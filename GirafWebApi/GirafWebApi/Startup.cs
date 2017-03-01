@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using GirafWebApi.Data;
 
 namespace GirafWebApi
 {
@@ -27,6 +29,10 @@ namespace GirafWebApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+           services.AddIdentity<GirafUser, IdentityRole>()
+          .AddEntityFrameworkStores<GirafDbContext>()
+          .AddDefaultTokenProviders();
+
             // Add framework services.
             services.AddMvc();
         }
@@ -38,6 +44,8 @@ namespace GirafWebApi
             loggerFactory.AddDebug();
 
             app.UseMvc();
+
+            app.UseIdentity();
         }
     }
 }
