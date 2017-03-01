@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using GirafWebApi.Data;
+using GirafWebApi.Models;
 
 namespace GirafWebApi.Controllers
 {

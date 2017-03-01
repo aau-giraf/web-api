@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using GirafWebApi.Data;
+using GirafWebApi.Models;
 
 namespace GirafWebApi
 {

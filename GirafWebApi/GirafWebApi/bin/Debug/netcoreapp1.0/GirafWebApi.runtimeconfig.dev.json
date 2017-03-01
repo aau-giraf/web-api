@@ -1,7 +1,7 @@
 {
   "runtimeOptions": {
     "additionalProbingPaths": [
-      "C:\\Users\\User\\.nuget\\packages"
+      "/home/morell/.nuget/packages"
     ]
   }
 }

@@ -4,12 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GirafWebApi.Models;
 
 namespace GirafWebApi.Data
 {
     public class GirafDbContext : IdentityDbContext<GirafUser>
     {
-        DbSet<GirafUser> Users { get; set; }
         public GirafDbContext(DbContextOptions<GirafDbContext> options)
             : base(options)
         {

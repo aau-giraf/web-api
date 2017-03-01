@@ -1,11 +1,19 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
-public class Department {
-    public long Key { get; set; }
+namespace GirafWebApi.Models {
+    public class Department {
+        [Column("id")]
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public long Key { get; set; }
 
-    public string Name { get; private set; }
+        [Required]
+        public string Name { get; private set; }
 
-    public ICollection<User> members { get; set; }
+        public ICollection<GirafUser> members { get; set; }
 
-    protected Department () {}
+        protected Department () {}
+    }
 }
