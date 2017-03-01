@@ -994,6 +994,20 @@
           "lib/netstandard1.3/Microsoft.CSharp.dll": {}
         }
       },
+      "Microsoft.Data.Sqlite/1.1.0-preview1-final": {
+        "type": "package",
+        "dependencies": {
+          "NETStandard.Library": "1.6.1-preview1-24530-04",
+          "SQLite": "3.12.2",
+          "System.Data.Common": "4.3.0-preview1-24530-04"
+        },
+        "compile": {
+          "lib/netstandard1.3/Microsoft.Data.Sqlite.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.3/Microsoft.Data.Sqlite.dll": {}
+        }
+      },
       "Microsoft.DotNet.PlatformAbstractions/1.1.0": {
         "type": "package",
         "dependencies": {
@@ -1075,6 +1089,20 @@
         },
         "runtime": {
           "lib/netstandard1.3/Microsoft.EntityFrameworkCore.Relational.Design.dll": {}
+        }
+      },
+      "Microsoft.EntityFrameworkCore.Sqlite/1.1.0-preview1-final": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.Data.Sqlite": "1.1.0-preview1-final",
+          "Microsoft.EntityFrameworkCore.Relational": "1.1.0-preview1-final",
+          "NETStandard.Library": "1.6.1-preview1-24530-04"
+        },
+        "compile": {
+          "lib/netstandard1.3/Microsoft.EntityFrameworkCore.Sqlite.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard1.3/Microsoft.EntityFrameworkCore.Sqlite.dll": {}
         }
       },
       "Microsoft.EntityFrameworkCore.SqlServer/1.1.0": {
@@ -2173,6 +2201,33 @@
         "type": "package",
         "runtimeTargets": {
           "runtimes/win7-x86/native/sni.dll": {
+            "assetType": "native",
+            "rid": "win7-x86"
+          }
+        }
+      },
+      "SQLite/3.12.2": {
+        "type": "package",
+        "dependencies": {
+          "SQLite.Native": "3.12.2"
+        }
+      },
+      "SQLite.Native/3.12.2": {
+        "type": "package",
+        "runtimeTargets": {
+          "runtimes/linux-x64/native/libsqlite3.so": {
+            "assetType": "native",
+            "rid": "linux-x64"
+          },
+          "runtimes/osx-x64/native/libsqlite3.dylib": {
+            "assetType": "native",
+            "rid": "osx-x64"
+          },
+          "runtimes/win7-x64/native/sqlite3.dll": {
+            "assetType": "native",
+            "rid": "win7-x64"
+          },
+          "runtimes/win7-x86/native/sqlite3.dll": {
             "assetType": "native",
             "rid": "win7-x86"
           }
@@ -5026,6 +5081,19 @@
         "ref/xamarinwatchos10/_._"
       ]
     },
+    "Microsoft.Data.Sqlite/1.1.0-preview1-final": {
+      "sha512": "3cpmDbDDbmt3EbNkPvXSnjQWYNtLv9kngIzKkkdamGoXmICmn5Pc9Lrba1J7Lc4KKosYcGvk2wIBe+02qlpUFQ==",
+      "type": "package",
+      "path": "microsoft.data.sqlite/1.1.0-preview1-final",
+      "files": [
+        "lib/net451/Microsoft.Data.Sqlite.dll",
+        "lib/net451/Microsoft.Data.Sqlite.xml",
+        "lib/netstandard1.3/Microsoft.Data.Sqlite.dll",
+        "lib/netstandard1.3/Microsoft.Data.Sqlite.xml",
+        "microsoft.data.sqlite.1.1.0-preview1-final.nupkg.sha512",
+        "microsoft.data.sqlite.nuspec"
+      ]
+    },
     "Microsoft.DotNet.PlatformAbstractions/1.1.0": {
       "sha512": "Bl6KYfbFSIW3QIRHAp931iR5h01qHjKghdpAtncwbzNUs0+IUZ+XfwkIU0sQsR33ufGvi3u4dZMIYYFysjpHAA==",
       "type": "package",
@@ -5087,6 +5155,19 @@
         "lib/netstandard1.3/Microsoft.EntityFrameworkCore.Relational.Design.xml",
         "microsoft.entityframeworkcore.relational.design.1.1.0.nupkg.sha512",
         "microsoft.entityframeworkcore.relational.design.nuspec"
+      ]
+    },
+    "Microsoft.EntityFrameworkCore.Sqlite/1.1.0-preview1-final": {
+      "sha512": "aJc6Nl0TuCpKjcnTWr+3tMRHzcHANMxCKe0c2isr6WoygDYYsAbH00xvfR/o79ySmWoyF5K82iiT6kiV7P/U3Q==",
+      "type": "package",
+      "path": "microsoft.entityframeworkcore.sqlite/1.1.0-preview1-final",
+      "files": [
+        "lib/net451/Microsoft.EntityFrameworkCore.Sqlite.dll",
+        "lib/net451/Microsoft.EntityFrameworkCore.Sqlite.xml",
+        "lib/netstandard1.3/Microsoft.EntityFrameworkCore.Sqlite.dll",
+        "lib/netstandard1.3/Microsoft.EntityFrameworkCore.Sqlite.xml",
+        "microsoft.entityframeworkcore.sqlite.1.1.0-preview1-final.nupkg.sha512",
+        "microsoft.entityframeworkcore.sqlite.nuspec"
       ]
     },
     "Microsoft.EntityFrameworkCore.SqlServer/1.1.0": {
@@ -6170,6 +6251,29 @@
         "runtime.win7-x86.runtime.native.system.data.sqlclient.sni.4.3.0.nupkg.sha512",
         "runtime.win7-x86.runtime.native.system.data.sqlclient.sni.nuspec",
         "runtimes/win7-x86/native/sni.dll"
+      ]
+    },
+    "SQLite/3.12.2": {
+      "sha512": "XYNQJt2eFqGluWP+fDaiNrV1v3kA+VsU2ygUjLx7zqzhIZKlAjSYMZLldmbGNnlNC5rKR+0LTrN0IA9dZkDyFw==",
+      "type": "package",
+      "path": "sqlite/3.12.2",
+      "files": [
+        "sqlite.3.12.2.nupkg.sha512",
+        "sqlite.nuspec"
+      ]
+    },
+    "SQLite.Native/3.12.2": {
+      "sha512": "/5BdEFTaCziE6K5OG0bjSUhPo+LRmFcmyriFWEZNSuHaiqSp69sVngTb/Yo8mH6JykMA79BFdCBLMW+2E3pnuA==",
+      "type": "package",
+      "path": "sqlite.native/3.12.2",
+      "files": [
+        "build/net45/SQLite.Native.props",
+        "runtimes/linux-x64/native/libsqlite3.so",
+        "runtimes/osx-x64/native/libsqlite3.dylib",
+        "runtimes/win7-x64/native/sqlite3.dll",
+        "runtimes/win7-x86/native/sqlite3.dll",
+        "sqlite.native.3.12.2.nupkg.sha512",
+        "sqlite.native.nuspec"
       ]
     },
     "System.AppContext/4.3.0": {
@@ -10886,6 +10990,7 @@
       "Microsoft.EntityFrameworkCore.Design >= 1.1.0",
       "Microsoft.EntityFrameworkCore.SqlServer >= 1.1.0",
       "Microsoft.EntityFrameworkCore.SqlServer.Design >= 1.1.0",
+      "Microsoft.EntityFrameworkCore.Sqlite >= 1.1.0-msbuild3-final",
       "Microsoft.EntityFrameworkCore.Tools >= 1.0.0-msbuild3-final",
       "Microsoft.Extensions.Logging.Debug >= 1.1.0",
       "Microsoft.NETCore.App >= 1.1.0",
@@ -10946,6 +11051,10 @@
           "Microsoft.EntityFrameworkCore.Design": {
             "target": "Package",
             "version": "1.1.0"
+          },
+          "Microsoft.EntityFrameworkCore.Sqlite": {
+            "target": "Package",
+            "version": "1.1.0-msbuild3-final"
           },
           "Microsoft.EntityFrameworkCore.SqlServer": {
             "target": "Package",

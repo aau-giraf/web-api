@@ -1,4 +1,4 @@
-namespace GirafWebApi
+namespace GirafWebApi.Models
 {
     public enum AccessLevel {
     /**

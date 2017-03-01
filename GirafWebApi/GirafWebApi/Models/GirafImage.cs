@@ -1,5 +1,7 @@
-namespace GirafWebApi
-{
+
+using GirafWebApi.Models.Persistence;
+
+namespace GirafWebApi.Models{
     public class GirafImage : PersistFileHandle {
         public GirafImage() {}
 
