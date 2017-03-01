@@ -31,7 +31,7 @@ namespace GirafWebApi.Controllers
         public IActionResult Post([FromBody]GirafUser user)
         {
             // TODO: add password to the search criteria for a user
-            GirafUser db_user = _context.Users.Where((GirafUser u) => u.UserName.Equals(user.UserName)).First();
+            var db_user = _context.Users.Where((GirafUser u) => u.UserName.Equals(user.UserName)).First();
 
             if(db_user == null)
             {
