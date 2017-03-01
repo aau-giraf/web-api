@@ -15,16 +15,24 @@ namespace GirafWebApi.Controllers
 
         // GET api/users
         [HttpGet]
-        public IEnumerable<GirafUser> Get()
+        public IActionResult Get()
         {
-            return _context.Users.ToList();
+            try {
+                return Ok(_context.Users.ToList());
+            } catch (Exception) {
+                return NotFound("No user found");
+            }
         }
 
         // GET api/users/5
         [HttpGet("{id}")]
-        public GirafUser Get(string id)
+        public IActionResult Get(string id)
         {
-            return _context.Users.Where((GirafUser u) => u.Id == id).First();
+            try {
+                return Ok(_context.Users.Where((GirafUser u) => u.Id == id));
+            } catch (Exception) {
+                return NotFound("No user found");
+            }
         }
 
         // POST api/users

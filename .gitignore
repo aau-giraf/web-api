@@ -1,3 +1,4 @@
 *.swp
 GirafWebApi/GirafWebApi/.vscode/
 GirafWebApi/GirafWebApi/obj/
+GirafWebApi/GirafWebApi/bin/

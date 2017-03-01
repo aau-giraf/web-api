@@ -38,9 +38,15 @@ namespace GirafWebApi
             // Add framework services.
             services.AddMvc();
             
-             //var connection = @"Server=(localdb)\mssqllocaldb;Database=EFGetStarted.AspNetCore.NewDb;Trusted_Connection=True;";
+            //var connection = @"Server=(localdb)\mssqllocaldb;Database=EFGetStarted.AspNetCore.NewDb;Trusted_Connection=True;";
             services.AddEntityFrameworkSqlite()
                 .AddDbContext<GirafDbContext>();
+
+            // configure identity server with in-memory stores, keys, clients and scopes
+            services.AddIdentityServer()
+                .AddTemporarySigningCredential()
+                .AddInMemoryApiResources(Config.GetApiResources())
+                .AddInMemoryClients(Config.GetClients());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
