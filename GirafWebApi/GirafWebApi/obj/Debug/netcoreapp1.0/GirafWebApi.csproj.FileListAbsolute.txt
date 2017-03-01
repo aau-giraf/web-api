@@ -1,9 +1,0 @@
-C:\Users\User\Documents\GitHub\Web-API\GirafWebApi\GirafWebApi\bin\Debug\netcoreapp1.0\GirafWebApi.deps.json
-C:\Users\User\Documents\GitHub\Web-API\GirafWebApi\GirafWebApi\bin\Debug\netcoreapp1.0\GirafWebApi.runtimeconfig.json
-C:\Users\User\Documents\GitHub\Web-API\GirafWebApi\GirafWebApi\bin\Debug\netcoreapp1.0\GirafWebApi.runtimeconfig.dev.json
-C:\Users\User\Documents\GitHub\Web-API\GirafWebApi\GirafWebApi\bin\Debug\netcoreapp1.0\GirafWebApi.dll
-C:\Users\User\Documents\GitHub\Web-API\GirafWebApi\GirafWebApi\bin\Debug\netcoreapp1.0\GirafWebApi.pdb
-C:\Users\User\Documents\GitHub\Web-API\GirafWebApi\GirafWebApi\obj\Debug\netcoreapp1.0\GirafWebApi.csprojResolveAssemblyReference.cache
-C:\Users\User\Documents\GitHub\Web-API\GirafWebApi\GirafWebApi\obj\Debug\netcoreapp1.0\GirafWebApi.AssemblyInfo.cs
-C:\Users\User\Documents\GitHub\Web-API\GirafWebApi\GirafWebApi\obj\Debug\netcoreapp1.0\GirafWebApi.dll
-C:\Users\User\Documents\GitHub\Web-API\GirafWebApi\GirafWebApi\obj\Debug\netcoreapp1.0\GirafWebApi.pdb

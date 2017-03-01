@@ -1,5 +1,8 @@
-public class GirafImage : PersistFileHandle {
-    public GirafImage() {}
+namespace GirafWebApi
+{
+    public class GirafImage : PersistFileHandle {
+        public GirafImage() {}
 
-    public GirafImage(string filePath) : base (filePath) {}
+        public GirafImage(string filePath) : base (filePath) {}
+    }
 }

@@ -1,4 +1,6 @@
-public enum AccessLevel {
+namespace GirafWebApi
+{
+    public enum AccessLevel {
     /**
      * Accessible by everyone, even non-users.
      */
@@ -11,4 +13,5 @@ public enum AccessLevel {
      * Accessible only to the owning user.
      */
     PRIVATE
+    }
 }

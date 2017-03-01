@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using GirafWebApi.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace GirafWebApi
 {
@@ -35,6 +36,10 @@ namespace GirafWebApi
 
             // Add framework services.
             services.AddMvc();
+            
+             var connection = @"Server=(localdb)\mssqllocaldb;Database=EFGetStarted.AspNetCore.NewDb;Trusted_Connection=True;";
+             services.AddDbContext<Contexts.TestContext>(options => options.UseSqlServer(connection));
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
