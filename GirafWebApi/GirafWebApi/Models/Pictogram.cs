@@ -3,8 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 public class Pictogram : PictoFrame {
     public GirafImage Image { get; set; }
-    
-    public Pictogram(string title, AccessLevel accessLevel, GirafImage image, string username) : base(title, accessLevel, username)
+    //this is a comment
+        public Pictogram(string title, AccessLevel accessLevel, GirafImage image, string username) : base(title, accessLevel, username)
     {
         this.Image = image;
     }
