@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using GirafWebApi.Contexts;
-using Microsoft.EntityFrameworkCore;
 using GirafWebApi.Models;
 
 namespace GirafWebApi
@@ -32,11 +31,12 @@ namespace GirafWebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddIdentity<GirafUser, IdentityRole>()
-                .AddEntityFrameworkStores<GirafDbContext>()
-                .AddDefaultTokenProviders();
+            .AddEntityFrameworkStores<GirafDbContext>()
+            .AddDefaultTokenProviders();
 
             // Add framework services.
             services.AddMvc();
+<<<<<<< Updated upstream
             
             //var connection = @"Server=(localdb)\mssqllocaldb;Database=EFGetStarted.AspNetCore.NewDb;Trusted_Connection=True;";
             services.AddEntityFrameworkSqlite()
@@ -47,10 +47,13 @@ namespace GirafWebApi
                 .AddTemporarySigningCredential()
                 .AddInMemoryApiResources(Config.GetApiResources())
                 .AddInMemoryClients(Config.GetClients());
+=======
+>>>>>>> Stashed changes
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, 
+            ILoggerFactory loggerFactory)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
