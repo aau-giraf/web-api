@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using GirafWebApi.Contexts;
 using GirafWebApi.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace GirafWebApi.Controllers
 {
@@ -12,6 +13,7 @@ namespace GirafWebApi.Controllers
     public class AuthenticationController : Controller
     {
         public readonly GirafDbContext _context;
+<<<<<<< Updated upstream
 
         // GET api/users
         [HttpGet]
@@ -60,5 +62,9 @@ namespace GirafWebApi.Controllers
         public void Delete(int id)
         {
         }
+=======
+        public readonly UserManager<GirafUser> _userManager;
+        public readonly SignInManager<GirafUser> _signInManager;
+>>>>>>> Stashed changes
     }
 }
