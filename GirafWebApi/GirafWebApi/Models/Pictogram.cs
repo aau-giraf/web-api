@@ -25,6 +25,6 @@ namespace GirafWebApi.Models {
         {
             this.Image = image;
         }
-        protected Pictogram(){ }
+        public Pictogram(){ }
     }
 }

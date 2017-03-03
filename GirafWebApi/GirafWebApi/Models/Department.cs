@@ -15,6 +15,8 @@ namespace GirafWebApi.Models
 
         public ICollection<GirafUser> members { get; set; }
 
-        protected Department () {}
+        public ICollection<Pictogram> pictograms { get; set; }
+
+        public Department () {}
     }
 }
