@@ -36,8 +36,6 @@ namespace GirafWebApi
 
             // Add framework services.
             services.AddMvc();
-<<<<<<< Updated upstream
-            
             //var connection = @"Server=(localdb)\mssqllocaldb;Database=EFGetStarted.AspNetCore.NewDb;Trusted_Connection=True;";
             services.AddEntityFrameworkSqlite()
                 .AddDbContext<GirafDbContext>();
@@ -47,17 +45,15 @@ namespace GirafWebApi
                 .AddTemporarySigningCredential()
                 .AddInMemoryApiResources(Config.GetApiResources())
                 .AddInMemoryClients(Config.GetClients());
-=======
->>>>>>> Stashed changes
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, 
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory, GirafDbContext context)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-
+            DBInitializer.Initialize(context);
             app.UseMvc();
 
             app.UseIdentity();

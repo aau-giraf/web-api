@@ -20,7 +20,7 @@ namespace GirafWebApi.Models {
         {
             this.Image = image;
         }
-        public Pictogram(string title, AccessLevel accessLevel, GirafImage image, long department_key, string user_id)
+        public Pictogram(string title, AccessLevel accessLevel, GirafImage image, long department_key, long user_id)
             : base(title, accessLevel, department_key, user_id)
         {
             this.Image = image;

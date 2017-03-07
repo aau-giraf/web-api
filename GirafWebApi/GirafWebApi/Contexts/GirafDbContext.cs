@@ -40,7 +40,7 @@ namespace GirafWebApi.Contexts
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
-			var connectionStringBuilder = new SqliteConnectionStringBuilder { DataSource = "memory" };
+			var connectionStringBuilder = new SqliteConnectionStringBuilder { DataSource = "GirafDB.db" };
         	var connectionString = connectionStringBuilder.ToString();
         	var connection = new SqliteConnection(connectionString);
 

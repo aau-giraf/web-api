@@ -7,11 +7,10 @@ using Microsoft.AspNetCore.Identity;
 
 namespace GirafWebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class AuthenticationController : Controller
     {
         public readonly GirafDbContext _context;
-<<<<<<< Updated upstream
 
         // GET api/users
         [HttpGet]
@@ -60,9 +59,5 @@ namespace GirafWebApi.Controllers
         public void Delete(int id)
         {
         }
-=======
-        public readonly UserManager<GirafUser> _userManager;
-        public readonly SignInManager<GirafUser> _signInManager;
->>>>>>> Stashed changes
     }
 }

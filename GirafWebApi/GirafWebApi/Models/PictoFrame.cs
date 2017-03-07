@@ -32,7 +32,7 @@ namespace GirafWebApi.Models {
         }
 
 
-        public PictoFrame(string title, AccessLevel accessLevel, long department_key, string user_id)
+        public PictoFrame(string title, AccessLevel accessLevel, long department_key, long user_id)
         : this(title, accessLevel, department_key)
         {
             this.owner_id = user_id;
@@ -42,8 +42,8 @@ namespace GirafWebApi.Models {
         {
             this.Title = title;
             this.AccessLevel = accessLevel;
-            this.owner_id = user.Id;
-            this.Department_Key = user.Department.Key;
+            //this.owner_id = user.Id; Needs fixin
+            this.Department_Key = user.Department_Key;
         }
         protected PictoFrame() {}
 
