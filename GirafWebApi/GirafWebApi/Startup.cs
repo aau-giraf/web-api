@@ -31,7 +31,7 @@ namespace GirafWebApi
         public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
+        public virtual void ConfigureServices(IServiceCollection services)
         {
             services.AddIdentity<GirafUser, IdentityRole>()
             .AddEntityFrameworkStores<GirafDbContext>()
@@ -39,18 +39,25 @@ namespace GirafWebApi
 
             // Add framework services.
             services.AddMvc();
+<<<<<<< Updated upstream
 
             //var connection = @"Server=(localdb)\mssqllocaldb;Database=EFGetStarted.AspNetCore.NewDb;Trusted_Connection=True;";
 
             services.AddEntityFrameworkSqlite()
                 .AddDbContext<GirafDbContext>();
+=======
+>>>>>>> Stashed changes
 
             // configure identity server with in-memory stores, keys, clients and resources
             services.AddIdentityServer()
                 .AddTemporarySigningCredential()
                 .AddInMemoryApiResources(Config.GetApiResources())
+<<<<<<< Updated upstream
                 .AddInMemoryClients(Config.GetClients())
                 .AddTestUsers(Config.GetUsers());
+=======
+                .AddInMemoryClients(Config.GetClients());
+>>>>>>> Stashed changes
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc;
 using GirafWebApi.Contexts;
 using GirafWebApi.Models;
 using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace GirafWebApi.Controllers
 {
@@ -11,15 +13,24 @@ namespace GirafWebApi.Controllers
     public class AuthenticationController : Controller
     {
         public readonly GirafDbContext _context;
+        public readonly UserManager<GirafUser> _userManager;
+        public readonly SignInManager<GirafUser> _signInManager;
+
+        public AuthenticationController(GirafDbContext context, UserManager<GirafUser> um, SignInManager<GirafUser> sim)
+        {
+            this._context = context;
+            this._userManager = um;
+            this._signInManager = sim;
+        }
 
         // GET api/users
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
             try {
-                return Ok(_context.Users.ToList());
+                return Ok(await _context.Users.ToListAsync());
             } catch (Exception) {
-                return NotFound("No user found");
+                return NotFound("No users found");
             }
         }
 
@@ -36,27 +47,20 @@ namespace GirafWebApi.Controllers
 
         // POST api/users
         [HttpPost]
-        public IActionResult Post([FromBody]GirafUser user)
+        public async Task<IActionResult> Post([FromBody]GirafUser user)
         {
-            // TODO: add password to the search criteria for a GirafUser
-            var db_user = _context.Users.Where((GirafUser u) => u.UserName.Equals(user.UserName)).First();
-
-            if(db_user == null)
-            {
-                return NotFound();
-            }
-            return Ok();
+            
         }
 
         // PUT api/users/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        public async Task<IActionResult> Put(int id, [FromBody]string value)
         {
         }
 
         // DELETE api/users/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
         }
     }
