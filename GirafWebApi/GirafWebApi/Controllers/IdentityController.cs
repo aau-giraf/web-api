@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace GirafWebApi.Controllers
 {
-    [Route("identity")]
+    [Route("[controller]")]
     [Authorize]
     public class IdentityController : ControllerBase
     {

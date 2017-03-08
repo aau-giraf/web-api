@@ -63,7 +63,6 @@ namespace GirafWebApi
             app.UseIdentityServer();
 
             DBInitializer.Initialize(context);
-            app.UseMvc();
 
             app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
             {
