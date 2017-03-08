@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,16 +6,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using GirafWebApi.Contexts;
 using GirafWebApi.Models;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using Microsoft.IdentityModel.Tokens;
-<<<<<<< Updated upstream
-using IdentityServer4.Configuration;
-using Microsoft.EntityFrameworkCore;
-=======
 using IdentityServer4.Validation;
 using IdentityServer4.Services;
->>>>>>> Stashed changes
 
 namespace GirafWebApi
 {
