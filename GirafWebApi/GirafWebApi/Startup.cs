@@ -9,7 +9,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using GirafWebApi.Contexts;
-using Microsoft.EntityFrameworkCore;
 using GirafWebApi.Models;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
@@ -35,12 +34,14 @@ namespace GirafWebApi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddIdentity<GirafUser, IdentityRole>()
-                .AddEntityFrameworkStores<GirafDbContext>()
-                .AddDefaultTokenProviders();
+            .AddEntityFrameworkStores<GirafDbContext>()
+            .AddDefaultTokenProviders();
 
             // Add framework services.
             services.AddMvc();
-            
+
+            //var connection = @"Server=(localdb)\mssqllocaldb;Database=EFGetStarted.AspNetCore.NewDb;Trusted_Connection=True;";
+
             services.AddEntityFrameworkSqlite()
                 .AddDbContext<GirafDbContext>();
 
@@ -53,17 +54,16 @@ namespace GirafWebApi
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, 
+            ILoggerFactory loggerFactory, GirafDbContext context)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
             app.UseIdentityServer();
 
-            app.UseCookieAuthentication(new CookieAuthenticationOptions
-            {
-                AuthenticationScheme = "Cookies"
-            });
+            DBInitializer.Initialize(context);
+            app.UseMvc();
 
             app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
             {

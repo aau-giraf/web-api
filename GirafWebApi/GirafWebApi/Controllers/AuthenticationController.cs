@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using GirafWebApi.Contexts;
 using GirafWebApi.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace GirafWebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class AuthenticationController : Controller
     {
         public readonly GirafDbContext _context;
