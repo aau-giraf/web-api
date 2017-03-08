@@ -11,7 +11,6 @@ namespace GirafWebApi.Controllers
     public class AuthenticationController : Controller
     {
         public readonly GirafDbContext _context;
-<<<<<<< Updated upstream
 
         // GET api/users
         [HttpGet]
@@ -19,17 +18,6 @@ namespace GirafWebApi.Controllers
         {
             try {
                 return Ok(_context.Users.ToList());
-            } catch (Exception) {
-                return NotFound("No user found");
-            }
-        }
-
-        // GET api/users/5
-        [HttpGet("{id}")]
-        public IActionResult Get(string id)
-        {
-            try {
-                return Ok(_context.Users.Where((GirafUser u) => u.Id == id));
             } catch (Exception) {
                 return NotFound("No user found");
             }
@@ -48,21 +36,7 @@ namespace GirafWebApi.Controllers
             }
             return Ok();
         }
-
-        // PUT api/users/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/users/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-        }
-=======
         public readonly UserManager<GirafUser> _userManager;
         public readonly SignInManager<GirafUser> _signInManager;
->>>>>>> Stashed changes
     }
 }

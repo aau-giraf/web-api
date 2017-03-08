@@ -13,7 +13,7 @@ namespace GirafWebApi.Models {
         protected GirafUser owner { get; set; }
 
         [Required]
-        protected AccessLevel AccessLevel { get; set; }
+        public AccessLevel AccessLevel { get; set; }
 
         public long Department_Key { get; set; }
         [ForeignKey("Department_Key")]
