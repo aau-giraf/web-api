@@ -38,13 +38,5 @@ namespace GirafWebApi.Contexts
             // For example, you can rename the ASP.NET Identity table names and more.
             // Add your customizations after calling base.OnModelCreating(builder);
         }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
-			var connectionStringBuilder = new SqliteConnectionStringBuilder { DataSource = "GirafDB.db" };
-        	var connectionString = connectionStringBuilder.ToString();
-        	var connection = new SqliteConnection(connectionString);
-
-			optionsBuilder.UseSqlite(connection);
-		}
     }
 }

@@ -21,7 +21,7 @@ namespace GirafWebApi
         /// <param name="services">A collection of the Services that must run on the server.</param>
         public override void ConfigureServices(IServiceCollection services) {
             base.ConfigureServices(services);
-            var connectionStringBuilder = new SqliteConnectionStringBuilder { DataSource = "Giraf_SQLite.db" };
+            var connectionStringBuilder = new SqliteConnectionStringBuilder { DataSource = "GirafDB.db" };
         	var connectionString = connectionStringBuilder.ToString();
         	var connection = new SqliteConnection(connectionString);
 

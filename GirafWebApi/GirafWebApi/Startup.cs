@@ -27,7 +27,7 @@ namespace GirafWebApi
 
         // This method gets called by the runtime. Use this method to add services to the container.
 
-        public void ConfigureServices(IServiceCollection services)
+        public virtual void ConfigureServices(IServiceCollection services)
         {             
             services.AddIdentity<GirafUser, IdentityRole>()
             .AddEntityFrameworkStores<GirafDbContext>()
@@ -35,11 +35,7 @@ namespace GirafWebApi
 
             // Add framework services.
             services.AddMvc();
-
-            //var connection = @"Server=(localdb)\mssqllocaldb;Database=EFGetStarted.AspNetCore.NewDb;Trusted_Connection=True;";
             
-            services.AddEntityFrameworkSqlite()
-                .AddDbContext<GirafDbContext>();
             // configure identity server with in-memory stores, keys, clients and resources
            
             services.AddIdentityServer()
