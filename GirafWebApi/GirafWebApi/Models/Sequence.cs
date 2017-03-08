@@ -7,15 +7,15 @@ namespace GirafWebApi.Models {
         public Pictogram Thumbnail { get; set; }
 
         protected Sequence () {}
-        public Sequence(string title, AccessLevel accessLevel, long deparment_key, string username, Pictogram thumbnail)
-        : this(title, accessLevel, deparment_key, username, thumbnail, new List<Frame>())
+        public Sequence(string title, AccessLevel accessLevel, long department_key, string user_id, Pictogram thumbnail)
+        : this(title, accessLevel, department_key, user_id, thumbnail, new List<Frame>())
         {
             Thumbnail = thumbnail;
 
         }
-        public Sequence(string title, AccessLevel accessLevel, long deparment_key, 
-            string username, Pictogram thumbnail, ICollection<Frame> elements)
-            : base(title, accessLevel, deparment_key, username)
+        public Sequence(string title, AccessLevel accessLevel, long department_key, 
+            string user_id, Pictogram thumbnail, ICollection<Frame> elements)
+            : base(title, accessLevel, department_key, user_id)
         {
             Thumbnail = thumbnail;
             this._elements = elements;

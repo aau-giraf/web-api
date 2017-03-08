@@ -26,7 +26,23 @@ namespace GirafWebApi.Migrations
 
                     b.HasKey("Key");
 
-                    b.ToTable("Department");
+                    b.ToTable("Departments");
+                });
+
+            modelBuilder.Entity("GirafWebApi.Models.Frame", b =>
+                {
+                    b.Property<long>("Key")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired();
+
+                    b.HasKey("Key");
+
+                    b.ToTable("Frames");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Frame");
                 });
 
             modelBuilder.Entity("GirafWebApi.Models.GirafImage", b =>
@@ -37,7 +53,7 @@ namespace GirafWebApi.Migrations
 
                     b.HasKey("Key");
 
-                    b.ToTable("GirafImage");
+                    b.ToTable("Images");
                 });
 
             modelBuilder.Entity("GirafWebApi.Models.GirafUser", b =>
@@ -50,14 +66,14 @@ namespace GirafWebApi.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
 
+                    b.Property<long?>("DepartmentKey");
+
                     b.Property<long>("Department_Key");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256);
 
                     b.Property<bool>("EmailConfirmed");
-
-                    b.Property<long?>("IconKey");
 
                     b.Property<bool>("LockoutEnabled");
 
@@ -84,9 +100,9 @@ namespace GirafWebApi.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Department_Key");
+                    b.HasIndex("DepartmentKey");
 
-                    b.HasIndex("IconKey");
+                    b.HasIndex("Department_Key");
 
                     b.HasIndex("NormalizedEmail")
                         .HasName("EmailIndex");
@@ -205,16 +221,71 @@ namespace GirafWebApi.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
+            modelBuilder.Entity("GirafWebApi.Models.Choice", b =>
+                {
+                    b.HasBaseType("GirafWebApi.Models.Frame");
+
+
+                    b.ToTable("Choices");
+
+                    b.HasDiscriminator().HasValue("Choice");
+                });
+
+            modelBuilder.Entity("GirafWebApi.Models.PictoFrame", b =>
+                {
+                    b.HasBaseType("GirafWebApi.Models.Frame");
+
+                    b.Property<long>("Department_Key");
+
+                    b.Property<long>("owner_id");
+
+                    b.HasIndex("Department_Key");
+
+                    b.ToTable("PictoFrames");
+
+                    b.HasDiscriminator().HasValue("PictoFrame");
+                });
+
+            modelBuilder.Entity("GirafWebApi.Models.Pictogram", b =>
+                {
+                    b.HasBaseType("GirafWebApi.Models.PictoFrame");
+
+                    b.Property<long?>("DepartmentKey");
+
+                    b.Property<long?>("ImageKey");
+
+                    b.HasIndex("DepartmentKey");
+
+                    b.HasIndex("ImageKey");
+
+                    b.ToTable("Pictograms");
+
+                    b.HasDiscriminator().HasValue("Pictogram");
+                });
+
+            modelBuilder.Entity("GirafWebApi.Models.Sequence", b =>
+                {
+                    b.HasBaseType("GirafWebApi.Models.PictoFrame");
+
+                    b.Property<long?>("ThumbnailKey");
+
+                    b.HasIndex("ThumbnailKey");
+
+                    b.ToTable("Sequences");
+
+                    b.HasDiscriminator().HasValue("Sequence");
+                });
+
             modelBuilder.Entity("GirafWebApi.Models.GirafUser", b =>
                 {
-                    b.HasOne("GirafWebApi.Models.Department", "Department")
+                    b.HasOne("GirafWebApi.Models.Department")
                         .WithMany("members")
-                        .HasForeignKey("Department_Key")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("DepartmentKey");
 
                     b.HasOne("GirafWebApi.Models.GirafImage", "Icon")
                         .WithMany()
-                        .HasForeignKey("IconKey");
+                        .HasForeignKey("Department_Key")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<string>", b =>
@@ -252,6 +323,32 @@ namespace GirafWebApi.Migrations
                         .WithMany("Roles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("GirafWebApi.Models.PictoFrame", b =>
+                {
+                    b.HasOne("GirafWebApi.Models.Department", "Department")
+                        .WithMany()
+                        .HasForeignKey("Department_Key")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("GirafWebApi.Models.Pictogram", b =>
+                {
+                    b.HasOne("GirafWebApi.Models.Department")
+                        .WithMany("pictograms")
+                        .HasForeignKey("DepartmentKey");
+
+                    b.HasOne("GirafWebApi.Models.GirafImage", "Image")
+                        .WithMany()
+                        .HasForeignKey("ImageKey");
+                });
+
+            modelBuilder.Entity("GirafWebApi.Models.Sequence", b =>
+                {
+                    b.HasOne("GirafWebApi.Models.Pictogram", "Thumbnail")
+                        .WithMany()
+                        .HasForeignKey("ThumbnailKey");
                 });
         }
     }

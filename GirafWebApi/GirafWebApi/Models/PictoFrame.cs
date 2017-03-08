@@ -8,7 +8,7 @@ namespace GirafWebApi.Models {
         [Required]
         protected string Title { get; set; }
 
-        public long owner_id { get; set; }
+        public string owner_id { get; set; }
         [ForeignKey("owner_id")]
         protected GirafUser owner { get; set; }
 
@@ -42,8 +42,8 @@ namespace GirafWebApi.Models {
         {
             this.Title = title;
             this.AccessLevel = accessLevel;
-            this.owner_id = user.Id;
-            this.Department_Key = user.Department.Key;
+            this.owner_id = user.Id; 
+            this.Department_Key = user.Department_Key;
         }
         protected PictoFrame() {}
 
