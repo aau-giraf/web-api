@@ -11,6 +11,9 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using GirafWebApi.Contexts;
 using Microsoft.EntityFrameworkCore;
 using GirafWebApi.Models;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 
 namespace GirafWebApi
 {
@@ -38,15 +41,15 @@ namespace GirafWebApi
             // Add framework services.
             services.AddMvc();
             
-            //var connection = @"Server=(localdb)\mssqllocaldb;Database=EFGetStarted.AspNetCore.NewDb;Trusted_Connection=True;";
             services.AddEntityFrameworkSqlite()
                 .AddDbContext<GirafDbContext>();
 
-            // configure identity server with in-memory stores, keys, clients and scopes
+            // configure identity server with in-memory stores, keys, clients and resources
             services.AddIdentityServer()
                 .AddTemporarySigningCredential()
                 .AddInMemoryApiResources(Config.GetApiResources())
-                .AddInMemoryClients(Config.GetClients());
+                .AddInMemoryClients(Config.GetClients())
+                .AddTestUsers(Config.GetUsers());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,9 +58,22 @@ namespace GirafWebApi
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            app.UseMvc();
+            app.UseIdentityServer();
 
-            app.UseIdentity();
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AuthenticationScheme = "Cookies"
+            });
+
+            app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
+            {
+                Authority = "http://localhost:5001",
+                RequireHttpsMetadata = false,
+                
+                ApiName = "api1"
+            });
+
+            app.UseMvc();
         }
     }
 }

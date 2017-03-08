@@ -1,0 +1,8 @@
+/home/lee/Documents/P6/web-api/GirafWebApi/GirafClient/bin/Debug/netcoreapp1.0/GirafClient.deps.json
+/home/lee/Documents/P6/web-api/GirafWebApi/GirafClient/bin/Debug/netcoreapp1.0/GirafClient.runtimeconfig.json
+/home/lee/Documents/P6/web-api/GirafWebApi/GirafClient/bin/Debug/netcoreapp1.0/GirafClient.runtimeconfig.dev.json
+/home/lee/Documents/P6/web-api/GirafWebApi/GirafClient/bin/Debug/netcoreapp1.0/GirafClient.dll
+/home/lee/Documents/P6/web-api/GirafWebApi/GirafClient/bin/Debug/netcoreapp1.0/GirafClient.pdb
+/home/lee/Documents/P6/web-api/GirafWebApi/GirafClient/obj/Debug/netcoreapp1.0/GirafClient.AssemblyInfo.cs
+/home/lee/Documents/P6/web-api/GirafWebApi/GirafClient/obj/Debug/netcoreapp1.0/GirafClient.dll
+/home/lee/Documents/P6/web-api/GirafWebApi/GirafClient/obj/Debug/netcoreapp1.0/GirafClient.pdb
