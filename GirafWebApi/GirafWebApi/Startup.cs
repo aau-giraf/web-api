@@ -13,6 +13,8 @@ using GirafWebApi.Models;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
+using IdentityServer4.Configuration;
+using Microsoft.EntityFrameworkCore;
 
 namespace GirafWebApi
 {
@@ -39,25 +41,18 @@ namespace GirafWebApi
 
             // Add framework services.
             services.AddMvc();
-<<<<<<< Updated upstream
 
             //var connection = @"Server=(localdb)\mssqllocaldb;Database=EFGetStarted.AspNetCore.NewDb;Trusted_Connection=True;";
-
+            
             services.AddEntityFrameworkSqlite()
                 .AddDbContext<GirafDbContext>();
-=======
->>>>>>> Stashed changes
-
             // configure identity server with in-memory stores, keys, clients and resources
             services.AddIdentityServer()
                 .AddTemporarySigningCredential()
                 .AddInMemoryApiResources(Config.GetApiResources())
-<<<<<<< Updated upstream
                 .AddInMemoryClients(Config.GetClients())
+                .AddTemporarySigningCredential()
                 .AddTestUsers(Config.GetUsers());
-=======
-                .AddInMemoryClients(Config.GetClients());
->>>>>>> Stashed changes
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -66,11 +61,13 @@ namespace GirafWebApi
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-
+            
+            app.UseIdentity();
             app.UseIdentityServer();
-
+            
             DBInitializer.Initialize(context);
-
+            app.UseMvc();
+            
             app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
             {
                 Authority = "http://localhost:5001",

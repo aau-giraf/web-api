@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using GirafWebApi.Contexts;
 using GirafWebApi.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GirafWebApi.Controllers
 {
@@ -21,20 +22,21 @@ namespace GirafWebApi.Controllers
         [HttpGet]
         public IActionResult Get()
         {
+        /// .Include is used to get information on members aswell when getting the Department
             try {
                 var depart = _context.Departments.Include(x => x.members);
-                return Ok(depart.ToList()); //Adding Department to context?
+                return Ok(depart.ToList()); 
             } catch (Exception e) {
                 return NotFound("No departments found. " + e.Message);
             }
         }
-
         [HttpGet("{id}")]
         public IActionResult Get(long ID)
         {
+        /// .Include is used to get information on members aswell when getting the Department
             var department = _context.Departments.Include(x => x.members).Where(dep => dep.Key == ID).First();
             try {
-                return Ok(department); //Adding Department to context?
+                return Ok(department); 
             } catch (Exception) {
                 return NotFound("Department not found. ");
             }

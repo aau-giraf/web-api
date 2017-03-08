@@ -12,15 +12,16 @@ namespace GirafWebApi.Models
 
         /*[Key]
         [Column("id")]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]*/
-        //public long Key { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public string Id { get; set; }*/
         public long Department_Key { get; set; }
         [ForeignKey("Department_Key")]
         //public Department Department { get; set; }
-
         public GirafImage Icon { get; set; }
-        public GirafUser (string userName) : base(userName)
+        public string Password;
+        public GirafUser (string userName, string password) : base(userName)
         {
+            this.Password = password;
         }
         public GirafUser()
         {

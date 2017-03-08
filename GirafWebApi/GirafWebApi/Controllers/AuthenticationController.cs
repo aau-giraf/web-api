@@ -46,7 +46,7 @@ namespace GirafWebApi.Controllers
         }
 
         // POST api/users
-        [HttpPost]
+       /* [HttpPost]
         public async Task<IActionResult> Post([FromBody]GirafUser user)
         {
             
@@ -62,6 +62,6 @@ namespace GirafWebApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-        }
+        }*/
     }
 }

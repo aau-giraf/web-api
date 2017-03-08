@@ -8,9 +8,10 @@ using GirafWebApi.Contexts;
 namespace GirafWebApi.Migrations
 {
     [DbContext(typeof(GirafDbContext))]
-    partial class GirafDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170308121854_InitialIdentityServerMigration")]
+    partial class InitialIdentityServerMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.0-rtm-22752");
