@@ -30,9 +30,9 @@ namespace GirafWebApi
 
 			var users = new GirafUser[]
 			{
-				new GirafUser("Kurt", "pass") { Department_Key = 1},
-				new GirafUser("Harald Gråtand", "pass") {Department_Key = 1},
-				new GirafUser("Lee", "pass") { Department_Key = 2}
+				new GirafUser("Kurt") { Department_Key = 1},
+				new GirafUser("Harald Gråtand") {Department_Key = 1},
+				new GirafUser("Lee") { Department_Key = 2, Password = "123"}
 			};
 			
 			foreach(var user in users)

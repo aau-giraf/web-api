@@ -13,8 +13,13 @@ using GirafWebApi.Models;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
+<<<<<<< Updated upstream
 using IdentityServer4.Configuration;
 using Microsoft.EntityFrameworkCore;
+=======
+using IdentityServer4.Validation;
+using IdentityServer4.Services;
+>>>>>>> Stashed changes
 
 namespace GirafWebApi
 {
@@ -33,8 +38,9 @@ namespace GirafWebApi
         public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public virtual void ConfigureServices(IServiceCollection services)
-        {
+
+        public void ConfigureServices(IServiceCollection services)
+        {             
             services.AddIdentity<GirafUser, IdentityRole>()
             .AddEntityFrameworkStores<GirafDbContext>()
             .AddDefaultTokenProviders();
@@ -47,12 +53,14 @@ namespace GirafWebApi
             services.AddEntityFrameworkSqlite()
                 .AddDbContext<GirafDbContext>();
             // configure identity server with in-memory stores, keys, clients and resources
+           
             services.AddIdentityServer()
-                .AddTemporarySigningCredential()
-                .AddInMemoryApiResources(Config.GetApiResources())
-                .AddInMemoryClients(Config.GetClients())
-                .AddTemporarySigningCredential()
-                .AddTestUsers(Config.GetUsers());
+                .AddInMemoryApiResources(Configurations.ApiResources.GetApiResources())
+                .AddInMemoryClients(Configurations.Clients.GetClients())
+                .AddTemporarySigningCredential(); // Skal måske ændres?
+
+            services.AddTransient<IResourceOwnerPasswordValidator, Configurations.ResourceOwnerPasswordValidator>();
+            services.AddTransient<IProfileService, Configurations.ProfileService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -72,8 +80,8 @@ namespace GirafWebApi
             {
                 Authority = "http://localhost:5001",
                 RequireHttpsMetadata = false,
-                
-                ApiName = "api1"
+                ApiName = "MyApi",
+                AllowedScopes = { "MyApi"}
             });
 
             app.UseMvc();

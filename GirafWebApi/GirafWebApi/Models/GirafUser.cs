@@ -9,7 +9,7 @@ namespace GirafWebApi.Models
     public class GirafUser : IdentityUser
     {
         public static string[] GirafRoles = new string[] { "User", "Guardian", "Admin" };
-
+        public string Password { get; set; }
         /*[Key]
         [Column("id")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

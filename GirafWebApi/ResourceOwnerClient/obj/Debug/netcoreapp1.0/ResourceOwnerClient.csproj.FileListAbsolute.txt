@@ -1,8 +1,0 @@
-/home/lee/Documents/P6/web-api/GirafWebApi/ResourceOwnerClient/bin/Debug/netcoreapp1.0/ResourceOwnerClient.deps.json
-/home/lee/Documents/P6/web-api/GirafWebApi/ResourceOwnerClient/bin/Debug/netcoreapp1.0/ResourceOwnerClient.runtimeconfig.json
-/home/lee/Documents/P6/web-api/GirafWebApi/ResourceOwnerClient/bin/Debug/netcoreapp1.0/ResourceOwnerClient.runtimeconfig.dev.json
-/home/lee/Documents/P6/web-api/GirafWebApi/ResourceOwnerClient/bin/Debug/netcoreapp1.0/ResourceOwnerClient.dll
-/home/lee/Documents/P6/web-api/GirafWebApi/ResourceOwnerClient/bin/Debug/netcoreapp1.0/ResourceOwnerClient.pdb
-/home/lee/Documents/P6/web-api/GirafWebApi/ResourceOwnerClient/obj/Debug/netcoreapp1.0/ResourceOwnerClient.AssemblyInfo.cs
-/home/lee/Documents/P6/web-api/GirafWebApi/ResourceOwnerClient/obj/Debug/netcoreapp1.0/ResourceOwnerClient.dll
-/home/lee/Documents/P6/web-api/GirafWebApi/ResourceOwnerClient/obj/Debug/netcoreapp1.0/ResourceOwnerClient.pdb
