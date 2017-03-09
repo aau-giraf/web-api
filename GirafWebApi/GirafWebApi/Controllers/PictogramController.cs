@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GirafWebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class PictogramController : Controller
     {
         public readonly GirafDbContext _context;
