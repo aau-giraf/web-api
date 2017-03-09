@@ -16,13 +16,11 @@ namespace GirafWebApi.Controllers
     {
         public readonly GirafDbContext _context;
         public readonly UserManager<GirafUser> _userManager;
-        public readonly RoleManager<GirafUser> _roleManager;
 
-        public PictogramController(GirafDbContext context, UserManager<GirafUser> userManager, RoleManager<GirafUser> roleManager)
+        public PictogramController(GirafDbContext context, UserManager<GirafUser> userManager)
         {
             this._context = context;
             this._userManager = userManager;
-            this._roleManager = roleManager;
         }
 
         /// <summary>
@@ -32,12 +30,12 @@ namespace GirafWebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            List<Pictogram> _pictograms = await _context.Pictograms.Where(p => p.AccessLevel == AccessLevel.PUBLIC).ToListAsync();
+            var _pictograms = _context.Pictograms.Where(p => p.AccessLevel == AccessLevel.PUBLIC);
             /*if (is_auth?)
             {
                 _pictograms.AddRange(await _context.Pictograms.Where(p => p.Department.members.Contains(User)));
             }*/
-            return Ok(_pictograms);
+            return Ok(await _pictograms.ToListAsync());
         }
 
         /// <summary>
@@ -45,7 +43,8 @@ namespace GirafWebApi.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns> a <see cref="Pictogram"/> pictogram with a specific <paramref name="id"/> id </returns>
-        [HttpGet("{id}")]
+        [HttpGet]
+        [Route("{id}/image")]
         public async Task<IActionResult> Get(int id)
         {
             var _pictogram = await _context.Pictograms.Where(p => p.AccessLevel == AccessLevel.PUBLIC && p.Key == id).ToListAsync();
