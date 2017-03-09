@@ -18,7 +18,6 @@ namespace GirafWebApi.Models
         [ForeignKey("Department_Key")]
         //public Department Department { get; set; }
         public GirafImage Icon { get; set; }
-        public string Password;
         public GirafUser (string userName, string password) : base(userName)
         {
             this.Password = password;
