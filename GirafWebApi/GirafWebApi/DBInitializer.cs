@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GirafWebApi.Contexts;
 using GirafWebApi.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace GirafWebApi
 {
@@ -15,6 +16,20 @@ namespace GirafWebApi
 			context.Database.EnsureCreated();
 			if (context.Users.Any())
 				return;
+			
+			var Roles = new IdentityRole[]
+			{
+				new IdentityRole("Admin"), 
+            	new IdentityRole("Guardian"), 
+           		new IdentityRole("User")
+			};
+
+			foreach(var role in Roles)
+			{
+				context.Roles.Add(role);
+			}
+
+			context.SaveChanges();
 
 			var Departments = new Department[]
 			{
@@ -30,9 +45,9 @@ namespace GirafWebApi
 
 			var users = new GirafUser[]
 			{
-				new GirafUser("Kurt", "password") { Department_Key = 1},
-				new GirafUser("Harald Gråtand", "password") {Department_Key = 1},
-				new GirafUser("Lee", "password") { Department_Key = 2}
+				new GirafUser("Kurt", "password", Roles.Where(role => role.Name == "User").First()) { Department_Key = 1},
+				new GirafUser("Harald Gråtand", "password", Roles.Where(role => role.Name == "Guardian").First()) {Department_Key = 1},
+				new GirafUser("Lee", "password", Roles.Where(role => role.Name == "Admin").First()) { Department_Key = 2}
 			};
 			
 			foreach(var user in users)
@@ -41,6 +56,7 @@ namespace GirafWebApi
 				context.Users.Add(user);
 			}
 			context.SaveChanges();
+			
 			var Pictograms = new Pictogram[]
 			{
 				new Pictogram("Hat", AccessLevel.PROTECTED, new GirafImage()) { owner_id = users.Where(usr => usr.UserName == "Kurt").First().Id },

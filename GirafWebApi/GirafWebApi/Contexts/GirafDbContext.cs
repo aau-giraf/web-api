@@ -18,6 +18,7 @@ namespace GirafWebApi.Contexts
         public DbSet<Frame> Frames { get; set; }
         public DbSet<GirafImage> Images { get; set; }
         public DbSet<Sequence> Sequences { get; set; }
+
         public GirafDbContext(DbContextOptions<GirafDbContext> options)
             : base(options)
         {
@@ -33,6 +34,7 @@ namespace GirafWebApi.Contexts
             builder.Entity<Choice>().ToTable("Choices");
             builder.Entity<Sequence>().ToTable("Sequences");
             builder.Entity<GirafImage>().ToTable("Images");
+            builder.Entity<IdentityRole>().ToTable("Roles");       
             
             // Customize the ASP.NET Identity model and override the defaults if needed.
             // For example, you can rename the ASP.NET Identity table names and more.

@@ -8,11 +8,16 @@ using GirafWebApi.Contexts;
 using GirafWebApi.Models;
 using IdentityServer4.Validation;
 using IdentityServer4.Services;
+using Microsoft.AspNetCore.Http;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace GirafWebApi
 {
     public class Startup
     {
+        GirafDbContext context;
+
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -29,9 +34,11 @@ namespace GirafWebApi
 
         public virtual void ConfigureServices(IServiceCollection services)
         {             
-            services.AddIdentity<GirafUser, IdentityRole>()
-            .AddEntityFrameworkStores<GirafDbContext>()
-            .AddDefaultTokenProviders();
+            services.AddIdentity<GirafUser, IdentityRole>(options => {
+                options.Cookies.ApplicationCookie.LoginPath = new PathString("/api/values/");
+            })
+                .AddEntityFrameworkStores<GirafDbContext>()
+                .AddDefaultTokenProviders();
 
             // Add framework services.
             services.AddMvc();
@@ -44,6 +51,12 @@ namespace GirafWebApi
                 .AddInMemoryClients(Configurations.Clients.GetClients())
                 .AddTemporarySigningCredential(); // Skal måske ændres?
 
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admin",
+                    policy => policy.RequireRole(context.Roles.Where(x => x.Name == "Admin").First().Name));
+            });
+
             services.AddTransient<IResourceOwnerPasswordValidator, Configurations.ResourceOwnerPasswordValidator>();
             services.AddTransient<IProfileService, Configurations.ProfileService>();
         }
@@ -54,13 +67,15 @@ namespace GirafWebApi
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
+
+            this.context = context;
+            DBInitializer.Initialize(context);
             
             app.UseIdentity();
             app.UseIdentityServer();
             
-            DBInitializer.Initialize(context);
-            app.UseMvc();
-            
+            app.UseJwtBearerAuthentication();
+
             app.UseIdentityServerAuthentication(new IdentityServerAuthenticationOptions
             {
                 Authority = "http://localhost:5001",
