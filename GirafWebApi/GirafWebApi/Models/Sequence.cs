@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using GirafWebApi.Models.DTOs;
 
 namespace GirafWebApi.Models {
     public class Sequence : PictoFrame { 
@@ -7,15 +8,14 @@ namespace GirafWebApi.Models {
         public Pictogram Thumbnail { get; set; }
 
         protected Sequence () {}
-        public Sequence(string title, AccessLevel accessLevel, long department_key, string user_id, Pictogram thumbnail)
-        : this(title, accessLevel, department_key, user_id, thumbnail, new List<Frame>())
+        public Sequence(string title, AccessLevel accessLevel, Pictogram thumbnail)
+        : this(title, accessLevel, thumbnail, new List<Frame>())
         {
             Thumbnail = thumbnail;
 
         }
-        public Sequence(string title, AccessLevel accessLevel, long department_key, 
-            string user_id, Pictogram thumbnail, ICollection<Frame> elements)
-            : base(title, accessLevel, department_key, user_id)
+        public Sequence(string title, AccessLevel accessLevel, Pictogram thumbnail, ICollection<Frame> elements)
+            : base(title, accessLevel)
         {
             Thumbnail = thumbnail;
             this._elements = elements;
@@ -35,11 +35,11 @@ namespace GirafWebApi.Models {
 
         public System.Collections.Generic.IEnumerator<Frame> GetEnumerator() => _elements.GetEnumerator();
 
-        public void Merge(Sequence sequence) {
+        public void Merge(SequenceDTO sequence) {
             base.Merge(sequence);
 
             this.Thumbnail = sequence.Thumbnail;
-            foreach (var frame in sequence) {
+            foreach (var frame in sequence._elements) {
                 _elements.Add(frame);
             }
         }

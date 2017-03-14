@@ -40,25 +40,6 @@ namespace GirafWebApi.Controllers
                 return Unauthorized();
             }
             return Ok(tokenResponse.Json);
-            //Console.WriteLine(tokenResponse.Json);
-            //Console.WriteLine("\n\n");
-
-            /*// call api
-            var client = new HttpClient();
-            client.SetBearerToken(tokenResponse.AccessToken);
-
-            var response = await client.GetAsync("http://localhost:5001/identity");
-            if (!response.IsSuccessStatusCode)
-            {
-                Console.WriteLine(response.StatusCode);
-            }
-            else
-            {
-                var content = response.Content.ReadAsStringAsync().Result;
-                Console.WriteLine(JArray.Parse(content));
-            }
-
-            return Ok("Logged in");*/
         }
     }
 }

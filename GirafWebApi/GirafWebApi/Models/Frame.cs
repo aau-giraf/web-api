@@ -12,7 +12,7 @@ namespace GirafWebApi.Models {
 
         [Required]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{yyyy-MM-dd HH:mm:ss}")]
-        protected DateTime lastEdit { get; set; }
+        public DateTime lastEdit { get; set; }
 
         private ICollection<Sequence> partOfSequences { get; set; }
     }

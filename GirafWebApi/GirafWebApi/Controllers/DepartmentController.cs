@@ -21,21 +21,21 @@ namespace GirafWebApi.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get()
+        public async Task<IActionResult> Get()
         {
         /// .Include is used to get information on members aswell when getting the Department
             try {
-                var depart = _context.Departments.Include(x => x.members);
-                return Ok(depart.ToList()); 
+                var depart = _context.Departments.Include(dep => dep.Members);
+                return Ok(await depart.ToListAsync()); //Adding Department to context?
             } catch (Exception e) {
                 return NotFound("No departments found. " + e.Message);
             }
         }
         [HttpGet("{id}")]
-        public IActionResult Get(long ID)
+        public async Task<IActionResult> Get(long ID)
         {
         /// .Include is used to get information on members aswell when getting the Department
-            var department = _context.Departments.Include(x => x.members).Where(dep => dep.Key == ID).First();
+            var department = await _context.Departments.Include(dep => dep.Members).Where(dep => dep.Key == ID).FirstAsync();
             try {
                 return Ok(department); 
             } catch (Exception) {
@@ -44,17 +44,17 @@ namespace GirafWebApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post([FromBody]Department dep)
+        public async Task<IActionResult> Post([FromBody]Department dep)
         {
             try
             {
-                _context.Departments.Add(dep);
+                await _context.Departments.AddAsync(dep);
                 _context.SaveChanges();
                 return Ok(dep.Name);
             }
             catch (System.Exception e)
             {
-                return Ok(e.Message + e.InnerException);
+                return BadRequest (e.Message + e.InnerException);
             }
         }
     }

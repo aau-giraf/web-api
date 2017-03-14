@@ -45,40 +45,58 @@ namespace GirafWebApi
 
 			var users = new GirafUser[]
 			{
-				new GirafUser("Kurt", "password", Roles.Where(role => role.Name == "User").First()) { Department_Key = 1},
-				new GirafUser("Harald Gråtand", "password", Roles.Where(role => role.Name == "Guardian").First()) {Department_Key = 1},
-				new GirafUser("Lee", "password", Roles.Where(role => role.Name == "Admin").First()) { Department_Key = 2}
+				new GirafUser("Kurt", "password", Roles.Where(r => r.Name == "User").First()),
+				new GirafUser("Harald Gråtand", "password", Roles.Where(r => r.Name == "Guardian").First()),
+				new GirafUser("Lee", "password", Roles.Where(r => r.Name == "Admin").First())
 			};
 			
 			foreach(var user in users)
 			{
-				context.Departments.Where(dep => dep.Key == user.Department_Key).First().members.Add(user);
 				context.Users.Add(user);
 			}
+			context.Departments.Where(dep => dep.Key == 1).First().Members.Add(users[0]);
+			context.Departments.Where(dep => dep.Key == 1).First().Members.Add(users[1]);
+			context.Departments.Where(dep => dep.Key == 2).First().Members.Add(users[2]);
 			context.SaveChanges();
 			
 			var Pictograms = new Pictogram[]
 			{
-				new Pictogram("Hat", AccessLevel.PROTECTED, new GirafImage()) { owner_id = users.Where(usr => usr.UserName == "Kurt").First().Id },
-				new Pictogram("Kat", AccessLevel.PROTECTED, new GirafImage()) { owner_id = users.Where(usr => usr.UserName == "Kurt").First().Id },
-				new Pictogram("Nat", AccessLevel.PROTECTED, new GirafImage()) { owner_id = users.Where(usr => usr.UserName == "Kurt").First().Id },
-				new Pictogram("Slat", AccessLevel.PROTECTED, new GirafImage()) { owner_id = users.Where(usr => usr.UserName == "Kurt").First().Id },
-				new Pictogram("Pjat", AccessLevel.PROTECTED, new GirafImage()) { owner_id = users.Where(usr => usr.UserName == "Kurt").First().Id },
-				new Pictogram("Skråt", AccessLevel.PROTECTED, new GirafImage()) { owner_id = users.Where(usr => usr.UserName == "Lee").First().Id },
-				new Pictogram("Snot", AccessLevel.PROTECTED, new GirafImage()) { owner_id = users.Where(usr => usr.UserName == "Lee").First().Id },
-				new Pictogram("Flot", AccessLevel.PROTECTED, new GirafImage()) { owner_id = users.Where(usr => usr.UserName == "Lee").First().Id },
-				new Pictogram("Slot", AccessLevel.PROTECTED, new GirafImage()) { owner_id = users.Where(usr => usr.UserName == "Lee").First().Id },
-				new Pictogram("Bil", AccessLevel.PROTECTED, new GirafImage()) { owner_id = users.Where(usr => usr.UserName == "Harald Gråtand").First().Id },
-				new Pictogram("Smil", AccessLevel.PROTECTED, new GirafImage()) { owner_id = users.Where(usr => usr.UserName == "Harald Gråtand").First().Id },
-				new Pictogram("Fil", AccessLevel.PROTECTED, new GirafImage()) { owner_id = users.Where(usr => usr.UserName == "Harald Gråtand").First().Id },
-				new Pictogram("Stil", AccessLevel.PROTECTED, new GirafImage()) { owner_id = users.Where(usr => usr.UserName == "Harald Gråtand").First().Id },
-				new Pictogram("Harald Blåtand", AccessLevel.PUBLIC, new GirafImage()) { owner_id = users.Where(usr => usr.UserName == "Harald Gråtand").First().Id }
+				new Pictogram("Hat", AccessLevel.PROTECTED),
+				new Pictogram("Kat", AccessLevel.PROTECTED),
+				new Pictogram("Nat", AccessLevel.PROTECTED),
+				new Pictogram("Slat", AccessLevel.PROTECTED),
+				new Pictogram("Pjat", AccessLevel.PROTECTED),
+				new Pictogram("Skråt", AccessLevel.PROTECTED),
+				new Pictogram("Snot", AccessLevel.PROTECTED),
+				new Pictogram("Flot", AccessLevel.PROTECTED),
+				new Pictogram("Slot", AccessLevel.PROTECTED),
+				new Pictogram("Bil", AccessLevel.PROTECTED),
+				new Pictogram("Smil", AccessLevel.PROTECTED),
+				new Pictogram("Fil", AccessLevel.PROTECTED),
+				new Pictogram("Stil", AccessLevel.PROTECTED),
+				new Pictogram("Harald Blåtand", AccessLevel.PUBLIC)
 			};
-
 			foreach (var pictogram in Pictograms)
 			{
 				context.Add(pictogram);
 			}
+			var usr = context.Users.Where(user => user.UserName == "Kurt").First();
+			usr.Resources.Add(Pictograms[0]);
+			usr.Resources.Add(Pictograms[1]);
+			usr.Resources.Add(Pictograms[2]);
+			usr.Resources.Add(Pictograms[3]);
+			usr.Resources.Add(Pictograms[4]);
+			usr = context.Users.Where(user => user.UserName == "Lee").First();
+			usr.Resources.Add(Pictograms[5]);
+			usr.Resources.Add(Pictograms[6]);
+			usr.Resources.Add(Pictograms[7]);
+			usr.Resources.Add(Pictograms[8]);
+			usr = context.Users.Where(user => user.UserName == "Harald Gråtand").First();
+			usr.Resources.Add(Pictograms[9]);
+			usr.Resources.Add(Pictograms[10]);
+			usr.Resources.Add(Pictograms[11]);
+			usr.Resources.Add(Pictograms[12]);
+			usr.Resources.Add(Pictograms[13]);
 			context.SaveChanges();
 		}
     }

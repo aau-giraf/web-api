@@ -38,22 +38,13 @@ namespace GirafWebApi.Migrations
                     b.Property<string>("Discriminator")
                         .IsRequired();
 
+                    b.Property<DateTime>("lastEdit");
+
                     b.HasKey("Key");
 
                     b.ToTable("Frames");
 
                     b.HasDiscriminator<string>("Discriminator").HasValue("Frame");
-                });
-
-            modelBuilder.Entity("GirafWebApi.Models.GirafImage", b =>
-                {
-                    b.Property<long>("Key")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("Id");
-
-                    b.HasKey("Key");
-
-                    b.ToTable("Images");
                 });
 
             modelBuilder.Entity("GirafWebApi.Models.GirafUser", b =>
@@ -67,8 +58,6 @@ namespace GirafWebApi.Migrations
                         .IsConcurrencyToken();
 
                     b.Property<long?>("DepartmentKey");
-
-                    b.Property<long>("Department_Key");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256);
@@ -84,6 +73,8 @@ namespace GirafWebApi.Migrations
 
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256);
+
+                    b.Property<string>("Password");
 
                     b.Property<string>("PasswordHash");
 
@@ -101,8 +92,6 @@ namespace GirafWebApi.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentKey");
-
-                    b.HasIndex("Department_Key");
 
                     b.HasIndex("NormalizedEmail")
                         .HasName("EmailIndex");
@@ -235,11 +224,14 @@ namespace GirafWebApi.Migrations
                 {
                     b.HasBaseType("GirafWebApi.Models.Frame");
 
-                    b.Property<long>("Department_Key");
+                    b.Property<int>("AccessLevel");
 
-                    b.Property<long>("owner_id");
+                    b.Property<string>("GirafUserId");
 
-                    b.HasIndex("Department_Key");
+                    b.Property<string>("Title")
+                        .IsRequired();
+
+                    b.HasIndex("GirafUserId");
 
                     b.ToTable("PictoFrames");
 
@@ -252,11 +244,7 @@ namespace GirafWebApi.Migrations
 
                     b.Property<long?>("DepartmentKey");
 
-                    b.Property<long?>("ImageKey");
-
                     b.HasIndex("DepartmentKey");
-
-                    b.HasIndex("ImageKey");
 
                     b.ToTable("Pictograms");
 
@@ -279,13 +267,8 @@ namespace GirafWebApi.Migrations
             modelBuilder.Entity("GirafWebApi.Models.GirafUser", b =>
                 {
                     b.HasOne("GirafWebApi.Models.Department")
-                        .WithMany("members")
+                        .WithMany("Members")
                         .HasForeignKey("DepartmentKey");
-
-                    b.HasOne("GirafWebApi.Models.GirafImage", "Icon")
-                        .WithMany()
-                        .HasForeignKey("Department_Key")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<string>", b =>
@@ -327,21 +310,16 @@ namespace GirafWebApi.Migrations
 
             modelBuilder.Entity("GirafWebApi.Models.PictoFrame", b =>
                 {
-                    b.HasOne("GirafWebApi.Models.Department", "Department")
-                        .WithMany()
-                        .HasForeignKey("Department_Key")
-                        .OnDelete(DeleteBehavior.Cascade);
+                    b.HasOne("GirafWebApi.Models.GirafUser")
+                        .WithMany("Resources")
+                        .HasForeignKey("GirafUserId");
                 });
 
             modelBuilder.Entity("GirafWebApi.Models.Pictogram", b =>
                 {
                     b.HasOne("GirafWebApi.Models.Department")
-                        .WithMany("pictograms")
+                        .WithMany("Pictograms")
                         .HasForeignKey("DepartmentKey");
-
-                    b.HasOne("GirafWebApi.Models.GirafImage", "Image")
-                        .WithMany()
-                        .HasForeignKey("ImageKey");
                 });
 
             modelBuilder.Entity("GirafWebApi.Models.Sequence", b =>
