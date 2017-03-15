@@ -1,10 +1,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using GirafWebApi.Models.DTOs;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GirafWebApi.Models {
     public class Sequence : PictoFrame { 
         private ICollection<Frame> _elements {get; set;}
+        public long ThumbnailKey { get; set; }
+        [ForeignKey("ThumbnailKey")]
         public Pictogram Thumbnail { get; set; }
 
         protected Sequence () {}
@@ -35,11 +38,11 @@ namespace GirafWebApi.Models {
 
         public System.Collections.Generic.IEnumerator<Frame> GetEnumerator() => _elements.GetEnumerator();
 
-        public void Merge(SequenceDTO sequence) {
+        public void Merge(SequenceDTO sequence, ICollection<Frame> frames) {
             base.Merge(sequence);
 
-            this.Thumbnail = sequence.Thumbnail;
-            foreach (var frame in sequence._elements) {
+            this.ThumbnailKey = sequence.ThumbnailID;
+            foreach (var frame in frames) {
                 _elements.Add(frame);
             }
         }

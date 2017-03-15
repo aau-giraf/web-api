@@ -1,11 +1,11 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace GirafWebApi.Models.DTOs
 {
     public class SequenceDTO : PictoFrameDTO
     {
-        public long thumbnail_id { get; set; }
-        public bool elements_set { get; set; }
-        public long[] element_ids { get; set; }
+        public long ThumbnailID { get; set; }
+        public bool ElementsSet { get; set; }
+        public long[] ElementIDs { get; set; }
     }
 }

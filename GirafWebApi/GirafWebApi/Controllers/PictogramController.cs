@@ -74,7 +74,7 @@ namespace GirafWebApi.Controllers
 
             pict.lastEdit = DateTime.Now;
             var res = await _context.Pictograms.AddAsync(pict);
-            dep.Pictograms.Add(pict);
+            dep.Resources.Add(pict);
             usr.Resources.Add(pict);
 
             _context.SaveChanges();

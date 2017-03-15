@@ -16,11 +16,11 @@ namespace GirafWebApi.Models
 
         public ICollection<GirafUser> Members { get; set; }
 
-        public ICollection<Pictogram> Pictograms { get; set; }
+        public ICollection<PictoFrame> Resources { get; set; }
 
         public Department () {
             Members = new List<GirafUser>();
-            Pictograms = new List<Pictogram>();
+            Resources = new List<PictoFrame>();
         }
     }
 }

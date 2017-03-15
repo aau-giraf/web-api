@@ -33,8 +33,9 @@ namespace GirafWebApi.Controllers
         public async Task<IActionResult> CreateSequence([FromBody] SequenceDTO DTO)
         {
             if (DTO == null) return BadRequest();
-            Sequence _sequence = new Sequence(DTO.title, DTO.access_level, DTO.department_id, DTO.owner_id, ( await _context.Pictograms.Where(p => p.Key == DTO.thumbnail_id).FirstAsync()));
+            Sequence _sequence = new Sequence(DTO.Title, DTO.AccessLevel, ( await _context.Pictograms.Where(p => p.Key == DTO.ThumbnailID).FirstAsync()));
             var res = await _context.Sequences.AddAsync(_sequence);
+
             _context.SaveChanges();
             return Ok(res.Entity);
         }
