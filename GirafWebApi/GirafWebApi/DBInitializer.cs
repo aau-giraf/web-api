@@ -14,9 +14,9 @@ namespace GirafWebApi
 		public static void Initialize(GirafDbContext context)
 		{
 			context.Database.EnsureCreated();
+			
 			if (context.Users.Any())
 				return;
-			
 			var Roles = new IdentityRole[]
 			{
 				new IdentityRole("Admin"), 
@@ -58,7 +58,7 @@ namespace GirafWebApi
 			context.Departments.Where(dep => dep.Key == 1).First().Members.Add(users[1]);
 			context.Departments.Where(dep => dep.Key == 2).First().Members.Add(users[2]);
 			context.SaveChanges();
-			
+
 			var Pictograms = new Pictogram[]
 			{
 				new Pictogram("Hat", AccessLevel.PROTECTED),

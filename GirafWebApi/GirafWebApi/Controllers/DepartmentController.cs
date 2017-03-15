@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace GirafWebApi.Controllers
 {
     [Route("[controller]")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Policy = "Admin")]
     public class DepartmentController : Controller
     {
         GirafDbContext _context;

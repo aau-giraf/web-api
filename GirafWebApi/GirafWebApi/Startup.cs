@@ -26,9 +26,6 @@ namespace GirafWebApi
     /// </summary>
     public class Startup
     {
-        
-        GirafDbContext context;
-        
         protected IHostingEnvironment _environment;
 
         /// <summary>
@@ -58,7 +55,7 @@ namespace GirafWebApi
         /// </summary>
         /// <param name="services">The collection of services to add to the server.</param>
         public virtual void ConfigureServices(IServiceCollection services)
-        {             
+        {    
             services.AddIdentity<GirafUser, IdentityRole>(options => {
                 options.Cookies.ApplicationCookie.LoginPath = new PathString("/api/values/");
             })
@@ -76,8 +73,7 @@ namespace GirafWebApi
 
             services.AddAuthorization(options =>
             {
-                options.AddPolicy("Admin",
-                    policy => policy.RequireRole(context.Roles.Where(x => x.Name == "Admin").First().Name));
+                options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
             });
 
             services.AddTransient<IResourceOwnerPasswordValidator, Configurations.ResourceOwnerPasswordValidator>();
@@ -85,7 +81,17 @@ namespace GirafWebApi
             //Add the physical FileProvider for reading images on the server-side
             
             var physicalProvider = _environment.ContentRootFileProvider;
-            services.AddSingleton<IFileProvider>(physicalProvider);
+            //services.AddSingleton<IFileProvider>(physicalProvider);
+
+            if(Program.DbOption == DbOption.SQLite) {
+                var connectionStringBuilder = new SqliteConnectionStringBuilder { DataSource = "GirafDB.db" };
+                var connectionString = connectionStringBuilder.ToString();
+                var connection = new SqliteConnection(connectionString);
+
+                services.AddDbContext<GirafDbContext>(options => options.UseSqlite(connection));
+            }
+            else
+                services.AddDbContext<GirafDbContext>();     
         }
 
         /// <summary>
@@ -101,7 +107,6 @@ namespace GirafWebApi
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
-            this.context = context;
             DBInitializer.Initialize(context);
             
             app.UseIdentity();

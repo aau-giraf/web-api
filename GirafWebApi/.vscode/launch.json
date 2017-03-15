@@ -7,7 +7,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             "program": "${workspaceRoot}/GirafWebApi/bin/Debug/netcoreapp1.0/GirafWebApi.dll",
-            "args": [],
+            "args": ["-localdb"],
             "cwd": "${workspaceRoot}",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart",
