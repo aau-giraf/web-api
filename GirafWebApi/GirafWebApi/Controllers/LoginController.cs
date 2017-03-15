@@ -1,13 +1,7 @@
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
-using GirafWebApi.Contexts;
-using GirafWebApi.Models;
 using IdentityModel.Client;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Linq;
 
 namespace GirafWebApi.Controllers
 {

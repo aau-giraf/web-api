@@ -1,9 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using GirafWebApi.Contexts;
+using GirafWebApi.Setup;
 using GirafWebApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
@@ -11,7 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace GirafWebApi.Controllers
 {
     [Route("[controller]")]
-    [Authorize(Policy = "Admin")]
+    //[Authorize(Policy = "Admin")]
     public class DepartmentController : Controller
     {
         GirafDbContext _context;

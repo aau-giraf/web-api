@@ -15,5 +15,10 @@ namespace GirafWebApi.Models {
         public DateTime lastEdit { get; set; }
 
         private ICollection<Sequence> partOfSequences { get; set; }
+
+        public Frame()
+        {
+            partOfSequences = new List<Sequence>();
+        }
     }
 }

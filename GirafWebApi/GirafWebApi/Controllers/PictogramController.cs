@@ -1,16 +1,16 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using GirafWebApi.Contexts;
+using GirafWebApi.Setup;
 using GirafWebApi.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.IO;
 using System;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.AspNetCore.Http;
 using GirafWebApi.Models.DTOs;
+using Microsoft.AspNetCore.Hosting;
+using System.Threading;
 
 namespace GirafWebApi.Controllers
 {
@@ -19,13 +19,13 @@ namespace GirafWebApi.Controllers
     {
         public readonly GirafDbContext _context;
         public readonly UserManager<GirafUser> _userManager;
-        public readonly IFileProvider _imageProvider;
+        public readonly IHostingEnvironment _env;
 
-        public PictogramController(GirafDbContext context, UserManager<GirafUser> userManager, IFileProvider imageProvider)
+        public PictogramController(GirafDbContext context, UserManager<GirafUser> userManager, IHostingEnvironment env)
         {
             this._context = context;
             this._userManager = userManager;
-            this._imageProvider = imageProvider;
+            this._env = env;
         }
 
         /// <summary>
@@ -69,9 +69,20 @@ namespace GirafWebApi.Controllers
         {
             //Find all involved entities
             Pictogram pict = new Pictogram(pictogram.Title, pictogram.AccessLevel);
-            var dep = await _context.Departments.Where(depa => depa.Key == pictogram.Department_Key).FirstAsync();
-            var usr = await _context.Users.Where(user => user.Id == pictogram.Owner_Id).FirstAsync();
+            Department dep;
+            GirafUser usr;
+            try {
+                dep = await _context.Departments.Where(depa => depa.Key == pictogram.Department_Key).FirstAsync();
+            } catch {
+                return NotFound("There is no department with the given id.");
+            }
+            try {
+                usr = await _context.Users.Where(user => user.Id == pictogram.Owner_Id).FirstAsync();
+            } catch {
+                return NotFound("There is no user with the specified user-id.");
+            }
 
+            //Stamp the pictogram with current time and add it to the database, owner and department
             pict.lastEdit = DateTime.Now;
             var res = await _context.Pictograms.AddAsync(pict);
             dep.Resources.Add(pict);
@@ -107,10 +118,10 @@ namespace GirafWebApi.Controllers
         {
             var pict = await _context.Pictograms.Where(pic => pic.Key == id).FirstAsync();
 
-            var imageHandle = _imageProvider.GetFileInfo(Path.Combine("images", $"{pict}.png"));
+            /*var imageHandle = new FileInfo() //File.GetFileInfo(Path.Combine("images", $"{pict}.png"));
             if(imageHandle != null) {
                 System.IO.File.Delete(imageHandle.PhysicalPath);
-            }
+            }*/
 
             if(pict != null) {
                 _context.Pictograms.Remove(pict);
@@ -131,11 +142,22 @@ namespace GirafWebApi.Controllers
         [Produces("image/png")]
         public async Task<FileContentResult> ReadImage(int id)
         {
-            var image = _imageProvider.GetFileInfo(Path.Combine("images", $"{id}.png"));
-            if(!image.Exists)
+            string path = Path.Combine(_env.ContentRootPath, "images");
+
+            if(!Directory.Exists(path)) {
+                System.Console.WriteLine("Created a directory for images.");
+                Directory.CreateDirectory(path);
+            }
+
+            FileInfo image = new FileInfo(Path.Combine(path, $"{id}.png"));
+            if(!image.Exists) {
                 return null;
+            }
+
             byte[] imageBytes = new byte[image.Length];
-            await image.CreateReadStream().ReadAsync(imageBytes, 0, imageBytes.Length);
+            var fileReader = new FileStream(image.FullName, FileMode.Open);
+            await fileReader.ReadAsync(imageBytes, 0, (int) image.Length, new CancellationToken());
+
             return base.File(imageBytes, "image/png");
         }
 
@@ -152,7 +174,7 @@ namespace GirafWebApi.Controllers
             System.Console.WriteLine(Request.Body);
 
             System.Console.WriteLine("Started PictogramImage controller - ready to post");
-            var imageDir = _imageProvider.GetFileInfo("images");
+            /*var imageDir = _imageProvider.GetFileInfo("images");
             if(!Directory.Exists(imageDir.PhysicalPath)){
                 Directory.CreateDirectory(imageDir.PhysicalPath);
                 System.Console.WriteLine("Image directory created.");
@@ -170,16 +192,18 @@ namespace GirafWebApi.Controllers
             if(imageFile.Exists)
                 return BadRequest("An image for the specified pictogram already exists.");
             var imageStream = System.IO.File.Create(imageFile.PhysicalPath);
-            await imageStream.WriteAsync(image, 0, image.Length);
-
-            //"rewind" the body - setting it back to the original.
+            await imageStream.WriteAsync(image, 0, image.Length);*/
             return Ok();
         }
 
         [Consumes("image/png")]
         [HttpPut("{id}/image")]
         public async Task<IActionResult> UpdatePictogramImage(long id, [FromBody] byte[] image) {
-            return Ok();
+            var picto = await _context.Pictograms.Where(p => p.Key == id).FirstAsync();
+
+            //Delete the physical image and create a new from the image in the request.
+
+            return Ok(picto);
         }
         #endregion
     }

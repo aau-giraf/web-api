@@ -1,11 +1,9 @@
-using GirafWebApi.Contexts;
+using GirafWebApi.Setup;
 using GirafWebApi.Models;
 using GirafWebApi.Models.DTOs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 

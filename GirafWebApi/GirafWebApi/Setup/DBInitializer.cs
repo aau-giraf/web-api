@@ -1,16 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
-using GirafWebApi.Contexts;
 using GirafWebApi.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
-namespace GirafWebApi
+namespace GirafWebApi.Setup
 {
+	/// <summary>
+	/// A class for initializing the database with some sample data.
+	/// </summary>
     public class DBInitializer
     {
+		/// <summary>
+		/// Initializes the local database with sample data.
+		/// </summary>
+		/// <param name="context">A reference to the database context.</param>
 		public static void Initialize(GirafDbContext context)
 		{
 			context.Database.EnsureCreated();

@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using GirafWebApi.Contexts;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using GirafWebApi.Setup;
 
 namespace GirafWebApi
 {
@@ -27,15 +24,10 @@ namespace GirafWebApi
         /// </summary>
         public const string CONNECTIONSTRING_NAME = "ConnectionString";
 
+        /// <summary>
+        /// A static field for storing the choice of database option.
+        /// </summary>
         public static DbOption DbOption;
-        /// <summary>
-        /// Return value for the Main-function in case it has been run without arguments.
-        /// </summary>
-        private const int ERROR_BAD_ARGUMENTS = 0xA0;
-        /// <summary>
-        /// Return value for the Main-function in case it has succesfully completed.
-        /// </summary>
-        private const int SUCCESS = 0x0;
         /// <summary>
         /// Program argument for running the server locally.
         /// </summary>
@@ -50,41 +42,34 @@ namespace GirafWebApi
         /// </summary>
         /// <param name="args">Program arguments (see <see cref="RUN_WITH_LOCALDB"/> and <see cref="RUN_DEPLOYMENT"/> for explanation)</param>
         /// <returns>An exit code (see <see cref="ERROR_BAD_ARGUMENTS"/> and <see cref="SUCCESS"/> for explanation)</returns>
-        public static int Main(string[] args)
+        public static void Main(string[] args)
         {
             Console.Title = "Giraf REST-api Console";
+            Console.WriteLine("Welcome to Giraf REST Server.");
+
+            //Default to use SQLite database
+            DbOption = DbOption.SQLite;
 
             //Display a message for the user in case no arguments were specified.
             if(args.Length == 0) {
-                System.Console.WriteLine("Welcome to Giraf REST Server.");
                 System.Console.WriteLine("You have not specified any arguments, please use the following:");
-                System.Console.WriteLine($"   {RUN_WITH_LOCALDB}       : Runs a local SQLite db for debugging");
+                System.Console.WriteLine($"   {RUN_WITH_LOCALDB}       : Runs a local SQLite db for debugging (default)");
                 System.Console.WriteLine($"   {RUN_DEPLOYMENT} #path# : Deploys the server #path# must be the path to a web.config file containing a ConnectionString for the MariaDB.");
-                System.Console.WriteLine("Now defaulting to localdb");
                 DbOption = DbOption.SQLite;
             }
 
             //Build the host from the given arguments.
-            IWebHost host = null;
-            if(args[0].Equals(RUN_WITH_LOCALDB)) {
-                host = ConfigureHost();
-                DbOption = DbOption.SQLite;
-            }
-            else if(args[0].Equals(RUN_DEPLOYMENT)) {
-                host = ConfigureHost();
+            IWebHost host = ConfigureHost();
+            //Check if server should deploy and verify that there is two arguments, validation of the path is handled later.
+            if(args[0].Equals(RUN_DEPLOYMENT)) {
+                if(string.IsNullOrEmpty(args[1])) 
+                    throw new ArgumentException("You must specify a file-path as second argument when running with " + RUN_DEPLOYMENT);
+
                 ConfigurationFilePath = args[1];
                 DbOption = DbOption.SQL;
             }
-
-            //Attempt to run the host, else display an error and abort.
-            if(host != null)
-                host.Run();
-            else {
-                System.Console.WriteLine("Your argument was not recognized, aborting.");
-                return ERROR_BAD_ARGUMENTS;
-            }
-
-            return SUCCESS;
+            //Launch the rest-api.
+            host.Run();
         }
 
         /// <summary>

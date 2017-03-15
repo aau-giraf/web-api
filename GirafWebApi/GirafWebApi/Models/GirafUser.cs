@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using GirafWebApi.Contexts;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace GirafWebApi.Models
@@ -27,7 +25,7 @@ namespace GirafWebApi.Models
         }
         public GirafUser()
         {
-                
+            this.Resources = new List<PictoFrame>();
         }
     }
 }

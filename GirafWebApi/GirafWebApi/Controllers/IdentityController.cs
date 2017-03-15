@@ -1,9 +1,6 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq;
 using Microsoft.AspNetCore.Identity;
 using GirafWebApi.Models;
-using IdentityServer4.Configuration;
 
 namespace GirafWebApi.Controllers
 {

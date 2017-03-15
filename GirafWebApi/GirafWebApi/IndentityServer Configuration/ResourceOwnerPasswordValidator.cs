@@ -1,15 +1,10 @@
-using System;
-using System.Data;
 using System.Threading.Tasks;
 using IdentityServer4.Validation;
-using Microsoft.Data.Sqlite;
 using System.Linq;
-using GirafWebApi.Contexts;
+using GirafWebApi.Setup;
 using static IdentityModel.OidcConstants;
-using GirafWebApi.Models;
-using Microsoft.EntityFrameworkCore;
 
-namespace GirafWebApi.Configurations
+namespace GirafWebApi.IdentityServer.Configurations
 {
     public class ResourceOwnerPasswordValidator : IResourceOwnerPasswordValidator
     {

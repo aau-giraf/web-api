@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using IdentityServer4.Models;
 
-namespace GirafWebApi.Configurations
+namespace GirafWebApi.IdentityServer.Configurations
 {
     public class ApiResources
     {

@@ -1,5 +1,5 @@
 using System.Linq;
-using GirafWebApi.Contexts;
+using GirafWebApi.Setup;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GirafWebApi.Controllers

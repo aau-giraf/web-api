@@ -1,16 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using GirafWebApi.Models;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using System.IO;
-using System.Xml.Linq;
 
-namespace GirafWebApi.Contexts
+namespace GirafWebApi.Setup
 {
     public class GirafDbContext : IdentityDbContext<GirafUser>
     {
@@ -18,8 +10,8 @@ namespace GirafWebApi.Contexts
         public DbSet<Pictogram> Pictograms { get; set; }
         public DbSet<PictoFrame> PictoFrames { get; set; }
         public DbSet<Choice> Choices { get; set; }
-        public DbSet<Frame> Frames { get; set; }
         public DbSet<Sequence> Sequences { get; set; }
+        public DbSet<Frame> Frames {get; set;}
         public GirafDbContext(DbContextOptions<GirafDbContext> options)
             : base(options)
         {
@@ -27,10 +19,10 @@ namespace GirafWebApi.Contexts
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            builder.Entity<Frame>().ToTable("Frames");
             builder.Entity<Department>().ToTable("Departments");
             builder.Entity<Pictogram>().ToTable("Pictograms");
             builder.Entity<PictoFrame>().ToTable("PictoFrames");
-            builder.Entity<Frame>().ToTable("Frames");
             builder.Entity<Choice>().ToTable("Choices");
             builder.Entity<Sequence>().ToTable("Sequences");
             builder.Entity<IdentityRole>().ToTable("Roles");   

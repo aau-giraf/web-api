@@ -4,22 +4,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using GirafWebApi.Contexts;
 using GirafWebApi.Models;
 using IdentityServer4.Validation;
-using IdentityServer4.Services;
 using Microsoft.AspNetCore.Http;
+using GirafWebApi.Extensions;
 
-using Microsoft.AspNetCore.Http;
-using System.Linq;
-using Microsoft.Extensions.FileProviders;
-using Microsoft.Data.Sqlite;
-using System.Xml.Linq;
-using System.IO;
-using System;
-using Microsoft.EntityFrameworkCore;
-
-namespace GirafWebApi
+namespace GirafWebApi.Setup
 {
     /// <summary>
     /// The base-class for handling setup in the Giraf REST-api.
@@ -32,7 +22,6 @@ namespace GirafWebApi
         /// Instantiates a new Startup-object for building the ASP.net REST server.
         /// </summary>
         /// <param name="env">A reference to the <see cref="IHostingEnvironment"/> interface, on which the server is build.</param>
-        
         public Startup(IHostingEnvironment env)
         {
             _environment = env;
@@ -67,8 +56,8 @@ namespace GirafWebApi
             // configure identity server with in-memory stores, keys, clients and resources
            
             services.AddIdentityServer()
-                .AddInMemoryApiResources(Configurations.ApiResources.GetApiResources())
-                .AddInMemoryClients(Configurations.Clients.GetClients())
+                .AddInMemoryApiResources(GirafWebApi.IdentityServer.Configurations.ApiResources.GetApiResources())
+                .AddInMemoryClients(GirafWebApi.IdentityServer.Configurations.Clients.GetClients())
                 .AddTemporarySigningCredential(); // Skal måske ændres?
 
             services.AddAuthorization(options =>
@@ -76,22 +65,14 @@ namespace GirafWebApi
                 options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
             });
 
-            services.AddTransient<IResourceOwnerPasswordValidator, Configurations.ResourceOwnerPasswordValidator>();
+            services.AddTransient<IResourceOwnerPasswordValidator, GirafWebApi.IdentityServer.Configurations.ResourceOwnerPasswordValidator>();
 
-            //Add the physical FileProvider for reading images on the server-side
-            
-            var physicalProvider = _environment.ContentRootFileProvider;
-            //services.AddSingleton<IFileProvider>(physicalProvider);
-
+            //Add the database context to the server using extension-methods
             if(Program.DbOption == DbOption.SQLite) {
-                var connectionStringBuilder = new SqliteConnectionStringBuilder { DataSource = "GirafDB.db" };
-                var connectionString = connectionStringBuilder.ToString();
-                var connection = new SqliteConnection(connectionString);
-
-                services.AddDbContext<GirafDbContext>(options => options.UseSqlite(connection));
+                services.AddSqlite();
             }
             else
-                services.AddDbContext<GirafDbContext>();     
+                services.AddSql();     
         }
 
         /// <summary>
@@ -104,10 +85,11 @@ namespace GirafWebApi
         public void Configure(IApplicationBuilder app,
             ILoggerFactory loggerFactory, GirafDbContext context)
         {
+            //Add some sample data if the application is running locally
+            if(Program.DbOption == DbOption.SQLite) DBInitializer.Initialize(context);
+
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-
-            DBInitializer.Initialize(context);
             
             app.UseIdentity();
             app.UseIdentityServer();
