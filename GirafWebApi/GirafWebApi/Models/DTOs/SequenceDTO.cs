@@ -4,8 +4,8 @@ namespace GirafWebApi.Models.DTOs
 {
     public class SequenceDTO : PictoFrameDTO
     {
-        public ICollection<Frame> _elements {get; set;}
-        public Pictogram Thumbnail { get; set; }
-        
+        public long thumbnail_id { get; set; }
+        public bool elements_set { get; set; }
+        public long[] element_ids { get; set; }
     }
 }
