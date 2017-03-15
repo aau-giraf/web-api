@@ -4,3 +4,5 @@ GirafWebApi/.vs/
 GirafWebApi/GirafWebApi/obj/
 GirafWebApi/GirafWebApi/bin/
 GirafWebApi/GirafWebApi/.idea/
+GirafWebApi/migrations/
+GirafWebApi/Migrations/
