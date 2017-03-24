@@ -30,6 +30,24 @@ namespace GirafRest.Migrations
                     b.ToTable("Departments");
                 });
 
+            modelBuilder.Entity("GirafRest.Models.DepartmentResource", b =>
+                {
+                    b.Property<long>("Key")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<long>("DeparmentKey");
+
+                    b.Property<long>("PictoFrameKey");
+
+                    b.HasKey("Key");
+
+                    b.HasIndex("DeparmentKey");
+
+                    b.HasIndex("PictoFrameKey");
+
+                    b.ToTable("DepartmentResource");
+                });
+
             modelBuilder.Entity("GirafRest.Models.Frame", b =>
                 {
                     b.Property<long>("Key")
@@ -58,7 +76,7 @@ namespace GirafRest.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
 
-                    b.Property<long?>("DepartmentKey");
+                    b.Property<long>("DepartmentKey");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256);
@@ -100,6 +118,25 @@ namespace GirafRest.Migrations
                         .HasName("UserNameIndex");
 
                     b.ToTable("AspNetUsers");
+                });
+
+            modelBuilder.Entity("GirafRest.Models.UserResource", b =>
+                {
+                    b.Property<long>("Key")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<long>("PictoFrameKey");
+
+                    b.Property<string>("UserId")
+                        .IsRequired();
+
+                    b.HasKey("Key");
+
+                    b.HasIndex("PictoFrameKey");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserResource");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole", b =>
@@ -225,16 +262,8 @@ namespace GirafRest.Migrations
 
                     b.Property<int>("AccessLevel");
 
-                    b.Property<long?>("DepartmentKey");
-
-                    b.Property<string>("GirafUserId");
-
                     b.Property<string>("Title")
                         .IsRequired();
-
-                    b.HasIndex("DepartmentKey");
-
-                    b.HasIndex("GirafUserId");
 
                     b.ToTable("PictoFrames");
 
@@ -264,11 +293,38 @@ namespace GirafRest.Migrations
                     b.HasDiscriminator().HasValue("Sequence");
                 });
 
+            modelBuilder.Entity("GirafRest.Models.DepartmentResource", b =>
+                {
+                    b.HasOne("GirafRest.Models.Department", "Department")
+                        .WithMany("Resources")
+                        .HasForeignKey("DeparmentKey")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("GirafRest.Models.PictoFrame", "Resource")
+                        .WithMany("Departments")
+                        .HasForeignKey("PictoFrameKey")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("GirafRest.Models.GirafUser", b =>
                 {
-                    b.HasOne("GirafRest.Models.Department")
+                    b.HasOne("GirafRest.Models.Department", "Department")
                         .WithMany("Members")
-                        .HasForeignKey("DepartmentKey");
+                        .HasForeignKey("DepartmentKey")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("GirafRest.Models.UserResource", b =>
+                {
+                    b.HasOne("GirafRest.Models.PictoFrame", "Resource")
+                        .WithMany("Users")
+                        .HasForeignKey("PictoFrameKey")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("GirafRest.Models.GirafUser", "User")
+                        .WithMany("Resources")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<string>", b =>
@@ -306,17 +362,6 @@ namespace GirafRest.Migrations
                         .WithMany("Roles")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("GirafRest.Models.PictoFrame", b =>
-                {
-                    b.HasOne("GirafRest.Models.Department")
-                        .WithMany("Resources")
-                        .HasForeignKey("DepartmentKey");
-
-                    b.HasOne("GirafRest.Models.GirafUser")
-                        .WithMany("Resources")
-                        .HasForeignKey("GirafUserId");
                 });
 
             modelBuilder.Entity("GirafRest.Models.Sequence", b =>

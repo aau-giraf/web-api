@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using GirafRest.Data;
 using GirafRest.Models;
 using Microsoft.AspNetCore.Identity;
@@ -15,54 +18,62 @@ namespace GirafRest.Setup
 		/// Initializes the local database with sample data.
 		/// </summary>
 		/// <param name="context">A reference to the database context.</param>
-		public static void Initialize(GirafDbContext context, UserManager<GirafUser> userManager)
+		public async static Task Initialize(GirafDbContext context, UserManager<GirafUser> userManager)
 		{
 			context.Database.EnsureCreated();
 			
 			if (context.Users.Any())
 				return;
+
+			System.Console.WriteLine("Adding some sample data to the database.");
+			System.Console.WriteLine("Adding roles.");
 			var Roles = new IdentityRole[]
 			{
 				new IdentityRole("Admin"), 
             	new IdentityRole("Guardian"), 
            		new IdentityRole("User")
 			};
-
 			foreach(var role in Roles)
 			{
 				context.Roles.Add(role);
 			}
-
 			context.SaveChanges();
 
+			System.Console.WriteLine("Adding departments.");
 			var Departments = new Department[]
 			{
 				new Department { Name = "Tobias' stue for godt humør", Key = 1},
 				new Department { Name = "Bajer plejen", Key = 2}
 			};
-			
 			foreach(var department in Departments)
 			{
 				context.Departments.Add(department);
 			}
 			context.SaveChanges();
 
+			System.Console.WriteLine("Adding users.");
 			var users = new GirafUser[]
 			{
 				new GirafUser("Kurt"),
-				new GirafUser("Harald Gråtand"),
+				new GirafUser("Graatand"),
 				new GirafUser("Lee")
 			};
-			
 			foreach(var user in users)
 			{
-				userManager.CreateAsync(user, "password");
+				await userManager.CreateAsync(user, "password");
 			}
+			System.Console.WriteLine("Adding users to departments.");
 			context.Departments.Where(dep => dep.Key == 1).First().Members.Add(users[0]);
+			users[0].Department = context.Departments.Where(dep => dep.Key == 1).First();
+			context.SaveChanges();
 			context.Departments.Where(dep => dep.Key == 1).First().Members.Add(users[1]);
+			users[1].Department = context.Departments.Where(dep => dep.Key == 1).First();
+			context.SaveChanges();
 			context.Departments.Where(dep => dep.Key == 2).First().Members.Add(users[2]);
+			users[2].Department = context.Departments.Where(dep => dep.Key == 2).First();
 			context.SaveChanges();
 
+			System.Console.WriteLine("Adding pictograms.");
 			var Pictograms = new Pictogram[]
 			{
 				new Pictogram("Hat", AccessLevel.PROTECTED),
@@ -82,26 +93,25 @@ namespace GirafRest.Setup
 			};
 			foreach (var pictogram in Pictograms)
 			{
+				pictogram.lastEdit = DateTime.Now;
 				context.Add(pictogram);
 			}
+			System.Console.WriteLine("Adding pictograms to users.");
 			var usr = context.Users.Where(user => user.UserName == "Kurt").First();
-			usr.Resources.Add(Pictograms[0]);
-			usr.Resources.Add(Pictograms[1]);
-			usr.Resources.Add(Pictograms[2]);
-			usr.Resources.Add(Pictograms[3]);
-			usr.Resources.Add(Pictograms[4]);
-			usr = context.Users.Where(user => user.UserName == "Lee").First();
-			usr.Resources.Add(Pictograms[5]);
-			usr.Resources.Add(Pictograms[6]);
-			usr.Resources.Add(Pictograms[7]);
-			usr.Resources.Add(Pictograms[8]);
-			usr = context.Users.Where(user => user.UserName == "Harald Gråtand").First();
-			usr.Resources.Add(Pictograms[9]);
-			usr.Resources.Add(Pictograms[10]);
-			usr.Resources.Add(Pictograms[11]);
-			usr.Resources.Add(Pictograms[12]);
-			usr.Resources.Add(Pictograms[13]);
+			var pictos = new List<Pictogram> { Pictograms[0], Pictograms[1], Pictograms[2], Pictograms[3], Pictograms[4] };
+			foreach (var pict in pictos) new UserResource(usr, pict);
 			context.SaveChanges();
+			usr = context.Users.Where(user => user.UserName == "Lee").First();
+			pictos = new List<Pictogram> { Pictograms[5], Pictograms[6], Pictograms[7], Pictograms[8] };
+			foreach (var pict in pictos) new UserResource(usr, pict);
+			context.SaveChanges();
+			usr = context.Users.Where(user => user.UserName == "Graatand").First();
+			pictos = new List<Pictogram> { Pictograms[9], Pictograms[10], Pictograms[11], Pictograms[12], Pictograms[13] };
+			foreach (var pict in pictos) new UserResource(usr, pict);
+			context.SaveChanges();
+
+			//Add one of Graatands pictograms to department 1 to see if pictograms are fetched properly.
+			new DepartmentResource(Departments[0], Pictograms[9]);
 		}
     }
 }

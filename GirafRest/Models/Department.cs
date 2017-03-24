@@ -14,13 +14,12 @@ namespace GirafRest.Models
         [Required]
         public string Name { get; set; }
 
-        public ICollection<GirafUser> Members { get; set; }
-
-        public ICollection<PictoFrame> Resources { get; set; }
+        public virtual ICollection<GirafUser> Members { get; set; }
+        public virtual ICollection<DepartmentResource> Resources { get; set; }
 
         public Department () {
             Members = new List<GirafUser>();
-            Resources = new List<PictoFrame>();
+            Resources = new List<DepartmentResource>();
         }
     }
 }

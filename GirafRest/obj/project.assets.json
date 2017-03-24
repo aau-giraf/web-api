@@ -11042,16 +11042,16 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/media/morell/1A8A61D58A61AE47/Users/TobiasMorell/Documents/GirafRest/GirafRest/GirafRest.csproj",
+      "projectUniqueName": "/home/morell/Documents/web-api/GirafRest/GirafRest.csproj",
       "projectName": "GirafRest",
-      "projectPath": "/media/morell/1A8A61D58A61AE47/Users/TobiasMorell/Documents/GirafRest/GirafRest/GirafRest.csproj",
-      "outputPath": "/media/morell/1A8A61D58A61AE47/Users/TobiasMorell/Documents/GirafRest/GirafRest/obj/",
+      "projectPath": "/home/morell/Documents/web-api/GirafRest/GirafRest.csproj",
+      "outputPath": "/home/morell/Documents/web-api/GirafRest/obj/",
       "projectStyle": "PackageReference",
       "originalTargetFrameworks": [
         "netcoreapp1.1"
       ],
       "files": {
-        "lib/netcoreapp1.1/GirafRest.dll": "/media/morell/1A8A61D58A61AE47/Users/TobiasMorell/Documents/GirafRest/GirafRest/bin/placeholder/netcoreapp1.1/GirafRest.dll"
+        "lib/netcoreapp1.1/GirafRest.dll": "/home/morell/Documents/web-api/GirafRest/bin/placeholder/netcoreapp1.1/GirafRest.dll"
       },
       "frameworks": {
         "netcoreapp1.1": {

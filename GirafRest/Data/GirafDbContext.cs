@@ -31,6 +31,32 @@ namespace GirafRest.Data
             builder.Entity<PictoFrame>().ToTable("PictoFrames");
             builder.Entity<Choice>().ToTable("Choices");
             builder.Entity<Sequence>().ToTable("Sequences");
+
+            //asp.net does not support many-to-many in its' current release. Here is a work around.
+            //The work around is similar to the one taught in the DBS course, where a relationship called
+            //DeparmentResource is used to map between departments and resources
+            builder.Entity<DepartmentResource>()
+                .HasOne(dr => dr.Department)
+                .WithMany(d => d.Resources)
+                .HasForeignKey(dr => dr.DeparmentKey);
+            builder.Entity<DepartmentResource>()
+                .HasOne(dr => dr.Resource)
+                .WithMany(r => r.Departments)
+                .HasForeignKey(dr => dr.PictoFrameKey);
+            //The same goes for user and resources
+            builder.Entity<UserResource>()
+                .HasOne(ur => ur.User)
+                .WithMany(u => u.Resources)
+                .HasForeignKey(u => u.UserId);
+            builder.Entity<UserResource>()
+                .HasOne(ur => ur.Resource)
+                .WithMany(r => r.Users)
+                .HasForeignKey(dr => dr.PictoFrameKey);
+
+            builder.Entity<GirafUser>()
+                .HasOne<Department>(u => u.Department)
+                .WithMany(d => d.Members);
+            
             
             // Customize the ASP.NET Identity model and override the defaults if needed.
             // For example, you can rename the ASP.NET Identity table names and more.

@@ -7,7 +7,6 @@ using Microsoft.Extensions.Options;
 using GirafRest.Models;
 using GirafRest.Models.ManageViewModels;
 using GirafRest.Services;
-using GirafRest.Models;
 
 namespace GirafRest.Controllers
 {

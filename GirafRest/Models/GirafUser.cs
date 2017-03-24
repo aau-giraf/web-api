@@ -8,20 +8,21 @@ namespace GirafRest.Models
     public class GirafUser : IdentityUser
     {
         public static string[] GirafRoles = new string[] { "User", "Guardian", "Admin" };
-        //public string Password { get; set; }
         
-        public ICollection<PictoFrame> Resources { get; set; }
+        public long DepartmentKey { get; set; }
+        [ForeignKey("DepartmentKey")]
+        public virtual Department Department { get; set; }
+        
+        public virtual ICollection<UserResource> Resources { get; set; }
     
-        public GirafUser (string userName/*, string password*/) : base(userName)
+        public GirafUser (string userName) : base(userName)
         {
             this.UserName = userName;
-            //this.Password = password;
-            
-            this.Resources = new List<PictoFrame>();
+            this.Resources = new List<UserResource>();
         }
         public GirafUser()
         {
-            this.Resources = new List<PictoFrame>();
+            this.Resources = new List<UserResource>();
         }
     }
 }

@@ -12,13 +12,18 @@ namespace GirafRest.Models {
         [Required]
         public AccessLevel AccessLevel { get; set; }
 
-        public PictoFrame(string title, AccessLevel accessLevel)
+        public ICollection<UserResource> Users { get; set; }
+        public ICollection<DepartmentResource> Departments { get; set; }
+
+        public PictoFrame(string title, AccessLevel accessLevel) : this()
         {
             this.Title = title;
-
             this.AccessLevel = accessLevel;
         }
-        protected PictoFrame() {}
+        protected PictoFrame() {
+            this.Users = new List<UserResource>();
+            this.Departments = new List<DepartmentResource>();
+        }
 
         public virtual void Merge(PictoFrameDTO other) {
             this.AccessLevel = other.AccessLevel;

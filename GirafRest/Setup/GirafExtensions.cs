@@ -51,7 +51,7 @@ namespace GirafRest.Extensions
             services.AddDbContext<GirafDbContext>(options => options.UseSqlServer(connString.ToString()));
         }
 
-        public static void StripPasswordRequirements(this IdentityOptions options) {
+        public static void RemovePasswordRequirements(this IdentityOptions options) {
             //Set password requirements to an absolute bare minimum.
             options.Password.RequireDigit = false;
             options.Password.RequireLowercase = false;

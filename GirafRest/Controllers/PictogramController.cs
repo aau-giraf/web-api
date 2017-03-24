@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Hosting;
 using System.Threading;
 using GirafRest.Data;
 using GirafRest.Models;
+using Microsoft.Extensions.Logging;
 
 namespace GirafRest.Controllers
 {
@@ -20,12 +21,15 @@ namespace GirafRest.Controllers
         public readonly GirafDbContext _context;
         public readonly UserManager<GirafUser> _userManager;
         public readonly IHostingEnvironment _env;
+        private readonly ILogger _logger;
 
-        public PictogramController(GirafDbContext context, UserManager<GirafUser> userManager, IHostingEnvironment env)
+        public PictogramController(GirafDbContext context, UserManager<GirafUser> userManager, 
+            IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             this._context = context;
             this._userManager = userManager;
             this._env = env;
+            this._logger = loggerFactory.CreateLogger<PictogramController>();
         }
 
         /// <summary>
@@ -35,12 +39,29 @@ namespace GirafRest.Controllers
         [HttpGet]
         public async Task<IActionResult> Read()
         {
-            var _pictograms = _context.Pictograms.Where(p => p.AccessLevel == AccessLevel.PUBLIC);
-            /*if (is_auth?)
+            //Fetch all public pictograms
+            var _pictograms = await _context.Pictograms
+                .Where(p => p.AccessLevel == AccessLevel.PUBLIC)
+                .ToListAsync();
+            
+            //Find the user and add his pictograms to the result
+            var user = await LoadUserAsync(HttpContext.User);
+            if(user != null)
             {
-                _pictograms.AddRange(await _context.Pictograms.Where(p => p.Department.members.Contains(User)));
-            }*/
-            return Ok(await _pictograms.ToListAsync());
+                _logger.LogInformation($"Fetching user pictograms for user {user.UserName}");
+                var userPictograms = user.Resources.Select(ur => ur.Resource).OfType<Pictogram>();
+                _pictograms = _pictograms.Union(userPictograms).ToList();
+                //Also find his department and their pictograms
+                var dep = user.Department;
+                if(dep != null){
+                    _logger.LogInformation($"Fetching pictograms for department {dep.Name}");
+                    var depPictograms = dep.Resources.Select(dr => dr.Resource).OfType<Pictogram>();
+                _pictograms = _pictograms.Union (depPictograms).ToList();
+                }
+                else _logger.LogWarning($"{user.UserName} has no department.");
+            }
+
+            return Ok(_pictograms.Select(p => new {p.Key, p.Title, p.AccessLevel, p.lastEdit}));
         }
 
         /// <summary>
@@ -69,24 +90,17 @@ namespace GirafRest.Controllers
         {
             //Find all involved entities
             Pictogram pict = new Pictogram(pictogram.Title, pictogram.AccessLevel);
-            Department dep;
-            GirafUser usr;
-            try {
-                dep = await _context.Departments.Where(depa => depa.Key == pictogram.Department_Key).FirstAsync();
-            } catch {
-                return NotFound("There is no department with the given id.");
+            //Establish many-to-many relationship
+            foreach(var usr in pictogram.Users) {
+                new UserResource(usr, pict);
             }
-            try {
-                usr = await _context.Users.Where(user => user.Id == pictogram.Owner_Id).FirstAsync();
-            } catch {
-                return NotFound("There is no user with the specified user-id.");
+            foreach (var dep in pictogram.Departments) {
+                new DepartmentResource(dep, pict);
             }
 
             //Stamp the pictogram with current time and add it to the database, owner and department
             pict.lastEdit = DateTime.Now;
             var res = await _context.Pictograms.AddAsync(pict);
-            dep.Resources.Add(pict);
-            usr.Resources.Add(pict);
 
             _context.SaveChanges();
 
@@ -206,5 +220,23 @@ namespace GirafRest.Controllers
             return Ok(picto);
         }
         #endregion
+
+        private async Task<GirafUser> LoadUserAsync(System.Security.Claims.ClaimsPrincipal principal)  {
+            var usr = (await _userManager.GetUserAsync(principal));
+            if(usr == null) return null;
+
+            return await _context.Users
+                    //First load the user from the database
+                    .Where (u => u.Id == usr.Id)
+                    //Then load his pictograms - both the relationship and the actual pictogram
+                    .Include(u => u.Resources)
+                    .ThenInclude(ur => ur.Resource)
+                    //Then load his department and their pictograms
+                    .Include(u => u.Department)
+                    .ThenInclude(d => d.Resources)
+                    .ThenInclude(dr => dr.Resource)
+                    //And return him
+                    .FirstAsync();
+        }
     }
 }

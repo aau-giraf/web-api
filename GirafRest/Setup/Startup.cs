@@ -12,7 +12,7 @@ using GirafRest.Data;
 using GirafRest.Models;
 using GirafRest.Services;
 using GirafRest.Extensions;
-
+using Microsoft.AspNetCore.Identity;
 
 namespace GirafRest.Setup
 {
@@ -45,7 +45,7 @@ namespace GirafRest.Setup
             else services.AddSql();   
 
             services.AddIdentity<GirafUser, IdentityRole>(options => {
-                options.StripPasswordRequirements();
+                options.RemovePasswordRequirements();
             })
                 .AddEntityFrameworkStores<GirafDbContext>()
                 .AddDefaultTokenProviders();
@@ -63,15 +63,15 @@ namespace GirafRest.Setup
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
+            GirafDbContext context, UserManager<GirafUser> userManager)
         {
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+            loggerFactory.AddConsole();
             loggerFactory.AddDebug();
 
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                //app.UseDatabaseErrorPage();
             }
             app.UseIdentity();
             app.UseStaticFiles();
@@ -83,6 +83,9 @@ namespace GirafRest.Setup
                     name: "default",
                     template: "{controller=Account}/{action=AccessDenied}");
             });
+
+            //Fill some sample data into the database
+            if(Program.DbOption == DbOption.SQLite) DBInitializer.Initialize(context, userManager);
         }
     }
 }
