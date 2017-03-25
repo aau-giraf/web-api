@@ -12,6 +12,7 @@ using GirafRest.Data;
 using GirafRest.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
+using System.Collections.Generic;
 
 namespace GirafRest.Controllers
 {
@@ -60,39 +61,12 @@ namespace GirafRest.Controllers
         [HttpGet]
         public async Task<IActionResult> ReadPictograms()
         {
-            //Fetch all public pictograms and cask to a list - using Union'ing two IEnumerables gives an exception.
-            var _pictograms = await _context.Pictograms
-                .Where(p => p.AccessLevel == AccessLevel.PUBLIC)
-                .ToListAsync();
-            
-            //Find the user and add his pictograms to the result
-            var user = await LoadUserAsync(HttpContext.User);
-            if(user != null)
-            {
-                _logger.LogInformation($"Fetching user pictograms for user {user.UserName}");
-                var userPictograms = user.Resources
-                    .Select(ur => ur.Resource)
-                    .OfType<Pictogram>();
-                _pictograms = _pictograms
-                    .Union(userPictograms)
-                    .ToList();
-                //Also find his department and their pictograms
-                var dep = user.Department;
-                if(dep != null){
-                    _logger.LogInformation($"Fetching pictograms for department {dep.Name}");
-                    var depPictograms = dep.Resources
-                        .Select(dr => dr.Resource)
-                        .OfType<Pictogram>();
-                _pictograms = _pictograms
-                    .Union (depPictograms)
-                    .ToList();
-                }
-                else _logger.LogWarning($"{user.UserName} has no department.");
-            }
-            
-            //Return the list of pictograms as Pictogram DTOs
-            //- returning Pictograms directly causes an exception due to circular references
-            return Ok(_pictograms.Select(p => new PictogramDTO(p)));
+            var userPictograms = await ReadAllPictograms();
+
+            var titleQuery = HttpContext.Request.Query["title"];
+            if(!String.IsNullOrEmpty(titleQuery)) userPictograms = FilterByTitle(userPictograms, titleQuery);
+
+            return Ok(userPictograms);
         }
 
         /// <summary>
@@ -276,6 +250,7 @@ namespace GirafRest.Controllers
         }
         #endregion
 
+        #region helpers
         /// <summary>
         /// Load the user from the <see cref="HttpContext"/> - both his information and all related data.
         /// </summary>
@@ -350,5 +325,48 @@ namespace GirafRest.Controllers
 
             return false;
         }
+
+        private async Task<List<PictogramDTO>> ReadAllPictograms() {
+            //Fetch all public pictograms and cask to a list - using Union'ing two IEnumerables gives an exception.
+            var _pictograms = await _context.Pictograms
+                .Where(p => p.AccessLevel == AccessLevel.PUBLIC)
+                .ToListAsync();
+            
+            //Find the user and add his pictograms to the result
+            var user = await LoadUserAsync(HttpContext.User);
+            if(user != null)
+            {
+                _logger.LogInformation($"Fetching user pictograms for user {user.UserName}");
+                var userPictograms = user.Resources
+                    .Select(ur => ur.Resource)
+                    .OfType<Pictogram>();
+                _pictograms = _pictograms
+                    .Union(userPictograms)
+                    .ToList();
+                //Also find his department and their pictograms
+                var dep = user.Department;
+                if(dep != null){
+                    _logger.LogInformation($"Fetching pictograms for department {dep.Name}");
+                    var depPictograms = dep.Resources
+                        .Select(dr => dr.Resource)
+                        .OfType<Pictogram>();
+                _pictograms = _pictograms
+                    .Union (depPictograms)
+                    .ToList();
+                }
+                else _logger.LogWarning($"{user.UserName} has no department.");
+            }
+            
+            //Return the list of pictograms as Pictogram DTOs
+            //- returning Pictograms directly causes an exception due to circular references
+            return _pictograms.Select(p => new PictogramDTO(p)).ToList();
+        }
+        #endregion
+        #region query filters
+        public List<PictogramDTO> FilterByTitle(List<PictogramDTO> pictos, string titleQuery) { 
+            var mathces = pictos.Where(p => p.Title.ToLower().Contains(titleQuery.ToLower()));
+            return mathces.ToList();
+        }
+        #endregion
     }
 }
