@@ -93,7 +93,7 @@ namespace GirafRest.Setup
 			};
 			foreach (var pictogram in Pictograms)
 			{
-				pictogram.lastEdit = DateTime.Now;
+				pictogram.LastEdit = DateTime.Now;
 				context.Add(pictogram);
 			}
 			System.Console.WriteLine("Adding pictograms to users.");

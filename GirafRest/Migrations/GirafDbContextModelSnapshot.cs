@@ -45,7 +45,7 @@ namespace GirafRest.Migrations
 
                     b.HasIndex("PictoFrameKey");
 
-                    b.ToTable("DepartmentResource");
+                    b.ToTable("DeparmentResources");
                 });
 
             modelBuilder.Entity("GirafRest.Models.Frame", b =>
@@ -136,7 +136,7 @@ namespace GirafRest.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserResource");
+                    b.ToTable("UserResources");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRole", b =>

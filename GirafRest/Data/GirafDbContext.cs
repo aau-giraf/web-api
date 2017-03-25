@@ -17,6 +17,10 @@ namespace GirafRest.Data
         public DbSet<Sequence> Sequences { get; set; }
         public DbSet<Frame> Frames {get; set;}
 
+        public DbSet<UserResource> UserResources { get; set; }
+
+        public DbSet<DepartmentResource> DeparmentResources { get; set; }
+
         public GirafDbContext(DbContextOptions<GirafDbContext> options)
             : base(options)
         {
@@ -57,6 +61,8 @@ namespace GirafRest.Data
                 .HasOne<Department>(u => u.Department)
                 .WithMany(d => d.Members);
             
+            builder.Entity<UserResource>().ToTable("UserResources");
+            builder.Entity<DepartmentResource>().ToTable("DeparmentResources");
             
             // Customize the ASP.NET Identity model and override the defaults if needed.
             // For example, you can rename the ASP.NET Identity table names and more.
