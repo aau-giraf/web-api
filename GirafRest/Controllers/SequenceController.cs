@@ -7,19 +7,19 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
 using GirafRest.Data;
+using System;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace GirafRest.Controllers
 {
     [Route("[controller]")]
-    public class SequenceController : Controller
+    public class SequenceController : GirafController
     {
-        public readonly GirafDbContext _context;
-        public readonly UserManager<GirafUser> _userManager;
-
-        public SequenceController(GirafDbContext context, UserManager<GirafUser> userManager)
+        public SequenceController(GirafDbContext context, UserManager<GirafUser> userManager,
+            IHostingEnvironment env, ILoggerFactory loggerFactory)
+                : base(context, userManager, env, loggerFactory.CreateLogger<SequenceController>())
         {
-            this._context = context;
-            this._userManager = userManager;
         }
 
         [HttpGet]
@@ -31,8 +31,9 @@ namespace GirafRest.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateSequence([FromBody] SequenceDTO DTO)
         {
-            if (DTO == null) return BadRequest();
-            Sequence _sequence = new Sequence(DTO.Title, DTO.AccessLevel, ( await _context.Pictograms.Where(p => p.Key == DTO.ThumbnailID).FirstAsync()));
+            var _pictogram = await _context.Pictograms.Where(p => p.Key == DTO.ThumbnailID).FirstAsync();
+            Sequence _sequence = new Sequence(DTO.Title, DTO.AccessLevel, _pictogram);
+            _sequence.LastEdit = DateTime.Now;
             var res = await _context.Sequences.AddAsync(_sequence);
 
             _context.SaveChanges();

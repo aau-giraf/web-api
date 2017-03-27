@@ -17,40 +17,12 @@ using System.Collections.Generic;
 namespace GirafRest.Controllers
 {
     [Route("[controller]")]
-    public class PictogramController : Controller
+    public class PictogramController : GirafController
     {
-        /// <summary>
-        /// A reference to the database context - used to access the database and query for data. Handled by Asp.net's dependency injection.
-        /// </summary>
-        public readonly GirafDbContext _context;
-        /// <summary>
-        /// Asp.net's user manager. Can be used to fetch user data from the request's cookie. Handled by Asp.net's dependency injection.
-        /// </summary>
-        public readonly UserManager<GirafUser> _userManager;
-        /// <summary>
-        /// A reference to the hosting environment - somewhat like the Environment class in normal C# applications.
-        /// It is used to find image files-paths. Handled by Asp.net's dependency injection.
-        /// </summary>
-        public readonly IHostingEnvironment _env;
-        /// <summary>
-        /// A data-logger used to write messages to the console. Handled by Asp.net's dependency injection.
-        /// </summary>
-        private readonly ILogger _logger;
-
-        /// <summary>
-        /// A constructor for the PictogramController. This is automatically called by Asp.net when receiving the first request for a pictogram.
-        /// </summary>
-        /// <param name="context">Reference to the database context.</param>
-        /// <param name="userManager">Reference to Asp.net's user-manager.</param>
-        /// <param name="env">Reference to an implementation of the IHostingEnvironment interface.</param>
-        /// <param name="loggerFactory">Reference to an implementation of a logger.</param>
-        public PictogramController(GirafDbContext context, UserManager<GirafUser> userManager, 
-            IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public PictogramController(GirafDbContext context, UserManager<GirafUser> userManager,
+            IHostingEnvironment env, ILoggerFactory loggerFactory) 
+                : base(context, userManager, env, loggerFactory.CreateLogger<PictogramController>())
         {
-            this._context = context;
-            this._userManager = userManager;
-            this._env = env;
-            this._logger = loggerFactory.CreateLogger<PictogramController>();
         }
 
         /// <summary>

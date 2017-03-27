@@ -63,7 +63,7 @@ namespace GirafRest.Setup
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
+        public async void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
             GirafDbContext context, UserManager<GirafUser> userManager)
         {
             loggerFactory.AddConsole();
@@ -85,7 +85,7 @@ namespace GirafRest.Setup
             });
 
             //Fill some sample data into the database
-            if(Program.DbOption == DbOption.SQLite) DBInitializer.Initialize(context, userManager);
+            if(Program.DbOption == DbOption.SQLite) await DBInitializer.Initialize(context, userManager);
         }
     }
 }
