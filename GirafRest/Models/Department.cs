@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using GirafRest.Models.DTOs;
 
 namespace GirafRest.Models
 {
@@ -20,6 +21,10 @@ namespace GirafRest.Models
         public Department () {
             Members = new List<GirafUser>();
             Resources = new List<DepartmentResource>();
+        }
+
+        public Department(DepartmentDTO depDto) : this (){
+            this.Name = depDto.Name;
         }
     }
 }

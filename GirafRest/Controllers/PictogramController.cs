@@ -207,7 +207,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="id">Id of the pictogram to upload an image for.</param>
         /// <returns>The pictogram's information along with its image.</returns>
-        [HttpPost("{id}/image")]
+        [HttpPost("image/{id}")]
         [Consumes("image/png")]
         [Authorize]
         public async Task<IActionResult> CreateImage(long id)
@@ -233,7 +233,7 @@ namespace GirafRest.Controllers
         /// <param name="id">Id of the pictogram to update the image for.</param>
         /// <returns>The updated pictogram along with its image.</returns>
         [Consumes("image/png")]
-        [HttpPut("{id}/image")]
+        [HttpPut("image/{id}")]
         [Authorize]
         public async Task<IActionResult> UpdatePictogramImage(long id) {
             var picto = await _context.Pictograms.Where(p => p.Key == id).FirstAsync();
