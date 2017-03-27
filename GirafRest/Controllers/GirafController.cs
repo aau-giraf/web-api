@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace GirafRest.Controllers
 {
@@ -45,6 +46,29 @@ namespace GirafRest.Controllers
             this._userManager = userManager;
             this._env = env;
             this._logger = logger;
+        }
+        
+        /// <summary>
+        /// Load the user from the <see cref="HttpContext"/> - both his information and all related data.
+        /// </summary>
+        /// <param name="principal">The security claim - i.e. the information about the currently authenticated user.</param>
+        /// <returns>A <see cref="GirafUser"/> with related data.</returns>
+        protected async Task<GirafUser> LoadUserAsync(System.Security.Claims.ClaimsPrincipal principal)  {
+            var usr = (await _userManager.GetUserAsync(principal));
+            if(usr == null) return null;
+
+            return await _context.Users
+                    //First load the user from the database
+                    .Where (u => u.Id == usr.Id)
+                    //Then load his pictograms - both the relationship and the actual pictogram
+                    .Include(u => u.Resources)
+                    .ThenInclude(ur => ur.Resource)
+                    //Then load his department and their pictograms
+                    .Include(u => u.Department)
+                    .ThenInclude(d => d.Resources)
+                    .ThenInclude(dr => dr.Resource)
+                    //And return him
+                    .FirstAsync();
         }
     }
 }

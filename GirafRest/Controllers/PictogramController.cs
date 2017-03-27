@@ -223,28 +223,7 @@ namespace GirafRest.Controllers
         #endregion
 
         #region helpers
-        /// <summary>
-        /// Load the user from the <see cref="HttpContext"/> - both his information and all related data.
-        /// </summary>
-        /// <param name="principal">The security claim - i.e. the information about the currently authenticated user.</param>
-        /// <returns>A <see cref="GirafUser"/> with related data.</returns>
-        private async Task<GirafUser> LoadUserAsync(System.Security.Claims.ClaimsPrincipal principal)  {
-            var usr = (await _userManager.GetUserAsync(principal));
-            if(usr == null) return null;
-
-            return await _context.Users
-                    //First load the user from the database
-                    .Where (u => u.Id == usr.Id)
-                    //Then load his pictograms - both the relationship and the actual pictogram
-                    .Include(u => u.Resources)
-                    .ThenInclude(ur => ur.Resource)
-                    //Then load his department and their pictograms
-                    .Include(u => u.Department)
-                    .ThenInclude(d => d.Resources)
-                    .ThenInclude(dr => dr.Resource)
-                    //And return him
-                    .FirstAsync();
-        }
+        
 
         /// <summary>
         /// Get the path to the image directory, also checks if the directory for images exists and creates it if not.
@@ -336,8 +315,8 @@ namespace GirafRest.Controllers
         #endregion
         #region query filters
         public List<PictogramDTO> FilterByTitle(List<PictogramDTO> pictos, string titleQuery) { 
-            var mathces = pictos.Where(p => p.Title.ToLower().Contains(titleQuery.ToLower()));
-            return mathces.ToList();
+            var matches = pictos.Where(p => p.Title.ToLower().Contains(titleQuery.ToLower()));
+            return matches.ToList();
         }
         #endregion
     }
