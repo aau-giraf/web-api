@@ -14,7 +14,7 @@ namespace GirafRest.Data
         public DbSet<Pictogram> Pictograms { get; set; }
         public DbSet<PictoFrame> PictoFrames { get; set; }
         public DbSet<Choice> Choices { get; set; }
-        public DbSet<Sequence> Sequences { get; set; }
+        public DbSet<Weekday> Weekdays { get; set; }
         public DbSet<Frame> Frames {get; set;}
 
         public DbSet<UserResource> UserResources { get; set; }
@@ -34,7 +34,7 @@ namespace GirafRest.Data
             builder.Entity<Pictogram>().ToTable("Pictograms");
             builder.Entity<PictoFrame>().ToTable("PictoFrames");
             builder.Entity<Choice>().ToTable("Choices");
-            builder.Entity<Sequence>().ToTable("Sequences");
+            builder.Entity<Weekday>().ToTable("Weekdays");
 
             //asp.net does not support many-to-many in its' current release. Here is a work around.
             //The work around is similar to the one taught in the DBS course, where a relationship called

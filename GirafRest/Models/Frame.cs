@@ -15,7 +15,7 @@ namespace GirafRest.Models {
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{yyyy-MM-dd HH:mm:ss}")]
         public DateTime LastEdit { get; set; }
 
-        private ICollection<Sequence> partOfSequences { get; set; }
+        private ICollection<Weekday> partOfSequences { get; set; }
 
         public virtual void Merge(FrameDTO other) {
             if(other.Id != this.Key) throw new ArgumentException("Two pictograms with different IDs may not be merged.");
@@ -24,7 +24,7 @@ namespace GirafRest.Models {
 
         public Frame()
         {
-            partOfSequences = new List<Sequence>();
+            partOfSequences = new List<Weekday>();
         }
     }
 }

@@ -16,7 +16,6 @@ namespace GirafRest.Models {
         : this(title, accessLevel, thumbnail, new List<Frame>())
         {
             Thumbnail = thumbnail;
-
         }
         public Sequence(string title, AccessLevel accessLevel, Pictogram thumbnail, ICollection<Frame> elements)
             : base(title, accessLevel)
@@ -41,13 +40,11 @@ namespace GirafRest.Models {
 
         public System.Collections.Generic.IEnumerator<Frame> GetEnumerator() => _elements.GetEnumerator();
 
-        public void Merge(SequenceDTO sequence) {
+        public void Merge(WeekdayDTO sequence) {
             base.Merge(sequence);
 
             this.ThumbnailKey = sequence.ThumbnailID;
-            foreach (var frame in sequence.Elements) {
-                _elements.Add(frame);
-            }
+            
         }
     }
 }

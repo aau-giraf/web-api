@@ -111,18 +111,19 @@ namespace GirafRest.Setup
 			pictos = new List<Pictogram> { Pictograms[9], Pictograms[10], Pictograms[11], Pictograms[12], Pictograms[13] };
 			foreach (var pict in pictos) new UserResource(usr, pict);
 			context.SaveChanges();
+			
 			System.Console.WriteLine("Adding Sequences to database");
-			var Sequences = new Sequence[]
+			var Sequences = new Weekday[]
 			{
-				new Sequence("Hatquence", AccessLevel.PRIVATE, Pictograms.Where(p => p.Title == "Hat").First(), new List<Frame> { Pictograms[0], Pictograms[1], Pictograms[2], Pictograms[3], Pictograms[4] }),
-				new Sequence("Snotquence", AccessLevel.PRIVATE, Pictograms.Where(p => p.Title == "Snot").First(), new List<Frame> { Pictograms[5], Pictograms[6], Pictograms[7], Pictograms[8] }),
-				new Sequence("Bilquence", AccessLevel.PRIVATE, Pictograms.Where(p => p.Title == "Bil").First(), new List<Frame> { Pictograms[9], Pictograms[10], Pictograms[11], Pictograms[12], Pictograms[13] })
+				new Weekday("Hatquence", AccessLevel.PRIVATE, Pictograms.Where(p => p.Title == "Hat").First(), new List<Frame> { Pictograms[0], Pictograms[1], Pictograms[2], Pictograms[3], Pictograms[4] }),
+				new Weekday("Snotquence", AccessLevel.PRIVATE, Pictograms.Where(p => p.Title == "Snot").First(), new List<Frame> { Pictograms[5], Pictograms[6], Pictograms[7], Pictograms[8] }),
+				new Weekday("Bilquence", AccessLevel.PRIVATE, Pictograms.Where(p => p.Title == "Bil").First(), new List<Frame> { Pictograms[9], Pictograms[10], Pictograms[11], Pictograms[12], Pictograms[13] })
 			};
 
 			foreach(var seq in Sequences)
 			{
 				seq.LastEdit = DateTime.Now;
-				context.Sequences.Add(seq);
+				context.Weekdays.Add(seq);
 			}
 			
 			usr = context.Users.Where(u => u.UserName == "Kurt").First();

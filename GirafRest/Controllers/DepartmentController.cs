@@ -140,5 +140,34 @@ namespace GirafRest.Controllers
                 return BadRequest (e.Message + e.InnerException);
             }
         }
+
+        [HttpPost("{id}/add-user")]
+        public async Task<IActionResult> AddUser(long ID, [FromBody]GirafUser usr)
+        {
+            if(usr == null)
+                return BadRequest("User was null");
+            var dep = await _context.Departments.Include(d => d.Members).Where(d => d.Key == ID).FirstAsync();
+            if(dep == null)
+                return NotFound("Department not found");
+            if(dep.Members.Where(u => u.UserName == usr.UserName).Any())
+                return BadRequest("User already exists in Department");
+            dep.Members.Add(usr);
+            _context.SaveChanges();
+            return Ok("User added succesfully");
+        }
+        [HttpDelete("{id}/remove-user")]
+        public async Task<IActionResult> RemoveUser(long ID, [FromBody]GirafUser usr)
+        {
+            if(usr == null)
+                return BadRequest("User was null");
+            var dep = await _context.Departments.Include(d => d.Members).Where(d => d.Key == ID).FirstAsync();
+            if(dep == null)
+                return NotFound("Department not found");
+            if(!dep.Members.Where(u => u.UserName == usr.UserName).Any())
+                return BadRequest("User does not exist in Department");
+            dep.Members.Remove(dep.Members.Where(u => u.UserName == usr.UserName).First());
+            _context.SaveChanges();
+            return Ok("User removed succesfully");
+        }
     }
 }
