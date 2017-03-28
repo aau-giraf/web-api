@@ -42,7 +42,7 @@ namespace GirafRest.Data
             builder.Entity<DepartmentResource>()
                 .HasOne(dr => dr.Department)
                 .WithMany(d => d.Resources)
-                .HasForeignKey(dr => dr.DeparmentKey);
+                .HasForeignKey(dr => dr.DepartmentKey);
             builder.Entity<DepartmentResource>()
                 .HasOne(dr => dr.Resource)
                 .WithMany(r => r.Departments)

@@ -12,8 +12,8 @@ namespace GirafRest.Models
 
 
         [Required]
-        public long DeparmentKey { get; set; }
-        [ForeignKey("DeparmentKey")]
+        public long DepartmentKey { get; set; }
+        [ForeignKey("DepartmentKey")]
         public virtual Department Department {get; set;}
 
         [Required]
@@ -23,7 +23,7 @@ namespace GirafRest.Models
 
         public DepartmentResource(Department dep, PictoFrame resource)
         {
-            this.DeparmentKey = dep.Key;
+            this.DepartmentKey = dep.Key;
             this.Department = dep;
             this.PictoFrameKey = resource.Key;
             this.Resource = resource;

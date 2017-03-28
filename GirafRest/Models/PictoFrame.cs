@@ -26,6 +26,7 @@ namespace GirafRest.Models {
         }
 
         public virtual void Merge(PictoFrameDTO other) {
+            base.Merge(other);
             this.AccessLevel = other.AccessLevel;
         }
     }

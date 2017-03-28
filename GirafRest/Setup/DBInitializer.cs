@@ -27,6 +27,7 @@ namespace GirafRest.Setup
 
 			System.Console.WriteLine("Adding some sample data to the database.");
 			System.Console.WriteLine("Adding roles.");
+
 			var Roles = new IdentityRole[]
 			{
 				new IdentityRole("Admin"), 
@@ -62,6 +63,7 @@ namespace GirafRest.Setup
 			{
 				await userManager.CreateAsync(user, "password");
 			}
+			
 			System.Console.WriteLine("Adding users to departments.");
 			context.Departments.Where(dep => dep.Key == 1).First().Members.Add(users[0]);
 			users[0].Department = context.Departments.Where(dep => dep.Key == 1).First();
@@ -109,9 +111,31 @@ namespace GirafRest.Setup
 			pictos = new List<Pictogram> { Pictograms[9], Pictograms[10], Pictograms[11], Pictograms[12], Pictograms[13] };
 			foreach (var pict in pictos) new UserResource(usr, pict);
 			context.SaveChanges();
+			System.Console.WriteLine("Adding Sequences to database");
+			var Sequences = new Sequence[]
+			{
+				new Sequence("Hatquence", AccessLevel.PRIVATE, Pictograms.Where(p => p.Title == "Hat").First(), new List<Frame> { Pictograms[0], Pictograms[1], Pictograms[2], Pictograms[3], Pictograms[4] }),
+				new Sequence("Snotquence", AccessLevel.PRIVATE, Pictograms.Where(p => p.Title == "Snot").First(), new List<Frame> { Pictograms[5], Pictograms[6], Pictograms[7], Pictograms[8] }),
+				new Sequence("Bilquence", AccessLevel.PRIVATE, Pictograms.Where(p => p.Title == "Bil").First(), new List<Frame> { Pictograms[9], Pictograms[10], Pictograms[11], Pictograms[12], Pictograms[13] })
+			};
+
+			foreach(var seq in Sequences)
+			{
+				seq.LastEdit = DateTime.Now;
+				context.Sequences.Add(seq);
+			}
+			
+			usr = context.Users.Where(u => u.UserName == "Kurt").First();
+			new UserResource(usr, Sequences[0]);
+			usr = context.Users.Where(u => u.UserName == "Lee").First();
+			new UserResource(usr, Sequences[1]);
+			usr = context.Users.Where(u => u.UserName == "Graatand").First();
+			new UserResource(usr, Sequences[2]);
+			context.SaveChanges();
 
 			//Add one of Graatands pictograms to department 1 to see if pictograms are fetched properly.
 			new DepartmentResource(Departments[0], Pictograms[9]);
+			context.SaveChanges();
 		}
     }
 }

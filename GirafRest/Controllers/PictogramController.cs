@@ -270,7 +270,7 @@ namespace GirafRest.Controllers
 
             //The pictogram was not owned by user, check if his department owns it.
             var ownedByDepartment = await _context.DeparmentResources
-                .Where(dr => dr.PictoFrameKey == pictogram.Key && dr.DeparmentKey == usr.DepartmentKey)
+                .Where(dr => dr.PictoFrameKey == pictogram.Key && dr.DepartmentKey == usr.DepartmentKey)
                 .AnyAsync();
             if(ownedByDepartment) return true;
 
