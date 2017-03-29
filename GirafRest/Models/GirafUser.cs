@@ -9,6 +9,10 @@ namespace GirafRest.Models
     {
         public static string[] GirafRoles = new string[] { "User", "Guardian", "Admin" };
         
+        public long WeekKey { get; set; }
+
+        [ForeignKey("WeekKey")]
+        public Week WeekSchedule { get; set; }
         public long DepartmentKey { get; set; }
         [ForeignKey("DepartmentKey")]
         public virtual Department Department { get; set; }
