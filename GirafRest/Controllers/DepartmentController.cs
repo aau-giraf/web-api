@@ -11,30 +11,23 @@ using Microsoft.Extensions.Logging;
 using GirafRest.Models.DTOs;
 using Microsoft.EntityFrameworkCore.Query;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Hosting;
 
 namespace GirafRest.Controllers
 {
     [Route("[controller]")]
-    public class DepartmentController : Controller
+    public class DepartmentController : GirafController
     {
-        /// <summary>
-        /// A reference to the database-context - used for quering data.
-        /// </summary>
-        private readonly GirafDbContext _context;
-        /// <summary>
-        /// A reference to a logger, used to provide debug information.
-        /// </summary>
-        private readonly ILogger _logger;
-
         /// <summary>
         /// Constructor for the department-controller. This is called by the asp.net runtime.
         /// </summary>
         /// <param name="context">A reference to the database-context.</param>
         /// <param name="loggerFactory">A reference to an implementation of ILoggerFactory. Used to create a debug-logger.</param>
-        public DepartmentController(GirafDbContext context, ILoggerFactory loggerFactory)
+        public DepartmentController(GirafDbContext context, UserManager<GirafUser> userManager, 
+            IHostingEnvironment env, ILoggerFactory loggerFactory)
+            : base(context, userManager, env, loggerFactory.CreateLogger<DepartmentController>())
         {
-            _context = context;
-            _logger = loggerFactory.CreateLogger<DepartmentController>();
         }
 
         /// <summary>
@@ -61,12 +54,6 @@ namespace GirafRest.Controllers
                 _logger.LogError($"Exception in Get: {e.Message}, {e.InnerException}");
                 return BadRequest();
             }
-        }
-
-        private IQueryable<Department> NameQueryFilter(string nameQuery)
-        {
-            if(string.IsNullOrEmpty(nameQuery)) nameQuery = "";
-            return _context.Departments.Where(d => d.Name.ToLower().Contains(nameQuery.ToLower()));
         }
 
         /// <summary>
@@ -127,7 +114,7 @@ namespace GirafRest.Controllers
 
                     if(res == null) continue;
                     var dr = new DepartmentResource(result.Entity, res);
-                    await _context.DeparmentResources.AddAsync(dr);
+                    await _context.DepartmentResources.AddAsync(dr);
                 }
 
                 //Save the changes and return the entity
@@ -141,33 +128,169 @@ namespace GirafRest.Controllers
             }
         }
 
+        /// <summary>
+        /// Add a user to the given department.
+        /// </summary>
+        /// <param name="ID">The Id of the department to add the user to.</param>
+        /// <param name="usr">A serialized GirafUser instance to add to the department.</param>
+        /// <returns>BadRequest if no user or department has been specified or the user is already in the department,
+        ///  NotFound if there is no department with the given ID or
+        ///  Ok if there was no problems.</returns>
         [HttpPost("{id}/add-user")]
         public async Task<IActionResult> AddUser(long ID, [FromBody]GirafUser usr)
         {
+            //Fetch user and department and check that they exist
             if(usr == null)
                 return BadRequest("User was null");
-            var dep = await _context.Departments.Include(d => d.Members).Where(d => d.Key == ID).FirstAsync();
+            var dep = await _context.Departments
+                .Where(d => d.Key == ID)
+                .Include(d => d.Members)
+                .FirstAsync();
             if(dep == null)
                 return NotFound("Department not found");
+
+            //Check if the user is already in the department
             if(dep.Members.Where(u => u.UserName == usr.UserName).Any())
                 return BadRequest("User already exists in Department");
+
+            //Add the user and sace the changes
             dep.Members.Add(usr);
-            _context.SaveChanges();
-            return Ok("User added succesfully");
+            await _context.SaveChangesAsync();
+            return Ok(new DepartmentDTO(dep));
         }
+
+        /// <summary>
+        /// Removes a user from a given department.
+        /// </summary>
+        /// <param name="ID">Id of the department from which the user should be removed</param>
+        /// <param name="usr">A serialized instance of a <see cref="GirafUser"/> user.</param>
+        /// <returns>
+        /// BadRequest if no user is given or he does not exist in the department,
+        /// NotFound if there is no department with the given Id or
+        /// Ok if no problems occured.
+        /// </returns>
         [HttpDelete("{id}/remove-user")]
         public async Task<IActionResult> RemoveUser(long ID, [FromBody]GirafUser usr)
         {
+            //Check if a valid user was supplied and that the given department exists
             if(usr == null)
                 return BadRequest("User was null");
-            var dep = await _context.Departments.Include(d => d.Members).Where(d => d.Key == ID).FirstAsync();
+            var dep = await _context
+                .Departments
+                .Where(d => d.Key == ID)
+                .Include(d => d.Members)
+                .FirstAsync();
             if(dep == null)
                 return NotFound("Department not found");
+
+            //Check if the user actually is in the department
             if(!dep.Members.Where(u => u.UserName == usr.UserName).Any())
                 return BadRequest("User does not exist in Department");
+
+            //Remove the user from the department
             dep.Members.Remove(dep.Members.Where(u => u.UserName == usr.UserName).First());
             _context.SaveChanges();
-            return Ok("User removed succesfully");
+            return Ok(new DepartmentDTO(dep));
         }
+
+        /// <summary>
+        /// Add a resource to the given department. After this call the department owns the resource and it is available to all its members.
+        /// </summary>
+        /// <param name="id">Id of the department to add the resource to.</param>
+        /// <param name="resourceId">Id of the resource to add.</param>
+        /// <returns>
+        /// NotFound if either the department or the resource does not exist,
+        /// BadRequest if no resourceId has been specified as either query-parameter or in the request-body or
+        /// Ok if no problems occured.
+        /// </returns>
+        [HttpPost("{id}/add-resource")]
+        [Authorize]
+        public async Task<IActionResult> AddResource(long id, [FromBody] long? resourceId) {
+            //Fetch the department and check that it exists.
+            var department = await _context.Departments.Where(d => d.Key == id).FirstAsync();
+            if(department == null) return NotFound($"There is no department with Id {id}.");
+
+            //Check if there is a resourceId specified in the body or as a query-paramater
+            long resId = -1;
+            var resourceIdValid = CheckResourceId(resourceId, ref resId);
+            if(!resourceIdValid) return BadRequest("Unable to find a valid resource-id. Please specify one in request-body or as url-query.");
+
+            //Fetch the resource with the given id, check that it exists.
+            var resource = await _context.Frames.Where(f => f.Key == resId).FirstAsync();
+            if(resource == null) return NotFound($"There is no resource with id {id}.");
+
+            var resourceOwned = await CheckForResourceOwnership(resource);
+            if(!resourceOwned) return Unauthorized();
+
+            //Check if the department already owns the resource
+            var alreadyOwned = await _context.DepartmentResources
+                .Where(depres => depres.OtherKey == id && depres.ResourceKey == resId)
+                .AnyAsync();
+            if(alreadyOwned) return BadRequest("The department already owns the given resource.");
+
+            //Create a relationship between the department and the resource.
+            var dr = new DepartmentResource(department, resource);
+            await _context.DepartmentResources.AddAsync(dr);
+            await _context.SaveChangesAsync();
+
+            //Return Ok and the department - the resource is now visible in deparment.Resources
+            return Ok(new DepartmentDTO(department));
+        }
+
+        [HttpPost("{id}/remove-resource")]
+        [Authorize]
+        public async Task<IActionResult> RemoveResource(long id, [FromBody] long? resourceId) {
+            //Fetch the department and check that it exists.
+            var department = await _context.Departments.Where(d => d.Key == id).FirstAsync();
+            if(department == null) return NotFound($"There is no department with Id {id}.");
+
+            long resId = -1;
+            var resourceIdValid = CheckResourceId(resourceId, ref resId);
+            if(!resourceIdValid) return BadRequest("Unable to find a valid resource-id. Please specify one in request-body or as url-query.");
+
+            //Fetch the resource with the given id, check that it exists.
+            var resource = await _context.Frames
+                .Where(f => f.Key == resId)
+                .FirstAsync();
+            if(resource == null) return NotFound($"There is no resource with id {resourceId}.");
+
+            var resourceOwned = await CheckForResourceOwnership(resource);
+            if(!resourceOwned) return Unauthorized();
+
+            //Check if the department already owns the resource and remove if so.
+            var drrelation = await _context.DepartmentResources
+                .Where(dr => dr.ResourceKey == resource.Key && dr.OtherKey == department.Key)
+                .FirstAsync();
+            if(drrelation == null) return BadRequest("The department does not own the given resource.");
+            department.Resources.Remove(drrelation);
+            await _context.SaveChangesAsync();
+
+            //Return Ok and the department - the resource is now visible in deparment.Resources
+            return Ok(new DepartmentDTO(department));
+        }
+
+        #region Helpers
+        private IQueryable<Department> NameQueryFilter(string nameQuery)
+        {
+            if(string.IsNullOrEmpty(nameQuery)) nameQuery = "";
+            return _context.Departments.Where(d => d.Name.ToLower().Contains(nameQuery.ToLower()));
+        }
+
+        /// <summary>
+        /// Checks if a valid resource-id has been specified along with the request.
+        /// </summary>
+        /// <param name="resourceId">The resource-id specified in the request's body.</param>
+        /// <param name="resId">A ref parameter for storing the found resource-id.</param>
+        /// <returns>True if a valid resource-id was found, false otherwise.</returns>
+        private bool CheckResourceId(long? resourceId, ref long resId) {
+            if(resourceId == null) {
+                var resourceQuery = HttpContext.Request.Query["resourceId"];
+                if(string.IsNullOrEmpty(resourceQuery)) return false;
+                if(!long.TryParse(resourceQuery, out resId)) return false;
+            }
+            else resId = (long) resourceId;
+            return true;
+        }
+        #endregion
     }
 }

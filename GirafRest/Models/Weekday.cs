@@ -7,19 +7,20 @@ namespace GirafRest.Models
     public enum Days { Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday };
     public class Weekday : PictoFrame
     {
-        public long ThumbnailKey { get; set; }
-        [ForeignKey("ThumbnailKey")]
         public bool ElementsSet { get; set; }
         public Days Day { get; set; }
-        public ICollection<Frame> _elements { get; set; }
-        public Weekday()
+        public ICollection<WeekdayResource> Elements { get; set; }
+        public Weekday() : base()
         {
-            _elements = new List<Frame>();
+            Elements = new List<WeekdayResource>();
         }
-        public Weekday(string title, AccessLevel accessLevel, Pictogram thumbnail, ICollection<Frame> elements)
+        public Weekday(string title, AccessLevel accessLevel/*, Pictogram thumbnail*/, ICollection<Frame> elements)
             : base(title, accessLevel)
         {
-            this._elements = elements;
+            this.Elements = new List<WeekdayResource>();
+            foreach(var elem in elements) {
+                this.Elements.Add(new WeekdayResource(this, elem));
+            }
         }
     }
 }

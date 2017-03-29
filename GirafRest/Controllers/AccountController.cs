@@ -59,7 +59,7 @@ namespace GirafRest.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterViewModel model)
         {
-            var user = new GirafUser { UserName = model.Username };
+            var user = new GirafUser (model.Username, model.DepartmentId);
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
