@@ -86,7 +86,7 @@ namespace GirafRest.Controllers
         {
             //Create the actual pictogram instance
             Pictogram pict = new Pictogram(pictogram.Title, pictogram.AccessLevel);
-
+            
             var user = await LoadUserAsync(HttpContext.User);
             //Add the pictogram to the current user and his department
             new UserResource(user, pict);
@@ -252,30 +252,6 @@ namespace GirafRest.Controllers
             }
         }
 
-        /// <summary>
-        /// Checks if the user owns the given <paramref name="pictogram"/> and returns true if so.
-        /// Returns false if the user or his department does not own the <see cref="Pictogram"/>. 
-        /// </summary>
-        /// <param name="pictogram">The pictogram to check the ownership for.</param>
-        /// <returns>True if the user is authorized to see the resource and false if not.</returns>
-        private async Task<bool> CheckForResourceOwnership(Pictogram pictogram) {
-            //The pictogram was not public, check if the user owns it.
-            var usr = await LoadUserAsync(HttpContext.User);
-            if(usr == null) return false;
-            
-            var ownedByUser = await _context.UserResources
-                .Where(ur => ur.PictoFrameKey == pictogram.Key && ur.UserId == usr.Id)
-                .AnyAsync();
-            if(ownedByUser) return true;
-
-            //The pictogram was not owned by user, check if his department owns it.
-            var ownedByDepartment = await _context.DeparmentResources
-                .Where(dr => dr.PictoFrameKey == pictogram.Key && dr.DepartmentKey == usr.DepartmentKey)
-                .AnyAsync();
-            if(ownedByDepartment) return true;
-
-            return false;
-        }
 
         private async Task<List<PictogramDTO>> ReadAllPictograms() {
             //Fetch all public pictograms and cask to a list - using Union'ing two IEnumerables gives an exception.

@@ -1,9 +1,10 @@
+using GirafRest.Models.DTOs;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace GirafRest.Models {
     public class Choice : Frame { 
-        ICollection<PictoFrame> Options { get; set; }
+        public ICollection<PictoFrame> Options { get; private set; }
 
         protected Choice () {}
         public Choice(List<PictoFrame> options)
@@ -24,6 +25,11 @@ namespace GirafRest.Models {
 
         public void Clear() => Options.Clear();
 
-        public System.Collections.Generic.IEnumerator<PictoFrame> GetEnumerator() => Options.GetEnumerator();
+        public IEnumerator<PictoFrame> GetEnumerator() => Options.GetEnumerator();
+
+        public virtual void Merge(ChoiceDTO other)
+        {
+            this.Options = other.Options;
+        }
     }
 }

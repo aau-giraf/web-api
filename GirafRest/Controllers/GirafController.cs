@@ -70,5 +70,31 @@ namespace GirafRest.Controllers
                     //And return him
                     .FirstAsync();
         }
+
+        /// <summary>
+        /// Checks if the user owns the given <paramref name="PictoFrame"/> and returns true if so.
+        /// Returns false if the user or his department does not own the <see cref="Pictogram"/>. 
+        /// </summary>
+        /// <param name="PictoFrame">The pictogram to check the ownership for.</param>
+        /// <returns>True if the user is authorized to see the resource and false if not.</returns>
+        protected async Task<bool> CheckForResourceOwnership(PictoFrame resource)
+        {
+            //The pictoFrame was not public, check if the user owns it.
+            var usr = await LoadUserAsync(HttpContext.User);
+            if (usr == null) return false;
+
+            var ownedByUser = await _context.UserResources
+                .Where(ur => ur.PictoFrameKey == resource.Key && ur.UserId == usr.Id)
+                .AnyAsync();
+            if (ownedByUser) return true;
+
+            //The pictogram was not owned by user, check if his department owns it.
+            var ownedByDepartment = await _context.DeparmentResources
+                .Where(dr => dr.PictoFrameKey == resource.Key && dr.DepartmentKey == usr.DepartmentKey)
+                .AnyAsync();
+            if (ownedByDepartment) return true;
+
+            return false;
+        }
     }
 }

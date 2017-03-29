@@ -6,6 +6,7 @@ using GirafRest.Data;
 using GirafRest.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace GirafRest.Setup
 {
@@ -137,6 +138,20 @@ namespace GirafRest.Setup
 			//Add one of Graatands pictograms to department 1 to see if pictograms are fetched properly.
 			new DepartmentResource(Departments[0], Pictograms[9]);
 			context.SaveChanges();
-		}
+
+            // creating test choices
+            List<PictoFrame> pFrames = new List<PictoFrame>();
+            pFrames.Add(context.Pictograms.Where(p => p.AccessLevel == AccessLevel.PUBLIC).First());
+            Choice _choice = new Choice(pFrames);
+            context.Choices.Add(_choice);
+            context.SaveChanges();
+
+            Console.WriteLine("###########################################################");
+            foreach (PictoFrame p in await context.Choices.Where(ch => ch.Key == 15).FirstAsync())
+            {
+                Console.WriteLine(p.Title);
+            }
+            Console.WriteLine("###########################################################");
+        }
     }
 }
