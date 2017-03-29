@@ -44,7 +44,6 @@ namespace GirafRest.Models {
             base.Merge(sequence);
 
             this.ThumbnailKey = sequence.ThumbnailID;
-            
         }
     }
 }

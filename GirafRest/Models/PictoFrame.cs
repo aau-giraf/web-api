@@ -5,10 +5,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using GirafRest.Models.DTOs;
 
 namespace GirafRest.Models {
-    public abstract class PictoFrame : Frame {
-        [Required]
+    public abstract class PictoFrame : Frame{
         public string Title { get; set; }
-
         [Required]
         public AccessLevel AccessLevel { get; set; }
 

@@ -127,7 +127,7 @@ namespace GirafRest.Controllers
 
                     if(res == null) continue;
                     var dr = new DepartmentResource(result.Entity, res);
-                    await _context.DeparmentResources.AddAsync(dr);
+                    await _context.DepartmentResources.AddAsync(dr);
                 }
 
                 //Save the changes and return the entity

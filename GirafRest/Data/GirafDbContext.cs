@@ -16,10 +16,9 @@ namespace GirafRest.Data
         public DbSet<Choice> Choices { get; set; }
         public DbSet<Weekday> Weekdays { get; set; }
         public DbSet<Frame> Frames {get; set;}
-
         public DbSet<UserResource> UserResources { get; set; }
 
-        public DbSet<DepartmentResource> DeparmentResources { get; set; }
+        public DbSet<DepartmentResource> DepartmentResources { get; set; }
 
         public GirafDbContext(DbContextOptions<GirafDbContext> options)
             : base(options)
