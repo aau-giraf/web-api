@@ -15,10 +15,11 @@ namespace GirafRest.Models
         
         public virtual ICollection<UserResource> Resources { get; set; }
     
-        public GirafUser (string userName) : base(userName)
+        public GirafUser (string userName, long departmentId) : base(userName)
         {
             this.UserName = userName;
             this.Resources = new List<UserResource>();
+            this.DepartmentKey = departmentId;
         }
         public GirafUser()
         {

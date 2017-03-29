@@ -9,20 +9,20 @@ namespace GirafRest.Models.DTOs
         public bool ElementsSet { get; set; }
         public long[] ElementIDs { get; set; }
         public Days Day { get; set; }
-        public ICollection<FrameDTO> _elements { get; set; }
+        public ICollection<FrameDTO> Elements { get; set; }
         public WeekdayDTO(Weekday weekday){
             this.AccessLevel = weekday.AccessLevel;
             this.Id = weekday.Key;
             this.Title = weekday.Title;
             this.LastEdit = weekday.LastEdit;
             this.Day = weekday.Day;
-            _elements = new List<FrameDTO>();
-            foreach (var element in weekday._elements)
+            Elements = new List<FrameDTO>();
+            foreach (var element in weekday.Elements)
             {
-                _elements.Add(new PictogramDTO(new Pictogram()) { Id = element.Key, LastEdit = element.LastEdit});
+                Elements.Add(new PictogramDTO(element.Resource as Pictogram));
                 //_elements.Add(new FrameDTO() { Id = element.Key, LastEdit = element.LastEdit});
             }
-            if(_elements != null)
+            if(Elements.Count > 0)
                 ElementsSet = true;
         }
     }

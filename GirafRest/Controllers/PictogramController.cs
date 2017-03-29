@@ -153,28 +153,6 @@ namespace GirafRest.Controllers
 
         #region ImageHandling
         /// <summary>
-        /// Read the image of the <see cref="Pictogram"/> pictogram with the specified <paramref name="id"/> id from a file.
-        /// </summary>
-        /// <param name="id">Id of the pictogram to fetch image for.</param>
-        /// <returns> A byte-array with the bytes of the image.</returns>
-        public async Task<byte[]> ReadImage(long id)
-        {
-            string imageDir = GetImageDirectory();
-            //Check if the image-file exists.
-            FileInfo image = new FileInfo(Path.Combine(imageDir, $"{id}.png"));
-            if(!image.Exists) {
-                return null;
-            }
-
-            //Read the image from file into a byte array
-            byte[] imageBytes = new byte[image.Length];
-            var fileReader = new FileStream(image.FullName, FileMode.Open);
-            await fileReader.ReadAsync(imageBytes, 0, (int) image.Length, new CancellationToken());
-
-            return imageBytes;
-        }
-
-        /// <summary>
         /// Upload an image for the <see cref="Pictogram"/> pictogram with the given id.
         /// </summary>
         /// <param name="id">Id of the pictogram to upload an image for.</param>
@@ -223,22 +201,6 @@ namespace GirafRest.Controllers
         #endregion
 
         #region helpers
-        
-
-        /// <summary>
-        /// Get the path to the image directory, also checks if the directory for images exists and creates it if not.
-        /// </summary>
-        private string GetImageDirectory() {
-            //Check that the image directory exists - create it if not.
-            var imageDir = Path.Combine(_env.ContentRootPath, "images");
-            if(!Directory.Exists(imageDir)){
-                Directory.CreateDirectory(imageDir);
-                _logger.LogInformation("Image directory created.");
-            }
-
-            return imageDir;
-        }
-
         /// <summary>
         /// Copies the content of the request's body into the specified file.
         /// </summary>
@@ -250,31 +212,6 @@ namespace GirafRest.Controllers
                 await bodyStream.CopyToAsync(imageStream);
                 await bodyStream.FlushAsync();
             }
-        }
-
-        /// <summary>
-        /// Checks if the user owns the given <paramref name="pictogram"/> and returns true if so.
-        /// Returns false if the user or his department does not own the <see cref="Pictogram"/>. 
-        /// </summary>
-        /// <param name="pictogram">The pictogram to check the ownership for.</param>
-        /// <returns>True if the user is authorized to see the resource and false if not.</returns>
-        private async Task<bool> CheckForResourceOwnership(Pictogram pictogram) {
-            //The pictogram was not public, check if the user owns it.
-            var usr = await LoadUserAsync(HttpContext.User);
-            if(usr == null) return false;
-            
-            var ownedByUser = await _context.UserResources
-                .Where(ur => ur.PictoFrameKey == pictogram.Key && ur.UserId == usr.Id)
-                .AnyAsync();
-            if(ownedByUser) return true;
-
-            //The pictogram was not owned by user, check if his department owns it.
-            var ownedByDepartment = await _context.DepartmentResources
-                .Where(dr => dr.PictoFrameKey == pictogram.Key && dr.DepartmentKey == usr.DepartmentKey)
-                .AnyAsync();
-            if(ownedByDepartment) return true;
-
-            return false;
         }
 
         private async Task<List<PictogramDTO>> ReadAllPictograms() {

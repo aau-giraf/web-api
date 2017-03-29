@@ -55,25 +55,14 @@ namespace GirafRest.Setup
 			System.Console.WriteLine("Adding users.");
 			var users = new GirafUser[]
 			{
-				new GirafUser("Kurt"),
-				new GirafUser("Graatand"),
-				new GirafUser("Lee")
+				new GirafUser("Kurt", 1),
+				new GirafUser("Graatand", 1),
+				new GirafUser("Lee", 2)
 			};
 			foreach(var user in users)
 			{
 				await userManager.CreateAsync(user, "password");
 			}
-			
-			System.Console.WriteLine("Adding users to departments.");
-			context.Departments.Where(dep => dep.Key == 1).First().Members.Add(users[0]);
-			users[0].Department = context.Departments.Where(dep => dep.Key == 1).First();
-			context.SaveChanges();
-			context.Departments.Where(dep => dep.Key == 1).First().Members.Add(users[1]);
-			users[1].Department = context.Departments.Where(dep => dep.Key == 1).First();
-			context.SaveChanges();
-			context.Departments.Where(dep => dep.Key == 2).First().Members.Add(users[2]);
-			users[2].Department = context.Departments.Where(dep => dep.Key == 2).First();
-			context.SaveChanges();
 
 			System.Console.WriteLine("Adding pictograms.");
 			var Pictograms = new Pictogram[]
@@ -115,9 +104,9 @@ namespace GirafRest.Setup
 			System.Console.WriteLine("Adding Sequences to database");
 			var Sequences = new Weekday[]
 			{
-				new Weekday("Hatquence", AccessLevel.PRIVATE, Pictograms.Where(p => p.Title == "Hat").First(), new List<Frame> { Pictograms[0], Pictograms[1], Pictograms[2], Pictograms[3], Pictograms[4] }),
-				new Weekday("Snotquence", AccessLevel.PRIVATE, Pictograms.Where(p => p.Title == "Snot").First(), new List<Frame> { Pictograms[5], Pictograms[6], Pictograms[7], Pictograms[8] }),
-				new Weekday("Bilquence", AccessLevel.PRIVATE, Pictograms.Where(p => p.Title == "Bil").First(), new List<Frame> { Pictograms[9], Pictograms[10], Pictograms[11], Pictograms[12], Pictograms[13] })
+				new Weekday("Hatquence", AccessLevel.PRIVATE, /*Pictograms.Where(p => p.Title == "Hat").First(),*/ new List<Frame> { Pictograms[0], Pictograms[1], Pictograms[2], Pictograms[3], Pictograms[4] }),
+				new Weekday("Snotquence", AccessLevel.PRIVATE, /*Pictograms.Where(p => p.Title == "Snot").First(),*/ new List<Frame> { Pictograms[5], Pictograms[6], Pictograms[7], Pictograms[8] }),
+				new Weekday("Bilquence", AccessLevel.PRIVATE, /*Pictograms.Where(p => p.Title == "Bil").First(),*/ new List<Frame> { Pictograms[9], Pictograms[10], Pictograms[11], Pictograms[12], Pictograms[13] })
 			};
 
 			foreach(var seq in Sequences)
