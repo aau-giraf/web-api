@@ -10,17 +10,13 @@ namespace GirafRest.Models.DTOs
         public long[] ElementIDs { get; set; }
         public Days Day { get; set; }
         public ICollection<FrameDTO> Elements { get; set; }
-        public WeekdayDTO(Weekday weekday){
-            this.AccessLevel = weekday.AccessLevel;
-            this.Id = weekday.Key;
-            this.Title = weekday.Title;
-            this.LastEdit = weekday.LastEdit;
+        public WeekdayDTO(Weekday weekday) : base(weekday) {
+            this.ThumbnailID = weekday.ThumbnailId;
             this.Day = weekday.Day;
             Elements = new List<FrameDTO>();
             foreach (var element in weekday.Elements)
             {
-                Elements.Add(new PictogramDTO(element.Resource as Pictogram));
-                //_elements.Add(new FrameDTO() { Id = element.Key, LastEdit = element.LastEdit});
+                Elements.Add(new FrameDTO(element.Resource));
             }
             if(Elements.Count > 0)
                 ElementsSet = true;
