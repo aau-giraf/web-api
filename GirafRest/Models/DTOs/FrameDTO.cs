@@ -6,5 +6,10 @@ namespace GirafRest.Models.DTOs
     {
         public long Id { get; set; }
         public DateTime LastEdit { get; set; }
+
+        public FrameDTO (Frame frame) {
+            this.Id = frame.Key;
+            this.LastEdit = frame.LastEdit;
+        }
     }
 }
