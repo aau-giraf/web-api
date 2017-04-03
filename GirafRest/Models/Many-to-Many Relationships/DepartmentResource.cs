@@ -24,7 +24,7 @@ namespace GirafRest.Models
         {
             this.OtherKey = dep.Key;
             this.Other = dep;
-            this.ResourceKey = resource.Key;
+            this.ResourceKey = resource.Id;
             this.Resource = resource;
 
             Other.Resources.Add(this);

@@ -16,7 +16,7 @@ namespace GirafRest.Controllers
         [HttpGet]
         public IActionResult Get(long ID)
         {
-            return Ok(_context.Choices.Where(ch => ch.Key == ID));  
+            return Ok(_context.Choices.Where(ch => ch.Id == ID));  
         }
     }
 }

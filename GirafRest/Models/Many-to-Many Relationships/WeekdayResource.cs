@@ -21,9 +21,9 @@ namespace GirafRest.Models
 
         public WeekdayResource(Weekday weekday, Frame resource)
         {
-            this.OtherKey = weekday.Key;
+            //this.OtherKey = weekday.Id;
             this.Other = weekday;
-            this.ResourceKey = resource.Key;
+            this.ResourceKey = resource.Id;
             this.Resource = resource;
 
             //weekday.Elements.Add(this);

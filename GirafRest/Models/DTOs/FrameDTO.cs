@@ -8,7 +8,7 @@ namespace GirafRest.Models.DTOs
         public DateTime LastEdit { get; set; }
 
         public FrameDTO (Frame frame) {
-            this.Id = frame.Key;
+            this.Id = frame.Id;
             this.LastEdit = frame.LastEdit;
         }
     }

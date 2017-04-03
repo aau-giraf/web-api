@@ -6,7 +6,7 @@ using System;
 
 namespace GirafRest.Models {
     public class Sequence : PictoFrame { 
-        private ICollection<Frame> _elements { get; set; }
+        /*private ICollection<Frame> _elements { get; set; }
         public long ThumbnailKey { get; set; }
         [ForeignKey("ThumbnailKey")]
         public Pictogram Thumbnail { get; set; }
@@ -44,6 +44,6 @@ namespace GirafRest.Models {
             base.Merge(sequence);
 
             this.ThumbnailKey = sequence.ThumbnailID;
-        }
+        }*/
     }
 }

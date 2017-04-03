@@ -23,7 +23,7 @@ namespace GirafRest.Models
         {
             this.OtherKey = user.Id;
             this.Other = user;
-            this.ResourceKey = resource.Key;
+            this.ResourceKey = resource.Id;
             this.Resource = resource;
 
             Other.Resources.Add(this);
