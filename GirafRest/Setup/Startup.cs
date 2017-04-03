@@ -13,6 +13,8 @@ using GirafRest.Models;
 using GirafRest.Services;
 using GirafRest.Extensions;
 using Microsoft.AspNetCore.Identity;
+using Pomelo.EntityFrameworkCore.Extensions;
+using Pomelo.EntityFrameworkCore.MySql;
 
 namespace GirafRest.Setup
 {
@@ -22,8 +24,8 @@ namespace GirafRest.Setup
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+                //.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
 
             if (env.IsDevelopment())
             {
@@ -41,8 +43,12 @@ namespace GirafRest.Setup
         public void ConfigureServices(IServiceCollection services)
         {
             //Add the database context to the server using extension-methods
-            if(Program.DbOption == DbOption.SQLite) services.AddSqlite();
-            else services.AddSql();   
+            //if(Program.DbOption == DbOption.SQLite) services.AddSqlite();
+            //else services.AddSql(Configuration);
+            services.AddSql(Configuration);
+
+
+            //services.AddDbContext<GirafDbContext>(options => options.UseMySQL(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<GirafUser, IdentityRole>(options => {
                 options.RemovePasswordRequirements();

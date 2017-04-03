@@ -28,15 +28,15 @@ namespace GirafRest.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.Entity<Frame>().ToTable("Frames");
-            builder.Entity<Department>().ToTable("Departments");
-            builder.Entity<Pictogram>().ToTable("Pictograms");
-            builder.Entity<PictoFrame>().ToTable("PictoFrames");
-            builder.Entity<Choice>().ToTable("Choices");
+            builder.Entity<Frame>().ToTable("Frames").HasDiscriminator<string>("Discriminator");
+            builder.Entity<Department>().ToTable("Departments").HasDiscriminator<string>("Discriminator");
+            builder.Entity<Pictogram>().ToTable("Pictograms").HasDiscriminator<string>("Discriminator").HasValue<Pictogram>(nameof(Pictogram));
+            builder.Entity<PictoFrame>().ToTable("PictoFrames").HasDiscriminator<string>("Discriminator");
+            builder.Entity<Choice>().ToTable("Choices").HasDiscriminator<string>("Discriminator").HasValue<Choice>(nameof(Choice));
 
             /*builder.Entity<Weekday>().Property("ThumbnailKey");
             builder.Entity<Weekday>().HasOne(w => w.Thumbnail).WithMany().HasForeignKey("ThumbnailKey");*/
-            builder.Entity<Weekday>().ToTable("Weekdays");
+            builder.Entity<Weekday>().ToTable("Weekdays").HasDiscriminator<string>("Discriminator").HasValue<Weekday>(nameof(Weekday));
 
             //asp.net does not support many-to-many in its' current release. Here is a work around.
             //The work around is similar to the one taught in the DBS course, where a relationship called

@@ -12,6 +12,9 @@
     <UserSecretsId>aspnet-GirafRest-f1c1b260-a093-40a1-977d-e78e374504a6</UserSecretsId>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="1.1.1-prerelease-10027" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.0.0" />
     <PackageReference Include="Microsoft.AspNetCore" Version="1.1.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies">

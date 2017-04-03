@@ -45,7 +45,7 @@ namespace GirafRest
             Console.WriteLine("Welcome to Giraf REST Server.");
 
             //Default to use SQLite database
-            DbOption = DbOption.SQLite;
+            DbOption = DbOption.SQL;
 
             //Display a message for the user in case no arguments were specified.
             if(args.Length == 0) {
@@ -57,6 +57,8 @@ namespace GirafRest
 
             //Build the host from the given arguments.
             IWebHost host = ConfigureHost();
+
+            
             //Check if server should deploy and verify that there is two arguments, validation of the path is handled later.
             if(args.Length > 0 && args[0].Equals(RUN_DEPLOYMENT)) {
                 if(string.IsNullOrEmpty(args[1])) 
@@ -65,6 +67,8 @@ namespace GirafRest
                 ConfigurationFilePath = args[1];
                 DbOption = DbOption.SQL;
             }
+            
+
             //Launch the rest-api.
             host.Run();
         }
