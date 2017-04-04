@@ -21,11 +21,11 @@ namespace GirafRest.Extensions
     /// </summary>
     public static class GirafExtensions {
         /// <summary>
-        /// Extension-method for configuring the application to use a local Sqlite database.
+        /// Extension-method for configuring the application to use a local SQLite database.
         /// </summary>
         /// <param name="services">A reference to the services of the application.</param>
         public static void AddSqlite(this IServiceCollection services) {
-            var connectionStringBuilder = new SqliteConnectionStringBuilder { DataSource = "GirafDB.db" };
+            var connectionStringBuilder = new SqliteConnectionStringBuilder { DataSource = "giraf.db" };
             var connectionString = connectionStringBuilder.ToString();
             var connection = new SqliteConnection(connectionString);
 
@@ -33,13 +33,10 @@ namespace GirafRest.Extensions
         }
 
         /// <summary>
-        /// An extension-method for configuring the application to use a Sql database. This method is used when deploying the server.
-        /// A path to a valid xml-file containing the connection-string must be given as the second argument when running the application.
-        /// Example: dotnet run -deploy ~/web-api/connection.xml
-        /// This xml-file MUST contain a key called ConnectionString.
+        /// An extension-method for configuring the application to use a MySQL database.
         /// </summary>
         /// <param name="services">A reference to the services of the application.</param>
-        public static void AddSql(this IServiceCollection services, IConfigurationRoot Configuration) {
+        public static void AddMySql(this IServiceCollection services, IConfigurationRoot Configuration) {
             //Setup the connection to the sql server
             services.AddDbContext<GirafDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
         }

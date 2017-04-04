@@ -28,10 +28,10 @@ namespace GirafRest.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.Entity<Frame>().ToTable("Frames").HasDiscriminator<string>("Discriminator");
-            builder.Entity<Department>().ToTable("Departments").HasDiscriminator<string>("Discriminator");
+            builder.Entity<Frame>().ToTable("Frames").HasDiscriminator<string>("Discriminator").HasValue<Frame>(nameof(Frame));
+            builder.Entity<Department>().ToTable("Departments").HasDiscriminator<string>("Discriminator").HasValue<Department>(nameof(Department));
             builder.Entity<Pictogram>().ToTable("Pictograms").HasDiscriminator<string>("Discriminator").HasValue<Pictogram>(nameof(Pictogram));
-            builder.Entity<PictoFrame>().ToTable("PictoFrames").HasDiscriminator<string>("Discriminator");
+            builder.Entity<PictoFrame>().ToTable("PictoFrames").HasDiscriminator<string>("Discriminator").HasValue<PictoFrame>(nameof(PictoFrame));
             builder.Entity<Choice>().ToTable("Choices").HasDiscriminator<string>("Discriminator").HasValue<Choice>(nameof(Choice));
             builder.Entity<Weekday>().ToTable("Weekdays").HasDiscriminator<string>("Discriminator").HasValue<Weekday>(nameof(Weekday));
 
@@ -77,8 +77,8 @@ namespace GirafRest.Data
             builder.Entity<UserResource>().ToTable("UserResources");
             builder.Entity<DepartmentResource>().ToTable("DeparmentResources");
             builder.Entity<WeekdayResource>().ToTable("WeekdayResources");
-            builder.Entity<Weekday>().ToTable("Weekdays");
-            builder.Entity<Week>().ToTable("Weeks");
+            //builder.Entity<Weekday>().ToTable("Weekdays").HasDiscriminator<string>("Discriminator").HasValue<Weekday>(nameof(Weekday));
+            builder.Entity<Week>().ToTable("Weeks").HasDiscriminator<string>("Discriminator").HasValue<Week>(nameof(Week));
             
             // Customize the ASP.NET Identity model and override the defaults if needed.
             // For example, you can rename the ASP.NET Identity table names and more.

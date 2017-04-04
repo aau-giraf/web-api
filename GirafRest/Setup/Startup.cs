@@ -23,14 +23,13 @@ namespace GirafRest.Setup
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
-                .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-                //.AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true);
+                .SetBasePath(env.ContentRootPath);
 
             if (env.IsDevelopment())
             {
-                // For more details on using the user secret store see http://go.microsoft.com/fwlink/?LinkID=532709
-                //builder.AddUserSecrets<Startup>();
+                builder.AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true);
+            } else {
+                builder.AddJsonFile(Program.ConnectionStringName, optional: false, reloadOnChange: true);
             }
 
             builder.AddEnvironmentVariables();
@@ -43,12 +42,18 @@ namespace GirafRest.Setup
         public void ConfigureServices(IServiceCollection services)
         {
             //Add the database context to the server using extension-methods
-            //if(Program.DbOption == DbOption.SQLite) services.AddSqlite();
-            //else services.AddSql(Configuration);
-            services.AddSql(Configuration);
+            switch (Program.DbOption) {
+                case DbOption.SQLite:
+                    services.AddSqlite();
+                    break;
+                case DbOption.MySQL:
+                    services.AddMySql(Configuration);
+                    break;
+                default:
+                    services.AddSqlite();
+                    break;
+            }
 
-
-            //services.AddDbContext<GirafDbContext>(options => options.UseMySQL(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<GirafUser, IdentityRole>(options => {
                 options.RemovePasswordRequirements();
