@@ -109,7 +109,7 @@ namespace GirafRest.Controllers
                 //Add all the resources with the given ids
                 foreach (var reso in dep.Pictograms) {
                     var res = await _context.Pictograms
-                        .Where(p => p.Key == reso)
+                        .Where(p => p.Id == reso)
                         .FirstAsync();
 
                     if(res == null) continue;
@@ -216,7 +216,7 @@ namespace GirafRest.Controllers
             if(!resourceIdValid) return BadRequest("Unable to find a valid resource-id. Please specify one in request-body or as url-query.");
 
             //Fetch the resource with the given id, check that it exists.
-            var resource = await _context.Frames.Where(f => f.Key == resId).FirstAsync();
+            var resource = await _context.Frames.Where(f => f.Id == resId).FirstAsync();
             if(resource == null) return NotFound($"There is no resource with id {id}.");
 
             var resourceOwned = await CheckForResourceOwnership(resource);
@@ -250,7 +250,7 @@ namespace GirafRest.Controllers
 
             //Fetch the resource with the given id, check that it exists.
             var resource = await _context.Frames
-                .Where(f => f.Key == resId)
+                .Where(f => f.Id == resId)
                 .FirstAsync();
             if(resource == null) return NotFound($"There is no resource with id {resourceId}.");
 
@@ -259,7 +259,7 @@ namespace GirafRest.Controllers
 
             //Check if the department already owns the resource and remove if so.
             var drrelation = await _context.DepartmentResources
-                .Where(dr => dr.ResourceKey == resource.Key && dr.OtherKey == department.Key)
+                .Where(dr => dr.ResourceKey == resource.Id && dr.OtherKey == department.Key)
                 .FirstAsync();
             if(drrelation == null) return BadRequest("The department does not own the given resource.");
             department.Resources.Remove(drrelation);

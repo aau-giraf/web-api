@@ -36,7 +36,7 @@ namespace GirafRest.Controllers
         public async Task<IActionResult> ReadChoice(long id)
         {
             _logger.LogInformation($"Fetching choice which match the ID");
-            Choice _choice = await _context.Choices.Where(ch => ch.Key == id).Include(ch => ch.Options).FirstAsync();
+            Choice _choice = await _context.Choices.Where(ch => ch.Id == id).Include(ch => ch.Options).FirstAsync();
             if (_choice == null) NotFound();
             
             _logger.LogInformation($"Cheching if current user have access to all choices");
@@ -80,7 +80,7 @@ namespace GirafRest.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateChoiceInfo([FromBody] ChoiceDTO choice)
         {
-            Choice _choice = await _context.Choices.Where(ch => ch.Key == choice.Id).FirstAsync();
+            Choice _choice = await _context.Choices.Where(ch => ch.Id == choice.Id).FirstAsync();
             if (_choice == null) NotFound();
 
             _logger.LogInformation($"Updating the choice with the new information and adding it to the database");
@@ -99,7 +99,7 @@ namespace GirafRest.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteChoice(long id)
         {
-            var _choice = await _context.Choices.Where(ch => ch.Key == id).FirstAsync();
+            var _choice = await _context.Choices.Where(ch => ch.Id == id).FirstAsync();
             if (_choice == null) NotFound();
 
             _logger.LogInformation($"Checking if the user is authorized");

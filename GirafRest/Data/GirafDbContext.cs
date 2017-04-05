@@ -14,7 +14,7 @@ namespace GirafRest.Data
         public DbSet<Pictogram> Pictograms { get; set; }
         public DbSet<PictoFrame> PictoFrames { get; set; }
         public DbSet<Choice> Choices { get; set; }
-        public DbSet<Weekday> Weekdays { get; set; }
+        public DbSet<Week> Weeks { get; set; }
         public DbSet<Frame> Frames {get; set;}
         public DbSet<UserResource> UserResources { get; set; }
         public DbSet<DepartmentResource> DepartmentResources { get; set; }
@@ -28,15 +28,12 @@ namespace GirafRest.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            builder.Entity<Frame>().ToTable("Frames");
-            builder.Entity<Department>().ToTable("Departments");
-            builder.Entity<Pictogram>().ToTable("Pictograms");
-            builder.Entity<PictoFrame>().ToTable("PictoFrames");
-            builder.Entity<Choice>().ToTable("Choices");
-
-            /*builder.Entity<Weekday>().Property("ThumbnailKey");
-            builder.Entity<Weekday>().HasOne(w => w.Thumbnail).WithMany().HasForeignKey("ThumbnailKey");*/
-            builder.Entity<Weekday>().ToTable("Weekdays");
+            builder.Entity<Frame>().ToTable("Frames").HasDiscriminator<string>("Discriminator").HasValue<Frame>(nameof(Frame));
+            builder.Entity<Department>().ToTable("Departments").HasDiscriminator<string>("Discriminator").HasValue<Department>(nameof(Department));
+            builder.Entity<Pictogram>().ToTable("Pictograms").HasDiscriminator<string>("Discriminator").HasValue<Pictogram>(nameof(Pictogram));
+            builder.Entity<PictoFrame>().ToTable("PictoFrames").HasDiscriminator<string>("Discriminator").HasValue<PictoFrame>(nameof(PictoFrame));
+            builder.Entity<Choice>().ToTable("Choices").HasDiscriminator<string>("Discriminator").HasValue<Choice>(nameof(Choice));
+            builder.Entity<Weekday>().ToTable("Weekdays").HasDiscriminator<string>("Discriminator").HasValue<Weekday>(nameof(Weekday));
 
             //asp.net does not support many-to-many in its' current release. Here is a work around.
             //The work around is similar to the one taught in the DBS course, where a relationship called
@@ -63,10 +60,15 @@ namespace GirafRest.Data
                 .HasOne<Department>(u => u.Department)
                 .WithMany(d => d.Members);
 
+            builder.Entity<Weekday>()
+                .HasOne<Week>()
+                .WithMany(w => w.Days);
+
             builder.Entity<WeekdayResource>()
                 .HasOne<Weekday>(wr => wr.Other)
                 .WithMany(w => w.Elements)
                 .HasForeignKey(wr => wr.OtherKey);
+                
             builder.Entity<WeekdayResource>()
                 .HasOne<Frame> (wr => wr.Resource)
                 .WithMany()
@@ -75,6 +77,8 @@ namespace GirafRest.Data
             builder.Entity<UserResource>().ToTable("UserResources");
             builder.Entity<DepartmentResource>().ToTable("DeparmentResources");
             builder.Entity<WeekdayResource>().ToTable("WeekdayResources");
+            //builder.Entity<Weekday>().ToTable("Weekdays").HasDiscriminator<string>("Discriminator").HasValue<Weekday>(nameof(Weekday));
+            builder.Entity<Week>().ToTable("Weeks").HasDiscriminator<string>("Discriminator").HasValue<Week>(nameof(Week));
             
             // Customize the ASP.NET Identity model and override the defaults if needed.
             // For example, you can rename the ASP.NET Identity table names and more.

@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Hosting;
 
 namespace GirafRest
 {
-    public enum DbOption { SQLite, SQL }
+    public enum DbOption { SQLite, MySQL }
 
     /// <summary>
     /// The main class for the Giraf REST-api.
@@ -16,55 +16,54 @@ namespace GirafRest
     public class Program
     {
         /// <summary>
-        /// The absolute filepath for the configuration-file on the server.
-        /// Must contain the key "ConnectionString" with the connection-string for the database.
-        /// </summary>
-        /// <returns></returns>
-        public static string ConfigurationFilePath { get; set; }
-        /// <summary>
         /// The name of the connection string element in the XML configuration-file
+        /// Defaults to the appsettings.Development.json file
         /// </summary>
-        public const string CONNECTIONSTRING_NAME = "ConnectionString";
+        public static string ConnectionStringName = "appsettings.Development.json";
 
         /// <summary>
         /// A static field for storing the choice of database option.
+        /// Defaults to SQLite
         /// </summary>
-        public static DbOption DbOption;
-        /// <summary>
-        /// Program argument for running the server locally.
-        /// </summary>
-        private const string RUN_WITH_LOCALDB = "-localdb";
-        /// <summary>
-        /// Program argument for deploying the server.
-        /// </summary>
-        private const string RUN_DEPLOYMENT = "-deploy";
+        public static DbOption DbOption = DbOption.SQLite;
 
         public static void Main(string[] args)
         {
+            var helpMessage = "\tRun with --help to list options";
+            var options = "\n\t--db=[mysql|sqlite] | Connect to MySQL or SQLite database, defaults to SQLite.\n" + 
+                          "\t--prod=[true|false] | If true then connect to production db, defaults to false.\n" +
+                          "\t--list              | List options\n";
+
             Console.Title = "Giraf REST-api Console";
             Console.WriteLine("Welcome to Giraf REST Server.");
 
-            //Default to use SQLite database
-            DbOption = DbOption.SQLite;
-
-            //Display a message for the user in case no arguments were specified.
-            if(args.Length == 0) {
-                System.Console.WriteLine("You have not specified any arguments, please use the following:");
-                System.Console.WriteLine($"   {RUN_WITH_LOCALDB}       : Runs a local SQLite db for debugging (default)");
-                System.Console.WriteLine($"   {RUN_DEPLOYMENT} #path# : Deploys the server #path# must be the path to a web.config file containing a ConnectionString for the MariaDB.");
-                DbOption = DbOption.SQLite;
+            foreach (var arg in args) {
+                switch (arg) {
+                    case "--db=mysql":
+                        DbOption = DbOption.MySQL;
+                        break;
+                    case "--db=sqlite":
+                        DbOption = DbOption.SQLite;
+                        break;
+                    case "--prod=true":
+                        ConnectionStringName = "appsettings.json";
+                        break;
+                    case "--prod=false":
+                        ConnectionStringName = "appsettings.Development.json";
+                        break;
+                    case "--list":
+                        Console.WriteLine(options);
+                        return;
+                    default:
+                        Console.WriteLine("Invalid argument {0}", arg);
+                        Console.WriteLine(helpMessage);
+                        return;
+                }
             }
 
             //Build the host from the given arguments.
-            IWebHost host = ConfigureHost();
-            //Check if server should deploy and verify that there is two arguments, validation of the path is handled later.
-            if(args.Length > 0 && args[0].Equals(RUN_DEPLOYMENT)) {
-                if(string.IsNullOrEmpty(args[1])) 
-                    throw new ArgumentException("You must specify a file-path as second argument when running with " + RUN_DEPLOYMENT);
+            var host = ConfigureHost();
 
-                ConfigurationFilePath = args[1];
-                DbOption = DbOption.SQL;
-            }
             //Launch the rest-api.
             host.Run();
         }

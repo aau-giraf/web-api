@@ -6,10 +6,11 @@ using GirafRest.Models.DTOs;
 
 namespace GirafRest.Models {
     public abstract class Frame {
+        
         [Column("id")]
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public long Key { get; set; }
+        public long Id { get; set; }
 
         [Required]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{yyyy-MM-dd HH:mm:ss}")]
@@ -21,7 +22,7 @@ namespace GirafRest.Models {
         public ICollection<DepartmentResource> Departments { get; set; }
 
         public virtual void Merge(FrameDTO other) {
-            if(other.Id != this.Key) throw new ArgumentException("Two pictograms with different IDs may not be merged.");
+            if(other.Id != this.Id) throw new ArgumentException("Two pictograms with different IDs may not be merged.");
             this.LastEdit = DateTime.Now;
         }
 

@@ -69,6 +69,9 @@ namespace GirafRest.Controllers
                     .Include(u => u.Department)
                     .ThenInclude(d => d.Resources)
                     .ThenInclude(dr => dr.Resource)
+                    // then load his week schedule
+                    .Include(u => u.WeekSchedule)
+                    .ThenInclude(w => w.Days)
                     //And return him
                     .FirstAsync();
         }
@@ -121,13 +124,13 @@ namespace GirafRest.Controllers
             if(usr == null) return false;
             
             var ownedByUser = await _context.UserResources
-                .Where(ur => ur.ResourceKey == pictogram.Key && ur.OtherKey == usr.Id)
+                .Where(ur => ur.ResourceKey == pictogram.Id && ur.OtherKey == usr.Id)
                 .AnyAsync();
             if(ownedByUser) return true;
 
             //The pictogram was not owned by user, check if his department owns it.
             var ownedByDepartment = await _context.DepartmentResources
-                .Where(dr => dr.ResourceKey == pictogram.Key && dr.OtherKey == usr.DepartmentKey)
+                .Where(dr => dr.ResourceKey == pictogram.Id && dr.OtherKey == usr.DepartmentKey)
                 .AnyAsync();
             if(ownedByDepartment) return true;
 

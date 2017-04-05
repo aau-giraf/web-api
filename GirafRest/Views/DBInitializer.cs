@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GirafRest.Data;
 using GirafRest.Models;
+using GirafRest.Models.DTOs;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -103,25 +104,35 @@ namespace GirafRest.Setup
 			context.SaveChanges();
 			
 			System.Console.WriteLine("Adding Sequences to database");
-			var Sequences = new Weekday[]
+			var Weekdays = new Weekday[]
 			{
-				new Weekday("Hatquence", AccessLevel.PRIVATE, /*Pictograms.Where(p => p.Title == "Hat").First(),*/ new List<Frame> { Pictograms[0], Pictograms[1], Pictograms[2], Pictograms[3], Pictograms[4] }),
-				new Weekday("Snotquence", AccessLevel.PRIVATE, /*Pictograms.Where(p => p.Title == "Snot").First(),*/ new List<Frame> { Pictograms[5], Pictograms[6], Pictograms[7], Pictograms[8] }),
-				new Weekday("Bilquence", AccessLevel.PRIVATE, /*Pictograms.Where(p => p.Title == "Bil").First(),*/ new List<Frame> { Pictograms[9], Pictograms[10], Pictograms[11], Pictograms[12], Pictograms[13] })
+				new Weekday(Days.Monday, Pictograms.Where(p => p.Title == "Hat").First(), 
+							new List<Frame> { Pictograms[0], Pictograms[1], Pictograms[2], Pictograms[3], Pictograms[4] }),
+				new Weekday(Days.Tuesday, Pictograms.Where(p => p.Title == "Snot").First(), 
+							new List<Frame> { Pictograms[5], Pictograms[6], Pictograms[7], Pictograms[8] }),
+				new Weekday(Days.Thursday, Pictograms.Where(p => p.Title == "Snot").First(), 
+							new List<Frame> { Pictograms[8], Pictograms[6], Pictograms[7], Pictograms[5] }),
+				new Weekday(Days.Saturday, Pictograms.Where(p => p.Title == "Snot").First(), 
+							new List<Frame> { Pictograms[8], Pictograms[5] }),
+				new Weekday(Days.Wednesday,  Pictograms.Where(p => p.Title == "Bil").First(),  
+							new List<Frame> { Pictograms[9], Pictograms[10], Pictograms[11], Pictograms[12], Pictograms[13] })
 			};
 
-			foreach(var seq in Sequences)
+			foreach(var day in Weekdays)
 			{
-				seq.LastEdit = DateTime.Now;
-				context.Weekdays.Add(seq);
+				day.LastEdit = DateTime.Now;
 			}
 			
 			usr = context.Users.Where(u => u.UserName == "Kurt").First();
-			new UserResource(usr, Sequences[0]);
+			usr.WeekSchedule.Days.Add(Weekdays[0]);
 			usr = context.Users.Where(u => u.UserName == "Lee").First();
-			new UserResource(usr, Sequences[1]);
+			usr.WeekSchedule.Days.Add(Weekdays[1]);
+			usr = context.Users.Where(u => u.UserName == "Lee").First();
+			usr.WeekSchedule.Days.Add(Weekdays[2]);
+			usr = context.Users.Where(u => u.UserName == "Lee").First();
+			usr.WeekSchedule.Days.Add(Weekdays[3]);
 			usr = context.Users.Where(u => u.UserName == "Graatand").First();
-			new UserResource(usr, Sequences[2]);
+			usr.WeekSchedule.Days.Add(Weekdays[4]);
 			context.SaveChanges();
 
 			//Add one of Graatands pictograms to department 1 to see if pictograms are fetched properly.
@@ -136,7 +147,7 @@ namespace GirafRest.Setup
             context.SaveChanges();
 
             Console.WriteLine("###########################################################");
-            foreach (PictoFrame p in await context.Choices.Where(ch => ch.Key == 15).FirstAsync())
+            foreach (PictoFrame p in await context.Choices.Where(ch => ch.Id == 15).FirstAsync())
             {
                 Console.WriteLine(p.Title);
             }

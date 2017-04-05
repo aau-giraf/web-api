@@ -12,6 +12,8 @@ namespace GirafRest.Models
         public long DepartmentKey { get; set; }
         [ForeignKey("DepartmentKey")]
         public virtual Department Department { get; set; }
+
+        public Week WeekSchedule { get; set; }
         
         public virtual ICollection<UserResource> Resources { get; set; }
     
@@ -20,6 +22,7 @@ namespace GirafRest.Models
             this.UserName = userName;
             this.Resources = new List<UserResource>();
             this.DepartmentKey = departmentId;
+            this.WeekSchedule = new Week();
         }
         public GirafUser()
         {

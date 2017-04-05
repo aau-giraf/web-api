@@ -55,13 +55,13 @@ namespace GirafRest.Controllers
         public async Task<IActionResult> ReadPictogram(int id)
         {
             //Fetch the pictogram and check that it actually exists
-            var _pictogram = await _context.Pictograms.Where(p => p.Key == id).FirstAsync();
+            var _pictogram = await _context.Pictograms.Where(p => p.Id == id).FirstAsync();
             if(_pictogram == null) return NotFound();
 
             //Attempt to read the image of the pictogram from a file
             byte[] imageBytes;
             try {
-                imageBytes = await ReadImage(_pictogram.Key);
+                imageBytes = await ReadImage(_pictogram.Id);
             }
             //Catch the exception that is thrown when the image-file is occupied by a writing process.
             catch (IOException) {
@@ -112,7 +112,7 @@ namespace GirafRest.Controllers
         public async Task<IActionResult> UpdatePictogramInfo([FromBody] PictogramDTO pictogram)
         {
             //Fetch the pictogram from the database and check that it exists
-            var pict = await _context.Pictograms.Where(pic => pic.Key == pictogram.Id).FirstAsync();
+            var pict = await _context.Pictograms.Where(pic => pic.Id == pictogram.Id).FirstAsync();
             if(pict == null) return NotFound();
 
             //Update the existing database entry and save the changes.
@@ -133,7 +133,7 @@ namespace GirafRest.Controllers
         public async Task<IActionResult> DeletePictogram(int id)
         {
             //Fetch the pictogram from the database and check that it exists
-            var pict = await _context.Pictograms.Where(pic => pic.Key == id).FirstAsync();
+            var pict = await _context.Pictograms.Where(pic => pic.Id == id).FirstAsync();
             if(pict == null) return NotFound();
 
             if(! await CheckForResourceOwnership(pict)) return Unauthorized();
@@ -163,7 +163,7 @@ namespace GirafRest.Controllers
         public async Task<IActionResult> CreateImage(long id)
         {
             //Fetch the image and check that it exists
-            var pict = await _context.Pictograms.Where(p => p.Key == id).FirstAsync();
+            var pict = await _context.Pictograms.Where(p => p.Id == id).FirstAsync();
             if(pict == null) return NotFound();
 
             string imageDir = GetImageDirectory();
@@ -186,7 +186,7 @@ namespace GirafRest.Controllers
         [HttpPut("image/{id}")]
         [Authorize]
         public async Task<IActionResult> UpdatePictogramImage(long id) {
-            var picto = await _context.Pictograms.Where(p => p.Key == id).FirstAsync();
+            var picto = await _context.Pictograms.Where(p => p.Id == id).FirstAsync();
             if(picto == null) return NotFound();
 
             string imageDir = GetImageDirectory();

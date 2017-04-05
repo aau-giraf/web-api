@@ -63,7 +63,7 @@ namespace GirafRest.Controllers
             return Ok(sequences.Select(s => new WeekdayDTO(s)).ToList());
         }
 
-        /*[HttpPost]
+        [HttpPost]
         public async Task<IActionResult> CreateWeekday([FromBody] WeekdayDTO DTO)
         {
             var _pictogram = await _context.Pictograms.Where(p => p.Key == DTO.ThumbnailID).FirstAsync();
@@ -76,22 +76,22 @@ namespace GirafRest.Controllers
         }*/
 
         
-        /*[HttpPut]
+        [HttpPut]
         public async Task<IActionResult> UpdateWeekday([FromBody] WeekdayDTO DTO)
         {
             if (DTO == null)
                 return BadRequest();
-            var _week = await _context.Weeks.Where(s => s.Key == DTO.Id).FirstAsync();
+            var _week = await _context.Weeks.FirstAsync();
             if (_week == null)
                 return BadRequest();
-            _week.days.Where(d => d.Day == DTO.Day).First().Merge(DTO);
+            _week.Days.Where(d => d.Day == DTO.Day).First();
             return Ok(_week);
         }
 
-        private async Task<List<Weekday>> GetPublicSequences()
+       /* private async Task<List<Weekday>> GetPublicSequences()
         {
             return(await _context.Weekdays
-                .Where(s => s.accessLevel == AccessLevel.PUBLIC)
+                .Where(s => s.AccessLevel == AccessLevel.PUBLIC)
                 .ToListAsync());
         }*/
     }

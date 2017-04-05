@@ -9,9 +9,9 @@ namespace GirafRest.Models.DTOs
     {
         public List<PictoFrame> Options;
 
-        public ChoiceDTO(Choice choice)
+        public ChoiceDTO(Choice choice) :base(choice)
         {
-            this.Id = choice.Key;
+            this.Id = choice.Id;
             this.LastEdit = choice.LastEdit;
             foreach (PictoFrame p in choice)
             {

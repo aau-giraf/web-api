@@ -4,12 +4,15 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using GirafRest.Data;
 using GirafRest.Setup;
+using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Pomelo.EntityFrameworkCore.Extensions;
+using Pomelo.EntityFrameworkCore.MySql;
 
 namespace GirafRest.Extensions
 {
@@ -18,11 +21,11 @@ namespace GirafRest.Extensions
     /// </summary>
     public static class GirafExtensions {
         /// <summary>
-        /// Extension-method for configuring the application to use a local Sqlite database.
+        /// Extension-method for configuring the application to use a local SQLite database.
         /// </summary>
         /// <param name="services">A reference to the services of the application.</param>
         public static void AddSqlite(this IServiceCollection services) {
-            var connectionStringBuilder = new SqliteConnectionStringBuilder { DataSource = "GirafDB.db" };
+            var connectionStringBuilder = new SqliteConnectionStringBuilder { DataSource = "giraf.db" };
             var connectionString = connectionStringBuilder.ToString();
             var connection = new SqliteConnection(connectionString);
 
@@ -30,25 +33,12 @@ namespace GirafRest.Extensions
         }
 
         /// <summary>
-        /// An extension-method for configuring the application to use a Sql database. This method is used when deploying the server.
-        /// A path to a valid xml-file containing the connection-string must be given as the second argument when running the application.
-        /// Example: dotnet run -deploy ~/web-api/connection.xml
-        /// This xml-file MUST contain a key called ConnectionString.
+        /// An extension-method for configuring the application to use a MySQL database.
         /// </summary>
         /// <param name="services">A reference to the services of the application.</param>
-        public static void AddSql(this IServiceCollection services) {
-            //Open the XML document on the specified path and check that the file actually exists
-            XDocument config = XDocument.Load(new System.Uri(Program.ConfigurationFilePath).AbsoluteUri);
-            if(config == null) {
-                throw new FileNotFoundException("Failed to find a suitable XML-based configuration file");
-            }
-            //Extract the connection string
-            var connString = config.Element(Program.CONNECTIONSTRING_NAME);
-            if(connString == null) {
-                throw new ArgumentNullException($"The XML file on specified path must contain an element called {Program.CONNECTIONSTRING_NAME}.\nThe given path was: {Program.ConfigurationFilePath}");
-            }
+        public static void AddMySql(this IServiceCollection services, IConfigurationRoot Configuration) {
             //Setup the connection to the sql server
-            services.AddDbContext<GirafDbContext>(options => options.UseSqlServer(connString.ToString()));
+            services.AddDbContext<GirafDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
         }
 
         public static void RemovePasswordRequirements(this IdentityOptions options) {
