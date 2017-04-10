@@ -82,15 +82,22 @@ namespace GirafRest.Controllers
         /// <param name="pictogram">A <see cref="PictogramDTO"/> with all relevant information about the new pictogram.</param>
         /// <returns>The new pictogram with all database-generated information.</returns>
         [HttpPost]
-        public async Task<IActionResult> CreatePictogram([FromBody] PictogramDTO pictogram)
+        public async Task<IActionResult> CreatePictogram(PictogramDTO pictogram)
         {
+            if(pictogram == null) return BadRequest("The body of the request must contain a pictogram.");
             //Create the actual pictogram instance
             Pictogram pict = new Pictogram(pictogram.Title, pictogram.AccessLevel);
 
             var user = await LoadUserAsync(HttpContext.User);
-            //Add the pictogram to the current user and his department
-            new UserResource(user, pict);
-            new DepartmentResource(user.Department, pict);
+
+            if(user != null) {
+                //Add the pictogram to the current user and his department
+                new UserResource(user, pict);
+                new DepartmentResource(user.Department, pict);
+            }
+            else if(pictogram.AccessLevel != AccessLevel.PUBLIC) {
+                return BadRequest("You must be logged in to create non-public pictograms.");
+            }
 
             //Stamp the pictogram with current time and add it to the database
             pict.LastEdit = DateTime.Now;

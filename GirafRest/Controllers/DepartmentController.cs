@@ -136,7 +136,7 @@ namespace GirafRest.Controllers
         /// <returns>BadRequest if no user or department has been specified or the user is already in the department,
         ///  NotFound if there is no department with the given ID or
         ///  Ok if there was no problems.</returns>
-        [HttpPost("{id}/add-user")]
+        [HttpPost("add-user/{id}")]
         public async Task<IActionResult> AddUser(long ID, [FromBody]GirafUser usr)
         {
             //Fetch user and department and check that they exist
@@ -169,7 +169,7 @@ namespace GirafRest.Controllers
         /// NotFound if there is no department with the given Id or
         /// Ok if no problems occured.
         /// </returns>
-        [HttpDelete("{id}/remove-user")]
+        [HttpDelete("remove-user/{id}")]
         public async Task<IActionResult> RemoveUser(long ID, [FromBody]GirafUser usr)
         {
             //Check if a valid user was supplied and that the given department exists
@@ -203,7 +203,7 @@ namespace GirafRest.Controllers
         /// BadRequest if no resourceId has been specified as either query-parameter or in the request-body or
         /// Ok if no problems occured.
         /// </returns>
-        [HttpPost("{id}/add-resource")]
+        [HttpPost("add-resource/{id}")]
         [Authorize]
         public async Task<IActionResult> AddResource(long id, [FromBody] long? resourceId) {
             //Fetch the department and check that it exists.

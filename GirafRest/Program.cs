@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using GirafRest.Setup;
 using Microsoft.AspNetCore.Hosting;
@@ -27,6 +28,11 @@ namespace GirafRest
         /// </summary>
         public static DbOption DbOption = DbOption.SQLite;
 
+        /// <summary>
+        /// A field for storing the port on which to host the server.
+        /// </summary>
+        private static Int16 port = 5000;
+
         public static void Main(string[] args)
         {
             var helpMessage = "\tRun with --help to list options";
@@ -37,33 +43,12 @@ namespace GirafRest
             Console.Title = "Giraf REST-api Console";
             Console.WriteLine("Welcome to Giraf REST Server.");
 
-            foreach (var arg in args) {
-                switch (arg) {
-                    case "--db=mysql":
-                        DbOption = DbOption.MySQL;
-                        break;
-                    case "--db=sqlite":
-                        DbOption = DbOption.SQLite;
-                        break;
-                    case "--prod=true":
-                        ConnectionStringName = "appsettings.json";
-                        break;
-                    case "--prod=false":
-                        ConnectionStringName = "appsettings.Development.json";
-                        break;
-                    case "--list":
-                        Console.WriteLine(options);
-                        return;
-                    default:
-                        Console.WriteLine("Invalid argument {0}", arg);
-                        Console.WriteLine(helpMessage);
-                        return;
-                }
-            }
+            //Parse all the program arguments and stop execution if any invalid arguments were found.
+            bool validArguments = checkProgramArguments(args);
+            if(!validArguments) return;
 
             //Build the host from the given arguments.
             var host = ConfigureHost();
-
             //Launch the rest-api.
             host.Run();
         }
@@ -75,7 +60,7 @@ namespace GirafRest
         /// <see cref="StartupDeployment"/> sets up the environment for deployment.
         /// </summary>
         /// <returns>A <see cref="IWebHost"/> host fit for running the server.</returns>
-        private static IWebHost ConfigureHost(string port = "5000") {
+        private static IWebHost ConfigureHost() {
             var host = new WebHostBuilder()
                 .UseKestrel()
                 .UseUrls($"http://localhost:{port}")
@@ -86,6 +71,71 @@ namespace GirafRest
                 .Build();
 
             return host;
+        }
+
+        private static bool checkProgramArguments(string[] args) {
+            Regex portRegex = new Regex(@"port=[\d]*");
+
+            var helpMessage = "\tRun with --help to list options";
+            var options = "\n\t--db=[mysql|sqlite] | Connect to MySQL or SQLite database, defaults to SQLite.\n" + 
+                          "\t--prod=[true|false] | If true then connect to production db, defaults to false.\n" +
+                          "\t--port=integer | Specify which port to host the server on, defaults to 5000.\n" +
+                          "\t--list              | List options\n";
+            if(args.Length == 0) {
+                System.Console.WriteLine("\tNo program arguments were found - running in default configuration.");
+                System.Console.WriteLine(options);
+            }
+
+            foreach (var arg in args) {
+                string[] argumentAndParameter = arg.Split('=');
+
+                switch (argumentAndParameter[0]) {
+                    //Check for db arguments and validate them
+                    case "--db":
+                        if(argumentAndParameter[1].Equals("mysql"))
+                            DbOption = DbOption.MySQL;
+                        else if(argumentAndParameter[1].Equals("sqlite"))
+                            DbOption = DbOption.SQLite;
+                        else {
+                            System.Console.WriteLine("\tERROR: Invalid database parameter was specified. Expected [sqlite|mysql] but found " + argumentAndParameter[1]);
+                            return false;
+                        }
+                        break;
+                    //Check for production arguments and validate them
+                    case "--prod":
+                        if(argumentAndParameter[1].Equals("true"))
+                            ConnectionStringName = "appsettings.json";
+                        else if(argumentAndParameter[1].Equals("false"))
+                            ConnectionStringName = "appsettings.Development.json";
+                        else {
+                            System.Console.WriteLine("\tERROR: Invalid production parameter was specified, expected [true|false] but found " + argumentAndParameter[1]);
+                            return false;
+                        }
+                        break;
+                    //Check for list arguments and display a list of program arguments.
+                    case "--list":
+                        Console.WriteLine(options);
+                        return false;
+                    //Check for port arguments and validate them
+                    case "--port":
+                        try {
+                            port = Int16.Parse(argumentAndParameter[1]);
+                        }
+                        catch {
+                            System.Console.WriteLine("\tERROR: Invalid port parameter was specified, expected an integer, but found " + argumentAndParameter[1]);
+                            return false;
+                        }
+                        break;
+                    //An invalid argument was found, stop the execution.
+                    default:
+                        Console.WriteLine("\tInvalid argument {0}", argumentAndParameter[0]);
+                        Console.WriteLine(helpMessage);
+                        return false;
+                }
+            }
+
+            //No invalid arguments or parameters was found - execution may continue.
+            return true;
         }
     }
 }

@@ -14,5 +14,7 @@ namespace GirafRest.Models.DTOs
                 Days.Add(new WeekdayDTO(day));
             }
         }
+
+        public WeekDTO() {}
     }
 }

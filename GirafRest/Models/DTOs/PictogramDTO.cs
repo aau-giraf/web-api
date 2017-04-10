@@ -11,5 +11,7 @@ namespace GirafRest.Models.DTOs
         {
             this.Image = image;
         }
+
+        public PictogramDTO() {}
     }
 }

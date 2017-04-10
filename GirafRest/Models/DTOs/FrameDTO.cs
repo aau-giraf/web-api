@@ -11,5 +11,7 @@ namespace GirafRest.Models.DTOs
             this.Id = frame.Id;
             this.LastEdit = frame.LastEdit;
         }
+
+        public FrameDTO () {}
     }
 }
