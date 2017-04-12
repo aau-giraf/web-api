@@ -14,37 +14,39 @@ using Microsoft.Extensions.Logging;
 namespace GirafRest.Controllers
 {
     [Route("[controller]")]
-    public class WeekController : GirafController
+    public class WeekController : Controller
     {
+        private readonly GirafController _giraf;
+
         public WeekController(GirafDbContext context, UserManager<GirafUser> userManager,	
-            IHostingEnvironment env, ILoggerFactory loggerFactory) 
-                : base(context, userManager, env, loggerFactory.CreateLogger<PictogramController>())	
-        {	
+            IHostingEnvironment env, ILoggerFactory loggerFactory)
+        {
+            _giraf = new GirafController(context, userManager, env, loggerFactory.CreateLogger<PictogramController>());
         }		
         [HttpGet]	
         [Authorize]
         public async Task<IActionResult> GetWeekSchedule()
         {	
-            var user = await LoadUserAsync(HttpContext.User);
+            var user = await _giraf.LoadUserAsync(HttpContext.User);
             return Ok(new WeekDTO(user.WeekSchedule).Days);	
         }	
         [HttpPut]
         [Authorize]
         public async Task<IActionResult> UpdateDay(Weekday newDay)	
         {	
-            var user = await LoadUserAsync(HttpContext.User);
+            var user = await _giraf.LoadUserAsync(HttpContext.User);
             user.WeekSchedule.Days.Remove(user.WeekSchedule.Days.Where(d => d.Day == newDay.Day).First());
             user.WeekSchedule.Days.Add(newDay);
-            await _context.SaveChangesAsync();	
+            await _giraf._context.SaveChangesAsync();	
             return Ok(new WeekDTO(user.WeekSchedule));	
         }
         [HttpPut]
         [Authorize]
         public async Task<IActionResult> UpdateWeek(ICollection<Weekday> newWeek)
         {
-            var user = await LoadUserAsync(HttpContext.User);
+            var user = await _giraf.LoadUserAsync(HttpContext.User);
             user.WeekSchedule.Days = newWeek;
-            await _context.SaveChangesAsync();
+            await _giraf._context.SaveChangesAsync();
             return Ok(new WeekDTO(user.WeekSchedule));
         }
     }

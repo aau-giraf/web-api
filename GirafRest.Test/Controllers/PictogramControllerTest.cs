@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Xunit;
 using Moq;
 using System.Collections.Generic;
@@ -9,11 +10,11 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace GirafRest.Tests
+namespace GirafRest.Test
 {
     public class PictogramControllerTest
     {
-        private readonly PictogramController Controller;
+        private readonly PictogramController pictogramController;
 
         public PictogramControllerTest()
         {
@@ -27,17 +28,16 @@ namespace GirafRest.Tests
 
             var mockLogger = new Mock<ILoggerFactory>();
 
-            Controller = new PictogramController(mockContext.Object, mockUserManager.Object, mockHostingEnvironment.Object, mockLogger.Object);
+            pictogramController = new PictogramController(mockContext.Object, mockUserManager.Object, mockHostingEnvironment.Object, mockLogger.Object);
         }
 
         [Fact]
         public void Get_NoLogin_ExpectPublicPictograms()
         {
-            var result = Controller.ReadPictograms();
-            result.
+            //var result = pictogramController.ReadPictograms();
         }
 
-        private void addTestSessions(GirafDbContext context) {
+        public virtual void addTestSessions(GirafDbContext context) {
             var sessions = new List<PictoFrame> {
                 new Pictogram("Public Picto1", AccessLevel.PUBLIC),
                 new Pictogram("Public Picto2", AccessLevel.PUBLIC),
@@ -50,7 +50,7 @@ namespace GirafRest.Tests
             }
             context.SaveChanges();
         }
-        private void addUsers(UserManager<GirafUser> userManager) {
+        public virtual void addUsers(UserManager<GirafUser> userManager) {
             var users = new List<GirafUser> {
                 new GirafUser("Alice", 1),
                 new GirafUser("Bob", 2),

@@ -3,6 +3,7 @@ using GirafRest.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -14,25 +15,25 @@ using System.Threading;
 
 namespace GirafRest.Controllers
 {
-    public class GirafController : Controller
+    public class GirafController
     {
         /// <summary>
         /// A reference to the database context - used to access the database and query for data. Handled by Asp.net's dependency injection.
         /// </summary>
-        protected readonly GirafDbContext _context;
+        public readonly GirafDbContext _context;
         /// <summary>
         /// Asp.net's user manager. Can be used to fetch user data from the request's cookie. Handled by Asp.net's dependency injection.
         /// </summary>
-        protected readonly UserManager<GirafUser> _userManager;
+        public readonly UserManager<GirafUser> _userManager;
         /// <summary>
         /// A reference to the hosting environment - somewhat like the Environment class in normal C# applications.
         /// It is used to find image files-paths. Handled by Asp.net's dependency injection.
         /// </summary>
-        protected readonly IHostingEnvironment _env;
+        public readonly IHostingEnvironment _env;
         /// <summary>
         /// A data-logger used to write messages to the console. Handled by Asp.net's dependency injection.
         /// </summary>
-        protected readonly ILogger _logger;
+        public readonly ILogger _logger;
 
         /// <summary>
         /// A constructor for the PictogramController. This is automatically called by Asp.net when receiving the first request for a pictogram.
@@ -55,7 +56,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="principal">The security claim - i.e. the information about the currently authenticated user.</param>
         /// <returns>A <see cref="GirafUser"/> with related data.</returns>
-        protected async Task<GirafUser> LoadUserAsync(System.Security.Claims.ClaimsPrincipal principal)  {
+        public async Task<GirafUser> LoadUserAsync(System.Security.Claims.ClaimsPrincipal principal)  {
             var usr = (await _userManager.GetUserAsync(principal));
             if(usr == null) return null;
 
@@ -81,7 +82,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="id">Id of the pictogram to fetch image for.</param>
         /// <returns> A byte-array with the bytes of the image.</returns>
-        protected async Task<byte[]> ReadImage(long id)
+        public async Task<byte[]> ReadImage(long id)
         {
             string imageDir = GetImageDirectory();
             //Check if the image-file exists.
@@ -101,7 +102,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Get the path to the image directory, also checks if the directory for images exists and creates it if not.
         /// </summary>
-        protected string GetImageDirectory() {
+        public string GetImageDirectory() {
             //Check that the image directory exists - create it if not.
             var imageDir = Path.Combine(_env.ContentRootPath, "images");
             if(!Directory.Exists(imageDir)){
@@ -118,9 +119,9 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="pictogram">The pictogram to check the ownership for.</param>
         /// <returns>True if the user is authorized to see the resource and false if not.</returns>
-        protected async Task<bool> CheckForResourceOwnership(Frame pictogram) {
+        public async Task<bool> CheckForResourceOwnership(Frame pictogram, HttpContext httpContext) {
             //The pictogram was not public, check if the user owns it.
-            var usr = await LoadUserAsync(HttpContext.User);
+            var usr = await LoadUserAsync(httpContext.User);
             if(usr == null) return false;
             
             var ownedByUser = await _context.UserResources

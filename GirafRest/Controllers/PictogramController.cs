@@ -17,12 +17,20 @@ using System.Collections.Generic;
 namespace GirafRest.Controllers
 {
     [Route("[controller]")]
-    public class PictogramController : GirafController
+    public class PictogramController : Controller
     {
+        private readonly GirafController _giraf;
+
         public PictogramController(GirafDbContext context, UserManager<GirafUser> userManager,
-            IHostingEnvironment env, ILoggerFactory loggerFactory) 
-                : base(context, userManager, env, loggerFactory.CreateLogger<PictogramController>())
+            IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            _giraf = new GirafController(context, userManager, env, loggerFactory.CreateLogger<PictogramController>());
+        }
+
+        public PictogramController(GirafDbContext context, UserManager<GirafUser> userManager,
+            IHostingEnvironment env, ILoggerFactory loggerFactory, GirafController _giraf)
+        {
+            this._giraf = _giraf;
         }
 
         /// <summary>
@@ -55,13 +63,13 @@ namespace GirafRest.Controllers
         public async Task<IActionResult> ReadPictogram(int id)
         {
             //Fetch the pictogram and check that it actually exists
-            var _pictogram = await _context.Pictograms.Where(p => p.Id == id).FirstAsync();
+            var _pictogram = await _giraf._context.Pictograms.Where(p => p.Id == id).FirstAsync();
             if(_pictogram == null) return NotFound();
 
             //Attempt to read the image of the pictogram from a file
             byte[] imageBytes;
             try {
-                imageBytes = await ReadImage(_pictogram.Id);
+                imageBytes = await _giraf.ReadImage(_pictogram.Id);
             }
             //Catch the exception that is thrown when the image-file is occupied by a writing process.
             catch (IOException) {
@@ -71,7 +79,7 @@ namespace GirafRest.Controllers
             //Check if the pictogram is public and return it if so
             if(_pictogram.AccessLevel == AccessLevel.PUBLIC) return Ok(new PictogramDTO(_pictogram, imageBytes));
 
-            var ownsResource = await CheckForResourceOwnership(_pictogram);
+            var ownsResource = await _giraf.CheckForResourceOwnership(_pictogram, HttpContext);
             if(ownsResource) return Ok(new PictogramDTO(_pictogram, imageBytes));
             else return Unauthorized();
         }
@@ -88,7 +96,7 @@ namespace GirafRest.Controllers
             //Create the actual pictogram instance
             Pictogram pict = new Pictogram(pictogram.Title, pictogram.AccessLevel);
 
-            var user = await LoadUserAsync(HttpContext.User);
+            var user = await _giraf.LoadUserAsync(HttpContext.User);
 
             if(user != null) {
                 //Add the pictogram to the current user and his department
@@ -101,8 +109,8 @@ namespace GirafRest.Controllers
 
             //Stamp the pictogram with current time and add it to the database
             pict.LastEdit = DateTime.Now;
-            var res = await _context.Pictograms.AddAsync(pict);
-            await _context.SaveChangesAsync();
+            var res = await _giraf._context.Pictograms.AddAsync(pict);
+            await _giraf._context.SaveChangesAsync();
 
             return Ok(new PictogramDTO(res.Entity));
         }
@@ -119,13 +127,13 @@ namespace GirafRest.Controllers
         public async Task<IActionResult> UpdatePictogramInfo([FromBody] PictogramDTO pictogram)
         {
             //Fetch the pictogram from the database and check that it exists
-            var pict = await _context.Pictograms.Where(pic => pic.Id == pictogram.Id).FirstAsync();
+            var pict = await _giraf._context.Pictograms.Where(pic => pic.Id == pictogram.Id).FirstAsync();
             if(pict == null) return NotFound();
 
             //Update the existing database entry and save the changes.
             pict.Merge(pictogram);
-            var res = _context.Pictograms.Update(pict);
-            await _context.SaveChangesAsync();
+            var res = _giraf._context.Pictograms.Update(pict);
+            await _giraf._context.SaveChangesAsync();
 
             return Ok(new PictogramDTO(pict));
         }
@@ -140,21 +148,21 @@ namespace GirafRest.Controllers
         public async Task<IActionResult> DeletePictogram(int id)
         {
             //Fetch the pictogram from the database and check that it exists
-            var pict = await _context.Pictograms.Where(pic => pic.Id == id).FirstAsync();
+            var pict = await _giraf._context.Pictograms.Where(pic => pic.Id == id).FirstAsync();
             if(pict == null) return NotFound();
 
-            if(! await CheckForResourceOwnership(pict)) return Unauthorized();
+            if(! await _giraf.CheckForResourceOwnership(pict, HttpContext)) return Unauthorized();
 
-            string imageDir = GetImageDirectory();
+            string imageDir = _giraf.GetImageDirectory();
             var imageFile = new FileInfo(Path.Combine(imageDir, $"{id}.png"));
             if(imageFile.Exists) { 
                 imageFile.Delete();
-                _logger.LogInformation($"Deleted {imageFile.Name} from disc.");
+                _giraf._logger.LogInformation($"Deleted {imageFile.Name} from disc.");
             }
 
             //Remove it and save changes
-            _context.Pictograms.Remove(pict);
-            await _context.SaveChangesAsync();
+            _giraf._context.Pictograms.Remove(pict);
+            await _giraf._context.SaveChangesAsync();
             return Ok();
         }
 
@@ -170,10 +178,10 @@ namespace GirafRest.Controllers
         public async Task<IActionResult> CreateImage(long id)
         {
             //Fetch the image and check that it exists
-            var pict = await _context.Pictograms.Where(p => p.Id == id).FirstAsync();
+            var pict = await _giraf._context.Pictograms.Where(p => p.Id == id).FirstAsync();
             if(pict == null) return NotFound();
 
-            string imageDir = GetImageDirectory();
+            string imageDir = _giraf.GetImageDirectory();
 
             //Create image-file and copy the contents of the request-body into the new file
             var imageFile = new FileInfo(Path.Combine(imageDir, $"{id}.png"));
@@ -193,10 +201,10 @@ namespace GirafRest.Controllers
         [HttpPut("image/{id}")]
         [Authorize]
         public async Task<IActionResult> UpdatePictogramImage(long id) {
-            var picto = await _context.Pictograms.Where(p => p.Id == id).FirstAsync();
+            var picto = await _giraf._context.Pictograms.Where(p => p.Id == id).FirstAsync();
             if(picto == null) return NotFound();
 
-            string imageDir = GetImageDirectory();
+            string imageDir = _giraf.GetImageDirectory();
 
             //Check if the file exists - if so delete it
             var imageInfo = new FileInfo(Path.Combine(imageDir, $"{id}.png"));
@@ -223,15 +231,15 @@ namespace GirafRest.Controllers
 
         private async Task<List<PictogramDTO>> ReadAllPictograms() {
             //Fetch all public pictograms and cask to a list - using Union'ing two IEnumerables gives an exception.
-            var _pictograms = await _context.Pictograms
+            var _pictograms = await _giraf._context.Pictograms
                 .Where(p => p.AccessLevel == AccessLevel.PUBLIC)
                 .ToListAsync();
             
             //Find the user and add his pictograms to the result
-            var user = await LoadUserAsync(HttpContext.User);
+            var user = await _giraf.LoadUserAsync(HttpContext.User);
             if(user != null)
             {
-                _logger.LogInformation($"Fetching user pictograms for user {user.UserName}");
+                _giraf._logger.LogInformation($"Fetching user pictograms for user {user.UserName}");
                 var userPictograms = user.Resources
                     .Select(ur => ur.Resource)
                     .OfType<Pictogram>();
@@ -241,7 +249,7 @@ namespace GirafRest.Controllers
                 //Also find his department and their pictograms
                 var dep = user.Department;
                 if(dep != null){
-                    _logger.LogInformation($"Fetching pictograms for department {dep.Name}");
+                    _giraf._logger.LogInformation($"Fetching pictograms for department {dep.Name}");
                     var depPictograms = dep.Resources
                         .Select(dr => dr.Resource)
                         .OfType<Pictogram>();
@@ -249,7 +257,7 @@ namespace GirafRest.Controllers
                     .Union (depPictograms)
                     .ToList();
                 }
-                else _logger.LogWarning($"{user.UserName} has no department.");
+                else _giraf._logger.LogWarning($"{user.UserName} has no department.");
             }
             
             //Return the list of pictograms as Pictogram DTOs
