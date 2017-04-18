@@ -91,7 +91,7 @@ namespace GirafRest.Setup
             });
 
             //Fill some sample data into the database
-            if(Program.DbOption == DbOption.SQLite) await DBInitializer.Initialize(context, userManager);
+            if(Program.DbOption == DbOption.SQLite) DBInitializer.Initialize(context, userManager);
         }
     }
 }

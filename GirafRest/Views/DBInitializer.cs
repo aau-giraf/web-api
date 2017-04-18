@@ -20,7 +20,7 @@ namespace GirafRest.Setup
 		/// Initializes the local database with sample data.
 		/// </summary>
 		/// <param name="context">A reference to the database context.</param>
-		public async static Task Initialize(GirafDbContext context, UserManager<GirafUser> userManager)
+		public async static void Initialize(GirafDbContext context, UserManager<GirafUser> userManager)
 		{
 			context.Database.EnsureCreated();
 
@@ -45,8 +45,8 @@ namespace GirafRest.Setup
             System.Console.WriteLine("Adding departments.");
 			var Departments = new Department[]
 			{
-				new Department { Name = "Tobias' stue for godt humør", Key = 1},
-				new Department { Name = "Bajer plejen", Key = 2}
+				new Department { Name = "Tobias' stue for godt humør"},
+				new Department { Name = "Bajer plejen"}
 			};
 			foreach(var department in Departments)
 			{
@@ -92,6 +92,7 @@ namespace GirafRest.Setup
 				pictogram.LastEdit = DateTime.Now;
 				context.Add(pictogram);
 			}
+			context.SaveChanges();
 			System.Console.WriteLine("Adding pictograms to users.");
 			var usr = context.Users.Where(user => user.UserName == "Kurt").First();
 			var pictos = new List<Pictogram> { Pictograms[0], Pictograms[1], Pictograms[2], Pictograms[3], Pictograms[4] };
