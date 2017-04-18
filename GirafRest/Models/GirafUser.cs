@@ -1,19 +1,18 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace GirafRest.Models
 {
     [Table("User")]
     public class GirafUser : IdentityUser
-    {
-        public static string[] GirafRoles = new string[] { "User", "Guardian", "Admin" };
-        
+    {        
         public long DepartmentKey { get; set; }
         [ForeignKey("DepartmentKey")]
         public virtual Department Department { get; set; }
 
-        public Week WeekSchedule { get; set; }
+        public ICollection<Week> WeekSchedule { get; set; }
         
         public virtual ICollection<UserResource> Resources { get; set; }
 
@@ -24,11 +23,16 @@ namespace GirafRest.Models
             this.UserName = userName;
             this.Resources = new List<UserResource>();
             this.DepartmentKey = departmentId;
-            this.WeekSchedule = new Week();
+            this.WeekSchedule = new List<Week>();
+            this.WeekSchedule.Add(new Week());
+            this.WeekSchedule.First().InitWeek();
         }
         public GirafUser()
         {
             this.Resources = new List<UserResource>();
+            this.WeekSchedule = new List<Week>();
+            this.WeekSchedule.Add(new Week());
+            this.WeekSchedule.First().InitWeek();
         }
     }
 }

@@ -66,7 +66,8 @@ namespace GirafRest.Controllers
                     .ThenInclude(dr => dr.Resource)
                     // then load his week schedule
                     .Include(u => u.WeekSchedule)
-                    .ThenInclude(w => w.Days)
+                    .ThenInclude(w => w.Weekdays)
+                    .ThenInclude(wd => wd.Elements)
                     //And return him
                     .FirstAsync();
         }

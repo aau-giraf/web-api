@@ -85,7 +85,7 @@ namespace GirafRest.Controllers
             var _week = await _giraf._context.Weeks.FirstAsync();
             if (_week == null)
                 return BadRequest();
-            _week.Days.Where(d => d.Day == DTO.Day).First();
+            _week.Weekdays.Where(d => d.Day == DTO.Day).First();
             return Ok(_week);
         }
 
