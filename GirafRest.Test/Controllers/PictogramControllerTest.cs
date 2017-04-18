@@ -20,7 +20,6 @@ namespace GirafRest.Test
 
         private readonly GirafUser mockUser;
 
-
         public PictogramControllerTest()
         {
             mockUser = new GirafUser("Mock User", 0);
