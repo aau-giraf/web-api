@@ -35,12 +35,6 @@ namespace GirafRest
 
         public static void Main(string[] args)
         {
-            var helpMessage = "\tRun with --help to list options";
-            var options = "\n\t--db=[mysql|sqlite] | Connect to MySQL or SQLite database, defaults to SQLite.\n" + 
-                          "\t--prod=[true|false] | If true then connect to production db, defaults to false.\n" +
-                          "\t--list              | List options\n";
-
-            Console.Title = "Giraf REST-api Console";
             Console.WriteLine("Welcome to Giraf REST Server.");
 
             //Parse all the program arguments and stop execution if any invalid arguments were found.

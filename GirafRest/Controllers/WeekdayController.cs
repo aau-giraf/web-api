@@ -20,9 +20,9 @@ namespace GirafRest.Controllers
     {
         private readonly GirafController _giraf;
         public WeekdayController(GirafDbContext context, UserManager<GirafUser> userManager,
-            IHostingEnvironment env, ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory)
         {
-            _giraf = new GirafController(context, userManager, env, loggerFactory.CreateLogger<WeekdayController>());
+            _giraf = new GirafController(context, userManager, loggerFactory.CreateLogger<WeekdayController>());
         }
 
         /*[HttpGet]

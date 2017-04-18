@@ -19,9 +19,9 @@ namespace GirafRest.Controllers
         private readonly GirafController _giraf;
 
         public WeekController(GirafDbContext context, UserManager<GirafUser> userManager,	
-            IHostingEnvironment env, ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory)
         {
-            _giraf = new GirafController(context, userManager, env, loggerFactory.CreateLogger<PictogramController>());
+            _giraf = new GirafController(context, userManager, loggerFactory.CreateLogger<PictogramController>());
         }		
         [HttpGet]	
         [Authorize]

@@ -7,30 +7,28 @@ using Microsoft.Extensions.Options;
 using GirafRest.Models;
 using GirafRest.Models.ManageViewModels;
 using GirafRest.Services;
+using GirafRest.Data;
 
 namespace GirafRest.Controllers
 {
     [Authorize]
+    [Route("[controller]")]
     public class ManageController : Controller
     {
-        private readonly UserManager<GirafUser> _userManager;
         private readonly SignInManager<GirafUser> _signInManager;
-        private readonly string _externalCookieScheme;
         private readonly IEmailSender _emailSender;
-        private readonly ILogger _logger;
+        private readonly GirafController _giraf;
 
         public ManageController(
+          GirafDbContext context,
           UserManager<GirafUser> userManager,
           SignInManager<GirafUser> signInManager,
-          IOptions<IdentityCookieOptions> identityCookieOptions,
           IEmailSender emailSender,
           ILoggerFactory loggerFactory)
         {
-            _userManager = userManager;
+            _giraf = new GirafController(context, userManager, loggerFactory.CreateLogger<ManageController>());
             _signInManager = signInManager;
-            _externalCookieScheme = identityCookieOptions.Value.ExternalCookieAuthenticationScheme;
             _emailSender = emailSender;
-            _logger = loggerFactory.CreateLogger<ManageController>();
         }
 
         //
@@ -39,18 +37,50 @@ namespace GirafRest.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
         {
-            var user = await GetCurrentUserAsync();
+            var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
             if (user != null)
             {
-                var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+                var result = await _giraf._userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                    _logger.LogInformation(3, "User changed their password successfully.");
+                    _giraf._logger.LogInformation(3, "User changed their password successfully.");
                     return Ok("Your password was changed.");
                 }
             }
             return BadRequest();
+        }
+
+        [HttpPost("icon")]
+        [Authorize]
+        public async Task<IActionResult> CreateUserIcon() {
+            var usr = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            if(usr.UserIcon != null) return BadRequest("The user already has an icon - please PUT instead.");
+            byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body);
+            usr.UserIcon = image;
+            await _giraf._context.SaveChangesAsync();
+
+            return Ok(usr);
+        }
+        [HttpPut("icon")]
+        [Authorize]
+        public async Task<IActionResult> UpdateUserIcon() {
+            var usr = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            if(usr.UserIcon == null) return BadRequest("The user does not have an icon - please POST instead.");
+            byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body);
+            usr.UserIcon = image;
+            await _giraf._context.SaveChangesAsync();
+
+            return Ok(usr);
+        }
+        [HttpDelete("icon")]
+        [Authorize]
+        public async Task<IActionResult> DeleteUserIcon() {
+            var usr = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            usr.UserIcon = null;
+            await _giraf._context.SaveChangesAsync();
+
+            return Ok(usr);
         }
 
         //
@@ -59,10 +89,10 @@ namespace GirafRest.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SetPassword(SetPasswordViewModel model)
         {
-            var user = await GetCurrentUserAsync();
+            var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
             if (user != null)
             {
-                var result = await _userManager.AddPasswordAsync(user, model.NewPassword);
+                var result = await _giraf._userManager.AddPasswordAsync(user, model.NewPassword);
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
@@ -79,13 +109,8 @@ namespace GirafRest.Controllers
         {
             foreach (var error in result.Errors)
             {
-                _logger.LogError(error.Description);
+                _giraf._logger.LogError(error.Description);
             }
-        }
-
-        private Task<GirafUser> GetCurrentUserAsync()
-        {
-            return _userManager.GetUserAsync(HttpContext.User);
         }
 
         #endregion
