@@ -1,85 +1,101 @@
-using System;
 using System.Linq;
 using Xunit;
 using Moq;
 using GirafRest.Models;
-using GirafRest.Controllers;
-using GirafRest.Data;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
+using GirafRest.Controllers;
 
 namespace GirafRest.Test
 {
     public class PictogramControllerTest
     {
         private readonly PictogramController pictogramController;
-        private readonly Mock<FakeDbContext> dbMock;
-        private readonly Mock<ILoggerFactory> lfMock;
         private readonly List<string> logs;
 
 
         public PictogramControllerTest()
         {
-            var data = testSessions().AsQueryable();
-
-            var mockSet = new Mock<DbSet<Pictogram>>();
-            mockSet.As<IAsyncEnumerable<Pictogram>>()
-                .Setup(m => m.GetEnumerator())
-                .Returns(new TestDbAsyncEnumerator<Pictogram>(data.GetEnumerator()));
-
-            mockSet.As<IQueryable<Pictogram>>()
-                .Setup(m => m.Provider)
-                .Returns(new TestDbAsyncQueryProvider<Pictogram>(data.Provider));
-            mockSet.As<IQueryable<Pictogram>>().Setup(m => m.Expression).Returns(data.Expression);
-            mockSet.As<IQueryable<Pictogram>>().Setup(m => m.ElementType).Returns (data.ElementType);
-            mockSet.As<IQueryable<Pictogram>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator());
-
-            dbMock = new Mock<FakeDbContext> ();
-            dbMock.Setup(c => c.Pictograms).Returns(mockSet.Object);
-
-            var iUS = new Mock<IUserStore<GirafUser>>();
-            /*var iO = new Mock<IOptions<IdentityOptions>>();
-            var iPH = new Mock<IPasswordHasher<GirafUser>>();
-            var iUV = new Mock<IEnumerable<IUserValidator<GirafUser>>>();
-            var iPV = new Mock<IEnumerable<IPasswordValidator<GirafUser>>>();
-            var iLN = new Mock<ILookupNormalizer>();
-            var iIED = new Mock<IdentityErrorDescriber>();
-            var iSP = new Mock<IServiceProvider>();
-            var iL = new Mock<ILogger<UserManager<GirafUser>>>();*/
-            
-            var umMock = new UserManager<GirafUser> (iUS.Object, null, null, null, null, null, null, null, null);
             var mockUser = new GirafUser("Mock User", 0);
-            iUS.Setup(x => x.CreateAsync(mockUser, new CancellationToken())).Returns(Task.FromResult(IdentityResult.Success));
-            iUS.Setup(x => x.FindByNameAsync(mockUser.UserName, new CancellationToken())).Returns(Task.FromResult(mockUser));
 
-            logs = new List<string>();
-            var lMock = new Mock<ILogger>();
-            //lMock.Setup(x => x.LogInformation(It.IsAny<string>())).Callback((string s) => logs.Add(s));
-            //lMock.Setup(x => x.LogError(It.IsAny<string>())).Callback((string s) => logs.Add(s));
+            var pictograms = testSessions();
+            var relations = new List<UserResource> () {
+                new UserResource(mockUser, pictograms[4])
+            };
 
-            lfMock = new Mock<ILoggerFactory>();
-            lfMock.Setup(lf => lf.CreateLogger(It.IsAny<string>())).Returns(lMock.Object);
+            var mockSet = UnitTestExtensions.CreateMockDbSet<Pictogram>(pictograms);
+            var mockRelationSet = UnitTestExtensions.CreateMockDbSet<UserResource>(relations);
+
+            var dbMock = new Mock<FakeDbContext> ();
+            dbMock.Setup(c => c.Pictograms).Returns(mockSet.Object);
+            dbMock.Setup(c => c.UserResources).Returns (mockRelationSet.Object);
+
+            var umMock = UnitTestExtensions.MockUserManager(mockUser);
+            var lfMock = UnitTestExtensions.CreateMockLoggerFactory();
 
             pictogramController = new PictogramController(dbMock.Object, umMock, lfMock.Object);
         }
 
         [Fact]
-        public void AccessExistingPublic_Expect200OK()
+        public void GetExistingPublic_ExpectOK()
         {
             Pictogram p = testSessions().Where(pict => pict.AccessLevel == AccessLevel.PUBLIC).First();
-            var res = pictogramController.ReadPictogram((int) p.Id);
+            var res = pictogramController.ReadPictogram(p.Id);
             IActionResult aRes = res.Result;
 
-            Assert.IsType<JsonResult>(aRes);
-            var jRes = aRes as JsonResult;
-            Assert.True(jRes.StatusCode == 400);
+            Assert.IsType<OkObjectResult>(aRes);
+        }
+
+        [Fact]
+        public void GetExistingPrivate_NoLogin_ExpectUnauthorized() {
+            Pictogram p = testSessions().Where(pict => pict.AccessLevel == AccessLevel.PRIVATE).First();
+            var res = pictogramController.ReadPictogram(p.Id);
+            IActionResult aRes = res.Result;
+
+            Assert.IsType<UnauthorizedResult>(aRes);
+        }
+
+        [Fact]
+        public void GetExistingProtected_NoLogin_ExpectUnauthorized() {
+            Pictogram p = testSessions().Where(pict => pict.AccessLevel == AccessLevel.PROTECTED).First();
+            var res = pictogramController.ReadPictogram(p.Id);
+            IActionResult aRes = res.Result;
+
+            Assert.IsType<UnauthorizedResult>(aRes);
+        }
+
+        [Fact]
+        public void GetExistingPrivate_Login_ExpectOK() {
+
+        }
+
+        [Fact]
+        public void GetExistingProtectedInDepartment_Login_ExpectOK() {
+
+        }
+
+        [Fact]
+        public void GetExistingProtectedInDepartment_Login_ExpectUnauthorized() {
+
+        }
+
+        [Fact]
+        public void GetExistingPrivateAnotherUser_Login_ExpectUnauthorized() {
+
+        }
+
+        [Fact]
+        public void GetNonexistingPictogram_Login_ExpectNotFound() {
+
+        }
+
+        [Fact]
+        public void GetNonexistingPictogram_NoLogin_ExpectNotFound() {
+
         }
 
         public List<Pictogram> testSessions() {
@@ -88,20 +104,11 @@ namespace GirafRest.Test
                 new Pictogram("Public Picto2", AccessLevel.PUBLIC),
                 new Pictogram("No restrictions", AccessLevel.PUBLIC),
                 new Pictogram("Restricted", AccessLevel.PRIVATE),
-                new Pictogram("Private Pictogram", AccessLevel.PRIVATE)
+                new Pictogram("Private Pictogram", AccessLevel.PRIVATE),
+                new Pictogram("Protected Pictogram", AccessLevel.PROTECTED)
             };
             
             return sessions;
-        }
-        public List<GirafUser> testUsers() {
-            var users = new List<GirafUser> {
-                new GirafUser("Alice", 1),
-                new GirafUser("Bob", 2),
-                new GirafUser("Morten", 1),
-                new GirafUser("Brian", 2)
-            };
-
-            return  users;
         }
     }
 }
