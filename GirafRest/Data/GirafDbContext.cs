@@ -10,16 +10,17 @@ namespace GirafRest.Data
 {
     public class GirafDbContext : IdentityDbContext<GirafUser>
     {
-        public DbSet<Department> Departments { get; set; }
-        public DbSet<Pictogram> Pictograms { get; set; }
-        public DbSet<PictoFrame> PictoFrames { get; set; }
-        public DbSet<Choice> Choices { get; set; }
-        public DbSet<Week> Weeks { get; set; }
-        public DbSet<Frame> Frames {get; set;}
-        public DbSet<UserResource> UserResources { get; set; }
-        public DbSet<DepartmentResource> DepartmentResources { get; set; }
-        public DbSet<WeekdayResource> WeekdayResources {get; set;}
+        public virtual DbSet<Department> Departments { get; set; }
+        public virtual  DbSet<Pictogram> Pictograms { get; set; }
+        public virtual DbSet<PictoFrame> PictoFrames { get; set; }
+        public virtual DbSet<Choice> Choices { get; set; }
+        public virtual DbSet<Week> Weeks { get; set; }
+        public virtual DbSet<Frame> Frames {get; set;}
+        public virtual DbSet<UserResource> UserResources { get; set; }
+        public virtual DbSet<DepartmentResource> DepartmentResources { get; set; }
+        public virtual DbSet<WeekdayResource> WeekdayResources {get; set;}
 
+        protected GirafDbContext () {}
         public GirafDbContext(DbContextOptions<GirafDbContext> options)
             : base(options)
         {

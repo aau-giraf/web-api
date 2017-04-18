@@ -10,36 +10,64 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Builder;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace GirafRest.Test
 {
     public class PictogramControllerTest
     {
         private readonly PictogramController pictogramController;
-        private readonly Mock<GirafDbContext> dbMock;
-        private readonly Mock<UserManager<GirafUser>> umMock;
+        private readonly Mock<FakeDbContext> dbMock;
         private readonly Mock<ILoggerFactory> lfMock;
         private readonly List<string> logs;
 
 
         public PictogramControllerTest()
         {
-            dbMock = new Mock<GirafDbContext> ();
-            dbMock.Setup(c => c.Pictograms.AddRange(testSessions()));
-            dbMock.Setup(c => c.SaveChanges());
+            var data = testSessions().AsQueryable();
 
-            umMock = new Mock<UserManager<GirafUser>>();
-            umMock.Setup(um => addUsers(um));
+            var mockSet = new Mock<DbSet<Pictogram>>();
+            mockSet.As<IAsyncEnumerable<Pictogram>>()
+                .Setup(m => m.GetEnumerator())
+                .Returns(new TestDbAsyncEnumerator<Pictogram>(data.GetEnumerator()));
+
+            mockSet.As<IQueryable<Pictogram>>()
+                .Setup(m => m.Provider)
+                .Returns(new TestDbAsyncQueryProvider<Pictogram>(data.Provider));
+            mockSet.As<IQueryable<Pictogram>>().Setup(m => m.Expression).Returns(data.Expression);
+            mockSet.As<IQueryable<Pictogram>>().Setup(m => m.ElementType).Returns (data.ElementType);
+            mockSet.As<IQueryable<Pictogram>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator());
+
+            dbMock = new Mock<FakeDbContext> ();
+            dbMock.Setup(c => c.Pictograms).Returns(mockSet.Object);
+
+            var iUS = new Mock<IUserStore<GirafUser>>();
+            /*var iO = new Mock<IOptions<IdentityOptions>>();
+            var iPH = new Mock<IPasswordHasher<GirafUser>>();
+            var iUV = new Mock<IEnumerable<IUserValidator<GirafUser>>>();
+            var iPV = new Mock<IEnumerable<IPasswordValidator<GirafUser>>>();
+            var iLN = new Mock<ILookupNormalizer>();
+            var iIED = new Mock<IdentityErrorDescriber>();
+            var iSP = new Mock<IServiceProvider>();
+            var iL = new Mock<ILogger<UserManager<GirafUser>>>();*/
+            
+            var umMock = new UserManager<GirafUser> (iUS.Object, null, null, null, null, null, null, null, null);
+            var mockUser = new GirafUser("Mock User", 0);
+            iUS.Setup(x => x.CreateAsync(mockUser, new CancellationToken())).Returns(Task.FromResult(IdentityResult.Success));
+            iUS.Setup(x => x.FindByNameAsync(mockUser.UserName, new CancellationToken())).Returns(Task.FromResult(mockUser));
 
             logs = new List<string>();
             var lMock = new Mock<ILogger>();
-            lMock.Setup(x => x.LogInformation(It.IsAny<string>())).Callback((string s) => logs.Add(s));
-            lMock.Setup(x => x.LogError(It.IsAny<string>())).Callback((string s) => logs.Add(s));
+            //lMock.Setup(x => x.LogInformation(It.IsAny<string>())).Callback((string s) => logs.Add(s));
+            //lMock.Setup(x => x.LogError(It.IsAny<string>())).Callback((string s) => logs.Add(s));
 
             lfMock = new Mock<ILoggerFactory>();
             lfMock.Setup(lf => lf.CreateLogger(It.IsAny<string>())).Returns(lMock.Object);
 
-            pictogramController = new PictogramController(dbMock.Object, umMock.Object, lfMock.Object);
+            pictogramController = new PictogramController(dbMock.Object, umMock, lfMock.Object);
         }
 
         [Fact]
@@ -65,7 +93,7 @@ namespace GirafRest.Test
             
             return sessions;
         }
-        public virtual void addUsers(UserManager<GirafUser> userManager) {
+        public List<GirafUser> testUsers() {
             var users = new List<GirafUser> {
                 new GirafUser("Alice", 1),
                 new GirafUser("Bob", 2),
@@ -73,9 +101,7 @@ namespace GirafRest.Test
                 new GirafUser("Brian", 2)
             };
 
-            foreach (var u in users) {
-                userManager.CreateAsync(u, "mocking");
-            }
+            return  users;
         }
     }
 }
