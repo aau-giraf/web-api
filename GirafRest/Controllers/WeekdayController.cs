@@ -16,12 +16,13 @@ using System.Collections.Generic;
 namespace GirafRest.Controllers
 {
     [Route("[controller]")]
-    public class WeekdayController : GirafController
+    public class WeekdayController : Controller
     {
+        private readonly GirafController _giraf;
         public WeekdayController(GirafDbContext context, UserManager<GirafUser> userManager,
             IHostingEnvironment env, ILoggerFactory loggerFactory)
-                : base(context, userManager, env, loggerFactory.CreateLogger<WeekdayController>())
         {
+            _giraf = new GirafController(context, userManager, env, loggerFactory.CreateLogger<WeekdayController>());
         }
 
         /*[HttpGet]
@@ -81,7 +82,7 @@ namespace GirafRest.Controllers
         {
             if (DTO == null)
                 return BadRequest();
-            var _week = await _context.Weeks.FirstAsync();
+            var _week = await _giraf._context.Weeks.FirstAsync();
             if (_week == null)
                 return BadRequest();
             _week.Days.Where(d => d.Day == DTO.Day).First();

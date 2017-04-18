@@ -29,5 +29,7 @@ namespace GirafRest.Models.DTOs
             if(Elements.Count > 0)
                 ElementsSet = true;
         }
+
+        public WeekdayDTO() {}
     }
 }

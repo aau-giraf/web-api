@@ -10,5 +10,7 @@ namespace GirafRest.Models.DTOs
             this.Title = pictoframe.Title;
             this.AccessLevel = pictoframe.AccessLevel;
         }
+
+        public PictoFrameDTO () {}
     }
 }
