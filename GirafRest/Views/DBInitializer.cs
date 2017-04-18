@@ -103,7 +103,7 @@ namespace GirafRest.Setup
 			foreach (var pict in pictos) new UserResource(usr, pict);
 			context.SaveChanges();
 			
-			System.Console.WriteLine("Adding Sequences to database");
+			System.Console.WriteLine("Adding weekdays to users");
 			var Weekdays = new Weekday[]
 			{
 				new Weekday(Days.Monday, Pictograms.Where(p => p.Title == "Hat").First(), 
@@ -124,15 +124,18 @@ namespace GirafRest.Setup
 			}
 			
 			usr = context.Users.Where(u => u.UserName == "Kurt").First();
-			usr.WeekSchedule.Days.Add(Weekdays[0]);
+			usr.WeekSchedule.First().Weekdays.Remove(usr.WeekSchedule.First().Weekdays.Where(wd => wd.Day == Weekdays[0].Day).First());
+			usr.WeekSchedule.First().Weekdays.Add(Weekdays[0]);
 			usr = context.Users.Where(u => u.UserName == "Lee").First();
-			usr.WeekSchedule.Days.Add(Weekdays[1]);
-			usr = context.Users.Where(u => u.UserName == "Lee").First();
-			usr.WeekSchedule.Days.Add(Weekdays[2]);
-			usr = context.Users.Where(u => u.UserName == "Lee").First();
-			usr.WeekSchedule.Days.Add(Weekdays[3]);
+			usr.WeekSchedule.First().Weekdays.Remove(usr.WeekSchedule.First().Weekdays.Where(wd => wd.Day == Weekdays[1].Day).First());
+			usr.WeekSchedule.First().Weekdays.Add(Weekdays[1]);
+			usr.WeekSchedule.First().Weekdays.Remove(usr.WeekSchedule.First().Weekdays.Where(wd => wd.Day == Weekdays[2].Day).First());
+			usr.WeekSchedule.First().Weekdays.Add(Weekdays[2]);
+			usr.WeekSchedule.First().Weekdays.Remove(usr.WeekSchedule.First().Weekdays.Where(wd => wd.Day == Weekdays[3].Day).First());
+			usr.WeekSchedule.First().Weekdays.Add(Weekdays[3]);
 			usr = context.Users.Where(u => u.UserName == "Graatand").First();
-			usr.WeekSchedule.Days.Add(Weekdays[4]);
+			usr.WeekSchedule.First().Weekdays.Remove(usr.WeekSchedule.First().Weekdays.Where(wd => wd.Day == Weekdays[4].Day).First());
+			usr.WeekSchedule.First().Weekdays.Add(Weekdays[4]);
 			context.SaveChanges();
 
 			//Add one of Graatands pictograms to department 1 to see if pictograms are fetched properly.

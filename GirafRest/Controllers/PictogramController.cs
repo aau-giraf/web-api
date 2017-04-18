@@ -54,7 +54,7 @@ namespace GirafRest.Controllers
         /// Unauthorized if the pictogram is private and user does not own it.
         /// </returns>
         [HttpGet("{id}")]
-        public async Task<IActionResult> ReadPictogram(int id)
+        public async Task<IActionResult> ReadPictogram(long id)
         {
             //Fetch the pictogram and check that it actually exists
             var _pictogram = await _giraf._context.Pictograms

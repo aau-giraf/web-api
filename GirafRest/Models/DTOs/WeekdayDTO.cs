@@ -8,7 +8,7 @@ namespace GirafRest.Models.DTOs
     {
         public long ThumbnailID { get; set; }
         public bool ElementsSet { get; set; }
-        public long[] ElementIDs { get; set; }
+        public List<long> ElementIDs { get; set; }
         public Days Day { get; set; }
         public ICollection<FrameDTO> Elements { get; set; }
         public WeekdayDTO(Weekday weekday) {
@@ -22,9 +22,13 @@ namespace GirafRest.Models.DTOs
             }
             this.Day = weekday.Day;
             Elements = new List<FrameDTO>();
-            foreach (var element in weekday.Elements)
-            {
-                Elements.Add(new FrameDTO(element.Resource));
+            ElementIDs = new List<long>();
+            if(weekday.Elements != null){
+                foreach (var element in weekday.Elements)
+                {
+                    Elements.Add(new FrameDTO(element.Resource));
+                    ElementIDs.Add(element.Resource.Id);
+                }
             }
             if(Elements.Count > 0)
                 ElementsSet = true;

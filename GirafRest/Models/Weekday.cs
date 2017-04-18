@@ -33,5 +33,11 @@ namespace GirafRest.Models
                 this.Elements.Add(new WeekdayResource(this, elem));
             }
         }
+        public Weekday(WeekdayDTO day)
+        {
+            this.Day = day.Day;
+            this.ThumbnailKey = day.ThumbnailID;
+            
+        }
     }
 }

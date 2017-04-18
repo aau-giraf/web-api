@@ -62,7 +62,7 @@ namespace GirafRest.Data
 
             builder.Entity<Weekday>()
                 .HasOne<Week>()
-                .WithMany(w => w.Days);
+                .WithMany(w => w.Weekdays);
 
             builder.Entity<WeekdayResource>()
                 .HasOne<Weekday>(wr => wr.Other)
