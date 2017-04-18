@@ -103,7 +103,11 @@ namespace GirafRest.Controllers
             var ownedByUser = await _context.UserResources
                 .Where(ur => ur.ResourceKey == pictogram.Id && ur.OtherKey == usr.Id)
                 .AnyAsync();
-            if(ownedByUser) return true;
+            if (ownedByUser)
+            {
+                Console.WriteLine("The user owns it!");
+                return true;
+            }
 
             //The pictogram was not owned by user, check if his department owns it.
             var ownedByDepartment = await _context.DepartmentResources

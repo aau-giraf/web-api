@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using GirafRest.Models;
+using GirafRest.Models.Many_to_Many_Relationships;
 
 namespace GirafRest.Data
 {
@@ -73,6 +74,16 @@ namespace GirafRest.Data
                 .HasOne<Frame> (wr => wr.Resource)
                 .WithMany()
                 .HasForeignKey(wr => wr.ResourceKey);
+
+            builder.Entity<ChoiceResource>()
+                .HasOne<Choice>(cr => cr.Other)
+                .WithMany(c => c.Options)
+                .HasForeignKey(cr => cr.OtherKey);
+
+            builder.Entity<ChoiceResource>()
+                .HasOne<Frame>(cr => cr.Resource)
+                .WithMany()
+                .HasForeignKey(cr => cr.ResourceKey);
             
             builder.Entity<UserResource>().ToTable("UserResources");
             builder.Entity<DepartmentResource>().ToTable("DeparmentResources");

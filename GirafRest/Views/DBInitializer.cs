@@ -143,18 +143,19 @@ namespace GirafRest.Setup
 			context.SaveChanges();
 
             // creating test choices
-            List<PictoFrame> pFrames = new List<PictoFrame>();
-            pFrames.Add(context.Pictograms.Where(p => p.AccessLevel == AccessLevel.PUBLIC).First());
-            Choice _choice = new Choice(pFrames);
-            context.Choices.Add(_choice);
+            List<PictoFrame> pFrames1 = new List<PictoFrame>(); // Contains public choice
+            List<PictoFrame> pFrames2 = new List<PictoFrame>(); // Contains choice which kurt can access
+            List<PictoFrame> pFrames3 = new List<PictoFrame>(); // Contains choice which lee can access
+            pFrames1.AddRange(context.Pictograms.Where(p => p.AccessLevel == AccessLevel.PUBLIC));
+            pFrames2.AddRange(context.Pictograms.Where(p => p.Id < 6));
+            pFrames3.AddRange(context.Pictograms.Where(p => p.Id >= 6 && p.Id < 10));
+            Choice _choice1 = new Choice(pFrames1);
+            Choice _choice2 = new Choice(pFrames2);
+            Choice _choice3 = new Choice(pFrames3);
+            context.Choices.Add(_choice1);
+            context.Choices.Add(_choice2);
+            context.Choices.Add(_choice3);
             context.SaveChanges();
-
-            Console.WriteLine("###########################################################");
-            foreach (PictoFrame p in await context.Choices.Where(ch => ch.Id == 15).FirstAsync())
-            {
-                Console.WriteLine(p.Title);
-            }
-            Console.WriteLine("###########################################################");
         }
     }
 }

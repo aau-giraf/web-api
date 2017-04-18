@@ -11,16 +11,18 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using GirafRest.Models.DTOs;
 using System;
+using GirafRest.Models.Many_to_Many_Relationships;
 
 namespace GirafRest.Controllers
 {
     [Route("[controller]")]
-    public class ChoiceController : GirafController
+    public class ChoiceController : Controller
     {
-        public ChoiceController(GirafDbContext context, UserManager<GirafUser> userManager,
-            IHostingEnvironment env, ILoggerFactory loggerFactory)
-                : base(context, userManager, env, loggerFactory.CreateLogger<ChoiceController>())
+        private readonly GirafController _giraf;
+
+        public ChoiceController(GirafDbContext context, UserManager<GirafUser> userManager, ILoggerFactory loggerFactory)
         {
+            _giraf = new GirafController(context, userManager, loggerFactory.CreateLogger<PictogramController>());
         }
 
         /// <summary>
@@ -35,18 +37,19 @@ namespace GirafRest.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> ReadChoice(long id)
         {
-            _logger.LogInformation($"Fetching choice which match the ID");
-            Choice _choice = await _context.Choices.Where(ch => ch.Id == id).Include(ch => ch.Options).FirstAsync();
-            if (_choice == null) NotFound();
-            
-            _logger.LogInformation($"Cheching if current user have access to all choices");
-            foreach (PictoFrame p in _choice)
+            _giraf._logger.LogInformation($"Fetching choice which match the ID");
+            Choice _choice;
+            try
             {
-                if (p.AccessLevel != AccessLevel.PUBLIC && !(await CheckForResourceOwnership(p)))
-                    return Unauthorized();
+                _choice = await _giraf._context.Choices.Where(ch => ch.Id == id).Include(ch => ch.Options).ThenInclude(op => op.Resource).FirstAsync();
             }
+            catch (Exception)
+            {
+                return NotFound();
+            }
+            if (!(await checkAccess(_choice))) return Unauthorized();
 
-            return Ok(_choice);  
+            return Ok(new ChoiceDTO(_choice));  
         }
         
         /// <summary>
@@ -57,16 +60,24 @@ namespace GirafRest.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateChoice([FromBody] ChoiceDTO choice)
         {
-            Choice _choice = new Choice(choice.Options);
-
-            // need to relate the choice to him and his department?
-            
+            List<PictoFrame> pictoFrameList = new List<PictoFrame>();
+            try
+            {
+                foreach (var option in choice.Options)
+                    pictoFrameList.Add(await _giraf._context.PictoFrames.Where(p => p.Id == option.Id).FirstAsync());
+            }
+            catch (Exception)
+            {
+                return NotFound();
+            }
+            Choice _choice = new Choice(pictoFrameList);
+            if (!(await checkAccess(_choice))) return Unauthorized();
             _choice.LastEdit = DateTime.Now;
-            _logger.LogInformation($"Adding the new choice to the database");
-            var res = await _context.Choices.AddAsync(_choice);
-            await _context.SaveChangesAsync();
+            _giraf._logger.LogInformation($"Adding the new choice to the database");
+            var res = await _giraf._context.Choices.AddAsync(_choice);
+            await _giraf._context.SaveChangesAsync();
 
-            return Ok(new ChoiceDTO(res.Entity));
+            return Ok(new ChoiceDTO(_choice));
         }
 
         /// <summary>
@@ -80,13 +91,27 @@ namespace GirafRest.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateChoiceInfo([FromBody] ChoiceDTO choice)
         {
-            Choice _choice = await _context.Choices.Where(ch => ch.Id == choice.Id).FirstAsync();
-            if (_choice == null) NotFound();
-
-            _logger.LogInformation($"Updating the choice with the new information and adding it to the database");
+            Choice _choice;
+            List<PictoFrame> pictoFrameList = new List<PictoFrame>();
+            try
+            {
+                _choice = await _giraf._context.Choices.Where(ch => ch.Id == choice.Id).Include(ch => ch.Options).ThenInclude(op => op.Resource).FirstAsync();
+                foreach (var option in choice.Options)
+                {
+                    pictoFrameList.Add(await _giraf._context.PictoFrames.Where(p => p.Id == option.Id).FirstAsync());
+                }
+            }
+            catch (Exception)
+            {
+                return NotFound();
+            }
+            _choice.Clear();
+            _choice.AddAll(pictoFrameList);
+            if (!(await checkAccess(_choice))) return Unauthorized();
+            _giraf._logger.LogInformation($"Updating the choice with the new information and adding it to the database");
             _choice.Merge(choice);
-            _context.Choices.Update(_choice);
-            _context.SaveChanges();
+            _giraf._context.Choices.Update(_choice);
+            _giraf._context.SaveChanges();
 
             return Ok(new ChoiceDTO(_choice));
         }
@@ -99,20 +124,31 @@ namespace GirafRest.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteChoice(long id)
         {
-            var _choice = await _context.Choices.Where(ch => ch.Id == id).FirstAsync();
-            if (_choice == null) NotFound();
-
-            _logger.LogInformation($"Checking if the user is authorized");
-            foreach (PictoFrame p in _choice)
+            Choice _choice;
+            try
             {
-                if (!(await CheckForResourceOwnership(p))) Unauthorized();
+                _choice = await _giraf._context.Choices.Where(ch => ch.Id == id).Include(ch => ch.Options).ThenInclude(op => op.Resource).FirstAsync();
             }
-
-            _logger.LogInformation($"Removing selected choice from the database");
-            _context.Choices.Remove(_choice);
-            await _context.SaveChangesAsync();
+            catch (Exception)
+            {
+                return NotFound();
+            }
+            if(!(await checkAccess(_choice))) return Unauthorized();
+            _giraf._logger.LogInformation($"Removing selected choice from the database");
+            _giraf._context.Choices.Remove(_choice);
+            await _giraf._context.SaveChangesAsync();
 
             return Ok();
+        }
+
+        public async Task<bool> checkAccess(Choice choice)
+        {
+            _giraf._logger.LogInformation($"Checking if the user is authorized");
+            foreach (PictoFrame p in choice)
+            {
+                if (p.AccessLevel != AccessLevel.PUBLIC && !(await _giraf.CheckForResourceOwnership(p, HttpContext))) return false;
+            }
+            return true;
         }
     }
 }
