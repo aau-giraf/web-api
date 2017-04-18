@@ -23,8 +23,8 @@ namespace GirafRest.Setup
 		public async static Task Initialize(GirafDbContext context, UserManager<GirafUser> userManager)
 		{
 			context.Database.EnsureCreated();
-			
-			if (context.Users.Any())
+
+            if (context.Users.Any())
 				return;
 
 			System.Console.WriteLine("Adding some sample data to the database.");
@@ -41,8 +41,8 @@ namespace GirafRest.Setup
 				context.Roles.Add(role);
 			}
 			context.SaveChanges();
-
-			System.Console.WriteLine("Adding departments.");
+            
+            System.Console.WriteLine("Adding departments.");
 			var Departments = new Department[]
 			{
 				new Department { Name = "Tobias' stue for godt humør", Key = 1},
@@ -53,21 +53,24 @@ namespace GirafRest.Setup
 				context.Departments.Add(department);
 			}
 			context.SaveChanges();
-
-			System.Console.WriteLine("Adding users.");
+            
+            System.Console.WriteLine("Adding users.");
 			var users = new GirafUser[]
 			{
 				new GirafUser("Kurt", 1),
 				new GirafUser("Graatand", 1),
 				new GirafUser("Lee", 2)
 			};
-			foreach(var user in users)
+            // Here Pictograms.count == 0
+            Console.WriteLine("T1 " + context.Pictograms.Where(p => p.Id >= 0).Count() + " T");
+            foreach (var user in users)
 			{
-				await userManager.CreateAsync(user, "password");
-			}
-
-			System.Console.WriteLine("Adding pictograms.");
-			var Pictograms = new Pictogram[]
+                await userManager.CreateAsync(user, "password");
+            }
+            // Here Pictograms.count == 21
+            Console.WriteLine("T2 " + context.Pictograms.Where(p => p.Id >= 0).Count() + " T");
+            System.Console.WriteLine("Adding pictograms.");
+            var Pictograms = new Pictogram[]
 			{
 				new Pictogram("Hat", AccessLevel.PROTECTED),
 				new Pictogram("Kat", AccessLevel.PROTECTED),
@@ -84,7 +87,7 @@ namespace GirafRest.Setup
 				new Pictogram("Stil", AccessLevel.PROTECTED),
 				new Pictogram("Harald Blåtand", AccessLevel.PUBLIC)
 			};
-			foreach (var pictogram in Pictograms)
+            foreach (var pictogram in Pictograms)
 			{
 				pictogram.LastEdit = DateTime.Now;
 				context.Add(pictogram);
@@ -96,7 +99,7 @@ namespace GirafRest.Setup
 			context.SaveChanges();
 			usr = context.Users.Where(user => user.UserName == "Lee").First();
 			pictos = new List<Pictogram> { Pictograms[5], Pictograms[6], Pictograms[7], Pictograms[8] };
-			foreach (var pict in pictos) new UserResource(usr, pict);
+            foreach (var pict in pictos) new UserResource(usr, pict);
 			context.SaveChanges();
 			usr = context.Users.Where(user => user.UserName == "Graatand").First();
 			pictos = new List<Pictogram> { Pictograms[9], Pictograms[10], Pictograms[11], Pictograms[12], Pictograms[13] };
@@ -146,9 +149,9 @@ namespace GirafRest.Setup
             List<PictoFrame> pFrames1 = new List<PictoFrame>(); // Contains public choice
             List<PictoFrame> pFrames2 = new List<PictoFrame>(); // Contains choice which kurt can access
             List<PictoFrame> pFrames3 = new List<PictoFrame>(); // Contains choice which lee can access
-            pFrames1.AddRange(context.Pictograms.Where(p => p.AccessLevel == AccessLevel.PUBLIC));
-            pFrames2.AddRange(context.Pictograms.Where(p => p.Id < 6));
-            pFrames3.AddRange(context.Pictograms.Where(p => p.Id >= 6 && p.Id < 10));
+            pFrames1.Add(context.Pictograms.Where(p => p.Id == Pictograms[13].Id).First());
+            pFrames2.AddRange(context.Pictograms.Where(p => p.Id >= Pictograms[0].Id && p.Id <= Pictograms[4].Id));
+            pFrames3.AddRange(context.Pictograms.Where(p => p.Id >= Pictograms[5].Id && p.Id <= Pictograms[8].Id));
             Choice _choice1 = new Choice(pFrames1);
             Choice _choice2 = new Choice(pFrames2);
             Choice _choice3 = new Choice(pFrames3);
@@ -156,6 +159,8 @@ namespace GirafRest.Setup
             context.Choices.Add(_choice2);
             context.Choices.Add(_choice3);
             context.SaveChanges();
+
+            Console.WriteLine(_choice1.Id);
         }
     }
 }
