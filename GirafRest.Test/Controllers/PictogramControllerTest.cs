@@ -16,15 +16,20 @@ namespace GirafRest.Test
     {
         private readonly PictogramController pictogramController;
         private readonly List<string> logs;
+        private readonly Mock<IUserStore<GirafUser>> userStore;
+
+        private readonly GirafUser mockUser;
 
 
         public PictogramControllerTest()
         {
-            var mockUser = new GirafUser("Mock User", 0);
+            mockUser = new GirafUser("Mock User", 0);
+            var mockUser2 = new GirafUser("Owner of other privates", 1);
 
             var pictograms = testSessions();
             var relations = new List<UserResource> () {
-                new UserResource(mockUser, pictograms[4])
+                new UserResource(mockUser, pictograms[3]),
+                new UserResource(mockUser2, pictograms[4])
             };
 
             var mockSet = UnitTestExtensions.CreateMockDbSet<Pictogram>(pictograms);
@@ -34,15 +39,18 @@ namespace GirafRest.Test
             dbMock.Setup(c => c.Pictograms).Returns(mockSet.Object);
             dbMock.Setup(c => c.UserResources).Returns (mockRelationSet.Object);
 
-            var umMock = UnitTestExtensions.MockUserManager(mockUser);
+            userStore = new Mock<IUserStore<GirafUser>>();
+            var umMock = UnitTestExtensions.MockUserManager(userStore);
             var lfMock = UnitTestExtensions.CreateMockLoggerFactory();
 
             pictogramController = new PictogramController(dbMock.Object, umMock, lfMock.Object);
         }
 
         [Fact]
-        public void GetExistingPublic_ExpectOK()
+        public void GetExistingPublic_NoLogin_ExpectOK()
         {
+            userStore.MockLoggedOut();
+
             Pictogram p = testSessions().Where(pict => pict.AccessLevel == AccessLevel.PUBLIC).First();
             var res = pictogramController.ReadPictogram(p.Id);
             IActionResult aRes = res.Result;
@@ -52,6 +60,8 @@ namespace GirafRest.Test
 
         [Fact]
         public void GetExistingPrivate_NoLogin_ExpectUnauthorized() {
+            userStore.MockLoggedOut();
+
             Pictogram p = testSessions().Where(pict => pict.AccessLevel == AccessLevel.PRIVATE).First();
             var res = pictogramController.ReadPictogram(p.Id);
             IActionResult aRes = res.Result;
@@ -61,6 +71,8 @@ namespace GirafRest.Test
 
         [Fact]
         public void GetExistingProtected_NoLogin_ExpectUnauthorized() {
+            userStore.MockLoggedOut();
+
             Pictogram p = testSessions().Where(pict => pict.AccessLevel == AccessLevel.PROTECTED).First();
             var res = pictogramController.ReadPictogram(p.Id);
             IActionResult aRes = res.Result;
@@ -70,7 +82,12 @@ namespace GirafRest.Test
 
         [Fact]
         public void GetExistingPrivate_Login_ExpectOK() {
+            userStore.MockLoginAsUser(mockUser);
 
+            var res = pictogramController.ReadPictogram(3);
+            IActionResult aRes = res.Result;
+
+            Assert.IsType<OkObjectResult>(aRes);
         }
 
         [Fact]

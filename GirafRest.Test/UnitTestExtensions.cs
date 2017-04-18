@@ -10,7 +10,7 @@ using Moq;
 
 namespace GirafRest.Test
 {
-    public class UnitTestExtensions
+    public static class UnitTestExtensions
     {
         public static Mock<DbSet<T>> CreateMockDbSet<T>(List<T> dataList) 
             where T : class
@@ -31,13 +31,21 @@ namespace GirafRest.Test
             return mockSet;
         }
 
-        public static UserManager<GirafUser> MockUserManager(GirafUser mockUser) {
-            var iUS = new Mock<IUserStore<GirafUser>>();
-            var umMock = new UserManager<GirafUser> (iUS.Object, null, null, null, null, null, null, null, null);
-            iUS.Setup(x => x.CreateAsync(mockUser, new CancellationToken())).Returns(Task.FromResult(IdentityResult.Success));
-            iUS.Setup(x => x.FindByNameAsync(mockUser.UserName, new CancellationToken())).Returns(Task.FromResult(mockUser));
+        public static UserManager<GirafUser> MockUserManager(Mock<IUserStore<GirafUser>> userStore) {
+            var umMock = new UserManager<GirafUser> (userStore.Object, null, null, null, null, null, null, null, null);
+            //iUS.Setup(x => x.CreateAsync(mockUser, new CancellationToken())).Returns(Task.FromResult(IdentityResult.Success));
 
             return umMock;
+        }
+
+        public static void MockLoginAsUser(this Mock<IUserStore<GirafUser>> userStore, GirafUser user) {
+            userStore.Setup(x => x.FindByNameAsync(It.IsAny<string>(), new CancellationToken())).Returns(Task.FromResult(user));
+            userStore.Setup(x => x.FindByIdAsync(It.IsAny<string>(), new CancellationToken())).Returns(Task.FromResult(user));
+        }
+
+        public static void MockLoggedOut(this Mock<IUserStore<GirafUser>> userStore) {
+            userStore.Setup(x => x.FindByNameAsync(It.IsAny<string>(), new CancellationToken())).Returns(Task.FromResult<GirafUser>(null));
+            userStore.Setup(x => x.FindByIdAsync(It.IsAny<string>(), new CancellationToken())).Returns(Task.FromResult<GirafUser>(null));
         }
 
         public static Mock<ILoggerFactory> CreateMockLoggerFactory() {
