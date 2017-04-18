@@ -27,9 +27,9 @@ namespace GirafRest.Controllers
         /// <param name="context">A reference to the database-context.</param>
         /// <param name="loggerFactory">A reference to an implementation of ILoggerFactory. Used to create a debug-logger.</param>
         public DepartmentController(GirafDbContext context, UserManager<GirafUser> userManager, 
-            IHostingEnvironment env, ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory)
         {
-            _giraf = new GirafController(context, userManager, env, loggerFactory.CreateLogger<DepartmentController>());
+            _giraf = new GirafController(context, userManager, loggerFactory.CreateLogger<DepartmentController>());
         
         }
 

@@ -22,15 +22,9 @@ namespace GirafRest.Controllers
         private readonly GirafController _giraf;
 
         public PictogramController(GirafDbContext context, UserManager<GirafUser> userManager,
-            IHostingEnvironment env, ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory) 
         {
-            _giraf = new GirafController(context, userManager, env, loggerFactory.CreateLogger<PictogramController>());
-        }
-
-        public PictogramController(GirafDbContext context, UserManager<GirafUser> userManager,
-            IHostingEnvironment env, ILoggerFactory loggerFactory, GirafController _giraf)
-        {
-            this._giraf = _giraf;
+            _giraf = new GirafController(context, userManager, loggerFactory.CreateLogger<PictogramController>());
         }
 
         /// <summary>
@@ -63,24 +57,16 @@ namespace GirafRest.Controllers
         public async Task<IActionResult> ReadPictogram(int id)
         {
             //Fetch the pictogram and check that it actually exists
-            var _pictogram = await _giraf._context.Pictograms.Where(p => p.Id == id).FirstAsync();
+            var _pictogram = await _giraf._context.Pictograms
+                .Where(p => p.Id == id)
+                .FirstAsync();
             if(_pictogram == null) return NotFound();
 
-            //Attempt to read the image of the pictogram from a file
-            byte[] imageBytes;
-            try {
-                imageBytes = await _giraf.ReadImage(_pictogram.Id);
-            }
-            //Catch the exception that is thrown when the image-file is occupied by a writing process.
-            catch (IOException) {
-                return BadRequest("The server has not processed the image yet. Please wait a while and try again.");
-            }
-
             //Check if the pictogram is public and return it if so
-            if(_pictogram.AccessLevel == AccessLevel.PUBLIC) return Ok(new PictogramDTO(_pictogram, imageBytes));
+            if(_pictogram.AccessLevel == AccessLevel.PUBLIC) return Ok(new PictogramDTO(_pictogram, _pictogram.Image));
 
             var ownsResource = await _giraf.CheckForResourceOwnership(_pictogram, HttpContext);
-            if(ownsResource) return Ok(new PictogramDTO(_pictogram, imageBytes));
+            if(ownsResource) return Ok(new PictogramDTO(_pictogram, _pictogram.Image));
             else return Unauthorized();
         }
 
@@ -153,13 +139,6 @@ namespace GirafRest.Controllers
 
             if(! await _giraf.CheckForResourceOwnership(pict, HttpContext)) return Unauthorized();
 
-            string imageDir = _giraf.GetImageDirectory();
-            var imageFile = new FileInfo(Path.Combine(imageDir, $"{id}.png"));
-            if(imageFile.Exists) { 
-                imageFile.Delete();
-                _giraf._logger.LogInformation($"Deleted {imageFile.Name} from disc.");
-            }
-
             //Remove it and save changes
             _giraf._context.Pictograms.Remove(pict);
             await _giraf._context.SaveChangesAsync();
@@ -178,18 +157,18 @@ namespace GirafRest.Controllers
         public async Task<IActionResult> CreateImage(long id)
         {
             //Fetch the image and check that it exists
-            var pict = await _giraf._context.Pictograms.Where(p => p.Id == id).FirstAsync();
+            var pict = await _giraf._context
+                .Pictograms
+                .Where(p => p.Id == id)
+                .FirstAsync();
             if(pict == null) return NotFound();
+            else if(pict.Image != null) return BadRequest("The pictogram already has an image.");
 
-            string imageDir = _giraf.GetImageDirectory();
+            byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body);
+            pict.Image = image;
+            var pictoResult = await _giraf._context.SaveChangesAsync();
 
-            //Create image-file and copy the contents of the request-body into the new file
-            var imageFile = new FileInfo(Path.Combine(imageDir, $"{id}.png"));
-            if(imageFile.Exists)
-                return BadRequest("An image for the specified pictogram already exists.");
-            await WriteImage(HttpContext.Request.Body, imageFile);
-
-            return Ok(new PictogramDTO(pict));
+            return Ok(new PictogramDTO(pict, image));
         }
 
         /// <summary>
@@ -201,33 +180,32 @@ namespace GirafRest.Controllers
         [HttpPut("image/{id}")]
         [Authorize]
         public async Task<IActionResult> UpdatePictogramImage(long id) {
-            var picto = await _giraf._context.Pictograms.Where(p => p.Id == id).FirstAsync();
+            var picto = await _giraf._context
+                .Pictograms
+                .Where(p => p.Id == id)
+                .FirstAsync();
             if(picto == null) return NotFound();
+            else if(picto.Image == null) return BadRequest("The pictogram does not have a image, please POST instead.");
 
-            string imageDir = _giraf.GetImageDirectory();
+            byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body);
+            picto.Image = image;
+            await _giraf._context.SaveChangesAsync();
 
-            //Check if the file exists - if so delete it
-            var imageInfo = new FileInfo(Path.Combine(imageDir, $"{id}.png"));
-            if(imageInfo.Exists) imageInfo.Delete();
-            await WriteImage(HttpContext.Request.Body, imageInfo);
+            return Ok(new PictogramDTO(picto, image));
+        }
 
-            return Ok(new PictogramDTO(picto));
+        [HttpGet("image/{id}")]
+        public async Task<FileResult> ReadPictogramImage(long id) {
+            var picto = await _giraf._context
+                .Pictograms
+                .Where(p => p.Id == id)
+                .FirstAsync();
+            
+            return base.File(picto.Image, "image/png");
         }
         #endregion
 
         #region helpers
-        /// <summary>
-        /// Copies the content of the request's body into the specified file.
-        /// </summary>
-        /// <param name="bodyStream">A byte-stream from the body of the request.</param>
-        /// <param name="targetFile">The target file for the copy.</param>
-        /// <returns>Actually nothing - Task return-type in order to make the method async.</returns>
-        private async Task WriteImage(Stream bodyStream, FileInfo targetFile) {
-            using (var imageStream = System.IO.File.Create(targetFile.FullName)) {
-                await bodyStream.CopyToAsync(imageStream);
-                await bodyStream.FlushAsync();
-            }
-        }
 
         private async Task<List<PictogramDTO>> ReadAllPictograms() {
             //Fetch all public pictograms and cask to a list - using Union'ing two IEnumerables gives an exception.
@@ -267,7 +245,9 @@ namespace GirafRest.Controllers
         #endregion
         #region query filters
         public List<PictogramDTO> FilterByTitle(List<PictogramDTO> pictos, string titleQuery) { 
-            var matches = pictos.Where(p => p.Title.ToLower().Contains(titleQuery.ToLower()));
+            var matches = pictos
+                .Where(p => p.Title.ToLower().Contains(titleQuery.ToLower()));
+
             return matches.ToList();
         }
         #endregion

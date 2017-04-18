@@ -26,11 +26,6 @@ namespace GirafRest.Controllers
         /// </summary>
         public readonly UserManager<GirafUser> _userManager;
         /// <summary>
-        /// A reference to the hosting environment - somewhat like the Environment class in normal C# applications.
-        /// It is used to find image files-paths. Handled by Asp.net's dependency injection.
-        /// </summary>
-        public readonly IHostingEnvironment _env;
-        /// <summary>
         /// A data-logger used to write messages to the console. Handled by Asp.net's dependency injection.
         /// </summary>
         public readonly ILogger _logger;
@@ -43,11 +38,10 @@ namespace GirafRest.Controllers
         /// <param name="env">Reference to an implementation of the IHostingEnvironment interface.</param>
         /// <param name="loggerFactory">Reference to an implementation of a logger.</param>
         public GirafController(GirafDbContext context, UserManager<GirafUser> userManager,
-            IHostingEnvironment env, ILogger logger)
+            ILogger logger)
         {
             this._context = context;
             this._userManager = userManager;
-            this._env = env;
             this._logger = logger;
         }
         
@@ -78,39 +72,20 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Read the image of the <see cref="Pictogram"/> pictogram with the specified <paramref name="id"/> id from a file.
+        /// Copies the content of the request's body into the specified file.
         /// </summary>
-        /// <param name="id">Id of the pictogram to fetch image for.</param>
-        /// <returns> A byte-array with the bytes of the image.</returns>
-        public async Task<byte[]> ReadImage(long id)
-        {
-            string imageDir = GetImageDirectory();
-            //Check if the image-file exists.
-            FileInfo image = new FileInfo(Path.Combine(imageDir, $"{id}.png"));
-            if(!image.Exists) {
-                return null;
+        /// <param name="bodyStream">A byte-stream from the body of the request.</param>
+        /// <param name="targetFile">The target file for the copy.</param>
+        /// <returns>Actually nothing - Task return-type in order to make the method async.</returns>
+        public async Task<byte[]> ReadRequestImage(Stream bodyStream) {
+            byte[] image;
+            using (var imageStream = new MemoryStream()) {
+                await bodyStream.CopyToAsync(imageStream);
+                await bodyStream.FlushAsync();
+                image = imageStream.ToArray();
             }
 
-            //Read the image from file into a byte array
-            byte[] imageBytes = new byte[image.Length];
-            var fileReader = new FileStream(image.FullName, FileMode.Open);
-            await fileReader.ReadAsync(imageBytes, 0, (int) image.Length, new CancellationToken());
-
-            return imageBytes;
-        }
-
-        /// <summary>
-        /// Get the path to the image directory, also checks if the directory for images exists and creates it if not.
-        /// </summary>
-        public string GetImageDirectory() {
-            //Check that the image directory exists - create it if not.
-            var imageDir = Path.Combine(_env.ContentRootPath, "images");
-            if(!Directory.Exists(imageDir)){
-                Directory.CreateDirectory(imageDir);
-                _logger.LogInformation("Image directory created.");
-            }
-
-            return imageDir;
+            return image;
         }
 
         /// <summary>

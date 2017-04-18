@@ -16,6 +16,8 @@ namespace GirafRest.Models
         public Week WeekSchedule { get; set; }
         
         public virtual ICollection<UserResource> Resources { get; set; }
+
+        public byte[] UserIcon {get; set;}
     
         public GirafUser (string userName, long departmentId) : base(userName)
         {

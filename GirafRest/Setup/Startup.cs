@@ -54,23 +54,18 @@ namespace GirafRest.Setup
                     break;
             }
 
-
+            //Add Identity for user management.
             services.AddIdentity<GirafUser, IdentityRole>(options => {
                 options.RemovePasswordRequirements();
+                options.StopRedirectOnUnauthorized();
             })
                 .AddEntityFrameworkStores<GirafDbContext>()
                 .AddDefaultTokenProviders();
-
-            //Really ugly way to avoid redirecting.
-            services.Configure<IdentityOptions>(options =>
-            {
-                options.StopRedirectOnUnauthorized();
-            });
+                
+            // Add email sender for account recorvery.
+            services.AddTransient<IEmailSender, AuthMessageSender>();
 
             services.AddMvc();
-
-            // Add application services.
-            services.AddTransient<IEmailSender, AuthMessageSender>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
