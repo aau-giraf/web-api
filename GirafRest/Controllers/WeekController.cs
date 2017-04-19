@@ -34,7 +34,7 @@ namespace GirafRest.Controllers
             {
                 userWeeks.Add(new WeekDTO(week));
             }
-            //System.Console.WriteLine(userWeeks[1].Days.Count());
+            //System.Console.WriteLine(userWeeks[1].Dayzs.Count());
             return Ok(userWeeks);	
         }
 
