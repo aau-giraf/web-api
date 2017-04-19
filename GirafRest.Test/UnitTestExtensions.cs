@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 using GirafRest.Test.Mocks;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 
 namespace GirafRest.Test
 {
@@ -141,6 +143,11 @@ namespace GirafRest.Test
             mockSet.As<IQueryable<T>>().Setup(m => m.Expression).Returns(data.Expression);
             mockSet.As<IQueryable<T>>().Setup(m => m.ElementType).Returns (data.ElementType);
             mockSet.As<IQueryable<T>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator());
+
+
+            mockSet
+                .Setup(dbs => dbs.AddAsync(It.IsAny<T>(), It.IsAny<CancellationToken>()))
+                .Returns((T t) => Task.FromResult<EntityEntry<T>>(new MockEntityEntry<T>(t)));
 
             return mockSet;
         }
