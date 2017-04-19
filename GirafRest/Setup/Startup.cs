@@ -9,6 +9,7 @@ using GirafRest.Models;
 using GirafRest.Services;
 using GirafRest.Extensions;
 using Microsoft.AspNetCore.Identity;
+using GirafRest.Controllers;
 
 namespace GirafRest.Setup
 {
@@ -58,6 +59,8 @@ namespace GirafRest.Setup
                 
             // Add email sender for account recorvery.
             services.AddTransient<IEmailSender, AuthMessageSender>();
+            
+            services.AddTransient<IGirafService, GirafController>();
 
             services.AddMvc();
         }

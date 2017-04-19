@@ -12,17 +12,19 @@ using System.Collections.Generic;
 using GirafRest.Models.DTOs;
 using System;
 using GirafRest.Models.Many_to_Many_Relationships;
+using GirafRest.Services;
 
 namespace GirafRest.Controllers
 {
     [Route("[controller]")]
     public class ChoiceController : Controller
     {
-        private readonly GirafController _giraf;
+        private readonly IGirafService _giraf;
 
-        public ChoiceController(GirafDbContext context, UserManager<GirafUser> userManager, ILoggerFactory loggerFactory)
+        public ChoiceController(IGirafService girafService, LoggerFactory lFactory)
         {
-            _giraf = new GirafController(context, userManager, loggerFactory.CreateLogger<PictogramController>());
+            _giraf = girafService;
+            _giraf._logger = lFactory.CreateLogger("Choice");
         }
 
         /// <summary>
@@ -146,7 +148,7 @@ namespace GirafRest.Controllers
             _giraf._logger.LogInformation($"Checking if the user is authorized");
             foreach (PictoFrame p in choice)
             {
-                if (p.AccessLevel != AccessLevel.PUBLIC && !(await _giraf.CheckForResourceOwnership(p, HttpContext))) return false;
+                if (p.AccessLevel != AccessLevel.PUBLIC && !(await _giraf.CheckResourceOwnership(p, HttpContext))) return false;
             }
             return true;
         }

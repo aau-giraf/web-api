@@ -13,18 +13,19 @@ using GirafRest.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
+using GirafRest.Services;
 
 namespace GirafRest.Controllers
 {
     [Route("[controller]")]
     public class PictogramController : Controller
     {
-        private readonly GirafController _giraf;
+        private readonly IGirafService _giraf;
 
-        public PictogramController(GirafDbContext context, UserManager<GirafUser> userManager,
-            ILoggerFactory loggerFactory) 
+        public PictogramController(IGirafService girafController, ILoggerFactory lFactory) 
         {
-            _giraf = new GirafController(context, userManager, loggerFactory.CreateLogger<PictogramController>());
+            _giraf = girafController;
+            _giraf._logger = lFactory.CreateLogger("Pictogram");
         }
 
         /// <summary>
@@ -70,7 +71,7 @@ namespace GirafRest.Controllers
                 //Check if the pictogram is public and return it if so
                 if (_pictogram.AccessLevel == AccessLevel.PUBLIC) return Ok(new PictogramDTO(_pictogram, _pictogram.Image));
 
-                var ownsResource = await _giraf.CheckForResourceOwnership(_pictogram, HttpContext);
+                var ownsResource = await _giraf.CheckResourceOwnership(_pictogram, HttpContext);
                 if (ownsResource) return Ok(new PictogramDTO(_pictogram, _pictogram.Image));
                 else return Unauthorized();
             } catch (Exception e)
@@ -147,7 +148,7 @@ namespace GirafRest.Controllers
             var pict = await _giraf._context.Pictograms.Where(pic => pic.Id == id).FirstAsync();
             if(pict == null) return NotFound();
 
-            if(! await _giraf.CheckForResourceOwnership(pict, HttpContext)) return Unauthorized();
+            if(! await _giraf.CheckResourceOwnership(pict, HttpContext)) return Unauthorized();
 
             //Remove it and save changes
             _giraf._context.Pictograms.Remove(pict);

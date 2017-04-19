@@ -10,18 +10,19 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using GirafRest.Services;
 
 namespace GirafRest.Controllers
 {
     [Route("[controller]")]
     public class WeekController : Controller
     {
-        private readonly GirafController _giraf;
+        private readonly IGirafService _giraf;
 
-        public WeekController(GirafDbContext context, UserManager<GirafUser> userManager,	
-            ILoggerFactory loggerFactory)
+        public WeekController(IGirafService giraf, ILoggerFactory loggerFactory)
         {
-            _giraf = new GirafController(context, userManager, loggerFactory.CreateLogger<PictogramController>());
+            _giraf = giraf;
+            _giraf._logger = loggerFactory.CreateLogger("Week");
         }		
         [HttpGet]	
         [Authorize]

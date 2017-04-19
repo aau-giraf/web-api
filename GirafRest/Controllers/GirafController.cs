@@ -12,23 +12,24 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.IO;
 using System.Threading;
+using GirafRest.Services;
 
 namespace GirafRest.Controllers
 {
-    public class GirafController
+    public class GirafController : IGirafService
     {
         /// <summary>
         /// A reference to the database context - used to access the database and query for data. Handled by Asp.net's dependency injection.
         /// </summary>
-        public readonly GirafDbContext _context;
+        public GirafDbContext _context { get;  }
         /// <summary>
         /// Asp.net's user manager. Can be used to fetch user data from the request's cookie. Handled by Asp.net's dependency injection.
         /// </summary>
-        public readonly UserManager<GirafUser> _userManager;
+        public UserManager<GirafUser> _userManager { get;  }
         /// <summary>
         /// A data-logger used to write messages to the console. Handled by Asp.net's dependency injection.
         /// </summary>
-        public readonly ILogger _logger;
+        public ILogger _logger { get; set; }
 
         /// <summary>
         /// A constructor for the PictogramController. This is automatically called by Asp.net when receiving the first request for a pictogram.
@@ -37,12 +38,10 @@ namespace GirafRest.Controllers
         /// <param name="userManager">Reference to Asp.net's user-manager.</param>
         /// <param name="env">Reference to an implementation of the IHostingEnvironment interface.</param>
         /// <param name="loggerFactory">Reference to an implementation of a logger.</param>
-        public GirafController(GirafDbContext context, UserManager<GirafUser> userManager,
-            ILogger logger)
+        public GirafController(GirafDbContext context, UserManager<GirafUser> userManager)
         {
             this._context = context;
             this._userManager = userManager;
-            this._logger = logger;
         }
         
         /// <summary>
@@ -95,7 +94,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="pictogram">The pictogram to check the ownership for.</param>
         /// <returns>True if the user is authorized to see the resource and false if not.</returns>
-        public async Task<bool> CheckForResourceOwnership(Frame pictogram, HttpContext httpContext) {
+        public async Task<bool> CheckResourceOwnership(Frame pictogram, HttpContext httpContext) {
             //The pictogram was not public, check if the user owns it.
             var usr = await LoadUserAsync(httpContext.User);
             if(usr == null) return false;

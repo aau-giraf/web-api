@@ -17,16 +17,16 @@ namespace GirafRest.Controllers
     {
         private readonly SignInManager<GirafUser> _signInManager;
         private readonly IEmailSender _emailSender;
-        private readonly GirafController _giraf;
+        private readonly IGirafService _giraf;
 
         public ManageController(
-          GirafDbContext context,
-          UserManager<GirafUser> userManager,
+            IGirafService giraf,
           SignInManager<GirafUser> signInManager,
           IEmailSender emailSender,
           ILoggerFactory loggerFactory)
         {
-            _giraf = new GirafController(context, userManager, loggerFactory.CreateLogger<ManageController>());
+            _giraf = giraf;
+            _giraf._logger = loggerFactory.CreateLogger("Manage");
             _signInManager = signInManager;
             _emailSender = emailSender;
         }

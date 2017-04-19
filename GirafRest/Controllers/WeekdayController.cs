@@ -12,17 +12,18 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
+using GirafRest.Services;
 
 namespace GirafRest.Controllers
 {
     [Route("[controller]")]
     public class WeekdayController : Controller
     {
-        private readonly GirafController _giraf;
-        public WeekdayController(GirafDbContext context, UserManager<GirafUser> userManager,
-            ILoggerFactory loggerFactory)
+        private readonly IGirafService _giraf;
+        public WeekdayController(IGirafService giraf, ILoggerFactory loggerFactory)
         {
-            _giraf = new GirafController(context, userManager, loggerFactory.CreateLogger<WeekdayController>());
+            _giraf = giraf;
+            _giraf._logger = loggerFactory.CreateLogger("Weekday");
         }
 
         /*[HttpGet]
