@@ -27,7 +27,7 @@ namespace GirafRest.Setup
             if (context.Users.Any())
 				return;
 
-			/*System.Console.WriteLine("Adding some sample data to the database.");
+			System.Console.WriteLine("Adding some sample data to the database.");
 			System.Console.WriteLine("Adding roles.");
 
 			var Roles = new IdentityRole[]
@@ -68,11 +68,11 @@ namespace GirafRest.Setup
                 await userManager.CreateAsync(user, "password");
             }
             // Here Pictograms.count == 21
-            Console.WriteLine("T2 " + context.Pictograms.Where(p => p.Id >= 0).Count() + " T");*/
+            Console.WriteLine("T2 " + context.Pictograms.Where(p => p.Id >= 0).Count() + " T");
             System.Console.WriteLine("Adding pictograms.");
             var Pictograms = new Pictogram[]
 			{
-				new Pictogram("Hat", AccessLevel.PROTECTED)/*,
+				new Pictogram("Hat", AccessLevel.PROTECTED),
 				new Pictogram("Kat", AccessLevel.PROTECTED),
 				new Pictogram("Nat", AccessLevel.PROTECTED),
 				new Pictogram("Slat", AccessLevel.PROTECTED),
@@ -85,14 +85,14 @@ namespace GirafRest.Setup
 				new Pictogram("Smil", AccessLevel.PROTECTED),
 				new Pictogram("Fil", AccessLevel.PROTECTED),
 				new Pictogram("Stil", AccessLevel.PROTECTED),
-				new Pictogram("Harald Blåtand", AccessLevel.PUBLIC)*/
+				new Pictogram("Harald Blåtand", AccessLevel.PUBLIC)
 			};
             foreach (var pictogram in Pictograms)
 			{
 				pictogram.LastEdit = DateTime.Now;
 				context.Add(pictogram);
 			}
-			context.SaveChanges();/*
+			context.SaveChanges();
 			System.Console.WriteLine("Adding pictograms to users.");
 			var usr = context.Users.Where(user => user.UserName == "Kurt").First();
 			var pictos = new List<Pictogram> { Pictograms[0], Pictograms[1], Pictograms[2], Pictograms[3], Pictograms[4] };
@@ -161,7 +161,7 @@ namespace GirafRest.Setup
             context.Choices.Add(_choice3);
             context.SaveChanges();
 
-            Console.WriteLine(_choice1.Id);*/
+            Console.WriteLine(_choice1.Id);
         }
     }
 }
