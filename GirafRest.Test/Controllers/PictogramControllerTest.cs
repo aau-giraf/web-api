@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 using System.Threading;
 using GirafRest.Controllers;
 using System;
+using Xunit.Abstractions;
+using GirafRest.Models.DTOs;
+using GirafRest.Test.Mocks;
 
 namespace GirafRest.Test
 {
@@ -17,18 +20,20 @@ namespace GirafRest.Test
     {
         private readonly PictogramController pictogramController;
         private readonly List<string> logs;
-        private readonly FakeUserManager userManager;
+        private readonly MockUserManager userManager;
 
         private readonly GirafUser mockUser;
+        private readonly ITestOutputHelper testLogger;
 
-        public PictogramControllerTest()
+        public PictogramControllerTest(ITestOutputHelper output)
         {
+            testLogger = output;
             var dbMock = UnitTestExtensions.CreateMockDbContext();
             var userStore = new Mock<IUserStore<GirafUser>>();
             userManager = UnitTestExtensions.MockUserManager(userStore);
             var lfMock = UnitTestExtensions.CreateMockLoggerFactory();
 
-            pictogramController = new PictogramController(dbMock.Object, userManager, lfMock.Object);
+            pictogramController = new PictogramController(new MockGirafService(dbMock.Object, userManager), lfMock.Object);
         }
 
         [Fact]
@@ -47,9 +52,10 @@ namespace GirafRest.Test
         public void GetExistingPrivate_NoLogin_ExpectUnauthorized() {
             userManager.MockLogout();
 
-            Pictogram p = UnitTestExtensions.MockPictograms.Where(pict => pict.AccessLevel == AccessLevel.PRIVATE).First();
-            var res = pictogramController.ReadPictogram(p.Id);
+            var res = pictogramController.ReadPictogram(3);
             IActionResult aRes = res.Result;
+
+            //testLogger.WriteLine(((aRes as OkObjectResult).Value as PictogramDTO).Title);
 
             Assert.IsType<UnauthorizedResult>(aRes);
         }
@@ -61,6 +67,9 @@ namespace GirafRest.Test
                 
                 var res = pictogramController.ReadPictogram(5);
                 IActionResult aRes = res.Result;
+
+                
+                Console.WriteLine((aRes as OkObjectResult).Value);
 
                 Assert.IsType<UnauthorizedResult>(aRes);
             }
@@ -80,7 +89,7 @@ namespace GirafRest.Test
                 Assert.IsType<OkObjectResult>(aRes);
             }
             catch (Exception e) {
-                Assert.True(false, $"The method threw an exception: {e.Message}");
+                Assert.True(false, $"The method threw an exception: {e.Message}, {e.Source}");
             }
         }
 
@@ -96,7 +105,7 @@ namespace GirafRest.Test
             }
             catch (Exception e)
             {
-                Assert.True(false);
+                Assert.True(false, $"The method threw an exception: {e.Message}");
             }
         }
 
@@ -104,18 +113,32 @@ namespace GirafRest.Test
         public void GetExistingProtectedInDepartment_Login_ExpectUnauthorized() {
             try
             {
+                userManager.MockLoginAsUser(UnitTestExtensions.MockUsers[0]);
+                var tRes = pictogramController.ReadPictogram(6);
+                var res = tRes.Result;
 
+                Assert.IsType<OkObjectResult>(res);
             }
             catch (Exception e)
             {
-
-                throw;
+                Assert.True(false, $"The method threw an exception: {e.Message}");
             }
         }
 
         [Fact]
         public void GetExistingPrivateAnotherUser_Login_ExpectUnauthorized() {
+            try
+            {
+                userManager.MockLoginAsUser(UnitTestExtensions.MockUsers[0]);
+                var tRes = pictogramController.ReadPictogram(4);
+                var res = tRes.Result;
 
+                Assert.IsType<OkObjectResult>(res);
+            }
+            catch (Exception e)
+            {
+                Assert.True(false, $"The method threw an exception: {e.Message}");
+            }
         }
 
         [Fact]

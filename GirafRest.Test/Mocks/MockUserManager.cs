@@ -8,13 +8,13 @@ using GirafRest.Models;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace GirafRest.Test
+namespace GirafRest.Test.Mocks
 {
-    public class FakeUserManager : UserManager<GirafUser>
+    public class MockUserManager : UserManager<GirafUser>
     {
         GirafUser currentUser;
 
-        public FakeUserManager(IUserStore<GirafUser> store)
+        public MockUserManager(IUserStore<GirafUser> store)
             : base(store, null, null, null, null, null, null, null, null)
         {
         }

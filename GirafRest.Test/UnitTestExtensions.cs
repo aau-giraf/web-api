@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
+using GirafRest.Test.Mocks;
 
 namespace GirafRest.Test
 {
@@ -58,7 +59,7 @@ namespace GirafRest.Test
                             Name = "Mock Department",
                             Members = new List<GirafUser>()
                             {
-                                mockUsers[0]
+                                MockUsers[0]
                             }
                         },
                         new Department()
@@ -66,7 +67,7 @@ namespace GirafRest.Test
                             Name = "Mock Department2",
                             Members = new List<GirafUser>()
                             {
-                                mockUsers[1]
+                                MockUsers[1]
                             }
                         }
                     };
@@ -81,8 +82,8 @@ namespace GirafRest.Test
             {
                 if(mockUserResources == null)
                     mockUserResources = new List<UserResource>() {
-                        new UserResource(mockUsers[0], MockPictograms[3]),
-                        new UserResource(mockUsers[1], MockPictograms[4])
+                        new UserResource(MockUsers[0], MockPictograms[3]),
+                        new UserResource(MockUsers[1], MockPictograms[4])
                     };
 
                 return mockUserResources;
@@ -105,9 +106,8 @@ namespace GirafRest.Test
         }
         #endregion
 
-        public static Mock<FakeDbContext> CreateMockDbContext()
+        public static Mock<MockDbContext> CreateMockDbContext()
         {
-            var mockUsers = MockUsers;
             var mockDeps = MockDepartments;
             var pictograms = MockPictograms;
             var relations = MockUserResources;
@@ -118,7 +118,7 @@ namespace GirafRest.Test
             var mockDepartments = CreateMockDbSet<Department>(mockDeps);
             var mockDepRes = CreateMockDbSet<DepartmentResource>(depRelations);
 
-            var dbMock = new Mock<FakeDbContext>();
+            var dbMock = new Mock<MockDbContext>();
             dbMock.Setup(c => c.Pictograms).Returns(mockSet.Object);
             dbMock.Setup(c => c.UserResources).Returns(mockRelationSet.Object);
             dbMock.Setup(c => c.Departments).Returns(mockDepartments.Object);
@@ -145,8 +145,8 @@ namespace GirafRest.Test
             return mockSet;
         }
 
-        public static FakeUserManager MockUserManager(Mock<IUserStore<GirafUser>> userStore) {
-            var umMock = new FakeUserManager (userStore.Object);
+        public static MockUserManager MockUserManager(Mock<IUserStore<GirafUser>> userStore) {
+            var umMock = new MockUserManager (userStore.Object);
             return umMock;
         }
 

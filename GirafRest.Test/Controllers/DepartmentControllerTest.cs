@@ -17,31 +17,26 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Hosting;
 using GirafRest.Controllers;
 using Microsoft.AspNetCore.Http;
+using GirafRest.Test.Mocks;
 
 namespace GirafRest.Test.Controllers
 {
     public class DepartmentControllerTest
     {
         private readonly DepartmentController departmentController;
-        private readonly Mock<GirafDbContext> dbMock;
-        private readonly Mock<IUserStore<GirafUser>> userStore;
-        private readonly Mock<ILoggerFactory> lfMock;
-        private readonly List<string> logs;
         public testDepartments testDeps;
         
         public DepartmentControllerTest()
         {
-            userStore = new Mock<IUserStore<GirafUser>>();
+            var userStore = new Mock<IUserStore<GirafUser>>();
             var umMock = UnitTestExtensions.MockUserManager(userStore);
             var lfMock = UnitTestExtensions.CreateMockLoggerFactory();
             
             setupDepartments (umMock);
 
-            dbMock = new Mock<GirafDbContext> ();
-            var depMockDbset = UnitTestExtensions.CreateMockDbSet<Department>(testDeps.departments);
-            dbMock.Setup(x => x.Departments).Returns(depMockDbset.Object);
+            var dbMock = UnitTestExtensions.CreateMockDbContext();
 
-            departmentController = new DepartmentController(dbMock.Object, umMock, lfMock.Object);
+            departmentController = new DepartmentController(new MockGirafService(dbMock.Object, umMock), lfMock.Object);
             var hContext = new DefaultHttpContext();
             departmentController.ControllerContext = new ControllerContext();
             departmentController.ControllerContext.HttpContext = hContext;
