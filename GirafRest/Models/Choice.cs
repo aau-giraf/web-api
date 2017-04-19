@@ -7,7 +7,7 @@ namespace GirafRest.Models {
     public class Choice : Frame { 
         public ICollection<ChoiceResource> Options { get; private set; }
 
-        protected Choice () {}
+        public Choice () {}
         public Choice(List<PictoFrame> options)
         {
             Options = new List<ChoiceResource>();

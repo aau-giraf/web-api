@@ -77,6 +77,21 @@ namespace GirafRest.Test
                 return mockDepartments;
             }
         }
+        private static List<Choice> mockChoices;
+        public static List<Choice> MockChoices
+        {
+            get
+            {
+                if (mockChoices == null)
+                    mockChoices = new List<Choice>()
+                    {
+                        new Choice(MockPictograms.Where(p => p.AccessLevel == AccessLevel.PUBLIC).Cast<PictoFrame>().ToList()),
+                        new Choice(MockPictograms.Where(p => p.AccessLevel == AccessLevel.PRIVATE).Cast<PictoFrame>().ToList()),
+                        new Choice(MockPictograms.Where(p => p.AccessLevel == AccessLevel.PROTECTED).Cast<PictoFrame>().ToList())
+                    };
+                return mockChoices;
+            }
+        }
         private static List<UserResource> mockUserResources;
         public static List<UserResource> MockUserResources
         {
@@ -106,6 +121,7 @@ namespace GirafRest.Test
                 return mockDepartmentResources;
             }
         }
+
         #endregion
 
         public static Mock<MockDbContext> CreateMockDbContext()
@@ -119,12 +135,14 @@ namespace GirafRest.Test
             var mockRelationSet = CreateMockDbSet<UserResource>(relations);
             var mockDepartments = CreateMockDbSet<Department>(mockDeps);
             var mockDepRes = CreateMockDbSet<DepartmentResource>(depRelations);
+            var mockChoices = CreateMockDbSet<Choice>(MockChoices);
 
             var dbMock = new Mock<MockDbContext>();
             dbMock.Setup(c => c.Pictograms).Returns(mockSet.Object);
             dbMock.Setup(c => c.UserResources).Returns(mockRelationSet.Object);
             dbMock.Setup(c => c.Departments).Returns(mockDepartments.Object);
             dbMock.Setup(c => c.DepartmentResources).Returns(mockDepRes.Object);
+            dbMock.Setup(c => c.Choices).Returns(mockChoices.Object);
 
             return dbMock;
         }
