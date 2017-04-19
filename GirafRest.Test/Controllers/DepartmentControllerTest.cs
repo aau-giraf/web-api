@@ -82,18 +82,7 @@ namespace GirafRest.Test.Controllers
                 userManager.CreateAsync(u, "mocking");
             }
 
-            /* setup department DTO */
-            var departmentsDTOs = new List<DepartmentDTO> {
-                new DepartmentDTO(1, "dep1", new List<string> (users.Select(m => m.UserName)), 
-                new List<long> (pictograms.Select(dr => dr.Id)))
-            };
-
-            /* setup Department */
-            var departments = new List<Department> {
-                new Department(departmentsDTOs[0])
-            };
-
-            testDeps = new testDepartments(pictograms, users, departments);
+            //testDeps = new testDepartments(pictograms, users, departments);
         }
         
         [Fact]
