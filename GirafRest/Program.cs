@@ -59,7 +59,7 @@ namespace GirafRest
         private static IWebHost ConfigureHost() {
             var host = new WebHostBuilder()
                 .UseKestrel()
-                .UseUrls($"http://localhost:{port}")
+                .UseUrls($"http://+:{port}")
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()
