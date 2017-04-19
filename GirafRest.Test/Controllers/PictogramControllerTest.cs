@@ -71,23 +71,33 @@ namespace GirafRest.Test
 
         [Fact]
         public void GetExistingProtected_NoLogin_ExpectUnauthorized() {
-            userStore.MockLoggedOut();
+            try {
+                userStore.MockLoggedOut();
 
-            Pictogram p = testSessions().Where(pict => pict.AccessLevel == AccessLevel.PROTECTED).First();
-            var res = pictogramController.ReadPictogram(p.Id);
-            IActionResult aRes = res.Result;
+                Pictogram p = testSessions().Where(pict => pict.AccessLevel == AccessLevel.PROTECTED).First();
+                var res = pictogramController.ReadPictogram(p.Id);
+                IActionResult aRes = res.Result;
 
-            Assert.IsType<UnauthorizedResult>(aRes);
+                Assert.IsType<UnauthorizedResult>(aRes);
+            }
+            catch {
+                Assert.True(false, "The method threw an exception.");
+            }
         }
 
         [Fact]
         public void GetExistingPrivate_Login_ExpectOK() {
-            userStore.MockLoginAsUser(mockUser);
+            try {
+                userStore.MockLoginAsUser(mockUser);
 
-            var res = pictogramController.ReadPictogram(3);
-            IActionResult aRes = res.Result;
+                var res = pictogramController.ReadPictogram(3);
+                IActionResult aRes = res.Result;
 
-            Assert.IsType<OkObjectResult>(aRes);
+                Assert.IsType<OkObjectResult>(aRes);
+            }
+            catch {
+                Assert.True(false, "The method threw an exception.");
+            }
         }
 
         [Fact]
