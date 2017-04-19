@@ -36,6 +36,8 @@ namespace GirafRest.Controllers
         public async Task<IActionResult> ReadPictograms()
         {
             var userPictograms = await ReadAllPictograms();
+            if (userPictograms == null)
+                return BadRequest("There is most likely no pictograms available on the server.");
 
             var titleQuery = HttpContext.Request.Query["title"];
             if(!String.IsNullOrEmpty(titleQuery)) userPictograms = FilterByTitle(userPictograms, titleQuery);
@@ -56,18 +58,26 @@ namespace GirafRest.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> ReadPictogram(long id)
         {
-            //Fetch the pictogram and check that it actually exists
-            var _pictogram = await _giraf._context.Pictograms
-                .Where(p => p.Id == id)
-                .FirstAsync();
-            if(_pictogram == null) return NotFound();
 
-            //Check if the pictogram is public and return it if so
-            if(_pictogram.AccessLevel == AccessLevel.PUBLIC) return Ok(new PictogramDTO(_pictogram, _pictogram.Image));
+            try
+            {
+                //Fetch the pictogram and check that it actually exists
+                var _pictogram = await _giraf._context.Pictograms
+                    .Where(p => p.Id == id)
+                    .FirstAsync();
+                if (_pictogram == null) return NotFound();
 
-            var ownsResource = await _giraf.CheckForResourceOwnership(_pictogram, HttpContext);
-            if(ownsResource) return Ok(new PictogramDTO(_pictogram, _pictogram.Image));
-            else return Unauthorized();
+                //Check if the pictogram is public and return it if so
+                if (_pictogram.AccessLevel == AccessLevel.PUBLIC) return Ok(new PictogramDTO(_pictogram, _pictogram.Image));
+
+                var ownsResource = await _giraf.CheckForResourceOwnership(_pictogram, HttpContext);
+                if (ownsResource) return Ok(new PictogramDTO(_pictogram, _pictogram.Image));
+                else return Unauthorized();
+            } catch (Exception e)
+            {
+                _giraf._logger.LogError("An exception occured in read", $"Message: {e.Message}", $"Source: {e.Source}");
+                return BadRequest("There is most likely no pictograms available on the server.");
+            }
         }
 
         /// <summary>
@@ -208,39 +218,47 @@ namespace GirafRest.Controllers
         #region helpers
 
         private async Task<List<PictogramDTO>> ReadAllPictograms() {
-            //Fetch all public pictograms and cask to a list - using Union'ing two IEnumerables gives an exception.
-            var _pictograms = await _giraf._context.Pictograms
-                .Where(p => p.AccessLevel == AccessLevel.PUBLIC)
-                .ToListAsync();
-            
-            //Find the user and add his pictograms to the result
-            var user = await _giraf.LoadUserAsync(HttpContext.User);
-            if(user != null)
+            try
             {
-                _giraf._logger.LogInformation($"Fetching user pictograms for user {user.UserName}");
-                var userPictograms = user.Resources
-                    .Select(ur => ur.Resource)
-                    .OfType<Pictogram>();
-                _pictograms = _pictograms
-                    .Union(userPictograms)
-                    .ToList();
-                //Also find his department and their pictograms
-                var dep = user.Department;
-                if(dep != null){
-                    _giraf._logger.LogInformation($"Fetching pictograms for department {dep.Name}");
-                    var depPictograms = dep.Resources
-                        .Select(dr => dr.Resource)
+                //Fetch all public pictograms and cask to a list - using Union'ing two IEnumerables gives an exception.
+                var _pictograms = await _giraf._context.Pictograms
+                    .Where(p => p.AccessLevel == AccessLevel.PUBLIC)
+                    .ToListAsync();
+
+                //Find the user and add his pictograms to the result
+                var user = await _giraf.LoadUserAsync(HttpContext.User);
+                if (user != null)
+                {
+                    _giraf._logger.LogInformation($"Fetching user pictograms for user {user.UserName}");
+                    var userPictograms = user.Resources
+                        .Select(ur => ur.Resource)
                         .OfType<Pictogram>();
-                _pictograms = _pictograms
-                    .Union (depPictograms)
-                    .ToList();
+                    _pictograms = _pictograms
+                        .Union(userPictograms)
+                        .ToList();
+                    //Also find his department and their pictograms
+                    var dep = user.Department;
+                    if (dep != null)
+                    {
+                        _giraf._logger.LogInformation($"Fetching pictograms for department {dep.Name}");
+                        var depPictograms = dep.Resources
+                            .Select(dr => dr.Resource)
+                            .OfType<Pictogram>();
+                        _pictograms = _pictograms
+                            .Union(depPictograms)
+                            .ToList();
+                    }
+                    else _giraf._logger.LogWarning($"{user.UserName} has no department.");
                 }
-                else _giraf._logger.LogWarning($"{user.UserName} has no department.");
+
+                //Return the list of pictograms as Pictogram DTOs
+                //- returning Pictograms directly causes an exception due to circular references
+                return _pictograms.Select(p => new PictogramDTO(p)).ToList();
+            } catch (Exception e)
+            {
+                _giraf._logger.LogError("An exception occurred when reading all pictograms.", $"Message: {e.Message}", $"Source: {e.Source}");
+                return null;
             }
-            
-            //Return the list of pictograms as Pictogram DTOs
-            //- returning Pictograms directly causes an exception due to circular references
-            return _pictograms.Select(p => new PictogramDTO(p)).ToList();
         }
         #endregion
         #region query filters

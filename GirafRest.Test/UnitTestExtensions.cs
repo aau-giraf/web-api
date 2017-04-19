@@ -31,21 +31,9 @@ namespace GirafRest.Test
             return mockSet;
         }
 
-        public static UserManager<GirafUser> MockUserManager(Mock<IUserStore<GirafUser>> userStore) {
-            var umMock = new UserManager<GirafUser> (userStore.Object, null, null, null, null, null, null, null, null);
-            //iUS.Setup(x => x.CreateAsync(mockUser, new CancellationToken())).Returns(Task.FromResult(IdentityResult.Success));
-
+        public static FakeUserManager MockUserManager(Mock<IUserStore<GirafUser>> userStore) {
+            var umMock = new FakeUserManager (userStore.Object);
             return umMock;
-        }
-
-        public static void MockLoginAsUser(this Mock<IUserStore<GirafUser>> userStore, GirafUser user) {
-            userStore.Setup(x => x.FindByNameAsync(It.IsAny<string>(), new CancellationToken())).Returns(Task.FromResult(user));
-            userStore.Setup(x => x.FindByIdAsync(It.IsAny<string>(), new CancellationToken())).Returns(Task.FromResult(user));
-        }
-
-        public static void MockLoggedOut(this Mock<IUserStore<GirafUser>> userStore) {
-            userStore.Setup(x => x.FindByNameAsync(It.IsAny<string>(), new CancellationToken())).Returns(Task.FromResult<GirafUser>(null));
-            userStore.Setup(x => x.FindByIdAsync(It.IsAny<string>(), new CancellationToken())).Returns(Task.FromResult<GirafUser>(null));
         }
 
         public static Mock<ILoggerFactory> CreateMockLoggerFactory() {

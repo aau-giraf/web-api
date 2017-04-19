@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -13,8 +9,6 @@ using GirafRest.Models;
 using GirafRest.Services;
 using GirafRest.Extensions;
 using Microsoft.AspNetCore.Identity;
-using Pomelo.EntityFrameworkCore.Extensions;
-using Pomelo.EntityFrameworkCore.MySql;
 
 namespace GirafRest.Setup
 {
@@ -91,7 +85,7 @@ namespace GirafRest.Setup
             });
 
             //Fill some sample data into the database
-            if(Program.DbOption == DbOption.SQLite) DBInitializer.Initialize(context, userManager);
+            //if(Program.DbOption == DbOption.SQLite) DBInitializer.Initialize(context, userManager);
         }
     }
 }

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Threading;
 using GirafRest.Controllers;
+using System;
 
 namespace GirafRest.Test
 {
@@ -16,7 +17,7 @@ namespace GirafRest.Test
     {
         private readonly PictogramController pictogramController;
         private readonly List<string> logs;
-        private readonly Mock<IUserStore<GirafUser>> userStore;
+        private readonly FakeUserManager userManager;
 
         private readonly GirafUser mockUser;
 
@@ -38,17 +39,37 @@ namespace GirafRest.Test
             dbMock.Setup(c => c.Pictograms).Returns(mockSet.Object);
             dbMock.Setup(c => c.UserResources).Returns (mockRelationSet.Object);
 
-            userStore = new Mock<IUserStore<GirafUser>>();
-            var umMock = UnitTestExtensions.MockUserManager(userStore);
+            var userStore = new Mock<IUserStore<GirafUser>>();
+            userManager = UnitTestExtensions.MockUserManager(userStore);
             var lfMock = UnitTestExtensions.CreateMockLoggerFactory();
 
-            pictogramController = new PictogramController(dbMock.Object, umMock, lfMock.Object);
+            pictogramController = new PictogramController(dbMock.Object, userManager, lfMock.Object);
+        }
+
+        [Fact]
+        public void Login_ExpectMockUser()
+        {
+            userManager.MockLogout();
+            var tUsr = userManager.GetUserAsync(new System.Security.Claims.ClaimsPrincipal());
+            var usr = tUsr.Result;
+
+            Assert.Same(null, usr);
+        }
+
+        [Fact]
+        public void Logout_ExpectNullUser()
+        {
+            userManager.MockLoginAsUser(mockUser);
+            var tUsr = userManager.GetUserAsync(new System.Security.Claims.ClaimsPrincipal());
+            var usr = tUsr.Result;
+
+            Assert.Same(mockUser, usr);
         }
 
         [Fact]
         public void GetExistingPublic_NoLogin_ExpectOK()
         {
-            userStore.MockLoggedOut();
+            userManager.MockLogout();
 
             Pictogram p = testSessions().Where(pict => pict.AccessLevel == AccessLevel.PUBLIC).First();
             var res = pictogramController.ReadPictogram(p.Id);
@@ -59,7 +80,7 @@ namespace GirafRest.Test
 
         [Fact]
         public void GetExistingPrivate_NoLogin_ExpectUnauthorized() {
-            userStore.MockLoggedOut();
+            userManager.MockLogout();
 
             Pictogram p = testSessions().Where(pict => pict.AccessLevel == AccessLevel.PRIVATE).First();
             var res = pictogramController.ReadPictogram(p.Id);
@@ -71,31 +92,30 @@ namespace GirafRest.Test
         [Fact]
         public void GetExistingProtected_NoLogin_ExpectUnauthorized() {
             try {
-                userStore.MockLoggedOut();
-
-                Pictogram p = testSessions().Where(pict => pict.AccessLevel == AccessLevel.PROTECTED).First();
-                var res = pictogramController.ReadPictogram(p.Id);
+                userManager.MockLogout();
+                
+                var res = pictogramController.ReadPictogram(5);
                 IActionResult aRes = res.Result;
 
                 Assert.IsType<UnauthorizedResult>(aRes);
             }
-            catch {
-                Assert.True(false, "The method threw an exception.");
+            catch (Exception e){
+                Assert.True(false, $"The method threw an exception: {e.Message}");
             }
         }
 
         [Fact]
         public void GetExistingPrivate_Login_ExpectOK() {
             try {
-                userStore.MockLoginAsUser(mockUser);
+                userManager.MockLoginAsUser(mockUser);
 
                 var res = pictogramController.ReadPictogram(3);
                 IActionResult aRes = res.Result;
 
                 Assert.IsType<OkObjectResult>(aRes);
             }
-            catch {
-                Assert.True(false, "The method threw an exception.");
+            catch (Exception e) {
+                Assert.True(false, $"The method threw an exception: {e.Message}");
             }
         }
 
@@ -116,7 +136,11 @@ namespace GirafRest.Test
 
         [Fact]
         public void GetNonexistingPictogram_Login_ExpectNotFound() {
+            userManager.MockLoginAsUser(mockUser);
 
+            var res = pictogramController.ReadPictogram(999);
+            var pRes = res.Result;
+            Assert.IsType<NotFoundObjectResult>(pRes);
         }
 
         [Fact]
