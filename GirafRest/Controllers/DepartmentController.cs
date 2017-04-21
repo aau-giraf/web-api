@@ -100,9 +100,10 @@ namespace GirafRest.Controllers
             try
             {
                 //Add the department to the database.
-                var result = await _giraf._context.Departments.AddAsync(new Department(dep));
-                System.Console.WriteLine("ORK SATME "+dep.Name);
-                //Add all members specified by either id or username in the DTO
+                Department result = new Department(dep);
+                await _giraf._context.Departments.AddAsync(result);
+
+//Add all members specified by either id or username in the DTO
                 foreach(var mem in dep.Members) {
                     var usr = await _giraf._context.Users
                         .Where(u => u.UserName == mem || u.Id == mem)
@@ -110,8 +111,8 @@ namespace GirafRest.Controllers
 
                     if(usr == null) continue;
 
-                    result.Entity.Members.Add(usr);
-                    usr.Department = result.Entity;
+                    result.Members.Add(usr);
+                    usr.Department = result;
                 }
                 
                 //Add all the resources with the given ids
@@ -121,12 +122,12 @@ namespace GirafRest.Controllers
                         .FirstAsync();
 
                     if(res == null) continue;
-                    var dr = new DepartmentResource(result.Entity, res);
+                    var dr = new DepartmentResource(result, res);
                     await _giraf._context.DepartmentResources.AddAsync(dr);
                 }
                 //Save the changes and return the entity
                 await _giraf._context.SaveChangesAsync();
-                return Ok(new DepartmentDTO(result.Entity));
+                return Ok(new DepartmentDTO(result));
             }
             catch (System.Exception e)
             {

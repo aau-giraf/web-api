@@ -17,5 +17,11 @@ namespace GirafRest.Models.DTOs
             this.Members = new List<string> (department.Members.Select(m => m.UserName));
             this.Pictograms = new List<long> (department.Resources.Select(dr => dr.ResourceKey));
         }
+
+        public DepartmentDTO ()
+        {
+            Members = new List<string>();
+            Pictograms = new List<long>();
+        }
     }
 }
