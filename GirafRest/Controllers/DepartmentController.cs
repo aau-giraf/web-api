@@ -228,7 +228,7 @@ namespace GirafRest.Controllers
             var resource = await _giraf._context.Frames.Where(f => f.Id == resId).FirstAsync();
             if(resource == null) return NotFound($"There is no resource with id {id}.");
 
-            var resourceOwned = await _giraf.CheckResourceOwnership(resource, HttpContext);
+            var resourceOwned = await _giraf.CheckPrivateOwnership(resource, HttpContext);
             if(!resourceOwned) return Unauthorized();
 
             //Check if the department already owns the resource
@@ -263,7 +263,7 @@ namespace GirafRest.Controllers
                 .FirstAsync();
             if(resource == null) return NotFound($"There is no resource with id {resourceId}.");
 
-            var resourceOwned = await _giraf.CheckResourceOwnership(resource, HttpContext);
+            var resourceOwned = await _giraf.CheckPrivateOwnership(resource, HttpContext);
             if(!resourceOwned) return Unauthorized();
 
             //Check if the department already owns the resource and remove if so.

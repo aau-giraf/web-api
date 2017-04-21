@@ -130,21 +130,18 @@ namespace GirafRest.Test
 
         public static Mock<MockDbContext> CreateMockDbContext()
         {
-            var mockUsers = MockUsers;
-            var pictograms = MockPictograms;
-            var relations = MockUserResources;
-            var depRelations = MockDepartmentResources;
-
-            var mockSet = CreateMockDbSet<Pictogram>(pictograms);
-            var mockRelationSet = CreateMockDbSet<UserResource>(relations);
-            var mockDepRes = CreateMockDbSet<DepartmentResource>(depRelations);
+            var mockSet = CreateMockDbSet<Pictogram>(MockPictograms);
+            var mockRelationSet = CreateMockDbSet<UserResource>(MockUserResources);
+            var mockDepRes = CreateMockDbSet<DepartmentResource>(MockDepartmentResources);
             var mockChoices = CreateMockDbSet<Choice>(MockChoices);
+            var mockDeps = CreateMockDbSet<Department>(MockDepartments);
 
             var dbMock = new Mock<MockDbContext>();
             dbMock.Setup(c => c.Pictograms).Returns(mockSet.Object);
             dbMock.Setup(c => c.UserResources).Returns(mockRelationSet.Object);
             dbMock.Setup(c => c.DepartmentResources).Returns(mockDepRes.Object);
             dbMock.Setup(c => c.Choices).Returns(mockChoices.Object);
+            dbMock.Setup(c => c.Departments).Returns(mockDeps.Object);
 
             return dbMock;
         }
@@ -164,11 +161,13 @@ namespace GirafRest.Test
             dbMock.Setup(c => c.Departments).Returns(mockDepartments.Object);
         }
 
-        public static Mock<DbSet<T>> CreateMockDbSet<T>(List<T> dataList) 
+        public static Mock<MockDbSet<T>> CreateMockDbSet<T>(List<T> dataList) 
             where T : class
         {
             IQueryable<T> data = dataList.AsQueryable();
-            var mockSet = new Mock<DbSet<T>>();
+            MockDbSet<T> dbSet = new MockDbSet<T>(dataList);
+
+            var mockSet = new Mock<MockDbSet<T>>();
             mockSet.As<IAsyncEnumerable<T>>()
                 .Setup(m => m.GetEnumerator())
                 .Returns(new TestDbAsyncEnumerator<T>(data.GetEnumerator()));
@@ -176,13 +175,11 @@ namespace GirafRest.Test
             mockSet.As<IQueryable<T>>()
                 .Setup(m => m.Provider)
                 .Returns(new TestDbAsyncQueryProvider<T>(data.Provider));
+
             mockSet.As<IQueryable<T>>().Setup(m => m.Expression).Returns(data.Expression);
-            mockSet.As<IQueryable<T>>().Setup(m => m.ElementType).Returns (data.ElementType);
+            mockSet.As<IQueryable<T>>().Setup(m => m.ElementType).Returns(data.ElementType);
             mockSet.As<IQueryable<T>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator());
-            /*mockSet
-                .Setup(dbs => dbs.AddAsync(It.IsAny<T>(), It.IsAny<CancellationToken>()))
-                .Returns((T t) => Task.FromResult<EntityEntry<T>>(new MockEntityEntry<T>(t)));
-*/
+
             return mockSet;
         }
 

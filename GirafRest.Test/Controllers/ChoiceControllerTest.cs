@@ -19,11 +19,11 @@ namespace GirafRest.Test
 
         public ChoiceControllerTest()
         {
-            var dbMock = UnitTestExtensions.CreateMockDbContext();
+            var dbMock = CreateMockDbContext();
 
             var userStore = new Mock<IUserStore<GirafUser>>();
-            userManager = UnitTestExtensions.MockUserManager(userStore);
-            var lfMock = UnitTestExtensions.CreateMockLoggerFactory();
+            userManager = MockUserManager(userStore);
+            var lfMock = CreateMockLoggerFactory();
 
             choiceController = new ChoiceController(new MockGirafService(dbMock.Object, userManager), lfMock.Object);
         }
@@ -33,7 +33,7 @@ namespace GirafRest.Test
         {
             userManager.MockLogout();
 
-            Choice c = UnitTestExtensions.MockChoices.Where(ch => ch.Options.All(cr => (cr.Resource as PictoFrame).AccessLevel == AccessLevel.PUBLIC)).First();
+            Choice c = MockChoices.Where(ch => ch.Options.All(cr => (cr.Resource as PictoFrame).AccessLevel == AccessLevel.PUBLIC)).First();
             var res = choiceController.ReadChoice(c.Id);
             IActionResult aRes = res.Result;
 

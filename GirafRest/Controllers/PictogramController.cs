@@ -65,15 +65,22 @@ namespace GirafRest.Controllers
                 //Fetch the pictogram and check that it actually exists
                 var _pictogram = await _giraf._context.Pictograms
                     .Where(p => p.Id == id)
-                    .FirstAsync();
+                    .FirstOrDefaultAsync();
                 if (_pictogram == null) return NotFound();
 
                 //Check if the pictogram is public and return it if so
                 if (_pictogram.AccessLevel == AccessLevel.PUBLIC) return Ok(new PictogramDTO(_pictogram, _pictogram.Image));
 
-                var ownsResource = await _giraf.CheckResourceOwnership(_pictogram, HttpContext);
-                if (ownsResource) return Ok(new PictogramDTO(_pictogram, _pictogram.Image));
-                else return Unauthorized();
+                bool ownsResource = false;
+                if (_pictogram.AccessLevel == AccessLevel.PRIVATE)
+                    ownsResource = await _giraf.CheckPrivateOwnership(_pictogram, HttpContext);
+                else if (_pictogram.AccessLevel == AccessLevel.PROTECTED)
+                    ownsResource = await _giraf.CheckProtectedOwnership(_pictogram, HttpContext);
+
+                if (ownsResource)
+                    return Ok(new PictogramDTO(_pictogram, _pictogram.Image));
+                else
+                    return Unauthorized();
             } catch (Exception e)
             {
                 _giraf._logger.LogError("An exception occured in read", $"Message: {e.Message}", $"Source: {e.Source}");
@@ -148,7 +155,7 @@ namespace GirafRest.Controllers
             var pict = await _giraf._context.Pictograms.Where(pic => pic.Id == id).FirstAsync();
             if(pict == null) return NotFound();
 
-            if(! await _giraf.CheckResourceOwnership(pict, HttpContext)) return Unauthorized();
+            if(! await _giraf.CheckPrivateOwnership(pict, HttpContext)) return Unauthorized();
 
             //Remove it and save changes
             _giraf._context.Pictograms.Remove(pict);

@@ -4,15 +4,13 @@ using Moq;
 using GirafRest.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Threading;
 using GirafRest.Controllers;
 using System;
 using Xunit.Abstractions;
-using GirafRest.Models.DTOs;
 using GirafRest.Test.Mocks;
+using static GirafRest.Test.UnitTestExtensions;
+using Microsoft.Extensions.Logging;
 
 namespace GirafRest.Test
 {
@@ -21,17 +19,19 @@ namespace GirafRest.Test
         private readonly PictogramController pictogramController;
         private readonly List<string> logs;
         private readonly MockUserManager userManager;
-
-        private readonly GirafUser mockUser;
+        
         private readonly ITestOutputHelper testLogger;
 
         public PictogramControllerTest(ITestOutputHelper output)
         {
             testLogger = output;
-            var dbMock = UnitTestExtensions.CreateMockDbContext();
+            var dbMock = CreateMockDbContext();
             var userStore = new Mock<IUserStore<GirafUser>>();
-            userManager = UnitTestExtensions.MockUserManager(userStore);
-            var lfMock = UnitTestExtensions.CreateMockLoggerFactory();
+            userManager = MockUserManager(userStore);
+            var lfMock = CreateMockLoggerFactory();
+            var lMock = new Mock<ILogger>();
+            /*lMock.Setup(l => l.LogError(It.IsAny<string>()))
+                .Callback((string s) => output.WriteLine(s));*/
 
             pictogramController = new PictogramController(new MockGirafService(dbMock.Object, userManager), lfMock.Object);
         }
@@ -41,7 +41,7 @@ namespace GirafRest.Test
         {
             userManager.MockLogout();
 
-            Pictogram p = UnitTestExtensions.MockPictograms.Where(pict => pict.AccessLevel == AccessLevel.PUBLIC).First();
+            Pictogram p = MockPictograms.Where(pict => pict.AccessLevel == AccessLevel.PUBLIC).First();
             var res = pictogramController.ReadPictogram(p.Id);
             IActionResult aRes = res.Result;
 
@@ -81,7 +81,7 @@ namespace GirafRest.Test
         [Fact]
         public void GetExistingPrivate_Login_ExpectOK() {
             try {
-                userManager.MockLoginAsUser(mockUser);
+                userManager.MockLoginAsUser(MockUsers[0]);
 
                 var res = pictogramController.ReadPictogram(3);
                 IActionResult aRes = res.Result;
@@ -97,7 +97,7 @@ namespace GirafRest.Test
         public void GetExistingProtectedInDepartment_Login_ExpectOK() {
             try
             {
-                userManager.MockLoginAsUser(UnitTestExtensions.MockUsers[0]);
+                userManager.MockLoginAsUser(MockUsers[0]);
                 var tRes = pictogramController.ReadPictogram(5);
                 var res = tRes.Result;
 
@@ -113,7 +113,7 @@ namespace GirafRest.Test
         public void GetExistingProtectedInDepartment_Login_ExpectUnauthorized() {
             try
             {
-                userManager.MockLoginAsUser(UnitTestExtensions.MockUsers[0]);
+                userManager.MockLoginAsUser(MockUsers[0]);
                 var tRes = pictogramController.ReadPictogram(6);
                 var res = tRes.Result;
 
@@ -129,7 +129,7 @@ namespace GirafRest.Test
         public void GetExistingPrivateAnotherUser_Login_ExpectUnauthorized() {
             try
             {
-                userManager.MockLoginAsUser(UnitTestExtensions.MockUsers[0]);
+                userManager.MockLoginAsUser(MockUsers[0]);
                 var tRes = pictogramController.ReadPictogram(4);
                 var res = tRes.Result;
 
@@ -143,11 +143,11 @@ namespace GirafRest.Test
 
         [Fact]
         public void GetNonexistingPictogram_Login_ExpectNotFound() {
-            userManager.MockLoginAsUser(mockUser);
+            userManager.MockLoginAsUser(MockUsers[0]);
 
             var res = pictogramController.ReadPictogram(999);
             var pRes = res.Result;
-            Assert.IsType<NotFoundObjectResult>(pRes);
+            Assert.IsAssignableFrom<NotFoundResult>(pRes);
         }
 
         [Fact]

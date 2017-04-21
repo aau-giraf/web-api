@@ -30,7 +30,7 @@ namespace GirafRest.Services
 
         Task<GirafUser> LoadUserAsync(ClaimsPrincipal principal);
         Task<byte[]> ReadRequestImage(Stream bodyStream);
-        Task<bool> CheckResourceOwnership(Frame resource, HttpContext context);
-
+        Task<bool> CheckPrivateOwnership(Frame resource, HttpContext context);
+        Task<bool> CheckProtectedOwnership(Frame resource, HttpContext context);
     }
 }
