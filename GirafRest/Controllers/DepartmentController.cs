@@ -52,6 +52,9 @@ namespace GirafRest.Controllers
                     .ThenInclude(dr => dr.Resource)
                     .ToListAsync();
 
+                if (result.Count == 0)
+                    return NotFound();
+
                 //Return the list.
                 return Ok(result.Select(d => new DepartmentDTO(d)).ToList());
             } catch (Exception e) {
@@ -98,7 +101,7 @@ namespace GirafRest.Controllers
             {
                 //Add the department to the database.
                 var result = await _giraf._context.Departments.AddAsync(new Department(dep));
-
+                System.Console.WriteLine("ORK SATME "+dep.Name);
                 //Add all members specified by either id or username in the DTO
                 foreach(var mem in dep.Members) {
                     var usr = await _giraf._context.Users
@@ -110,6 +113,7 @@ namespace GirafRest.Controllers
                     result.Entity.Members.Add(usr);
                     usr.Department = result.Entity;
                 }
+                
                 //Add all the resources with the given ids
                 foreach (var reso in dep.Pictograms) {
                     var res = await _giraf._context.Pictograms
@@ -120,13 +124,13 @@ namespace GirafRest.Controllers
                     var dr = new DepartmentResource(result.Entity, res);
                     await _giraf._context.DepartmentResources.AddAsync(dr);
                 }
-
                 //Save the changes and return the entity
                 await _giraf._context.SaveChangesAsync();
                 return Ok(new DepartmentDTO(result.Entity));
             }
             catch (System.Exception e)
             {
+                System.Console.WriteLine("Orksatme "+e);
                 _giraf._logger.LogError($"Exception in Post: {e.Message}, {e.InnerException}");
                 return BadRequest (e.Message + e.InnerException);
             }

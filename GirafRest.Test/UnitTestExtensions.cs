@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -5,6 +6,7 @@ using System.Threading.Tasks;
 using GirafRest.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Logging;
 using Moq;
 using GirafRest.Test.Mocks;
@@ -58,6 +60,7 @@ namespace GirafRest.Test
                     mockDepartments = new List<Department>() {
                         new Department()
                         {
+                            Key = 1,
                             Name = "Mock Department",
                             Members = new List<GirafUser>()
                             {
@@ -66,6 +69,7 @@ namespace GirafRest.Test
                         },
                         new Department()
                         {
+                            Key = 2,
                             Name = "Mock Department2",
                             Members = new List<GirafUser>()
                             {
@@ -126,26 +130,40 @@ namespace GirafRest.Test
 
         public static Mock<MockDbContext> CreateMockDbContext()
         {
-            var mockDeps = MockDepartments;
+            var mockUsers = MockUsers;
             var pictograms = MockPictograms;
             var relations = MockUserResources;
             var depRelations = MockDepartmentResources;
 
             var mockSet = CreateMockDbSet<Pictogram>(pictograms);
             var mockRelationSet = CreateMockDbSet<UserResource>(relations);
-            var mockDepartments = CreateMockDbSet<Department>(mockDeps);
             var mockDepRes = CreateMockDbSet<DepartmentResource>(depRelations);
             var mockChoices = CreateMockDbSet<Choice>(MockChoices);
 
             var dbMock = new Mock<MockDbContext>();
             dbMock.Setup(c => c.Pictograms).Returns(mockSet.Object);
             dbMock.Setup(c => c.UserResources).Returns(mockRelationSet.Object);
-            dbMock.Setup(c => c.Departments).Returns(mockDepartments.Object);
             dbMock.Setup(c => c.DepartmentResources).Returns(mockDepRes.Object);
             dbMock.Setup(c => c.Choices).Returns(mockChoices.Object);
 
             return dbMock;
         }
+
+        public static void AddEmptyDepartmentList (Mock<MockDbContext> dbMock)
+        {      
+            dbMock.Reset();       
+            var emptyDep = UnitTestExtensions.CreateMockDbSet<Department>(new List<Department>());
+            dbMock.Setup(c => c.Departments).Returns(emptyDep.Object);
+        }
+
+        public static void AddSampleDepartmentList (Mock<MockDbContext> dbMock)
+        {
+            dbMock.Reset();             
+            var mockDeps = MockDepartments;
+            var mockDepartments = CreateMockDbSet<Department>(mockDeps);
+            dbMock.Setup(c => c.Departments).Returns(mockDepartments.Object);
+        }
+
         public static Mock<DbSet<T>> CreateMockDbSet<T>(List<T> dataList) 
             where T : class
         {
@@ -161,12 +179,10 @@ namespace GirafRest.Test
             mockSet.As<IQueryable<T>>().Setup(m => m.Expression).Returns(data.Expression);
             mockSet.As<IQueryable<T>>().Setup(m => m.ElementType).Returns (data.ElementType);
             mockSet.As<IQueryable<T>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator());
-
-
-            mockSet
+            /*mockSet
                 .Setup(dbs => dbs.AddAsync(It.IsAny<T>(), It.IsAny<CancellationToken>()))
                 .Returns((T t) => Task.FromResult<EntityEntry<T>>(new MockEntityEntry<T>(t)));
-
+*/
             return mockSet;
         }
 

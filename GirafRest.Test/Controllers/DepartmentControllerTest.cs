@@ -24,66 +24,75 @@ namespace GirafRest.Test.Controllers
     public class DepartmentControllerTest
     {
         private readonly DepartmentController departmentController;
-        public testDepartments testDeps;
+
+        private readonly Mock<GirafDbContext> dbContextMock;
+        private readonly Mock<IUserStore<GirafUser>> userStore;
+        private readonly MockUserManager umMock;
+        private readonly Mock<ILoggerFactory> lfMock;
+        private readonly List<string> logs;
+        private readonly Mock<MockDbContext> dbMock;
         
         public DepartmentControllerTest()
         {
-            var userStore = new Mock<IUserStore<GirafUser>>();
-            var umMock = UnitTestExtensions.MockUserManager(userStore);
+            userStore = new Mock<IUserStore<GirafUser>>();
+            umMock = UnitTestExtensions.MockUserManager(userStore);
             var lfMock = UnitTestExtensions.CreateMockLoggerFactory();
             
-            setupDepartments (umMock);
-
-            var dbMock = UnitTestExtensions.CreateMockDbContext();
-
+            dbMock = UnitTestExtensions.CreateMockDbContext();
             departmentController = new DepartmentController(new MockGirafService(dbMock.Object, umMock), lfMock.Object);
             var hContext = new DefaultHttpContext();
             departmentController.ControllerContext = new ControllerContext();
             departmentController.ControllerContext.HttpContext = hContext;
         }
-
-        public struct testDepartments {
-            public List<Pictogram> pictograms;
-            public List<GirafUser> users;
-            public List<Department> departments;
-
-            public testDepartments (List<Pictogram> p, List<GirafUser> u, List<Department> d) {
-                pictograms = p;
-                users = u;
-                departments = d;
-            }
+        
+        [Fact]
+        public void Department_Get_all_Departments_ExpectOK()
+        {
+            UnitTestExtensions.AddSampleDepartmentList(dbMock);
+            var res = departmentController.Get();
+            IActionResult aRes = res.Result;
+            Assert.IsType<OkObjectResult>(aRes);
         }
 
-        public virtual void setupDepartments (UserManager<GirafUser> userManager)
+        [Fact]
+        public void Department_Get_Department_byID_ExpectOK()
         {
-            /* setup pictograms */
-            List<Pictogram> pictograms = new List<Pictogram> {
-                new Pictogram("Public Picto1", AccessLevel.PUBLIC),
-                new Pictogram("Public Picto2", AccessLevel.PUBLIC),
-                new Pictogram("No restrictions", AccessLevel.PUBLIC),
-                new Pictogram("Restricted", AccessLevel.PRIVATE),
-                new Pictogram("Private Pictogram", AccessLevel.PRIVATE)
-            };
+            UnitTestExtensions.AddSampleDepartmentList(dbMock);
+            var res = departmentController.Get(1);
+            IActionResult aRes = res.Result;
+            Assert.IsType<OkObjectResult>(aRes);
+        }
 
-            /* setup users */
-            var users = new List<GirafUser> {
-                new GirafUser("Alice", 1),
-                new GirafUser("Bob", 2),
-                new GirafUser("Morten", 1),
-                new GirafUser("Brian", 2)
-            };
-            
-            foreach (var u in users) {
-                userManager.CreateAsync(u, "mocking");
-            }
+        [Fact]
+        public void Department_Get_all_Departments_ExpectNotFound()
+        {
+            UnitTestExtensions.AddEmptyDepartmentList(dbMock);
+            var res = departmentController.Get();
+            IActionResult aRes = res.Result;
+            Assert.IsType<NotFoundResult>(aRes);
+        }
 
-            //testDeps = new testDepartments(pictograms, users, departments);
+        [Fact]
+        public void Department_Get_Department_byID_ExpectNotFound()
+        {
+            UnitTestExtensions.AddEmptyDepartmentList(dbMock);
+            var res = departmentController.Get(1);
+            IActionResult aRes = res.Result;
+            Assert.IsType<NotFoundResult>(aRes);
         }
         
         [Fact]
-        public void DepartmentGetSuccessTest()
+        public void Department_Post_Department_ExpectOK()
         {
-            var res = departmentController.Get();
+            var depDTO = new DepartmentDTO (new Department(){
+                Key = 1,
+                Name = "dep1"
+            });
+            
+            umMock.MockLoginAsUser(UnitTestExtensions.MockUsers[0]);
+            UnitTestExtensions.AddSampleDepartmentList(dbMock);
+
+            var res = departmentController.Post(depDTO);
             IActionResult aRes = res.Result;
             Assert.IsType<OkObjectResult>(aRes);
         }
