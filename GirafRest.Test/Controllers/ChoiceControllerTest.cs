@@ -1,5 +1,6 @@
 ﻿using GirafRest.Controllers;
 using GirafRest.Models;
+using GirafRest.Test.Mocks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -14,7 +15,7 @@ namespace GirafRest.Test
     {
         private readonly ChoiceController choiceController;
         private readonly List<string> logs;
-        private readonly FakeUserManager userManager;
+        private readonly MockUserManager userManager;
 
         public ChoiceControllerTest()
         {
@@ -24,7 +25,7 @@ namespace GirafRest.Test
             userManager = UnitTestExtensions.MockUserManager(userStore);
             var lfMock = UnitTestExtensions.CreateMockLoggerFactory();
 
-            choiceController = new ChoiceController(dbMock.Object, userManager, lfMock.Object);
+            choiceController = new ChoiceController(new MockGirafService(dbMock.Object, userManager), lfMock.Object);
         }
 
         [Fact]

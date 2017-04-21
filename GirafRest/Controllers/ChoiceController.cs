@@ -21,7 +21,7 @@ namespace GirafRest.Controllers
     {
         private readonly IGirafService _giraf;
 
-        public ChoiceController(IGirafService girafService, LoggerFactory lFactory)
+        public ChoiceController(IGirafService girafService, ILoggerFactory lFactory)
         {
             _giraf = girafService;
             _giraf._logger = lFactory.CreateLogger("Choice");
