@@ -57,13 +57,15 @@ namespace GirafRest.Test.Mocks
         public Task<bool> CheckProtectedOwnership(Frame resource, HttpContext contect)
         {
             var tUser = _userManager.GetUserAsync(new ClaimsPrincipal());
+            if (tUser == null)
+                return Task.FromResult(false);
             var user = tUser.Result;
 
             if (user == null)
                 return Task.FromResult(false);
 
             var ownsResource = _context.DepartmentResources
-                .Where(dr => dr.ResourceKey == resource.Id && dr.Other.Key == user.Department.Key)
+                .Where(dr => dr.ResourceKey == resource.Id && dr.OtherKey == user.DepartmentKey)
                 .Any();
             if (ownsResource)
                 return Task.FromResult(true);

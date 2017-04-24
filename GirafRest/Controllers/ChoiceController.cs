@@ -148,8 +148,25 @@ namespace GirafRest.Controllers
             _giraf._logger.LogInformation($"Checking if the user is authorized");
             foreach (PictoFrame p in choice)
             {
-                if (p.AccessLevel != AccessLevel.PUBLIC && !(await _giraf.CheckPrivateOwnership(p, HttpContext))) return false;
+                bool ownsResource;
+                switch (p.AccessLevel)
+                {
+                    case AccessLevel.PROTECTED:
+                        ownsResource = await _giraf.CheckProtectedOwnership(p, HttpContext);
+                        break;
+                    case AccessLevel.PRIVATE:
+                        ownsResource = await _giraf.CheckPrivateOwnership(p, HttpContext);
+                        if (!ownsResource)
+                            return false;
+                        break;
+                    case AccessLevel.PUBLIC:
+                    default:
+                        ownsResource = true;
+                        break;
             }
+            if (!ownsResource)
+                return false;
+        }
             return true;
         }
     }

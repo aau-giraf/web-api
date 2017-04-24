@@ -12,6 +12,8 @@ using Moq;
 using GirafRest.Test.Mocks;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
 namespace GirafRest.Test
 {
@@ -25,13 +27,28 @@ namespace GirafRest.Test
             {
                 if (mockPictograms == null)
                     mockPictograms = new List<Pictogram> {
-                        new Pictogram("Public Picto1", AccessLevel.PUBLIC),
-                        new Pictogram("Public Picto2", AccessLevel.PUBLIC),
-                        new Pictogram("No restrictions", AccessLevel.PUBLIC),
-                        new Pictogram("Private for user 1 ", AccessLevel.PRIVATE),
-                        new Pictogram("Private for user 2", AccessLevel.PRIVATE),
-                        new Pictogram("Protected for Dep 1", AccessLevel.PROTECTED),
-                        new Pictogram("Protected for Dep 2", AccessLevel.PROTECTED)
+                        new Pictogram("Public Picto1", AccessLevel.PUBLIC) {
+                            Id = 0
+                        },
+                        new Pictogram("Public Picto2", AccessLevel.PUBLIC) {
+                            Id = 1
+                        },
+                        new Pictogram("No restrictions", AccessLevel.PUBLIC) {
+                            Id = 2
+                        },
+                        new Pictogram("Private for user 0", AccessLevel.PRIVATE) {
+                            Id = 3
+                        },
+                        new Pictogram("Private for user 1", AccessLevel.PRIVATE) {
+                            Id = 4
+                        },
+                        new Pictogram("Protected for Dep 1", AccessLevel.PROTECTED)
+                        {
+                            Id = 5
+                        },
+                        new Pictogram("Protected for Dep 2", AccessLevel.PROTECTED) {
+                            Id = 6
+                        }
                     };
 
                 return mockPictograms;
@@ -44,8 +61,13 @@ namespace GirafRest.Test
             {
                 if(mockUsers == null)
                     mockUsers = new List<GirafUser>() {
-                        new GirafUser("Mock User", 0),
+                        new GirafUser("Mock User", 0) {
+                            DepartmentKey = 1
+                        },
                         new GirafUser("Owner of other privates", 1)
+                        {
+                            DepartmentKey = 2
+                        }
                     };
 
                 return mockUsers;
@@ -89,9 +111,32 @@ namespace GirafRest.Test
                 if (mockChoices == null)
                     mockChoices = new List<Choice>()
                     {
-                        new Choice(MockPictograms.Where(p => p.AccessLevel == AccessLevel.PUBLIC).Cast<PictoFrame>().ToList()),
-                        new Choice(MockPictograms.Where(p => p.AccessLevel == AccessLevel.PRIVATE).Cast<PictoFrame>().ToList()),
-                        new Choice(MockPictograms.Where(p => p.AccessLevel == AccessLevel.PROTECTED).Cast<PictoFrame>().ToList())
+                        new Choice(MockPictograms.Where(p => p.AccessLevel == AccessLevel.PUBLIC).Cast<PictoFrame>().ToList())
+                        {
+                            Id = 0
+                        },
+                        //A private pictogram for mock user 0
+                        new Choice(new List<PictoFrame>() {
+                            MockPictograms[3]
+                        })
+                        {
+                            Id = 1
+                        },
+                        //A choice for department 0 (with id 1)
+                        new Choice(new List<PictoFrame>() {
+                            MockPictograms[5]
+                        })
+                        {
+                            Id = 2
+                        },
+                        //A choice for department 1 (with id 2)
+                        new Choice(new List<PictoFrame>()
+                        {
+                            MockPictograms[6]
+                        })
+                        {
+                            Id = 3
+                        },
                     };
                 return mockChoices;
             }
@@ -127,6 +172,19 @@ namespace GirafRest.Test
         }
 
         #endregion
+        public static void MockHttpContext(this Controller controller)
+        {
+            var hContext = new DefaultHttpContext();
+            controller.ControllerContext = new ControllerContext();
+            controller.ControllerContext.HttpContext = hContext;
+        }
+
+        public static void MockQuery(this Controller controller, string key, string value)
+        {
+            controller.MockHttpContext();
+            controller.HttpContext.Request.Query
+                .Append(new KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues>(key, value));
+        }
 
         public static Mock<MockDbContext> CreateMockDbContext()
         {
@@ -165,12 +223,12 @@ namespace GirafRest.Test
             where T : class
         {
             IQueryable<T> data = dataList.AsQueryable();
-            MockDbSet<T> dbSet = new MockDbSet<T>(dataList);
 
             var mockSet = new Mock<MockDbSet<T>>();
             mockSet.As<IAsyncEnumerable<T>>()
                 .Setup(m => m.GetEnumerator())
                 .Returns(new TestDbAsyncEnumerator<T>(data.GetEnumerator()));
+            
 
             mockSet.As<IQueryable<T>>()
                 .Setup(m => m.Provider)

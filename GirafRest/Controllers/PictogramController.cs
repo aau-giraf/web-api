@@ -83,8 +83,9 @@ namespace GirafRest.Controllers
                     return Unauthorized();
             } catch (Exception e)
             {
-                _giraf._logger.LogError("An exception occured in read", $"Message: {e.Message}", $"Source: {e.Source}");
-                return BadRequest("There is most likely no pictograms available on the server.");
+                string exceptionMessage = $"Exception occured in read:\n{e}";
+                _giraf._logger.LogError(exceptionMessage);
+                return BadRequest("There is most likely no pictograms available on the server.\n\n" + exceptionMessage);
             }
         }
 

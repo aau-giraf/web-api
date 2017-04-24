@@ -11,13 +11,13 @@ using Xunit.Abstractions;
 using GirafRest.Test.Mocks;
 using static GirafRest.Test.UnitTestExtensions;
 using Microsoft.Extensions.Logging;
+using Microsoft.AspNetCore.Http;
 
 namespace GirafRest.Test
 {
     public class PictogramControllerTest
     {
         private readonly PictogramController pictogramController;
-        private readonly List<string> logs;
         private readonly MockUserManager userManager;
         
         private readonly ITestOutputHelper testLogger;
@@ -32,14 +32,28 @@ namespace GirafRest.Test
             var lMock = new Mock<ILogger>();
             /*lMock.Setup(l => l.LogError(It.IsAny<string>()))
                 .Callback((string s) => output.WriteLine(s));*/
-
+                
             pictogramController = new PictogramController(new MockGirafService(dbMock.Object, userManager), lfMock.Object);
+            pictogramController.MockHttpContext();
         }
 
+        #region ReadPictogram(id)
         [Fact]
         public void GetExistingPublic_NoLogin_ExpectOK()
         {
             userManager.MockLogout();
+
+            Pictogram p = MockPictograms.Where(pict => pict.AccessLevel == AccessLevel.PUBLIC).First();
+            var res = pictogramController.ReadPictogram(p.Id);
+            IActionResult aRes = res.Result;
+
+            Assert.IsType<OkObjectResult>(aRes);
+        }
+
+        [Fact]
+        public void GetExistingPublic_Login_ExpectOK()
+        {
+            userManager.MockLoginAsUser(MockUsers[0]);
 
             Pictogram p = MockPictograms.Where(pict => pict.AccessLevel == AccessLevel.PUBLIC).First();
             var res = pictogramController.ReadPictogram(p.Id);
@@ -68,9 +82,6 @@ namespace GirafRest.Test
                 var res = pictogramController.ReadPictogram(5);
                 IActionResult aRes = res.Result;
 
-                
-                Console.WriteLine((aRes as OkObjectResult).Value);
-
                 Assert.IsType<UnauthorizedResult>(aRes);
             }
             catch (Exception e){
@@ -79,11 +90,11 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void GetExistingPrivate_Login_ExpectOK() {
+        public void GetOwnPrivate_Login_ExpectOK() {
             try {
-                userManager.MockLoginAsUser(MockUsers[0]);
+                userManager.MockLoginAsUser(MockUsers[1]);
 
-                var res = pictogramController.ReadPictogram(3);
+                var res = pictogramController.ReadPictogram(4);
                 IActionResult aRes = res.Result;
 
                 Assert.IsType<OkObjectResult>(aRes);
@@ -94,12 +105,18 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void GetExistingProtectedInDepartment_Login_ExpectOK() {
+        public void GetProtectedInOwnDepartment_Login_ExpectOK() {
             try
             {
                 userManager.MockLoginAsUser(MockUsers[0]);
                 var tRes = pictogramController.ReadPictogram(5);
                 var res = tRes.Result;
+
+                if(res is BadRequestObjectResult)
+                {
+                    var uRes = res as BadRequestObjectResult;
+                    testLogger.WriteLine(uRes.Value.ToString());
+                }
 
                 Assert.IsType<OkObjectResult>(res);
             }
@@ -110,14 +127,20 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void GetExistingProtectedInDepartment_Login_ExpectUnauthorized() {
+        public void GetProtectedInAnotherDepartment_Login_ExpectUnauthorized() {
             try
             {
                 userManager.MockLoginAsUser(MockUsers[0]);
                 var tRes = pictogramController.ReadPictogram(6);
                 var res = tRes.Result;
 
-                Assert.IsType<OkObjectResult>(res);
+                if (res is BadRequestObjectResult)
+                {
+                    var uRes = res as BadRequestObjectResult;
+                    testLogger.WriteLine(uRes.Value.ToString());
+                }
+
+                Assert.IsType<UnauthorizedResult>(res);
             }
             catch (Exception e)
             {
@@ -133,7 +156,7 @@ namespace GirafRest.Test
                 var tRes = pictogramController.ReadPictogram(4);
                 var res = tRes.Result;
 
-                Assert.IsType<OkObjectResult>(res);
+                Assert.IsType<UnauthorizedResult>(res);
             }
             catch (Exception e)
             {
@@ -152,7 +175,110 @@ namespace GirafRest.Test
 
         [Fact]
         public void GetNonexistingPictogram_NoLogin_ExpectNotFound() {
+            userManager.MockLogout();
 
+            var res = pictogramController.ReadPictogram(999).Result;
+
+            Assert.IsAssignableFrom<NotFoundResult>(res);
         }
+        #endregion
+        #region ReadPictograms()
+        [Fact]
+        public void GetAll_NoLogin_ExpectOk()
+        {
+            userManager.MockLogout();
+            pictogramController.MockHttpContext();
+
+            var res = pictogramController.ReadPictograms().Result;
+
+            Assert.IsType<OkObjectResult>(res);
+        }
+
+        [Fact]
+        public void GetAll_Login_ExpectOk()
+        {
+            userManager.MockLoginAsUser(MockUsers[0]);
+            pictogramController.MockHttpContext();
+
+            var res = pictogramController.ReadPictograms().Result;
+
+            Assert.IsType<OkObjectResult>(res);
+        }
+
+        [Fact]
+        public void GetAllWithValidQuery_NoLogin_ExpectOk()
+        {
+            userManager.MockLogout();
+            pictogramController.MockHttpContext();
+            pictogramController.HttpContext.Request.Query
+                .Append(new KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues>("title", "picto1"));
+
+            var res = pictogramController.ReadPictograms().Result;
+
+            Assert.IsType<OkObjectResult>(res);
+        }
+
+        [Fact]
+        public void GetAllWithInvalidQuery_NoLogin_ExpectNotFound()
+        {
+            userManager.MockLogout();
+            pictogramController.MockHttpContext();
+            pictogramController.HttpContext.Request.Query
+                .Append(new KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues>("title", "invalid"));
+
+            var res = pictogramController.ReadPictograms().Result;
+
+            Assert.IsType<NotFoundResult>(res);
+        }
+
+        [Fact]
+        public void GetAllWithValidQuery_Login_ExpectOk()
+        {
+            userManager.MockLoginAsUser(MockUsers[0]);
+            pictogramController.MockHttpContext();
+            pictogramController.HttpContext.Request.Query
+                .Append(new KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues>("title", "picto1"));
+
+            var res = pictogramController.ReadPictograms().Result;
+
+            Assert.IsType<OkObjectResult>(res);
+        }
+
+        [Fact]
+        public void GetAllWithInvalidQuery_Login_ExpectNotFound()
+        {
+            userManager.MockLoginAsUser(MockUsers[1]);
+            pictogramController.HttpContext.Request.Query
+                .Append(new KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues>("title", "invalid"));
+
+            var res = pictogramController.ReadPictograms().Result;
+
+            Assert.IsType<NotFoundResult>(res);
+        }
+
+        [Fact]
+        public void GetAllWithValidQueryOnAnotherUsersPrivate_Login_ExpectNotFound()
+        {
+            userManager.MockLoginAsUser(MockUsers[0]);
+            pictogramController.HttpContext.Request.Query
+                .Append(new KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues>("title", "user 1"));
+
+            var res = pictogramController.ReadPictograms().Result;
+
+            Assert.IsType<NotFoundResult>(res);
+        }
+
+        [Fact]
+        public void GetAllWithValidQueryOnPrivate_NoLogin_ExpectNotFound()
+        {
+            userManager.MockLogout();
+            pictogramController.HttpContext.Request.Query
+                .Append(new KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues>("title", "user 1"));
+
+            var res = pictogramController.ReadPictograms().Result;
+
+            Assert.IsType<NotFoundResult>(res);
+        }
+        #endregion
     }
 }

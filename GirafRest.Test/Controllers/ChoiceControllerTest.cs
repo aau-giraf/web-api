@@ -68,8 +68,7 @@ namespace GirafRest.Test
         public void GetExistingPrivate_Login_ExpectOK() {
             userManager.MockLoginAsUser(MockUsers[0]);
 
-            Choice c = UnitTestExtensions.MockChoices.Where(ch => ch.Options.All(cr => (cr.Resource as PictoFrame).AccessLevel == AccessLevel.PRIVATE)).First();
-            var res = choiceController.ReadChoice(c.Id);
+            var res = choiceController.ReadChoice(1);
             IActionResult aRes = res.Result;
 
             Assert.IsType<OkObjectResult>(aRes);
@@ -102,10 +101,9 @@ namespace GirafRest.Test
         [Fact]
         public void GetExistingProtected_Login_ExpectOK()
         {
-            userManager.MockLoginAsUser(MockUsers[1]);
-
-            Choice c = UnitTestExtensions.MockChoices.Where(ch => ch.Options.All(cr => (cr.Resource as PictoFrame).AccessLevel == AccessLevel.PROTECTED)).First();
-            var res = choiceController.ReadChoice(c.Id);
+            userManager.MockLoginAsUser(MockUsers[0]);
+            
+            var res = choiceController.ReadChoice(2);
             IActionResult aRes = res.Result;
 
             Assert.IsType<OkObjectResult>(aRes);
@@ -116,8 +114,7 @@ namespace GirafRest.Test
         {
             userManager.MockLoginAsUser(MockUsers[0]);
 
-            Choice c = UnitTestExtensions.MockChoices.Where(ch => ch.Options.All(cr => (cr.Resource as PictoFrame).AccessLevel == AccessLevel.PROTECTED)).First();
-            var res = choiceController.ReadChoice(c.Id);
+            var res = choiceController.ReadChoice(3);
             IActionResult aRes = res.Result;
 
             Assert.IsType<UnauthorizedResult>(aRes);
@@ -186,8 +183,7 @@ namespace GirafRest.Test
         {
             userManager.MockLoginAsUser(MockUsers[0]);
 
-            Choice c = UnitTestExtensions.MockChoices.Where(ch => ch.Options.All(cr => (cr.Resource as PictoFrame).AccessLevel == AccessLevel.PRIVATE)).First();
-            var res = choiceController.DeleteChoice(c.Id);
+            var res = choiceController.DeleteChoice(1);
             IActionResult aRes = res.Result;
 
             Assert.IsType<OkResult>(aRes);

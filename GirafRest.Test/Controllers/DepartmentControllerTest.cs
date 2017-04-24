@@ -30,9 +30,7 @@ namespace GirafRest.Test.Controllers
             
             dbMock = CreateMockDbContext();
             departmentController = new DepartmentController(new MockGirafService(dbMock.Object, umMock), lfMock.Object);
-            var hContext = new DefaultHttpContext();
-            departmentController.ControllerContext = new ControllerContext();
-            departmentController.ControllerContext.HttpContext = hContext;
+            departmentController.MockHttpContext();
         }
         
         [Fact]

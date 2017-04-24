@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using GirafRest.Models;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace GirafRest.Test.Mocks
 {
