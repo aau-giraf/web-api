@@ -23,7 +23,7 @@ namespace GirafRest.Test
     {
         #region Mock Data
         private static List<Pictogram> mockPictograms;
-        public static List<Pictogram> MockPictograms
+        public static IReadOnlyList<Pictogram> MockPictograms
         {
             get
             {
@@ -57,7 +57,7 @@ namespace GirafRest.Test
             }
         }
         private static List<GirafUser> mockUsers;
-        public static List<GirafUser> MockUsers
+        public static IReadOnlyList<GirafUser> MockUsers
         {
             get
             {
@@ -76,7 +76,7 @@ namespace GirafRest.Test
             }
         }
         private static List<Department> mockDepartments;
-        public static List<Department> MockDepartments
+        public static IReadOnlyList<Department> MockDepartments
         {
             get
             {
@@ -106,7 +106,7 @@ namespace GirafRest.Test
             }
         }
         private static List<Choice> mockChoices;
-        public static List<Choice> MockChoices
+        public static IReadOnlyList<Choice> MockChoices
         {
             get
             {
@@ -144,7 +144,7 @@ namespace GirafRest.Test
             }
         }
         private static List<UserResource> mockUserResources;
-        public static List<UserResource> MockUserResources
+        public static IReadOnlyList<UserResource> MockUserResources
         {
             get
             {
@@ -158,7 +158,7 @@ namespace GirafRest.Test
             }
         }
         private static List<DepartmentResource> mockDepartmentResources;
-        public static List<DepartmentResource> MockDepartmentResources
+        public static IReadOnlyList<DepartmentResource> MockDepartmentResources
         {
             get
             {
@@ -251,7 +251,7 @@ namespace GirafRest.Test
             dbMock.Setup(c => c.Departments).Returns(mockDepartments.Object);
         }
 
-        public static Mock<MockDbSet<T>> CreateMockDbSet<T>(List<T> dataList) 
+        public static Mock<MockDbSet<T>> CreateMockDbSet<T>(IReadOnlyList<T> dataList) 
             where T : class
         {
             var copyList = new List<T>();
