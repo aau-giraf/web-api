@@ -103,7 +103,7 @@ namespace GirafRest.Controllers
                 Department result = new Department(dep);
                 await _giraf._context.Departments.AddAsync(result);
 
-//Add all members specified by either id or username in the DTO
+                //Add all members specified by either id or username in the DTO
                 foreach(var mem in dep.Members) {
                     var usr = await _giraf._context.Users
                         .Where(u => u.UserName == mem || u.Id == mem)
@@ -131,7 +131,6 @@ namespace GirafRest.Controllers
             }
             catch (System.Exception e)
             {
-                System.Console.WriteLine("Orksatme "+e);
                 _giraf._logger.LogError($"Exception in Post: {e.Message}, {e.InnerException}");
                 return BadRequest (e.Message + e.InnerException);
             }
@@ -151,12 +150,19 @@ namespace GirafRest.Controllers
             //Fetch user and department and check that they exist
             if(usr == null)
                 return BadRequest("User was null");
-            var dep = await _giraf._context.Departments
-                .Where(d => d.Key == ID)
-                .Include(d => d.Members)
-                .FirstAsync();
-            if(dep == null)
+            Department dep;
+
+            try
+            {
+                dep = await _giraf._context.Departments
+                    .Where(d => d.Key == ID)
+                    .Include(d => d.Members)
+                    .FirstAsync();
+            }
+            catch (Exception e)
+            {
                 return NotFound("Department not found");
+            }
 
             //Check if the user is already in the department
             if(dep.Members.Where(u => u.UserName == usr.UserName).Any())
@@ -181,16 +187,24 @@ namespace GirafRest.Controllers
         [HttpDelete("remove-user/{id}")]
         public async Task<IActionResult> RemoveUser(long ID, [FromBody]GirafUser usr)
         {
+            Department dep = null;
+
             //Check if a valid user was supplied and that the given department exists
             if(usr == null)
                 return BadRequest("User was null");
-            var dep = await _giraf._context
-                .Departments
-                .Where(d => d.Key == ID)
-                .Include(d => d.Members)
-                .FirstAsync();
-            if(dep == null)
-                return NotFound("Department not found");
+            try
+            {
+                dep = await _giraf._context
+                    .Departments
+                    .Where(d => d.Key == ID)
+                    .Include(d => d.Members)
+                    .FirstAsync();
+            }
+            catch (Exception e)
+            {
+                if(dep == null)
+                    return NotFound("Department not found");
+            }
 
             //Check if the user actually is in the department
             if(!dep.Members.Where(u => u.UserName == usr.UserName).Any())
