@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
+using System.IO;
 
 namespace GirafRest.Test
 {
@@ -197,6 +198,18 @@ namespace GirafRest.Test
         {
             context.Setup(c => c.Request.Query)
                 .Returns(new QueryCollection());
+        }
+
+        public static void MockRequestImage(this Mock<HttpContext> context, string filepath)
+        {
+            context.Setup(hc => hc.Request.Body)
+                .Returns(new FileStream(filepath, FileMode.Open, FileAccess.Read));
+        }
+
+        public static void MockRequestNoImage(this Mock<HttpContext> context)
+        {
+            context.Setup(hc => hc.Request.Body)
+                .Returns(new MemoryStream());
         }
 
         public static Mock<MockDbContext> CreateMockDbContext()

@@ -80,7 +80,10 @@ namespace GirafRest.Test.Mocks
 
         public Task<byte[]> ReadRequestImage(Stream bodyStream)
         {
-            throw new NotImplementedException();
+            byte[] image = new byte[bodyStream.Length];
+            bodyStream.Read(image, 0, image.Length);
+
+            return Task.FromResult(image);
         }
     }
 }
