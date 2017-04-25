@@ -107,6 +107,7 @@ namespace GirafRest.Controllers
             {
                 return NotFound();
             }
+            if (!(await checkAccess(_choice))) return Unauthorized();
             _choice.Clear();
             _choice.AddAll(pictoFrameList);
             if (!(await checkAccess(_choice))) return Unauthorized();
@@ -163,10 +164,10 @@ namespace GirafRest.Controllers
                     default:
                         ownsResource = true;
                         break;
+                }
+                if (!ownsResource)
+                    return false;
             }
-            if (!ownsResource)
-                return false;
-        }
             return true;
         }
     }

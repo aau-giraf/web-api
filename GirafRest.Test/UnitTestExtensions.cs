@@ -106,7 +106,7 @@ namespace GirafRest.Test
             }
         }
         private static List<Choice> mockChoices;
-        public static List<Choice> MockChoices
+        public static IReadOnlyList<Choice> MockChoices
         {
             get
             {
@@ -217,7 +217,7 @@ namespace GirafRest.Test
             var mockSet = CreateMockDbSet<Pictogram>(MockPictograms);
             var mockRelationSet = CreateMockDbSet<UserResource>(MockUserResources);
             var mockDepRes = CreateMockDbSet<DepartmentResource>(MockDepartmentResources);
-            var mockChoices = CreateMockChoiceSet(MockChoices);
+            var mockChoices = CreateMockDbSet<Choice>(MockChoices);
             var mockDeps = CreateMockDbSet<Department>(MockDepartments);
             var mockPF = CreateMockDbSet<PictoFrame>(MockPictograms.Cast<PictoFrame>().ToList());
 
@@ -249,46 +249,6 @@ namespace GirafRest.Test
             var mockDeps = MockDepartments;
             var mockDepartments = CreateMockDbSet<Department>(mockDeps);
             dbMock.Setup(c => c.Departments).Returns(mockDepartments.Object);
-        }
-
-        public static Mock<MockDbSet<Choice>> CreateMockChoiceSet(List<Choice> choices)
-        {
-            //A workaround to solve an issue where choices are changed by unit tests.
-            var copyList = new List<Choice>();
-            choices.ForEach(c =>
-            {
-                Choice copyChoice = new Choice()
-                {
-                    Departments = c.Departments,
-                    Id = c.Id,
-                    LastEdit = c.LastEdit,
-                    Users = c.Users
-                };
-                foreach (var ch in c.Options)
-                {
-                    copyChoice.Options.Add(ch);
-                }
-                copyList.Add(copyChoice);
-            });
-
-            IQueryable<Choice> data = copyList.AsQueryable();
-
-            var mockSet = new Mock<MockDbSet<Choice>>();
-            mockSet.As<IAsyncEnumerable<Choice>>()
-                .Setup(m => m.GetEnumerator())
-                .Returns(new TestDbAsyncEnumerator<Choice>(data.GetEnumerator()));
-
-
-            mockSet.As<IQueryable<Choice>>()
-                .Setup(m => m.Provider)
-                .Returns(new TestDbAsyncQueryProvider<Choice>(data.Provider));
-
-            mockSet.As<IQueryable<Choice>>().Setup(m => m.Expression).Returns(data.Expression);
-            mockSet.As<IQueryable<Choice>>().Setup(m => m.ElementType).Returns(data.ElementType);
-            mockSet.As<IQueryable<Choice>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator());
-
-            return mockSet;
-
         }
 
         public static Mock<MockDbSet<T>> CreateMockDbSet<T>(IReadOnlyList<T> dataList) 
