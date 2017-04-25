@@ -254,7 +254,10 @@ namespace GirafRest.Test
         public static Mock<MockDbSet<T>> CreateMockDbSet<T>(List<T> dataList) 
             where T : class
         {
-            IQueryable<T> data = dataList.AsQueryable();
+            var copyList = new List<T>();
+            copyList.AddRange(dataList);
+
+            IQueryable<T> data = copyList.AsQueryable();
 
             var mockSet = new Mock<MockDbSet<T>>();
             mockSet.As<IAsyncEnumerable<T>>()
