@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
 
 namespace GirafRest.Test
 {
@@ -172,18 +173,30 @@ namespace GirafRest.Test
         }
 
         #endregion
-        public static void MockHttpContext(this Controller controller)
+        public static Mock<HttpContext> MockHttpContext(this Controller controller)
         {
-            var hContext = new DefaultHttpContext();
+            var hContext = new Mock<HttpContext>();
+
+            hContext
+                .Setup(c => c.User)
+                .Returns(new System.Security.Claims.ClaimsPrincipal());
+
             controller.ControllerContext = new ControllerContext();
-            controller.ControllerContext.HttpContext = hContext;
+            controller.ControllerContext.HttpContext = hContext.Object;
+
+            return hContext;
         }
 
-        public static void MockQuery(this Controller controller, string key, string value)
+        public static void MockQuery(this Mock<HttpContext> context, string key, string value)
         {
-            controller.MockHttpContext();
-            controller.HttpContext.Request.Query
-                .Append(new KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues>(key, value));
+            context.Setup(c => c.Request.Query[key])
+                .Returns(value);
+        }
+
+        public static void MockClearQueries(this Mock<HttpContext> context)
+        {
+            context.Setup(c => c.Request.Query)
+                .Returns(new QueryCollection());
         }
 
         public static Mock<MockDbContext> CreateMockDbContext()
@@ -193,6 +206,7 @@ namespace GirafRest.Test
             var mockDepRes = CreateMockDbSet<DepartmentResource>(MockDepartmentResources);
             var mockChoices = CreateMockDbSet<Choice>(MockChoices);
             var mockDeps = CreateMockDbSet<Department>(MockDepartments);
+            var mockPF = CreateMockDbSet<PictoFrame>(MockPictograms.Cast<PictoFrame>().ToList());
 
             var dbMock = new Mock<MockDbContext>();
             dbMock.Setup(c => c.Pictograms).Returns(mockSet.Object);
@@ -200,6 +214,11 @@ namespace GirafRest.Test
             dbMock.Setup(c => c.DepartmentResources).Returns(mockDepRes.Object);
             dbMock.Setup(c => c.Choices).Returns(mockChoices.Object);
             dbMock.Setup(c => c.Departments).Returns(mockDeps.Object);
+            dbMock.Setup(c => c.PictoFrames).Returns(mockPF.Object);
+
+            //Make sure that all references are setup - Entity does not handle it for us this time.
+            MockUsers[0].Department = MockDepartments[0];
+            MockUsers[1].Department = MockDepartments[1];
 
             return dbMock;
         }
