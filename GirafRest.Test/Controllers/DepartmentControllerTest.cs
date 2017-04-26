@@ -13,139 +13,152 @@ using Microsoft.AspNetCore.Http;
 using GirafRest.Test.Mocks;
 using Google.Protobuf.WellKnownTypes;
 using static GirafRest.Test.UnitTestExtensions;
+using Xunit.Abstractions;
 
 namespace GirafRest.Test.Controllers
 {
     public class DepartmentControllerTest
     {
-        private readonly DepartmentController departmentController;
+        private TestContext _testContext;
+        private readonly ITestOutputHelper _testLogger;
         
-        private readonly MockUserManager umMock;
-        private readonly Mock<MockDbContext> dbMock;
-        
-        public DepartmentControllerTest()
+        public DepartmentControllerTest(ITestOutputHelper testLogger)
         {
-            var userStore = new Mock<IUserStore<GirafUser>>();
-            umMock = MockUserManager(userStore);
-            var lfMock = CreateMockLoggerFactory();
-            
-            dbMock = CreateMockDbContext();
-            departmentController = new DepartmentController(new MockGirafService(dbMock.Object, umMock), lfMock.Object);
-            departmentController.MockHttpContext();
+            _testLogger = testLogger;
+        }
+
+        private DepartmentController initializeTest()
+        {
+            _testContext = new TestContext();
+
+            var dc = new DepartmentController(
+                new MockGirafService(_testContext.MockDbContext.Object,
+                _testContext.MockUserManager), _testContext.MockLoggerFactory.Object);
+            _testContext.MockHttpContext = dc.MockHttpContext();
+
+            return dc;
         }
         
         [Fact]
         public void Department_Get_all_Departments_ExpectOK()
         {
-            AddSampleDepartmentList(dbMock);
-            var res = departmentController.Get();
-            IActionResult aRes = res.Result;
-            Assert.IsType<OkObjectResult>(aRes);
+            var dc = initializeTest();
+
+            var res = dc.Get().Result;
+            Assert.IsType<OkObjectResult>(res);
         }
 
         [Fact]
         public void Department_Get_Department_byID_ExpectOK()
         {
-            AddSampleDepartmentList(dbMock);
-            var res = departmentController.Get(1);
-            IActionResult aRes = res.Result;
-            Assert.IsType<OkObjectResult>(aRes);
+            var dc = initializeTest();
+
+            var res = dc.Get(1).Result;
+            Assert.IsType<OkObjectResult>(res);
         }
 
         [Fact]
         public void Department_Get_all_Departments_ExpectNotFound()
         {
-            AddEmptyDepartmentList(dbMock);
-            var res = departmentController.Get();
-            IActionResult aRes = res.Result;
-            Assert.IsType<NotFoundResult>(aRes);
+            var dc = initializeTest();
+            AddEmptyDepartmentList();
+
+            var res = dc.Get().Result;
+            Assert.IsType<NotFoundResult>(res);
         }
 
         [Fact]
         public void Department_Get_Department_byID_ExpectNotFound()
         {
-            AddEmptyDepartmentList(dbMock);
-            var res = departmentController.Get(1);
-            IActionResult aRes = res.Result;
-            Assert.IsType<NotFoundResult>(aRes);
+            var dc = initializeTest();
+            AddEmptyDepartmentList();
+
+            var res = dc.Get(1).Result;
+            Assert.IsType<NotFoundResult>(res);
         }
         
         [Fact]
         public void Department_Post_Department_ExpectOK()
         {
+            var dc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
             var depDTO = new DepartmentDTO (new Department(){
                 Name = "dep1"
             });
-            
-            umMock.MockLoginAsUser(MockUsers[0]);
-            AddSampleDepartmentList(dbMock);
 
-            var res = departmentController.Post(depDTO);
-            IActionResult aRes = res.Result;
-            Assert.IsType<OkObjectResult>(aRes);
+            var res = dc.Post(depDTO).Result;
+            Assert.IsType<OkObjectResult>(res);
         }
 
         [Fact]
         public void Department_AddUser_ExpectOK()
         {
-            MockUsers.Add(new GirafUser());
-            MockUsers[MockUsers.Count - 1].UserName = "AddUserTest";
+            var dc = initializeTest();
+            var user = new GirafUser()
+            {
+                UserName = "TestUser"
+            };
 
-            var res = departmentController.AddUser(1, MockUsers[MockUsers.Count - 1]);
-            IActionResult aRes = res.Result;
-            Assert.IsType<OkObjectResult>(aRes);
+            var res = dc.AddUser(1, user).Result;
+            Assert.IsType<OkObjectResult>(res);
         }
 
         [Fact]
         public void Department_AddUser_ExpectNotFound()
         {
-            MockUsers.Add(new GirafUser());
-            MockUsers[MockUsers.Count - 1].UserName = "AddUserTest";
+            var dc = initializeTest();
+            var user = new GirafUser()
+            {
+                UserName = "AddUserTest"
+            };
 
-            var res = departmentController.AddUser(10, MockUsers[MockUsers.Count - 1]);
-            IActionResult aRes = res.Result;
-            Assert.IsType<NotFoundObjectResult>(aRes);
+            var res = dc.AddUser(10, user).Result;
+            Assert.IsType<NotFoundObjectResult>(res);
         }
 
         [Fact]
         public void Department_RemoveUser_ExpectOK()
         {
-            MockUsers.Add(new GirafUser());
-            MockUsers[MockUsers.Count - 1].UserName = "AddUserTest";
+            var dc = initializeTest();
+            var user = new GirafUser()
+            {
+                UserName = "AddUserTest"
+            };
 
-            var res = departmentController.RemoveUser(1, MockUsers[MockUsers.Count - 1]);
-            IActionResult aRes = res.Result;
-            Assert.IsType<OkObjectResult>(aRes);
+            var res = dc.RemoveUser(1, user).Result;
+            Assert.IsType<OkObjectResult>(res);
         }
 
         /* If the user is null */
         [Fact]
         public void Department_RemoveUser_UserNullExpectBadRequest()
         {
-            var res = departmentController.RemoveUser(1, null);
-            IActionResult aRes = res.Result;
-            Assert.IsType<BadRequestObjectResult>(aRes);
+            var dc = initializeTest();
+            var res = dc.RemoveUser(1, null).Result;
+            Assert.IsType<BadRequestObjectResult>(res);
         }
 
         /* If the department is not found */
         [Fact]
         public void Department_RemoveUser_ExpectNotFound()
         {
-            var res = departmentController.RemoveUser(10, MockUsers[0]);
-            IActionResult aRes = res.Result;
-            Assert.IsType<NotFoundObjectResult>(aRes);
+            var dc = initializeTest();
+            var res = dc.RemoveUser(10, _testContext.MockUsers[0]).Result;
+            Assert.IsType<NotFoundObjectResult>(res);
         }
 
         /* If the user is valid but not in the specified department */
         [Fact]
         public void Department_RemoveUser_ExpectBadRequest()
         {
-            MockUsers.Add(new GirafUser());
-            MockUsers[MockUsers.Count - 1].UserName = "AddUserTest";
+            var dc = initializeTest();
+            var user = new GirafUser()
+            {
+                UserName = "AddUserTest"
+            };
 
-            var res = departmentController.RemoveUser(1, MockUsers[MockUsers.Count - 1]);
-            IActionResult aRes = res.Result;
-            Assert.IsType<BadRequestObjectResult>(aRes);
+            var res = dc.RemoveUser(1, user).Result;
+            Assert.IsType<BadRequestObjectResult>(res);
         }
 
         [Fact]
@@ -182,6 +195,13 @@ namespace GirafRest.Test.Controllers
         public void Department_AddResource_ExpectAlreadyOwnedBadRequest()
         {
 
+        }
+
+        private void AddEmptyDepartmentList()
+        {
+            _testContext.MockDbContext.Reset();
+            var emptyDep = CreateMockDbSet(new List<Department>());
+            _testContext.MockDbContext.Setup(c => c.Departments).Returns(emptyDep.Object);
         }
     }
 }

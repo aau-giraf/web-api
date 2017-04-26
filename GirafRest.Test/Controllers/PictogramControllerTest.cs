@@ -12,39 +12,47 @@ using GirafRest.Test.Mocks;
 using static GirafRest.Test.UnitTestExtensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
+using GirafRest.Models.DTOs;
+using System.IO;
 
 namespace GirafRest.Test
 {
     public class PictogramControllerTest
     {
-        private readonly PictogramController pictogramController;
-        private readonly MockUserManager userManager;
+        private const int PUBLIC_PICTOGRAM = 0;
+        private const int PRIVATE_PICTOGRAM_USER0 = 3;
+        private const int PROTECTED_PICTOGRAM_USER0 = 5;
+        private const int NONEXISTING_PICTOGRAM = 999;
+
+        private TestContext _testContext;
         
-        private readonly ITestOutputHelper testLogger;
+        private readonly ITestOutputHelper _testLogger;
 
         public PictogramControllerTest(ITestOutputHelper output)
         {
-            testLogger = output;
-            var dbMock = CreateMockDbContext();
-            var userStore = new Mock<IUserStore<GirafUser>>();
-            userManager = MockUserManager(userStore);
-            var lfMock = CreateMockLoggerFactory();
-            var lMock = new Mock<ILogger>();
-            /*lMock.Setup(l => l.LogError(It.IsAny<string>()))
-                .Callback((string s) => output.WriteLine(s));*/
-                
-            pictogramController = new PictogramController(new MockGirafService(dbMock.Object, userManager), lfMock.Object);
-            pictogramController.MockHttpContext();
+            _testLogger = output;
+        }
+
+        private PictogramController initializeTest()
+        {
+            _testContext = new TestContext();
+
+            var pc = new PictogramController(
+                new MockGirafService(_testContext.MockDbContext.Object,
+                _testContext.MockUserManager), _testContext.MockLoggerFactory.Object);
+            _testContext.MockHttpContext = pc.MockHttpContext();
+
+            return pc;
         }
 
         #region ReadPictogram(id)
         [Fact]
         public void GetExistingPublic_NoLogin_ExpectOK()
         {
-            userManager.MockLogout();
-
-            Pictogram p = MockPictograms.Where(pict => pict.AccessLevel == AccessLevel.PUBLIC).First();
-            var res = pictogramController.ReadPictogram(p.Id);
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLogout();
+            
+            var res = pc.ReadPictogram(PUBLIC_PICTOGRAM);
             IActionResult aRes = res.Result;
 
             Assert.IsType<OkObjectResult>(aRes);
@@ -53,10 +61,10 @@ namespace GirafRest.Test
         [Fact]
         public void GetExistingPublic_Login_ExpectOK()
         {
-            userManager.MockLoginAsUser(MockUsers[0]);
-
-            Pictogram p = MockPictograms.Where(pict => pict.AccessLevel == AccessLevel.PUBLIC).First();
-            var res = pictogramController.ReadPictogram(p.Id);
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            
+            var res = pc.ReadPictogram(PUBLIC_PICTOGRAM);
             IActionResult aRes = res.Result;
 
             Assert.IsType<OkObjectResult>(aRes);
@@ -64,194 +72,185 @@ namespace GirafRest.Test
 
         [Fact]
         public void GetExistingPrivate_NoLogin_ExpectUnauthorized() {
-            userManager.MockLogout();
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLogout();
 
-            var res = pictogramController.ReadPictogram(3);
+            var res = pc.ReadPictogram(PRIVATE_PICTOGRAM_USER0);
             IActionResult aRes = res.Result;
-
-            //testLogger.WriteLine(((aRes as OkObjectResult).Value as PictogramDTO).Title);
 
             Assert.IsType<UnauthorizedResult>(aRes);
         }
 
         [Fact]
         public void GetExistingProtected_NoLogin_ExpectUnauthorized() {
-            try {
-                userManager.MockLogout();
-                
-                var res = pictogramController.ReadPictogram(5);
-                IActionResult aRes = res.Result;
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLogout();
 
-                Assert.IsType<UnauthorizedResult>(aRes);
-            }
-            catch (Exception e){
-                Assert.True(false, $"The method threw an exception: {e.Message}");
-            }
+            var res = pc.ReadPictogram(PROTECTED_PICTOGRAM_USER0);
+            IActionResult aRes = res.Result;
+
+            Assert.IsType<UnauthorizedResult>(aRes);
         }
 
         [Fact]
         public void GetOwnPrivate_Login_ExpectOK() {
-            try {
-                userManager.MockLoginAsUser(MockUsers[1]);
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
 
-                var res = pictogramController.ReadPictogram(4);
-                IActionResult aRes = res.Result;
+            var res = pc.ReadPictogram(PRIVATE_PICTOGRAM_USER0);
+            IActionResult aRes = res.Result;
 
-                Assert.IsType<OkObjectResult>(aRes);
-            }
-            catch (Exception e) {
-                Assert.True(false, $"The method threw an exception: {e.Message}, {e.Source}");
-            }
+            Assert.IsType<OkObjectResult>(aRes);
         }
 
         [Fact]
         public void GetProtectedInOwnDepartment_Login_ExpectOK() {
-            try
-            {
-                userManager.MockLoginAsUser(MockUsers[0]);
-                var tRes = pictogramController.ReadPictogram(5);
-                var res = tRes.Result;
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            var res = pc.ReadPictogram(PROTECTED_PICTOGRAM_USER0).Result;
 
-                if(res is BadRequestObjectResult)
-                {
-                    var uRes = res as BadRequestObjectResult;
-                    testLogger.WriteLine(uRes.Value.ToString());
-                }
-
-                Assert.IsType<OkObjectResult>(res);
-            }
-            catch (Exception e)
+            if(res is ObjectResult)
             {
-                Assert.True(false, $"The method threw an exception: {e.Message}");
+                var uRes = res as ObjectResult;
+                _testLogger.WriteLine(uRes.Value.ToString());
             }
+
+            Assert.IsType<OkObjectResult>(res);
         }
 
         [Fact]
         public void GetProtectedInAnotherDepartment_Login_ExpectUnauthorized() {
-            try
-            {
-                userManager.MockLoginAsUser(MockUsers[0]);
-                var tRes = pictogramController.ReadPictogram(6);
-                var res = tRes.Result;
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[1]);
+            var tRes = pc.ReadPictogram(PROTECTED_PICTOGRAM_USER0);
+            var res = tRes.Result;
 
-                if (res is BadRequestObjectResult)
-                {
-                    var uRes = res as BadRequestObjectResult;
-                    testLogger.WriteLine(uRes.Value.ToString());
-                }
-
-                Assert.IsType<UnauthorizedResult>(res);
-            }
-            catch (Exception e)
+            if (res is ObjectResult)
             {
-                Assert.True(false, $"The method threw an exception: {e.Message}");
+                var uRes = res as ObjectResult;
+                _testLogger.WriteLine(uRes.Value.ToString());
             }
+
+            Assert.IsType<UnauthorizedResult>(res);
         }
 
         [Fact]
         public void GetExistingPrivateAnotherUser_Login_ExpectUnauthorized() {
-            try
-            {
-                userManager.MockLoginAsUser(MockUsers[0]);
-                var tRes = pictogramController.ReadPictogram(4);
-                var res = tRes.Result;
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[1]);
+            var res = pc.ReadPictogram(PRIVATE_PICTOGRAM_USER0).Result;
 
-                Assert.IsType<UnauthorizedResult>(res);
-            }
-            catch (Exception e)
-            {
-                Assert.True(false, $"The method threw an exception: {e.Message}");
-            }
+            Assert.IsType<UnauthorizedResult>(res);
         }
 
         [Fact]
         public void GetNonexistingPictogram_Login_ExpectNotFound() {
-            userManager.MockLoginAsUser(MockUsers[0]);
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
 
-            var res = pictogramController.ReadPictogram(999);
+            var res = pc.ReadPictogram(NONEXISTING_PICTOGRAM);
             var pRes = res.Result;
             Assert.IsAssignableFrom<NotFoundResult>(pRes);
         }
 
         [Fact]
         public void GetNonexistingPictogram_NoLogin_ExpectNotFound() {
-            userManager.MockLogout();
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLogout();
 
-            var res = pictogramController.ReadPictogram(999).Result;
+            var res = pc.ReadPictogram(NONEXISTING_PICTOGRAM).Result;
 
             Assert.IsAssignableFrom<NotFoundResult>(res);
         }
         #endregion
         #region ReadPictograms()
         [Fact]
-        public void GetAll_NoLogin_ExpectOk()
+        public void GetAll_NoLogin_ExpectOk3Pictograms()
         {
-            userManager.MockLogout();
-            pictogramController.MockHttpContext();
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLogout();
+            _testContext.MockHttpContext.MockClearQueries();
 
-            var res = pictogramController.ReadPictograms().Result;
+            var res = pc.ReadPictograms().Result;
+            var resList = convertToListAndLogTestOutput(res as OkObjectResult);
 
-            Assert.IsType<OkObjectResult>(res);
+            Assert.True(3 == resList.Count);
         }
 
         [Fact]
-        public void GetAll_Login_ExpectOk()
+        public void GetAll_Login_ExpectOk5Pictograms()
         {
-            userManager.MockLoginAsUser(MockUsers[0]);
-            pictogramController.MockHttpContext();
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockHttpContext.MockClearQueries();
 
-            var res = pictogramController.ReadPictograms().Result;
+            var res = pc.ReadPictograms().Result;
+            var resList = convertToListAndLogTestOutput(res as OkObjectResult);
 
-            Assert.IsType<OkObjectResult>(res);
+            Assert.True(5 == resList.Count);
         }
 
         [Fact]
-        public void GetAllWithValidQuery_NoLogin_ExpectOk()
+        public void GetAllWithValidQuery_NoLogin_ExpectOk1Pictogram()
         {
-            userManager.MockLogout();
-            pictogramController.MockHttpContext();
-            pictogramController.HttpContext.Request.Query
-                .Append(new KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues>("title", "picto1"));
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLogout();
+            _testContext.MockHttpContext.MockQuery("title", "picto1");
 
-            var res = pictogramController.ReadPictograms().Result;
+            var res = pc.ReadPictograms().Result;
+            var resList = convertToListAndLogTestOutput(res as OkObjectResult);
 
-            Assert.IsType<OkObjectResult>(res);
+            Assert.True(1 == resList.Count);
         }
 
         [Fact]
         public void GetAllWithInvalidQuery_NoLogin_ExpectNotFound()
         {
-            userManager.MockLogout();
-            pictogramController.MockHttpContext();
-            pictogramController.HttpContext.Request.Query
-                .Append(new KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues>("title", "invalid"));
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLogout();
+            _testContext.MockHttpContext.MockQuery("title", "invalid");
 
-            var res = pictogramController.ReadPictograms().Result;
+            var res = pc.ReadPictograms().Result;
+
+            if (res is OkObjectResult)
+            {
+                convertToListAndLogTestOutput(res as OkObjectResult);
+            }
 
             Assert.IsType<NotFoundResult>(res);
         }
 
         [Fact]
-        public void GetAllWithValidQuery_Login_ExpectOk()
+        public void GetAllWithValidQuery_Login_ExpectOk1Pictogram()
         {
-            userManager.MockLoginAsUser(MockUsers[0]);
-            pictogramController.MockHttpContext();
-            pictogramController.HttpContext.Request.Query
-                .Append(new KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues>("title", "picto1"));
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockHttpContext.MockQuery("title", "picto1");
 
-            var res = pictogramController.ReadPictograms().Result;
+            var res = pc.ReadPictograms().Result;
 
-            Assert.IsType<OkObjectResult>(res);
+            var resList = convertToListAndLogTestOutput(res as OkObjectResult);
+
+            Assert.True(1 == resList.Count);
         }
 
         [Fact]
         public void GetAllWithInvalidQuery_Login_ExpectNotFound()
         {
-            userManager.MockLoginAsUser(MockUsers[1]);
-            pictogramController.HttpContext.Request.Query
-                .Append(new KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues>("title", "invalid"));
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[1]);
+            _testContext.MockHttpContext.MockQuery("title", "invalid");
 
-            var res = pictogramController.ReadPictograms().Result;
+            var res = pc.ReadPictograms().Result;
+
+            if (res is OkObjectResult)
+            {
+                convertToListAndLogTestOutput(res as OkObjectResult);
+            }
+            if(res is BadRequestObjectResult)
+            {
+                _testLogger.WriteLine((res as BadRequestObjectResult).Value.ToString());
+            }
 
             Assert.IsType<NotFoundResult>(res);
         }
@@ -259,11 +258,16 @@ namespace GirafRest.Test
         [Fact]
         public void GetAllWithValidQueryOnAnotherUsersPrivate_Login_ExpectNotFound()
         {
-            userManager.MockLoginAsUser(MockUsers[0]);
-            pictogramController.HttpContext.Request.Query
-                .Append(new KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues>("title", "user 1"));
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockHttpContext.MockQuery("title", "user 1");
 
-            var res = pictogramController.ReadPictograms().Result;
+            var res = pc.ReadPictograms().Result;
+
+            if (res is OkObjectResult)
+            {
+                convertToListAndLogTestOutput(res as OkObjectResult);
+            }
 
             Assert.IsType<NotFoundResult>(res);
         }
@@ -271,14 +275,823 @@ namespace GirafRest.Test
         [Fact]
         public void GetAllWithValidQueryOnPrivate_NoLogin_ExpectNotFound()
         {
-            userManager.MockLogout();
-            pictogramController.HttpContext.Request.Query
-                .Append(new KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues>("title", "user 1"));
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLogout();
+            _testContext.MockHttpContext.MockQuery("title", "user 1");
 
-            var res = pictogramController.ReadPictograms().Result;
+            var res = pc.ReadPictograms().Result;
+
+            if (res is OkObjectResult)
+            {
+                convertToListAndLogTestOutput(res as OkObjectResult);
+            }
 
             Assert.IsType<NotFoundResult>(res);
         }
+
+        private List<PictogramDTO> convertToListAndLogTestOutput(OkObjectResult result)
+        {
+            var list = result.Value as List<PictogramDTO>;
+            list.ForEach(p => _testLogger.WriteLine(p.Title));
+
+            return list;
+        }
+        #endregion
+        #region Create Pictogram
+        private const string pictogramName = "TP";
+
+        [Fact]
+        public void CreatePictogram_LoginValidDTOPublic_ExpectOK()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLogout();
+
+            var dto = new PictogramDTO()
+            {
+                AccessLevel = AccessLevel.PUBLIC,
+                Title = "Public " + pictogramName,
+                Id = 400
+            };
+
+            var res = pc.CreatePictogram(dto).Result;
+            Assert.IsType<OkObjectResult>(res);
+        }
+
+        [Fact]
+        public void CreatePictogram_LoginValidDTOPrivate_ExpectOK()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[1]);
+
+            var dto = new PictogramDTO()
+            {
+                AccessLevel = AccessLevel.PRIVATE,
+                Title = "Private " + pictogramName,
+                Id = 400
+            };
+
+            var res = pc.CreatePictogram(dto).Result;
+            Assert.IsType<OkObjectResult>(res);
+        }
+
+        [Fact]
+        public void CreatePictogram_LoginValidDTOProtected_ExpectOK()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[1]);
+
+            var dto = new PictogramDTO()
+            {
+                AccessLevel = AccessLevel.PROTECTED,
+                Title = "Protected " + pictogramName,
+                Id = 400
+            };
+
+            var res = pc.CreatePictogram(dto).Result;
+
+            _testLogger.WriteLine(((res as OkObjectResult).Value as PictogramDTO).Id.ToString());
+
+            Assert.IsType<OkObjectResult>(res);
+        }
+
+        [Fact]
+        public void CreatePictogram_LoginInvalidDTO_ExpectBadRequest()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[1]);
+
+            PictogramDTO dto = null;
+
+            var res = pc.CreatePictogram(dto).Result;
+
+            if(res is BadRequestObjectResult)
+            {
+                _testLogger.WriteLine((res as BadRequestObjectResult).Value.ToString());
+            }
+
+            Assert.IsType<BadRequestObjectResult>(res);
+        }
+        #endregion
+        #region UpdatePictogramInfo
+        [Fact]
+        public void Update_NoLoginPrivate_Unauthorized()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLogout();
+
+            var dto = new PictogramDTO()
+            {
+                Title = "Updated Pictogram",
+                AccessLevel = AccessLevel.PRIVATE,
+                Id = PRIVATE_PICTOGRAM_USER0
+            };
+
+            var res = pc.UpdatePictogramInfo(dto).Result;
+            if(res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsType<UnauthorizedResult>(res);
+        }
+
+        [Fact]
+        public void Update_NoLoginProtected_Unauthorized()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLogout();
+
+            var dto = new PictogramDTO()
+            {
+                Title = "Updated Pictogram",
+                AccessLevel = AccessLevel.PROTECTED,
+                Id = PROTECTED_PICTOGRAM_USER0
+            };
+
+            var res = pc.UpdatePictogramInfo(dto).Result;
+
+            if(res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsType<UnauthorizedResult>(res);
+        }
+
+        [Fact]
+        public void Update_LoginPublic_Ok()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+
+            var dto = new PictogramDTO()
+            {
+                Title = "Updated Pictogram",
+                AccessLevel = AccessLevel.PUBLIC,
+                Id = PUBLIC_PICTOGRAM
+            };
+
+            var res = pc.UpdatePictogramInfo(dto).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsType<OkObjectResult>(res);
+        }
+
+        [Fact]
+        public void Update_LoginOwnProtected_Ok()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+
+            var dto = new PictogramDTO()
+            {
+                Title = "Updated Pictogram",
+                AccessLevel = AccessLevel.PROTECTED,
+                Id = PROTECTED_PICTOGRAM_USER0
+            };
+
+            var res = pc.UpdatePictogramInfo(dto).Result;
+
+            _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsType<OkObjectResult>(res);
+        }
+
+        [Fact]
+        public void Update_LoginOwnPrivate_Ok()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+
+            var dto = new PictogramDTO()
+            {
+                Title = "Updated Pictogram",
+                AccessLevel = AccessLevel.PRIVATE,
+                Id = PRIVATE_PICTOGRAM_USER0
+            };
+            
+            var res = pc.UpdatePictogramInfo(dto).Result;
+
+            if(res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsType<OkObjectResult>(res);
+        }
+
+        [Fact]
+        public void Update_LoginAnotherPrivate_Unauthorized()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[1]);
+
+            var dto = new PictogramDTO()
+            {
+                Title = "Updated Pictogram",
+                Id = PRIVATE_PICTOGRAM_USER0
+            };
+
+            var res = pc.UpdatePictogramInfo(dto).Result;
+
+            Assert.IsType<UnauthorizedResult>(res);
+        }
+
+        [Fact]
+        public void Update_LoginAnotherProtected_Unauthorized()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[1]);
+
+            var dto = new PictogramDTO()
+            {
+                Title = "Updated Pictogram",
+                Id = PROTECTED_PICTOGRAM_USER0
+            };
+
+            var res = pc.UpdatePictogramInfo(dto).Result;
+
+            Assert.IsType<UnauthorizedResult>(res);
+        }
+
+        [Fact]
+        public void Update_LoginNonexisting_NotFound()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[1]);
+
+            var dto = new PictogramDTO()
+            {
+                Title = "Updated Pictogram",
+                Id = NONEXISTING_PICTOGRAM
+            };
+
+            var res = pc.UpdatePictogramInfo(dto).Result;
+
+            if(res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsAssignableFrom<NotFoundResult>(res);
+        }
+
+        public void Update_LoginInvalidDTO_BadRequest()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[1]);
+
+            PictogramDTO dto = null;
+
+            var res = pc.UpdatePictogramInfo(dto).Result;
+
+            _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsType<BadRequestObjectResult>(res);
+        }
+        #endregion
+        #region DeletePictogram
+        [Fact]
+        public void Delete_NoLoginProtected_Unauthorized()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLogout();
+
+            var res = pc.DeletePictogram(PROTECTED_PICTOGRAM_USER0).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsType<UnauthorizedResult>(res);
+        }
+
+        [Fact]
+        public void Delete_NoLoginPrivate_Unauthorized()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLogout();
+
+            var res = pc.DeletePictogram(PRIVATE_PICTOGRAM_USER0).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsType<UnauthorizedResult>(res);
+        }
+
+        [Fact]
+        public void Delete_LoginPublic_Ok()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+
+            var res = pc.DeletePictogram(PUBLIC_PICTOGRAM).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsType<OkResult>(res);
+        }
+
+        [Fact]
+        public void Delete_LoginOwnProtected_Ok()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+
+            var res = pc.DeletePictogram(PROTECTED_PICTOGRAM_USER0).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsType<OkResult>(res);
+        }
+
+        [Fact]
+        public void Delete_LoginOwnPrivate_Ok()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+
+            var res = pc.DeletePictogram(PRIVATE_PICTOGRAM_USER0).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsType<OkResult>(res);
+        }
+
+        [Fact]
+        public void Delete_LoginAnotherProtected_Unauthorized()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[1]);
+
+            var res = pc.DeletePictogram(PROTECTED_PICTOGRAM_USER0).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsType<UnauthorizedResult>(res);
+        }
+
+        [Fact]
+        public void Delete_LoginAnotherPrivate_Unauthorized()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[1]);
+
+            var res = pc.DeletePictogram(PRIVATE_PICTOGRAM_USER0).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsType<UnauthorizedResult>(res);
+        }
+
+        [Fact]
+        public void Delete_LoginNonexisting_NotFound()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+
+            var res = pc.DeletePictogram(NONEXISTING_PICTOGRAM).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsAssignableFrom<NotFoundResult>(res);
+        }
+        #endregion
+        #region CreateImage
+        private const string PNG_FILEPATH = "MockImage.png";
+
+        [Fact]
+        public void CreateImage_NoLoginProtected_Unauthorized()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLogout();
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
+
+            var res = pc.CreateImage(PROTECTED_PICTOGRAM_USER0).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsType<UnauthorizedResult>(res);
+        }
+
+        [Fact]
+        public void CreateImage_NoLoginPrivate_Unauthorized()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLogout();
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
+
+            var res = pc.CreateImage(PRIVATE_PICTOGRAM_USER0).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsType<UnauthorizedResult>(res);
+        }
+
+        [Fact]
+        public void CreateImage_LoginPublic_Ok()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
+
+            var res = pc.CreateImage(PUBLIC_PICTOGRAM).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsType<OkObjectResult>(res);
+        }
+
+        [Fact]
+        public void CreateImage_LoginPrivate_Ok()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
+
+            var res = pc.CreateImage(PRIVATE_PICTOGRAM_USER0).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsType<OkObjectResult>(res);
+        }
+        
+        [Fact]
+        public void CreateImage_LoginProtected_Ok()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
+
+            var res = pc.CreateImage(PROTECTED_PICTOGRAM_USER0).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsType<OkObjectResult>(res);
+        }
+
+        [Fact]
+        public void CreateImage_LoginAnotherProtected_Unauthorized()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[1]);
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
+
+            var res = pc.CreateImage(PROTECTED_PICTOGRAM_USER0).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsType<UnauthorizedResult>(res);
+        }
+
+        [Fact]
+        public void CreateImage_LoginAnotherPrivate_Unauthorized()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[1]);
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
+
+            var res = pc.CreateImage(PRIVATE_PICTOGRAM_USER0).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsType<UnauthorizedResult>(res);
+        }
+
+        [Fact]
+        public void CreateImage_LoginNonexisting_NotFound()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
+
+            var res = pc.CreateImage(NONEXISTING_PICTOGRAM).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsAssignableFrom<NotFoundResult>(res);
+        }
+
+        [Fact]
+        public void CreateImage_LoginPublicNullBody_BadRequest()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockHttpContext.MockRequestNoImage();
+
+            var res = pc.CreateImage(PUBLIC_PICTOGRAM).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsType<BadRequestObjectResult>(res);
+        }
+
+        [Fact]
+        public void CreateImage_LoginPublicExistingImage_BadRequest()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
+
+            pc.CreateImage(0);
+            var res = pc.CreateImage(0).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsType<BadRequestObjectResult>(res);
+        }
+        #endregion
+        #region UpdatePictogramImage
+        [Fact]
+        public void UpdateImage_NoLoginProtected_Unauthorized()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
+
+            pc.CreateImage(PROTECTED_PICTOGRAM_USER0);
+
+            _testContext.MockUserManager.MockLogout();
+            var res = pc.UpdatePictogramImage(PROTECTED_PICTOGRAM_USER0).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<UnauthorizedResult>(res);
+        }
+
+        [Fact]
+        public void UpdateImage_NoLoginPrivate_Unauthorized()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
+
+            pc.CreateImage(PRIVATE_PICTOGRAM_USER0);
+
+            _testContext.MockUserManager.MockLogout();
+            var res = pc.UpdatePictogramImage(PRIVATE_PICTOGRAM_USER0).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<UnauthorizedResult>(res);
+        }
+
+        [Fact]
+        public void UpdateImage_LoginPublic_Ok()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
+
+            pc.CreateImage(PUBLIC_PICTOGRAM);
+            
+            var res = pc.UpdatePictogramImage(PUBLIC_PICTOGRAM).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<OkObjectResult>(res);
+        }
+
+
+        [Fact]
+        public void UpdateImage_LoginPrivate_Ok()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
+
+            pc.CreateImage(PRIVATE_PICTOGRAM_USER0);
+
+            var res = pc.UpdatePictogramImage(PRIVATE_PICTOGRAM_USER0).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<OkObjectResult>(res);
+        }
+
+
+        [Fact]
+        public void UpdateImage_LoginProtected_Ok()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
+
+            pc.CreateImage(PROTECTED_PICTOGRAM_USER0);
+
+            var res = pc.UpdatePictogramImage(PROTECTED_PICTOGRAM_USER0).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<OkObjectResult>(res);
+        }
+
+
+        [Fact]
+        public void UpdateImage_LoginAnotherPrivate_Unauthorized()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
+
+            pc.CreateImage(PRIVATE_PICTOGRAM_USER0);
+
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[1]);
+            var res = pc.UpdatePictogramImage(PRIVATE_PICTOGRAM_USER0).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<UnauthorizedResult>(res);
+        }
+
+
+        [Fact]
+        public void UpdateImage_LoginAnotherProtected_Unauthorized()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
+
+            pc.CreateImage(PROTECTED_PICTOGRAM_USER0);
+
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[1]);
+            var res = pc.UpdatePictogramImage(PROTECTED_PICTOGRAM_USER0).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<UnauthorizedResult>(res);
+        }
+
+
+        [Fact]
+        public void UpdateImage_LoginNullBody_BadRequest()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
+
+            pc.CreateImage(PUBLIC_PICTOGRAM);
+
+            _testContext.MockHttpContext.MockRequestNoImage();
+            var res = pc.UpdatePictogramImage(PUBLIC_PICTOGRAM).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<OkObjectResult>(res);
+        }
+
+
+        [Fact]
+        public void UpdateImage_LoginNoImage_BadRequest()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
+            
+            var res = pc.UpdatePictogramImage(PRIVATE_PICTOGRAM_USER0).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<BadRequestObjectResult>(res);
+        }
+
+
+        [Fact]
+        public void UpdateImage_LoginNonexisting_NotFound()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
+            
+            var res = pc.UpdatePictogramImage(NONEXISTING_PICTOGRAM).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<NotFoundResult>(res);
+        }
+        #endregion
+        #region ReadPictogramImage
+        [Fact]
+        public void ReadImage_NoLoginProtected_Unauthorized()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
+            pc.CreateImage(PROTECTED_PICTOGRAM_USER0);
+
+            _testContext.MockUserManager.MockLogout();
+            var res = pc.ReadPictogramImage(PROTECTED_PICTOGRAM_USER0).Result;
+
+            Assert.IsType<UnauthorizedResult>(res);
+        }
+        
+        [Fact]
+        public void ReadImage_NoLoginPrivate_Unauthorized()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
+            pc.CreateImage(PRIVATE_PICTOGRAM_USER0);
+
+            _testContext.MockUserManager.MockLogout();
+            var res = pc.ReadPictogramImage(PRIVATE_PICTOGRAM_USER0).Result;
+
+            Assert.IsType<UnauthorizedResult>(res);
+        }
+        
+        [Fact]
+        public void ReadImage_LoginPublic_Ok()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
+            pc.CreateImage(PUBLIC_PICTOGRAM);
+            
+            var res = pc.ReadPictogramImage(PUBLIC_PICTOGRAM).Result;
+
+            Assert.IsType<FileContentResult>(res);
+        }
+        
+        [Fact]
+        public void ReadImage_LoginProtected_Ok()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
+            pc.CreateImage(PROTECTED_PICTOGRAM_USER0);
+
+            var res = pc.ReadPictogramImage(PROTECTED_PICTOGRAM_USER0).Result;
+
+            Assert.IsType<FileContentResult>(res);
+        }
+        
+        [Fact]
+        public void ReadImage_LoginAnotherPrivate_Unauthorized()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[1]);
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
+            pc.CreateImage(PRIVATE_PICTOGRAM_USER0);
+
+            var res = pc.ReadPictogramImage(PRIVATE_PICTOGRAM_USER0).Result;
+
+            Assert.IsType<UnauthorizedResult>(res);
+        }
+
+        [Fact]
+        public void ReadImage_LoginAnotherProtected_Unauhtorized()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[1]);
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
+            pc.CreateImage(PROTECTED_PICTOGRAM_USER0);
+
+            var res = pc.ReadPictogramImage(PROTECTED_PICTOGRAM_USER0).Result;
+
+            Assert.IsType<FileResult>(res);
+        }
+
+        [Fact]
+        public void ReadImage_LoginPublicNoImage_NotFound()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+
+            var res = pc.ReadPictogramImage(PUBLIC_PICTOGRAM).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsType<NotFoundObjectResult>(res);
+        }
+
+        [Fact]
+        public void ReadImage_LoginNonexisting_NotFound()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            pc.CreateImage(NONEXISTING_PICTOGRAM);
+
+            var res = pc.ReadPictogramImage(NONEXISTING_PICTOGRAM).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsType<NotFoundObjectResult>(res);
+        }
+        #endregion
+        #region FilterByTitle
+
         #endregion
     }
 }

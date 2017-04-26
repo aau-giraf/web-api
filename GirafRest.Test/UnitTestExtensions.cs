@@ -21,14 +21,16 @@ namespace GirafRest.Test
 {
     public static class UnitTestExtensions
     {
-        #region Mock Data
-        private static List<Pictogram> mockPictograms;
-        public static IReadOnlyList<Pictogram> MockPictograms
+        public class TestContext : IDisposable
         {
-            get
+            #region Mock Data
+            private List<Pictogram> mockPictograms;
+            public IReadOnlyList<Pictogram> MockPictograms
             {
-                if (mockPictograms == null)
-                    mockPictograms = new List<Pictogram> {
+                get
+                {
+                    if (mockPictograms == null)
+                        mockPictograms = new List<Pictogram> {
                         new Pictogram("Public Picto1", AccessLevel.PUBLIC) {
                             Id = 0
                         },
@@ -53,16 +55,16 @@ namespace GirafRest.Test
                         }
                     };
 
-                return mockPictograms;
+                    return mockPictograms;
+                }
             }
-        }
-        private static List<GirafUser> mockUsers;
-        public static IReadOnlyList<GirafUser> MockUsers
-        {
-            get
+            private List<GirafUser> mockUsers;
+            public IReadOnlyList<GirafUser> MockUsers
             {
-                if(mockUsers == null)
-                    mockUsers = new List<GirafUser>() {
+                get
+                {
+                    if (mockUsers == null)
+                        mockUsers = new List<GirafUser>() {
                         new GirafUser("Mock User", 0) {
                             DepartmentKey = 1
                         },
@@ -72,16 +74,16 @@ namespace GirafRest.Test
                         }
                     };
 
-                return mockUsers;
+                    return mockUsers;
+                }
             }
-        }
-        private static List<Department> mockDepartments;
-        public static IReadOnlyList<Department> MockDepartments
-        {
-            get
+            private List<Department> mockDepartments;
+            public IReadOnlyList<Department> MockDepartments
             {
-                if(mockDepartments == null)
-                    mockDepartments = new List<Department>() {
+                get
+                {
+                    if (mockDepartments == null)
+                        mockDepartments = new List<Department>() {
                         new Department()
                         {
                             Key = 1,
@@ -102,16 +104,16 @@ namespace GirafRest.Test
                         }
                     };
 
-                return mockDepartments;
+                    return mockDepartments;
+                }
             }
-        }
-        private static List<Choice> mockChoices;
-        public static IReadOnlyList<Choice> MockChoices
-        {
-            get
+            private List<Choice> mockChoices;
+            public List<Choice> MockChoices
             {
-                if (mockChoices == null)
-                    mockChoices = new List<Choice>()
+                get
+                {
+                    if (mockChoices == null)
+                        mockChoices = new List<Choice>()
                     {
                         new Choice(MockPictograms.Where(p => p.AccessLevel == AccessLevel.PUBLIC).Cast<PictoFrame>().ToList())
                         {
@@ -140,40 +142,105 @@ namespace GirafRest.Test
                             Id = 3
                         },
                     };
-                return mockChoices;
+                    return mockChoices;
+                }
             }
-        }
-        private static List<UserResource> mockUserResources;
-        public static IReadOnlyList<UserResource> MockUserResources
-        {
-            get
+            private List<UserResource> mockUserResources;
+            public IReadOnlyList<UserResource> MockUserResources
             {
-                if(mockUserResources == null)
-                    mockUserResources = new List<UserResource>() {
+                get
+                {
+                    if (mockUserResources == null)
+                        mockUserResources = new List<UserResource>() {
                         new UserResource(MockUsers[0], MockPictograms[3]),
                         new UserResource(MockUsers[1], MockPictograms[4])
                     };
 
-                return mockUserResources;
+                    return mockUserResources;
+                }
             }
-        }
-        private static List<DepartmentResource> mockDepartmentResources;
-        public static IReadOnlyList<DepartmentResource> MockDepartmentResources
-        {
-            get
+            private List<DepartmentResource> mockDepartmentResources;
+            public IReadOnlyList<DepartmentResource> MockDepartmentResources
             {
-                if(mockDepartmentResources == null)
-                    mockDepartmentResources = new List<DepartmentResource>()
+                get
+                {
+                    if (mockDepartmentResources == null)
+                        mockDepartmentResources = new List<DepartmentResource>()
                     {
                         new DepartmentResource(MockDepartments[0], MockPictograms[5]),
                         new DepartmentResource(MockDepartments[1], MockPictograms[6])
                     };
 
-                return mockDepartmentResources;
+                    return mockDepartmentResources;
+                }
             }
+            #endregion
+            public readonly Mock<MockDbContext> MockDbContext;
+            public readonly MockUserManager MockUserManager;
+            public Mock<HttpContext> MockHttpContext { get; set; }
+            public readonly Mock<ILoggerFactory> MockLoggerFactory;
+
+            public TestContext()
+            {
+                MockDbContext = CreateMockDbContext();
+                MockUserManager = CreateMockUserManager();
+
+                var mockLogger = new Mock<ILogger>();
+                MockLoggerFactory = new Mock<ILoggerFactory>();
+                MockLoggerFactory.Setup(lf => lf.CreateLogger(It.IsAny<string>()))
+                    .Returns(mockLogger.Object);
+            }
+
+            private Mock<MockDbContext> CreateMockDbContext()
+            {
+                var mockSet = CreateMockDbSet(MockPictograms);
+                var mockRelationSet = CreateMockDbSet(MockUserResources);
+                var mockDepRes = CreateMockDbSet(MockDepartmentResources);
+                var mockChoices = CreateMockDbSet(MockChoices);
+                var mockDeps = CreateMockDbSet(MockDepartments);
+                var mockPF = CreateMockDbSet(MockPictograms.Cast<PictoFrame>().ToList());
+
+                var dbMock = new Mock<MockDbContext>();
+                dbMock.Setup(c => c.Pictograms).Returns(mockSet.Object);
+                dbMock.Setup(c => c.UserResources).Returns(mockRelationSet.Object);
+                dbMock.Setup(c => c.DepartmentResources).Returns(mockDepRes.Object);
+                dbMock.Setup(c => c.Choices).Returns(mockChoices.Object);
+                dbMock.Setup(c => c.Departments).Returns(mockDeps.Object);
+                dbMock.Setup(c => c.PictoFrames).Returns(mockPF.Object);
+
+                //Make sure that all references are setup - Entity does not handle it for us this time.
+                MockUsers[0].Department = MockDepartments[0];
+                MockUsers[1].Department = MockDepartments[1];
+
+                return dbMock;
+            }
+
+            private MockUserManager CreateMockUserManager()
+            {
+                var userStore = new Mock<IUserStore<GirafUser>>();
+                var umMock = new MockUserManager(userStore.Object);
+                return umMock;
+            }
+
+            private Mock<ILoggerFactory> CreateMockLoggerFactory()
+            {
+                var logs = new List<string>();
+                var lMock = new Mock<ILogger>();
+
+                var lfMock = new Mock<ILoggerFactory>();
+                lfMock.Setup(lf => lf.CreateLogger(It.IsAny<string>())).Returns(lMock.Object);
+
+                return lfMock;
+            }
+
+            public void Dispose()
+            {
+
+            }
+
+
         }
 
-        #endregion
         public static Mock<HttpContext> MockHttpContext(this Controller controller)
         {
             var hContext = new Mock<HttpContext>();
@@ -212,45 +279,6 @@ namespace GirafRest.Test
                 .Returns(new MemoryStream());
         }
 
-        public static Mock<MockDbContext> CreateMockDbContext()
-        {
-            var mockSet = CreateMockDbSet<Pictogram>(MockPictograms);
-            var mockRelationSet = CreateMockDbSet<UserResource>(MockUserResources);
-            var mockDepRes = CreateMockDbSet<DepartmentResource>(MockDepartmentResources);
-            var mockChoices = CreateMockDbSet<Choice>(MockChoices);
-            var mockDeps = CreateMockDbSet<Department>(MockDepartments);
-            var mockPF = CreateMockDbSet<PictoFrame>(MockPictograms.Cast<PictoFrame>().ToList());
-
-            var dbMock = new Mock<MockDbContext>();
-            dbMock.Setup(c => c.Pictograms).Returns(mockSet.Object);
-            dbMock.Setup(c => c.UserResources).Returns(mockRelationSet.Object);
-            dbMock.Setup(c => c.DepartmentResources).Returns(mockDepRes.Object);
-            dbMock.Setup(c => c.Choices).Returns(mockChoices.Object);
-            dbMock.Setup(c => c.Departments).Returns(mockDeps.Object);
-            dbMock.Setup(c => c.PictoFrames).Returns(mockPF.Object);
-
-            //Make sure that all references are setup - Entity does not handle it for us this time.
-            MockUsers[0].Department = MockDepartments[0];
-            MockUsers[1].Department = MockDepartments[1];
-
-            return dbMock;
-        }
-
-        public static void AddEmptyDepartmentList (Mock<MockDbContext> dbMock)
-        {      
-            dbMock.Reset();       
-            var emptyDep = UnitTestExtensions.CreateMockDbSet<Department>(new List<Department>());
-            dbMock.Setup(c => c.Departments).Returns(emptyDep.Object);
-        }
-
-        public static void AddSampleDepartmentList (Mock<MockDbContext> dbMock)
-        {
-            dbMock.Reset();             
-            var mockDeps = MockDepartments;
-            var mockDepartments = CreateMockDbSet<Department>(mockDeps);
-            dbMock.Setup(c => c.Departments).Returns(mockDepartments.Object);
-        }
-
         public static Mock<MockDbSet<T>> CreateMockDbSet<T>(IReadOnlyList<T> dataList) 
             where T : class
         {
@@ -274,21 +302,6 @@ namespace GirafRest.Test
             mockSet.As<IQueryable<T>>().Setup(m => m.GetEnumerator()).Returns(data.GetEnumerator());
 
             return mockSet;
-        }
-
-        public static MockUserManager MockUserManager(Mock<IUserStore<GirafUser>> userStore) {
-            var umMock = new MockUserManager (userStore.Object);
-            return umMock;
-        }
-
-        public static Mock<ILoggerFactory> CreateMockLoggerFactory() {
-            var logs = new List<string>();
-            var lMock = new Mock<ILogger>();
-
-            var lfMock = new Mock<ILoggerFactory>();
-            lfMock.Setup(lf => lf.CreateLogger(It.IsAny<string>())).Returns(lMock.Object);
-
-            return lfMock;
         }
     }
 }
