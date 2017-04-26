@@ -35,6 +35,10 @@ namespace GirafRest
         /// </summary>
         private static Int16 port = 5000;
 
+        public static bool LogToFile = false;
+        public static string LogFilepath = "";
+        public static readonly string LogDirectory = "Logs";
+
         public static void Main(string[] args)
         {
             Console.WriteLine("Welcome to Giraf REST Server.");
@@ -73,11 +77,12 @@ namespace GirafRest
             Regex portRegex = new Regex(@"port=[\d]*");
 
             var helpMessage = "\tRun with --help to list options";
-            var options = "\n\t--db=[mysql|sqlite]\t\t| Connect to MySQL or SQLite database, defaults to SQLite.\n" + 
+            var options = "\n\t--db=[mysql|sqlite]\t\t| Connect to MySQL or SQLite database, defaults to SQLite.\n" +
                           "\t--prod=[true|false]\t\t| If true then connect to production db, defaults to false.\n" +
                           "\t--port=integer\t\t\t| Specify which port to host the server on, defaults to 5000.\n" +
-                          "\t--list\t\t\t\t| List options\n" + 
-                          "\t--sample-data=[true|false]\t| Defines if the rest-api should generate some sample data. This only works on an empty database.";
+                          "\t--list\t\t\t\t| List options\n" +
+                          "\t--sample-data=[true|false]\t| Defines if the rest-api should generate some sample data. This only works on an empty database." +
+                          "\t--logfile=string\t\t| Toggles logging to a file, the string specifies the path to the file relative to the working directory.";
             if(args.Length == 0) {
                 System.Console.WriteLine("\tNo program arguments were found - running in default configuration.");
                 System.Console.WriteLine(options);
@@ -133,6 +138,12 @@ namespace GirafRest
                             Console.WriteLine("\tERROR: Invalid parameter specified for --sample-data, expected [true|false], but found " + argumentAndParameter[1]);
                             return false;
                         }
+                        break;
+                    case "--logfile":
+                        if (String.IsNullOrWhiteSpace(argumentAndParameter[1]))
+                            return false;
+                        LogToFile = true;
+                        LogFilepath = argumentAndParameter[1];
                         break;
                     //An invalid argument was found, stop the execution.
                     default:
