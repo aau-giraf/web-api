@@ -37,7 +37,7 @@ namespace GirafRest
 
         public static bool LogToFile = false;
         public static string LogFilepath = "";
-        public static readonly string LogDirectory = "Logs";
+        public static readonly string LogDirectory = Path.Combine("wwwroot", "Logs");
 
         public static void Main(string[] args)
         {
