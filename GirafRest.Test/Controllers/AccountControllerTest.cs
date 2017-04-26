@@ -16,29 +16,28 @@ namespace GirafRest.Test
 {
     public class AccountControllerTest
     {
-        private readonly AccountController accountController;
-        private readonly List<string> logs;
-        private readonly MockUserManager userManager;
         private readonly ITestOutputHelper _outputHelpter;
-        private readonly Mock<MockDbContext> dbMock;
+        private TestContext _testContext;
 
         public AccountControllerTest(ITestOutputHelper outputHelpter)
         {
-            dbMock = CreateMockDbContext();
-
-            var userStore = new Mock<IUserStore<GirafUser>>();
-            userManager = MockUserManager(userStore);
-            var lfMock = CreateMockLoggerFactory();
-
-            // Skal lave alt der skal indsættes som parameter til AccountController
-            accountController = new AccountController(MockUserManager(new Mock<IUserStore<GirafUser>>()), null, null, null, lfMock.Object);
-
             _outputHelpter = outputHelpter;
+        }
+
+        private AccountController initializeTest()
+        {
+            _testContext = new TestContext();
+
+            AccountController ac = new AccountController(_testContext.MockUserManager, null, null, null, _testContext.MockLoggerFactory.Object);
+            _testContext.MockHttpContext = ac.MockHttpContext();
+            return ac;
         }
 
         [Fact]
         public void Login_CredentialsOk_ExpectOK()
         {
+            var accountController = initializeTest();
+
             // Indsæt korrekt username og password
             var res = accountController.Login(new LoginViewModel() { Username =  "", Password = ""});
             Assert.IsType<OkResult>(res.Result);
@@ -47,6 +46,8 @@ namespace GirafRest.Test
         [Fact]
         public void Login_CredentialsNotOk_ExpectUnauthorized()
         {
+            var accountController = initializeTest();
+
             // Indsæt forkert username og password
             var res = accountController.Login(new LoginViewModel() { Username = "", Password = "" });
             Assert.IsType<UnauthorizedResult>(res.Result);
@@ -55,6 +56,8 @@ namespace GirafRest.Test
         [Fact]
         public void Register_InputOk_ExpectOK()
         {
+            var accountController = initializeTest();
+
             var res = accountController.Register( new RegisterViewModel()
             { Username = "Kurt", Password = "123", ConfirmPassword = "123", DepartmentId = 0});
             Assert.IsType<OkResult>(res.Result);
@@ -63,6 +66,8 @@ namespace GirafRest.Test
         [Fact]
         public void Register_InputExist_ExpectBadRequest()
         {
+            var accountController = initializeTest();
+
             var res = accountController.Register(new RegisterViewModel()
             { Username = "Mock User", Password = "123", ConfirmPassword = "123", DepartmentId = 0 });
             Assert.IsType<BadRequestResult>(res.Result);
@@ -71,7 +76,9 @@ namespace GirafRest.Test
         [Fact]
         public void Logout_UserLoggedIn_ExpectOK()
         {
-            userManager.MockLoginAsUser(MockUsers[0]);
+            var accountController = initializeTest();
+
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
             var res = accountController.Logout();
             Assert.IsType<OkResult>(res.Result);
         }
@@ -79,7 +86,9 @@ namespace GirafRest.Test
         [Fact]
         public void Logout_UserNotLoggedIn_ExpectBadRequest()
         {
-            userManager.MockLogout();
+            var accountController = initializeTest();
+
+            _testContext.MockUserManager.MockLogout();
             var res = accountController.Logout();
             Assert.IsType<BadRequestResult>(res.Result);
         }
@@ -87,6 +96,8 @@ namespace GirafRest.Test
         [Fact]
         public void ForgotPassword_UserExist_ExpectOk()
         {
+            var accountController = initializeTest();
+
             // Indsæt email
             var res = accountController.ForgotPassword(new ForgotPasswordViewModel() { Username = "Mock User", Email = "" });
             Assert.IsType<OkResult>(res.Result);
@@ -95,6 +106,8 @@ namespace GirafRest.Test
         [Fact]
         public void ForgotPassword_UserDoNotExist_ExpectNotFound()
         {
+            var accountController = initializeTest();
+
             var res = accountController.ForgotPassword(new ForgotPasswordViewModel() { Username = "No User", Email = "" });
             Assert.IsType<OkResult>(res.Result);
         }
