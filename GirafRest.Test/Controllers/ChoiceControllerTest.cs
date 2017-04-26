@@ -247,17 +247,10 @@ namespace GirafRest.Test
             }
             c.Clear();
             c.AddAll(_testContext.MockPictograms.Cast<PictoFrame>().Where(p => p.AccessLevel == AccessLevel.PUBLIC).Take(2).ToList());
-            foreach (var option in _testContext.MockChoices[PRIVATE_CHOICE])
-            {
-                _outputHelpter.WriteLine(option.Title);
-            }
             var res = choiceController.UpdateChoiceInfo(new ChoiceDTO(c));
-            foreach (var option in _testContext.MockChoices[PRIVATE_CHOICE])
-            {
-                _outputHelpter.WriteLine(option.Title);
-            }
             Assert.IsType<OkObjectResult>(res.Result);
         }
+
 
         [Fact]
         public void Update_ExistingPrivate_OtherLogin_ExpectUnauthorized()
