@@ -77,7 +77,7 @@ namespace GirafRest.Setup
 				new Pictogram("Nat", AccessLevel.PROTECTED),
 				new Pictogram("Slat", AccessLevel.PROTECTED),
 				new Pictogram("Pjat", AccessLevel.PROTECTED),
-				new Pictogram("Skråt", AccessLevel.PROTECTED),
+				new Pictogram("Skråt", AccessLevel.PRIVATE),
 				new Pictogram("Snot", AccessLevel.PROTECTED),
 				new Pictogram("Flot", AccessLevel.PROTECTED),
 				new Pictogram("Slot", AccessLevel.PROTECTED),

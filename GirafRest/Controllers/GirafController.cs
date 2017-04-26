@@ -67,6 +67,7 @@ namespace GirafRest.Controllers
                     .Include(u => u.WeekSchedule)
                     .ThenInclude(w => w.Weekdays)
                     .ThenInclude(wd => wd.Elements)
+                    .Include(u => u.AvailableApplications)
                     //And return it
                     .FirstAsync();
         }

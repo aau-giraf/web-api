@@ -84,7 +84,7 @@ namespace GirafRest.Setup
             if (Program.LogToFile)
             {
                 loggerFactory.AddFile(Path.Combine(Program.LogDirectory, Program.LogFilepath), LogLevel.Warning);
-                app.UseStaticFiles(); // For the wwwroot folder
+                app.UseStaticFiles();
 
                 string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), Program.LogDirectory);
                 if (!Directory.Exists(directoryPath))

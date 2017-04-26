@@ -39,6 +39,11 @@ namespace GirafRest.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginViewModel model)
         {
+            if (string.IsNullOrEmpty(model.Username))
+                return BadRequest("No username specified.");
+            if (string.IsNullOrEmpty(model.Password))
+                return BadRequest("No password specified.");
+
             // This doesn't count login failures towards account lockout
             // To enable password failures to trigger account lockout, set lockoutOnFailure: true
             var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, lockoutOnFailure: false);

@@ -242,7 +242,7 @@ namespace GirafRest.Controllers
             var resource = await _giraf._context.Frames.Where(f => f.Id == resId).FirstAsync();
             if(resource == null) return NotFound($"There is no resource with id {id}.");
 
-            var resourceOwned = await _giraf.CheckPrivateOwnership(resource, HttpContext);
+            var resourceOwned = await _giraf.CheckProtectedOwnership(resource, HttpContext);
             if(!resourceOwned) return Unauthorized();
 
             //Check if the department already owns the resource
@@ -260,7 +260,7 @@ namespace GirafRest.Controllers
             return Ok(new DepartmentDTO(department));
         }
 
-        [HttpPost("{id}/remove-resource")]
+        [HttpPost("remove-resource/{id}")]
         [Authorize]
         public async Task<IActionResult> RemoveResource(long id, [FromBody] long? resourceId) {
             //Fetch the department and check that it exists.
@@ -274,16 +274,16 @@ namespace GirafRest.Controllers
             //Fetch the resource with the given id, check that it exists.
             var resource = await _giraf._context.Frames
                 .Where(f => f.Id == resId)
-                .FirstAsync();
+                .FirstOrDefaultAsync();
             if(resource == null) return NotFound($"There is no resource with id {resourceId}.");
 
-            var resourceOwned = await _giraf.CheckPrivateOwnership(resource, HttpContext);
+            var resourceOwned = await _giraf.CheckProtectedOwnership(resource, HttpContext);
             if(!resourceOwned) return Unauthorized();
 
             //Check if the department already owns the resource and remove if so.
             var drrelation = await _giraf._context.DepartmentResources
                 .Where(dr => dr.ResourceKey == resource.Id && dr.OtherKey == department.Key)
-                .FirstAsync();
+                .FirstOrDefaultAsync();
             if(drrelation == null) return BadRequest("The department does not own the given resource.");
             department.Resources.Remove(drrelation);
             await _giraf._context.SaveChangesAsync();

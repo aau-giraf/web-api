@@ -4,14 +4,14 @@ namespace GirafRest.Models
     /**
      * Accessible by everyone, even non-users.
      */
-    PUBLIC,
+    PUBLIC = 0,
     /**
      * Accessible to everyone associated with the owning department.
      */
-    PROTECTED, 
+    PROTECTED = 1, 
     /**
      * Accessible only to the owning user.
      */
-    PRIVATE
+    PRIVATE = 2
     }
 }
