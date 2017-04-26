@@ -6,7 +6,7 @@ using System.Text;
 
 namespace GirafRest.Test.Mocks
 {
-    class MockSignInManager : SignInManager<GirafUser>
+    /*class MockSignInManager : SignInManager<GirafUser>
     {
         GirafUser currentUser;
 
@@ -14,5 +14,5 @@ namespace GirafRest.Test.Mocks
         {
 
         }
-    }
+    }*/
 }

@@ -659,6 +659,7 @@ namespace GirafRest.Test
         #endregion
         #region CreateImage
         private const string PNG_FILEPATH = "MockImage.png";
+        private const string JPEG_FILEPATH = "MockImage.jpg";
 
         [Fact]
         public void CreateImage_NoLoginProtected_Unauthorized()
@@ -810,6 +811,22 @@ namespace GirafRest.Test
 
             Assert.IsType<BadRequestObjectResult>(res);
         }
+
+        [Fact]
+        public void CreateImage_PublicJpeg_Ok()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLogout();
+            _testContext.MockHttpContext.MockRequestImage(JPEG_FILEPATH);
+
+            var res = pc.CreateImage(PUBLIC_PICTOGRAM).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+
+            Assert.IsType<OkObjectResult>(res);
+        }
+
         #endregion
         #region UpdatePictogramImage
         [Fact]
@@ -979,6 +996,47 @@ namespace GirafRest.Test
                 _testLogger.WriteLine((res as ObjectResult).Value.ToString());
             Assert.IsType<NotFoundResult>(res);
         }
+
+        [Fact]
+        public void UpdateImage_PublicJpegToJpeg_Ok()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLogout();
+            _testContext.MockHttpContext.MockRequestImage(JPEG_FILEPATH);
+
+            pc.CreateImage(PUBLIC_PICTOGRAM);
+
+            pc.UpdatePictogramImage(PUBLIC_PICTOGRAM);
+
+            _testContext.MockHttpContext.MockRequestImage(JPEG_FILEPATH);
+
+            var res = pc.UpdatePictogramImage(PUBLIC_PICTOGRAM).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<OkObjectResult>(res);
+        }
+
+        [Fact]
+        public void UpdateImage_PublicPngToJpeg_Ok()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLogout();
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
+
+            pc.CreateImage(PUBLIC_PICTOGRAM);
+
+            pc.UpdatePictogramImage(PUBLIC_PICTOGRAM);
+
+            _testContext.MockHttpContext.MockRequestImage(JPEG_FILEPATH);
+
+            var res = pc.UpdatePictogramImage(PUBLIC_PICTOGRAM).Result;
+
+            if (res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<OkObjectResult>(res);
+        }
+
         #endregion
         #region ReadPictogramImage
         [Fact]
@@ -1089,6 +1147,20 @@ namespace GirafRest.Test
 
             Assert.IsType<NotFoundObjectResult>(res);
         }
+
+        [Fact]
+        public void ReadImage_GetPublicJpeg_ok()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLogout();
+            _testContext.MockHttpContext.MockRequestImage(JPEG_FILEPATH);
+            pc.CreateImage(PUBLIC_PICTOGRAM);
+
+            var res = pc.ReadPictogramImage(PUBLIC_PICTOGRAM).Result;
+
+            Assert.IsType<FileContentResult>(res);
+        }
+
         #endregion
         #region FilterByTitle
 
