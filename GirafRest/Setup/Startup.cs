@@ -10,6 +10,10 @@ using GirafRest.Services;
 using GirafRest.Extensions;
 using Microsoft.AspNetCore.Identity;
 using GirafRest.Controllers;
+using Serilog;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
+using Microsoft.AspNetCore.Http;
 
 namespace GirafRest.Setup
 {
@@ -66,11 +70,34 @@ namespace GirafRest.Setup
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public async void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
-            GirafDbContext context, UserManager<GirafUser> userManager)
+        public async void Configure(
+            IApplicationBuilder app,
+            IHostingEnvironment env,
+            ILoggerFactory loggerFactory,
+            GirafDbContext context,
+            UserManager<GirafUser> userManager,
+            IApplicationLifetime appLifetime)
         {
-            loggerFactory.AddConsole();
-            loggerFactory.AddDebug();
+            loggerFactory
+                .AddConsole()
+                .AddDebug();
+            if (Program.LogToFile)
+            {
+                loggerFactory.AddFile(Path.Combine(Program.LogDirectory, Program.LogFilepath), LogLevel.Warning);
+                app.UseStaticFiles(); // For the wwwroot folder
+
+                string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), Program.LogDirectory);
+                if (!Directory.Exists(directoryPath))
+                    Directory.CreateDirectory(directoryPath);
+
+                app.UseStaticFiles(new StaticFileOptions()
+                {
+                    FileProvider = new PhysicalFileProvider(
+                        directoryPath),
+                    RequestPath = new PathString("/logs")
+                });
+            }
+            appLifetime.ApplicationStopped.Register(Log.CloseAndFlush);
 
             if (env.IsDevelopment())
             {
