@@ -39,16 +39,18 @@ namespace GirafRest.Test
         [Fact]
         public void Login_CredentialsOk_ExpectOK()
         {
-            // Indsæt korrekt username og password
-            var res = accountController.Login(new LoginViewModel() { Username =  "", Password = ""});
+            Assert.True(false, "Not implemented");
+            // Indsæt korrekt password
+            var res = accountController.Login(new LoginViewModel()
+            { Username =  MockUsers[0].UserName, Password = ""});
             Assert.IsType<OkResult>(res.Result);
         }
 
         [Fact]
         public void Login_CredentialsNotOk_ExpectUnauthorized()
         {
-            // Indsæt forkert username og password
-            var res = accountController.Login(new LoginViewModel() { Username = "", Password = "" });
+            var res = accountController.Login(new LoginViewModel()
+            { Username = "CredentialsNotOk", Password = "CredentialsNotOk" });
             Assert.IsType<UnauthorizedResult>(res.Result);
         }
 
@@ -56,15 +58,17 @@ namespace GirafRest.Test
         public void Register_InputOk_ExpectOK()
         {
             var res = accountController.Register( new RegisterViewModel()
-            { Username = "Kurt", Password = "123", ConfirmPassword = "123", DepartmentId = 0});
+            { Username = "InputOk", Password = "InputOk", ConfirmPassword = "InputOk", DepartmentId = 0});
             Assert.IsType<OkResult>(res.Result);
         }
 
         [Fact]
         public void Register_InputExist_ExpectBadRequest()
         {
+            Assert.True(false, "Not implemented");
+            // Indsæt korrekt password
             var res = accountController.Register(new RegisterViewModel()
-            { Username = "Mock User", Password = "123", ConfirmPassword = "123", DepartmentId = 0 });
+            { Username = MockUsers[0].UserName, Password = "", ConfirmPassword = "", DepartmentId = 0 });
             Assert.IsType<BadRequestResult>(res.Result);
         }
 
@@ -87,34 +91,37 @@ namespace GirafRest.Test
         [Fact]
         public void ForgotPassword_UserExist_ExpectOk()
         {
-            // Indsæt email
-            var res = accountController.ForgotPassword(new ForgotPasswordViewModel() { Username = "Mock User", Email = "" });
+            Assert.True(false, "Not implemented");
+            // Indsæt korrekt email
+            var res = accountController.ForgotPassword(new ForgotPasswordViewModel()
+            { Username = MockUsers[0].UserName, Email = "" });
             Assert.IsType<OkResult>(res.Result);
         }
 
         [Fact]
         public void ForgotPassword_UserDoNotExist_ExpectNotFound()
         {
-            var res = accountController.ForgotPassword(new ForgotPasswordViewModel() { Username = "No User", Email = "" });
+            var res = accountController.ForgotPassword(new ForgotPasswordViewModel()
+            { Username = "UserDoNotExist", Email = "UserDoNotExist@UserDoNotExist.com" });
             Assert.IsType<OkResult>(res.Result);
         }
 
         [Fact]
         public void ResetPassword_() // hvad skal der testes ved den?
         {
-            Assert.True(false);
+            Assert.True(false, "Not implemented");
         }
 
         [Fact]
         public void ResetPasswordConfirmation_ExpectViewReturned()
         {
-            Assert.True(false);
+            Assert.True(false, "Not implemented");
         }
 
         [Fact]
         public void AccessDenied_ExpectUnauthorized()
         {
-            Assert.True(false);
+            Assert.True(false, "Not implemented");
         }
     }
 }
