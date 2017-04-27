@@ -62,13 +62,13 @@ namespace GirafRest.Models
         {
             if(!Weekdays.Any())
             {
-                this.Weekdays.Add(new Weekday(Days.Monday, null, new List<Frame>()));
-                this.Weekdays.Add(new Weekday(Days.Tuesday, null, new List<Frame>()));
-                this.Weekdays.Add(new Weekday(Days.Wednesday, null, new List<Frame>()));
-                this.Weekdays.Add(new Weekday(Days.Thursday, null, new List<Frame>()));
-                this.Weekdays.Add(new Weekday(Days.Friday, null, new List<Frame>()));
-                this.Weekdays.Add(new Weekday(Days.Saturday, null, new List<Frame>()));
-                this.Weekdays.Add(new Weekday(Days.Sunday, null, new List<Frame>()));
+                this.Weekdays.Add(new Weekday(Days.Monday, null, new List<Resource>()));
+                this.Weekdays.Add(new Weekday(Days.Tuesday, null, new List<Resource>()));
+                this.Weekdays.Add(new Weekday(Days.Wednesday, null, new List<Resource>()));
+                this.Weekdays.Add(new Weekday(Days.Thursday, null, new List<Resource>()));
+                this.Weekdays.Add(new Weekday(Days.Friday, null, new List<Resource>()));
+                this.Weekdays.Add(new Weekday(Days.Saturday, null, new List<Resource>()));
+                this.Weekdays.Add(new Weekday(Days.Sunday, null, new List<Resource>()));
             }
         }
     }

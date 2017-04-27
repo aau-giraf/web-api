@@ -36,14 +36,14 @@ namespace GirafRest.Models
         /// A reference to the actual resource.
         /// </summary>
         [ForeignKey("ResourceKey")]
-        public virtual Frame Resource { get; set; }
+        public virtual Resource Resource { get; set; }
 
         /// <summary>
         /// Creates a new many-to-many relationship between a department and a resource.
         /// </summary>
         /// <param name="dep">The involved department.</param>
         /// <param name="resource">The involved resource.</param>
-        public DepartmentResource(Department dep, Frame resource)
+        public DepartmentResource(Department dep, Resource resource)
         {
             this.OtherKey = dep.Key;
             this.Other = dep;

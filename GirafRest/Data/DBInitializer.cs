@@ -121,15 +121,15 @@ namespace GirafRest.Setup
 			var Weekdays = new Weekday[]
 			{
 				new Weekday(Days.Monday, Pictograms.Where(p => p.Title == "Hat").First(), 
-							new List<Frame> { Pictograms[0], Pictograms[1], Pictograms[2], Pictograms[3], Pictograms[4] }),
+							new List<Resource> { Pictograms[0], Pictograms[1], Pictograms[2], Pictograms[3], Pictograms[4] }),
 				new Weekday(Days.Tuesday, Pictograms.Where(p => p.Title == "Snot").First(), 
-							new List<Frame> { Pictograms[5], Pictograms[6], Pictograms[7], Pictograms[8] }),
+							new List<Resource> { Pictograms[5], Pictograms[6], Pictograms[7], Pictograms[8] }),
 				new Weekday(Days.Thursday, Pictograms.Where(p => p.Title == "Snot").First(), 
-							new List<Frame> { Pictograms[8], Pictograms[6], Pictograms[7], Pictograms[5] }),
+							new List<Resource> { Pictograms[8], Pictograms[6], Pictograms[7], Pictograms[5] }),
 				new Weekday(Days.Saturday, Pictograms.Where(p => p.Title == "Snot").First(), 
-							new List<Frame> { Pictograms[8], Pictograms[5] }),
+							new List<Resource> { Pictograms[8], Pictograms[5] }),
 				new Weekday(Days.Wednesday,  Pictograms.Where(p => p.Title == "Bil").First(),  
-							new List<Frame> { Pictograms[9], Pictograms[10], Pictograms[11], Pictograms[12], Pictograms[13] })
+							new List<Resource> { Pictograms[9], Pictograms[10], Pictograms[11], Pictograms[12], Pictograms[13] })
 			};
 
 			foreach(var day in Weekdays)

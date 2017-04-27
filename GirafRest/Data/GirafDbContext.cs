@@ -16,7 +16,7 @@ namespace GirafRest.Data
         public virtual DbSet<PictoFrame> PictoFrames { get; set; }
         public virtual DbSet<Choice> Choices { get; set; }
         public virtual DbSet<Week> Weeks { get; set; }
-        public virtual DbSet<Frame> Frames {get; set;}
+        public virtual DbSet<Resource> Frames {get; set;}
         public virtual DbSet<UserResource> UserResources { get; set; }
         public virtual DbSet<DepartmentResource> DepartmentResources { get; set; }
         public virtual DbSet<WeekdayResource> WeekdayResources {get; set;}
@@ -35,7 +35,7 @@ namespace GirafRest.Data
         {
             base.OnModelCreating(builder);
             //Creates tables for all entities.
-            builder.Entity<Frame>().ToTable("Frames").HasDiscriminator<string>("Discriminator").HasValue<Frame>(nameof(Frame));
+            builder.Entity<Resource>().ToTable("Frames").HasDiscriminator<string>("Discriminator").HasValue<Resource>(nameof(Resource));
             builder.Entity<Department>().ToTable("Departments").HasDiscriminator<string>("Discriminator").HasValue<Department>(nameof(Department));
             builder.Entity<Pictogram>().ToTable("Pictograms").HasDiscriminator<string>("Discriminator").HasValue<Pictogram>(nameof(Pictogram));
             builder.Entity<PictoFrame>().ToTable("PictoFrames").HasDiscriminator<string>("Discriminator").HasValue<PictoFrame>(nameof(PictoFrame));
@@ -86,7 +86,7 @@ namespace GirafRest.Data
                 .WithMany(w => w.Elements)
                 .HasForeignKey(wr => wr.OtherKey);
             builder.Entity<WeekdayResource>()
-                .HasOne<Frame> (wr => wr.Resource)
+                .HasOne<Resource> (wr => wr.Resource)
                 .WithMany()
                 .HasForeignKey(wr => wr.ResourceKey);
             //And between Choice and Resource(PictoFrame)
@@ -95,7 +95,7 @@ namespace GirafRest.Data
                 .WithMany(c => c.Options)
                 .HasForeignKey(cr => cr.OtherKey);
             builder.Entity<ChoiceResource>()
-                .HasOne<Frame>(cr => cr.Resource)
+                .HasOne<Resource>(cr => cr.Resource)
                 .WithMany()
                 .HasForeignKey(cr => cr.ResourceKey);
             

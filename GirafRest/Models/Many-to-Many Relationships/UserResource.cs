@@ -33,14 +33,14 @@ namespace GirafRest.Models
         public long ResourceKey { get; set; }
         //A reference to the actual resource.
         [ForeignKey("ResourceKey")]
-        public virtual Frame Resource { get; set; }
+        public virtual Resource Resource { get; set; }
 
         /// <summary>
         /// Creates a new many-to-many relationship between a user and a resource.
         /// </summary>
         /// <param name="user">The involved user.</param>
         /// <param name="resource">The involved resource.</param>
-        public UserResource(GirafUser user, Frame resource)
+        public UserResource(GirafUser user, Resource resource)
         {
             this.OtherKey = user.Id;
             this.Other = user;

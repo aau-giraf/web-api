@@ -9,7 +9,7 @@ namespace GirafRest.Models {
     /// PictoFrame further specializes the Resource class and defines common attributes for all resources that
     /// may be part of a Weekday.
     /// </summary>
-    public abstract class PictoFrame : Frame{
+    public abstract class PictoFrame : Resource{
         /// <summary>
         /// The title of the PictoFrame.
         /// </summary>

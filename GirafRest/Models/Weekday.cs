@@ -67,7 +67,7 @@ namespace GirafRest.Models
         /// <param name="day">The day of the week which the new weekday should represent.</param>
         /// <param name="thumbnail">The thumbnail of the weekday.</param>
         /// <param name="elements">A collection of elements that should be added to the weekday.</param>
-        public Weekday(Days day, Pictogram thumbnail, ICollection<Frame> elements)
+        public Weekday(Days day, Pictogram thumbnail, ICollection<Resource> elements)
         {
             this.Day = day;
             this.Thumbnail = thumbnail;

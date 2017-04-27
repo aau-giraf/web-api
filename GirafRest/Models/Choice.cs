@@ -10,7 +10,7 @@ namespace GirafRest.Models {
     /// A Choice may be present in the Citizen's Weekday's and indicates that the user may choose between a
     /// series of activities.
     /// </summary>
-    public class Choice : Frame { 
+    public class Choice : Resource { 
         /// <summary>
         /// A list of options involved in the choice.
         /// </summary>

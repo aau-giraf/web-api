@@ -35,14 +35,14 @@ namespace GirafRest.Models
         /// A reference to the actual resource.
         /// </summary>
         [ForeignKey("ResourceKey")]
-        public virtual Frame Resource { get; set; }
+        public virtual Resource Resource { get; set; }
 
         /// <summary>
         /// Creates a new many-to-many relationship between a weekday and a resource.
         /// </summary>
         /// <param name="weekday">The involved weekday.</param>
         /// <param name="resource">The involved resource.</param>
-        public WeekdayResource(Weekday weekday, Frame resource)
+        public WeekdayResource(Weekday weekday, Resource resource)
         {
             //this.OtherKey = weekday.Id;
             this.Other = weekday;

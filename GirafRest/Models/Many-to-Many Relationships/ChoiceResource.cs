@@ -28,7 +28,7 @@ namespace GirafRest.Models.Many_to_Many_Relationships
         /// A reference to the actual resource.
         /// </summary>
         [ForeignKey("ResourceKey")]
-        public Frame Resource { get; set; }
+        public Resource Resource { get; set; }
 
         /// <summary>
         /// The key of the involved choice.
@@ -46,7 +46,7 @@ namespace GirafRest.Models.Many_to_Many_Relationships
         /// </summary>
         /// <param name="choice">The involved choice.</param>
         /// <param name="resource">The involved resource.</param>
-        public ChoiceResource(Choice choice, Frame resource)
+        public ChoiceResource(Choice choice, Resource resource)
         {
             this.OtherKey = choice.Id;
             this.Other = choice;

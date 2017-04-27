@@ -20,7 +20,7 @@ namespace GirafRest.Models
         /// <summary>
         /// A reference to the actual resource.
         /// </summary>
-        Frame Resource { get; set; }
+        Resource Resource { get; set; }
 
         /// <summary>
         /// The key of the involved owner.

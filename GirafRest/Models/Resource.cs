@@ -8,7 +8,7 @@ namespace GirafRest.Models {
     /// <summary>
     /// Resource is the base class of all classes used by the users, e.g. pictograms and choices.
     /// </summary>
-    public abstract class Frame {
+    public abstract class Resource {
         /// <summary>
         /// The id of the resource.
         /// </summary>
@@ -45,7 +45,7 @@ namespace GirafRest.Models {
         /// <summary>
         /// Creates a new resource.
         /// </summary>
-        public Frame()
+        public Resource()
         {
             Users = new List<UserResource>();
             Departments = new List<DepartmentResource>();
