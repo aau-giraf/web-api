@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace GirafRest.Models.AccountViewModels
 {
+    /// <summary>
+    /// This model is used when the user signs into the system. It defines the structure of the expected json-string.
+    /// </summary>
     public class LoginViewModel
     {
         [Required]

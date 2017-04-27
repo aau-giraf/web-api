@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace GirafRest.Models.AccountViewModels
 {
+    /// <summary>
+    /// This class is used when a new user is to be created. It simply defines the structure of the expected
+    /// json string.
+    /// </summary>
     public class RegisterViewModel
     {
         [Required]

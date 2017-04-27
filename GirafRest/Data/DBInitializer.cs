@@ -61,13 +61,11 @@ namespace GirafRest.Setup
 				new GirafUser("Graatand", 1),
 				new GirafUser("Lee", 2)
 			};
-            // Here Pictograms.count == 0
             Console.WriteLine("T1 " + context.Pictograms.Where(p => p.Id >= 0).Count() + " T");
             foreach (var user in users)
 			{
                 await userManager.CreateAsync(user, "password");
             }
-            // Here Pictograms.count == 21
             Console.WriteLine("T2 " + context.Pictograms.Where(p => p.Id >= 0).Count() + " T");
             System.Console.WriteLine("Adding pictograms.");
             var Pictograms = new Pictogram[]
@@ -96,15 +94,27 @@ namespace GirafRest.Setup
 			System.Console.WriteLine("Adding pictograms to users.");
 			var usr = context.Users.Where(user => user.UserName == "Kurt").First();
 			var pictos = new List<Pictogram> { Pictograms[0], Pictograms[1], Pictograms[2], Pictograms[3], Pictograms[4] };
-			foreach (var pict in pictos) new UserResource(usr, pict);
+            foreach (var pict in pictos)
+            {
+                pict.AccessLevel = AccessLevel.PRIVATE;
+                new UserResource(usr, pict);
+            }
 			context.SaveChanges();
 			usr = context.Users.Where(user => user.UserName == "Lee").First();
 			pictos = new List<Pictogram> { Pictograms[5], Pictograms[6], Pictograms[7], Pictograms[8] };
-            foreach (var pict in pictos) new UserResource(usr, pict);
+            foreach (var pict in pictos)
+            {
+                pict.AccessLevel = AccessLevel.PRIVATE;
+                new UserResource(usr, pict);
+            }
 			context.SaveChanges();
 			usr = context.Users.Where(user => user.UserName == "Graatand").First();
-			pictos = new List<Pictogram> { Pictograms[9], Pictograms[10], Pictograms[11], Pictograms[12], Pictograms[13] };
-			foreach (var pict in pictos) new UserResource(usr, pict);
+			pictos = new List<Pictogram> { Pictograms[8], Pictograms[9], Pictograms[10], Pictograms[11], Pictograms[12], Pictograms[13] };
+            foreach (var pict in pictos)
+            {
+                pict.AccessLevel = AccessLevel.PRIVATE;
+                new UserResource(usr, pict);
+            }
 			context.SaveChanges();
 			
 			System.Console.WriteLine("Adding weekdays to users");

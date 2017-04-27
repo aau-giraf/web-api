@@ -13,6 +13,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Pomelo.EntityFrameworkCore.Extensions;
 using Pomelo.EntityFrameworkCore.MySql;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.FileProviders;
 
 namespace GirafRest.Extensions
 {
@@ -41,6 +43,10 @@ namespace GirafRest.Extensions
             services.AddDbContext<GirafDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
         }
 
+        /// <summary>
+        /// Removes the default password requirements from ASP.NET and set them to a bare minimum.
+        /// </summary>
+        /// <param name="options">A reference to IdentityOptions, which is used to configure Identity.</param>
         public static void RemovePasswordRequirements(this IdentityOptions options) {
             //Set password requirements to an absolute bare minimum.
             options.Password.RequireDigit = false;
@@ -50,6 +56,11 @@ namespace GirafRest.Extensions
             options.Password.RequireUppercase = false;
         }
 
+        /// <summary>
+        /// Configures the server to override the default behaviour on unauthorized request. This method
+        /// configures the server to simply return Unauthorized instead of redirecting to a login page.
+        /// </summary>
+        /// <param name="options">A reference to IdentityOptions, which is used to configure Identity.</param>
         public static void StopRedirectOnUnauthorized(this IdentityOptions options) {
             options.Cookies.ApplicationCookie.Events = new CookieAuthenticationEvents
                 {
@@ -65,6 +76,35 @@ namespace GirafRest.Extensions
                     }
                 };
                 options.Cookies.ApplicationCookie.AutomaticAuthenticate = true;
+        }
+
+        /// <summary>
+        /// Configures logging for the server. Depending on the program arguments the server will either log
+        /// solely to the console or both the console and a log-file (that may be found on host/logs/log-yyyyMMdd.txt).
+        /// </summary>
+        /// <param name="app">A reference to the application builder, that is used to define the behaviour of the server.</param>
+        /// <param name="loggerFactory">A reference to the loggerFactory that is used to define the behaviour of the loggers.</param>
+        public static void ConfigureLogging(this IApplicationBuilder app, ILoggerFactory loggerFactory)
+        {
+            loggerFactory
+                .AddConsole()
+                .AddDebug();
+            if (Program.LogToFile)
+            {
+                loggerFactory.AddFile(Path.Combine(Program.LogDirectory, Program.LogFilepath), LogLevel.Warning);
+                app.UseStaticFiles();
+
+                string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), Program.LogDirectory);
+                if (!Directory.Exists(directoryPath))
+                    Directory.CreateDirectory(directoryPath);
+
+                app.UseStaticFiles(new StaticFileOptions()
+                {
+                    FileProvider = new PhysicalFileProvider(
+                        directoryPath),
+                    RequestPath = new PathString("/logs")
+                });
+            }
         }
     }
 }

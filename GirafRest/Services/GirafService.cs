@@ -16,7 +16,11 @@ using GirafRest.Services;
 
 namespace GirafRest.Controllers
 {
-    public class GirafController : IGirafService
+    /// <summary>
+    /// The GirafService class implements the <see cref="IGirafService"/> interface and thus implements common
+    /// functionality that is needed by all controllers.
+    /// </summary>
+    public class GirafService : IGirafService
     {
         /// <summary>
         /// A reference to the database context - used to access the database and query for data. Handled by Asp.net's dependency injection.
@@ -36,9 +40,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="context">Reference to the database context.</param>
         /// <param name="userManager">Reference to Asp.net's user-manager.</param>
-        /// <param name="env">Reference to an implementation of the IHostingEnvironment interface.</param>
-        /// <param name="loggerFactory">Reference to an implementation of a logger.</param>
-        public GirafController(GirafDbContext context, UserManager<GirafUser> userManager)
+        public GirafService(GirafDbContext context, UserManager<GirafUser> userManager)
         {
             this._context = context;
             this._userManager = userManager;
@@ -73,11 +75,10 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Copies the content of the request's body into the specified file.
+        /// Reads an image from the current request's body and return it as a byte array.
         /// </summary>
         /// <param name="bodyStream">A byte-stream from the body of the request.</param>
-        /// <param name="targetFile">The target file for the copy.</param>
-        /// <returns>Actually nothing - Task return-type in order to make the method async.</returns>
+        /// <returns>The image found in the request represented as a byte array.</returns>
         public async Task<byte[]> ReadRequestImage(Stream bodyStream) {
             byte[] image;
             using (var imageStream = new MemoryStream()) {
@@ -91,11 +92,15 @@ namespace GirafRest.Controllers
 
         /// <summary>
         /// Checks if the user owns the given <paramref name="pictogram"/> and returns true if so.
-        /// Returns false if the user or his department does not own the <see cref="Pictogram"/>. 
+        /// Returns false if the user the <see cref="Pictogram"/>. 
         /// </summary>
         /// <param name="pictogram">The pictogram to check the ownership for.</param>
+        /// <param name="httpContext">A reference to the current HttpContext.</param>
         /// <returns>True if the user is authorized to see the resource and false if not.</returns>
-        public async Task<bool> CheckPrivateOwnership(Frame pictogram, HttpContext httpContext) {
+        public async Task<bool> CheckPrivateOwnership(PictoFrame pictogram, HttpContext httpContext) {
+            if (pictogram.AccessLevel != AccessLevel.PRIVATE)
+                return false;
+
             //The pictogram was not public, check if the user owns it.
             var usr = await LoadUserAsync(httpContext.User);
             if(usr == null) return false;
@@ -111,8 +116,17 @@ namespace GirafRest.Controllers
             return false;
         }
 
-        public async Task<bool> CheckProtectedOwnership(Frame resource, HttpContext httpContext)
+        /// <summary>
+        /// Checks if the current user's department owns the given resource.
+        /// </summary>
+        /// <param name="resource">The resource to check ownership for.</param>
+        /// <param name="httpContext">The http context of the current request.</param>
+        /// <returns>True if the user's department owns the pictogram, false if not.</returns>
+        public async Task<bool> CheckProtectedOwnership(PictoFrame resource, HttpContext httpContext)
         {
+            if (resource.AccessLevel != AccessLevel.PROTECTED)
+                return false;
+
             var usr = await LoadUserAsync(httpContext.User);
             if (usr == null) return false;
 

@@ -23,6 +23,8 @@ namespace GirafRest.Test
         private const int PRIVATE_PICTOGRAM_USER0 = 3;
         private const int PROTECTED_PICTOGRAM_USER0 = 5;
         private const int NONEXISTING_PICTOGRAM = 999;
+        private readonly string PNG_FILEPATH;
+        private readonly string JPEG_FILEPATH;
 
         private TestContext _testContext;
         
@@ -31,6 +33,8 @@ namespace GirafRest.Test
         public PictogramControllerTest(ITestOutputHelper output)
         {
             _testLogger = output;
+            PNG_FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Mocks", "MockImage.png");
+            JPEG_FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Mocks", "MockImage.jpeg");
         }
 
         private PictogramController initializeTest()
@@ -658,9 +662,6 @@ namespace GirafRest.Test
         }
         #endregion
         #region CreateImage
-        private const string PNG_FILEPATH = "MockImage.png";
-        private const string JPEG_FILEPATH = "MockImage.jpg";
-
         [Fact]
         public void CreateImage_NoLoginProtected_Unauthorized()
         {
@@ -1097,9 +1098,10 @@ namespace GirafRest.Test
         public void ReadImage_LoginAnotherPrivate_Unauthorized()
         {
             var pc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[1]);
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
             pc.CreateImage(PRIVATE_PICTOGRAM_USER0);
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[1]);
 
             var res = pc.ReadPictogramImage(PRIVATE_PICTOGRAM_USER0).Result;
 
@@ -1110,13 +1112,14 @@ namespace GirafRest.Test
         public void ReadImage_LoginAnotherProtected_Unauhtorized()
         {
             var pc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[1]);
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
             pc.CreateImage(PROTECTED_PICTOGRAM_USER0);
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[1]);
 
             var res = pc.ReadPictogramImage(PROTECTED_PICTOGRAM_USER0).Result;
 
-            Assert.IsType<FileResult>(res);
+            Assert.IsType<UnauthorizedResult>(res);
         }
 
         [Fact]
@@ -1163,6 +1166,77 @@ namespace GirafRest.Test
 
         #endregion
         #region FilterByTitle
+
+        [Fact]
+        public void FilterByTitle_QueryForP_6Pictograms()
+        {
+            var pc = initializeTest();
+            string query = "P";
+
+            var res = pc.FilterByTitle(_testContext.MockPictograms, query);
+
+            Assert.Equal(6, res.Count);
+        }
+
+
+        [Fact]
+        public void FilterByTitle_QueryForPu_2Pictograms()
+        {
+            var pc = initializeTest();
+            string query = "Pu";
+
+            var res = pc.FilterByTitle(_testContext.MockPictograms, query);
+
+            Assert.Equal(2, res.Count);
+        }
+
+
+        [Fact]
+        public void FilterByTitle_QueryForPr_4Pictograms()
+        {
+            var pc = initializeTest();
+            string query = "Pr";
+
+            var res = pc.FilterByTitle(_testContext.MockPictograms, query);
+
+            Assert.Equal(4, res.Count);
+        }
+
+
+        [Fact]
+        public void FilterByTitle_QueryForYYY_0Pictograms()
+        {
+            var pc = initializeTest();
+            string query = "YYY";
+
+            var res = pc.FilterByTitle(_testContext.MockPictograms, query);
+
+            Assert.Equal(0, res.Count);
+        }
+
+
+        [Fact]
+        public void FilterByTitle_QueryForEmptyString_0Pictograms()
+        {
+            var pc = initializeTest();
+            string query = "";
+
+            var res = pc.FilterByTitle(_testContext.MockPictograms, query);
+
+            Assert.Equal(0, res.Count);
+        }
+
+
+        [Fact]
+        public void FilterByTitle_QueryForPUBLIC_2Pictograms()
+        {
+            var pc = initializeTest();
+            string query = "PUBLIC";
+
+            var res = pc.FilterByTitle(_testContext.MockPictograms, query);
+
+            Assert.Equal(2, res.Count);
+        }
 
         #endregion
     }

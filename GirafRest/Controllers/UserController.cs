@@ -15,12 +15,25 @@ using GirafRest.Models.AccountViewModels;
 
 namespace GirafRest.Controllers
 {
+    /// <summary>
+    /// The user controller allows the user to change his information as well as add and remove applications
+    /// and resources to users.
+    /// </summary>
     [Authorize]
     [Route("[controller]")]
     public class UserController : Controller
     {
+        /// <summary>
+        /// The sign in manager that keeps track of which users are currently signed in.
+        /// </summary>
         private readonly SignInManager<GirafUser> _signInManager;
+        /// <summary>
+        /// An email sender that can be used to send emails to users that have lost their password. (DOES NOT WORK YET!)
+        /// </summary>
         private readonly IEmailSender _emailSender;
+        /// <summary>
+        /// A reference to GirafService, that defines common functionality for all controllers.
+        /// </summary>
         private readonly IGirafService _giraf;
 
         public UserController(
@@ -30,17 +43,24 @@ namespace GirafRest.Controllers
           ILoggerFactory loggerFactory)
         {
             _giraf = giraf;
-            _giraf._logger = loggerFactory.CreateLogger("Manage");
+            _giraf._logger = loggerFactory.CreateLogger("User");
             _signInManager = signInManager;
             _emailSender = emailSender;
         }
 
-        //
-        // POST: /Manage/ChangePassword
+        /// <summary>
+        /// Allows the user to change his password.
+        /// </summary>
+        /// <param name="model">All information needed to change the password, i.e. old password, new password
+        /// and a confirmation of the new password.</param>
+        /// <returns>BadRequest if something went wrong and ok if everything went well.</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
         {
+            if (model.OldPassword == null || model.NewPassword == null || model.ConfirmPassword == null)
+                return BadRequest("Please specify both you old password, a new one and a confirmation of the new one.");
+
             var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
             if (user != null)
             {
@@ -55,6 +75,10 @@ namespace GirafRest.Controllers
             return BadRequest();
         }
 
+        /// <summary>
+        /// Allows the user to upload an icon for his profile.
+        /// </summary>
+        /// <returns>Ok if the upload was succesful and BadRequest if not.</returns>
         [HttpPost("icon")]
         public async Task<IActionResult> CreateUserIcon() {
             var usr = await _giraf._userManager.GetUserAsync(HttpContext.User);
@@ -65,6 +89,10 @@ namespace GirafRest.Controllers
 
             return Ok(new GirafUserDTO(usr));
         }
+        /// <summary>
+        /// Allows the user to update his profile icon.
+        /// </summary>
+        /// <returns>Ok on success and BadRequest if the user already has an icon.</returns>
         [HttpPut("icon")]
         public async Task<IActionResult> UpdateUserIcon() {
             var usr = await _giraf._userManager.GetUserAsync(HttpContext.User);
@@ -75,6 +103,10 @@ namespace GirafRest.Controllers
 
             return Ok(new GirafUserDTO(usr));
         }
+        /// <summary>
+        /// Allows the user to delete his profile icon.
+        /// </summary>
+        /// <returns>Ok.</returns>
         [HttpDelete("icon")]
         public async Task<IActionResult> DeleteUserIcon() {
             var usr = await _giraf._userManager.GetUserAsync(HttpContext.User);
@@ -84,6 +116,15 @@ namespace GirafRest.Controllers
             return Ok(new GirafUserDTO(usr));
         }
         
+        /// <summary>
+        /// Adds an application to the specified user's list of applications.
+        /// </summary>
+        /// <param name="userId">The id of the user to add the application for.</param>
+        /// <param name="application">Information on the new application to add, must be serialized
+        /// and in the request body. Please specify ApplicationName and ApplicationPackage.</param>
+        /// <returns>BadRequest in no application is specified,
+        /// NotFound if no user with the given id exists or
+        /// Ok and a serialized version of the user to whom the application was added.</returns>
         [HttpPost("applications/{userId}")]
         public async Task<IActionResult> AddApplication(string userId, [FromBody] ApplicationOption application)
         {
@@ -104,7 +145,14 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
             return Ok(new GirafUserDTO(user));
         }
-        
+        /// <summary>
+        /// Delete an application from the given user's list of applications.
+        /// </summary>
+        /// <param name="userId">The id of the user to delete the application from.</param>
+        /// <param name="application">The application to delete (its ID is sufficient).</param>
+        /// <returns>BadRequest if no application is specified,
+        /// NotFound if no user or applications with the given ids exist
+        /// or Ok and the user if everything went well.</returns>
         [HttpDelete("applications/{userId}")]
         public async Task<IActionResult> DeleteApplication(string userId, [FromBody] ApplicationOption application)
         {
@@ -131,6 +179,11 @@ namespace GirafRest.Controllers
             return Ok(new GirafUserDTO(user));
         }
 
+        /// <summary>
+        /// Updates the display name of the current user.
+        /// </summary>
+        /// <param name="displayName">The new display name of the user.</param>
+        /// <returns>BadRequest if no display name was specified or Ok and the user.</returns>
         [HttpPut("display-name")]
         public async Task<IActionResult> UpdateDisplayName([FromBody] string displayName)
         {
@@ -144,6 +197,15 @@ namespace GirafRest.Controllers
             return Ok(new GirafUserDTO(user));
         }
 
+        /// <summary>
+        /// Adds a resource to the given user's list of resources.
+        /// </summary>
+        /// <param name="userId">The id of the user to add it to.</param>
+        /// <param name="resourceId">The id of the resource to add.</param>
+        /// <returns>
+        /// BadRequest if either of the two ids are missing or the resource is not PRIVATE, NotFound
+        /// if either the user or the resource does not exist or Ok if everything went well.
+        /// </returns>
         [HttpPost("add-resource/{userId}")]
         public async Task<IActionResult> AddUserResource(string userId, [FromBody] long? resourceId)
         {
@@ -186,7 +248,16 @@ namespace GirafRest.Controllers
             return Ok(new GirafUserDTO(user));
         }
 
-        [HttpPost("remove-resource/{userId}")]
+        /// <summary>
+        /// Deletes a resource with the specified id from the given user's list of resources.
+        /// </summary>
+        /// <param name="userId">The id of the user to add the resource to.</param>
+        /// <param name="resourceId">The id of the resource to add.</param>
+        /// <returns>
+        /// BadRequest if either of the two ids are missing or the resource is not PRIVATE, NotFound
+        /// if either the user or the resource does not exist or Ok if everything went well.
+        /// </returns>
+        [HttpDelete("remove-resource/{userId}")]
         public async Task<IActionResult> RemoveResource(string userId, [FromBody] long? resourceId)
         {
             //Check that valid parameters have been specified in the call
@@ -200,7 +271,7 @@ namespace GirafRest.Controllers
             if (user == null) return NotFound($"There is no department with Id {userId}.");
             
             //Fetch the resource with the given id, check that it exists.
-            var resource = await _giraf._context.Frames
+            var resource = await _giraf._context.PictoFrames
                 .Where(f => f.Id == resourceId)
                 .FirstOrDefaultAsync();
             if (resource == null) return NotFound($"There is no resource with id {resourceId}.");
@@ -221,6 +292,10 @@ namespace GirafRest.Controllers
             return Ok(new GirafUserDTO(user));
         }
 
+        /// <summary>
+        /// Displays the information of the current user.
+        /// </summary>
+        /// <returns>A serialized version of the currently authenticated user.</returns>
         [HttpGet]
         public async Task<IActionResult> GetUser()
         {
@@ -229,6 +304,11 @@ namespace GirafRest.Controllers
             return Ok(new GirafUserDTO(user));
         }
         
+        /// <summary>
+        /// Enables or disables grayscale mode for the currently authenticated user.
+        /// </summary>
+        /// <param name="enabled">A bool indicating whether grayscale should be enabled or not.</param>
+        /// <returns>Ok and a serialized version of the current user.</returns>
         [HttpPost("grayscale/{enabled}")]
         public async Task<IActionResult> ToggleGrayscale(bool enabled)
         {
@@ -239,6 +319,11 @@ namespace GirafRest.Controllers
             return Ok(new GirafUserDTO(user));
         }
 
+        /// <summary>
+        /// Enables or disables launcher animations for the currently authenticated user.
+        /// </summary>
+        /// <param name="enabled">A bool indicating whether launcher animations should be enabled or not.</param>
+        /// <returns>Ok and a serialized version of the current user.</returns>
         [HttpPost("launcher_animations/{enabled}")]
         public async Task<IActionResult> ToggleAnimations(bool enabled)
         {
@@ -249,8 +334,12 @@ namespace GirafRest.Controllers
             return Ok(new GirafUserDTO(user));
         }
 
-        //
-        // POST: /Manage/SetPassword
+        /// <summary>
+        /// Creates a new password for the currently authenticated user.
+        /// </summary>
+        /// <param name="model">Information on the new password, i.e. a JSON string containing
+        /// NewPassword and ConfirmPassword.</param>
+        /// <returns>BadRequest if the server failed to update the password or Ok if everything went well.</returns>
         [HttpPost("SetPassword")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> SetPassword(SetPasswordViewModel model)
@@ -270,7 +359,10 @@ namespace GirafRest.Controllers
         }
 
         #region Helpers
-
+        /// <summary>
+        /// Writes all errors found by identity to the logger.
+        /// </summary>
+        /// <param name="result">The result from Identity when executing user-related actions.</param>
         private void AddErrors(IdentityResult result)
         {
             foreach (var error in result.Errors)

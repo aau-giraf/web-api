@@ -25,7 +25,7 @@ namespace GirafRest.Test
         {
             #region Mock Data
             private List<Pictogram> mockPictograms;
-            public IReadOnlyList<Pictogram> MockPictograms
+            public List<Pictogram> MockPictograms
             {
                 get
                 {

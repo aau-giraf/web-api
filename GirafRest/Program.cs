@@ -35,8 +35,17 @@ namespace GirafRest
         /// </summary>
         private static Int16 port = 5000;
 
+        /// <summary>
+        /// Indicates if the server should utilize file logging.
+        /// </summary>
         public static bool LogToFile = false;
+        /// <summary>
+        /// The file path of the file to log to.
+        /// </summary>
         public static string LogFilepath = "";
+        /// <summary>
+        /// The directory where log-files should be placed.
+        /// </summary>
         public static readonly string LogDirectory = Path.Combine("wwwroot", "Logs");
 
         public static void Main(string[] args)
@@ -73,6 +82,11 @@ namespace GirafRest
             return host;
         }
 
+        /// <summary>
+        /// Checks if the given program arguments are valid and applies any changes they might infer.
+        /// </summary>
+        /// <param name="args">A string array with all program arguments.</param>
+        /// <returns>True if all arguments are valid, false if not.</returns>
         private static bool checkProgramArguments(string[] args) {
             Regex portRegex = new Regex(@"port=[\d]*");
 

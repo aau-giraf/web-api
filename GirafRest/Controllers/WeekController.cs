@@ -14,9 +14,15 @@ using GirafRest.Services;
 
 namespace GirafRest.Controllers
 {
+    /// <summary>
+    /// The WeekController allows the user to view and update his week schedule along with deleting it.
+    /// </summary>
     [Route("[controller]")]
     public class WeekController : Controller
     {
+        /// <summary>
+        /// A reference to GirafService, that contains common functionality for all controllers.
+        /// </summary>
         private readonly IGirafService _giraf;
 
         public WeekController(IGirafService giraf, ILoggerFactory loggerFactory)
@@ -24,45 +30,54 @@ namespace GirafRest.Controllers
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Week");
         }		
+
+        /// <summary>
+        /// Gets all week schedule for the currently authenticated user.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]	
         [Authorize]
         public async Task<IActionResult> GetWeekSchedules()
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
-            //System.Console.WriteLine(user.WeekSchedule.ElementAt(1).Weekdays.Count());
-            List<WeekDTO> userWeeks = new List<WeekDTO>();
-            foreach(var week in user.WeekSchedule)
-            {
-                userWeeks.Add(new WeekDTO(week));
-            }
-            //System.Console.WriteLine(userWeeks[1].Dayzs.Count());
-            return Ok(userWeeks);	
+            return Ok(user.WeekSchedule.Select(w => new WeekDTO(w)));	
         }
 
+        /// <summary>
+        /// Gets the schedule with the specified id.
+        /// </summary>
+        /// <param name="id">The id of the week schedule to fetch.</param>
+        /// <returns>NotFound if the user does not have a week with the given id or
+        /// Ok and a serialized version of the week if he does.</returns>
         [HttpGet("{id}")]	
         [Authorize]
         public async Task<IActionResult> GetUsersWeekSchedule(int id)
         {
-            var user = await _giraf._context.Users.Where(u => u.Id == id.ToString()).FirstAsync();
-            var week = user.WeekSchedule.Where(w => w.Id == id).First();
-            if(week != null)
+            var user = await _giraf.LoadUserAsync(HttpContext.User);
+            var week = user.WeekSchedule.Where(w => w.Id == id).FirstOrDefault();
+            if (week != null)
                 return Ok(new WeekDTO(week));
             else
-                return NotFound();	
+                return NotFound();
         }
 
+        /// <summary>
+        /// Updates one of the days of the week with the given id.
+        /// </summary>
+        /// <param name="id">The id of the week to update a day for.</param>
+        /// <param name="newDay">A serialized version of the day to update.</param>
+        /// <returns>NotFound if no week with the given id is owned by the user or 
+        /// Ok if everything goes well.</returns>
         [HttpPut("day/{id}")]
         [Authorize]
         public async Task<IActionResult> UpdateDay(int id, [FromBody]WeekdayDTO newDay)	
         {	
             var user = await _giraf.LoadUserAsync(HttpContext.User);
-            var week = user.WeekSchedule.Where(w => w.Id == id).First();
+            var week = user.WeekSchedule.Where(w => w.Id == id).FirstOrDefault();
             if(week != null && week.Weekdays.Any())
             {
                 week.Weekdays.Remove(week.Weekdays.Where(d => d.Day == newDay.Day).First());
                 week.Weekdays.Add(new Weekday(newDay));
-                user.WeekSchedule.Remove(user.WeekSchedule.Where(w => w.Id == id).First());
-                user.WeekSchedule.Add(week);
                 await _giraf._context.SaveChangesAsync();	
                 return Ok(new WeekDTO(week));	
             }
@@ -70,34 +85,40 @@ namespace GirafRest.Controllers
                 return NotFound();
         }
         
+        /// <summary>
+        /// Updates the entire information of the week with the given id.
+        /// </summary>
+        /// <param name="id">If of the week to update information for.</param>
+        /// <param name="newWeek">A serialized Week with new information.</param>
+        /// <returns>NotFound if the user does not have a week schedule or
+        /// Ok and a serialized version of the updated week if everything went well.</returns>
         [HttpPut("{id}")]
         [Authorize]
         public async Task<IActionResult> UpdateWeek(int id, [FromBody]WeekDTO newWeek)
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
-            user.WeekSchedule.Where(w => w.Id == id).First().Merge(newWeek);
+            var week = user.WeekSchedule.Where(w => w.Id == id).First();
+            if (week == null) return NotFound();
+            week.Merge(newWeek);
             await _giraf._context.SaveChangesAsync();
-            List<WeekDTO> userWeeks = new List<WeekDTO>();
-            foreach(var week in user.WeekSchedule)
-            {
-                userWeeks.Add(new WeekDTO(week));
-            }
-            return Ok(userWeeks);
+            return Ok(user.WeekSchedule.Select(w => new WeekDTO(w)));
         }
 
+        /// <summary>
+        /// Creates an entirely new week for the current user.
+        /// </summary>
+        /// <param name="newWeek">A serialized version of the new week.</param>
+        /// <returns>A list of all the current users week schedules or BadRequest if no valid Week was
+        /// found in the request body.</returns>
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> CreateWeek([FromBody]WeekDTO newWeek)
         {
+            if (newWeek == null) return BadRequest("Failed to find a valid Week in the request body.");
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             user.WeekSchedule.Add(new Week(newWeek));
             await _giraf._context.SaveChangesAsync();
-            List<WeekDTO> userWeeks = new List<WeekDTO>();
-            foreach(var week in user.WeekSchedule)
-            {
-                userWeeks.Add(new WeekDTO(week));
-            }
-            return Ok(userWeeks);
+            return Ok(user.WeekSchedule.Select(w => new WeekDTO(w)));
         }
     }
 }

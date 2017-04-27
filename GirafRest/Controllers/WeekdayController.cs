@@ -16,6 +16,7 @@ using GirafRest.Services;
 
 namespace GirafRest.Controllers
 {
+    
     [Route("[controller]")]
     public class WeekdayController : Controller
     {

@@ -1,4 +1,21 @@
-﻿using GirafRest.Controllers;using GirafRest.Models;using GirafRest.Models.AccountViewModels;using GirafRest.Models.DTOs;using GirafRest.Test.Mocks;using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Mvc;using Moq;using System.Collections.Generic;using System.Linq;using Xunit;using Xunit.Abstractions;using static GirafRest.Test.UnitTestExtensions;namespace GirafRest.Test{    public class AccountControllerTest    {
+﻿using GirafRest.Controllers;
+using GirafRest.Models;
+using GirafRest.Models.AccountViewModels;
+using GirafRest.Models.DTOs;
+using GirafRest.Test.Mocks;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Moq;
+using System.Collections.Generic;
+using System.Linq;
+using Xunit;
+using Xunit.Abstractions;
+using static GirafRest.Test.UnitTestExtensions;
+
+namespace GirafRest.Test
+{
+    public class AccountControllerTest
+    {
         private readonly ITestOutputHelper _outputHelpter;
         private TestContext _testContext;
 
@@ -94,7 +111,7 @@
         }
 
         [Fact]
-        public void ResetPassword_() // hvad skal der testes ved den?
+        public void ResetPassword_() // hvad skal der testes ved den? Den virker ikke endnu. Jeg tænker det kan være nice-to-have i Sprint 4
         {
             Assert.True(false, "Not implemented");
         }
@@ -110,4 +127,5 @@
         {
             Assert.True(false, "Not implemented");
         }
-    }}
+    }
+}

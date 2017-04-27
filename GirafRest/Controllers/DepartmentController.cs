@@ -2,40 +2,40 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using GirafRest.Setup;
 using GirafRest.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
-using GirafRest.Data;
 using Microsoft.Extensions.Logging;
 using GirafRest.Models.DTOs;
-using Microsoft.EntityFrameworkCore.Query;
-using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Hosting;
 using GirafRest.Services;
 
 namespace GirafRest.Controllers
 {
+    /// <summary>
+    /// The department controller serves the purpose of handling departments. It is capable of producing a
+    /// list of all departments in the system as well as adding resources and users to departments.
+    /// </summary>
     [Route("[controller]")]
     public class DepartmentController : Controller
     {
+        /// <summary>
+        /// A reference to IGirafService, which defines common functionality for all controllers.
+        /// </summary>
         private readonly IGirafService _giraf;
 
         /// <summary>
         /// Constructor for the department-controller. This is called by the asp.net runtime.
         /// </summary>
         /// <param name="context">A reference to the database-context.</param>
-        /// <param name="loggerFactory">A reference to an implementation of ILoggerFactory. Used to create a debug-logger.</param>
+        /// <param name="loggerFactory">A reference to an implementation of ILoggerFactory. Used to create a logger.</param>
         public DepartmentController(IGirafService giraf, ILoggerFactory loggerFactory)
         {
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Department");
-        
         }
 
         /// <summary>
-        /// Get all departments registered in the database.
+        /// Get all departments registered in the database or search for a department name as a query string.
         /// </summary>
         /// <returns>A list of all departments.</returns>
         [HttpGet]
@@ -45,7 +45,7 @@ namespace GirafRest.Controllers
                 //Filter all departments away that does not satisfy the name query.
                 var nameQuery = HttpContext.Request.Query["name"];
                 var depart = NameQueryFilter(nameQuery);
-                //Include relevant information and cast to list. .Select does not seem to work on IEnumerables.
+                //Include relevant information and cast to list.
                 var result = await depart
                     .Include(dep => dep.Members)
                     .Include(dep => dep.Resources)
@@ -71,7 +71,7 @@ namespace GirafRest.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(long ID)
         {
-        /// .Include is used to get information on members aswell when getting the Department
+            //.Include is used to get information on members aswell when getting the Department
             var department = _giraf._context.Departments
                 .Where(dep => dep.Key == ID);
 
@@ -79,13 +79,11 @@ namespace GirafRest.Controllers
             var depa = await department
                 .Include(dep => dep.Members)
                 .Include(dep => dep.Resources)
-                .FirstAsync();
-            try {
-                return Ok(new DepartmentDTO(depa)); 
-            } catch (Exception e) {
-                _giraf._logger.LogError("Exception in Get{id}: " + e.Message);
+                .FirstOrDefaultAsync();
+            if(depa == null)
                 return NotFound("Department not found.");
-            }
+
+            return Ok(new DepartmentDTO(depa));
         }
 
         /// <summary>
@@ -107,21 +105,21 @@ namespace GirafRest.Controllers
                 foreach(var mem in dep.Members) {
                     var usr = await _giraf._context.Users
                         .Where(u => u.UserName == mem || u.Id == mem)
-                        .FirstAsync();
+                        .FirstOrDefaultAsync();
 
-                    if(usr == null) continue;
+                    if (usr == null) return NotFound("The member list contained an invalid id: " + mem);
 
                     result.Members.Add(usr);
                     usr.Department = result;
                 }
                 
                 //Add all the resources with the given ids
-                foreach (var reso in dep.Pictograms) {
+                foreach (var reso in dep.Resources) {
                     var res = await _giraf._context.Pictograms
                         .Where(p => p.Id == reso)
-                        .FirstAsync();
+                        .FirstOrDefaultAsync();
 
-                    if(res == null) continue;
+                    if(res == null) return NotFound("The list of resources contained an invalid resource id: " + reso);
                     var dr = new DepartmentResource(result, res);
                     await _giraf._context.DepartmentResources.AddAsync(dr);
                 }
@@ -151,18 +149,12 @@ namespace GirafRest.Controllers
             if(usr == null)
                 return BadRequest("User was null");
             Department dep;
-
-            try
-            {
-                dep = await _giraf._context.Departments
-                    .Where(d => d.Key == ID)
-                    .Include(d => d.Members)
-                    .FirstAsync();
-            }
-            catch (Exception e)
-            {
-                return NotFound("Department not found");
-            }
+            
+            dep = await _giraf._context.Departments
+                .Where(d => d.Key == ID)
+                .Include(d => d.Members)
+                .FirstOrDefaultAsync();
+            if(dep == null) return NotFound("Department not found");
 
             //Check if the user is already in the department
             if(dep.Members.Where(u => u.UserName == usr.UserName).Any())
@@ -192,19 +184,14 @@ namespace GirafRest.Controllers
             //Check if a valid user was supplied and that the given department exists
             if(usr == null)
                 return BadRequest("User was null");
-            try
-            {
-                dep = await _giraf._context
-                    .Departments
-                    .Where(d => d.Key == ID)
-                    .Include(d => d.Members)
-                    .FirstAsync();
-            }
-            catch (Exception e)
-            {
-                if(dep == null)
-                    return NotFound("Department not found");
-            }
+
+            dep = await _giraf._context
+                .Departments
+                .Where(d => d.Key == ID)
+                .Include(d => d.Members)
+                .FirstOrDefaultAsync();
+            if(dep == null)
+                return NotFound("Department not found");
 
             //Check if the user actually is in the department
             if(!dep.Members.Where(u => u.UserName == usr.UserName).Any())
@@ -230,7 +217,7 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<IActionResult> AddResource(long id, [FromBody] long? resourceId) {
             //Fetch the department and check that it exists.
-            var department = await _giraf._context.Departments.Where(d => d.Key == id).FirstAsync();
+            var department = await _giraf._context.Departments.Where(d => d.Key == id).FirstOrDefaultAsync();
             if(department == null) return NotFound($"There is no department with Id {id}.");
 
             //Check if there is a resourceId specified in the body or as a query-paramater
@@ -238,10 +225,9 @@ namespace GirafRest.Controllers
             var resourceIdValid = CheckResourceId(resourceId, ref resId);
             if(!resourceIdValid) return BadRequest("Unable to find a valid resource-id. Please specify one in request-body or as url-query.");
 
-            //Fetch the resource with the given id, check that it exists.
-            var resource = await _giraf._context.Frames.Where(f => f.Id == resId).FirstAsync();
+            //Fetch the resource with the given id, check that it exists and that the user owns it.
+            var resource = await _giraf._context.PictoFrames.Where(f => f.Id == resId).FirstOrDefaultAsync();
             if(resource == null) return NotFound($"There is no resource with id {id}.");
-
             var resourceOwned = await _giraf.CheckProtectedOwnership(resource, HttpContext);
             if(!resourceOwned) return Unauthorized();
 
@@ -272,7 +258,7 @@ namespace GirafRest.Controllers
             if(!resourceIdValid) return BadRequest("Unable to find a valid resource-id. Please specify one in request-body or as url-query.");
 
             //Fetch the resource with the given id, check that it exists.
-            var resource = await _giraf._context.Frames
+            var resource = await _giraf._context.PictoFrames
                 .Where(f => f.Id == resId)
                 .FirstOrDefaultAsync();
             if(resource == null) return NotFound($"There is no resource with id {resourceId}.");
@@ -293,6 +279,11 @@ namespace GirafRest.Controllers
         }
 
         #region Helpers
+        /// <summary>
+        /// Produces a list of all departments that has 'nameQuery' in their name.
+        /// </summary>
+        /// <param name="nameQuery">A string to search for in the name of the departments.</param>
+        /// <returns>A list of all departments with 'nameQuery' in their name.</returns>
         private IQueryable<Department> NameQueryFilter(string nameQuery)
         {
             if(string.IsNullOrEmpty(nameQuery)) nameQuery = "";
