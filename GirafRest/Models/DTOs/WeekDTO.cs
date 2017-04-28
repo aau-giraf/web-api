@@ -10,6 +10,10 @@ namespace GirafRest.Models.DTOs
     public class WeekDTO
     {
         /// <summary>
+        /// The id of the week's thumbnail.
+        /// </summary>
+        public long ThumbnailID { get; set; }
+        /// <summary>
         /// The id of the week.
         /// </summary>
         public long Id { get; set; }
@@ -24,6 +28,14 @@ namespace GirafRest.Models.DTOs
         /// <param name="week">The week to create a DTO for.</param>
         public WeekDTO(Week week)
         {
+            try
+            {
+                this.ThumbnailID = week.ThumbnailKey;
+            }
+            catch (NullReferenceException)
+            {
+                this.ThumbnailID = 0;
+            }
             this.Id = week.Id;
             Days = new List<WeekdayDTO>();
             foreach (var day in week.Weekdays)

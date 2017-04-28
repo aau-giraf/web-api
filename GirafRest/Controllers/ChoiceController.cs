@@ -13,6 +13,7 @@ using GirafRest.Models.DTOs;
 using System;
 using GirafRest.Models.Many_to_Many_Relationships;
 using GirafRest.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GirafRest.Controllers
 {
@@ -162,6 +163,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="id">The id of the choice to delete.</param>
         /// <returns> Ok if the choice was deleted after checking authorization and NotFound if no choice with the id exists.</returns>
+        [Authorize(Roles = GirafRole.GuardianOrAdmin)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteChoice(long id)
         {

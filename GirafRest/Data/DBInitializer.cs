@@ -30,18 +30,19 @@ namespace GirafRest.Setup
 			System.Console.WriteLine("Adding some sample data to the database.");
 			System.Console.WriteLine("Adding roles.");
 
-			var Roles = new IdentityRole[]
+			var Roles = new GirafRole[]
 			{
-				new IdentityRole("Admin"), 
-            	new IdentityRole("Guardian"), 
-           		new IdentityRole("User")
+				new GirafRole(GirafRole.Admin), 
+            	new GirafRole(GirafRole.Guardian), 
+           		new GirafRole(GirafRole.Parent),
+                new GirafRole(GirafRole.User)
 			};
 			foreach(var role in Roles)
 			{
 				context.Roles.Add(role);
 			}
 			context.SaveChanges();
-            
+
             System.Console.WriteLine("Adding departments.");
 			var Departments = new Department[]
 			{
@@ -61,12 +62,14 @@ namespace GirafRest.Setup
 				new GirafUser("Graatand", 1),
 				new GirafUser("Lee", 2)
 			};
-            Console.WriteLine("T1 " + context.Pictograms.Where(p => p.Id >= 0).Count() + " T");
             foreach (var user in users)
 			{
                 await userManager.CreateAsync(user, "password");
             }
-            Console.WriteLine("T2 " + context.Pictograms.Where(p => p.Id >= 0).Count() + " T");
+
+            await userManager.AddToRoleAsync(users[0], "User").ConfigureAwait(false);
+            await userManager.AddToRoleAsync(users[2], "Admin").ConfigureAwait(false);
+
             System.Console.WriteLine("Adding pictograms.");
             var Pictograms = new Pictogram[]
 			{
@@ -120,16 +123,11 @@ namespace GirafRest.Setup
 			System.Console.WriteLine("Adding weekdays to users");
 			var Weekdays = new Weekday[]
 			{
-				new Weekday(Days.Monday, Pictograms.Where(p => p.Title == "Hat").First(), 
-							new List<Resource> { Pictograms[0], Pictograms[1], Pictograms[2], Pictograms[3], Pictograms[4] }),
-				new Weekday(Days.Tuesday, Pictograms.Where(p => p.Title == "Snot").First(), 
-							new List<Resource> { Pictograms[5], Pictograms[6], Pictograms[7], Pictograms[8] }),
-				new Weekday(Days.Thursday, Pictograms.Where(p => p.Title == "Snot").First(), 
-							new List<Resource> { Pictograms[8], Pictograms[6], Pictograms[7], Pictograms[5] }),
-				new Weekday(Days.Saturday, Pictograms.Where(p => p.Title == "Snot").First(), 
-							new List<Resource> { Pictograms[8], Pictograms[5] }),
-				new Weekday(Days.Wednesday,  Pictograms.Where(p => p.Title == "Bil").First(),  
-							new List<Resource> { Pictograms[9], Pictograms[10], Pictograms[11], Pictograms[12], Pictograms[13] })
+				new Weekday(Days.Monday, new List<Resource> { Pictograms[0], Pictograms[1], Pictograms[2], Pictograms[3], Pictograms[4] }),
+				new Weekday(Days.Tuesday, new List<Resource> { Pictograms[5], Pictograms[6], Pictograms[7], Pictograms[8] }),
+				new Weekday(Days.Thursday, new List<Resource> { Pictograms[8], Pictograms[6], Pictograms[7], Pictograms[5] }),
+				new Weekday(Days.Saturday, new List<Resource> { Pictograms[8], Pictograms[5] }),
+				new Weekday(Days.Wednesday, new List<Resource> { Pictograms[9], Pictograms[10], Pictograms[11], Pictograms[12], Pictograms[13] })
 			};
 
 			foreach(var day in Weekdays)
@@ -170,8 +168,6 @@ namespace GirafRest.Setup
             context.Choices.Add(_choice2);
             context.Choices.Add(_choice3);
             context.SaveChanges();
-
-            Console.WriteLine(_choice1.Id);
         }
     }
 }

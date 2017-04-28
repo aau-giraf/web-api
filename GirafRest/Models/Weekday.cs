@@ -28,16 +28,6 @@ namespace GirafRest.Models
         /// The last time the weekday was edited.
         /// </summary>
         public DateTime LastEdit { get; set; }
-
-        /// <summary>
-        /// The key of the pictogram, which is used as thumbnail for the weekday.
-        /// </summary>
-        public long ThumbnailKey { get; set; }
-        /// <summary>
-        /// A reference to the actual Thumbnail.
-        /// </summary>
-        public Pictogram Thumbnail { get; set; }
-
         /// <summary>
         /// A flag indicated whether or not the weekday has been populated.
         /// </summary>
@@ -65,13 +55,10 @@ namespace GirafRest.Models
         /// Creates a new weekday.
         /// </summary>
         /// <param name="day">The day of the week which the new weekday should represent.</param>
-        /// <param name="thumbnail">The thumbnail of the weekday.</param>
         /// <param name="elements">A collection of elements that should be added to the weekday.</param>
-        public Weekday(Days day, Pictogram thumbnail, ICollection<Resource> elements)
+        public Weekday(Days day, ICollection<Resource> elements)
         {
             this.Day = day;
-            this.Thumbnail = thumbnail;
-            this.ThumbnailKey = thumbnail.Id;
             this.Elements = new List<WeekdayResource>();
             foreach(var elem in elements) {
                 this.Elements.Add(new WeekdayResource(this, elem));
@@ -84,7 +71,6 @@ namespace GirafRest.Models
         public Weekday(WeekdayDTO day)
         {
             this.Day = day.Day;
-            this.ThumbnailKey = day.ThumbnailID;
             
         }
     }

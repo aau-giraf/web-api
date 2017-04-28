@@ -24,12 +24,20 @@ namespace GirafRest.Models
         /// A collection of weekdays for each day of the week.
         /// </summary>
         public ICollection<Weekday> Weekdays { get; set; }
+        public long ThumbnailKey { get; set; }
+        [ForeignKey("ThumbnailKey")]
+        public Pictogram Thumbnail { get; set; }
 
         /// <summary>
         /// DO NOT DELETE THIS.
         /// </summary>
         public Week()
         {
+            this.Weekdays = new List<Weekday>();
+        }
+        public Week(Pictogram thumbnail)
+        {
+            this.Thumbnail = thumbnail;
             this.Weekdays = new List<Weekday>();
         }
         /// <summary>
@@ -62,13 +70,13 @@ namespace GirafRest.Models
         {
             if(!Weekdays.Any())
             {
-                this.Weekdays.Add(new Weekday(Days.Monday, null, new List<Resource>()));
-                this.Weekdays.Add(new Weekday(Days.Tuesday, null, new List<Resource>()));
-                this.Weekdays.Add(new Weekday(Days.Wednesday, null, new List<Resource>()));
-                this.Weekdays.Add(new Weekday(Days.Thursday, null, new List<Resource>()));
-                this.Weekdays.Add(new Weekday(Days.Friday, null, new List<Resource>()));
-                this.Weekdays.Add(new Weekday(Days.Saturday, null, new List<Resource>()));
-                this.Weekdays.Add(new Weekday(Days.Sunday, null, new List<Resource>()));
+                this.Weekdays.Add(new Weekday(Days.Monday, new List<Resource>()));
+                this.Weekdays.Add(new Weekday(Days.Tuesday, new List<Resource>()));
+                this.Weekdays.Add(new Weekday(Days.Wednesday, new List<Resource>()));
+                this.Weekdays.Add(new Weekday(Days.Thursday, new List<Resource>()));
+                this.Weekdays.Add(new Weekday(Days.Friday, new List<Resource>()));
+                this.Weekdays.Add(new Weekday(Days.Saturday, new List<Resource>()));
+                this.Weekdays.Add(new Weekday(Days.Sunday, new List<Resource>()));
             }
         }
     }

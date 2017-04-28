@@ -68,7 +68,7 @@ namespace GirafRest.Setup
             }
 
             //Add Identity for user management.
-            services.AddIdentity<GirafUser, IdentityRole>(options => {
+            services.AddIdentity<GirafUser, GirafRole>(options => {
                 options.RemovePasswordRequirements();
                 options.StopRedirectOnUnauthorized();
             })
@@ -102,6 +102,7 @@ namespace GirafRest.Setup
             ILoggerFactory loggerFactory,
             GirafDbContext context,
             UserManager<GirafUser> userManager,
+            RoleManager<GirafRole> roleManager,
             IApplicationLifetime appLifetime)
         {
             //Configure logging for the application
@@ -125,8 +126,14 @@ namespace GirafRest.Setup
                     template: "{controller=Account}/{action=AccessDenied}");
             });
 
+            roleManager.CreateAsync(new GirafRole("User")).ConfigureAwait(false);
+            roleManager.CreateAsync(new GirafRole("Admin")).ConfigureAwait(false);
+            roleManager.CreateAsync(new GirafRole("Guardian")).ConfigureAwait(false);
+            roleManager.CreateAsync(new GirafRole("Parent")).ConfigureAwait(false);
+
+
             //Fill some sample data into the database
-            if(Program.GenerateSampleData) DBInitializer.Initialize(context, userManager);
+            if (Program.GenerateSampleData) DBInitializer.Initialize(context, userManager);
         }
     }
 }

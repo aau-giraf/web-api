@@ -9,7 +9,7 @@ using GirafRest.Models.Many_to_Many_Relationships;
 
 namespace GirafRest.Data
 {
-    public class GirafDbContext : IdentityDbContext<GirafUser>
+    public class GirafDbContext : IdentityDbContext<GirafUser, GirafRole, string>
     {
         public virtual DbSet<Department> Departments { get; set; }
         public virtual  DbSet<Pictogram> Pictograms { get; set; }
@@ -41,6 +41,7 @@ namespace GirafRest.Data
             builder.Entity<PictoFrame>().ToTable("PictoFrames").HasDiscriminator<string>("Discriminator").HasValue<PictoFrame>(nameof(PictoFrame));
             builder.Entity<Choice>().ToTable("Choices").HasDiscriminator<string>("Discriminator").HasValue<Choice>(nameof(Choice));
             builder.Entity<Weekday>().ToTable("Weekdays").HasDiscriminator<string>("Discriminator").HasValue<Weekday>(nameof(Weekday));
+            builder.Entity<UserRole>().ToTable("UserRoles").HasDiscriminator<string>("Discriminator").HasValue<UserRole>(nameof(UserRole));
 
             //asp.net does not support many-to-many in its' current release. Here is a workaround.
             //The workaround is similar to the one taught in the DBS course, where a relationship called
