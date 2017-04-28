@@ -24,6 +24,9 @@ namespace GirafRest.Controllers
     [Route("[controller]")]
     public class PictogramController : Controller
     {
+        private const string IMAGE_TYPE_PNG = "image/png";
+        private const string IMAGE_TYPE_JPEG = "image/jpg";
+
         /// <summary>
         /// A reference to GirafService, that defines common functionality for all classes.
         /// </summary>
@@ -217,7 +220,7 @@ namespace GirafRest.Controllers
         /// <param name="id">Id of the pictogram to upload an image for.</param>
         /// <returns>The pictogram's information along with its image.</returns>
         [HttpPost("image/{id}")]
-        [Consumes("image/png", "image/jpeg")]
+        [Consumes(IMAGE_TYPE_PNG, IMAGE_TYPE_JPEG)]
         [Authorize]
         public async Task<IActionResult> CreateImage(long id)
         {
@@ -253,8 +256,9 @@ namespace GirafRest.Controllers
             }
 
             pict.Image = image;
-            var pictoResult = await _giraf._context.SaveChangesAsync();
+            setPictogramImageType(pict);
 
+            var pictoResult = await _giraf._context.SaveChangesAsync();
             return Ok(new PictogramDTO(pict, image));
         }
 
@@ -263,7 +267,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="id">Id of the pictogram to update the image for.</param>
         /// <returns>The updated pictogram along with its image.</returns>
-        [Consumes("image/png", "image/jpeg")]
+        [Consumes(IMAGE_TYPE_PNG, IMAGE_TYPE_JPEG)]
         [HttpPut("image/{id}")]
         [Authorize]
         public async Task<IActionResult> UpdatePictogramImage(long id) {
@@ -295,8 +299,9 @@ namespace GirafRest.Controllers
             //Update the image
             byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body);
             picto.Image = image;
-            await _giraf._context.SaveChangesAsync();
+            setPictogramImageType(picto);
 
+            await _giraf._context.SaveChangesAsync();
             return Ok(new PictogramDTO(picto, image));
         }
 
@@ -336,7 +341,7 @@ namespace GirafRest.Controllers
             if (!ownsPictogram)
                 return Unauthorized();
 
-            return File(picto.Image, "image/png");
+            return File(picto.Image, picto.ImageFormat.ToString());
         }
         #endregion
 
@@ -387,6 +392,14 @@ namespace GirafRest.Controllers
                 _giraf._logger.LogError("An exception occurred when reading all pictograms.", $"Message: {e.Message}", $"Source: {e.Source}");
                 return null;
             }
+        }
+
+        private void setPictogramImageType(Pictogram picto)
+        {
+            if (HttpContext.Request.ContentType == IMAGE_TYPE_PNG)
+                picto.ImageFormat = PictogramImageFormat.png;
+            else if (HttpContext.Request.ContentType == IMAGE_TYPE_JPEG)
+                picto.ImageFormat = PictogramImageFormat.jpg;
         }
         #endregion
         #region query filters

@@ -15,6 +15,7 @@ using Pomelo.EntityFrameworkCore.Extensions;
 using Pomelo.EntityFrameworkCore.MySql;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.FileProviders;
+using GirafRest.Models;
 
 namespace GirafRest.Extensions
 {
@@ -104,6 +105,19 @@ namespace GirafRest.Extensions
                         directoryPath),
                     RequestPath = new PathString("/logs")
                 });
+            }
+        }
+
+        public static string ToString(this PictogramImageFormat format)
+        {
+            switch (format)
+            {
+                case PictogramImageFormat.png:
+                    return "image/png";
+                case PictogramImageFormat.jpg:
+                    return "image/jpeg";
+                default:
+                    return "";
             }
         }
     }

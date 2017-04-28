@@ -10,6 +10,10 @@ namespace GirafRest.Models.DTOs
         /// An array of bytes containing the pictogram's image.
         /// </summary>
         public byte[] Image { get; set; }
+        /// <summary>
+        /// Defines the file type of the pictogram's image.
+        /// </summary>
+        public PictogramImageFormat ImageFormat { get; set; }
 
         /// <summary>
         /// Creates a new pictogram data transfer object from a given pictogram.
