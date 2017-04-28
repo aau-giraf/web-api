@@ -32,9 +32,13 @@ namespace GirafRest.Test.Controllers
             _testContext = new TestContext();
 
             var dc = new DepartmentController(
-                new MockGirafService(_testContext.MockDbContext.Object,
-                _testContext.MockUserManager), _testContext.MockLoggerFactory.Object);
+                new MockGirafService(
+                    _testContext.MockDbContext.Object,
+                    _testContext.MockUserManager),
+                    _testContext.MockLoggerFactory.Object);
+
             _testContext.MockHttpContext = dc.MockHttpContext();
+            _testContext.MockHttpContext.MockClearQueries();
 
             return dc;
         }
@@ -64,6 +68,9 @@ namespace GirafRest.Test.Controllers
             AddEmptyDepartmentList();
 
             var res = dc.Get().Result;
+
+            if(res is ObjectResult)
+                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
             Assert.IsType<NotFoundResult>(res);
         }
 
@@ -120,12 +127,9 @@ namespace GirafRest.Test.Controllers
         public void Department_RemoveUser_ExpectOK()
         {
             var dc = initializeTest();
-            var user = new GirafUser()
-            {
-                UserName = "AddUserTest"
-            };
 
-            var res = dc.RemoveUser(1, user).Result;
+
+            var res = dc.RemoveUser(2, _testContext.MockUsers[1]).Result;
             Assert.IsType<OkObjectResult>(res);
         }
 
@@ -164,36 +168,57 @@ namespace GirafRest.Test.Controllers
         [Fact]
         public void Department_AddResource_ExpectOK()
         {
+            var dc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+
 
         }
 
         [Fact]
         public void Department_AddResource_ExpectDepartmentNotFound()
         {
+            var dc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
 
+            var res = dc.AddResource(10, null).Result;
+            Assert.IsType<NotFoundObjectResult>(res);
         }
 
         [Fact]
         public void Deparment_AddResource_ExpectInvalidResourceBadRequest()
         {
+            var dc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
 
+
+            var res = dc.AddResource(1, null).Result;
+            Assert.IsType<BadRequestObjectResult>(res);
         }
 
         [Fact]
         public void Department_AddResource_ExpectResourceNotFound()
         {
+            var dc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
 
+            var res = dc.AddResource(1, 1).Result;
+            Assert.IsType<NotFoundObjectResult>(res);
         }
 
         [Fact]
         public void Department_AddResource_ExpectUnauthorized()
         {
+            var dc = initializeTest();
 
+            var res = dc.AddResource(1, 1).Result;
+            Assert.IsType<UnauthorizedResult>(res);
         }
 
         [Fact]
         public void Department_AddResource_ExpectAlreadyOwnedBadRequest()
         {
+            var dc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
 
         }
 

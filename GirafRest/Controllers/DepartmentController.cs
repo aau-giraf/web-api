@@ -57,9 +57,11 @@ namespace GirafRest.Controllers
 
                 //Return the list.
                 return Ok(result.Select(d => new DepartmentDTO(d)).ToList());
-            } catch (Exception e) {
-                _giraf._logger.LogError($"Exception in Get: {e.Message}, {e.InnerException}");
-                return BadRequest();
+            } catch (Exception e)
+            {
+                string errorMessage = $"Exception in Get: {e.Message}, {e.InnerException}";
+                _giraf._logger.LogError(errorMessage);
+                return BadRequest(errorMessage);
             }
         }
 
@@ -75,11 +77,11 @@ namespace GirafRest.Controllers
             var department = _giraf._context.Departments
                 .Where(dep => dep.Key == ID);
 
-            if(!await department.AnyAsync()) return NotFound();
             var depa = await department
                 .Include(dep => dep.Members)
                 .Include(dep => dep.Resources)
                 .FirstOrDefaultAsync();
+
             if(depa == null)
                 return NotFound("Department not found.");
 
