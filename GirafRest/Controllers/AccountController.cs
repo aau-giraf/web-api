@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using GirafRest.Models;
-using GirafRest.Models.AccountViewModels;
 using GirafRest.Services;
+using GirafRest.Models.DTOs.AccountDTOs;
 
 namespace GirafRest.Controllers
 {
@@ -68,7 +68,7 @@ namespace GirafRest.Controllers
         /// </returns>
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] LoginViewModel model)
+        public async Task<IActionResult> Login([FromBody] LoginDTO model)
         {
             //Check that the caller has supplied username and password in the request
             if (string.IsNullOrEmpty(model.Username))
@@ -100,7 +100,7 @@ namespace GirafRest.Controllers
         /// </returns>
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> Register([FromBody] RegisterViewModel model)
+        public async Task<IActionResult> Register([FromBody] RegisterDTO model)
         {
             //Check that all the necesarry data has been supplied
             if (string.IsNullOrEmpty(model.Username))
@@ -150,7 +150,7 @@ namespace GirafRest.Controllers
         /// </returns>
         [HttpPost]
         [AllowAnonymous]
-        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordViewModel model)
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDTO model)
         {
             if (string.IsNullOrEmpty(model.Username))
                 return BadRequest("No username was supplied");
@@ -185,7 +185,7 @@ namespace GirafRest.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        public async Task<IActionResult> ResetPassword(ResetPasswordDTO model)
         {
             if (!ModelState.IsValid)
             {

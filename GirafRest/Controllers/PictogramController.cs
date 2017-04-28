@@ -55,7 +55,7 @@ namespace GirafRest.Controllers
             if (userPictograms.Count == 0)
                 return NotFound();
             else
-                return Ok(userPictograms.Select(p => new PictogramDTO(p)).ToList());
+                return Ok(userPictograms.Select(p => new PictogramDTO(p, p.Image)).ToList());
         }
 
         /// <summary>

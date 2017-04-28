@@ -3,15 +3,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using GirafRest.Models;
-using GirafRest.Models.ManageViewModels;
 using GirafRest.Services;
-using GirafRest.Data;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using GirafRest.Models.DTOs;
-using GirafRest.Models.AccountViewModels;
+using GirafRest.Models.DTOs.UserDTOs;
 
 namespace GirafRest.Controllers
 {
@@ -49,30 +46,15 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Allows the user to change his password.
+        /// Displays the information of the current user.
         /// </summary>
-        /// <param name="model">All information needed to change the password, i.e. old password, new password
-        /// and a confirmation of the new password.</param>
-        /// <returns>BadRequest if something went wrong and ok if everything went well.</returns>
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
+        /// <returns>A serialized version of the currently authenticated user.</returns>
+        [HttpGet]
+        public async Task<IActionResult> GetUser()
         {
-            if (model.OldPassword == null || model.NewPassword == null || model.ConfirmPassword == null)
-                return BadRequest("Please specify both you old password, a new one and a confirmation of the new one.");
+            var user = await _giraf.LoadUserAsync(HttpContext.User);
 
-            var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
-            if (user != null)
-            {
-                var result = await _giraf._userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
-                if (result.Succeeded)
-                {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    _giraf._logger.LogInformation(3, "User changed their password successfully.");
-                    return Ok("Your password was changed.");
-                }
-            }
-            return BadRequest();
+            return Ok(new GirafUserDTO(user));
         }
 
         /// <summary>
@@ -206,21 +188,21 @@ namespace GirafRest.Controllers
         /// BadRequest if either of the two ids are missing or the resource is not PRIVATE, NotFound
         /// if either the user or the resource does not exist or Ok if everything went well.
         /// </returns>
-        [HttpPost("add-resource/{userId}")]
-        public async Task<IActionResult> AddUserResource(string userId, [FromBody] long? resourceId)
+        [HttpPost("resource/{userId}")]
+        public async Task<IActionResult> AddUserResource(string userId, [FromBody] ResourceIdDTO resourceIdDTO)
         {
             //Check if valid parameters have been specified in the call
             if (string.IsNullOrEmpty(userId))
                 return BadRequest("You need to specify an id of a user.");
-            if (resourceId == null)
+            if (resourceIdDTO == null)
                 return BadRequest("You need to specify a resourceId in the body of the request.");
 
             //Find the resource and check that it actually does exist - also verify that the resource is private
             var resource = await _giraf._context.PictoFrames
-                .Where(pf => pf.Id == resourceId)
+                .Where(pf => pf.Id == resourceIdDTO.ResourceId)
                 .FirstOrDefaultAsync();
             if (resource == null)
-                return NotFound("The is no resource with id " + resourceId);
+                return NotFound("The is no resource with id " + resourceIdDTO.ResourceId);
             if (resource.AccessLevel != AccessLevel.PRIVATE)
                 return BadRequest("Resources must be PRIVATE (2) in order for users to own them.");
 
@@ -238,7 +220,7 @@ namespace GirafRest.Controllers
                 return NotFound("There is no user with id " + userId);
 
             //Check if the target user already owns the resource
-            if (user.Resources.Where(ur => ur.ResourceKey == resourceId).Any())
+            if (user.Resources.Where(ur => ur.ResourceKey == resourceIdDTO.ResourceId).Any())
                 return BadRequest("The user already owns the resource.");
 
             //Create the relation and save changes.
@@ -257,11 +239,11 @@ namespace GirafRest.Controllers
         /// BadRequest if either of the two ids are missing or the resource is not PRIVATE, NotFound
         /// if either the user or the resource does not exist or Ok if everything went well.
         /// </returns>
-        [HttpDelete("remove-resource/{userId}")]
-        public async Task<IActionResult> RemoveResource(string userId, [FromBody] long? resourceId)
+        [HttpDelete("resource/{userId}")]
+        public async Task<IActionResult> RemoveResource(string userId, [FromBody] ResourceIdDTO resourceIdDTO)
         {
             //Check that valid parameters have been specified in the call
-            if (resourceId == null)
+            if (resourceIdDTO == null)
                 return BadRequest("The body of the request must contain a resourceId");
             if (string.IsNullOrEmpty(userId))
                 return BadRequest("Please specify a userId to add the pictogram to");
@@ -272,9 +254,9 @@ namespace GirafRest.Controllers
             
             //Fetch the resource with the given id, check that it exists.
             var resource = await _giraf._context.PictoFrames
-                .Where(f => f.Id == resourceId)
+                .Where(f => f.Id == resourceIdDTO.ResourceId)
                 .FirstOrDefaultAsync();
-            if (resource == null) return NotFound($"There is no resource with id {resourceId}.");
+            if (resource == null) return NotFound($"There is no resource with id {resourceIdDTO.ResourceId}.");
 
             //Check if the caller owns the resource
             var resourceOwned = await _giraf.CheckPrivateOwnership(resource, HttpContext);
@@ -289,18 +271,6 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             //Return Ok and the user - the resource is now visible in user.Resources
-            return Ok(new GirafUserDTO(user));
-        }
-
-        /// <summary>
-        /// Displays the information of the current user.
-        /// </summary>
-        /// <returns>A serialized version of the currently authenticated user.</returns>
-        [HttpGet]
-        public async Task<IActionResult> GetUser()
-        {
-            var user = await _giraf.LoadUserAsync(HttpContext.User);
-
             return Ok(new GirafUserDTO(user));
         }
         
@@ -340,9 +310,9 @@ namespace GirafRest.Controllers
         /// <param name="model">Information on the new password, i.e. a JSON string containing
         /// NewPassword and ConfirmPassword.</param>
         /// <returns>BadRequest if the server failed to update the password or Ok if everything went well.</returns>
-        [HttpPost("SetPassword")]
+        [HttpPost("set-password")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SetPassword(SetPasswordViewModel model)
+        public async Task<IActionResult> SetPassword(SetPasswordDTO model)
         {
             var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
             if (user != null)
@@ -354,6 +324,32 @@ namespace GirafRest.Controllers
                     return Ok("Your password was set.");
                 }
                 AddErrors(result);
+            }
+            return BadRequest();
+        }
+        /// <summary>
+        /// Allows the user to change his password.
+        /// </summary>
+        /// <param name="model">All information needed to change the password, i.e. old password, new password
+        /// and a confirmation of the new password.</param>
+        /// <returns>BadRequest if something went wrong and ok if everything went well.</returns>
+        [HttpPost("change-password")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(ChangePasswordDTO model)
+        {
+            if (model.OldPassword == null || model.NewPassword == null || model.ConfirmPassword == null)
+                return BadRequest("Please specify both you old password, a new one and a confirmation of the new one.");
+
+            var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            if (user != null)
+            {
+                var result = await _giraf._userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+                if (result.Succeeded)
+                {
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    _giraf._logger.LogInformation(3, "User changed their password successfully.");
+                    return Ok("Your password was changed.");
+                }
             }
             return BadRequest();
         }

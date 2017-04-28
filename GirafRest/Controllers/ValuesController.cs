@@ -7,8 +7,10 @@ using System.Threading.Tasks;
 
 namespace GirafRest.Controllers
 {
+    /// <summary>
+    /// Serves no purpose apart from testing.
+    /// </summary>
     [Route("[controller]")]
-    [Authorize]
     public class ValuesController : Controller
     {
         private string[] values = { "Hest", "Mel", "Lotte" };

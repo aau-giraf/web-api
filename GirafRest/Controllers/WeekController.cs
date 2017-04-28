@@ -37,7 +37,7 @@ namespace GirafRest.Controllers
         /// <returns></returns>
         [HttpGet]	
         [Authorize]
-        public async Task<IActionResult> GetWeekSchedules()
+        public async Task<IActionResult> ReadWeekSchedules()
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             return Ok(user.WeekSchedule.Select(w => new WeekDTO(w)));	
@@ -51,7 +51,7 @@ namespace GirafRest.Controllers
         /// Ok and a serialized version of the week if he does.</returns>
         [HttpGet("{id}")]	
         [Authorize]
-        public async Task<IActionResult> GetUsersWeekSchedule(int id)
+        public async Task<IActionResult> ReadUsersWeekSchedule(int id)
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             var week = user.WeekSchedule.Where(w => w.Id == id).FirstOrDefault();
