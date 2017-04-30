@@ -28,20 +28,6 @@ namespace GirafRest.Setup
 				return;
 
 			System.Console.WriteLine("Adding some sample data to the database.");
-			System.Console.WriteLine("Adding roles.");
-
-			var Roles = new GirafRole[]
-			{
-				new GirafRole(GirafRole.Admin), 
-            	new GirafRole(GirafRole.Guardian), 
-           		new GirafRole(GirafRole.Parent),
-                new GirafRole(GirafRole.User)
-			};
-			foreach(var role in Roles)
-			{
-				context.Roles.Add(role);
-			}
-			context.SaveChanges();
 
             System.Console.WriteLine("Adding departments.");
 			var Departments = new Department[]
@@ -64,11 +50,11 @@ namespace GirafRest.Setup
 			};
             foreach (var user in users)
 			{
-                await userManager.CreateAsync(user, "password");
+                userManager.CreateAsync(user, "password");
             }
 
-            await userManager.AddToRoleAsync(users[0], "User").ConfigureAwait(false);
-            await userManager.AddToRoleAsync(users[2], "Admin").ConfigureAwait(false);
+            userManager.AddToRoleAsync(users[0], GirafRole.User);
+            userManager.AddToRoleAsync(users[2], GirafRole.Admin);
 
             System.Console.WriteLine("Adding pictograms.");
             var Pictograms = new Pictogram[]

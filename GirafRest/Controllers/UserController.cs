@@ -50,6 +50,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns>A serialized version of the currently authenticated user.</returns>
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetUser()
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);

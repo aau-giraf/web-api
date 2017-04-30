@@ -126,10 +126,10 @@ namespace GirafRest.Setup
                     template: "{controller=Account}/{action=AccessDenied}");
             });
 
-            roleManager.CreateAsync(new GirafRole("User")).ConfigureAwait(false);
-            roleManager.CreateAsync(new GirafRole("Admin")).ConfigureAwait(false);
-            roleManager.CreateAsync(new GirafRole("Guardian")).ConfigureAwait(false);
-            roleManager.CreateAsync(new GirafRole("Parent")).ConfigureAwait(false);
+            /*roleManager.CreateAsync(new GirafRole(GirafRole.Admin)).ConfigureAwait(false);
+            roleManager.CreateAsync(new GirafRole(GirafRole.Guardian)).ConfigureAwait(false);
+            roleManager.CreateAsync(new GirafRole(GirafRole.Parent)).ConfigureAwait(false);
+            roleManager.CreateAsync(new GirafRole(GirafRole.User)).ConfigureAwait(false);*/
 
 
             //Fill some sample data into the database

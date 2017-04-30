@@ -33,7 +33,7 @@ namespace GirafRest.Models
         /// <summary>
         /// A collection of the user's week schedules.
         /// </summary>
-        public ICollection<Week> WeekSchedule { get; set; }
+        public virtual ICollection<Week> WeekSchedule { get; set; }
         /// <summary>
         /// A collection of the user's resources.
         /// </summary>
@@ -50,7 +50,7 @@ namespace GirafRest.Models
         /// <summary>
         /// A collection of all the user's applications.
         /// </summary>
-        public ICollection<ApplicationOption> AvailableApplications { get; set; }
+        public virtual ICollection<ApplicationOption> AvailableApplications { get; set; }
         
         /// <summary>
         /// Creates a new user with the specified user name, associated with the given department.
