@@ -324,7 +324,7 @@ namespace GirafRest.Test
             Choice c = new Choice(new List<PictoFrame>()) { Id = 999 };
             c.AddAll(_testContext.MockPictograms.Cast<PictoFrame>().Where(p => p.AccessLevel == AccessLevel.PUBLIC).Take(2).ToList());
             var res = cc.UpdateChoiceInfo(new ChoiceDTO(c));
-            Assert.IsType<NotFoundResult>(res.Result);
+            Assert.IsType<NotFoundObjectResult>(res.Result);
         }
 
         [Fact]
@@ -339,7 +339,7 @@ namespace GirafRest.Test
                 .Take(2)
                 .ToList());
             var res = choiceController.UpdateChoiceInfo(new ChoiceDTO(c));
-            Assert.IsType<NotFoundResult>(res.Result);
+            Assert.IsType<NotFoundObjectResult>(res.Result);
         }
 
         [Fact]

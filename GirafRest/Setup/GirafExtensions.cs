@@ -108,7 +108,7 @@ namespace GirafRest.Extensions
             }
         }
 
-        public static string ToString(this PictogramImageFormat format)
+        public static string ToContentType(this PictogramImageFormat format)
         {
             switch (format)
             {

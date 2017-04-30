@@ -267,10 +267,20 @@ namespace GirafRest.Test
                 .Returns(new QueryCollection());
         }
 
+        public static void MockContentType (this Mock<HttpContext> context, string contentType)
+        {
+            context.Setup(c => c.Request.ContentType)
+                .Returns(contentType);
+        }
+
         public static void MockRequestImage(this Mock<HttpContext> context, string filepath)
         {
             context.Setup(hc => hc.Request.Body)
                 .Returns(new FileStream(filepath, FileMode.Open, FileAccess.Read));
+            if (filepath.Contains("png"))
+                context.MockContentType("image/png");
+            else if (filepath.Contains("jpg") || filepath.Contains("jpeg"))
+                context.MockContentType("image/jpeg");
         }
 
         public static void MockRequestNoImage(this Mock<HttpContext> context)

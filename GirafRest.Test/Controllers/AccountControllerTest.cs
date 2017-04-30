@@ -1,4 +1,4 @@
-﻿using GirafRest.Controllers;using GirafRest.Models;using GirafRest.Models.AccountViewModels;using GirafRest.Models.DTOs;using GirafRest.Test.Mocks;using Microsoft.AspNetCore.Http;
+﻿using GirafRest.Controllers;using GirafRest.Models;using GirafRest.Models.DTOs.AccountDTOs;using GirafRest.Models.DTOs;using GirafRest.Test.Mocks;using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Mvc;using Moq;using System.Collections.Generic;using System.Linq;using Xunit;using Xunit.Abstractions;using static GirafRest.Test.UnitTestExtensions;namespace GirafRest.Test{    public class AccountControllerTest    {
         private readonly ITestOutputHelper _outputHelpter;
         private TestContext _testContext;
@@ -25,7 +25,7 @@ using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Mvc;using Moq;
             Assert.True(false, "Not implemented");
             var accountController = initializeTest();
             // Indsæt korrekt password
-            var res = accountController.Login(new LoginViewModel()
+            var res = accountController.Login(new LoginDTO()
             { Username =  _testContext.MockUsers[0].UserName, Password = ""});
             Assert.IsType<OkResult>(res.Result);
         }
@@ -34,7 +34,7 @@ using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Mvc;using Moq;
         public void Login_CredentialsNotOk_ExpectUnauthorized()
         {
             var accountController = initializeTest();
-            var res = accountController.Login(new LoginViewModel()
+            var res = accountController.Login(new LoginDTO()
             { Username = "CredentialsNotOk", Password = "CredentialsNotOk" });
             Assert.IsType<UnauthorizedResult>(res.Result);
         }
@@ -43,7 +43,7 @@ using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Mvc;using Moq;
         public void Register_InputOk_ExpectOK()
         {
             var accountController = initializeTest();
-            var res = accountController.Register( new RegisterViewModel()
+            var res = accountController.Register( new RegisterDTO()
             { Username = "InputOk", Password = "InputOk", ConfirmPassword = "InputOk", DepartmentId = 0});
             Assert.IsType<OkResult>(res.Result);
         }
@@ -54,7 +54,7 @@ using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Mvc;using Moq;
             Assert.True(false, "Not implemented");
             // Indsæt korrekt password
             var accountController = initializeTest();
-            var res = accountController.Register(new RegisterViewModel()
+            var res = accountController.Register(new RegisterDTO()
             { Username = _testContext.MockUsers[0].UserName, Password = "", ConfirmPassword = "", DepartmentId = 0 });
             Assert.IsType<BadRequestResult>(res.Result);
         }
@@ -83,7 +83,7 @@ using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Mvc;using Moq;
             Assert.True(false, "Not implemented");
             var accountController = initializeTest();
             // Indsæt korrekt email
-            var res = accountController.ForgotPassword(new ForgotPasswordViewModel()
+            var res = accountController.ForgotPassword(new ForgotPasswordDTO()
             { Username = _testContext.MockUsers[0].UserName, Email = "" });
             Assert.IsType<OkResult>(res.Result);
         }
@@ -92,7 +92,7 @@ using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Mvc;using Moq;
         public void ForgotPassword_UserDoNotExist_ExpectNotFound()
         {
             var accountController = initializeTest();
-            var res = accountController.ForgotPassword(new ForgotPasswordViewModel()
+            var res = accountController.ForgotPassword(new ForgotPasswordDTO()
             { Username = "UserDoNotExist", Email = "UserDoNotExist@UserDoNotExist.com" });
             Assert.IsType<OkResult>(res.Result);
         }

@@ -1,19 +1,15 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.IO;
 using System;
 using GirafRest.Models.DTOs;
-using Microsoft.AspNetCore.Hosting;
-using System.Threading;
-using GirafRest.Data;
 using GirafRest.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
 using GirafRest.Services;
+using GirafRest.Extensions;
 
 namespace GirafRest.Controllers
 {
@@ -25,7 +21,7 @@ namespace GirafRest.Controllers
     public class PictogramController : Controller
     {
         private const string IMAGE_TYPE_PNG = "image/png";
-        private const string IMAGE_TYPE_JPEG = "image/jpg";
+        private const string IMAGE_TYPE_JPEG = "image/jpeg";
 
         /// <summary>
         /// A reference to GirafService, that defines common functionality for all classes.
@@ -341,7 +337,7 @@ namespace GirafRest.Controllers
             if (!ownsPictogram)
                 return Unauthorized();
 
-            return File(picto.Image, picto.ImageFormat.ToString());
+            return File(picto.Image, picto.ImageFormat.ToContentType());
         }
         #endregion
 

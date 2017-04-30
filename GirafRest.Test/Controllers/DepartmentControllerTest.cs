@@ -81,7 +81,7 @@ namespace GirafRest.Test.Controllers
             AddEmptyDepartmentList();
 
             var res = dc.Get(1).Result;
-            Assert.IsType<NotFoundResult>(res);
+            Assert.IsType<NotFoundObjectResult>(res);
         }
         
         [Fact]
@@ -201,7 +201,7 @@ namespace GirafRest.Test.Controllers
             var dc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
 
-            var res = dc.AddResource(1, 1).Result;
+            var res = dc.AddResource(2, 999).Result;
             Assert.IsType<NotFoundObjectResult>(res);
         }
 
