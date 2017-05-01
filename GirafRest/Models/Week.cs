@@ -70,13 +70,13 @@ namespace GirafRest.Models
         {
             if(!Weekdays.Any())
             {
-                this.Weekdays.Add(new Weekday(Days.Monday, new List<Resource>()));
-                this.Weekdays.Add(new Weekday(Days.Tuesday, new List<Resource>()));
-                this.Weekdays.Add(new Weekday(Days.Wednesday, new List<Resource>()));
-                this.Weekdays.Add(new Weekday(Days.Thursday, new List<Resource>()));
-                this.Weekdays.Add(new Weekday(Days.Friday, new List<Resource>()));
-                this.Weekdays.Add(new Weekday(Days.Saturday, new List<Resource>()));
-                this.Weekdays.Add(new Weekday(Days.Sunday, new List<Resource>()));
+                for(int i = 0; i < 7; i++){
+                    this.Weekdays.Add(
+                        new Weekday()
+                        {
+                            Day = (Days) i
+                        });
+                }
             }
         }
     }

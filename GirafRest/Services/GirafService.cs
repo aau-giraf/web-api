@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using System.IO;
 using System.Threading;
 using GirafRest.Services;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace GirafRest.Controllers
 {
@@ -54,7 +55,6 @@ namespace GirafRest.Controllers
         public async Task<GirafUser> LoadUserAsync(System.Security.Claims.ClaimsPrincipal principal)  {
             var usr = (await _userManager.GetUserAsync(principal));
             if(usr == null) return null;
-
             return await _context.Users
                     //First load the user from the database
                     .Where (u => u.Id == usr.Id)
@@ -97,22 +97,19 @@ namespace GirafRest.Controllers
         /// <param name="pictogram">The pictogram to check the ownership for.</param>
         /// <param name="httpContext">A reference to the current HttpContext.</param>
         /// <returns>True if the user is authorized to see the resource and false if not.</returns>
-        public async Task<bool> CheckPrivateOwnership(PictoFrame pictogram, HttpContext httpContext) {
+        public async Task<bool> CheckPrivateOwnership(PictoFrame pictogram, GirafUser user) {
             if (pictogram.AccessLevel != AccessLevel.PRIVATE)
                 return false;
 
             //The pictogram was not public, check if the user owns it.
-            var usr = await LoadUserAsync(httpContext.User);
-            if(usr == null) return false;
-            
+            if(user == null) return false;
             var ownedByUser = await _context.UserResources
-                .Where(ur => ur.ResourceKey == pictogram.Id && ur.OtherKey == usr.Id)
+                .Where(ur => ur.ResourceKey == pictogram.Id && ur.OtherKey == user.Id)
                 .AnyAsync();
             if (ownedByUser)
             {
                 return true;
             }
-
             return false;
         }
 
@@ -122,21 +119,21 @@ namespace GirafRest.Controllers
         /// <param name="resource">The resource to check ownership for.</param>
         /// <param name="httpContext">The http context of the current request.</param>
         /// <returns>True if the user's department owns the pictogram, false if not.</returns>
-        public async Task<bool> CheckProtectedOwnership(PictoFrame resource, HttpContext httpContext)
+        public async Task<bool> CheckProtectedOwnership(PictoFrame resource, GirafUser user)
         {
             if (resource.AccessLevel != AccessLevel.PROTECTED)
                 return false;
 
-            var usr = await LoadUserAsync(httpContext.User);
-            if (usr == null) return false;
+            if (user == null) return false;
 
             //The pictogram was not owned by user, check if his department owns it.
             var ownedByDepartment = await _context.DepartmentResources
-                .Where(dr => dr.ResourceKey == resource.Id && dr.OtherKey == usr.Department.Key)
+                .Where(dr => dr.ResourceKey == resource.Id && dr.OtherKey == user.Department.Key)
                 .AnyAsync();
             if (ownedByDepartment) return true;
 
             return false;
         }
+
     }
 }

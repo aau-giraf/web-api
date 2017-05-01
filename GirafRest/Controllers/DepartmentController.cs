@@ -220,6 +220,7 @@ namespace GirafRest.Controllers
         public async Task<IActionResult> AddResource(long id, [FromBody] long? resourceId) {
             //Fetch the department and check that it exists.
             var department = await _giraf._context.Departments.Where(d => d.Key == id).FirstOrDefaultAsync();
+            var usr = await _giraf.LoadUserAsync(HttpContext.User);
             if(department == null) return NotFound($"There is no department with Id {id}.");
 
             //Check if there is a resourceId specified in the body or as a query-paramater
@@ -230,7 +231,7 @@ namespace GirafRest.Controllers
             //Fetch the resource with the given id, check that it exists and that the user owns it.
             var resource = await _giraf._context.PictoFrames.Where(f => f.Id == resId).FirstOrDefaultAsync();
             if(resource == null) return NotFound($"There is no resource with id {id}.");
-            var resourceOwned = await _giraf.CheckProtectedOwnership(resource, HttpContext);
+            var resourceOwned = await _giraf.CheckProtectedOwnership(resource, usr);
             if(!resourceOwned) return Unauthorized();
 
             //Check if the department already owns the resource
@@ -252,6 +253,7 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<IActionResult> RemoveResource(long id, [FromBody] long? resourceId) {
             //Fetch the department and check that it exists.
+            var usr = await _giraf.LoadUserAsync(HttpContext.User);
             var department = await _giraf._context.Departments.Where(d => d.Key == id).FirstAsync();
             if(department == null) return NotFound($"There is no department with Id {id}.");
 
@@ -264,8 +266,9 @@ namespace GirafRest.Controllers
                 .Where(f => f.Id == resId)
                 .FirstOrDefaultAsync();
             if(resource == null) return NotFound($"There is no resource with id {resourceId}.");
-
-            var resourceOwned = await _giraf.CheckProtectedOwnership(resource, HttpContext);
+            
+            var resourceOwned = await _giraf.CheckProtectedOwnership(resource, usr);
+            
             if(!resourceOwned) return Unauthorized();
 
             //Check if the department already owns the resource and remove if so.

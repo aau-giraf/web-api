@@ -71,7 +71,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Create a new <see cref="Choice"/> choice.
         /// </summary>
-        /// <param name="choice"> A <see cref="ChoiceDTO"/> with all relevant information about the new choíce.</param>
+        /// <param name="choice"> A <see cref="ChoiceDTO"/> with all relevant information about the new choï¿½ce.</param>
         /// <returns>
         /// BadRequest if no valid ChoiceDTO is supplied, NotFound if the list of options contains an invalid pictogram
         /// id and Ok with the new choice with all database-generated information if the creation succeeded.
@@ -200,6 +200,7 @@ namespace GirafRest.Controllers
         /// <returns>True if the user owns all the involved resources, false if not.</returns>
         private async Task<bool> checkAccess(Choice choice)
         {
+            var usr = await _giraf.LoadUserAsync(HttpContext.User);
             _giraf._logger.LogInformation($"Checking if the user is authorized");
             foreach (PictoFrame p in choice)
             {
@@ -207,10 +208,12 @@ namespace GirafRest.Controllers
                 switch (p.AccessLevel)
                 {
                     case AccessLevel.PROTECTED:
-                        ownsResource = await _giraf.CheckProtectedOwnership(p, HttpContext);
+                        ownsResource = await _giraf.CheckProtectedOwnership(p, usr);
                         break;
                     case AccessLevel.PRIVATE:
-                        ownsResource = await _giraf.CheckPrivateOwnership(p, HttpContext);
+                        ownsResource = await _giraf.CheckPrivateOwnership(p, usr);
+                        if (!ownsResource)
+                            return false;
                         break;
                     case AccessLevel.PUBLIC:
                         ownsResource = true;

@@ -39,8 +39,16 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<IActionResult> ReadWeekSchedules()
         {
-            var user = await _giraf.LoadUserAsync(HttpContext.User);
+            /*var user = await _giraf.LoadUserAsync(HttpContext.User);
             return Ok(user.WeekSchedule.Select(w => new WeekDTO(w)));	
+            /*=======*/
+            var user = await _giraf.LoadUserAsync(HttpContext.User);
+            List<WeekDTO> userWeeks = new List<WeekDTO>();
+            if(user != null && user.WeekSchedule != null && user.WeekSchedule.Any()){
+                return Ok(user.WeekSchedule.Select(w => new WeekDTO(w)));
+            }
+            else
+                return NotFound();
         }
 
         /// <summary>
@@ -72,6 +80,7 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<IActionResult> UpdateDay(int id, [FromBody]WeekdayDTO newDay)	
         {	
+            if(newDay == null) return BadRequest("The body of the request must contain a Weekday");
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             var week = user.WeekSchedule.Where(w => w.Id == id).FirstOrDefault();
             if(week != null && week.Weekdays.Any())
@@ -81,8 +90,7 @@ namespace GirafRest.Controllers
                 await _giraf._context.SaveChangesAsync();	
                 return Ok(new WeekDTO(week));	
             }
-            else
-                return NotFound();
+            return NotFound();
         }
         
         /// <summary>
@@ -96,12 +104,19 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<IActionResult> UpdateWeek(int id, [FromBody]WeekDTO newWeek)
         {
+            
+            if(newWeek == null) return BadRequest("The body of the request must contain a Week");
             var user = await _giraf.LoadUserAsync(HttpContext.User);
-            var week = user.WeekSchedule.Where(w => w.Id == id).First();
-            if (week == null) return NotFound();
-            week.Merge(newWeek);
-            await _giraf._context.SaveChangesAsync();
-            return Ok(user.WeekSchedule.Select(w => new WeekDTO(w)));
+            if(user.WeekSchedule.Where(w => w.Id == id).Any())
+            {
+                var week = user.WeekSchedule.Where(w => w.Id == id).First();
+                if (week == null) return NotFound();
+                week.Merge(newWeek);
+                await _giraf._context.SaveChangesAsync();
+                return Ok(user.WeekSchedule.Select(w => new WeekDTO(w)));
+            }
+            else    
+                return NotFound();
         }
 
         /// <summary>

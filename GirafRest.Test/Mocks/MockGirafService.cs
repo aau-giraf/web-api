@@ -36,11 +36,8 @@ namespace GirafRest.Test.Mocks
             _userManager = userManager;
         }
 
-        public Task<bool> CheckPrivateOwnership(PictoFrame resource, HttpContext context)
+        public Task<bool> CheckPrivateOwnership(PictoFrame resource, GirafUser user)
         {
-            var tUser = _userManager.GetUserAsync(new ClaimsPrincipal());
-            var user = tUser.Result;
-
             if (user == null)
                 return Task.FromResult(false);
 
@@ -54,13 +51,8 @@ namespace GirafRest.Test.Mocks
             return Task.FromResult(false);
         }
 
-        public Task<bool> CheckProtectedOwnership(PictoFrame resource, HttpContext contect)
+        public Task<bool> CheckProtectedOwnership(PictoFrame resource, GirafUser user)
         {
-            var tUser = _userManager.GetUserAsync(new ClaimsPrincipal());
-            if (tUser == null)
-                return Task.FromResult(false);
-            var user = tUser.Result;
-
             if (user == null)
                 return Task.FromResult(false);
 

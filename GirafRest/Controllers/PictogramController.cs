@@ -72,6 +72,7 @@ namespace GirafRest.Controllers
         {
             try
             {
+                var usr = await _giraf.LoadUserAsync(HttpContext.User);
                 //Fetch the pictogram and check that it actually exists
                 var _pictogram = await _giraf._context.Pictograms
                     .Where(p => p.Id == id)
@@ -83,9 +84,9 @@ namespace GirafRest.Controllers
 
                 bool ownsResource = false;
                 if (_pictogram.AccessLevel == AccessLevel.PRIVATE)
-                    ownsResource = await _giraf.CheckPrivateOwnership(_pictogram, HttpContext);
+                    ownsResource = await _giraf.CheckPrivateOwnership(_pictogram, usr);
                 else if (_pictogram.AccessLevel == AccessLevel.PROTECTED)
-                    ownsResource = await _giraf.CheckProtectedOwnership(_pictogram, HttpContext);
+                    ownsResource = await _giraf.CheckProtectedOwnership(_pictogram, usr);
 
                 if (ownsResource)
                     return Ok(new PictogramDTO(_pictogram, _pictogram.Image));
@@ -145,24 +146,12 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<IActionResult> UpdatePictogramInfo([FromBody] PictogramDTO pictogram)
         {
+            var usr = await _giraf.LoadUserAsync(HttpContext.User);
             //Fetch the pictogram from the database and check that it exists
             var pict = await _giraf._context.Pictograms.Where(pic => pic.Id == pictogram.Id).FirstOrDefaultAsync();
             if(pict == null) return NotFound();
 
-            bool ownsResource = false;
-            switch (pict.AccessLevel)
-            {
-                case AccessLevel.PUBLIC:
-                    ownsResource = true;
-                    break;
-                case AccessLevel.PROTECTED:
-                    ownsResource = await _giraf.CheckProtectedOwnership(pict, HttpContext);
-                    break;
-                case AccessLevel.PRIVATE:
-                    ownsResource = await _giraf.CheckPrivateOwnership(pict, HttpContext);
-                    break;
-            }
-            if (!ownsResource)
+            if (!CheckOwnership(pict, usr).Result)
                 return Unauthorized();
 
             //Update the existing database entry and save the changes.
@@ -183,24 +172,12 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<IActionResult> DeletePictogram(int id)
         {
+            var usr = await _giraf.LoadUserAsync(HttpContext.User);
             //Fetch the pictogram from the database and check that it exists
             var pict = await _giraf._context.Pictograms.Where(pic => pic.Id == id).FirstOrDefaultAsync();
             if(pict == null) return NotFound();
-
-            var ownsResource = false;
-            switch (pict.AccessLevel)
-            {
-                case AccessLevel.PUBLIC:
-                    ownsResource = true;
-                    break;
-                case AccessLevel.PROTECTED:
-                    ownsResource = await _giraf.CheckProtectedOwnership(pict, HttpContext);
-                    break;
-                case AccessLevel.PRIVATE:
-                    ownsResource = await _giraf.CheckPrivateOwnership(pict, HttpContext);
-                    break;
-            }
-            if (!ownsResource)
+            
+            if (!CheckOwnership(pict, usr).Result)
                 return Unauthorized();
 
             //Remove it and save changes
@@ -220,6 +197,7 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<IActionResult> CreateImage(long id)
         {
+            var usr = await _giraf.LoadUserAsync(HttpContext.User);
             //Fetch the image and check that it exists
             var pict = await _giraf._context
                 .Pictograms
@@ -228,22 +206,8 @@ namespace GirafRest.Controllers
             if(pict == null) return NotFound();
             else if(pict.Image != null) return BadRequest("The pictogram already has an image.");
 
-            var ownsPictogram = false;
-            switch (pict.AccessLevel)
-            {
-                case AccessLevel.PUBLIC:
-                    ownsPictogram = true;
-                    break;
-                case AccessLevel.PROTECTED:
-                    ownsPictogram = await _giraf.CheckProtectedOwnership(pict, HttpContext);
-                    break;
-                case AccessLevel.PRIVATE:
-                    ownsPictogram = await _giraf.CheckPrivateOwnership(pict, HttpContext);
-                    break;
-            }
-            if (!ownsPictogram)
+            if (!CheckOwnership(pict, usr).Result)
                 return Unauthorized();
-
             //Read the image from the request body
             byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body);
             if(image.Length == 0)
@@ -267,6 +231,7 @@ namespace GirafRest.Controllers
         [HttpPut("image/{id}")]
         [Authorize]
         public async Task<IActionResult> UpdatePictogramImage(long id) {
+            var usr = await _giraf.LoadUserAsync(HttpContext.User);
             //Attempt to fetch the pictogram from the database.
             var picto = await _giraf._context
                 .Pictograms
@@ -275,21 +240,7 @@ namespace GirafRest.Controllers
             if(picto == null) return NotFound();
             else if(picto.Image == null) return BadRequest("The pictogram does not have a image, please POST instead.");
 
-            //Check ownership
-            var ownsPictogram = false;
-            switch (picto.AccessLevel)
-            {
-                case AccessLevel.PUBLIC:
-                    ownsPictogram = true;
-                    break;
-                case AccessLevel.PROTECTED:
-                    ownsPictogram = await _giraf.CheckProtectedOwnership(picto, HttpContext);
-                    break;
-                case AccessLevel.PRIVATE:
-                    ownsPictogram = await _giraf.CheckPrivateOwnership(picto, HttpContext);
-                    break;
-            }
-            if (!ownsPictogram)
+            if (!CheckOwnership(picto, usr).Result)
                 return Unauthorized();
 
             //Update the image
@@ -308,6 +259,7 @@ namespace GirafRest.Controllers
         /// <returns>A FileResult with the desired image.</returns>
         [HttpGet("image/{id}")]
         public async Task<IActionResult> ReadPictogramImage(long id) {
+            var usr = await _giraf.LoadUserAsync(HttpContext.User);
             //Fetch the pictogram and check that it actually exists and has an image.
             var picto = await _giraf._context
                 .Pictograms
@@ -318,23 +270,8 @@ namespace GirafRest.Controllers
             else if (picto.Image == null)
                 return NotFound("The specified pictogram has no image.");
 
-            //Check ownership
-            var ownsPictogram = false;
-            switch (picto.AccessLevel)
-            {
-                case AccessLevel.PUBLIC:
-                    ownsPictogram = true;
-                    break;
-                case AccessLevel.PROTECTED:
-                    ownsPictogram = await _giraf.CheckProtectedOwnership(picto, HttpContext);
-                    break;
-                case AccessLevel.PRIVATE:
-                    ownsPictogram = await _giraf.CheckPrivateOwnership(picto, HttpContext);
-                    break;
-                default:
-                    break;
-            }
-            if (!ownsPictogram)
+        
+            if (!CheckOwnership(picto, usr).Result)
                 return Unauthorized();
 
             return File(picto.Image, picto.ImageFormat.ToContentType());
@@ -342,6 +279,35 @@ namespace GirafRest.Controllers
         #endregion
 
         #region helpers
+        
+        /// <summary>
+        /// Checks if the user has some form of ownership of the pictogram.
+        /// </summary>
+        /// <param name="picto">The Pictogram in need of checking.</param>
+        /// <param name="titleQuery">The user in question.</param>
+        /// <returns>A list of said pictograms.</returns>
+        private async Task<bool> CheckOwnership(Pictogram picto, GirafUser usr)
+        {
+            var ownsPictogram = false;
+            switch (picto.AccessLevel)
+            {
+                case AccessLevel.PUBLIC:
+                    ownsPictogram = true;
+                    break;
+                case AccessLevel.PROTECTED:
+                    ownsPictogram = await _giraf.CheckProtectedOwnership(picto, usr);
+                    break;
+                case AccessLevel.PRIVATE:
+                    ownsPictogram = await _giraf.CheckPrivateOwnership(picto, usr);
+                    break;
+                default:
+                    break;
+            }
+            if (!ownsPictogram)
+                return false;
+            return true;
+        }
+
         /// <summary>
         /// Read all pictograms available to the current user (or only the PUBLIC ones if no user is authorized).
         /// </summary>

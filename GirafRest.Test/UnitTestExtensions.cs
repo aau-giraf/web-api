@@ -71,108 +71,178 @@ namespace GirafRest.Test
                         new GirafUser("Owner of other privates", 1)
                         {
                             DepartmentKey = 2
+                        },
+                        new GirafUser("User with no weeks", 2)
+                        {
+                            DepartmentKey = 3
                         }
                     };
 
                     return mockUsers;
                 }
             }
+            private List<Week> mockWeeks;
+            public List<Week> MockWeeks
+            {
+                get
+                {
+                    if(mockWeeks == null)
+                        mockWeeks = new List<Week>()
+                        {
+                            new Week()
+                            {
+                                Weekdays = new List<Weekday>(){
+                                    new Weekday(){
+                                        Day = Days.Monday
+                                    },
+                                    new Weekday(){
+                                        Day = Days.Tuesday
+                                    },
+                                    new Weekday(){
+                                        Day = Days.Wednesday
+                                    },
+                                    new Weekday(){
+                                        Day = Days.Thursday
+                                    },
+                                    new Weekday(){
+                                        Day = Days.Friday
+                                    },
+                                    new Weekday(){
+                                        Day = Days.Saturday
+                                    },
+                                    new Weekday(){
+                                        Day = Days.Sunday
+                                    }
+                                }
+                            },
+                            new Week(){
+                                Weekdays = new List<Weekday>(){
+                                    new Weekday(){
+                                        Day = Days.Monday
+                                    },
+                                    new Weekday(){
+                                        Day = Days.Tuesday
+                                    },
+                                    new Weekday(){
+                                        Day = Days.Wednesday
+                                    },
+                                    new Weekday(){
+                                        Day = Days.Thursday
+                                    },
+                                    new Weekday(){
+                                        Day = Days.Friday
+                                    },
+                                    new Weekday(){
+                                        Day = Days.Saturday
+                                    },
+                                    new Weekday(){
+                                        Day = Days.Sunday
+                                    }
+                                }
+                            },
+                        };
+                    MockUsers[0].WeekSchedule.Add(mockWeeks[0]);
+                    MockUsers[1].WeekSchedule.Add(mockWeeks[1]);
+                    MockUsers[2].WeekSchedule.Clear();
+                    return mockWeeks;
+                }
+            }
             private List<Department> mockDepartments;
             public IReadOnlyList<Department> MockDepartments
             {
                 get
-                {
-                    if (mockDepartments == null)
-                        mockDepartments = new List<Department>() {
-                        new Department()
-                        {
-                            Key = 1,
-                            Name = "Mock Department",
-                            Members = new List<GirafUser>()
+                    {
+                        if (mockDepartments == null)
+                            mockDepartments = new List<Department>() {
+                            new Department()
                             {
-                                MockUsers[0]
-                            }
-                        },
-                        new Department()
-                        {
-                            Key = 2,
-                            Name = "Mock Department2",
-                            Members = new List<GirafUser>()
+                                Key = 1,
+                                Name = "Mock Department",
+                                Members = new List<GirafUser>()
+                                {
+                                    MockUsers[0]
+                                }
+                            },
+                            new Department()
                             {
-                                MockUsers[1]
+                                Key = 2,
+                                Name = "Mock Department2",
+                                Members = new List<GirafUser>()
+                                {
+                                    MockUsers[1]
+                                }
                             }
-                        }
-                    };
+                        };
 
-                    return mockDepartments;
-                }
+                        return mockDepartments;
+                    }
             }
             private List<Choice> mockChoices;
             public List<Choice> MockChoices
             {
                 get
-                {
-                    if (mockChoices == null)
-                        mockChoices = new List<Choice>()
                     {
-                        new Choice(MockPictograms.Where(p => p.AccessLevel == AccessLevel.PUBLIC).Cast<PictoFrame>().ToList())
+                        if (mockChoices == null)
+                            mockChoices = new List<Choice>()
                         {
-                            Id = 0
-                        },
-                        //A private pictogram for mock user 0
-                        new Choice(new List<PictoFrame>() {
-                            MockPictograms[3]
-                        })
-                        {
-                            Id = 1
-                        },
-                        //A choice for department 0 (with id 1)
-                        new Choice(new List<PictoFrame>() {
-                            MockPictograms[5]
-                        })
-                        {
-                            Id = 2
-                        },
-                        //A choice for department 1 (with id 2)
-                        new Choice(new List<PictoFrame>()
-                        {
-                            MockPictograms[6]
-                        })
-                        {
-                            Id = 3
-                        },
-                    };
-                    return mockChoices;
-                }
+                            new Choice(MockPictograms.Where(p => p.AccessLevel == AccessLevel.PUBLIC).Cast<PictoFrame>().ToList())
+                            {
+                                Id = 0
+                            },
+                            //A private pictogram for mock user 0
+                            new Choice(new List<PictoFrame>() {
+                                MockPictograms[3]
+                            })
+                            {
+                                Id = 1
+                            },
+                            //A choice for department 0 (with id 1)
+                            new Choice(new List<PictoFrame>() {
+                                MockPictograms[5]
+                            })
+                            {
+                                Id = 2
+                            },
+                            //A choice for department 1 (with id 2)
+                            new Choice(new List<PictoFrame>()
+                            {
+                                MockPictograms[6]
+                            })
+                            {
+                                Id = 3
+                            },
+                        };
+                        return mockChoices;
+                    }
             }
             private List<UserResource> mockUserResources;
             public IReadOnlyList<UserResource> MockUserResources
             {
                 get
-                {
-                    if (mockUserResources == null)
-                        mockUserResources = new List<UserResource>() {
-                        new UserResource(MockUsers[0], MockPictograms[3]),
-                        new UserResource(MockUsers[1], MockPictograms[4])
-                    };
+                    {
+                        if (mockUserResources == null)
+                            mockUserResources = new List<UserResource>() {
+                            new UserResource(MockUsers[0], MockPictograms[3]),
+                            new UserResource(MockUsers[1], MockPictograms[4])
+                        };
 
-                    return mockUserResources;
-                }
+                        return mockUserResources;
+                    }
             }
             private List<DepartmentResource> mockDepartmentResources;
             public IReadOnlyList<DepartmentResource> MockDepartmentResources
             {
-                get
-                {
-                    if (mockDepartmentResources == null)
-                        mockDepartmentResources = new List<DepartmentResource>()
+                    get
                     {
-                        new DepartmentResource(MockDepartments[0], MockPictograms[5]),
-                        new DepartmentResource(MockDepartments[1], MockPictograms[6])
-                    };
+                        if (mockDepartmentResources == null)
+                            mockDepartmentResources = new List<DepartmentResource>()
+                        {
+                            new DepartmentResource(MockDepartments[0], MockPictograms[5]),
+                            new DepartmentResource(MockDepartments[1], MockPictograms[6])
+                        };
 
-                    return mockDepartmentResources;
-                }
+                        return mockDepartmentResources;
+                    }
             }
             #endregion
             public readonly Mock<MockDbContext> MockDbContext;
@@ -181,16 +251,16 @@ namespace GirafRest.Test
             public readonly Mock<ILoggerFactory> MockLoggerFactory;
 
             public TestContext()
-            {
-                MockDbContext = CreateMockDbContext();
-                MockUserManager = CreateMockUserManager();
+                {
+                    MockDbContext = CreateMockDbContext();
+                    MockUserManager = CreateMockUserManager();
 
-                var mockLogger = new Mock<ILogger>();
-                MockLoggerFactory = new Mock<ILoggerFactory>();
-                MockLoggerFactory.Setup(lf => lf.CreateLogger(It.IsAny<string>()))
-                    .Returns(mockLogger.Object);
-            }
-
+                    var mockLogger = new Mock<ILogger>();
+                    MockLoggerFactory = new Mock<ILoggerFactory>();
+                    MockLoggerFactory.Setup(lf => lf.CreateLogger(It.IsAny<string>()))
+                        .Returns(mockLogger.Object);
+                }
+        
             private Mock<MockDbContext> CreateMockDbContext()
             {
                 var mockSet = CreateMockDbSet(MockPictograms);
@@ -288,7 +358,6 @@ namespace GirafRest.Test
             context.Setup(hc => hc.Request.Body)
                 .Returns(new MemoryStream());
         }
-
         public static Mock<MockDbSet<T>> CreateMockDbSet<T>(IReadOnlyList<T> dataList) 
             where T : class
         {

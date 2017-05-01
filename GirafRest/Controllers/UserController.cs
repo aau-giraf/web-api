@@ -208,7 +208,8 @@ namespace GirafRest.Controllers
                 return BadRequest("Resources must be PRIVATE (2) in order for users to own them.");
 
             //Check that the currently authenticated user owns the resource
-            var resourceOwnedByCaller = await _giraf.CheckPrivateOwnership(resource, HttpContext);
+            var curUsr = await _giraf.LoadUserAsync(HttpContext.User);
+            var resourceOwnedByCaller = await _giraf.CheckPrivateOwnership(resource, curUsr);
             if (!resourceOwnedByCaller)
                 return Unauthorized();
 
@@ -260,7 +261,8 @@ namespace GirafRest.Controllers
             if (resource == null) return NotFound($"There is no resource with id {resourceIdDTO.ResourceId}.");
 
             //Check if the caller owns the resource
-            var resourceOwned = await _giraf.CheckPrivateOwnership(resource, HttpContext);
+            var curUsr = await _giraf.LoadUserAsync(HttpContext.User);
+            var resourceOwned = await _giraf.CheckPrivateOwnership(resource, curUsr);
             if (!resourceOwned) return Unauthorized();
 
             //Check if the user already owns the resource and remove if so.

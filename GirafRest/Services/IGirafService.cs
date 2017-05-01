@@ -58,13 +58,13 @@ namespace GirafRest.Services
         /// <param name="resource">The resource to check ownership for.</param>
         /// <param name="context">A reference to the HttpContext of the current request.</param>
         /// <returns>True if the user owns the resource, false if not.</returns>
-        Task<bool> CheckPrivateOwnership(PictoFrame resource, HttpContext context);
+        Task<bool> CheckPrivateOwnership(PictoFrame resource, GirafUser user);
         /// <summary>
         /// Checks if the current user's department owns the given resource.
         /// </summary>
         /// <param name="resource">The resource to check ownership for.</param>
         /// <param name="context">A reference to the HttpContext of the current request.</param>
         /// <returns>True if the user's department owns the resource, false if not.</returns>
-        Task<bool> CheckProtectedOwnership(PictoFrame resource, HttpContext context);
+        Task<bool> CheckProtectedOwnership(PictoFrame resource, GirafUser user);
     }
 }
