@@ -167,7 +167,10 @@ namespace GirafRest.Setup
             };
             foreach (var role in Roles)
             {
-                roleManager.CreateAsync(role).ConfigureAwait(false);
+                if (!roleManager.RoleExistsAsync(role.Name).Result)
+                {
+                    roleManager.CreateAsync(role).ConfigureAwait(false);
+                }
             }
         }
     }
