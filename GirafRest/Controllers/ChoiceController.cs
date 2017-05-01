@@ -163,7 +163,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="id">The id of the choice to delete.</param>
         /// <returns> Ok if the choice was deleted after checking authorization and NotFound if no choice with the id exists.</returns>
-        [Authorize(Roles = GirafRole.Guardian)]
+        [Authorize(Policy = GirafRole.RequireGuardianOrAdmin)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteChoice(long id)
         {

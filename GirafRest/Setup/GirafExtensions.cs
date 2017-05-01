@@ -44,6 +44,27 @@ namespace GirafRest.Extensions
             services.AddDbContext<GirafDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
         }
 
+        public static void ConfigurePolicies(this IServiceCollection services)
+        {
+            // Create policies for method access using attribute [Authorize("PolicyName")]
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(GirafRole.RequireUser, policy => policy.RequireRole(GirafRole.User));
+            });
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(GirafRole.RequireGuardian, policy => policy.RequireRole(GirafRole.Guardian));
+            });
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(GirafRole.RequireAdmin, policy => policy.RequireRole(GirafRole.Admin));
+            });
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(GirafRole.RequireGuardianOrAdmin, policy => policy.RequireRole(GirafRole.Guardian, GirafRole.Admin));
+            });
+        }
+
         /// <summary>
         /// Removes the default password requirements from ASP.NET and set them to a bare minimum.
         /// </summary>

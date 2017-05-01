@@ -20,28 +20,13 @@ namespace GirafRest.Setup
 		/// Initializes the local database with sample data.
 		/// </summary>
 		/// <param name="context">A reference to the database context.</param>
-		public async static void Initialize(GirafDbContext context, UserManager<GirafUser> userManager, RoleManager<GirafRole> roleManager)
+		public static void Initialize(GirafDbContext context, UserManager<GirafUser> userManager)
 		{
-			context.Database.EnsureCreated();
-
+            // Check if any data is in the database
             if (context.Users.Any())
 				return;
 
 			System.Console.WriteLine("Adding some sample data to the database.");
-
-			var Roles = new GirafRole[]
-			{
-				new GirafRole(GirafRole.Admin), 
-            	new GirafRole(GirafRole.Guardian), 
-           		new GirafRole(GirafRole.Parent),
-                new GirafRole(GirafRole.User)
-			};
-			foreach(var role in Roles)
-			{
-                roleManager.CreateAsync(role).ConfigureAwait(false);
-			}
-			context.SaveChanges();
-
             System.Console.WriteLine("Adding departments.");
 			var Departments = new Department[]
 			{
@@ -63,12 +48,13 @@ namespace GirafRest.Setup
 			};
             foreach (var user in users)
 			{
-                userManager.CreateAsync(user, "password");
+                userManager.CreateAsync(user, "password").ConfigureAwait(false);
             }
 
-            await userManager.AddToRoleAsync(users[0], GirafRole.User).ConfigureAwait(false);
-            await userManager.AddToRoleAsync(users[1], GirafRole.Guardian).ConfigureAwait(false);
-            await userManager.AddToRoleAsync(users[2], GirafRole.Admin).ConfigureAwait(false);
+            // Add users to roles
+            userManager.AddToRoleAsync(users[0], GirafRole.User).ConfigureAwait(false);
+            userManager.AddToRoleAsync(users[1], GirafRole.Guardian).ConfigureAwait(false);
+            userManager.AddToRoleAsync(users[2], GirafRole.Admin).ConfigureAwait(false);
 
             System.Console.WriteLine("Adding pictograms.");
             var Pictograms = new Pictogram[]
@@ -168,6 +154,21 @@ namespace GirafRest.Setup
             context.Choices.Add(_choice2);
             context.Choices.Add(_choice3);
             context.SaveChanges();
+        }
+
+        public static void EnsureRoleSetup(RoleManager<GirafRole> roleManager)
+        {
+            var Roles = new GirafRole[]
+            {
+                new GirafRole(GirafRole.Admin),
+                new GirafRole(GirafRole.Guardian),
+                new GirafRole(GirafRole.Parent),
+                new GirafRole(GirafRole.User)
+            };
+            foreach (var role in Roles)
+            {
+                roleManager.CreateAsync(role).ConfigureAwait(false);
+            }
         }
     }
 }
