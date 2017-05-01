@@ -307,8 +307,6 @@ namespace GirafRest.Test
             {
 
             }
-
-
         }
 
         public static Mock<HttpContext> MockHttpContext(this Controller controller)

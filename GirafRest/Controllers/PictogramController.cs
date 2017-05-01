@@ -142,13 +142,15 @@ namespace GirafRest.Controllers
         /// </param>
         /// <returns>NotFound if there is no pictogram with the specified id or 
         /// the updated pictogram to maintain statelessness.</returns>
-        [HttpPut]
-        [Authorize]
-        public async Task<IActionResult> UpdatePictogramInfo([FromBody] PictogramDTO pictogram)
+        [HttpPut("{id}")]
+        [Authorize(Policy = GirafRole.RequireGuardianOrAdmin)]
+        public async Task<IActionResult> UpdatePictogramInfo(long id, [FromBody] PictogramDTO pictogram)
         {
             var usr = await _giraf.LoadUserAsync(HttpContext.User);
             //Fetch the pictogram from the database and check that it exists
-            var pict = await _giraf._context.Pictograms.Where(pic => pic.Id == pictogram.Id).FirstOrDefaultAsync();
+            var pict = await _giraf._context.Pictograms
+                .Where(pic => pic.Id == id)
+                .FirstOrDefaultAsync();
             if(pict == null) return NotFound();
 
             if (!CheckOwnership(pict, usr).Result)
@@ -169,7 +171,7 @@ namespace GirafRest.Controllers
         /// <param name="id">The id of the pictogram to delete.</param>
         /// <returns>Ok if the pictogram was deleted and NotFound if no pictogram with the id exists.</returns>
         [HttpDelete("{id}")]
-        [Authorize]
+        [Authorize(Policy = GirafRole.RequireGuardianOrAdmin)]
         public async Task<IActionResult> DeletePictogram(int id)
         {
             var usr = await _giraf.LoadUserAsync(HttpContext.User);
