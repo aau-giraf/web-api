@@ -20,7 +20,7 @@ namespace GirafRest.Setup
 		/// Initializes the local database with sample data.
 		/// </summary>
 		/// <param name="context">A reference to the database context.</param>
-		public async static void Initialize(GirafDbContext context, UserManager<GirafUser> userManager)
+		public async static void Initialize(GirafDbContext context, UserManager<GirafUser> userManager, RoleManager<GirafRole> roleManager)
 		{
 			context.Database.EnsureCreated();
 
@@ -28,6 +28,19 @@ namespace GirafRest.Setup
 				return;
 
 			System.Console.WriteLine("Adding some sample data to the database.");
+
+			var Roles = new GirafRole[]
+			{
+				new GirafRole(GirafRole.Admin), 
+            	new GirafRole(GirafRole.Guardian), 
+           		new GirafRole(GirafRole.Parent),
+                new GirafRole(GirafRole.User)
+			};
+			foreach(var role in Roles)
+			{
+                roleManager.CreateAsync(role).ConfigureAwait(false);
+			}
+			context.SaveChanges();
 
             System.Console.WriteLine("Adding departments.");
 			var Departments = new Department[]
@@ -53,8 +66,9 @@ namespace GirafRest.Setup
                 userManager.CreateAsync(user, "password");
             }
 
-            userManager.AddToRoleAsync(users[0], GirafRole.User);
-            userManager.AddToRoleAsync(users[2], GirafRole.Admin);
+            await userManager.AddToRoleAsync(users[0], GirafRole.User).ConfigureAwait(false);
+            await userManager.AddToRoleAsync(users[1], GirafRole.Guardian).ConfigureAwait(false);
+            await userManager.AddToRoleAsync(users[2], GirafRole.Admin).ConfigureAwait(false);
 
             System.Console.WriteLine("Adding pictograms.");
             var Pictograms = new Pictogram[]
@@ -98,7 +112,7 @@ namespace GirafRest.Setup
             }
 			context.SaveChanges();
 			usr = context.Users.Where(user => user.UserName == "Graatand").First();
-			pictos = new List<Pictogram> { Pictograms[8], Pictograms[9], Pictograms[10], Pictograms[11], Pictograms[12], Pictograms[13] };
+			pictos = new List<Pictogram> { Pictograms[8], Pictograms[9], Pictograms[10], Pictograms[11], Pictograms[12] };
             foreach (var pict in pictos)
             {
                 pict.AccessLevel = AccessLevel.PRIVATE;
