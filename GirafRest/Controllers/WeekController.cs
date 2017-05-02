@@ -39,11 +39,7 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<IActionResult> ReadWeekSchedules()
         {
-            /*var user = await _giraf.LoadUserAsync(HttpContext.User);
-            return Ok(user.WeekSchedule.Select(w => new WeekDTO(w)));	
-            /*=======*/
             var user = await _giraf.LoadUserAsync(HttpContext.User);
-            List<WeekDTO> userWeeks = new List<WeekDTO>();
             if(user != null && user.WeekSchedule != null && user.WeekSchedule.Any()){
                 return Ok(user.WeekSchedule.Select(w => new WeekDTO(w)));
             }
@@ -109,7 +105,7 @@ namespace GirafRest.Controllers
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             if(user.WeekSchedule.Where(w => w.Id == id).Any())
             {
-                var week = user.WeekSchedule.Where(w => w.Id == id).First();
+                var week = user.WeekSchedule.Where(w => w.Id == id).FirstOrDefault();
                 if (week == null) return NotFound();
                 week.Merge(newWeek);
                 await _giraf._context.SaveChangesAsync();
@@ -134,6 +130,30 @@ namespace GirafRest.Controllers
             user.WeekSchedule.Add(new Week(newWeek));
             await _giraf._context.SaveChangesAsync();
             return Ok(user.WeekSchedule.Select(w => new WeekDTO(w)));
+        }
+
+        /// <summary>
+        /// Deletes the entire week with the given id.
+        /// </summary>
+        /// <param name="id">If of the week to delete.</param>
+        /// <returns>NotFound if the user does not have a week schedule or
+        /// Ok and a serialized version of the updated week if everything went well.</returns>
+        [HttpPut("{id}")]
+        [Authorize]
+        public async Task<IActionResult> DeleteWeek(int id)
+        {
+            var user = await _giraf.LoadUserAsync(HttpContext.User);
+
+            if(user.WeekSchedule.Where(w => w.Id == id).Any())
+            {
+                var week = user.WeekSchedule.Where(w => w.Id == id).FirstOrDefault();
+                if (week == null) return NotFound();
+                user.WeekSchedule.Remove(week);
+                await _giraf._context.SaveChangesAsync();
+                return Ok(user.WeekSchedule.Select(w => new WeekDTO(w)));
+            }
+            else    
+                return NotFound();
         }
     }
 }

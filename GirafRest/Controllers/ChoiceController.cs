@@ -57,7 +57,11 @@ namespace GirafRest.Controllers
             Choice _choice;
             try
             {
-                _choice = await _giraf._context.Choices.Where(ch => ch.Id == id).Include(ch => ch.Options).ThenInclude(op => op.Resource).FirstAsync();
+                _choice = await _giraf._context.Choices
+                    .Where(ch => ch.Id == id)
+                    .Include(ch => ch.Options)
+                    .ThenInclude(op => op.Resource)
+                    .FirstAsync();
             }
             catch (Exception)
             {
@@ -117,14 +121,14 @@ namespace GirafRest.Controllers
         /// <returns>
         /// NotFound, if there is no choice with the specified id or the list of options contains an invalid pictogram id,
         /// or Ok and the updated choice.</returns>
-        [HttpPut]
-        public async Task<IActionResult> UpdateChoiceInfo([FromBody] ChoiceDTO choice)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateChoiceInfo(long id, [FromBody] ChoiceDTO choice)
         {
             //Attempt to find the target choice.
             Choice _choice;
             List<PictoFrame> pictoFrameList = new List<PictoFrame>();
             _choice = await _giraf._context.Choices
-                .Where(ch => ch.Id == choice.Id)
+                .Where(ch => ch.Id == id)
                 .Include(ch => ch.Options)
                 .ThenInclude(op => op.Resource)
                 .FirstOrDefaultAsync();
