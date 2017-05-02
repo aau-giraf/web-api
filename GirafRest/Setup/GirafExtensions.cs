@@ -16,6 +16,7 @@ using Pomelo.EntityFrameworkCore.MySql;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.FileProviders;
 using GirafRest.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace GirafRest.Extensions
 {
@@ -42,6 +43,24 @@ namespace GirafRest.Extensions
         public static void AddMySql(this IServiceCollection services, IConfigurationRoot Configuration) {
             //Setup the connection to the sql server
             services.AddDbContext<GirafDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
+        }
+
+        public static void EnsureRoleSetup(RoleManager<GirafRole> roleManager)
+        {
+            var Roles = new GirafRole[]
+            {
+                new GirafRole(GirafRole.Admin),
+                new GirafRole(GirafRole.Guardian),
+                new GirafRole(GirafRole.Parent),
+                new GirafRole(GirafRole.User)
+            };
+            foreach (var role in Roles)
+            {
+                if (!roleManager.RoleExistsAsync(role.Name).Result)
+                {
+                    roleManager.CreateAsync(role).ConfigureAwait(false);
+                }
+            }
         }
 
         public static void ConfigurePolicies(this IServiceCollection services)

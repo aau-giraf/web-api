@@ -155,23 +155,5 @@ namespace GirafRest.Setup
             context.Choices.Add(_choice3);
             context.SaveChanges();
         }
-
-        public static void EnsureRoleSetup(RoleManager<GirafRole> roleManager)
-        {
-            var Roles = new GirafRole[]
-            {
-                new GirafRole(GirafRole.Admin),
-                new GirafRole(GirafRole.Guardian),
-                new GirafRole(GirafRole.Parent),
-                new GirafRole(GirafRole.User)
-            };
-            foreach (var role in Roles)
-            {
-                if (!roleManager.RoleExistsAsync(role.Name).Result)
-                {
-                    roleManager.CreateAsync(role).ConfigureAwait(false);
-                }
-            }
-        }
     }
 }

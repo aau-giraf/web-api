@@ -67,7 +67,7 @@
             context.Database.EnsureCreated();
 
             // Create roles if they do not exist
-            DBInitializer.EnsureRoleSetup(roleManager);
+            GirafExtensions.EnsureRoleSetup(roleManager);
 
             //Fill some sample data into the database
             if (Program.GenerateSampleData) DBInitializer.Initialize(context, userManager);
