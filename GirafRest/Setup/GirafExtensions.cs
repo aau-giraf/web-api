@@ -45,6 +45,10 @@ namespace GirafRest.Extensions
             services.AddDbContext<GirafDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
         }
 
+        /// <summary>
+        /// An extension-method for setting up roles for use when authorizing users to methods.
+        /// </summary>
+        /// <param name="roleManager">A reference to the role manager for the application.</param>
         public static void EnsureRoleSetup(RoleManager<GirafRole> roleManager)
         {
             var Roles = new GirafRole[]
@@ -63,9 +67,13 @@ namespace GirafRest.Extensions
             }
         }
 
+        /// <summary>
+        /// An extension-method for setting up policies for use when authorizing users to methods.
+        /// </summary>
+        /// <param name="services">A reference to the services of the application.</param>
         public static void ConfigurePolicies(this IServiceCollection services)
         {
-            // Create policies for method access using attribute [Authorize("PolicyName")]
+            // Create policies for method access using attribute [Authorize(Policy = "PolicyName")]
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(GirafRole.RequireUser, policy => policy.RequireRole(GirafRole.User));
