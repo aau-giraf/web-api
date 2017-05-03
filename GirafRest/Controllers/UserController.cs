@@ -9,6 +9,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.DTOs.UserDTOs;
+using System.Collections.Generic;
 
 namespace GirafRest.Controllers
 {
@@ -82,6 +83,16 @@ namespace GirafRest.Controllers
             else
             {
                 user = await _giraf.LoadUserAsync(HttpContext.User);
+                if(await _giraf._userManager.IsInRoleAsync(user, GirafRole.Guardian))
+                {
+                    var users = new List<GirafUserDTO>();
+                    foreach(var member in user.Department.Members)
+                    {
+                        users.Add(new GirafUserDTO(member));
+                    }
+                    var guardian = new GirafUserDTO(user);
+                    return Ok(new {Guardian = guardian, members = users});
+                }
             }
 
             return Ok(new GirafUserDTO(user));
