@@ -140,13 +140,16 @@ namespace GirafRest.Extensions
                 .AddDebug();
             if (Program.LogToFile)
             {
+                //Save log files corresponding to the strings defined in Program.cs, in this case logs/log.txt
                 loggerFactory.AddFile(Path.Combine(Program.LogDirectory, Program.LogFilepath), LogLevel.Warning);
                 app.UseStaticFiles();
 
+                //Ensure that the folder for the log-files exists - create it if not.
                 string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), Program.LogDirectory);
                 if (!Directory.Exists(directoryPath))
                     Directory.CreateDirectory(directoryPath);
 
+                //Tells ASP.NET that the log-directory is accessible remotely on the /logs-url
                 app.UseStaticFiles(new StaticFileOptions()
                 {
                     FileProvider = new PhysicalFileProvider(
