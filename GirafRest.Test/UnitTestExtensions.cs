@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using System.IO;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Xunit.Abstractions;
 
 namespace GirafRest.Test
@@ -66,16 +67,28 @@ namespace GirafRest.Test
                 {
                     if (mockUsers == null)
                         mockUsers = new List<GirafUser>() {
-                        new GirafUser("Mock User", 0) {
-                            DepartmentKey = 1
+                        new GirafUser("Admin", 0) {
+                            DepartmentKey = 1,
+                            Id = "admin",
+                            AvailableApplications = new List<ApplicationOption>()
                         },
-                        new GirafUser("Owner of other privates", 1)
+                        new GirafUser("Guardian in dep 2", 1)
                         {
-                            DepartmentKey = 2
+                            DepartmentKey = 2,
+                            Id = "guardian2",
+                            AvailableApplications = new List<ApplicationOption>()
                         },
-                        new GirafUser("User with no weeks", 2)
+                        new GirafUser("Citizen with no weeks", 2)
                         {
-                            DepartmentKey = 3
+                            DepartmentKey = 3,
+                            Id = "citizen3",
+                            AvailableApplications = new List<ApplicationOption>()
+                        },
+                        new GirafUser("Citizen of dep 2", 1)
+                        {
+                            DepartmentKey = 2,
+                            Id = "citizen2",
+                            AvailableApplications = new List<ApplicationOption>()
                         }
                     };
 
@@ -87,7 +100,7 @@ namespace GirafRest.Test
             {
                 get
                 {
-                    if(mockWeeks == null)
+                    if (mockWeeks == null)
                         mockWeeks = new List<Week>()
                         {
                             new Week()
@@ -152,9 +165,9 @@ namespace GirafRest.Test
             public IReadOnlyList<Department> MockDepartments
             {
                 get
-                    {
-                        if (mockDepartments == null)
-                            mockDepartments = new List<Department>() {
+                {
+                    if (mockDepartments == null)
+                        mockDepartments = new List<Department>() {
                             new Department()
                             {
                                 Key = 1,
@@ -175,16 +188,16 @@ namespace GirafRest.Test
                             }
                         };
 
-                        return mockDepartments;
-                    }
+                    return mockDepartments;
+                }
             }
             private List<Choice> mockChoices;
             public List<Choice> MockChoices
             {
                 get
-                    {
-                        if (mockChoices == null)
-                            mockChoices = new List<Choice>()
+                {
+                    if (mockChoices == null)
+                        mockChoices = new List<Choice>()
                         {
                             new Choice(MockPictograms.Where(p => p.AccessLevel == AccessLevel.PUBLIC).Cast<PictoFrame>().ToList())
                             {
@@ -213,37 +226,89 @@ namespace GirafRest.Test
                                 Id = 3
                             },
                         };
-                        return mockChoices;
-                    }
+                    return mockChoices;
+                }
             }
             private List<UserResource> mockUserResources;
             public IReadOnlyList<UserResource> MockUserResources
             {
                 get
-                    {
-                        if (mockUserResources == null)
-                            mockUserResources = new List<UserResource>() {
+                {
+                    if (mockUserResources == null)
+                        mockUserResources = new List<UserResource>() {
                             new UserResource(MockUsers[0], MockPictograms[3]),
                             new UserResource(MockUsers[1], MockPictograms[4])
                         };
 
-                        return mockUserResources;
-                    }
+                    return mockUserResources;
+                }
             }
             private List<DepartmentResource> mockDepartmentResources;
             public IReadOnlyList<DepartmentResource> MockDepartmentResources
             {
-                    get
-                    {
-                        if (mockDepartmentResources == null)
-                            mockDepartmentResources = new List<DepartmentResource>()
+                get
+                {
+                    if (mockDepartmentResources == null)
+                        mockDepartmentResources = new List<DepartmentResource>()
                         {
                             new DepartmentResource(MockDepartments[0], MockPictograms[5]),
                             new DepartmentResource(MockDepartments[1], MockPictograms[6])
                         };
 
-                        return mockDepartmentResources;
-                    }
+                    return mockDepartmentResources;
+                }
+            }
+
+            private List<GirafRole> mockRoles;
+            public List<GirafRole> MockRoles
+            {
+                get
+                {
+                    if (mockRoles == null)
+                        mockRoles = new List<GirafRole>()
+                        {
+                            new GirafRole(GirafRole.Admin) {
+                                Id = GirafRole.Admin
+                            },
+                            new GirafRole(GirafRole.Guardian) {
+                                Id = GirafRole.Guardian
+                            },
+                            new GirafRole(GirafRole.User)
+                            {
+                                Id = GirafRole.User
+                            }
+                        };
+
+                    return mockRoles;
+                }
+            }
+
+            private List<IdentityUserRole<string>> mockUserRoles;
+            public List<IdentityUserRole<string>> MockUserRoles {
+                get
+                {
+                    if (mockUserRoles == null)
+                        mockUserRoles = new List<IdentityUserRole<string>>()
+                        {
+                            new IdentityUserRole<string> ()
+                            {
+                                UserId = MockUsers[0].Id,
+                                RoleId = MockRoles[0].Id
+                            },
+                            new IdentityUserRole<string>()
+                            {
+                                UserId = MockUsers[1].Id,
+                                RoleId = MockRoles[1].Id
+                            },
+                            new IdentityUserRole<string>()
+                            {
+                                UserId = MockUsers[2].Id,
+                                RoleId = MockRoles[2].Id
+                            }
+                        };
+
+                    return mockUserRoles;
+                }
             }
             #endregion
             public readonly Mock<MockDbContext> MockDbContext;
@@ -254,7 +319,7 @@ namespace GirafRest.Test
             public TestContext()
             {
                 MockDbContext = CreateMockDbContext();
-                MockUserManager = CreateMockUserManager();
+                MockUserManager = CreateMockUserManager(this);
 
                 var mockLogger = new Mock<ILogger>();
 
@@ -271,6 +336,9 @@ namespace GirafRest.Test
                 var mockChoices = CreateMockDbSet(MockChoices);
                 var mockDeps = CreateMockDbSet(MockDepartments);
                 var mockPF = CreateMockDbSet(MockPictograms.Cast<PictoFrame>().ToList());
+                var mockUsers = CreateMockDbSet(MockUsers);
+                var mockRoles = CreateMockDbSet(MockRoles);
+                var mockUserRoles = CreateMockDbSet(MockUserRoles);
 
                 var dbMock = new Mock<MockDbContext>();
                 dbMock.Setup(c => c.Pictograms).Returns(mockSet.Object);
@@ -279,6 +347,11 @@ namespace GirafRest.Test
                 dbMock.Setup(c => c.Choices).Returns(mockChoices.Object);
                 dbMock.Setup(c => c.Departments).Returns(mockDeps.Object);
                 dbMock.Setup(c => c.PictoFrames).Returns(mockPF.Object);
+                /* Does not work as all of them are inherited from IdentityDbContext and not marked as virtual.
+                dbMock.Setup(c => c.Users).Returns(mockUsers.Object);
+                dbMock.Setup(c => c.UserRoles).Returns(mockUserRoles.Object);
+                dbMock.Setup(c => c.Roles).Returns(mockRoles.Object);
+                */
 
                 //Make sure that all references are setup - Entity does not handle it for us this time.
                 MockUsers[0].Department = MockDepartments[0];
@@ -287,10 +360,10 @@ namespace GirafRest.Test
                 return dbMock;
             }
 
-            private MockUserManager CreateMockUserManager()
+            private MockUserManager CreateMockUserManager(TestContext tc)
             {
                 var userStore = new Mock<IUserStore<GirafUser>>();
-                var umMock = new MockUserManager(userStore.Object);
+                var umMock = new MockUserManager(userStore.Object, tc);
                 return umMock;
             }
 

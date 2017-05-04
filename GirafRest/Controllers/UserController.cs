@@ -82,7 +82,7 @@ namespace GirafRest.Controllers
                 }
                 else
                     //We do not reveal if a user with the given username exists
-                    return Unauthorized();
+                    return NotFound();
             }
             else
             {

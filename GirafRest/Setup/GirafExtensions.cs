@@ -138,14 +138,14 @@ namespace GirafRest.Extensions
             loggerFactory
                 .AddConsole()
                 .AddDebug();
-            if (Program.LogToFile)
+            if (ProgramOptions.LogToFile)
             {
                 //Save log files corresponding to the strings defined in Program.cs, in this case logs/log.txt
-                loggerFactory.AddFile(Path.Combine(Program.LogDirectory, Program.LogFilepath), LogLevel.Warning);
+                loggerFactory.AddFile(Path.Combine(ProgramOptions.LogDirectory, ProgramOptions.LogFilepath), LogLevel.Warning);
                 app.UseStaticFiles();
 
                 //Ensure that the folder for the log-files exists - create it if not.
-                string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), Program.LogDirectory);
+                string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), ProgramOptions.LogDirectory);
                 if (!Directory.Exists(directoryPath))
                     Directory.CreateDirectory(directoryPath);
 

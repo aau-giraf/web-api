@@ -28,14 +28,8 @@ namespace GirafRest.Setup
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder().SetBasePath(env.ContentRootPath);
-
-            if (env.IsDevelopment())
-            {
-                builder.AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true);
-            }
-            else {
-                builder.AddJsonFile(Program.ConnectionStringName, optional: false, reloadOnChange: true);
-            }
+            
+            builder.AddJsonFile(ProgramOptions.ConnectionStringName, optional: false, reloadOnChange: true);
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
         }
@@ -50,7 +44,7 @@ namespace GirafRest.Setup
         public void ConfigureServices(IServiceCollection services)
         {
             //Add the database context to the server using extension-methods
-            switch (Program.DbOption) {
+            switch (ProgramOptions.DbOption) {
                 case DbOption.SQLite:
                     services.AddSqlite();
                     break;
@@ -131,7 +125,7 @@ namespace GirafRest.Setup
             GirafExtensions.EnsureRoleSetup(roleManager);
 
             //Fill some sample data into the database
-            if (Program.GenerateSampleData) DBInitializer.Initialize(context, userManager);
+            if (ProgramOptions.GenerateSampleData) DBInitializer.Initialize(context, userManager);
         }
     }
 }
