@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using GirafRest.Models;
 using GirafRest.Services;
 using GirafRest.Models.DTOs.AccountDTOs;
+using GirafRest.Models.DTOs.UserDTOs;
 
 namespace GirafRest.Controllers
 {
@@ -169,6 +170,56 @@ namespace GirafRest.Controllers
             await _emailSender.SendEmailAsync(model.Email, "Reset Password",
                $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
             return Ok($"An email has been sent to {model.Email} with a password reset link.");
+        }
+
+        /// <summary>
+        /// Creates a new password for the currently authenticated user.
+        /// </summary>
+        /// <param name="model">Information on the new password, i.e. a JSON string containing
+        /// NewPassword and ConfirmPassword.</param>
+        /// <returns>BadRequest if the server failed to update the password or Ok if everything went well.</returns>
+        [HttpPost("set-password")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> SetPassword(SetPasswordDTO model)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            if (user != null)
+            {
+                var result = await _userManager.AddPasswordAsync(user, model.NewPassword);
+                if (result.Succeeded)
+                {
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    return Ok("Your password was set.");
+                }
+                AddErrors(result);
+            }
+            return BadRequest();
+        }
+        /// <summary>
+        /// Allows the user to change his password.
+        /// </summary>
+        /// <param name="model">All information needed to change the password, i.e. old password, new password
+        /// and a confirmation of the new password.</param>
+        /// <returns>BadRequest if something went wrong and ok if everything went well.</returns>
+        [HttpPost("change-password")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangePassword(ChangePasswordDTO model)
+        {
+            if (model.OldPassword == null || model.NewPassword == null || model.ConfirmPassword == null)
+                return BadRequest("Please specify both you old password, a new one and a confirmation of the new one.");
+
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            if (user != null)
+            {
+                var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+                if (result.Succeeded)
+                {
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    _logger.LogInformation(3, "User changed their password successfully.");
+                    return Ok("Your password was changed.");
+                }
+            }
+            return BadRequest();
         }
 
         //

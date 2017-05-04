@@ -390,7 +390,7 @@ namespace GirafRest.Test
                 Id = PRIVATE_PICTOGRAM_USER0
             };
 
-            var res = pc.UpdatePictogramInfo(dto).Result;
+            var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
             if(res is ObjectResult)
                 _testLogger.WriteLine((res as ObjectResult).Value.ToString());
 
@@ -410,7 +410,7 @@ namespace GirafRest.Test
                 Id = PROTECTED_PICTOGRAM_USER0
             };
 
-            var res = pc.UpdatePictogramInfo(dto).Result;
+            var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
 
             if(res is ObjectResult)
                 _testLogger.WriteLine((res as ObjectResult).Value.ToString());
@@ -431,7 +431,7 @@ namespace GirafRest.Test
                 Id = PUBLIC_PICTOGRAM
             };
 
-            var res = pc.UpdatePictogramInfo(dto).Result;
+            var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
 
             if (res is ObjectResult)
                 _testLogger.WriteLine((res as ObjectResult).Value.ToString());
@@ -452,7 +452,7 @@ namespace GirafRest.Test
                 Id = PROTECTED_PICTOGRAM_USER0
             };
 
-            var res = pc.UpdatePictogramInfo(dto).Result;
+            var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
 
             _testLogger.WriteLine((res as ObjectResult).Value.ToString());
 
@@ -472,7 +472,7 @@ namespace GirafRest.Test
                 Id = PRIVATE_PICTOGRAM_USER0
             };
             
-            var res = pc.UpdatePictogramInfo(dto).Result;
+            var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
 
             if(res is ObjectResult)
                 _testLogger.WriteLine((res as ObjectResult).Value.ToString());
@@ -492,7 +492,7 @@ namespace GirafRest.Test
                 Id = PRIVATE_PICTOGRAM_USER0
             };
 
-            var res = pc.UpdatePictogramInfo(dto).Result;
+            var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
 
             Assert.IsType<UnauthorizedResult>(res);
         }
@@ -509,7 +509,7 @@ namespace GirafRest.Test
                 Id = PROTECTED_PICTOGRAM_USER0
             };
 
-            var res = pc.UpdatePictogramInfo(dto).Result;
+            var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
 
             Assert.IsType<UnauthorizedResult>(res);
         }
@@ -526,7 +526,7 @@ namespace GirafRest.Test
                 Id = NONEXISTING_PICTOGRAM
             };
 
-            var res = pc.UpdatePictogramInfo(dto).Result;
+            var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
 
             if(res is ObjectResult)
                 _testLogger.WriteLine((res as ObjectResult).Value.ToString());
@@ -541,7 +541,7 @@ namespace GirafRest.Test
 
             PictogramDTO dto = null;
 
-            var res = pc.UpdatePictogramInfo(dto).Result;
+            var res = pc.UpdatePictogramInfo(PUBLIC_PICTOGRAM, dto).Result;
 
             _testLogger.WriteLine((res as ObjectResult).Value.ToString());
 
@@ -1166,78 +1166,20 @@ namespace GirafRest.Test
 
         #endregion
         #region FilterByTitle
-
-        [Fact]
-        public void FilterByTitle_QueryForP_6Pictograms()
-        {
+        [Theory]
+        [InlineData("PUBLIC", 2)]
+        [InlineData("", 7)]
+        [InlineData("YYY", 0)]
+        [InlineData("Pr", 4)]
+        [InlineData("Pu", 2)]
+        [InlineData("P", 6)]
+        public void FilterByTitle(string query, int expectedPictograms) {
             var pc = initializeTest();
-            string query = "P";
-
+            
             var res = pc.FilterByTitle(_testContext.MockPictograms, query);
 
-            Assert.Equal(6, res.Count);
+            Assert.Equal(expectedPictograms, res.Count);
         }
-
-
-        [Fact]
-        public void FilterByTitle_QueryForPu_2Pictograms()
-        {
-            var pc = initializeTest();
-            string query = "Pu";
-
-            var res = pc.FilterByTitle(_testContext.MockPictograms, query);
-
-            Assert.Equal(2, res.Count);
-        }
-
-
-        [Fact]
-        public void FilterByTitle_QueryForPr_4Pictograms()
-        {
-            var pc = initializeTest();
-            string query = "Pr";
-
-            var res = pc.FilterByTitle(_testContext.MockPictograms, query);
-
-            Assert.Equal(4, res.Count);
-        }
-
-
-        [Fact]
-        public void FilterByTitle_QueryForYYY_0Pictograms()
-        {
-            var pc = initializeTest();
-            string query = "YYY";
-
-            var res = pc.FilterByTitle(_testContext.MockPictograms, query);
-
-            Assert.Equal(0, res.Count);
-        }
-
-
-        [Fact]
-        public void FilterByTitle_QueryForEmptyString_0Pictograms()
-        {
-            var pc = initializeTest();
-            string query = "";
-
-            var res = pc.FilterByTitle(_testContext.MockPictograms, query);
-
-            Assert.Equal(0, res.Count);
-        }
-
-
-        [Fact]
-        public void FilterByTitle_QueryForPUBLIC_2Pictograms()
-        {
-            var pc = initializeTest();
-            string query = "PUBLIC";
-
-            var res = pc.FilterByTitle(_testContext.MockPictograms, query);
-
-            Assert.Equal(2, res.Count);
-        }
-
         #endregion
     }
 }

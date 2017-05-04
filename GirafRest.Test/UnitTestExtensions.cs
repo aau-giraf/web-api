@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using System.IO;
+using Xunit.Abstractions;
 
 namespace GirafRest.Test
 {
@@ -248,19 +249,20 @@ namespace GirafRest.Test
             public readonly Mock<MockDbContext> MockDbContext;
             public readonly MockUserManager MockUserManager;
             public Mock<HttpContext> MockHttpContext { get; set; }
-            public readonly Mock<ILoggerFactory> MockLoggerFactory;
+            public Mock<ILoggerFactory> MockLoggerFactory { get; private set;}
 
             public TestContext()
-                {
-                    MockDbContext = CreateMockDbContext();
-                    MockUserManager = CreateMockUserManager();
+            {
+                MockDbContext = CreateMockDbContext();
+                MockUserManager = CreateMockUserManager();
 
-                    var mockLogger = new Mock<ILogger>();
-                    MockLoggerFactory = new Mock<ILoggerFactory>();
-                    MockLoggerFactory.Setup(lf => lf.CreateLogger(It.IsAny<string>()))
-                        .Returns(mockLogger.Object);
-                }
-        
+                var mockLogger = new Mock<ILogger>();
+
+                MockLoggerFactory = new Mock<ILoggerFactory>();
+                MockLoggerFactory.Setup(lf => lf.CreateLogger(It.IsAny<string>()))
+                    .Returns(mockLogger.Object);
+            }
+    
             private Mock<MockDbContext> CreateMockDbContext()
             {
                 var mockSet = CreateMockDbSet(MockPictograms);
@@ -356,7 +358,7 @@ namespace GirafRest.Test
             context.Setup(hc => hc.Request.Body)
                 .Returns(new MemoryStream());
         }
-        public static Mock<MockDbSet<T>> CreateMockDbSet<T>(IReadOnlyList<T> dataList) 
+        public static Mock<DbSet<T>> CreateMockDbSet<T>(IReadOnlyList<T> dataList) 
             where T : class
         {
             var copyList = new List<T>();
@@ -364,7 +366,7 @@ namespace GirafRest.Test
 
             IQueryable<T> data = copyList.AsQueryable();
 
-            var mockSet = new Mock<MockDbSet<T>>();
+            var mockSet = new Mock<DbSet<T>>();
             mockSet.As<IAsyncEnumerable<T>>()
                 .Setup(m => m.GetEnumerator())
                 .Returns(new TestDbAsyncEnumerator<T>(data.GetEnumerator()));

@@ -21,10 +21,6 @@ namespace GirafRest.Controllers
     public class UserController : Controller
     {
         /// <summary>
-        /// The sign in manager that keeps track of which users are currently signed in.
-        /// </summary>
-        private readonly SignInManager<GirafUser> _signInManager;
-        /// <summary>
         /// An email sender that can be used to send emails to users that have lost their password. (DOES NOT WORK YET!)
         /// </summary>
         private readonly IEmailSender _emailSender;
@@ -33,16 +29,18 @@ namespace GirafRest.Controllers
         /// </summary>
         private readonly IGirafService _giraf;
 
+        private readonly RoleManager<GirafUser> _roleManager;
+
         public UserController(
             IGirafService giraf,
-          SignInManager<GirafUser> signInManager,
           IEmailSender emailSender,
-          ILoggerFactory loggerFactory)
+          ILoggerFactory loggerFactory,
+          RoleManager<GirafUser> roleManager)
         {
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("User");
-            _signInManager = signInManager;
             _emailSender = emailSender;
+            _roleManager = roleManager;
         }
 
         /// <summary>
@@ -305,56 +303,6 @@ namespace GirafRest.Controllers
             user.DisplayLauncherAnimations = enabled;
             await _giraf._context.SaveChangesAsync();
             return Ok(new GirafUserDTO(user));
-        }
-
-        /// <summary>
-        /// Creates a new password for the currently authenticated user.
-        /// </summary>
-        /// <param name="model">Information on the new password, i.e. a JSON string containing
-        /// NewPassword and ConfirmPassword.</param>
-        /// <returns>BadRequest if the server failed to update the password or Ok if everything went well.</returns>
-        [HttpPost("set-password")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> SetPassword(SetPasswordDTO model)
-        {
-            var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
-            if (user != null)
-            {
-                var result = await _giraf._userManager.AddPasswordAsync(user, model.NewPassword);
-                if (result.Succeeded)
-                {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return Ok("Your password was set.");
-                }
-                AddErrors(result);
-            }
-            return BadRequest();
-        }
-        /// <summary>
-        /// Allows the user to change his password.
-        /// </summary>
-        /// <param name="model">All information needed to change the password, i.e. old password, new password
-        /// and a confirmation of the new password.</param>
-        /// <returns>BadRequest if something went wrong and ok if everything went well.</returns>
-        [HttpPost("change-password")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ChangePassword(ChangePasswordDTO model)
-        {
-            if (model.OldPassword == null || model.NewPassword == null || model.ConfirmPassword == null)
-                return BadRequest("Please specify both you old password, a new one and a confirmation of the new one.");
-
-            var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
-            if (user != null)
-            {
-                var result = await _giraf._userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
-                if (result.Succeeded)
-                {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    _giraf._logger.LogInformation(3, "User changed their password successfully.");
-                    return Ok("Your password was changed.");
-                }
-            }
-            return BadRequest();
         }
 
         #region Helpers
