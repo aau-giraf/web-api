@@ -7,5 +7,6 @@
 */migrations/
 */Migrations/
 */images/
-
+html/
+doxygen*
 \.vs/GirafRest/v15/\.suo

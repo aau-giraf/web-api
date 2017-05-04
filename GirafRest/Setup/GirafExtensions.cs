@@ -16,6 +16,7 @@ using Pomelo.EntityFrameworkCore.MySql;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.FileProviders;
 using GirafRest.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace GirafRest.Extensions
 {
@@ -44,9 +45,35 @@ namespace GirafRest.Extensions
             services.AddDbContext<GirafDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
         }
 
+        /// <summary>
+        /// An extension-method for setting up roles for use when authorizing users to methods.
+        /// </summary>
+        /// <param name="roleManager">A reference to the role manager for the application.</param>
+        public static void EnsureRoleSetup(RoleManager<GirafRole> roleManager)
+        {
+            var Roles = new GirafRole[]
+            {
+                new GirafRole(GirafRole.Admin),
+                new GirafRole(GirafRole.Guardian),
+                new GirafRole(GirafRole.Parent),
+                new GirafRole(GirafRole.User)
+            };
+            foreach (var role in Roles)
+            {
+                if (!roleManager.RoleExistsAsync(role.Name).Result)
+                {
+                    roleManager.CreateAsync(role).ConfigureAwait(false);
+                }
+            }
+        }
+
+        /// <summary>
+        /// An extension-method for setting up policies for use when authorizing users to methods.
+        /// </summary>
+        /// <param name="services">A reference to the services of the application.</param>
         public static void ConfigurePolicies(this IServiceCollection services)
         {
-            // Create policies for method access using attribute [Authorize("PolicyName")]
+            // Create policies for method access using attribute [Authorize(Policy = "PolicyName")]
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(GirafRole.RequireUser, policy => policy.RequireRole(GirafRole.User));
@@ -113,13 +140,16 @@ namespace GirafRest.Extensions
                 .AddDebug();
             if (Program.LogToFile)
             {
+                //Save log files corresponding to the strings defined in Program.cs, in this case logs/log.txt
                 loggerFactory.AddFile(Path.Combine(Program.LogDirectory, Program.LogFilepath), LogLevel.Warning);
                 app.UseStaticFiles();
 
+                //Ensure that the folder for the log-files exists - create it if not.
                 string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), Program.LogDirectory);
                 if (!Directory.Exists(directoryPath))
                     Directory.CreateDirectory(directoryPath);
 
+                //Tells ASP.NET that the log-directory is accessible remotely on the /logs-url
                 app.UseStaticFiles(new StaticFileOptions()
                 {
                     FileProvider = new PhysicalFileProvider(

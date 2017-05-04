@@ -9,6 +9,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.DTOs.UserDTOs;
+using System.Collections.Generic;
 
 namespace GirafRest.Controllers
 {
@@ -44,14 +45,59 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Displays the information of the current user.
+        /// Find information on the user with the username supplied as a url query parameter or the current user.
         /// </summary>
-        /// <returns>A serialized version of the currently authenticated user.</returns>
+        /// <returns>NotFound either if there is no user with the given username or the user is not authorized to see the user
+        /// or Ok and a serialized version of the sought-after user.</returns>
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> GetUser()
         {
-            var user = await _giraf.LoadUserAsync(HttpContext.User);
+            //Declare needed variables
+            GirafUser user;
+            string usernameQuery = HttpContext.Request.Query["username"];
+
+            //Check if the caller has supplied a query, find the user with the given name if so,
+            //else find the user with the given username.
+            if (!string.IsNullOrEmpty(usernameQuery))
+            {
+                //First attempt to fetch the user and check that he exists
+                user = await _giraf._userManager.FindByNameAsync(usernameQuery);
+                if (user == null)
+                    return NotFound();
+
+                //Get the current user and check if he is a guardian in the same department as the user
+                //or an Admin, in which cases the user is allowed to see the user.
+                var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
+                if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian))
+                {
+                    //Check if the guardian is in the same department as the user
+                    if (user.DepartmentKey != currentUser.DepartmentKey)
+                        //We do not reveal if a user with the given username exists
+                        return NotFound();
+                }
+                else if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Admin))
+                {
+                    //No additional checks required, simply skip to Ok.
+                }
+                else
+                    //We do not reveal if a user with the given username exists
+                    return Unauthorized();
+            }
+            else
+            {
+                user = await _giraf.LoadUserAsync(HttpContext.User);
+                if(await _giraf._userManager.IsInRoleAsync(user, GirafRole.Guardian))
+                {
+                    var users = new List<GirafUserDTO>();
+                    foreach(var member in user.Department.Members)
+                    {
+                        users.Add(new GirafUserDTO(member));
+                    }
+                    var guardian = new GirafUserDTO(user);
+                    return Ok(new {Guardian = guardian, members = users});
+                }
+            }
 
             return Ok(new GirafUserDTO(user));
         }
@@ -304,7 +350,6 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
             return Ok(new GirafUserDTO(user));
         }
-
         #region Helpers
         /// <summary>
         /// Writes all errors found by identity to the logger.

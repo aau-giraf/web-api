@@ -180,6 +180,7 @@ namespace GirafRest.Controllers
         /// <returns>BadRequest if the server failed to update the password or Ok if everything went well.</returns>
         [HttpPost("set-password")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> SetPassword(SetPasswordDTO model)
         {
             var user = await _userManager.GetUserAsync(HttpContext.User);
@@ -203,6 +204,7 @@ namespace GirafRest.Controllers
         /// <returns>BadRequest if something went wrong and ok if everything went well.</returns>
         [HttpPost("change-password")]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public async Task<IActionResult> ChangePassword(ChangePasswordDTO model)
         {
             if (model.OldPassword == null || model.NewPassword == null || model.ConfirmPassword == null)
@@ -215,7 +217,7 @@ namespace GirafRest.Controllers
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                    _logger.LogInformation(3, "User changed their password successfully.");
+                    _logger.LogInformation("User changed their password successfully.");
                     return Ok("Your password was changed.");
                 }
             }

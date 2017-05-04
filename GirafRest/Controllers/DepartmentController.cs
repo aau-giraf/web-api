@@ -249,7 +249,7 @@ namespace GirafRest.Controllers
             return Ok(new DepartmentDTO(department));
         }
 
-        [HttpPost("resource/{id}")]
+        [HttpDelete("resource/{id}")]
         [Authorize]
         public async Task<IActionResult> RemoveResource(long id, [FromBody] long? resourceId) {
             //Fetch the department and check that it exists.
