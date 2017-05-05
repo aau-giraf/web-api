@@ -86,12 +86,13 @@ namespace GirafRest.Controllers
                 if(await _giraf._userManager.IsInRoleAsync(user, GirafRole.Guardian))
                 {
                     var users = new List<GirafUserDTO>();
+                    users.Add(new GirafUserDTO(user));
                     foreach(var member in user.Department.Members)
                     {
                         users.Add(new GirafUserDTO(member));
                     }
-                    var guardian = new GirafUserDTO(user);
-                    return Ok(new {Guardian = guardian, Members = users});
+
+                    return Ok(users);
                 }
             }
 
