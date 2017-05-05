@@ -91,7 +91,7 @@ namespace GirafRest.Controllers
                         users.Add(new GirafUserDTO(member));
                     }
                     var guardian = new GirafUserDTO(user);
-                    return Ok(new {Guardian = guardian, members = users});
+                    return Ok(new {Guardian = guardian, Members = users});
                 }
             }
 

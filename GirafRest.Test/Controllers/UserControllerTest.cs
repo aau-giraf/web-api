@@ -11,6 +11,7 @@ using GirafRest.Models;
 using System.Collections.Generic;
 using GirafRest.Models.DTOs;
 using System.IO;
+using System;
 
 namespace GirafRest.Test.Controllers
 {
@@ -21,8 +22,12 @@ namespace GirafRest.Test.Controllers
         private readonly string PNG_FILEPATH;
         private const string CITIZEN_USERNAME = "Citizen of dep 2";
         private const int CITIZEN_INDEX = 2;
+        private const int CITIZEN_IN_ANOTHER_DEPARTMENT_INDEX = 3;
         private const int GUARDIAN_INDEX = 1;
         private const int ADMIN_INDEX = 0;
+        private const int GUARDIAN_PRIVATE_PICTOGRAM = 4;
+        private const int GUARDIAN_PROTECTED_PICTOGRAM = 6;
+        private const int PUBLIC_PICTOGRAM = 0;
 
         public UserControllerTest(ITestOutputHelper testLogger)
         {
@@ -491,95 +496,272 @@ namespace GirafRest.Test.Controllers
             Assert.IsType<BadRequestObjectResult>(result);
         }
 
-
         [Fact]
         public void UpdateDisplayName_ValidStringInput_Ok()
         {
-            Assert.True(false, "Test not implemented yet!");
+            var uc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_INDEX]);
+            string newDisplayName = "Display Name";
+
+            var result = uc.UpdateDisplayName(newDisplayName).Result;
+
+            if (result is ObjectResult)
+                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<OkObjectResult>(result);
         }
 
 
         [Fact]
         public void UpdateDisplayName_EmptyString_BadRequest()
         {
-            Assert.True(false, "Test not implemented yet!");
+            var uc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_INDEX]);
+            string newDisplayName = "";
+
+            var result = uc.UpdateDisplayName(newDisplayName).Result;
+
+            if (result is ObjectResult)
+                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<BadRequestObjectResult>(result);
         }
 
 
         [Fact]
         public void UpdateDisplayName_NullInput_BadRequest()
         {
-            Assert.True(false, "Test not implemented yet!");
+            var uc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_INDEX]);
+            string newDisplayName = null;
+
+            var result = uc.UpdateDisplayName(newDisplayName).Result;
+
+            if (result is ObjectResult)
+                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<BadRequestObjectResult>(result);
         }
 
 
         [Fact]
         public void AddResource_OwnPrivateValidUser_Ok()
         {
-            Assert.True(false, "Test not implemented yet!");
+            var uc = initializeTest();
+            string targetUser = _testContext.MockUsers[CITIZEN_INDEX].UserName;
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_INDEX]);
+
+            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { ResourceId = GUARDIAN_PRIVATE_PICTOGRAM }).Result;
+
+            if (result is ObjectResult)
+                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<OkObjectResult>(result);
         }
 
 
         [Fact]
         public void AddResource_OwnPrivateInvalidUser_NotFound()
         {
-            Assert.True(false, "Test not implemented yet!");
+            var uc = initializeTest();
+            string targetUser = "INVALID";
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_INDEX]);
+
+            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { ResourceId = GUARDIAN_PRIVATE_PICTOGRAM }).Result;
+
+            if (result is ObjectResult)
+                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<NotFoundObjectResult>(result);
         }
 
 
         [Fact]
         public void AddResource_OwnProtectedValidUser_BadRequest()
         {
-            Assert.True(false, "Test not implemented yet!");
+            var uc = initializeTest();
+            string targetUser = _testContext.MockUsers[CITIZEN_IN_ANOTHER_DEPARTMENT_INDEX].UserName;
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_INDEX]);
+
+            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { ResourceId = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
+
+            if (result is ObjectResult)
+                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<BadRequestObjectResult>(result);
         }
 
 
         [Fact]
         public void AddResource_OwnProtectedInvalidUser_NotFound()
         {
-            Assert.True(false, "Test not implemented yet!");
+            var uc = initializeTest();
+            string targetUser = "INVALID";
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_INDEX]);
+
+            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { ResourceId = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
+
+            if (result is ObjectResult)
+                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<BadRequestObjectResult>(result);
         }
 
 
         [Fact]
-        public void AddResource_AnotherProtectedValidUser_Unauthorized()
+        public void AddResource_AnotherProtectedValidUser_BadRequest()
         {
-            Assert.True(false, "Test not implemented yet!");
+            var uc = initializeTest();
+            string targetUser = _testContext.MockUsers[CITIZEN_INDEX].UserName;
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_IN_ANOTHER_DEPARTMENT_INDEX]);
+
+            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { ResourceId = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
+
+            if (result is ObjectResult)
+                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<BadRequestObjectResult>(result);
         }
 
 
         [Fact]
-        public void AddResource_AnotherProtectedInvalidUser_NotFound()
+        public void AddResource_AnotherProtectedInvalidUser_BadRequest()
         {
-            Assert.True(false, "Test not implemented yet!");
+            var uc = initializeTest();
+            string targetUser = "INVALID";
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_IN_ANOTHER_DEPARTMENT_INDEX]);
+
+            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { ResourceId = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
+
+            if (result is ObjectResult)
+                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<BadRequestObjectResult>(result);
         }
 
 
         [Fact]
         public void AddResource_PublicValidUser_BadRequest()
         {
-            Assert.True(false, "Test not implemented yet!");
+            var uc = initializeTest();
+            string targetUser = _testContext.MockUsers[GUARDIAN_INDEX].UserName;
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_INDEX]);
+
+            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { ResourceId = PUBLIC_PICTOGRAM }).Result;
+
+            if (result is ObjectResult)
+                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<BadRequestObjectResult>(result);
         }
 
 
         [Fact]
         public void AddResource_PublicInvalidUser_NotFound()
         {
-            Assert.True(false, "Test not implemented yet!");
+            var uc = initializeTest();
+            string targetUser = "INVALID";
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_INDEX]);
+
+            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { ResourceId = PUBLIC_PICTOGRAM }).Result;
+
+            if (result is ObjectResult)
+                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<BadRequestObjectResult>(result);
         }
 
 
         [Fact]
         public void AddResource_AnotherPrivateValidUser_Unauthorized()
         {
-            Assert.True(false, "Test not implemented yet!");
+            var uc = initializeTest();
+            string targetUser = _testContext.MockUsers[GUARDIAN_INDEX].UserName;
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_INDEX]);
+
+            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { ResourceId = GUARDIAN_PRIVATE_PICTOGRAM }).Result;
+
+            if (result is ObjectResult)
+                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<UnauthorizedResult>(result);
         }
 
 
         [Fact]
-        public void AddResource_AnotherPrivateInvalidUser_NotFound()
+        public void AddResource_AnotherPrivateInvalidUser_Unauthorized()
         {
-            Assert.True(false, "Test not implemented yet!");
+            var uc = initializeTest();
+            string targetUser = "INVALID";
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_INDEX]);
+
+            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { ResourceId = GUARDIAN_PRIVATE_PICTOGRAM }).Result;
+
+            if (result is ObjectResult)
+                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<UnauthorizedResult>(result);
+        }
+
+
+        [Fact]
+        public void ToggleGrayscale_True_GrayscaleIsTrue()
+        {
+            var uc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_INDEX]);
+
+            var result = uc.ToggleGrayscale(true).Result;
+
+            if (result is ObjectResult)
+                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<OkObjectResult>(result);
+            Assert.True(_testContext.MockUsers[CITIZEN_INDEX].LauncherOptions.UseGrayscale);
+        }
+
+        [Fact]
+        public void ToggleGrayscale_False_GrayscaleIsFalse()
+        {
+            var uc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_INDEX]);
+
+            var result = uc.ToggleGrayscale(false).Result;
+
+            if (result is ObjectResult)
+                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<OkObjectResult>(result);
+            Assert.True(!_testContext.MockUsers[CITIZEN_INDEX].LauncherOptions.UseGrayscale);
+        }
+
+        [Fact]
+        public void ToggleAnimations_True_AnimationsIsTrue()
+        {
+            var uc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_INDEX]);
+
+            var result = uc.ToggleAnimations(true).Result;
+
+            if (result is ObjectResult)
+                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<OkObjectResult>(result);
+            Assert.True(_testContext.MockUsers[CITIZEN_INDEX].LauncherOptions.DisplayLauncherAnimations);
+        }
+
+        [Fact]
+        public void ToggleAnimations_False_AnimationsIsFalse()
+        {
+            var uc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_INDEX]);
+
+            var result = uc.ToggleAnimations(false).Result;
+
+            if (result is ObjectResult)
+                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<OkObjectResult>(result);
+            Assert.True(!_testContext.MockUsers[CITIZEN_INDEX].LauncherOptions.DisplayLauncherAnimations);
         }
     }
 

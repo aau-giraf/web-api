@@ -218,6 +218,8 @@ namespace GirafRest.Controllers
         [HttpPost("resource/{id}")]
         [Authorize]
         public async Task<IActionResult> AddResource(long id, ResourceIdDTO resourceDTO) {
+            if (resourceDTO == null)
+                return BadRequest("You must specify a resource id in the request body.");
             //Fetch the department and check that it exists.
             var department = await _giraf._context.Departments.Where(d => d.Key == id).FirstOrDefaultAsync();
             var usr = await _giraf.LoadUserAsync(HttpContext.User);

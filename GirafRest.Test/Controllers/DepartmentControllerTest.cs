@@ -175,22 +175,21 @@ namespace GirafRest.Test.Controllers
         }
 
         [Fact]
-        public void Department_AddResource_ExpectDepartmentNotFound()
+        public void AddResource_InvalidDepartmentValidDTO_NotFound()
         {
             var dc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
 
-            var res = dc.AddResource(10, null).Result;
+            var res = dc.AddResource(10, new ResourceIdDTO() { ResourceId = 5 }).Result;
             Assert.IsType<NotFoundObjectResult>(res);
         }
 
         [Fact]
-        public void Deparment_AddResource_ExpectInvalidResourceBadRequest()
+        public void AddResource_NullAsResourceDTO_BadRequest()
         {
             var dc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
-
-
+            
             var res = dc.AddResource(1, null).Result;
             Assert.IsType<BadRequestObjectResult>(res);
         }
