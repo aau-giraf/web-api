@@ -25,6 +25,7 @@ namespace GirafRest.Test.Controllers
         private const int DEPARTMENT_TWO = 2;
         private const int DEPARTMENT_TEN = 10;
         private const int RESOURCE_ONE = 1;
+        private const int RESOURCE_FIVE = 1;
         private const int NONEXISTING = 999;
         private const int USER = 0;
         private const int OTHER_USER = 0;
@@ -187,7 +188,7 @@ namespace GirafRest.Test.Controllers
             var dc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
 
-            var res = dc.AddResource(DEPARTMENT_TEN, null).Result;
+            var res = dc.AddResource(DEPARTMENT_TEN, new ResourceIdDTO() { ResourceId = RESOURCE_FIVE }).Result;
             Assert.IsType<NotFoundObjectResult>(res);
         }
 
