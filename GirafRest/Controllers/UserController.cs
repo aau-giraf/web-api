@@ -113,8 +113,7 @@ namespace GirafRest.Controllers
             var user = await _giraf.LoadUserAsync(HttpContext.User);
 
             //Update all simple fields
-            user.AvailableApplications = userDTO.AvailableApplications;
-            user.UseGrayscale = userDTO.UseGrayscale;
+            user.LauncherOptions = userDTO.LauncherOptions;
             user.UserName = userDTO.Username;
             user.DisplayName = userDTO.DisplayName;
             
@@ -204,11 +203,11 @@ namespace GirafRest.Controllers
             if (user == null)
                 return NotFound($"There is no user with id: {username}");
 
-            if (user.AvailableApplications.Where(aa => aa.ApplicationName.Equals(application.ApplicationName)).Any())
+            if (user.LauncherOptions.AvailableApplications.Where(aa => aa.ApplicationName.Equals(application.ApplicationName)).Any())
                 return BadRequest("The user already has access to the given application.");
 
             //Add the application for the user to see
-            user.AvailableApplications.Add(application);
+            user.LauncherOptions.AvailableApplications.Add(application);
             await _giraf._context.SaveChangesAsync();
             return Ok(new GirafUserDTO(user));
         }
@@ -233,12 +232,12 @@ namespace GirafRest.Controllers
                 return NotFound($"There is no user with id: {user}");
 
             //Check if the given application was previously available to the user
-            var app = user.AvailableApplications.Where(a => a.Id == application.Id).FirstOrDefault();
+            var app = user.LauncherOptions.AvailableApplications.Where(a => a.Id == application.Id).FirstOrDefault();
             if (app == null)
                 return NotFound("The user did not have an ApplicationOption with id " + application.Id);
 
             //Remove it and save changes
-            user.AvailableApplications.Remove(app);
+            user.LauncherOptions.AvailableApplications.Remove(app);
             await _giraf._context.SaveChangesAsync();
             return Ok(new GirafUserDTO(user));
         }
@@ -365,7 +364,7 @@ namespace GirafRest.Controllers
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
 
-            user.UseGrayscale = enabled;
+            user.LauncherOptions.UseGrayscale = enabled;
             await _giraf._context.SaveChangesAsync();
             return Ok(new GirafUserDTO(user));
         }
@@ -380,7 +379,7 @@ namespace GirafRest.Controllers
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
 
-            user.DisplayLauncherAnimations = enabled;
+            user.LauncherOptions.DisplayLauncherAnimations = enabled;
             await _giraf._context.SaveChangesAsync();
             return Ok(new GirafUserDTO(user));
         }

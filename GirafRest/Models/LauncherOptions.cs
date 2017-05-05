@@ -7,6 +7,40 @@ using System.Threading.Tasks;
 
 namespace GirafRest.Models
 {
+    [ComplexType]
+    public class LauncherOptions
+    {
+        [Key]
+        public long Key { get; set; }
+
+        /// <summary>
+        /// A flag indicating whether to run applications in grayscale or not.
+        /// </summary>
+        public bool UseGrayscale { get; set; }
+        /// <summary>
+        /// A flag indicating whether to display animations in the launcher or not.
+        /// </summary>
+        public bool DisplayLauncherAnimations { get; set; }
+        /// <summary>
+        /// A collection of all the user's applications.
+        /// </summary>
+        public virtual ICollection<ApplicationOption> AvailableApplications { get; set; }
+
+        /// <summary>
+        /// A field for storing how many rows to display in the GirafLauncher application.
+        /// </summary>
+        public int LauncherRows { get; set; }
+        /// <summary>
+        /// A field for storing how many columns to display in the GirafLauncher application.
+        /// </summary>
+        public int LauncherColumns { get; set; }
+
+        public LauncherOptions()
+        {
+            AvailableApplications = new List<ApplicationOption>();
+        }
+    }
+
     /// <summary>
     /// Used to indicate that the user is allowed to use a given application.
     /// </summary>

@@ -24,7 +24,7 @@ namespace GirafRest.Test.Controllers
         private const int GUARDIAN_INDEX = 1;
         private const int ADMIN_INDEX = 0;
 
-        /*public UserControllerTest(ITestOutputHelper testLogger)
+        public UserControllerTest(ITestOutputHelper testLogger)
         {
             _testLogger = testLogger;
             PNG_FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Mocks", "MockImage.png");
@@ -263,7 +263,7 @@ namespace GirafRest.Test.Controllers
             Assert.IsType<OkObjectResult>(result);
             var user = (result as ObjectResult).Value as GirafUserDTO;
 
-            Assert.Contains(user.AvailableApplications, (a => a.ApplicationName == ao.ApplicationName));
+            Assert.Contains(user.LauncherOptions.AvailableApplications, (a => a.ApplicationName == ao.ApplicationName));
         }
 
 
@@ -581,7 +581,6 @@ namespace GirafRest.Test.Controllers
         {
             Assert.True(false, "Test not implemented yet!");
         }
-*/
     }
 
 }

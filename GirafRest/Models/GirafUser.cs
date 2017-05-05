@@ -40,17 +40,9 @@ namespace GirafRest.Models
         public virtual ICollection<UserResource> Resources { get; set; }
 
         /// <summary>
-        /// A flag indicating whether to run applications in grayscale or not.
+        /// A field for storing all relevant options that the user has specified in the GirafLauncher.
         /// </summary>
-        public bool UseGrayscale { get; set; }
-        /// <summary>
-        /// A flag indicating whether to display animations in the launcher or not.
-        /// </summary>
-        public bool DisplayLauncherAnimations { get; set; }
-        /// <summary>
-        /// A collection of all the user's applications.
-        /// </summary>
-        public virtual ICollection<ApplicationOption> AvailableApplications { get; set; }
+        public LauncherOptions LauncherOptions { get; set; }
         
         /// <summary>
         /// Creates a new user with the specified user name, associated with the given department.
@@ -65,7 +57,7 @@ namespace GirafRest.Models
             this.WeekSchedule = new List<Week>();
             this.WeekSchedule.Add(new Week());
             this.WeekSchedule.First().InitWeek();
-            AvailableApplications = new List<ApplicationOption>();
+            LauncherOptions = new LauncherOptions();
         }
         /// <summary>
         /// DO NOT DELETE THIS.
@@ -76,7 +68,7 @@ namespace GirafRest.Models
             this.WeekSchedule = new List<Week>();
             this.WeekSchedule.Add(new Week());
             this.WeekSchedule.First().InitWeek();
-            AvailableApplications = new List<ApplicationOption>();
+            LauncherOptions = new LauncherOptions();
         }
     }
 }

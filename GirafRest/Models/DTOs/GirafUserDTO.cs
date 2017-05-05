@@ -43,21 +43,9 @@ namespace GirafRest.Models.DTOs
         public virtual ICollection<long> Resources { get; set; }
 
         /// <summary>
-        /// A flag indicating whether to run apps in grayscale or not.
+        /// A field for storing all the relevant GirafLauncher options.
         /// </summary>
-        public bool UseGrayscale { get; set; }
-        /// <summary>
-        /// A flag indicating whether to display animations on the launcher or not.
-        /// </summary>
-        public bool DisplayLauncherAnimations { get; set; }
-        /// <summary>
-        /// A list of the user's applications.
-        /// </summary>
-        public ICollection<ApplicationOption> AvailableApplications { get; set; }
-        /// <summary>
-        /// The number of applications in the application list.
-        /// </summary>
-        public int ApplicationCount;
+        public LauncherOptions LauncherOptions { get; set; }
 
         /// <summary>
         /// DO NOT DELETE THIS! NEWTONSOFT REQUIRES AN EMPTY CONSTRUCTOR!
@@ -66,7 +54,7 @@ namespace GirafRest.Models.DTOs
         {
             WeekScheduleIds = new List<long>();
             Resources = new List<long>();
-            AvailableApplications = new List<ApplicationOption>();
+            LauncherOptions = new LauncherOptions();
         }
 
         /// <summary>
@@ -86,10 +74,7 @@ namespace GirafRest.Models.DTOs
             {
                 Resources.Add(res.Key);
             }
-            UseGrayscale = user.UseGrayscale;
-            DisplayLauncherAnimations = user.DisplayLauncherAnimations;
-            AvailableApplications = user.AvailableApplications;
-            ApplicationCount = user.AvailableApplications.Count;
+            LauncherOptions = user.LauncherOptions;
         }
     }
 }
