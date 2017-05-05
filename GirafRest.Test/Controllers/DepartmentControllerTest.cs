@@ -21,7 +21,14 @@ namespace GirafRest.Test.Controllers
     {
         private TestContext _testContext;
         private readonly ITestOutputHelper _testLogger;
-        
+        private const int DEPARTMENT_ONE = 1;
+        private const int DEPARTMENT_TWO = 2;
+        private const int DEPARTMENT_TEN = 10;
+        private const int RESOURCE_ONE = 1;
+        private const int NONEXISTING = 999;
+        private const int USER = 0;
+        private const int OTHER_USER = 0;
+
         public DepartmentControllerTest(ITestOutputHelper testLogger)
         {
             _testLogger = testLogger;
@@ -57,7 +64,7 @@ namespace GirafRest.Test.Controllers
         {
             var dc = initializeTest();
 
-            var res = dc.Get(1).Result;
+            var res = dc.Get(DEPARTMENT_ONE).Result;
             Assert.IsType<OkObjectResult>(res);
         }
 
@@ -80,7 +87,7 @@ namespace GirafRest.Test.Controllers
             var dc = initializeTest();
             AddEmptyDepartmentList();
 
-            var res = dc.Get(1).Result;
+            var res = dc.Get(DEPARTMENT_ONE).Result;
             Assert.IsType<NotFoundObjectResult>(res);
         }
         
@@ -88,7 +95,7 @@ namespace GirafRest.Test.Controllers
         public void Department_Post_Department_ExpectOK()
         {
             var dc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
             var depDTO = new DepartmentDTO (new Department(){
                 Name = "dep1"
             });
@@ -106,7 +113,7 @@ namespace GirafRest.Test.Controllers
                 UserName = "TestUser"
             };
 
-            var res = dc.AddUser(1, user).Result;
+            var res = dc.AddUser(DEPARTMENT_ONE, user).Result;
             Assert.IsType<OkObjectResult>(res);
         }
 
@@ -119,7 +126,7 @@ namespace GirafRest.Test.Controllers
                 UserName = "AddUserTest"
             };
 
-            var res = dc.AddUser(10, user).Result;
+            var res = dc.AddUser(DEPARTMENT_TEN, user).Result;
             Assert.IsType<NotFoundObjectResult>(res);
         }
 
@@ -129,7 +136,7 @@ namespace GirafRest.Test.Controllers
             var dc = initializeTest();
 
 
-            var res = dc.RemoveUser(2, _testContext.MockUsers[1]).Result;
+            var res = dc.RemoveUser(DEPARTMENT_TWO, _testContext.MockUsers[OTHER_USER]).Result;
             Assert.IsType<OkObjectResult>(res);
         }
 
@@ -138,7 +145,7 @@ namespace GirafRest.Test.Controllers
         public void Department_RemoveUser_UserNullExpectBadRequest()
         {
             var dc = initializeTest();
-            var res = dc.RemoveUser(1, null).Result;
+            var res = dc.RemoveUser(DEPARTMENT_ONE, null).Result;
             Assert.IsType<BadRequestObjectResult>(res);
         }
 
@@ -147,7 +154,7 @@ namespace GirafRest.Test.Controllers
         public void Department_RemoveUser_ExpectNotFound()
         {
             var dc = initializeTest();
-            var res = dc.RemoveUser(10, _testContext.MockUsers[0]).Result;
+            var res = dc.RemoveUser(DEPARTMENT_TEN, _testContext.MockUsers[USER]).Result;
             Assert.IsType<NotFoundObjectResult>(res);
         }
 
@@ -161,7 +168,7 @@ namespace GirafRest.Test.Controllers
                 UserName = "AddUserTest"
             };
 
-            var res = dc.RemoveUser(1, user).Result;
+            var res = dc.RemoveUser(DEPARTMENT_ONE, user).Result;
             Assert.IsType<BadRequestObjectResult>(res);
         }
 
@@ -169,7 +176,7 @@ namespace GirafRest.Test.Controllers
         public void Department_AddResource_ExpectOK()
         {
             var dc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
 
 
         }
@@ -178,9 +185,9 @@ namespace GirafRest.Test.Controllers
         public void AddResource_InvalidDepartmentValidDTO_NotFound()
         {
             var dc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
 
-            var res = dc.AddResource(10, new ResourceIdDTO() { ResourceId = 5 }).Result;
+            var res = dc.AddResource(DEPARTMENT_TEN, null).Result;
             Assert.IsType<NotFoundObjectResult>(res);
         }
 
@@ -188,9 +195,10 @@ namespace GirafRest.Test.Controllers
         public void AddResource_NullAsResourceDTO_BadRequest()
         {
             var dc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
-            
-            var res = dc.AddResource(1, null).Result;
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
+
+
+            var res = dc.AddResource(DEPARTMENT_ONE, null).Result;
             Assert.IsType<BadRequestObjectResult>(res);
         }
 
@@ -198,9 +206,9 @@ namespace GirafRest.Test.Controllers
         public void Department_AddResource_ExpectResourceNotFound()
         {
             var dc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
 
-            var res = dc.AddResource(2, new ResourceIdDTO() { ResourceId = 999 }).Result;
+            var res = dc.AddResource(DEPARTMENT_TWO, new ResourceIdDTO() { ResourceId = NONEXISTING }).Result;
             Assert.IsType<NotFoundObjectResult>(res);
         }
 
@@ -209,7 +217,7 @@ namespace GirafRest.Test.Controllers
         {
             var dc = initializeTest();
 
-            var res = dc.AddResource(1, new ResourceIdDTO() { ResourceId = 1 }).Result;
+            var res = dc.AddResource(DEPARTMENT_ONE, new ResourceIdDTO() { ResourceId = RESOURCE_ONE }).Result;
             Assert.IsType<UnauthorizedResult>(res);
         }
 
@@ -217,7 +225,7 @@ namespace GirafRest.Test.Controllers
         public void Department_AddResource_ExpectAlreadyOwnedBadRequest()
         {
             var dc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
 
         }
 

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Mvc;using Moq;using System.Collections.Generic;using System.Linq;using Xunit;using Xunit.Abstractions;using static GirafRest.Test.UnitTestExtensions;namespace GirafRest.Test{    public class AccountControllerTest    {
         private readonly ITestOutputHelper _outputHelpter;
         private TestContext _testContext;
-
+        private const int USER = 0;        private const int DEPARTMENT_ZERO = 0;
         public AccountControllerTest(ITestOutputHelper outputHelpter)
         {
             _outputHelpter = outputHelpter;
@@ -26,7 +26,7 @@ using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Mvc;using Moq;
             var accountController = initializeTest();
             // Indsæt korrekt password
             var res = accountController.Login(new LoginDTO()
-            { Username =  _testContext.MockUsers[0].UserName, Password = ""});
+            { Username =  _testContext.MockUsers[USER].UserName, Password = ""});
             Assert.IsType<OkResult>(res.Result);
         }
 
@@ -44,7 +44,7 @@ using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Mvc;using Moq;
         {
             var accountController = initializeTest();
             var res = accountController.Register( new RegisterDTO()
-            { Username = "InputOk", Password = "InputOk", ConfirmPassword = "InputOk", DepartmentId = 0});
+            { Username = "InputOk", Password = "InputOk", ConfirmPassword = "InputOk", DepartmentId = DEPARTMENT_ZERO});
             Assert.IsType<OkResult>(res.Result);
         }
 
@@ -55,7 +55,7 @@ using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Mvc;using Moq;
             // Indsæt korrekt password
             var accountController = initializeTest();
             var res = accountController.Register(new RegisterDTO()
-            { Username = _testContext.MockUsers[0].UserName, Password = "", ConfirmPassword = "", DepartmentId = 0 });
+            { Username = _testContext.MockUsers[USER].UserName, Password = "", ConfirmPassword = "", DepartmentId = DEPARTMENT_ZERO });
             Assert.IsType<BadRequestResult>(res.Result);
         }
 
@@ -63,7 +63,7 @@ using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Mvc;using Moq;
         public void Logout_UserLoggedIn_ExpectOK()
         {
             var accountController = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
             var res = accountController.Logout();
             Assert.IsType<OkResult>(res.Result);
         }
@@ -84,7 +84,7 @@ using Microsoft.AspNetCore.Identity;using Microsoft.AspNetCore.Mvc;using Moq;
             var accountController = initializeTest();
             // Indsæt korrekt email
             var res = accountController.ForgotPassword(new ForgotPasswordDTO()
-            { Username = _testContext.MockUsers[0].UserName, Email = "" });
+            { Username = _testContext.MockUsers[USER].UserName, Email = "" });
             Assert.IsType<OkResult>(res.Result);
         }
 
