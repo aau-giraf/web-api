@@ -21,6 +21,9 @@ namespace GirafRest.Test.Controllers
         private readonly GirafService giraf;
         private TestContext _testContext;
 
+        private const int USER = 0;
+        private const int OTHER_USER = 1;
+
         public GirafControllerTest()
         {
             /*var dbMock = CreateMockDbContext();
@@ -59,9 +62,9 @@ namespace GirafRest.Test.Controllers
         public void CheckPrivateOwnership_ExpectTrue()
         {
             var gs = initializeTest();
-            var user = _testContext.MockUsers[0];
+            var user = _testContext.MockUsers[USER];
 
-            var res = gs.CheckPrivateOwnership((Pictogram)_testContext.MockUsers[0].Resources.First().Resource, user);
+            var res = gs.CheckPrivateOwnership((Pictogram)_testContext.MockUsers[USER].Resources.First().Resource, user);
 
             Assert.True(res.Result);
         }
@@ -70,9 +73,9 @@ namespace GirafRest.Test.Controllers
         public void CheckPrivateOwnership_ExpectFalse()
         {
             var gs = initializeTest();
-            var user = _testContext.MockUsers[0];
+            var user = _testContext.MockUsers[USER];
 
-            var res = gs.CheckPrivateOwnership((Pictogram)_testContext.MockUsers[1].Resources.First().Resource, user);
+            var res = gs.CheckPrivateOwnership((Pictogram)_testContext.MockUsers[OTHER_USER].Resources.First().Resource, user);
 
             Assert.False(res.Result);
         }
@@ -81,7 +84,7 @@ namespace GirafRest.Test.Controllers
         public void CheckProtectedOwnership_ExpectTrue()
         {
             var gs = initializeTest();
-            var user = _testContext.MockUsers[0];
+            var user = _testContext.MockUsers[USER];
             var userDepartment = _testContext.MockDepartments.Where(d => d.Key == user.DepartmentKey).First();
 
             var res = gs.CheckProtectedOwnership((Pictogram)userDepartment.Resources.First().Resource, user);
@@ -93,7 +96,7 @@ namespace GirafRest.Test.Controllers
         public void CheckProtectedOwnership_ExpectFalse()
         {
             var gs = initializeTest();
-            var user = _testContext.MockUsers[0];
+            var user = _testContext.MockUsers[USER];
             var notUserDepartment = _testContext.MockDepartments.Where(d => d.Key != user.DepartmentKey).First();
 
             var res = gs.CheckProtectedOwnership((Pictogram)notUserDepartment.Resources.First().Resource, user);

@@ -21,6 +21,13 @@ namespace GirafRest.Test
         private readonly ITestOutputHelper _testLogger;
         private TestContext _testContext;
 
+        private const int USER = 0;
+        private const int OTHER_USER = 1;
+        private const int NO_WEEK_USER = 2;
+        private const int WEEK_ZERO = 0;
+        private const int DAY_ZERO = 0;
+        private const int NONEXISTING = 999;
+
         public List<GirafUser> users;
         public WeekControllerTest(ITestOutputHelper output)
         {
@@ -42,7 +49,7 @@ namespace GirafRest.Test
         public void AccessUserWeeks_Expect200OK()
         {
             var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
 
             var res = wc.ReadWeekSchedules();
             IActionResult aRes = res.Result;
@@ -54,9 +61,9 @@ namespace GirafRest.Test
         public void AccessSpecificUserWeek_Expect200OK()
         {
             var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
 
-            var res = wc.ReadUsersWeekSchedule(0);
+            var res = wc.ReadUsersWeekSchedule(WEEK_ZERO);
             IActionResult aRes = res.Result;
             
             Assert.IsType<OkObjectResult>(aRes);
@@ -66,15 +73,15 @@ namespace GirafRest.Test
         public void UpdateDayInWeek_Expect200OK()
         {
             var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
-            var day = _testContext.MockUsers[1].WeekSchedule.First().Weekdays.First();
-            var tempWeek = _testContext.MockUsers[0].WeekSchedule;
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
+            var day = _testContext.MockUsers[OTHER_USER].WeekSchedule.First().Weekdays.First();
+            var tempWeek = _testContext.MockUsers[USER].WeekSchedule;
             
-            var res = wc.UpdateDay(0, new WeekdayDTO(day));
+            var res = wc.UpdateDay(DAY_ZERO, new WeekdayDTO(day));
             IActionResult aRes = res.Result;
 
             Assert.IsType<OkObjectResult>(aRes);
-            _testContext.MockUsers[0].WeekSchedule = tempWeek;
+            _testContext.MockUsers[USER].WeekSchedule = tempWeek;
         }
 
 
@@ -82,39 +89,39 @@ namespace GirafRest.Test
         public void UpdateWeek_Expect200OK()
         {
             var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
-            var week = _testContext.MockUsers[1].WeekSchedule.First();
-            var tempWeek = _testContext.MockUsers[0].WeekSchedule;
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
+            var week = _testContext.MockUsers[OTHER_USER].WeekSchedule.First();
+            var tempWeek = _testContext.MockUsers[USER].WeekSchedule;
 
-            var res = wc.UpdateWeek(0, new WeekDTO(week));
+            var res = wc.UpdateWeek(WEEK_ZERO, new WeekDTO(week));
             IActionResult aRes = res.Result;
 
             Assert.IsType<OkObjectResult>(aRes);
 
-            _testContext.MockUsers[0].WeekSchedule = tempWeek;
+            _testContext.MockUsers[USER].WeekSchedule = tempWeek;
         }
 
         [Fact]
         public void CreateWeek_Expect200OK()
         {
             var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
-            var week = _testContext.MockUsers[1].WeekSchedule.First();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
+            var week = _testContext.MockUsers[OTHER_USER].WeekSchedule.First();
 
             var res = wc.CreateWeek(new WeekDTO(week));
             IActionResult aRes = res.Result;
 
             Assert.IsType<OkObjectResult>(aRes);
 
-            _testContext.MockUsers[0].WeekSchedule.Remove(_testContext.MockUsers[0].WeekSchedule.Last());
+            _testContext.MockUsers[USER].WeekSchedule.Remove(_testContext.MockUsers[USER].WeekSchedule.Last());
         }
 
         [Fact]
         public void AccessEmptyUserWeeks_ExpectNotFound()
         {
             var wc = initializeTest();
-            _testContext.MockUsers[2].WeekSchedule.Clear();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[2]);
+            _testContext.MockUsers[NO_WEEK_USER].WeekSchedule.Clear();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[NO_WEEK_USER]);
 
             var res = wc.ReadWeekSchedules();
             IActionResult aRes = res.Result;
@@ -126,9 +133,9 @@ namespace GirafRest.Test
         public void AccessSpecificEmptyUserWeek_ExpectNotFound()
         {
             var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[2]);
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[NO_WEEK_USER]);
 
-            var res = wc.ReadUsersWeekSchedule(150);
+            var res = wc.ReadUsersWeekSchedule(NONEXISTING);
             IActionResult aRes = res.Result;
             
             Assert.IsType<NotFoundResult>(aRes);
@@ -138,9 +145,9 @@ namespace GirafRest.Test
         public void UpdateDayInWeekWithNull_ExpectBadRequest()
         {
             var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
             
-            var res = wc.UpdateDay(0, null);
+            var res = wc.UpdateDay(DAY_ZERO, null);
             IActionResult aRes = res.Result;
 
             Assert.IsType<BadRequestObjectResult>(aRes);
@@ -150,9 +157,9 @@ namespace GirafRest.Test
         public void UpdateWeekWithNull_ExpectBadRequest()
         {
             var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
 
-            var res = wc.UpdateWeek(0, null);
+            var res = wc.UpdateWeek(WEEK_ZERO, null);
             IActionResult aRes = res.Result;
 
             Assert.IsType<BadRequestObjectResult>(aRes);
@@ -162,7 +169,7 @@ namespace GirafRest.Test
         public void CreateWeekWithNull_ExpectBadRequest()
         {
             var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
 
             var res = wc.CreateWeek(null);
             IActionResult aRes = res.Result;
@@ -174,10 +181,10 @@ namespace GirafRest.Test
         public void UpdateDayInNonExistingWeek_ExpectNotFound()
         {
             var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
-            var day = _testContext.MockUsers[1].WeekSchedule.First().Weekdays.First();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
+            var day = _testContext.MockUsers[OTHER_USER].WeekSchedule.First().Weekdays.First();
             
-            var res = wc.UpdateDay(6540, new WeekdayDTO(day));
+            var res = wc.UpdateDay(NONEXISTING, new WeekdayDTO(day));
             IActionResult aRes = res.Result;
 
             Assert.IsType<NotFoundResult>(aRes);
@@ -187,10 +194,10 @@ namespace GirafRest.Test
         public void UpdateNonExistingWeek_ExpectNotFound()
         {
             var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
-            var week = _testContext.MockUsers[1].WeekSchedule.First();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
+            var week = _testContext.MockUsers[OTHER_USER].WeekSchedule.First();
 
-            var res = wc.UpdateWeek(6540, new WeekDTO(week));
+            var res = wc.UpdateWeek(NONEXISTING, new WeekDTO(week));
             IActionResult aRes = res.Result;
 
             Assert.IsType<NotFoundResult>(aRes);
