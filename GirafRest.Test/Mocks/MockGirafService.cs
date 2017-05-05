@@ -77,5 +77,10 @@ namespace GirafRest.Test.Mocks
 
             return Task.FromResult(image);
         }
+
+        public Task<GirafUser> LoadByNameAsync(string username)
+        {
+            return _userManager.FindByNameAsync(username);
+        }
     }
 }

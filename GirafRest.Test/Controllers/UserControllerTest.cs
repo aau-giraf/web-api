@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using GirafRest.Models;
 using System.Collections.Generic;
 using GirafRest.Models.DTOs;
+using System.IO;
 
 namespace GirafRest.Test.Controllers
 {
@@ -35,8 +36,9 @@ namespace GirafRest.Test.Controllers
 
             var pc = new UserController(
                 new MockGirafService(_testContext.MockDbContext.Object,
-                _testContext.MockUserManager), _testContext.MockLoggerFactory.Object,
-                new Mock<IEmailSender>().Object);
+                _testContext.MockUserManager),
+                new Mock<IEmailSender>().Object,
+                _testContext.MockLoggerFactory.Object);
             _testContext.MockHttpContext = pc.MockHttpContext();
             _testContext.MockHttpContext.MockQuery("username", null);
 
@@ -51,7 +53,7 @@ namespace GirafRest.Test.Controllers
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
 
-            var response = uc.CreateUserIcon();
+            var response = uc.CreateUserIcon().Result;
 
             if(response is ObjectResult)
                 _testLogger.WriteLine((response as ObjectResult).Value.ToString());
@@ -68,7 +70,7 @@ namespace GirafRest.Test.Controllers
             uc.CreateUserIcon();
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
 
-            var response = uc.CreateUserIcon();
+            var response = uc.CreateUserIcon().Result;
 
             if(response is ObjectResult)
                 _testLogger.WriteLine((response as ObjectResult).Value.ToString());
@@ -82,10 +84,10 @@ namespace GirafRest.Test.Controllers
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
-            _uc.CreateUserIcon();
+            uc.CreateUserIcon();
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
 
-            var response = uc.UpdateUserIcon();
+            var response = uc.UpdateUserIcon().Result;
 
             if(response is ObjectResult)
                 _testLogger.WriteLine((response as ObjectResult).Value.ToString());
@@ -100,7 +102,7 @@ namespace GirafRest.Test.Controllers
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
 
-            var response = uc.UpdateUserIcon();
+            var response = uc.UpdateUserIcon().Result;
 
             if(response is ObjectResult)
                 _testLogger.WriteLine((response as ObjectResult).Value.ToString());
@@ -116,7 +118,7 @@ namespace GirafRest.Test.Controllers
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
             uc.CreateUserIcon();
 
-            var response = uc.DeleteUserIcon();
+            var response = uc.DeleteUserIcon().Result;
 
             if(response is ObjectResult)
                 _testLogger.WriteLine((response as ObjectResult).Value.ToString());
@@ -130,7 +132,7 @@ namespace GirafRest.Test.Controllers
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
 
-            var response = uc.DeleteUserIcon();
+            var response = uc.DeleteUserIcon().Result;
 
             if(response is ObjectResult)
                 _testLogger.WriteLine((response as ObjectResult).Value.ToString());
@@ -161,8 +163,10 @@ namespace GirafRest.Test.Controllers
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
 
+            /*
             Assert.IsType<OkObjectResult>(result);
             Assert.IsType<List<GirafUserDTO>>((result as ObjectResult).Value);
+            */
         }
 
         [Fact]
@@ -251,7 +255,7 @@ namespace GirafRest.Test.Controllers
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_INDEX]);
             var ao = new ApplicationOption("Test application", "test.app");
 
-            var result = uc.AddApplication(_testContext.MockUsers[CITIZEN_INDEX].Id, ao).Result;
+            var result = uc.AddApplication(_testContext.MockUsers[CITIZEN_INDEX].UserName, ao).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
@@ -270,7 +274,7 @@ namespace GirafRest.Test.Controllers
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_INDEX]);
             var ao = new ApplicationOption(null, "test.app");
 
-            var result = uc.AddApplication(_testContext.MockUsers[CITIZEN_INDEX].Id, ao).Result;
+            var result = uc.AddApplication(_testContext.MockUsers[CITIZEN_INDEX].UserName, ao).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
@@ -286,7 +290,7 @@ namespace GirafRest.Test.Controllers
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_INDEX]);
             var ao = new ApplicationOption("Test application", null);
 
-            var result = uc.AddApplication(_testContext.MockUsers[CITIZEN_INDEX].Id, ao).Result;
+            var result = uc.AddApplication(_testContext.MockUsers[CITIZEN_INDEX].UserName, ao).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
@@ -302,7 +306,7 @@ namespace GirafRest.Test.Controllers
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_INDEX]);
             ApplicationOption ao = null;
 
-            var result = uc.AddApplication(_testContext.MockUsers[CITIZEN_INDEX].Id, ao).Result;
+            var result = uc.AddApplication(_testContext.MockUsers[CITIZEN_INDEX].UserName, ao).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
@@ -312,7 +316,7 @@ namespace GirafRest.Test.Controllers
 
 
         [Fact]
-        public void AddApplication_NullAsUserId_NotFound()
+        public void AddApplication_NullAsUsername_NotFound()
         {
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_INDEX]);
@@ -328,7 +332,7 @@ namespace GirafRest.Test.Controllers
 
 
         [Fact]
-        public void AddApplication_InvalidUserId_NotFound()
+        public void AddApplication_InvalidUsername_NotFound()
         {
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_INDEX]);
@@ -350,8 +354,8 @@ namespace GirafRest.Test.Controllers
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_INDEX]);
             var ao = new ApplicationOption("Test application", "test.app");
 
-            uc.AddApplication(_testContext.MockUsers[CITIZEN_INDEX].Id, ao);
-            var result = uc.AddApplication(_testContext.MockUsers[CITIZEN_INDEX].Id, ao).Result;
+            uc.AddApplication(_testContext.MockUsers[CITIZEN_INDEX].UserName, ao);
+            var result = uc.AddApplication(_testContext.MockUsers[CITIZEN_INDEX].UserName, ao).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
@@ -363,42 +367,128 @@ namespace GirafRest.Test.Controllers
         [Fact]
         public void RenoveApplication_ValidApplicationInList_Ok()
         {
-            Assert.True(false, "Test not implemented yet!");
+            var uc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_INDEX]);
+            var ao = new ApplicationOption("Test Application", "test.app")
+            {
+                Id = 1
+            };
+            var username = _testContext.MockUsers[CITIZEN_INDEX].UserName;
+            uc.AddApplication(username, ao);
+
+            var result = uc.DeleteApplication(username, ao).Result;
+
+            if (result is ObjectResult)
+                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<OkObjectResult>(result);
         }
 
 
         [Fact]
         public void RemoveApplication_ValidApplicationNotInList_NotFound()
         {
-            Assert.True(false, "Test not implemented yet!");
+            var uc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_INDEX]);
+            var ao = new ApplicationOption("Test Application", "test.app")
+            {
+                Id = 1
+            };
+            var username = _testContext.MockUsers[CITIZEN_INDEX].UserName;
+            
+            var result = uc.DeleteApplication(username, ao).Result;
+
+            if (result is ObjectResult)
+                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<NotFoundObjectResult>(result);
         }
 
 
         [Fact]
-        public void RemoveApplication_NoIdOnDTO_BadRequest()
+        public void RemoveApplication_NoIdOnDTO_NotFound()
         {
-            Assert.True(false, "Test not implemented yet!");
+            var uc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_INDEX]);
+            var ao = new ApplicationOption("Test Application", "test.app")
+            {
+                Id = 1
+            };
+            var username = _testContext.MockUsers[CITIZEN_INDEX].UserName;
+            uc.AddApplication(username, ao);
+            ao = new ApplicationOption("Test Application", "test.app")
+            {
+                Id = -1
+            };
+
+            var result = uc.DeleteApplication(username, ao).Result;
+
+            if (result is ObjectResult)
+                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<NotFoundObjectResult>(result);
         }
 
 
         [Fact]
         public void RemoveApplication_NullAsApplication_BadRequest()
         {
-            Assert.True(false, "Test not implemented yet!");
+            var uc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_INDEX]);
+            var ao = new ApplicationOption("Test Application", "test.app")
+            {
+                Id = 1
+            };
+            var username = _testContext.MockUsers[CITIZEN_INDEX].UserName;
+            uc.AddApplication(username, ao);
+
+            var result = uc.DeleteApplication(username, null).Result;
+
+            if (result is ObjectResult)
+                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<BadRequestObjectResult>(result);
         }
 
 
         [Fact]
-        public void RemoveApplication_NullAsUser_BadRequest()
+        public void RemoveApplication_InvalidUsername_NotFound()
         {
-            Assert.True(false, "Test not implemented yet!");
+            var uc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_INDEX]);
+            var ao = new ApplicationOption("Test Application", "test.app")
+            {
+                Id = 1
+            };
+            var username = _testContext.MockUsers[CITIZEN_INDEX].UserName;
+            uc.AddApplication("INVALID USERNAME", ao);
+
+            var result = uc.DeleteApplication(username, null).Result;
+
+            if (result is ObjectResult)
+                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<BadRequestObjectResult>(result);
         }
 
-
         [Fact]
-        public void RemoveApplication_InvalidUserId_NotFound()
+        public void RemoveApplication_NullUsername_NotFound()
         {
-            Assert.True(false, "Test not implemented yet!");
+            var uc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_INDEX]);
+            var ao = new ApplicationOption("Test Application", "test.app")
+            {
+                Id = 1
+            };
+            var username = _testContext.MockUsers[CITIZEN_INDEX].UserName;
+            uc.AddApplication(null, ao);
+
+            var result = uc.DeleteApplication(username, null).Result;
+
+            if (result is ObjectResult)
+                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<BadRequestObjectResult>(result);
         }
 
 

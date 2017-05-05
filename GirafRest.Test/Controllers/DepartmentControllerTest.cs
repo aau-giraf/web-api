@@ -201,7 +201,7 @@ namespace GirafRest.Test.Controllers
             var dc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
 
-            var res = dc.AddResource(2, 999).Result;
+            var res = dc.AddResource(2, new ResourceIdDTO() { ResourceId = 999 }).Result;
             Assert.IsType<NotFoundObjectResult>(res);
         }
 
@@ -210,7 +210,7 @@ namespace GirafRest.Test.Controllers
         {
             var dc = initializeTest();
 
-            var res = dc.AddResource(1, 1).Result;
+            var res = dc.AddResource(1, new ResourceIdDTO() { ResourceId = 1 }).Result;
             Assert.IsType<UnauthorizedResult>(res);
         }
 

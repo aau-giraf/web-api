@@ -48,5 +48,10 @@ namespace GirafRest.Test.Mocks
         {
             return Task.FromResult(_testContext.MockUsers.Where(u => u.UserName == userName).FirstOrDefault());
         }
+
+        public override Task<GirafUser> FindByIdAsync(string userId)
+        {
+            return Task.FromResult(_testContext.MockUsers.Where(u => u.Id == userId).FirstOrDefault());
+        }
     }
 }

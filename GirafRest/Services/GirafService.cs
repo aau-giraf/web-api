@@ -75,6 +75,32 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
+        /// Loads the user with the given username and also includes all related data.
+        /// </summary>
+        /// <param name="username">The username of the user to fetch.</param>
+        /// <returns>A loaded user, i.e. a user with all related data.</returns>
+        public async Task<GirafUser> LoadByNameAsync(string username)
+        {
+            return await _context.Users
+                    //First load the user from the database
+                    .Where(u => u.UserName == username)
+                    //Then load his pictograms - both the relationship and the actual pictogram
+                    .Include(u => u.Resources)
+                    .ThenInclude(ur => ur.Resource)
+                    //Then load his department and their pictograms
+                    .Include(u => u.Department)
+                    .ThenInclude(d => d.Resources)
+                    .ThenInclude(dr => dr.Resource)
+                    // then load his week schedule
+                    .Include(u => u.WeekSchedule)
+                    .ThenInclude(w => w.Weekdays)
+                    .ThenInclude(wd => wd.Elements)
+                    .Include(u => u.AvailableApplications)
+                    //And return it
+                    .FirstAsync();
+        }
+
+        /// <summary>
         /// Reads an image from the current request's body and return it as a byte array.
         /// </summary>
         /// <param name="bodyStream">A byte-stream from the body of the request.</param>

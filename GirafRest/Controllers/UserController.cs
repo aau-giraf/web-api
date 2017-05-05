@@ -30,18 +30,14 @@ namespace GirafRest.Controllers
         /// </summary>
         private readonly IGirafService _giraf;
 
-        private readonly RoleManager<GirafUser> _roleManager;
-
         public UserController(
             IGirafService giraf,
           IEmailSender emailSender,
-          ILoggerFactory loggerFactory,
-          RoleManager<GirafUser> roleManager)
+          ILoggerFactory loggerFactory)
         {
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("User");
             _emailSender = emailSender;
-            _roleManager = roleManager;
         }
 
         /// <summary>
@@ -62,7 +58,7 @@ namespace GirafRest.Controllers
             if (!string.IsNullOrEmpty(usernameQuery))
             {
                 //First attempt to fetch the user and check that he exists
-                user = await _giraf._userManager.FindByNameAsync(usernameQuery);
+                user = await _giraf.LoadByNameAsync(usernameQuery);
                 if (user == null)
                     return NotFound();
 
@@ -103,6 +99,44 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
+        /// Updates all the information of the currently authenticated user with the information from the given DTO.
+        /// </summary>
+        /// <param name="userDTO">A DTO containing ALL the new information for the given user.</param>
+        /// <returns>
+        /// NotFound if the DTO contains either an invalid pictogram ID or an invalid week ID and
+        /// OK if the user was updated succesfully.
+        /// </returns>
+        [HttpPut]
+        public async Task<IActionResult> UpdateUser(GirafUserDTO userDTO)
+        {
+            //Fetch the user
+            var user = await _giraf.LoadUserAsync(HttpContext.User);
+
+            //Update all simple fields
+            user.AvailableApplications = userDTO.AvailableApplications;
+            user.UseGrayscale = userDTO.UseGrayscale;
+            user.UserName = userDTO.Username;
+            user.DisplayName = userDTO.DisplayName;
+            
+            //Attempt to update all fields that require database access.
+            try
+            {
+                await updateDepartmentAsync(user, userDTO.DepartmentKey);
+                await updateResourceAsync(user, userDTO.Resources);
+                await updateWeekAsync(user, userDTO.WeekScheduleIds);
+            }
+            catch (KeyNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+
+            //Save changes and return the user with updated information.
+            _giraf._context.Users.Update(user);
+            await _giraf._context.SaveChangesAsync();
+            return Ok(new GirafUserDTO(user));
+        }
+        #region UserIcon
+        /// <summary>
         /// Allows the user to upload an icon for his profile.
         /// </summary>
         /// <returns>Ok if the upload was succesful and BadRequest if not.</returns>
@@ -137,12 +171,16 @@ namespace GirafRest.Controllers
         [HttpDelete("icon")]
         public async Task<IActionResult> DeleteUserIcon() {
             var usr = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            if (usr.UserIcon == null)
+                return BadRequest("The user does not have an icon to delete.");
+
             usr.UserIcon = null;
             await _giraf._context.SaveChangesAsync();
 
             return Ok(new GirafUserDTO(usr));
         }
-        
+        #endregion
+        #region Not strictly necesarry methods, but more efficient than a PUT to user, as they only update a single value
         /// <summary>
         /// Adds an application to the specified user's list of applications.
         /// </summary>
@@ -152,20 +190,22 @@ namespace GirafRest.Controllers
         /// <returns>BadRequest in no application is specified,
         /// NotFound if no user with the given id exists or
         /// Ok and a serialized version of the user to whom the application was added.</returns>
-        [HttpPost("applications/{userId}")]
-        public async Task<IActionResult> AddApplication(string userId, [FromBody] ApplicationOption application)
+        [HttpPost("applications/{username}")]
+        public async Task<IActionResult> AddApplication(string username, [FromBody] ApplicationOption application)
         {
             //Check that an application has been specified
             if (application == null)
                 return BadRequest("No application was specified in the request body.");
+            if (application.ApplicationName == null || application.ApplicationPackage == null)
+                return BadRequest("You need to specify both an application name and an application package.");
 
             //Fetch the target user and check that he exists
-            var user = await _giraf._context.Users
-                .Where(u => u.Id == userId)
-                .Include(u => u.AvailableApplications)
-                .FirstOrDefaultAsync();
+            var user = await _giraf.LoadByNameAsync(username);
             if (user == null)
-                return NotFound($"There is no user with id: {userId}");
+                return NotFound($"There is no user with id: {username}");
+
+            if (user.AvailableApplications.Where(aa => aa.ApplicationName.Equals(application.ApplicationName)).Any())
+                return BadRequest("The user already has access to the given application.");
 
             //Add the application for the user to see
             user.AvailableApplications.Add(application);
@@ -175,25 +215,22 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Delete an application from the given user's list of applications.
         /// </summary>
-        /// <param name="userId">The id of the user to delete the application from.</param>
+        /// <param name="username">The username of the user to delete the application from.</param>
         /// <param name="application">The application to delete (its ID is sufficient).</param>
         /// <returns>BadRequest if no application is specified,
         /// NotFound if no user or applications with the given ids exist
         /// or Ok and the user if everything went well.</returns>
-        [HttpDelete("applications/{userId}")]
-        public async Task<IActionResult> DeleteApplication(string userId, [FromBody] ApplicationOption application)
+        [HttpDelete("applications/{username}")]
+        public async Task<IActionResult> DeleteApplication(string username, [FromBody] ApplicationOption application)
         {
             //Check if the caller has specified an application to remove
             if (application == null)
                 return BadRequest("No application was specified in the request body.");
 
             //Fetch the user and check that he exists
-            var user = await _giraf._context.Users
-                .Where(u => u.Id == userId)
-                .Include(u => u.AvailableApplications)
-                .FirstOrDefaultAsync();
+            var user = await _giraf.LoadByNameAsync(username);
             if (user == null)
-                return NotFound($"There is no user with id: {userId}");
+                return NotFound($"There is no user with id: {user}");
 
             //Check if the given application was previously available to the user
             var app = user.AvailableApplications.Where(a => a.Id == application.Id).FirstOrDefault();
@@ -233,11 +270,11 @@ namespace GirafRest.Controllers
         /// BadRequest if either of the two ids are missing or the resource is not PRIVATE, NotFound
         /// if either the user or the resource does not exist or Ok if everything went well.
         /// </returns>
-        [HttpPost("resource/{userId}")]
-        public async Task<IActionResult> AddUserResource(string userId, [FromBody] ResourceIdDTO resourceIdDTO)
+        [HttpPost("resource/{username}")]
+        public async Task<IActionResult> AddUserResource(string username, [FromBody] ResourceIdDTO resourceIdDTO)
         {
             //Check if valid parameters have been specified in the call
-            if (string.IsNullOrEmpty(userId))
+            if (string.IsNullOrEmpty(username))
                 return BadRequest("You need to specify an id of a user.");
             if (resourceIdDTO == null)
                 return BadRequest("You need to specify a resourceId in the body of the request.");
@@ -258,12 +295,9 @@ namespace GirafRest.Controllers
                 return Unauthorized();
 
             //Attempt to find the target user and check that he exists
-            var user = await _giraf._context.Users
-                .Where(u => u.Id == userId)
-                .Include(u => u.Resources)
-                .FirstOrDefaultAsync();
+            var user = await _giraf.LoadByNameAsync(username);
             if (user == null)
-                return NotFound("There is no user with id " + userId);
+                return NotFound("There is no user with username " + username);
 
             //Check if the target user already owns the resource
             if (user.Resources.Where(ur => ur.ResourceKey == resourceIdDTO.ResourceId).Any())
@@ -285,18 +319,18 @@ namespace GirafRest.Controllers
         /// BadRequest if either of the two ids are missing or the resource is not PRIVATE, NotFound
         /// if either the user or the resource does not exist or Ok if everything went well.
         /// </returns>
-        [HttpDelete("resource/{userId}")]
-        public async Task<IActionResult> RemoveResource(string userId, [FromBody] ResourceIdDTO resourceIdDTO)
+        [HttpDelete("resource/{username}")]
+        public async Task<IActionResult> DeleteResource(string username, [FromBody] ResourceIdDTO resourceIdDTO)
         {
             //Check that valid parameters have been specified in the call
             if (resourceIdDTO == null)
                 return BadRequest("The body of the request must contain a resourceId");
-            if (string.IsNullOrEmpty(userId))
+            if (string.IsNullOrEmpty(username))
                 return BadRequest("Please specify a userId to add the pictogram to");
 
             //Fetch the user and check that it exists.
-            var user = await _giraf._context.Users.Where(u => u.Id == userId).FirstOrDefaultAsync();
-            if (user == null) return NotFound($"There is no department with Id {userId}.");
+            var user = await _giraf.LoadByNameAsync(username);
+            if (user == null) return NotFound($"There is no department with Id {username}.");
             
             //Fetch the resource with the given id, check that it exists.
             var resource = await _giraf._context.Pictograms
@@ -350,7 +384,63 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
             return Ok(new GirafUserDTO(user));
         }
+        #endregion
         #region Helpers
+        /// <summary>
+        /// Attempts to update the users resources from the ids given in the collection.
+        /// </summary>
+        /// <param name="user">The user, whose resources should be updated.</param>
+        /// <param name="resouceIds">The ids of the users new resources.</param>
+        /// <returns></returns>
+        private async Task updateResourceAsync(GirafUser user, ICollection<long> resouceIds)
+        {
+            user.Resources.Clear();
+            var newResources = new List<UserResource>();
+            foreach (var id in resouceIds)
+            {
+                var pict = await _giraf._context.Pictograms
+                    .Where(p => p.Id == id)
+                    .FirstOrDefaultAsync();
+                if (pict == null) throw new KeyNotFoundException("There is no pictogram with the given id: " + id);
+                newResources.Add(new UserResource(user, pict));
+            }
+            user.Resources = newResources;
+        }
+        /// <summary>
+        /// Attempts to update the user's list of week schedules.
+        /// </summary>
+        /// <param name="user">The user to update the week schedules of.</param>
+        /// <param name="weekscheduleIds">A list of ids for the user's new week schedules.</param>
+        /// <returns></returns>
+        private async Task updateWeekAsync(GirafUser user, ICollection<long> weekscheduleIds)
+        {
+            user.WeekSchedule.Clear();
+            var newWeekschedules = new List<Week>();
+            foreach (var id in weekscheduleIds)
+            {
+                var week = await _giraf._context.Weeks
+                    .Where(w => w.Id == id)
+                    .FirstOrDefaultAsync();
+                if (week == null) throw new KeyNotFoundException("There is no week with the given id: " + id);
+                newWeekschedules.Add(week);
+            }
+            user.WeekSchedule = newWeekschedules;
+        }
+        /// <summary>
+        /// Attempts to update the user's department from the given id.
+        /// </summary>
+        /// <param name="user">The user, whose department should be updated.</param>
+        /// <param name="departmentId">The id of the user's new department.</param>
+        /// <returns></returns>
+        private async Task updateDepartmentAsync(GirafUser user, long departmentId)
+        {
+            user.DepartmentKey = departmentId;
+            var dep = await _giraf._context.Departments.Where(d => d.Key == departmentId).FirstOrDefaultAsync();
+            if (dep == null)
+                throw new KeyNotFoundException("There is no department with the given id: " + departmentId);
+            user.Department = dep;
+        }
+
         /// <summary>
         /// Writes all errors found by identity to the logger.
         /// </summary>
