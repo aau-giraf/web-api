@@ -61,7 +61,7 @@ namespace GirafRest.Test.Controllers
             var gs = initializeTest();
             var user = _testContext.MockUsers[0];
 
-            var res = gs.CheckPrivateOwnership((PictoFrame)_testContext.MockUsers[0].Resources.First().Resource, user);
+            var res = gs.CheckPrivateOwnership((Pictogram)_testContext.MockUsers[0].Resources.First().Resource, user);
 
             Assert.True(res.Result);
         }
@@ -72,7 +72,7 @@ namespace GirafRest.Test.Controllers
             var gs = initializeTest();
             var user = _testContext.MockUsers[0];
 
-            var res = gs.CheckPrivateOwnership((PictoFrame)_testContext.MockUsers[1].Resources.First().Resource, user);
+            var res = gs.CheckPrivateOwnership((Pictogram)_testContext.MockUsers[1].Resources.First().Resource, user);
 
             Assert.False(res.Result);
         }
@@ -84,7 +84,7 @@ namespace GirafRest.Test.Controllers
             var user = _testContext.MockUsers[0];
             var userDepartment = _testContext.MockDepartments.Where(d => d.Key == user.DepartmentKey).First();
 
-            var res = gs.CheckProtectedOwnership((PictoFrame)userDepartment.Resources.First().Resource, user);
+            var res = gs.CheckProtectedOwnership((Pictogram)userDepartment.Resources.First().Resource, user);
 
             Assert.True(res.Result);
         }
@@ -96,7 +96,7 @@ namespace GirafRest.Test.Controllers
             var user = _testContext.MockUsers[0];
             var notUserDepartment = _testContext.MockDepartments.Where(d => d.Key != user.DepartmentKey).First();
 
-            var res = gs.CheckProtectedOwnership((PictoFrame)notUserDepartment.Resources.First().Resource, user);
+            var res = gs.CheckProtectedOwnership((Pictogram)notUserDepartment.Resources.First().Resource, user);
 
             Assert.False(res.Result);
         }

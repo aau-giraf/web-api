@@ -36,7 +36,7 @@ namespace GirafRest.Test.Mocks
             _userManager = userManager;
         }
 
-        public Task<bool> CheckPrivateOwnership(PictoFrame resource, GirafUser user)
+        public Task<bool> CheckPrivateOwnership(Pictogram resource, GirafUser user)
         {
             if (user == null)
                 return Task.FromResult(false);
@@ -51,7 +51,7 @@ namespace GirafRest.Test.Mocks
             return Task.FromResult(false);
         }
 
-        public Task<bool> CheckProtectedOwnership(PictoFrame resource, GirafUser user)
+        public Task<bool> CheckProtectedOwnership(Pictogram resource, GirafUser user)
         {
             if (user == null)
                 return Task.FromResult(false);

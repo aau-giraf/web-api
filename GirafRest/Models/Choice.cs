@@ -25,11 +25,11 @@ namespace GirafRest.Models {
         /// Creates a new Choice with the given list of options.
         /// </summary>
         /// <param name="options">A list of options to add to the choice.</param>
-        public Choice(List<PictoFrame> options)
+        public Choice(List<Pictogram> options)
         {
             LastEdit = DateTime.Now;
             Options = new List<ChoiceResource>();
-            foreach (PictoFrame option in options)
+            foreach (Pictogram option in options)
             {
                 Options.Add(new ChoiceResource(this, option));
             }
@@ -38,13 +38,13 @@ namespace GirafRest.Models {
         /// <summary>
         /// Adds a option to the choice.
         /// </summary>
-        /// <param name="option">The pictoframe to be added as an option.</param>
-        public void Add (PictoFrame option) => Options.Add(new ChoiceResource(this, option));
+        /// <param name="option">The pictogram to be added as an option.</param>
+        public void Add (Pictogram option) => Options.Add(new ChoiceResource(this, option));
         /// <summary>
         /// Adds all the options from the given list.
         /// </summary>
         /// <param name="options">A list of options to add to the choice.</param>
-        public void AddAll(ICollection<PictoFrame> options) {
+        public void AddAll(ICollection<Pictogram> options) {
             foreach (var option in options) {
                 Options.Add(new ChoiceResource(this, option));
             }
@@ -53,15 +53,15 @@ namespace GirafRest.Models {
         /// <summary>
         /// Get the index'th option of the Choice.
         /// </summary>
-        /// <param name="index">The index to fetch the pictoframe from.</param>
-        /// <returns>The PictoFrame of the index'th slot.</returns>
-        public PictoFrame Get(int index) => (PictoFrame) Options.ElementAt(index).Resource;
+        /// <param name="index">The index to fetch the pictogram from.</param>
+        /// <returns>The Pictogram of the index'th slot.</returns>
+        public Pictogram Get(int index) => (Pictogram) Options.ElementAt(index).Resource;
 
         /// <summary>
-        /// Remove the given pictoframe from the list of options.
+        /// Remove the given pictogram from the list of options.
         /// </summary>
-        /// <param name="pictoframe">The pictoframe to remove.</param>
-        public void Remove(PictoFrame pictoframe) => Options.Remove(new ChoiceResource(this, pictoframe));
+        /// <param name="pictogram">The pictogram to remove.</param>
+        public void Remove(Pictogram pictogram) => Options.Remove(new ChoiceResource(this, pictogram));
 
         /// <summary>
         /// Clears all options of the choice.
@@ -72,14 +72,14 @@ namespace GirafRest.Models {
         /// Gets the enumerator of the Choice.
         /// </summary>
         /// <returns>The enumerator.</returns>
-        public IEnumerator<PictoFrame> GetEnumerator()
+        public IEnumerator<Pictogram> GetEnumerator()
         {
-            List<PictoFrame> pictoFrameList = new List<PictoFrame>();
+            List<Pictogram> pictogramList = new List<Pictogram>();
             foreach (var choiceResource in Options)
             {
-                pictoFrameList.Add((PictoFrame) choiceResource.Resource);
+                pictogramList.Add((Pictogram) choiceResource.Resource);
             }
-            return pictoFrameList.GetEnumerator();
+            return pictogramList.GetEnumerator();
         }
     }
 }

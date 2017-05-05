@@ -229,7 +229,7 @@ namespace GirafRest.Controllers
             if(!resourceIdValid) return BadRequest("Unable to find a valid resource-id. Please specify one in request-body or as url-query.");
 
             //Fetch the resource with the given id, check that it exists and that the user owns it.
-            var resource = await _giraf._context.PictoFrames.Where(f => f.Id == resId).FirstOrDefaultAsync();
+            var resource = await _giraf._context.Pictograms.Where(f => f.Id == resId).FirstOrDefaultAsync();
             if(resource == null) return NotFound($"There is no resource with id {id}.");
             var resourceOwned = await _giraf.CheckProtectedOwnership(resource, usr);
             if(!resourceOwned) return Unauthorized();
@@ -262,7 +262,7 @@ namespace GirafRest.Controllers
             if(!resourceIdValid) return BadRequest("Unable to find a valid resource-id. Please specify one in request-body or as url-query.");
 
             //Fetch the resource with the given id, check that it exists.
-            var resource = await _giraf._context.PictoFrames
+            var resource = await _giraf._context.Pictograms
                 .Where(f => f.Id == resId)
                 .FirstOrDefaultAsync();
             if(resource == null) return NotFound($"There is no resource with id {resourceId}.");

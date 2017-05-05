@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using GirafRest.Models.DTOs;
 
 namespace GirafRest.Models {
 
@@ -15,7 +16,42 @@ namespace GirafRest.Models {
     /// A pictogram is an image with an associated title. They are used by Guardians and Citizens alike to 
     /// communicate visually.
     /// </summary>
-    public class Pictogram : PictoFrame {
+    public class Pictogram : Resource{
+        /// <summary>
+        /// The title of the Pictogram.
+        /// </summary>
+        public string Title { get; set; }
+        /// <summary>
+        /// The accesslevel, PRIVATE means owning user only, PROTECTED means all in the owning department and PUBLIC is everyone.
+        /// </summary>
+        [Required]
+        public AccessLevel AccessLevel { get; set; }
+
+        /// <summary>
+        /// Creates a new PictoFrame.
+        /// </summary>
+        /// <param name="title">The title.</param>
+        /// <param name="accessLevel">The access level.</param>
+        /*public PictoFrame(string title, AccessLevel accessLevel) : this()
+        {
+            this.Title = title;
+            this.AccessLevel = accessLevel;
+        }
+        /// <summary>
+        /// DO NOT DELETE THIS.
+        /// </summary>
+        protected PictoFrame() : base() {
+            AccessLevel = AccessLevel.PUBLIC;
+        }*/
+
+        /// <summary>
+        /// Overrides the information of this PictoFrame with new information found in the DTO.
+        /// </summary>
+        /// <param name="other">The new information.</param>
+        public virtual void Merge(PictogramDTO other) {
+            base.Merge(other);
+            this.AccessLevel = other.AccessLevel;
+        }
         /// <summary>
         /// A byte array containing the pictogram's image.
         /// </summary>
@@ -31,14 +67,16 @@ namespace GirafRest.Models {
         /// </summary>
         /// <param name="title"></param>
         /// <param name="accessLevel"></param>
-        public Pictogram(string title, AccessLevel accessLevel) 
-            : base(title, accessLevel)
+        public Pictogram(string title, AccessLevel accessLevel)
         {
+            this.Title = title;
+            this.AccessLevel = accessLevel;
             ImageFormat = PictogramImageFormat.none;
         }
 
         /// <summary>
         /// DO NOT DELETE THIS.
+        /// It is required by Newtonsoft
         /// </summary>
         public Pictogram()
         {

@@ -88,11 +88,11 @@ namespace GirafRest.Controllers
                 return BadRequest("Could not find a valid ChoiceDTO in the body of the request.");
 
             //Attempt to find all resources that make up the choice
-            List<PictoFrame> pictoFrameList = new List<PictoFrame>();
+            List<Pictogram> pictogramList = new List<Pictogram>();
             try
             {
                 foreach (var option in choice.Options)
-                    pictoFrameList.Add(await _giraf._context.PictoFrames.Where(p => p.Id == option.Id).FirstAsync());
+                    pictogramList.Add(await _giraf._context.Pictograms.Where(p => p.Id == option.Id).FirstAsync());
             }
             catch
             {
@@ -100,7 +100,7 @@ namespace GirafRest.Controllers
             }
 
             //Create an object for the choice
-            Choice _choice = new Choice(pictoFrameList);
+            Choice _choice = new Choice(pictogramList);
             //Check if the user has access to all options of the choice
             if (!(await checkAccess(_choice))) return Unauthorized();
 
@@ -126,7 +126,7 @@ namespace GirafRest.Controllers
         {
             //Attempt to find the target choice.
             Choice _choice;
-            List<PictoFrame> pictoFrameList = new List<PictoFrame>();
+            List<Pictogram> pictogramList = new List<Pictogram>();
             _choice = await _giraf._context.Choices
                 .Where(ch => ch.Id == id)
                 .Include(ch => ch.Options)
@@ -140,17 +140,17 @@ namespace GirafRest.Controllers
             //Find all the involved resource and check that they exist
             foreach (var option in choice.Options)
             {
-                var pf = await _giraf._context.PictoFrames
+                var pf = await _giraf._context.Pictograms
                     .Where(p => p.Id == option.Id)
                     .FirstOrDefaultAsync();
                 if (pf == null)
                     return NotFound("The choice contained an id of a nonexisting pictogram.");
-                pictoFrameList.Add(pf);
+                pictogramList.Add(pf);
             }
             
             //Modify the choice and check that the user has access to all pictograms that were added to the choice
             _choice.Clear();
-            _choice.AddAll(pictoFrameList);
+            _choice.AddAll(pictogramList);
             if (!(await checkAccess(_choice))) return Unauthorized();
 
             //Save the changes
@@ -206,7 +206,7 @@ namespace GirafRest.Controllers
         {
             var usr = await _giraf.LoadUserAsync(HttpContext.User);
             _giraf._logger.LogInformation($"Checking if the user is authorized");
-            foreach (PictoFrame p in choice)
+            foreach (Pictogram p in choice)
             {
                 bool ownsResource = false;
                 switch (p.AccessLevel)

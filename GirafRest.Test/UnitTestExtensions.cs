@@ -199,26 +199,26 @@ namespace GirafRest.Test
                     if (mockChoices == null)
                         mockChoices = new List<Choice>()
                         {
-                            new Choice(MockPictograms.Where(p => p.AccessLevel == AccessLevel.PUBLIC).Cast<PictoFrame>().ToList())
+                            new Choice(MockPictograms.Where(p => p.AccessLevel == AccessLevel.PUBLIC).Cast<Pictogram>().ToList())
                             {
                                 Id = 0
                             },
                             //A private pictogram for mock user 0
-                            new Choice(new List<PictoFrame>() {
+                            new Choice(new List<Pictogram>() {
                                 MockPictograms[3]
                             })
                             {
                                 Id = 1
                             },
                             //A choice for department 0 (with id 1)
-                            new Choice(new List<PictoFrame>() {
+                            new Choice(new List<Pictogram>() {
                                 MockPictograms[5]
                             })
                             {
                                 Id = 2
                             },
                             //A choice for department 1 (with id 2)
-                            new Choice(new List<PictoFrame>()
+                            new Choice(new List<Pictogram>()
                             {
                                 MockPictograms[6]
                             })
@@ -335,7 +335,7 @@ namespace GirafRest.Test
                 var mockDepRes = CreateMockDbSet(MockDepartmentResources);
                 var mockChoices = CreateMockDbSet(MockChoices);
                 var mockDeps = CreateMockDbSet(MockDepartments);
-                var mockPF = CreateMockDbSet(MockPictograms.Cast<PictoFrame>().ToList());
+                //var mockPF = CreateMockDbSet(MockPictograms.Cast<PictoFrame>().ToList());
                 var mockUsers = CreateMockDbSet(MockUsers);
                 var mockRoles = CreateMockDbSet(MockRoles);
                 var mockUserRoles = CreateMockDbSet(MockUserRoles);
@@ -346,7 +346,7 @@ namespace GirafRest.Test
                 dbMock.Setup(c => c.DepartmentResources).Returns(mockDepRes.Object);
                 dbMock.Setup(c => c.Choices).Returns(mockChoices.Object);
                 dbMock.Setup(c => c.Departments).Returns(mockDeps.Object);
-                dbMock.Setup(c => c.PictoFrames).Returns(mockPF.Object);
+                //dbMock.Setup(c => c.PictoFrames).Returns(mockPF.Object);
                 /* Does not work as all of them are inherited from IdentityDbContext and not marked as virtual.
                 dbMock.Setup(c => c.Users).Returns(mockUsers.Object);
                 dbMock.Setup(c => c.UserRoles).Returns(mockUserRoles.Object);

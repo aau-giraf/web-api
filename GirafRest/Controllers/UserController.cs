@@ -243,7 +243,7 @@ namespace GirafRest.Controllers
                 return BadRequest("You need to specify a resourceId in the body of the request.");
 
             //Find the resource and check that it actually does exist - also verify that the resource is private
-            var resource = await _giraf._context.PictoFrames
+            var resource = await _giraf._context.Pictograms
                 .Where(pf => pf.Id == resourceIdDTO.ResourceId)
                 .FirstOrDefaultAsync();
             if (resource == null)
@@ -299,7 +299,7 @@ namespace GirafRest.Controllers
             if (user == null) return NotFound($"There is no department with Id {userId}.");
             
             //Fetch the resource with the given id, check that it exists.
-            var resource = await _giraf._context.PictoFrames
+            var resource = await _giraf._context.Pictograms
                 .Where(f => f.Id == resourceIdDTO.ResourceId)
                 .FirstOrDefaultAsync();
             if (resource == null) return NotFound($"There is no resource with id {resourceIdDTO.ResourceId}.");

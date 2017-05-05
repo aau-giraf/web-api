@@ -13,7 +13,6 @@ namespace GirafRest.Data
     {
         public virtual DbSet<Department> Departments { get; set; }
         public virtual  DbSet<Pictogram> Pictograms { get; set; }
-        public virtual DbSet<PictoFrame> PictoFrames { get; set; }
         public virtual DbSet<Choice> Choices { get; set; }
         public virtual DbSet<Week> Weeks { get; set; }
         public virtual DbSet<Resource> Frames {get; set;}
@@ -38,7 +37,6 @@ namespace GirafRest.Data
             builder.Entity<Resource>().ToTable("Frames").HasDiscriminator<string>("Discriminator").HasValue<Resource>(nameof(Resource));
             builder.Entity<Department>().ToTable("Departments").HasDiscriminator<string>("Discriminator").HasValue<Department>(nameof(Department));
             builder.Entity<Pictogram>().ToTable("Pictograms").HasDiscriminator<string>("Discriminator").HasValue<Pictogram>(nameof(Pictogram));
-            builder.Entity<PictoFrame>().ToTable("PictoFrames").HasDiscriminator<string>("Discriminator").HasValue<PictoFrame>(nameof(PictoFrame));
             builder.Entity<Choice>().ToTable("Choices").HasDiscriminator<string>("Discriminator").HasValue<Choice>(nameof(Choice));
             builder.Entity<Weekday>().ToTable("Weekdays").HasDiscriminator<string>("Discriminator").HasValue<Weekday>(nameof(Weekday));
 
@@ -80,7 +78,7 @@ namespace GirafRest.Data
                 .HasOne<Week>()
                 .WithMany(w => w.Weekdays);
 
-            //Configure a many-to-many relationship between Weekday and Resource(PictoFrame)
+            //Configure a many-to-many relationship between Weekday and Resource(Pictogram)
             builder.Entity<WeekdayResource>()
                 .HasOne<Weekday>(wr => wr.Other)
                 .WithMany(w => w.Elements)
@@ -89,7 +87,7 @@ namespace GirafRest.Data
                 .HasOne<Resource> (wr => wr.Resource)
                 .WithMany()
                 .HasForeignKey(wr => wr.ResourceKey);
-            //And between Choice and Resource(PictoFrame)
+            //And between Choice and Resource(Pictogram)
             builder.Entity<ChoiceResource>()
                 .HasOne<Choice>(cr => cr.Other)
                 .WithMany(c => c.Options)

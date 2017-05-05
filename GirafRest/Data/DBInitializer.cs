@@ -141,9 +141,9 @@ namespace GirafRest.Setup
 			context.SaveChanges();
 
             // creating test choices
-            List<PictoFrame> pFrames1 = new List<PictoFrame>(); // Contains public choice
-            List<PictoFrame> pFrames2 = new List<PictoFrame>(); // Contains choice which kurt can access
-            List<PictoFrame> pFrames3 = new List<PictoFrame>(); // Contains choice which lee can access
+            List<Pictogram> pFrames1 = new List<Pictogram>(); // Contains public choice
+            List<Pictogram> pFrames2 = new List<Pictogram>(); // Contains choice which kurt can access
+            List<Pictogram> pFrames3 = new List<Pictogram>(); // Contains choice which lee can access
             pFrames1.Add(context.Pictograms.Where(p => p.Id == Pictograms[13].Id).First());
             pFrames2.AddRange(context.Pictograms.Where(p => p.Id >= Pictograms[0].Id && p.Id <= Pictograms[4].Id));
             pFrames3.AddRange(context.Pictograms.Where(p => p.Id >= Pictograms[5].Id && p.Id <= Pictograms[8].Id));

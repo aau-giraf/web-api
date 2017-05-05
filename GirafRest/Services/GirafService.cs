@@ -97,7 +97,7 @@ namespace GirafRest.Controllers
         /// <param name="pictogram">The pictogram to check the ownership for.</param>
         /// <param name="httpContext">A reference to the current HttpContext.</param>
         /// <returns>True if the user is authorized to see the resource and false if not.</returns>
-        public async Task<bool> CheckPrivateOwnership(PictoFrame pictogram, GirafUser user) {
+        public async Task<bool> CheckPrivateOwnership(Pictogram pictogram, GirafUser user) {
             if (pictogram.AccessLevel != AccessLevel.PRIVATE)
                 return false;
 
@@ -119,7 +119,7 @@ namespace GirafRest.Controllers
         /// <param name="resource">The resource to check ownership for.</param>
         /// <param name="httpContext">The http context of the current request.</param>
         /// <returns>True if the user's department owns the pictogram, false if not.</returns>
-        public async Task<bool> CheckProtectedOwnership(PictoFrame resource, GirafUser user)
+        public async Task<bool> CheckProtectedOwnership(Pictogram resource, GirafUser user)
         {
             if (resource.AccessLevel != AccessLevel.PROTECTED)
                 return false;

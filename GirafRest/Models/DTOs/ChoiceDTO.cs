@@ -14,7 +14,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// A list of options that make up the choice.
         /// </summary>
-        public List<PictoFrameDTO> Options;
+        public List<PictogramDTO> Options;
 
         /// <summary>
         /// Creates a new ChoiceDTO from a given Choice.
@@ -24,10 +24,10 @@ namespace GirafRest.Models.DTOs
         {
             this.Id = choice.Id;
             this.LastEdit = choice.LastEdit;
-            Options = new List<PictoFrameDTO>();
-            foreach (PictoFrame p in choice)
+            Options = new List<PictogramDTO>();
+            foreach (Pictogram p in choice)
             {
-                this.Options.Add(new PictoFrameDTO(p));
+                this.Options.Add(new PictogramDTO(p));
             }
         }
 
