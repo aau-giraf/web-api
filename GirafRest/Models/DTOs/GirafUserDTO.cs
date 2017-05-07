@@ -67,7 +67,10 @@ namespace GirafRest.Models.DTOs
             Username = user.UserName;
             DisplayName = user.DisplayName;
             UserIcon = user.UserIcon;
-            DepartmentKey = user.DepartmentKey;
+            if (user.Department == null)
+                DepartmentKey = -1;
+            else 
+                DepartmentKey = user.DepartmentKey;
             WeekScheduleIds = user.WeekSchedule.Select(w => w.Id).ToList();
             Resources = new List<long>();
             foreach (var res in user.Resources)

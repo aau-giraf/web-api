@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using System.IO;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using GirafRest.Controllers;
+using GirafRest.Services;
 
 namespace GirafRest.Test
 {
@@ -55,7 +57,7 @@ namespace GirafRest.Test
                 }
             }
             private List<GirafUser> mockUsers;
-            public IReadOnlyList<GirafUser> MockUsers
+            public List<GirafUser> MockUsers
             {
                 get
                 {
@@ -317,7 +319,7 @@ namespace GirafRest.Test
                 MockLoggerFactory.Setup(lf => lf.CreateLogger(It.IsAny<string>()))
                     .Returns(mockLogger.Object);
             }
-    
+
             private Mock<MockDbContext> CreateMockDbContext()
             {
                 var mockSet = CreateMockDbSet(MockPictograms);

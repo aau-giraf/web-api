@@ -21,6 +21,6 @@ namespace GirafRest.Models.DTOs.AccountDTOs
         public string ConfirmPassword { get; set; }
 
         [Required]
-        public long DepartmentId { get; set; }
+        public long? DepartmentId { get; set; }
     }
 }

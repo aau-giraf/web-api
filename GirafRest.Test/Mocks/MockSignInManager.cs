@@ -1,29 +1,46 @@
 ﻿using GirafRest.Models;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Moq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static GirafRest.Test.UnitTestExtensions;
 
 namespace GirafRest.Test.Mocks
 {
     class MockSignInManager : SignInManager<GirafUser>
     {
-        public MockSignInManager(MockUserManager mockUserManager, IHttpContextAccessor contextAccessor)
-            : base(mockUserManager, contextAccessor, null, null, null)
-        {
+        public List<Tuple<string, string>> usernamePasswordList;
 
+        public MockSignInManager(MockUserManager mum, TestContext tc)
+            : base(mum, 
+                  //The following mocks must be there, as SignInManager throws an exception if they are null.
+                  new Mock<IHttpContextAccessor>().Object, 
+                  new Mock<IUserClaimsPrincipalFactory<GirafUser>>().Object,
+                  new Mock<IOptions<IdentityOptions>>().Object,
+                  new Mock<ILogger<SignInManager<GirafUser>>>().Object)
+        {
+            mum._signInManager = this;
+            usernamePasswordList = tc.MockUsers.Select(u => new Tuple<string, string>(u.UserName, "password")).ToList();
         }
 
         public override Task<SignInResult> PasswordSignInAsync(string userName, string password, bool isPersistent, bool lockoutOnFailure)
         {
-            return Task.FromResult(SignInResult.Success);
+            if (usernamePasswordList.Where(up => up.Item1 == userName && up.Item2 == password).Any())
+                return Task.FromResult(SignInResult.Success);
+            else
+                return Task.FromResult(SignInResult.Failed);
         }
 
         public override Task SignInAsync(GirafUser user, bool isPersistent, string authenticationMethod = null)
         {
-            return Task.FromResult(0);
+            return Task.FromResult(SignInResult.Success);
         }
 
         public override Task SignOutAsync()

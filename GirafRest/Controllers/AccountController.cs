@@ -8,6 +8,7 @@ using GirafRest.Models;
 using GirafRest.Services;
 using GirafRest.Models.DTOs.AccountDTOs;
 using GirafRest.Models.DTOs.UserDTOs;
+using GirafRest.Models.DTOs;
 
 namespace GirafRest.Controllers
 {
@@ -30,10 +31,6 @@ namespace GirafRest.Controllers
         /// A logger used to log information from the controller.
         /// </summary>
         private readonly ILogger _logger;
-        /// <summary>
-        /// A cookie-scheme, this is automatically provided by ASP.NET.
-        /// </summary>
-        private readonly string _externalCookieScheme;
 
         /// <summary>
         /// Creates a new account controller. The account controller allows the users to sign in and out of their account
@@ -48,13 +45,11 @@ namespace GirafRest.Controllers
             UserManager<GirafUser> userManager,
             SignInManager<GirafUser> signInManager,
             IEmailSender emailSender,
-            IOptions<IdentityCookieOptions> identityCookieOptions,
             ILoggerFactory loggerFactory)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
-            _externalCookieScheme = identityCookieOptions.Value.ExternalCookieAuthenticationScheme;
             _logger = loggerFactory.CreateLogger<AccountController>();
         }
 
@@ -71,6 +66,8 @@ namespace GirafRest.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginDTO model)
         {
+            if (model == null)
+                return BadRequest("The request body must contain username and password.");
             //Check that the caller has supplied username and password in the request
             if (string.IsNullOrEmpty(model.Username))
                 return BadRequest("No username specified.");
@@ -103,6 +100,9 @@ namespace GirafRest.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterDTO model)
         {
+            if (model == null)
+                return BadRequest("Please specify both 'Username', 'Password' and 'ConfirmPassword' " +
+                    "in the request body. You may optionally specify 'DepartmentId'.");
             //Check that all the necesarry data has been supplied
             if (string.IsNullOrEmpty(model.Username))
                 return BadRequest("Please supply a username.");
@@ -121,7 +121,7 @@ namespace GirafRest.Controllers
             {
                 await _signInManager.SignInAsync(user, isPersistent: false);
                 _logger.LogInformation(3, "User created a new account with password.");
-                return Ok();
+                return Ok(new GirafUserDTO(user));
             }
             AddErrors(result);
             return BadRequest();
@@ -153,23 +153,27 @@ namespace GirafRest.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDTO model)
         {
+            if (model == null)
+                return BadRequest("The request body must contain both a username and an email.");
             if (string.IsNullOrEmpty(model.Username))
                 return BadRequest("No username was supplied");
             if (string.IsNullOrEmpty(model.Email))
                 return BadRequest("No email was supplied");
 
+            string reply = $"An email has been sent to {model.Email} with a password reset link if the given username exists in the database.";
+
             var user = await _userManager.FindByNameAsync(model.Username);
             if (user == null)
             {
                 // Don't reveal that the user does not exist or is not confirmed
-                return NotFound("Please try again with another username");
+                return Ok(reply);
             }
             
             var code = await _userManager.GeneratePasswordResetTokenAsync(user);
             var callbackUrl = Url.Action(nameof(ResetPassword), "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-            await _emailSender.SendEmailAsync(model.Email, "Reset Password",
-               $"Please reset your password by clicking here: <a href='{callbackUrl}'>link</a>");
-            return Ok($"An email has been sent to {model.Email} with a password reset link.");
+            await _emailSender.SendEmailAsync(model.Email, "Nulstil kodeord",
+               $"Du har mistet din kode til GIRAF. Du kan nulstille den her: <a href='{callbackUrl}'>link</a>");
+            return Ok(reply);
         }
 
         /// <summary>

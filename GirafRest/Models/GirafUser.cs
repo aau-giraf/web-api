@@ -49,15 +49,17 @@ namespace GirafRest.Models
         /// </summary>
         /// <param name="userName">The username.</param>
         /// <param name="departmentId">The id of the department to which the user should be added.</param>
-        public GirafUser (string userName, long departmentId) : base(userName)
+        public GirafUser (string userName, long? departmentId) : base(userName)
         {
             this.UserName = userName;
             this.Resources = new List<UserResource>();
-            this.DepartmentKey = departmentId;
             this.WeekSchedule = new List<Week>();
             this.WeekSchedule.Add(new Week());
             this.WeekSchedule.First().InitWeek();
             LauncherOptions = new LauncherOptions();
+
+            if (departmentId != null)
+                DepartmentKey = (long) departmentId;
         }
         /// <summary>
         /// DO NOT DELETE THIS.
