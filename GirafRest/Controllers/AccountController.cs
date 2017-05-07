@@ -187,6 +187,15 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<IActionResult> SetPassword(SetPasswordDTO model)
         {
+            if (model == null)
+                return BadRequest("You must specify both 'NewPassword' and 'ConfirmPassword' in the request body.");
+            if (string.IsNullOrEmpty(model.NewPassword))
+                return BadRequest("Please add a 'NewPassword' field to the request.");
+            if (string.IsNullOrEmpty(model.ConfirmPassword))
+                return BadRequest("Please add a 'ConfirmPassword' field to the request.");
+            if (model.NewPassword != model.ConfirmPassword)
+                return BadRequest("Password Mismatch.");
+
             var user = await _userManager.GetUserAsync(HttpContext.User);
             if (user != null)
             {
@@ -198,7 +207,7 @@ namespace GirafRest.Controllers
                 }
                 AddErrors(result);
             }
-            return BadRequest();
+            return BadRequest("Password update did not succeed." + ModelState["Identity"]);
         }
         /// <summary>
         /// Allows the user to change his password.
@@ -211,8 +220,12 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<IActionResult> ChangePassword(ChangePasswordDTO model)
         {
+            if (model == null)
+                return BadRequest("The request body must contain 'OldPassword', 'NewPassword' and 'ConfirmPassword'.");
             if (model.OldPassword == null || model.NewPassword == null || model.ConfirmPassword == null)
                 return BadRequest("Please specify both you old password, a new one and a confirmation of the new one.");
+            if (model.NewPassword != model.ConfirmPassword)
+                return BadRequest("Password Mismatch");
 
             var user = await _userManager.GetUserAsync(HttpContext.User);
             if (user != null)
@@ -225,7 +238,7 @@ namespace GirafRest.Controllers
                     return Ok("Your password was changed.");
                 }
             }
-            return BadRequest();
+            return BadRequest("An error occured: " + ModelState["Identity"]);
         }
 
         //
@@ -287,7 +300,7 @@ namespace GirafRest.Controllers
         {
             foreach (var error in result.Errors)
             {
-                ModelState.AddModelError(string.Empty, error.Description);
+                ModelState.AddModelError("Identity", error.Description);
             }
         }
 

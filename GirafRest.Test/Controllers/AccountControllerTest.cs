@@ -1,6 +1,7 @@
 ﻿using GirafRest.Controllers;using GirafRest.Models.DTOs.AccountDTOs;using GirafRest.Test.Mocks;using Microsoft.AspNetCore.Mvc;using Moq;using Xunit;using Xunit.Abstractions;using static GirafRest.Test.UnitTestExtensions;using GirafRest.Services;
 using System.Threading.Tasks;
 using GirafRest.Models.DTOs;
+using GirafRest.Models.DTOs.UserDTOs;
 
 namespace GirafRest.Test{    public class AccountControllerTest    {
         //NOTE: We do not test the logout method as it is merely an almost invisble abstraction on top of SignInManager.SignOut.
@@ -32,7 +33,8 @@ namespace GirafRest.Test{    public class AccountControllerTest    {
 
             var mockUrlHelper = new Mock<IUrlHelper>();            ac.Url = mockUrlHelper.Object;
             return ac;
-        }
+        }
+        #region Login
         [Fact]
         public void Login_CredentialsOk_OK()
         {
@@ -71,7 +73,9 @@ namespace GirafRest.Test{    public class AccountControllerTest    {
             var accountController = initializeTest();
             var res = accountController.Login(null).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
             Assert.IsType<BadRequestObjectResult>(res);
-        }
+        }
+        #endregion
+        #region Register
         [Fact]
         public void Register_InputOk_ExpectOK()
         {
@@ -181,11 +185,241 @@ namespace GirafRest.Test{    public class AccountControllerTest    {
             var res = accountController.Register(null).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
             Assert.IsType<BadRequestObjectResult>(res);
         }
+        #endregion
         #region SetPassword
+        [Fact]
+        public void SetPassword_ValidInput_Ok()
+        {
+            var ac = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
+
+            SetPasswordDTO spDTO = new SetPasswordDTO()
+            {
+                NewPassword = "newPassword",
+                ConfirmPassword = "newPassword"
+            };
+            var result = ac.SetPassword(spDTO).Result;
+
+            if (result is ObjectResult)
+                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<OkObjectResult>(result);
+        }
+
+
+        [Fact]
+        public void SetPassword_MissingNewPasswod_BadRequest()
+        {
+            var ac = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
+
+            SetPasswordDTO spDTO = new SetPasswordDTO()
+            {
+                ConfirmPassword = "newPassword"
+            };
+            var result = ac.SetPassword(spDTO).Result;
+
+            if (result is ObjectResult)
+                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+
+        [Fact]
+        public void SetPassword_MissingConfirmPassword_BadRequest()
+        {
+            var ac = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
+
+            SetPasswordDTO spDTO = new SetPasswordDTO()
+            {
+                NewPassword = "newPassword"
+            };
+            var result = ac.SetPassword(spDTO).Result;
+
+            if (result is ObjectResult)
+                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+
+        [Fact]
+        public void SetPasswod_NullDTO_BadRequest()
+        {
+            var ac = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
+
+            SetPasswordDTO spDTO = null;
+            var result = ac.SetPassword(spDTO).Result;
+
+            if (result is ObjectResult)
+                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+
+        [Fact]
+        public void SetPassword_PasswordMismatch_BadRequest()
+        {
+            var ac = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
+
+            SetPasswordDTO spDTO = new SetPasswordDTO()
+            {
+                NewPassword = "newPassword",
+                ConfirmPassword = "NEWPassword"
+            };
+            var result = ac.SetPassword(spDTO).Result;
+
+            if (result is ObjectResult)
+                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
 
         #endregion
         #region ChangePassword
+        [Fact]
+        public void ChangePassword_ValidInput_Ok()
+        {
+            var ac = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
 
+            ChangePasswordDTO cpDTO = new ChangePasswordDTO()
+            {
+                OldPassword = "password",
+                NewPassword = "PASSWORD",
+                ConfirmPassword = "PASSWORD"
+            };
+            var result = ac.ChangePassword(cpDTO).Result;
+
+            if (result is ObjectResult)
+                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<OkObjectResult>(result);
+        }
+
+
+        [Fact]
+        public void ChangePassword_NoNewPassword_BadRequest()
+        {
+            var ac = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
+
+            ChangePasswordDTO cpDTO = new ChangePasswordDTO()
+            {
+                OldPassword = "password",
+                ConfirmPassword = "PASSWORD"
+            };
+            var result = ac.ChangePassword(cpDTO).Result;
+
+            if (result is ObjectResult)
+                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+
+        [Fact]
+        public void ChangePassword_NoConfirmPassword_BadRequest()
+        {
+            var ac = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
+
+            ChangePasswordDTO cpDTO = new ChangePasswordDTO()
+            {
+                OldPassword = "password",
+                NewPassword = "PASSWORD"
+            };
+            var result = ac.ChangePassword(cpDTO).Result;
+
+            if (result is ObjectResult)
+                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+
+        [Fact]
+        public void ChangePassword_NoOldPasswod_BadRequest()
+        {
+            var ac = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
+
+            ChangePasswordDTO cpDTO = new ChangePasswordDTO()
+            {
+                NewPassword = "PASSWORD",
+                ConfirmPassword = "PASSWORD"
+            };
+            var result = ac.ChangePassword(cpDTO).Result;
+
+            if (result is ObjectResult)
+                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+
+        [Fact]
+        public void ChangePassword_NullDTO_BadRequest()
+        {
+            var ac = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
+
+            ChangePasswordDTO cpDTO = null;
+            var result = ac.ChangePassword(cpDTO).Result;
+
+            if (result is ObjectResult)
+                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+
+        [Fact]
+        public void ChangePassword_PasswordMismatch_BadRequest()
+        {
+            var ac = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
+
+            ChangePasswordDTO cpDTO = new ChangePasswordDTO()
+            {
+                OldPassword = "password",
+                NewPassword = "PASSWORD",
+                ConfirmPassword = "DROWSSAP"
+            };
+            var result = ac.ChangePassword(cpDTO).Result;
+
+            if (result is ObjectResult)
+                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
+
+
+        [Fact]
+        public void ChangePassword_WrongOldPassword_BadRequest()
+        {
+            var ac = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
+
+            ChangePasswordDTO cpDTO = new ChangePasswordDTO()
+            {
+                OldPassword = "drowssap",
+                NewPassword = "PASSWORD",
+                ConfirmPassword = "PASSWORD"
+            };
+            var result = ac.ChangePassword(cpDTO).Result;
+
+            if (result is ObjectResult)
+                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<BadRequestObjectResult>(result);
+        }
         #endregion
         #region ForgotPassword
         [Fact]
