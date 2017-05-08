@@ -525,3 +525,83 @@ pdgy24tw.l2s(73,28): error CS0246: The type or namespace name 'ApplicationUser' 
 2017-05-08T11:37:53.0316748+02:00 0HL4LUJD45T2O [WRN] User "b6bb9a90-6e49-4553-9c30-b0bb3d4e69a3" failed to provide the correct password. (ec8d2479)
 2017-05-08T11:38:05.1773237+02:00 0HL4LUJD45T2P [WRN] Invalid password for user "b6bb9a90-6e49-4553-9c30-b0bb3d4e69a3". (c2dce6c7)
 2017-05-08T11:38:05.1863313+02:00 0HL4LUJD45T2P [WRN] User "b6bb9a90-6e49-4553-9c30-b0bb3d4e69a3" failed to provide the correct password. (ec8d2479)
+2017-05-08T12:36:38.0241561+02:00 0HL4LVOC4F118 [ERR] An exception occured:
+The SMTP server does not support authentication.
+Inner Exception:
+ (2e89ae9c)
+2017-05-08T12:38:40.2446836+02:00 0HL4LVPGHQE94 [ERR] An exception occured:
+The remote certificate is invalid according to the validation procedure.
+Inner Exception:
+ (2b0d7ac1)
+2017-05-08T12:40:03.2040267+02:00 0HL4LVPGHQE95 [ERR] An exception occured:
+The remote certificate is invalid according to the validation procedure.
+Inner Exception:
+ (2b0d7ac1)
+2017-05-08T12:40:23.4761928+02:00 0HL4LVPGHQE96 [ERR] An exception occured:
+The remote certificate is invalid according to the validation procedure.
+Inner Exception:
+ (2b0d7ac1)
+2017-05-08T12:41:19.5094089+02:00 0HL4LVQVFI6K5 [ERR] An exception occured:
+The remote certificate is invalid according to the validation procedure.
+Inner Exception:
+ (2b0d7ac1)
+2017-05-08T12:44:49.9910332+02:00 0HL4LVSUN63L1 [ERR] An exception occured:
+The remote certificate is invalid according to the validation procedure.
+Inner Exception:
+ (2b0d7ac1)
+2017-05-08T12:49:11.5981679+02:00 0HL4LVVCIL7C6 [ERR] An exception occured:
+The remote certificate is invalid according to the validation procedure.
+Inner Exception:
+ (2b0d7ac1)
+2017-05-08T12:53:12.2067907+02:00 0HL4M01KBV9AJ [ERR] An exception occured:
+The remote certificate is invalid according to the validation procedure.
+Inner Exception:
+ (2b0d7ac1)
+2017-05-08T12:54:38.7653601+02:00 0HL4M02EA4R31 [ERR] An exception occured:
+The handshake failed due to an unexpected packet format.
+Inner Exception:
+ (58bab38c)
+2017-05-08T12:56:04.3590639+02:00 0HL4M02EA4R32 [ERR] An exception occured:
+Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host.
+Inner Exception:
+System.Net.Sockets.SocketException: An existing connection was forcibly closed by the remote host
+   at System.Net.Sockets.Socket.EndReceive(IAsyncResult asyncResult)
+   at System.Net.Sockets.NetworkStream.EndRead(IAsyncResult asyncResult) (09c78a14)
+2017-05-08T12:57:04.5319911+02:00 0HL4M03PJSP41 [ERR] An exception occured:
+The remote certificate is invalid according to the validation procedure.
+Inner Exception:
+ (2b0d7ac1)
+2017-05-08T12:59:00.6080118+02:00 0HL4M04SB9FU3 [ERR] An exception occured:
+The SMTP server does not support authentication.
+Inner Exception:
+ (2e89ae9c)
+2017-05-08T13:03:01.9863243+02:00 0HL4M073V5EAG [ERR] An exception occured:
+The remote certificate is invalid according to the validation procedure.
+Inner Exception:
+ (2b0d7ac1)
+2017-05-08T13:05:35.6720525+02:00 0HL4M08I1MLLM [ERR] An exception occured:
+Value cannot be null.
+Parameter name: address
+Inner Exception:
+ (474bd63d)
+2017-05-08T13:07:37.9696483+02:00 0HL4M08I1MLLN [ERR] An exception occured:
+Value cannot be null.
+Parameter name: address
+Inner Exception:
+ (474bd63d)
+2017-05-08T13:12:06.7084788+02:00 0HL4M0C6MK18J [ERR] An exception occured:
+Value cannot be null.
+Parameter name: address
+Inner Exception:
+ (474bd63d)
+2017-05-08T13:17:08.6650783+02:00 0HL4M0DI457NB [ERR] An exception occured:
+Value cannot be null.
+Parameter name: address
+Inner Exception:
+ (474bd63d)
+2017-05-08T13:17:24.2140143+02:00 0HL4M0DI457NC [ERR] An exception occured:
+Value cannot be null.
+Parameter name: address
+Inner Exception:
+ (474bd63d)
+2017-05-08T13:19:02.6211988+02:00 0HL4M0FLRRJA0 [WRN] VerifyUserTokenAsync() failed with purpose: "ResetPassword" for user "80aa6ec5-53db-440e-9baa-b4633de829d1". (08c3f50e)
