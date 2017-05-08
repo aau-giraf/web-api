@@ -63,24 +63,21 @@ namespace GirafRest.Test
                 {
                     if (mockUsers == null)
                         mockUsers = new List<GirafUser>() {
-                        new GirafUser("Admin", 0) {
-                            DepartmentKey = 1,
+                        new GirafUser("Admin", 1)
+                        {
                             Id = "admin"
                         },
-                        new GirafUser("Guardian in dep 2", 1)
+                        new GirafUser("Guardian in dep 2", 2)
                         {
-                            DepartmentKey = 2,
                             Id = "guardian2"
                         },
-                        new GirafUser("Citizen with no weeks", 2)
+                        new GirafUser("Citizen of dep 2", 2)
                         {
-                            DepartmentKey = 3,
-                            Id = "citizen3"
-                        },
-                        new GirafUser("Citizen of dep 2", 1)
-                        {
-                            DepartmentKey = 2,
                             Id = "citizen2"
+                        },
+                        new GirafUser("Citizen with no weeks", 3)
+                        {
+                            Id = "citizen3"
                         }
                     };
 
