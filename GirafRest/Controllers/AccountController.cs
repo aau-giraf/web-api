@@ -9,6 +9,8 @@ using GirafRest.Services;
 using GirafRest.Models.DTOs.AccountDTOs;
 using GirafRest.Models.DTOs.UserDTOs;
 using GirafRest.Models.DTOs;
+using Microsoft.AspNetCore.Http;
+using System;
 
 namespace GirafRest.Controllers
 {
@@ -171,9 +173,24 @@ namespace GirafRest.Controllers
             
             var code = await _userManager.GeneratePasswordResetTokenAsync(user);
             var callbackUrl = Url.Action(nameof(ResetPassword), "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-            await _emailSender.SendEmailAsync(model.Email, "Nulstil kodeord",
-               $"Du har mistet din kode til GIRAF. Du kan nulstille den her: <a href='{callbackUrl}'>link</a>");
+            try
+            {
+                await _emailSender.SendEmailAsync(model.Email, "Nulstil kodeord",
+                   $"Du har mistet din kode til GIRAF. Du kan nulstille den her: <a href='{callbackUrl}'>link</a>");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"An exception occured:\n{ex.Message}\nInner Exception:\n{ex.InnerException}");
+                return BadRequest("The mailing service is currently offline. Please contact an administrator if the problem " +
+                    "persists.");
+            }
             return Ok(reply);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ForgotPasswordView()
+        {
+            return View();
         }
 
         /// <summary>
@@ -261,7 +278,7 @@ namespace GirafRest.Controllers
             {
                 return View(model);
             }
-            var user = await _userManager.FindByEmailAsync(model.Email);
+            var user = await _userManager.FindByNameAsync(model.Username);
             if (user == null)
             {
                 // Don't reveal that the user does not exist

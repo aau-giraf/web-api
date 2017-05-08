@@ -7,16 +7,19 @@ namespace GirafRest.Models.DTOs.AccountDTOs
     /// </summary>
     public class ResetPasswordDTO
     {
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
+        [Required(ErrorMessage = "Indtast venligst dit brugernavn her.")]
+        [Display(Name = "Brugernavn")]
+        public string Username { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Indtast venligst dit kodeord her.")]
         [DataType(DataType.Password)]
+        [Display(Name = "Kodeord")]
         public string Password { get; set; }
 
+        [Required(ErrorMessage = "Gentag venligst dit kodeord her.")]
         [DataType(DataType.Password)]
-        [Display(Name = "Confirm password")]
+        [Display(Name = "Bekræft Kodeord")]
+        [Compare("Password", ErrorMessage = "De indtastede kodeord passer ikke sammen.")]
         public string ConfirmPassword { get; set; }
 
         public string Code { get; set; }

@@ -63,8 +63,9 @@ namespace GirafRest.Setup
             })
                 .AddEntityFrameworkStores<GirafDbContext>()
                 .AddDefaultTokenProviders();
-            
+
             // Add email sender for account recorvery.
+            services.Configure<EmailConfig>(Configuration.GetSection("Email"));
             services.AddTransient<IEmailSender, AuthMessageSender>();
 
             // Add the implementation of IGirafService to the context, i.e. all common functionality for
