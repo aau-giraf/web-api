@@ -11,6 +11,8 @@ using GirafRest.Models.DTOs.UserDTOs;
 using GirafRest.Models.DTOs;
 using Microsoft.AspNetCore.Http;
 using System;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace GirafRest.Controllers
 {
@@ -18,21 +20,14 @@ namespace GirafRest.Controllers
     public class AccountController : Controller
     {
         /// <summary>
-        /// A reference to ASP.NET's user manager, which handles currently authenticated users.
-        /// </summary>
-        private readonly UserManager<GirafUser> _userManager;
-        /// <summary>
         /// A reference to ASP.NET's sign-in manager, that is used to validate usernames and passwords.
         /// </summary>
         private readonly SignInManager<GirafUser> _signInManager;
         /// <summary>
         /// A reference to an email sender, that is used to send emails to users who request a new password.
         /// </summary>
-        private readonly IEmailSender _emailSender;
-        /// <summary>
-        /// A logger used to log information from the controller.
-        /// </summary>
-        private readonly ILogger _logger;
+        private readonly IEmailService _emailSender;
+        private readonly IGirafService _giraf;
 
         /// <summary>
         /// Creates a new account controller. The account controller allows the users to sign in and out of their account
@@ -44,15 +39,15 @@ namespace GirafRest.Controllers
         /// <param name="identityCookieOptions">A reference to a cookie-scheme.</param>
         /// <param name="loggerFactory">A reference to a logger factory</param>
         public AccountController(
-            UserManager<GirafUser> userManager,
             SignInManager<GirafUser> signInManager,
-            IEmailSender emailSender,
-            ILoggerFactory loggerFactory)
+            IEmailService emailSender,
+            ILoggerFactory loggerFactory,
+            IGirafService giraf)
         {
-            _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
-            _logger = loggerFactory.CreateLogger<AccountController>();
+            _giraf = giraf;
+            _giraf._logger = loggerFactory.CreateLogger("Account");
         }
 
         /// <summary>
@@ -69,24 +64,64 @@ namespace GirafRest.Controllers
         public async Task<IActionResult> Login([FromBody] LoginDTO model)
         {
             if (model == null)
-                return BadRequest("The request body must contain username and password.");
+                return BadRequest("The request body must contain at least a username.");
             //Check that the caller has supplied username and password in the request
             if (string.IsNullOrEmpty(model.Username))
                 return BadRequest("No username specified.");
-            if (string.IsNullOrEmpty(model.Password))
-                return BadRequest("No password specified.");
 
+            //Check if a user is already logged in and attempt to login with the username given in the DTO
+            var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            if(currentUser != null)
+            {
+                return await attemptCitizenLoginAsync(currentUser, model.Username);
+            }
+
+            //There is no current user - check that a password is present.
+            if(string.IsNullOrEmpty(model.Password))
+                return BadRequest("No password specified.");
             //Attempt to sign in with the given credentials.
             var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, lockoutOnFailure: false);
             if (result.Succeeded)
             {
-                _logger.LogInformation(1, $"{model.Username} logged in.");
+                _giraf._logger.LogInformation($"{model.Username} logged in.");
                 return Ok();
             }
             else
             {
                 return Unauthorized();
             }
+        }
+        /// <summary>
+        /// Attempts to login from a Guardian's account to a citizen's account. Guardians does not require the citizen's 
+        /// password in order to login, but they must be in the same department. 
+        /// </summary>
+        /// <param name="guardian">The Guardian user who is currently authenticated.</param>
+        /// <param name="username">The username of the citizen to login as.</param>
+        /// <returns></returns>
+        private async Task<IActionResult> attemptCitizenLoginAsync(GirafUser guardian, string username)
+        {
+            //Check if the user is in the Guardian role - return unauthorized if not.
+            if (await _giraf._userManager.IsInRoleAsync(guardian, GirafRole.Guardian))
+            {
+                //Attempt to find a user with the given username in the guardian's department
+                var citizenUser = await _giraf._userManager.FindByNameAsync(username);
+                
+                //Check if the user exists, sign out the guardian and sign in the user if so
+                if (citizenUser != null && citizenUser.DepartmentKey == guardian.DepartmentKey)
+                {
+                    if (!await _giraf._userManager.IsInRoleAsync(citizenUser, GirafRole.Citizen))
+                        return Unauthorized();
+
+                    await _signInManager.SignOutAsync();
+                    await _signInManager.SignInAsync(citizenUser, isPersistent: true);
+                    return Ok(new GirafUserDTO(citizenUser));
+                }
+                //There was no user with the given username in the department - return NotFound.
+                else
+                    return NotFound($"There is no user with the given username in your department: {username}");
+            }
+            else
+                return Unauthorized();
         }
 
         /// <summary>
@@ -118,11 +153,11 @@ namespace GirafRest.Controllers
 
             //Create a new user with the supplied information
             var user = new GirafUser (model.Username, model.DepartmentId);
-            var result = await _userManager.CreateAsync(user, model.Password);
+            var result = await _giraf._userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
-                await _signInManager.SignInAsync(user, isPersistent: false);
-                _logger.LogInformation(3, "User created a new account with password.");
+                await _signInManager.SignInAsync(user, isPersistent: true);
+                _giraf._logger.LogInformation("User created a new account with password.");
                 return Ok(new GirafUserDTO(user));
             }
             AddErrors(result);
@@ -137,7 +172,7 @@ namespace GirafRest.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            _logger.LogInformation(4, "User logged out.");
+            _giraf._logger.LogInformation("User logged out.");
             return Ok("You logged out.");
         }
 
@@ -164,14 +199,14 @@ namespace GirafRest.Controllers
 
             string reply = $"An email has been sent to {model.Email} with a password reset link if the given username exists in the database.";
 
-            var user = await _userManager.FindByNameAsync(model.Username);
+            var user = await _giraf._userManager.FindByNameAsync(model.Username);
             if (user == null)
             {
                 // Don't reveal that the user does not exist or is not confirmed
                 return Ok(reply);
             }
             
-            var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var code = await _giraf._userManager.GeneratePasswordResetTokenAsync(user);
             var callbackUrl = Url.Action(nameof(ResetPassword), "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
             try
             {
@@ -180,7 +215,7 @@ namespace GirafRest.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"An exception occured:\n{ex.Message}\nInner Exception:\n{ex.InnerException}");
+                _giraf._logger.LogError($"An exception occured:\n{ex.Message}\nInner Exception:\n{ex.InnerException}");
                 return BadRequest("The mailing service is currently offline. Please contact an administrator if the problem " +
                     "persists.");
             }
@@ -207,10 +242,10 @@ namespace GirafRest.Controllers
             if (model.NewPassword != model.ConfirmPassword)
                 return BadRequest("Password Mismatch.");
 
-            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
             if (user != null)
             {
-                var result = await _userManager.AddPasswordAsync(user, model.NewPassword);
+                var result = await _giraf._userManager.AddPasswordAsync(user, model.NewPassword);
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
@@ -238,47 +273,61 @@ namespace GirafRest.Controllers
             if (model.NewPassword != model.ConfirmPassword)
                 return BadRequest("Password Mismatch");
 
-            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
             if (user != null)
             {
-                var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+                var result = await _giraf._userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                    _logger.LogInformation("User changed their password successfully.");
+                    _giraf._logger.LogInformation("User changed their password successfully.");
                     return Ok("Your password was changed.");
                 }
             }
             return BadRequest("An error occured: " + ModelState["Identity"]);
         }
 
-        //
-        // GET: /Account/ResetPassword
+        /// <summary>
+        /// Gets the view associated with the ResetPassword page.
+        /// </summary>
+        /// <param name="code"The reset password token that has been sent to the user via his email.></param>
+        /// <returns>BadRequest if there is no valid code or the view if the code was valid.</returns>
         [HttpGet]
         [AllowAnonymous]
         public IActionResult ResetPassword(string code = null)
         {
-            return code == null ? View("Error") : View();
+            if (code == null)
+                return BadRequest("Failed to find a valid reset code.");
+            return View();
         }
 
-        //
-        // POST: /Account/ResetPassword
+        /// <summary>
+        /// Attempts to change the given user's password. If the DTO did not contain valid information simply returns the view with
+        /// the current information that the user has specified.
+        /// </summary>
+        /// <param name="model">A DTO containing the user's Username, Password and a ConfirmPassword.</param>
+        /// <returns></returns>
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(ResetPasswordDTO model)
         {
+            //Check that all the necesarry information was specified
             if (!ModelState.IsValid)
             {
+                //It was not, return the user to the view, where he may try again.
                 return View(model);
             }
-            var user = await _userManager.FindByNameAsync(model.Username);
+            //Try to fetch the user from the given username. If the username does not exist simply return the
+            //confirmation page to avoid revealing that the username does not exist.
+            var user = await _giraf._userManager.FindByNameAsync(model.Username);
             if (user == null)
             {
                 // Don't reveal that the user does not exist
                 return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), "Account");
             }
-            var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
+            //Attempt to change the user's password and redirect him to the confirmation page.
+            var result = await _giraf._userManager.ResetPasswordAsync(user, model.Code, model.Password);
             if (result.Succeeded)
             {
                 return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), "Account");
@@ -287,8 +336,10 @@ namespace GirafRest.Controllers
             return View();
         }
 
-        //
-        // GET: /Account/ResetPasswordConfirmation
+        /// <summary>
+        /// Get the view associated with the ResetPasswordConfirmation page.
+        /// </summary>
+        /// <returns>The view.</returns>
         [HttpGet]
         [AllowAnonymous]
         public IActionResult ResetPasswordConfirmation()
@@ -296,8 +347,11 @@ namespace GirafRest.Controllers
             return View();
         }
 
-        //
-        // GET /Account/AccessDenied
+        /// <summary>
+        /// An end-point that simply returns Unauthorized. It is redirected to by the runtime when an unauthorized request
+        /// to an end-point with the [Authorize] attribute is encountered.
+        /// </summary>
+        /// <returns>Unauthorized.</returns>
         [HttpGet]
         public IActionResult AccessDenied()
         {
@@ -306,7 +360,10 @@ namespace GirafRest.Controllers
         #endregion
 
         #region Helpers
-
+        /// <summary>
+        /// Adds all the Identity errors to the model state, such that they may be displayed on the webpage.
+        /// </summary>
+        /// <param name="result">The IdentityResult containing all errors that were encountered.</param>
         private void AddErrors(IdentityResult result)
         {
             foreach (var error in result.Errors)

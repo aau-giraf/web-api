@@ -66,7 +66,7 @@ namespace GirafRest.Setup
 
             // Add email sender for account recorvery.
             services.Configure<EmailConfig>(Configuration.GetSection("Email"));
-            services.AddTransient<IEmailSender, AuthMessageSender>();
+            services.AddTransient<IEmailService, MessageServices>();
 
             // Add the implementation of IGirafService to the context, i.e. all common functionality for
             // the controllers.
@@ -123,7 +123,7 @@ namespace GirafRest.Setup
             context.Database.EnsureCreated();
 
             // Create roles if they do not exist
-            GirafExtensions.EnsureRoleSetup(roleManager);
+            roleManager.EnsureRoleSetup();
 
             //Fill some sample data into the database
             if (ProgramOptions.GenerateSampleData) DBInitializer.Initialize(context, userManager);

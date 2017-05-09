@@ -24,7 +24,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// An email sender that can be used to send emails to users that have lost their password. (DOES NOT WORK YET!)
         /// </summary>
-        private readonly IEmailSender _emailSender;
+        private readonly IEmailService _emailSender;
         /// <summary>
         /// A reference to GirafService, that defines common functionality for all controllers.
         /// </summary>
@@ -32,7 +32,7 @@ namespace GirafRest.Controllers
 
         public UserController(
             IGirafService giraf,
-          IEmailSender emailSender,
+          IEmailService emailSender,
           ILoggerFactory loggerFactory)
         {
             _giraf = giraf;
@@ -85,14 +85,12 @@ namespace GirafRest.Controllers
                 user = await _giraf.LoadUserAsync(HttpContext.User);
                 if(await _giraf._userManager.IsInRoleAsync(user, GirafRole.Guardian))
                 {
-                    var users = new List<GirafUserDTO>();
-                    users.Add(new GirafUserDTO(user));
-                    foreach(var member in user.Department.Members)
-                    {
-                        users.Add(new GirafUserDTO(member));
-                    }
+                    var dep = await _giraf._context.Departments
+                        .Where(d => d.Key == user.DepartmentKey)
+                        .Include(d => d.Members)
+                        .FirstOrDefaultAsync();
 
-                    return Ok(users);
+                    return Ok(dep.Members.Select(m => new GirafUserDTO(m)));
                 }
             }
 

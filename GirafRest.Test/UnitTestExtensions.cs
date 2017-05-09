@@ -78,6 +78,14 @@ namespace GirafRest.Test
                         new GirafUser("Citizen with no weeks", 3)
                         {
                             Id = "citizen3"
+                        },
+                        new GirafUser("Admin without Department", null)
+                        {
+                            Id = "nimda"
+                        },
+                        new GirafUser("Guardian2 in dep2", 2)
+                        {
+                            Id = "guardian22"
                         }
                     };
 
@@ -173,7 +181,9 @@ namespace GirafRest.Test
                                 Name = "Mock Department2",
                                 Members = new List<GirafUser>()
                                 {
-                                    MockUsers[1]
+                                    MockUsers[1],
+                                    MockUsers[3],
+                                    MockUsers[5]
                                 }
                             }
                         };
@@ -263,9 +273,9 @@ namespace GirafRest.Test
                             new GirafRole(GirafRole.Guardian) {
                                 Id = GirafRole.Guardian
                             },
-                            new GirafRole(GirafRole.User)
+                            new GirafRole(GirafRole.Citizen)
                             {
-                                Id = GirafRole.User
+                                Id = GirafRole.Citizen
                             }
                         };
 
@@ -293,6 +303,11 @@ namespace GirafRest.Test
                             new IdentityUserRole<string>()
                             {
                                 UserId = MockUsers[2].Id,
+                                RoleId = MockRoles[2].Id
+                            },
+                            new IdentityUserRole<string>()
+                            {
+                                UserId = MockUsers[3].Id,
                                 RoleId = MockRoles[2].Id
                             }
                         };

@@ -52,7 +52,7 @@ namespace GirafRest.Setup
             }
 
             // Add users to roles
-            userManager.AddToRoleAsync(users[0], GirafRole.User).ConfigureAwait(false);
+            userManager.AddToRoleAsync(users[0], GirafRole.Citizen).ConfigureAwait(false);
             userManager.AddToRoleAsync(users[1], GirafRole.Guardian).ConfigureAwait(false);
             userManager.AddToRoleAsync(users[2], GirafRole.Admin).ConfigureAwait(false);
 

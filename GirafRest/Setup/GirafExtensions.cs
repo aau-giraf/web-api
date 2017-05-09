@@ -49,14 +49,14 @@ namespace GirafRest.Extensions
         /// An extension-method for setting up roles for use when authorizing users to methods.
         /// </summary>
         /// <param name="roleManager">A reference to the role manager for the application.</param>
-        public static void EnsureRoleSetup(RoleManager<GirafRole> roleManager)
+        public static void EnsureRoleSetup(this RoleManager<GirafRole> roleManager)
         {
             var Roles = new GirafRole[]
             {
                 new GirafRole(GirafRole.Admin),
                 new GirafRole(GirafRole.Guardian),
                 new GirafRole(GirafRole.Parent),
-                new GirafRole(GirafRole.User)
+                new GirafRole(GirafRole.Citizen)
             };
             foreach (var role in Roles)
             {
@@ -76,7 +76,7 @@ namespace GirafRest.Extensions
             // Create policies for method access using attribute [Authorize(Policy = "PolicyName")]
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(GirafRole.RequireUser, policy => policy.RequireRole(GirafRole.User));
+                options.AddPolicy(GirafRole.RequireCitizen, policy => policy.RequireRole(GirafRole.Citizen));
             });
             services.AddAuthorization(options =>
             {

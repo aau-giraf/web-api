@@ -44,7 +44,7 @@ namespace GirafRest.Test.Controllers
             var pc = new UserController(
                 new MockGirafService(_testContext.MockDbContext.Object,
                 _testContext.MockUserManager),
-                new Mock<IEmailSender>().Object,
+                new Mock<IEmailService>().Object,
                 _testContext.MockLoggerFactory.Object);
             _testContext.MockHttpContext = pc.MockHttpContext();
             _testContext.MockHttpContext.MockQuery("username", null);
