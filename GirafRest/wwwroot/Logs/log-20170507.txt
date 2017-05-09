@@ -1,0 +1,42 @@
+2017-05-07T20:05:55.9420128+02:00 0HL4LEEPLH0QL [ERR] An exception occured:
+The remote certificate is invalid according to the validation procedure.
+Inner Exception:
+ (2b0d7ac1)
+2017-05-07T20:08:32.0314596+02:00 0HL4LEG8AN8RM [ERR] An exception occured:
+The remote certificate is invalid according to the validation procedure.
+Inner Exception:
+ (2b0d7ac1)
+2017-05-07T20:14:10.1110856+02:00 0HL4LEJD0IOHB [ERR] An exception occured:
+The remote certificate is invalid according to the validation procedure.
+Inner Exception:
+ (2b0d7ac1)
+2017-05-07T20:19:36.1653270+02:00 0HL4LEME9HKMV [ERR] An exception occured:
+Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host.
+Inner Exception:
+System.Net.Sockets.SocketException: An existing connection was forcibly closed by the remote host
+   at System.Net.Sockets.Socket.EndReceive(IAsyncResult asyncResult)
+   at System.Net.Sockets.NetworkStream.EndRead(IAsyncResult asyncResult) (09c78a14)
+2017-05-07T20:19:47.0804248+02:00 0HL4LEME9HKN0 [ERR] An exception occured:
+Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host.
+Inner Exception:
+System.Net.Sockets.SocketException: An existing connection was forcibly closed by the remote host
+   at System.Net.Sockets.Socket.EndReceive(IAsyncResult asyncResult)
+   at System.Net.Sockets.NetworkStream.EndRead(IAsyncResult asyncResult) (09c78a14)
+2017-05-07T20:19:50.9611162+02:00 0HL4LEME9HKN1 [ERR] An exception occured:
+Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host.
+Inner Exception:
+System.Net.Sockets.SocketException: An existing connection was forcibly closed by the remote host
+   at System.Net.Sockets.Socket.EndReceive(IAsyncResult asyncResult)
+   at System.Net.Sockets.NetworkStream.EndRead(IAsyncResult asyncResult) (09c78a14)
+2017-05-07T20:19:59.1266008+02:00 0HL4LEME9HKN2 [ERR] An exception occured:
+Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host.
+Inner Exception:
+System.Net.Sockets.SocketException: An existing connection was forcibly closed by the remote host
+   at System.Net.Sockets.Socket.EndReceive(IAsyncResult asyncResult)
+   at System.Net.Sockets.NetworkStream.EndRead(IAsyncResult asyncResult) (09c78a14)
+2017-05-07T20:20:00.0246158+02:00 0HL4LEME9HKN3 [ERR] An exception occured:
+Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host.
+Inner Exception:
+System.Net.Sockets.SocketException: An existing connection was forcibly closed by the remote host
+   at System.Net.Sockets.Socket.EndReceive(IAsyncResult asyncResult)
+   at System.Net.Sockets.NetworkStream.EndRead(IAsyncResult asyncResult) (09c78a14)

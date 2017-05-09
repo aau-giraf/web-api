@@ -10,17 +10,22 @@ namespace GirafRest.Models.DTOs.AccountDTOs
     {
         [Required]
         [EmailAddress]
-        [Display(Name = "Username")]
+        [Display(Name = "Brugernavn")]
         public string Username { get; set; }
 
         [Required]
+        [Display(Name = "Kodeord")]
+        [DataType(DataType.Password)]
         public string Password { get; set; }
 
         [Required]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [Display(Name = "Bekræft kodeord")]
+        [DataType(DataType.Password)]
+        [Compare("Password", ErrorMessage = "De indtastede kodeord passer ikke sammen.")]
         public string ConfirmPassword { get; set; }
 
         [Required]
+        [Display(Name = "Afdelingsnummer")]
         public long? DepartmentId { get; set; }
     }
 }
