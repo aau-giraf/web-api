@@ -176,7 +176,7 @@ namespace GirafRest.Controllers
             try
             {
                 await _emailSender.SendEmailAsync(model.Email, "Nulstil kodeord",
-                   $"Du har mistet din kode til GIRAF. Du kan nulstille den her: <a href='{callbackUrl}'>link</a>");
+                   $"Du har mistet din kode til GIRAF. Du kan nulstille det her: <a href='{callbackUrl}'>Nulstil Kodeord</a>");
             }
             catch (Exception ex)
             {
@@ -185,12 +185,6 @@ namespace GirafRest.Controllers
                     "persists.");
             }
             return Ok(reply);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> ForgotPasswordView()
-        {
-            return View();
         }
 
         /// <summary>
