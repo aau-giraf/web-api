@@ -1,10 +1,11 @@
-﻿using GirafRest.Controllers;using GirafRest.Models.DTOs.AccountDTOs;using GirafRest.Test.Mocks;using Microsoft.AspNetCore.Mvc;using Moq;using Xunit;using Xunit.Abstractions;using static GirafRest.Test.UnitTestExtensions;using GirafRest.Services;
-using System.Threading.Tasks;
-using GirafRest.Models.DTOs;
-using GirafRest.Models.DTOs.UserDTOs;
-
-namespace GirafRest.Test{    public class AccountControllerTest    {
+﻿using GirafRest.Controllers;using GirafRest.Models.DTOs.AccountDTOs;using GirafRest.Test.Mocks;using Microsoft.AspNetCore.Mvc;using Moq;using Xunit;using Xunit.Abstractions;using static GirafRest.Test.UnitTestExtensions;using GirafRest.Services;
+using System.Threading.Tasks;
+using GirafRest.Models.DTOs;
+using GirafRest.Models.DTOs.UserDTOs;
+
+namespace GirafRest.Test{    public class AccountControllerTest    {
         //NOTE: We do not test the logout method as it is merely an almost invisble abstraction on top of SignInManager.SignOut.
+
         private readonly ITestOutputHelper _outputHelpter;
         private TestContext _testContext;
         private const int USER = 0;        private const int DEPARTMENT_ZERO = 0;        private const int GUARDIAN_INDEX = 1;        private const int ANOTHER_GUARDIAN_INDEX = 5;        private const int CITIZEN_INDEX = 3;        private const int ADMIN_INDEX = 4;        private const int CITIZEN_OUTSIDE_DEPARTMENT = 2;
@@ -16,7 +17,8 @@ namespace GirafRest.Test{    public class AccountControllerTest    {
         private void outputEmail(string r, string s, string m)
         {
             _outputHelpter.WriteLine($"Email sent:\nReceiver: {r}\nSubject: {s}\n\n{m}");
-        }
+        }
+
         private AccountController initializeTest()
         {
             _testContext = new TestContext();
@@ -30,34 +32,66 @@ namespace GirafRest.Test{    public class AccountControllerTest    {
 
             _testContext.MockHttpContext = ac.MockHttpContext();            _testContext.MockHttpContext                .Setup(mhc => mhc.Request.Scheme)                .Returns("Scheme?");
 
-            var mockUrlHelper = new Mock<IUrlHelper>();            ac.Url = mockUrlHelper.Object;
-            return ac;
+            var mockUrlHelper = new Mock<IUrlHelper>();            ac.Url = mockUrlHelper.Object;
+            return ac;
+        }
+        #region Login
+        [Fact]
+        public void Login_CredentialsOk_OK()
+        {
+            var accountController = initializeTest();            
+            var res = accountController.Login(new LoginDTO()
+            {
+                Username = _testContext.MockUsers[USER].UserName,
+                Password = "password"
+            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());            
+            Assert.IsType<OkResult>(res);
+        }        
+        private void outputEmail(string r, string s, string m)
+        {
+            _outputHelpter.WriteLine($"Email sent:\nReceiver: {r}\nSubject: {s}\n\n{m}");
+        }        
+        [Fact]
+        public void Login_UsernameInvalidPasswordOk_Unauthorized()
+        {
+            var accountController = initializeTest();            
+            var res = accountController.Login(new LoginDTO()
+            {
+                Username = "INVALID",
+                Password = "password"
+            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());            
+            Assert.IsType<UnauthorizedResult>(res);
+        }        [Fact]
+        public void Login_NullDTO_BadRequest()
+        {
+            var accountController = initializeTest();
+            var res = accountController.Login(null).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<BadRequestObjectResult>(res);
         }
-        #region Login
-        [Fact]
-        public void Login_CredentialsOk_OK()
-        {
-            var accountController = initializeTest();            
-            var res = accountController.Login(new LoginDTO()
-            {
-                Username = _testContext.MockUsers[USER].UserName,
-                Password = "password"
-            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());            
-            Assert.IsType<OkResult>(res);
-        }        
-        private void outputEmail(string r, string s, string m)
-        {
-            _outputHelpter.WriteLine($"Email sent:\nReceiver: {r}\nSubject: {s}\n\n{m}");
-        }        
+
+
+        [Fact]
+        public void Login_LoginAsGuardianDTOWithCitizenName_Ok()
+        {
+            var ac = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_INDEX]);
+
+            var result = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[CITIZEN_INDEX].UserName }).Result;
+
+            if (result is ObjectResult)
+                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<OkObjectResult>(result);
+        }
         [Fact]
         public void Login_UsernameInvalidPasswordOk_Unauthorized()
         {
-            var accountController = initializeTest();            
+            var accountController = initializeTest();
             var res = accountController.Login(new LoginDTO()
             {
                 Username = "INVALID",
-                Password = "password"
-            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());            
+                Password = "password"
+            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
             Assert.IsType<UnauthorizedResult>(res);
         }        [Fact]
         public void Login_NullDTO_BadRequest()
@@ -158,67 +192,138 @@ namespace GirafRest.Test{    public class AccountControllerTest    {
                 ConfirmPassword = "InputOk",
                 DepartmentId = DEPARTMENT_ZERO
             }).Result;
-            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
-
-            var res = accountController.Login(null).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());            
-            Assert.IsType<BadRequestObjectResult>(res);
-        }        
-        [Fact]
-        public void Login_LoginAsGuardianDTOWithCitizenName_Ok()
-        {
-            var ac = initializeTest();            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_INDEX]);
-            var result = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[CITIZEN_INDEX].UserName }).Result;
-            if (result is ObjectResult)                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
-            Assert.IsType<OkObjectResult>(result);        }
-        [Fact]        public void Login_LoginAsGuardianDTOWithAdminInNoDep_NotFound()        {            var ac = initializeTest();            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_INDEX]);
-            var result = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[ADMIN_INDEX].UserName }).Result;
-            if (result is ObjectResult)                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
-            Assert.IsType<NotFoundObjectResult>(result);        }
-        [Fact]        public void Login_LoginAsGuardianDTOWithGuardianInSameDep_Unauthorized()        {            var ac = initializeTest();            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_INDEX]);
-            var result = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[ANOTHER_GUARDIAN_INDEX].UserName }).Result;
-            if (result is ObjectResult)                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
-            Assert.IsType<UnauthorizedResult>(result);        }
-        [Fact]        public void Login_LoginAsGuardianDTOWithUserInAnotherDep_NotFound()        {            var ac = initializeTest();            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_INDEX]);
-            var result = ac.Login(new LoginDTO()            {                Username = _testContext.MockUsers[CITIZEN_OUTSIDE_DEPARTMENT].UserName            }).Result;
-            if (result is ObjectResult)                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
-            Assert.IsType<NotFoundObjectResult>(result);        }        [Fact]        public void Login_LoginAsCitizenDTOWithGuardianInSameDep_Unauthorized()        {            var ac = initializeTest();            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_INDEX]);
-            var result = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[GUARDIAN_INDEX].UserName }).Result;            if (result is ObjectResult)                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
-            Assert.IsType<UnauthorizedResult>(result);        }        #endregion        #region Register        [Fact]        public void Register_InputOk_ExpectOK()        {            var accountController = initializeTest();            var res = accountController.Register( new RegisterDTO()            {                Username = "InputOk",                Password = "InputOk",                ConfirmPassword = "InputOk",                DepartmentId = DEPARTMENT_ZERO            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());            Assert.IsType<OkObjectResult>(res);        }             [Fact]        public void Register_ExistingUsername_BadRequest()        {            var accountController = initializeTest();            var res = accountController.Register(new RegisterDTO()            {                Username = _testContext.MockUsers[USER].UserName,                Password = "password",                ConfirmPassword = "password",                DepartmentId = DEPARTMENT_ZERO            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());            Assert.IsType<BadRequestResult>(res);        }        
-        [Fact]        public void Register_NoConfirmPassword_BadRequest()        {            var accountController = initializeTest();
-            var res = accountController.Register(new RegisterDTO()            {                Username = "NewUser",                Password = "password",                DepartmentId = DEPARTMENT_ZERO            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
-            Assert.IsType<BadRequestObjectResult>(res);        }        [Fact]        public void Register_NoPassword_BadRequest()        {            var accountController = initializeTest();
-            var res = accountController.Register(new RegisterDTO()            {                Username = "NewUser",                ConfirmPassword = "password",                DepartmentId = DEPARTMENT_ZERO            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
-            Assert.IsType<BadRequestObjectResult>(res);        }        [Fact]        public void Register_NoUsername_BadRequest()        {            var accountController = initializeTest();
-            var res = accountController.Register(new RegisterDTO()            {                Password = "password",                ConfirmPassword = "password",                DepartmentId = DEPARTMENT_ZERO            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
-            Assert.IsType<BadRequestObjectResult>(res);        }
-        [Fact]        public void Register_NoDepartment_OkDepKeyIsMinus1()        {            var accountController = initializeTest();
-            var res = accountController.Register(new RegisterDTO()            {                Username = "NewUser",                Password = "password",                ConfirmPassword = "password"            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
-            Assert.IsType<OkObjectResult>(res);            var user = (res as ObjectResult).Value as GirafUserDTO;            Assert.Equal(-1, user.DepartmentKey);        }
-        [Fact]        public void Register_PasswordMismatch_BadRequest()        {            var accountController = initializeTest();
-            var res = accountController.Register(new RegisterDTO()            {                Username = "NewUser",                Password = "password",                ConfirmPassword = "drowssap",                DepartmentId = DEPARTMENT_ZERO            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
-            Assert.IsType<BadRequestObjectResult>(res);        }        [Fact]        public void Register_BlankDTO_BadRequest()        {            var accountController = initializeTest();
-            var res = accountController.Register(new RegisterDTO()            {                Username = "",                Password = "",                ConfirmPassword = ""            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
-            Assert.IsType<BadRequestObjectResult>(res);        }        [Fact]        public void Register_NullDTO_BadRequest()        {            var accountController = initializeTest();
-            var res = accountController.Register(null).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
-            Assert.IsType<BadRequestObjectResult>(res);        }        #endregion        #region ForgotPassword        [Fact]        public void ForgotPassword_UserExist_Ok()        {            var accountController = initializeTest();
-            var res = accountController.ForgotPassword(new ForgotPasswordDTO()            {                Username = _testContext.MockUsers[ADMIN_DEP_ONE].UserName,                Email = "unittest@giraf.cs.aau.dk"            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
-            Assert.IsType<OkObjectResult>(res);        }
-        [Fact]        public void ForgotPassword_UserDoNotExist_Ok()        {            //It might seem contradictory that this should return Ok, but we wish to keep it secret if the username exists or not.            var accountController = initializeTest();
-            var res = accountController.ForgotPassword(new ForgotPasswordDTO()            {                Username = "UserDoNotExist",                Email = "UserDoNotExist@UserDoNotExist.com"            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
-            Assert.IsType<OkObjectResult>(res);        }        [Fact]        public void ForgotPassword_NoUsername_BadRequest()        {            var accountController = initializeTest();            var res = accountController.ForgotPassword(new ForgotPasswordDTO()            {                Email = "unittest@giraf.cs.aau.dk"            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
-            Assert.IsType<BadRequestObjectResult>(res);        }        [Fact]        public void ForgotPassword_NoEmail_BadRequest()        {            var accountController = initializeTest();
-            var res = accountController.ForgotPassword(new ForgotPasswordDTO()            {                Username = _testContext.MockUsers[ADMIN_DEP_ONE].UserName            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
-            Assert.IsType<BadRequestObjectResult>(res);        }        [Fact]        public void ForgotPassword_NullDTO_BadRequest()        {            var accountController = initializeTest();            var res = accountController.ForgotPassword(null).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
-            Assert.IsType<BadRequestObjectResult>(res);        }        #endregion        #region SetPassword        [Fact]        public void SetPassword_ValidInput_Ok()        {            var ac = initializeTest();            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);            SetPasswordDTO spDTO = new SetPasswordDTO()            {                NewPassword = "newPassword",                ConfirmPassword = "newPassword"            };
-            var result = ac.SetPassword(spDTO).Result;            if (result is ObjectResult)                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
+
+            if (result is ObjectResult)
+                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<NotFoundObjectResult>(result);
+        }
+
+
+        [Fact]
+        public void Login_LoginAsCitizenDTOWithGuardianInSameDep_Unauthorized()
+        {
+            var ac = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_INDEX]);
+
+            var result = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[GUARDIAN_INDEX].UserName }).Result;
+
+            if (result is ObjectResult)
+                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
+
+            Assert.IsType<UnauthorizedResult>(result);
+        }
+
+        #endregion
+        #region Register
+        [Fact]
+        public void Register_InputOk_ExpectOK()
+        {
+            var accountController = initializeTest();
+            var res = accountController.Register( new RegisterDTO()
+            {
+                Username = "InputOk",
+                Password = "InputOk",
+                ConfirmPassword = "InputOk",
+                DepartmentId = DEPARTMENT_ZERO
+            }).Result;
+            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
+
+            var res = accountController.Login(null).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());            
+            Assert.IsType<BadRequestObjectResult>(res);
+        }        
+        [Fact]
+        public void Login_LoginAsGuardianDTOWithCitizenName_Ok()
+        {
+            var ac = initializeTest();            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_INDEX]);
+            var result = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[CITIZEN_INDEX].UserName }).Result;
+            if (result is ObjectResult)                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
             Assert.IsType<OkObjectResult>(result);        }
-        [Fact]        public void ForgotPassword_UserDoNotExist_Ok()        {            //It might seem contradictory that this should return Ok, but we wish to keep it secret if the username exists or not.            var accountController = initializeTest();
-            var res = accountController.ForgotPassword(new ForgotPasswordDTO()            {                Username = "UserDoNotExist",                Email = "UserDoNotExist@UserDoNotExist.com"            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
-            Assert.IsType<OkObjectResult>(res);        }        [Fact]        public void ForgotPassword_NoUsername_BadRequest()        {            var accountController = initializeTest();
-            var res = accountController.ForgotPassword(new ForgotPasswordDTO()            {                Email = "unittest@giraf.cs.aau.dk"            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
-            Assert.IsType<BadRequestObjectResult>(res);        }        [Fact]        public void ForgotPassword_NoEmail_BadRequest()        {            var accountController = initializeTest();            
-            var res = accountController.ForgotPassword(new ForgotPasswordDTO()            {                Username = _testContext.MockUsers[USER].UserName            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
-            Assert.IsType<BadRequestObjectResult>(res);        }        [Fact]        public void ForgotPassword_NullDTO_BadRequest()        {            var accountController = initializeTest();
+        [Fact]        public void Login_LoginAsGuardianDTOWithAdminInNoDep_NotFound()        {            var ac = initializeTest();            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_INDEX]);
+            var result = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[ADMIN_INDEX].UserName }).Result;
+            if (result is ObjectResult)                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
+            Assert.IsType<NotFoundObjectResult>(result);        }
+        [Fact]        public void Login_LoginAsGuardianDTOWithGuardianInSameDep_Unauthorized()        {            var ac = initializeTest();            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_INDEX]);
+            var result = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[ANOTHER_GUARDIAN_INDEX].UserName }).Result;
+            if (result is ObjectResult)                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
+            Assert.IsType<UnauthorizedResult>(result);        }
+        [Fact]        public void Login_LoginAsGuardianDTOWithUserInAnotherDep_NotFound()        {            var ac = initializeTest();            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_INDEX]);
+            var result = ac.Login(new LoginDTO()            {                Username = _testContext.MockUsers[CITIZEN_OUTSIDE_DEPARTMENT].UserName            }).Result;
+            if (result is ObjectResult)                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
+            Assert.IsType<NotFoundObjectResult>(result);        }        [Fact]        public void Login_LoginAsCitizenDTOWithGuardianInSameDep_Unauthorized()        {            var ac = initializeTest();            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_INDEX]);
+            var result = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[GUARDIAN_INDEX].UserName }).Result;            if (result is ObjectResult)                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
+            Assert.IsType<UnauthorizedResult>(result);        }        #endregion        #region Register        [Fact]        public void Register_InputOk_ExpectOK()        {            var accountController = initializeTest();            var res = accountController.Register( new RegisterDTO()            {                Username = "InputOk",                Password = "InputOk",                ConfirmPassword = "InputOk",                DepartmentId = DEPARTMENT_ZERO            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());            Assert.IsType<OkObjectResult>(res);        }             [Fact]        public void Register_ExistingUsername_BadRequest()        {            var accountController = initializeTest();            var res = accountController.Register(new RegisterDTO()            {                Username = _testContext.MockUsers[USER].UserName,                Password = "password",                ConfirmPassword = "password",                DepartmentId = DEPARTMENT_ZERO            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());            Assert.IsType<BadRequestResult>(res);        }        
+        [Fact]        public void Register_NoConfirmPassword_BadRequest()        {            var accountController = initializeTest();
+            var res = accountController.Register(new RegisterDTO()            {                Username = "NewUser",                Password = "password",                DepartmentId = DEPARTMENT_ZERO            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<BadRequestObjectResult>(res);        }        [Fact]        public void Register_NoPassword_BadRequest()        {            var accountController = initializeTest();
+            var res = accountController.Register(new RegisterDTO()            {                Username = "NewUser",                ConfirmPassword = "password",                DepartmentId = DEPARTMENT_ZERO            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<BadRequestObjectResult>(res);        }        [Fact]        public void Register_NoUsername_BadRequest()        {            var accountController = initializeTest();
+            var res = accountController.Register(new RegisterDTO()            {                Password = "password",                ConfirmPassword = "password",                DepartmentId = DEPARTMENT_ZERO            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<BadRequestObjectResult>(res);        }
+        [Fact]        public void Register_NoDepartment_OkDepKeyIsMinus1()        {            var accountController = initializeTest();
+            var res = accountController.Register(new RegisterDTO()            {                Username = "NewUser",                Password = "password",                ConfirmPassword = "password"            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<OkObjectResult>(res);            var user = (res as ObjectResult).Value as GirafUserDTO;            Assert.Equal(-1, user.DepartmentKey);        }
+        [Fact]        public void Register_PasswordMismatch_BadRequest()        {            var accountController = initializeTest();
+            var res = accountController.Register(new RegisterDTO()            {                Username = "NewUser",                Password = "password",                ConfirmPassword = "drowssap",                DepartmentId = DEPARTMENT_ZERO            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<BadRequestObjectResult>(res);        }        [Fact]        public void Register_BlankDTO_BadRequest()        {            var accountController = initializeTest();
+            var res = accountController.Register(new RegisterDTO()            {                Username = "",                Password = "",                ConfirmPassword = ""            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<BadRequestObjectResult>(res);        }        [Fact]        public void Register_NullDTO_BadRequest()        {            var accountController = initializeTest();
+            var res = accountController.Register(null).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<BadRequestObjectResult>(res);        }        #endregion        #region ForgotPassword        [Fact]        public void ForgotPassword_UserExist_Ok()        {            var accountController = initializeTest();
+            var res = accountController.ForgotPassword(new ForgotPasswordDTO()            {                Username = _testContext.MockUsers[ADMIN_DEP_ONE].UserName,                Email = "unittest@giraf.cs.aau.dk"            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<OkObjectResult>(res);        }
+        [Fact]        public void ForgotPassword_UserDoNotExist_Ok()        {            //It might seem contradictory that this should return Ok, but we wish to keep it secret if the username exists or not.            var accountController = initializeTest();
+            var res = accountController.ForgotPassword(new ForgotPasswordDTO()            {                Username = "UserDoNotExist",                Email = "UserDoNotExist@UserDoNotExist.com"            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<OkObjectResult>(res);        }        [Fact]        public void ForgotPassword_NoUsername_BadRequest()        {            var accountController = initializeTest();            var res = accountController.ForgotPassword(new ForgotPasswordDTO()            {                Email = "unittest@giraf.cs.aau.dk"            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<BadRequestObjectResult>(res);        }        [Fact]        public void ForgotPassword_NoEmail_BadRequest()        {            var accountController = initializeTest();
+            var res = accountController.ForgotPassword(new ForgotPasswordDTO()            {                Username = _testContext.MockUsers[ADMIN_DEP_ONE].UserName            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<BadRequestObjectResult>(res);        }        [Fact]        public void ForgotPassword_NullDTO_BadRequest()        {            var accountController = initializeTest();            var res = accountController.ForgotPassword(null).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<BadRequestObjectResult>(res);        }        #endregion        #region SetPassword        [Fact]        public void SetPassword_ValidInput_Ok()        {            var ac = initializeTest();            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);            SetPasswordDTO spDTO = new SetPasswordDTO()            {                NewPassword = "newPassword",                ConfirmPassword = "newPassword"            };
+            var result = ac.SetPassword(spDTO).Result;            if (result is ObjectResult)                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
+            Assert.IsType<OkObjectResult>(result);        }
+        [Fact]        public void ForgotPassword_UserDoNotExist_Ok()        {            //It might seem contradictory that this should return Ok, but we wish to keep it secret if the username exists or not.            var accountController = initializeTest();
+            var res = accountController.ForgotPassword(new ForgotPasswordDTO()            {                Username = "UserDoNotExist",                Email = "UserDoNotExist@UserDoNotExist.com"            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<OkObjectResult>(res);        }        [Fact]        public void ForgotPassword_NoUsername_BadRequest()        {            var accountController = initializeTest();
+            var res = accountController.ForgotPassword(new ForgotPasswordDTO()            {                Email = "unittest@giraf.cs.aau.dk"            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<BadRequestObjectResult>(res);        }        [Fact]        public void ForgotPassword_NoEmail_BadRequest()        {            var accountController = initializeTest();            
+            var res = accountController.ForgotPassword(new ForgotPasswordDTO()            {                Username = _testContext.MockUsers[USER].UserName            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<BadRequestObjectResult>(res);        }        [Fact]        public void ForgotPassword_NullDTO_BadRequest()        {            var accountController = initializeTest();
+            var res = accountController.ForgotPassword(null).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<BadRequestObjectResult>(res);
+        }
+        [Fact]
+        public void ForgotPassword_UserDoNotExist_Ok()
+        {
+            //It might seem contradictory that this should return Ok, but we wish to keep it secret if the username exists or not.
+            var accountController = initializeTest();
+            var res = accountController.ForgotPassword(new ForgotPasswordDTO()
+            {
+                Username = "UserDoNotExist",
+                Email = "UserDoNotExist@UserDoNotExist.com"
+            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<OkObjectResult>(res);
+        }        [Fact]
+        public void ForgotPassword_NoUsername_BadRequest()
+        {
+            var accountController = initializeTest();
+            var res = accountController.ForgotPassword(new ForgotPasswordDTO()
+            {
+                Email = "unittest@giraf.cs.aau.dk"
+            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<BadRequestObjectResult>(res);
+        }        [Fact]
+        public void ForgotPassword_NoEmail_BadRequest()
+        {
+            var accountController = initializeTest();
+            var res = accountController.ForgotPassword(new ForgotPasswordDTO()
+            {
+                Username = _testContext.MockUsers[USER].UserName
+            }).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
+            Assert.IsType<BadRequestObjectResult>(res);
+        }        [Fact]
+        public void ForgotPassword_NullDTO_BadRequest()
+        {
+            var accountController = initializeTest();
             var res = accountController.ForgotPassword(null).Result;            if (res is ObjectResult)                _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
             Assert.IsType<BadRequestObjectResult>(res);
         }
