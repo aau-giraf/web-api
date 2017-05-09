@@ -90,7 +90,7 @@ namespace GirafRest.Controllers
                         .Include(d => d.Members)
                         .FirstOrDefaultAsync();
 
-                    return Ok(dep.Members.Select(m => new GirafUserDTO(m)));
+                    return Ok(dep.Members.Select(m => new GirafUserDTO(m)).ToList());
                 }
             }
 

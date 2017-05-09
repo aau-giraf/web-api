@@ -182,7 +182,7 @@ namespace GirafRest.Test
                                 Members = new List<GirafUser>()
                                 {
                                     MockUsers[1],
-                                    MockUsers[3],
+                                    MockUsers[2],
                                     MockUsers[5]
                                 }
                             }

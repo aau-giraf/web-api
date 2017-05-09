@@ -62,12 +62,12 @@ namespace GirafRest.Test.Controllers
 
             var response = uc.CreateUserIcon().Result;
 
-            if(response is ObjectResult)
+            if (response is ObjectResult)
                 _testLogger.WriteLine((response as ObjectResult).Value.ToString());
 
             Assert.IsType<OkObjectResult>(response);
         }
-        
+
         [Fact]
         public void CreateUserIcon_ExistingIcon_BadRequest()
         {
@@ -79,12 +79,12 @@ namespace GirafRest.Test.Controllers
 
             var response = uc.CreateUserIcon().Result;
 
-            if(response is ObjectResult)
+            if (response is ObjectResult)
                 _testLogger.WriteLine((response as ObjectResult).Value.ToString());
 
             Assert.IsType<BadRequestObjectResult>(response);
         }
-        
+
         [Fact]
         public void UpdateUserIcon_ExistingIcon_Ok()
         {
@@ -96,12 +96,12 @@ namespace GirafRest.Test.Controllers
 
             var response = uc.UpdateUserIcon().Result;
 
-            if(response is ObjectResult)
+            if (response is ObjectResult)
                 _testLogger.WriteLine((response as ObjectResult).Value.ToString());
 
             Assert.IsType<OkObjectResult>(response);
         }
-        
+
         [Fact]
         public void UpdateUserIcon_NoIcon_BadRequest()
         {
@@ -111,12 +111,12 @@ namespace GirafRest.Test.Controllers
 
             var response = uc.UpdateUserIcon().Result;
 
-            if(response is ObjectResult)
+            if (response is ObjectResult)
                 _testLogger.WriteLine((response as ObjectResult).Value.ToString());
 
             Assert.IsType<BadRequestObjectResult>(response);
         }
-        
+
         [Fact]
         public void DeleteUserIcon_ExistingIcon_Ok()
         {
@@ -127,12 +127,12 @@ namespace GirafRest.Test.Controllers
 
             var response = uc.DeleteUserIcon().Result;
 
-            if(response is ObjectResult)
+            if (response is ObjectResult)
                 _testLogger.WriteLine((response as ObjectResult).Value.ToString());
 
             Assert.IsType<OkObjectResult>(response);
         }
-        
+
         [Fact]
         public void DeleteUserIcon_NoIcon_BadRequest()
         {
@@ -141,7 +141,7 @@ namespace GirafRest.Test.Controllers
 
             var response = uc.DeleteUserIcon().Result;
 
-            if(response is ObjectResult)
+            if (response is ObjectResult)
                 _testLogger.WriteLine((response as ObjectResult).Value.ToString());
             Assert.IsType<BadRequestObjectResult>(response);
         }
@@ -160,8 +160,8 @@ namespace GirafRest.Test.Controllers
 
             Assert.IsType<OkObjectResult>(result);
         }
-        
-        [Fact(Skip = "Not fully implemented!")]
+
+        [Fact]
         public void GetUser_GuardianLogin_OkListOfUsersInDepartmentAndGuardiansInfo()
         {
             var uc = initializeTest();
@@ -170,11 +170,9 @@ namespace GirafRest.Test.Controllers
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            /*
+            
             Assert.IsType<OkObjectResult>(result);
             Assert.IsType<List<GirafUserDTO>>((result as ObjectResult).Value);
-            */
         }
 
         [Fact]
@@ -406,7 +404,7 @@ namespace GirafRest.Test.Controllers
                 Id = NEW_APPLICATION_ID
             };
             var username = _testContext.MockUsers[CITIZEN_DEP_TWO].UserName;
-            
+
             var result = uc.DeleteApplication(username, ao).Result;
 
             if (result is ObjectResult)
