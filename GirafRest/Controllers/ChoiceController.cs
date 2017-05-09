@@ -122,7 +122,7 @@ namespace GirafRest.Controllers
         /// NotFound, if there is no choice with the specified id or the list of options contains an invalid pictogram id,
         /// or Ok and the updated choice.</returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateChoiceInfo(long id, [FromBody] ChoiceDTO choice)
+        public async Task<IActionResult> UpdateChoice(long id, [FromBody] ChoiceDTO choice)
         {
             //Attempt to find the target choice.
             Choice _choice;

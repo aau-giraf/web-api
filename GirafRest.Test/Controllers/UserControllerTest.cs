@@ -22,13 +22,14 @@ namespace GirafRest.Test.Controllers
         private readonly string PNG_FILEPATH;
         private const string CITIZEN_USERNAME = "Citizen of dep 2";
 
+        private const int NEW_APPLICATION_ID = 1;
         private const int ADMIN_DEP_ONE = 0;
         private const int GUARDIAN_DEP_TWO = 1;
         private const int CITIZEN_DEP_TWO = 2;
         private const int CITIZEN_DEP_THREE = 3;
+        private const int PUBLIC_PICTOGRAM = 0;
         private const int GUARDIAN_PRIVATE_PICTOGRAM = 4;
         private const int GUARDIAN_PROTECTED_PICTOGRAM = 6;
-        private const int PUBLIC_PICTOGRAM = 0;
 
         public UserControllerTest(ITestOutputHelper testLogger)
         {
@@ -144,9 +145,10 @@ namespace GirafRest.Test.Controllers
                 _testLogger.WriteLine((response as ObjectResult).Value.ToString());
             Assert.IsType<BadRequestObjectResult>(response);
         }
-        
+
         #endregion
-        public void GetUser_OrdinaryUser_OkUserInformation()
+        #region GetUser
+        public void GetUser_CitizenLogin_OkUserInfo()
         {
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_TWO]);
@@ -159,8 +161,8 @@ namespace GirafRest.Test.Controllers
             Assert.IsType<OkObjectResult>(result);
         }
         
-        [Fact]
-        public void GetUser_Guardian_OkListOfUsersInDepartment()
+        [Fact(Skip = "Not fully implemented!")]
+        public void GetUser_GuardianLogin_OkListOfUsersInDepartmentAndGuardiansInfo()
         {
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
@@ -176,7 +178,7 @@ namespace GirafRest.Test.Controllers
         }
 
         [Fact]
-        public void GetUser_GuardianUsernameInDep_Ok()
+        public void GetUser_GuardianLoginUsernameInDep_Ok()
         {
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
@@ -192,7 +194,7 @@ namespace GirafRest.Test.Controllers
 
 
         [Fact]
-        public void GetUser_GuardianUsernameNotInDep_NotFound()
+        public void GetUser_GuardianLoginUsernameNotInDep_NotFound()
         {
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
@@ -208,7 +210,7 @@ namespace GirafRest.Test.Controllers
 
 
         [Fact]
-        public void GetUser_AdminUsernameQuery_Ok()
+        public void GetUser_AdminLoginUsernameQuery_Ok()
         {
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -224,7 +226,7 @@ namespace GirafRest.Test.Controllers
 
 
         [Fact]
-        public void GetUser_AdminInvalidUsername_NotFound()
+        public void GetUser_AdminLoginInvalidUsername_NotFound()
         {
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
@@ -240,7 +242,7 @@ namespace GirafRest.Test.Controllers
 
 
         [Fact]
-        public void GetUser_CitizenUsernameQuery_NotFound()
+        public void GetUser_CitizenLoginUsernameQuery_NotFound()
         {
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_TWO]);
@@ -253,9 +255,12 @@ namespace GirafRest.Test.Controllers
 
             Assert.IsType<NotFoundResult>(result);
         }
-
+        #endregion
+        #region UpdateUser | Not implmented yet!
+        #endregion
+        #region AddApplication
         [Fact]
-        public void AddApplication_ValidApplicatoin_OkAppInList()
+        public void AddApplication_ValidApplication_OkAppInList()
         {
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
@@ -368,16 +373,16 @@ namespace GirafRest.Test.Controllers
 
             Assert.IsType<BadRequestObjectResult>(result);
         }
-
-
+        #endregion
+        #region DeleteApplication
         [Fact]
-        public void RenoveApplication_ValidApplicationInList_Ok()
+        public void DeleteApplication_ValidApplicationInList_Ok()
         {
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             var ao = new ApplicationOption("Test Application", "test.app")
             {
-                Id = 1
+                Id = NEW_APPLICATION_ID
             };
             var username = _testContext.MockUsers[CITIZEN_DEP_TWO].UserName;
             uc.AddApplication(username, ao);
@@ -392,13 +397,13 @@ namespace GirafRest.Test.Controllers
 
 
         [Fact]
-        public void RemoveApplication_ValidApplicationNotInList_NotFound()
+        public void DeleteApplication_ValidApplicationNotInList_NotFound()
         {
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             var ao = new ApplicationOption("Test Application", "test.app")
             {
-                Id = 1
+                Id = NEW_APPLICATION_ID
             };
             var username = _testContext.MockUsers[CITIZEN_DEP_TWO].UserName;
             
@@ -412,19 +417,19 @@ namespace GirafRest.Test.Controllers
 
 
         [Fact]
-        public void RemoveApplication_NoIdOnDTO_NotFound()
+        public void DeleteApplication_NoIdOnDTO_NotFound()
         {
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             var ao = new ApplicationOption("Test Application", "test.app")
             {
-                Id = 1
+                Id = NEW_APPLICATION_ID
             };
             var username = _testContext.MockUsers[CITIZEN_DEP_TWO].UserName;
             uc.AddApplication(username, ao);
             ao = new ApplicationOption("Test Application", "test.app")
             {
-                Id = -1
+                Id = -NEW_APPLICATION_ID
             };
 
             var result = uc.DeleteApplication(username, ao).Result;
@@ -437,13 +442,13 @@ namespace GirafRest.Test.Controllers
 
 
         [Fact]
-        public void RemoveApplication_NullAsApplication_BadRequest()
+        public void DeleteApplication_NullAsApplication_BadRequest()
         {
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             var ao = new ApplicationOption("Test Application", "test.app")
             {
-                Id = 1
+                Id = NEW_APPLICATION_ID
             };
             var username = _testContext.MockUsers[CITIZEN_DEP_TWO].UserName;
             uc.AddApplication(username, ao);
@@ -458,13 +463,13 @@ namespace GirafRest.Test.Controllers
 
 
         [Fact]
-        public void RemoveApplication_InvalidUsername_NotFound()
+        public void DeleteApplication_InvalidUsername_NotFound()
         {
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             var ao = new ApplicationOption("Test Application", "test.app")
             {
-                Id = 1
+                Id = NEW_APPLICATION_ID
             };
             var username = _testContext.MockUsers[CITIZEN_DEP_TWO].UserName;
             uc.AddApplication("INVALID USERNAME", ao);
@@ -478,13 +483,13 @@ namespace GirafRest.Test.Controllers
         }
 
         [Fact]
-        public void RemoveApplication_NullUsername_NotFound()
+        public void DeleteApplication_NullUsername_NotFound()
         {
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             var ao = new ApplicationOption("Test Application", "test.app")
             {
-                Id = 1
+                Id = NEW_APPLICATION_ID
             };
             var username = _testContext.MockUsers[CITIZEN_DEP_TWO].UserName;
             uc.AddApplication(null, ao);
@@ -496,7 +501,8 @@ namespace GirafRest.Test.Controllers
 
             Assert.IsType<BadRequestObjectResult>(result);
         }
-
+        #endregion
+        #region UpdateDisplayName
         [Fact]
         public void UpdateDisplayName_ValidStringInput_Ok()
         {
@@ -543,10 +549,10 @@ namespace GirafRest.Test.Controllers
 
             Assert.IsType<BadRequestObjectResult>(result);
         }
-
-
+        #endregion
+        #region AddUserResource
         [Fact]
-        public void AddResource_OwnPrivateValidUser_Ok()
+        public void AddUserResource_OwnPrivateValidUser_Ok()
         {
             var uc = initializeTest();
             string targetUser = _testContext.MockUsers[CITIZEN_DEP_TWO].UserName;
@@ -562,7 +568,7 @@ namespace GirafRest.Test.Controllers
 
 
         [Fact]
-        public void AddResource_OwnPrivateInvalidUser_NotFound()
+        public void AddUserResource_OwnPrivateInvalidUser_NotFound()
         {
             var uc = initializeTest();
             string targetUser = "INVALID";
@@ -578,7 +584,7 @@ namespace GirafRest.Test.Controllers
 
 
         [Fact]
-        public void AddResource_OwnProtectedValidUser_BadRequest()
+        public void AddUserResource_OwnProtectedValidUser_BadRequest()
         {
             var uc = initializeTest();
             string targetUser = _testContext.MockUsers[CITIZEN_DEP_THREE].UserName;
@@ -594,7 +600,7 @@ namespace GirafRest.Test.Controllers
 
 
         [Fact]
-        public void AddResource_OwnProtectedInvalidUser_NotFound()
+        public void AddUserResource_OwnProtectedInvalidUser_NotFound()
         {
             var uc = initializeTest();
             string targetUser = "INVALID";
@@ -610,7 +616,7 @@ namespace GirafRest.Test.Controllers
 
 
         [Fact]
-        public void AddResource_AnotherProtectedValidUser_BadRequest()
+        public void AddUserResource_AnotherProtectedValidUser_BadRequest()
         {
             var uc = initializeTest();
             string targetUser = _testContext.MockUsers[CITIZEN_DEP_TWO].UserName;
@@ -626,7 +632,7 @@ namespace GirafRest.Test.Controllers
 
 
         [Fact]
-        public void AddResource_AnotherProtectedInvalidUser_BadRequest()
+        public void AddUserResource_AnotherProtectedInvalidUser_BadRequest()
         {
             var uc = initializeTest();
             string targetUser = "INVALID";
@@ -642,7 +648,7 @@ namespace GirafRest.Test.Controllers
 
 
         [Fact]
-        public void AddResource_PublicValidUser_BadRequest()
+        public void AddUserResource_PublicValidUser_BadRequest()
         {
             var uc = initializeTest();
             string targetUser = _testContext.MockUsers[GUARDIAN_DEP_TWO].UserName;
@@ -658,7 +664,7 @@ namespace GirafRest.Test.Controllers
 
 
         [Fact]
-        public void AddResource_PublicInvalidUser_NotFound()
+        public void AddUserResource_PublicInvalidUser_NotFound()
         {
             var uc = initializeTest();
             string targetUser = "INVALID";
@@ -674,7 +680,7 @@ namespace GirafRest.Test.Controllers
 
 
         [Fact]
-        public void AddResource_AnotherPrivateValidUser_Unauthorized()
+        public void AddUserResource_AnotherPrivateValidUser_Unauthorized()
         {
             var uc = initializeTest();
             string targetUser = _testContext.MockUsers[GUARDIAN_DEP_TWO].UserName;
@@ -690,7 +696,7 @@ namespace GirafRest.Test.Controllers
 
 
         [Fact]
-        public void AddResource_AnotherPrivateInvalidUser_Unauthorized()
+        public void AddUserResource_AnotherPrivateInvalidUser_Unauthorized()
         {
             var uc = initializeTest();
             string targetUser = "INVALID";
@@ -703,8 +709,10 @@ namespace GirafRest.Test.Controllers
 
             Assert.IsType<UnauthorizedResult>(result);
         }
-
-
+        #endregion
+        #region DeleteResource | Not implemented yet!
+        #endregion
+        #region ToggleGrayscale
         [Fact]
         public void ToggleGrayscale_True_GrayscaleIsTrue()
         {
@@ -734,7 +742,8 @@ namespace GirafRest.Test.Controllers
             Assert.IsType<OkObjectResult>(result);
             Assert.True(!_testContext.MockUsers[CITIZEN_DEP_TWO].LauncherOptions.UseGrayscale);
         }
-
+        #endregion
+        #region ToggleAnimations
         [Fact]
         public void ToggleAnimations_True_AnimationsIsTrue()
         {
@@ -764,6 +773,7 @@ namespace GirafRest.Test.Controllers
             Assert.IsType<OkObjectResult>(result);
             Assert.True(!_testContext.MockUsers[CITIZEN_DEP_TWO].LauncherOptions.DisplayLauncherAnimations);
         }
+        #endregion
     }
 
 }

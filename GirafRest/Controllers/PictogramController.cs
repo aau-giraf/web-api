@@ -34,6 +34,7 @@ namespace GirafRest.Controllers
             _giraf._logger = lFactory.CreateLogger("Pictogram");
         }
 
+        #region PictogramHandling
         /// <summary>
         /// Get all public <see cref="Pictogram"/> pictograms available to the user
         /// (i.e the public pictograms and those owned by the user (PRIVATE) and his department (PROTECTED)).
@@ -187,7 +188,7 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
             return Ok();
         }
-
+        #endregion
         #region ImageHandling
         /// <summary>
         /// Upload an image for the <see cref="Pictogram"/> pictogram with the given id.

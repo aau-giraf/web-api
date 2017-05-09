@@ -2,9 +2,7 @@
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Test.Mocks;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Moq;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -45,8 +43,9 @@ namespace GirafRest.Test
             return cc;
         }
 
+        #region ReadChoice
         [Fact]
-        public void GetExistingPublic_NoLogin_ExpectOK()
+        public void ReadChoice_NoLoginGetPublic_OK()
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
@@ -55,7 +54,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void GetExistingPublic_Login_ExpectOK()
+        public void ReadChoice_LoginGetPublic_OK()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -65,7 +64,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void GetExistingPrivate_NoLogin_ExpectUnauthorized()
+        public void ReadChoice_NoLoginGetPrivate_Unauthorized()
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
@@ -74,7 +73,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void GetExistingPrivate_Login_ExpectOK()
+        public void ReadChoice_LoginGetPrivate_OK()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -84,7 +83,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void GetExistingPrivate_OtherLogin_ExpectUnauthorized()
+        public void ReadChoice_OtherLoginGetPrivate_Unauthorized()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
@@ -93,7 +92,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void GetExistingProtected_NoLogin_ExpectUnauthorized()
+        public void ReadChoice_NoLoginGetProtected_Unauthorized()
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
@@ -102,7 +101,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void GetExistingProtected_Login_ExpectOK()
+        public void ReadChoice_LoginGetProtected_OK()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -112,7 +111,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void GetExistingProtected_OtherLogin_ExpectUnauthorized()
+        public void ReadChoice_OtherLoginGetProtected_Unauthorized()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
@@ -121,7 +120,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void GetNonExisting_NoLogin_ExpectNotFound()
+        public void ReadChoice_NoLoginGetNonExisting_NotFound()
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
@@ -130,16 +129,18 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void GetNonExisting_Login_ExpectNotFound()
+        public void ReadChoice_LoginGetNonExisting_NotFound()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = choiceController.ReadChoice(NONEXISTING);
             Assert.IsType<NotFoundResult>(res.Result);
         }
+        #endregion
 
+        #region CreateChoice
         [Fact]
-        public void CreatePublic_NoLogin_ExpectOk()
+        public void CreateChoice_NoLoginCreatePublic_Ok()
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
@@ -149,7 +150,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void CreatePublic_Login_ExpectOk()
+        public void CreateChoice_LoginCreatePublic_Ok()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -162,7 +163,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void CreatePrivate_NoLogin_ExpectUnauthorized()
+        public void CreateChoice_NoLoginCreatePrivate_Unauthorized()
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
@@ -172,7 +173,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void CreatePrivate_Login_ExpectOk()
+        public void CreateChoice_LoginCreatePrivate_Ok()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -182,7 +183,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void CreatePrivate_OtherLogin_ExpectUnauthorized()
+        public void CreateChoice_OtherLoginCreatePrivate_Unauthorized()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
@@ -190,9 +191,11 @@ namespace GirafRest.Test
             var res = choiceController.CreateChoice(new ChoiceDTO(new Choice(options) { Id = CREATE_CHOICE_ID }));
             Assert.IsType<UnauthorizedResult>(res.Result);
         }
+        #endregion
 
+        #region UpdateChoice
         [Fact]
-        public void Update_ExistingPublic_NoLogin_ExpectOk()
+        public void UpdateChoice_NoLoginUpdatePublic_Ok()
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
@@ -203,12 +206,12 @@ namespace GirafRest.Test
             }
             c.Clear();
             c.AddAll(_testContext.MockPictograms.Cast<Pictogram>().Where(p => p.AccessLevel == AccessLevel.PUBLIC).Take(TWO).ToList());
-            var res = cc.UpdateChoiceInfo(c.Id, new ChoiceDTO(c));
+            var res = cc.UpdateChoice(c.Id, new ChoiceDTO(c));
             Assert.IsType<OkObjectResult>(res.Result);
         }
 
         [Fact]
-        public void Update_ExistingPublic_Login_ExpectOk()
+        public void UpdateChoice_LoginUpdatePublic_Ok()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -219,12 +222,12 @@ namespace GirafRest.Test
             }
             c.Clear();
             c.AddAll(_testContext.MockPictograms.Cast<Pictogram>().Where(p => p.AccessLevel == AccessLevel.PUBLIC).Take(TWO).ToList());
-            var res = choiceController.UpdateChoiceInfo(c.Id, new ChoiceDTO(c));
+            var res = choiceController.UpdateChoice(c.Id, new ChoiceDTO(c));
             Assert.IsType<OkObjectResult>(res.Result);
         }
 
         [Fact]
-        public void Update_ExistingPrivate_NoLogin_ExpectUnauthorized()
+        public void UpdateChoice_NoLoginUpdatePrivate_Unauthorized()
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
@@ -235,12 +238,12 @@ namespace GirafRest.Test
             }
             c.Clear();
             c.AddAll(_testContext.MockPictograms.Cast<Pictogram>().Where(p => p.AccessLevel == AccessLevel.PUBLIC).Take(TWO).ToList());
-            var res = cc.UpdateChoiceInfo(c.Id, new ChoiceDTO(c));
+            var res = cc.UpdateChoice(c.Id, new ChoiceDTO(c));
             Assert.IsType<UnauthorizedResult>(res.Result);
         }
 
         [Fact]
-        public void Update_ExistingPrivate_Login_ExpectOk()
+        public void UpdateChoice_LoginUpdatePrivate_Ok()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -251,13 +254,13 @@ namespace GirafRest.Test
             }
             c.Clear();
             c.AddAll(_testContext.MockPictograms.Cast<Pictogram>().Where(p => p.AccessLevel == AccessLevel.PUBLIC).Take(TWO).ToList());
-            var res = choiceController.UpdateChoiceInfo(c.Id, new ChoiceDTO(c));
+            var res = choiceController.UpdateChoice(c.Id, new ChoiceDTO(c));
             Assert.IsType<OkObjectResult>(res.Result);
         }
 
 
         [Fact]
-        public void Update_ExistingPrivate_OtherLogin_ExpectUnauthorized()
+        public void UpdateChoice_OtherLoginUpdatePrivate_Unauthorized()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
@@ -268,12 +271,12 @@ namespace GirafRest.Test
             }
             c.Clear();
             c.AddAll(_testContext.MockPictograms.Cast<Pictogram>().Where(p => p.AccessLevel == AccessLevel.PUBLIC).Take(TWO).ToList());
-            var res = choiceController.UpdateChoiceInfo(c.Id, new ChoiceDTO(c));
+            var res = choiceController.UpdateChoice(c.Id, new ChoiceDTO(c));
             Assert.IsType<UnauthorizedResult>(res.Result);
         }
 
         [Fact]
-        public void Update_ExistingProtected_NoLogin_ExpectUnauthorized()
+        public void UpdateChoice_NoLoginUpdateProtected_Unauthorized()
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
@@ -284,12 +287,12 @@ namespace GirafRest.Test
             }
             c.Clear();
             c.AddAll(_testContext.MockPictograms.Cast<Pictogram>().Where(p => p.AccessLevel == AccessLevel.PUBLIC).Take(TWO).ToList());
-            var res = cc.UpdateChoiceInfo(c.Id, new ChoiceDTO(c));
+            var res = cc.UpdateChoice(c.Id, new ChoiceDTO(c));
             Assert.IsType<UnauthorizedResult>(res.Result);
         }
 
         [Fact]
-        public void Update_ExistingProtected_Login_ExpectOk()
+        public void UpdateChoice_LoginUpdateProtected_Ok()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -300,12 +303,12 @@ namespace GirafRest.Test
             }
             c.Clear();
             c.AddAll(_testContext.MockPictograms.Cast<Pictogram>().Where(p => p.AccessLevel == AccessLevel.PUBLIC).Take(TWO).ToList());
-            var res = choiceController.UpdateChoiceInfo(c.Id, new ChoiceDTO(c));
+            var res = choiceController.UpdateChoice(c.Id, new ChoiceDTO(c));
             Assert.IsType<OkObjectResult>(res.Result);
         }
 
         [Fact]
-        public void Update_ExistingProtected_OtherLogin_ExpectUnauthorized()
+        public void UpdateChoice_OtherLoginUpdateProtected_Unauthorized()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
@@ -316,23 +319,23 @@ namespace GirafRest.Test
             }
             c.Clear();
             c.AddAll(_testContext.MockPictograms.Cast<Pictogram>().Where(p => p.AccessLevel == AccessLevel.PUBLIC).Take(TWO).ToList());
-            var res = choiceController.UpdateChoiceInfo(c.Id, new ChoiceDTO(c));
+            var res = choiceController.UpdateChoice(c.Id, new ChoiceDTO(c));
             Assert.IsType<UnauthorizedResult>(res.Result);
         }
 
         [Fact]
-        public void Update_NonExisting_NoLogin_ExpectNotFound()
+        public void UpdateChoice_NoLoginUpdateNonExisting_NotFound()
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
             Choice c = new Choice(new List<Pictogram>()) { Id = NONEXISTING };
             c.AddAll(_testContext.MockPictograms.Cast<Pictogram>().Where(p => p.AccessLevel == AccessLevel.PUBLIC).Take(TWO).ToList());
-            var res = cc.UpdateChoiceInfo(c.Id, new ChoiceDTO(c));
+            var res = cc.UpdateChoice(c.Id, new ChoiceDTO(c));
             Assert.IsType<NotFoundObjectResult>(res.Result);
         }
 
         [Fact]
-        public void Update_NonExisting_Login_ExpectNotFound()
+        public void UpdateChoice_LoginUpdateNonExisting_NotFound()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -342,98 +345,93 @@ namespace GirafRest.Test
                 .Where(p => p.AccessLevel == AccessLevel.PUBLIC)
                 .Take(TWO)
                 .ToList());
-            var res = choiceController.UpdateChoiceInfo(c.Id, new ChoiceDTO(c));
+            var res = choiceController.UpdateChoice(c.Id, new ChoiceDTO(c));
             Assert.IsType<NotFoundObjectResult>(res.Result);
         }
+        #endregion
 
-        [Fact]
-        public void DeleteExistingPublic_NoLogin_ExpectOk()
+        #region DeleteChoice | Work as intented with the exception of the authorize attribute
+        // ASP.NET inforces this attribute and some tests should therefore be changed to Unauthorized
+        // if a Mock version of this attribute is made
+        public void DeleteChoice_NoLoginDeletePublic_Ok()
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
             var res = cc.DeleteChoice(_testContext.MockChoices[PUBLIC_CHOICE].Id);
             Assert.IsType<OkResult>(res.Result);
         }
-
-        [Fact]
-        public void DeleteExistingPublic_Login_ExpectOk()
+        
+        public void DeleteChoice_LoginDeletePublic_Ok()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = choiceController.DeleteChoice(_testContext.MockChoices[PUBLIC_CHOICE].Id);
             Assert.IsType<OkResult>(res.Result);
         }
-
-        [Fact]
-        public void DeleteExistingPrivate_NoLogin_ExpectUnauthorized()
+        
+        public void DeleteChoice_NoLoginDeletePrivate_Unauthorized()
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
             var res = cc.DeleteChoice(_testContext.MockChoices[PRIVATE_CHOICE].Id);
             Assert.IsType<UnauthorizedResult>(res.Result);
         }
-
-        [Fact]
-        public void DeleteExistingPrivate_Login_ExpectOk()
+        
+        public void DeleteChoice_LoginDeletePrivate_Ok()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = choiceController.DeleteChoice(_testContext.MockChoices[PRIVATE_CHOICE].Id);
             Assert.IsType<OkResult>(res.Result);
         }
-
-        [Fact]
-        public void DeleteExistingPrivate_OtherLogin_ExpectUnauthorized()
+        
+        public void DeleteChoice_OtherLoginDeletePrivate_Unauthorized()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             var res = choiceController.DeleteChoice(_testContext.MockChoices[PRIVATE_CHOICE].Id);
             Assert.IsType<UnauthorizedResult>(res.Result);
         }
-
-        [Fact]
-        public void DeleteExistingProtected_NoLogin_ExpectUnauthorized()
+        
+        public void DeleteChoice_NoLoginDeleteProtected_Unauthorized()
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
             var res = cc.DeleteChoice(_testContext.MockChoices[PROTECTED_CHOICE].Id);
             Assert.IsType<UnauthorizedResult>(res.Result);
         }
-
-        [Fact]
-        public void DeleteExistingProtected_Login_ExpectOk()
+        
+        public void DeleteChoice_LoginDeleteProtected_Ok()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = choiceController.DeleteChoice(_testContext.MockChoices[PROTECTED_CHOICE].Id);
             Assert.IsType<OkResult>(res.Result);
         }
-
-        [Fact]
-        public void DeleteExistingProtected_OtherLogin_ExpectUnauthorized()
+        
+        public void DeleteChoice_OtherLoginDeleteProtected_Unauthorized()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             var res = choiceController.DeleteChoice(_testContext.MockChoices[PROTECTED_CHOICE].Id);
             Assert.IsType<UnauthorizedResult>(res.Result);
         }
-
-        [Fact]
-        public void DeleteNonExisting_NoLogin_ExpectNotFound()
+        
+        public void DeleteChoice_NoLoginDeleteNonExisting_NotFound()
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
             var res = cc.DeleteChoice(NONEXISTING);
             Assert.IsType<NotFoundResult>(res.Result);
         }
-
-        [Fact]
-        public void DeleteNonExisting_Login_ExpectNotFound()
+        
+        public void DeleteChoice_LoginDeleteNonExisting_NotFound()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = choiceController.DeleteChoice(NONEXISTING);
             Assert.IsType<NotFoundResult>(res.Result);
         }
+        #endregion
     }
 }

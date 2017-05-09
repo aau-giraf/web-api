@@ -21,9 +21,9 @@ namespace GirafRest.Test
         private readonly ITestOutputHelper _testLogger;
         private TestContext _testContext;
 
-        private const int USER = 0;
-        private const int OTHER_USER = 1;
-        private const int NO_WEEK_USER = 2;
+        private const int ADMIN_DEP_ONE = 0;
+        private const int GUARDIAN_DEP_TWO = 1;
+        private const int CITEZEN_DEP_THREE = 3; // Have no week
         private const int WEEK_ZERO = 0;
         private const int DAY_ZERO = 0;
         private const int NONEXISTING = 999;
@@ -45,162 +45,218 @@ namespace GirafRest.Test
             return wc;
         }
 
+        #region ReadWeekSchedules
         [Fact]
-        public void AccessUserWeeks_Expect200OK()
+        public void ReadWeekSchedules_AccessUsersWeeks_Ok()
         {
             var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
 
             var res = wc.ReadWeekSchedules();
             IActionResult aRes = res.Result;
 
             Assert.IsType<OkObjectResult>(aRes);
-        }        
-       
-       [Fact]
-        public void AccessSpecificUserWeek_Expect200OK()
+        }
+
+        [Fact]
+        public void ReadWeekSchedules_AccessUsersWeeksNoWeeksExist_NotFound()
         {
             var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
+            _testContext.MockUsers[CITEZEN_DEP_THREE].WeekSchedule.Clear();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITEZEN_DEP_THREE]);
+
+            var res = wc.ReadWeekSchedules();
+            IActionResult aRes = res.Result;
+
+            Assert.IsType<NotFoundResult>(aRes);
+        }
+        #endregion
+        #region ReadWeekSchedule(id)
+        [Fact]
+        public void ReadWeekSchedules_AccessValidUsersSpecificWeek_Ok()
+        {
+            var wc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
 
             var res = wc.ReadUsersWeekSchedule(WEEK_ZERO);
             IActionResult aRes = res.Result;
             
             Assert.IsType<OkObjectResult>(aRes);
         }
-        
+
         [Fact]
-        public void UpdateDayInWeek_Expect200OK()
+        public void ReadWeekSchedules_AccessValidUsersSpecificWeekNoWeekExist_NotFound()
         {
             var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
-            var day = _testContext.MockUsers[OTHER_USER].WeekSchedule.First().Weekdays.First();
-            var tempWeek = _testContext.MockUsers[USER].WeekSchedule;
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITEZEN_DEP_THREE]);
+
+            var res = wc.ReadUsersWeekSchedule(NONEXISTING);
+            IActionResult aRes = res.Result;
+
+            Assert.IsType<NotFoundResult>(aRes);
+        }
+        #endregion
+        #region UpdateDay
+        [Fact]
+        public void UpdateDay_InExistingWeek_Ok()
+        {
+            var wc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var day = _testContext.MockUsers[GUARDIAN_DEP_TWO].WeekSchedule.First().Weekdays.First();
+            var tempWeek = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule;
             
             var res = wc.UpdateDay(DAY_ZERO, new WeekdayDTO(day));
             IActionResult aRes = res.Result;
 
             Assert.IsType<OkObjectResult>(aRes);
-            _testContext.MockUsers[USER].WeekSchedule = tempWeek;
+            _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule = tempWeek;
         }
 
-
         [Fact]
-        public void UpdateWeek_Expect200OK()
+        public void UpdateDay_InNonExistingWeek_NotFound()
         {
             var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
-            var week = _testContext.MockUsers[OTHER_USER].WeekSchedule.First();
-            var tempWeek = _testContext.MockUsers[USER].WeekSchedule;
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var day = _testContext.MockUsers[GUARDIAN_DEP_TWO].WeekSchedule.First().Weekdays.First();
+            var tempWeek = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule;
+
+            var res = wc.UpdateDay(NONEXISTING, new WeekdayDTO(day));
+            IActionResult aRes = res.Result;
+
+            Assert.IsType<NotFoundResult>(aRes);
+            _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule = tempWeek;
+        }
+
+        [Fact]
+        public void UpdateDay_InExistingWeekNullDTO_NotFound()
+        {
+            var wc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+
+            var res = wc.UpdateDay(DAY_ZERO, null);
+            IActionResult aRes = res.Result;
+
+            Assert.IsType<BadRequestObjectResult>(aRes);
+        }
+        #endregion
+        #region UpdateWeek
+        [Fact]
+        public void UpdateWeek_ValidWeekValidDTO_Ok()
+        {
+            var wc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var week = _testContext.MockUsers[GUARDIAN_DEP_TWO].WeekSchedule.First();
+            var tempWeek = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule;
 
             var res = wc.UpdateWeek(WEEK_ZERO, new WeekDTO(week));
             IActionResult aRes = res.Result;
 
             Assert.IsType<OkObjectResult>(aRes);
 
-            _testContext.MockUsers[USER].WeekSchedule = tempWeek;
+            _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule = tempWeek;
         }
 
         [Fact]
-        public void CreateWeek_Expect200OK()
+        public void UpdateWeek_InvalidWeekValidDTO_NotFound()
         {
             var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
-            var week = _testContext.MockUsers[OTHER_USER].WeekSchedule.First();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var week = _testContext.MockUsers[GUARDIAN_DEP_TWO].WeekSchedule.First();
+            var tempWeek = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule;
 
-            var res = wc.CreateWeek(new WeekDTO(week));
+            var res = wc.UpdateWeek(NONEXISTING, new WeekDTO(week));
+            IActionResult aRes = res.Result;
+
+            Assert.IsType<NotFoundResult>(aRes);
+
+            _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule = tempWeek;
+        }
+
+        [Fact(Skip = "Not implmented yet!")]
+        public void UpdateWeek_ValidWeekInvalidDTO_BadRequest()
+        {
+            var wc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var week = _testContext.MockUsers[GUARDIAN_DEP_TWO].WeekSchedule.First();
+            var tempWeek = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule;
+
+            var res = wc.UpdateWeek(WEEK_ZERO, new WeekDTO(week));
             IActionResult aRes = res.Result;
 
             Assert.IsType<OkObjectResult>(aRes);
 
-            _testContext.MockUsers[USER].WeekSchedule.Remove(_testContext.MockUsers[USER].WeekSchedule.Last());
+            _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule = tempWeek;
         }
 
         [Fact]
-        public void AccessEmptyUserWeeks_ExpectNotFound()
+        public void UpdateWeek_ValidWeekNullDTO_BadRequest()
         {
             var wc = initializeTest();
-            _testContext.MockUsers[NO_WEEK_USER].WeekSchedule.Clear();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[NO_WEEK_USER]);
-
-            var res = wc.ReadWeekSchedules();
-            IActionResult aRes = res.Result;
-
-            Assert.IsType<NotFoundResult>(aRes);
-        }        
-       
-       [Fact]
-        public void AccessSpecificEmptyUserWeek_ExpectNotFound()
-        {
-            var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[NO_WEEK_USER]);
-
-            var res = wc.ReadUsersWeekSchedule(NONEXISTING);
-            IActionResult aRes = res.Result;
-            
-            Assert.IsType<NotFoundResult>(aRes);
-        }
-        
-        [Fact]
-        public void UpdateDayInWeekWithNull_ExpectBadRequest()
-        {
-            var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
-            
-            var res = wc.UpdateDay(DAY_ZERO, null);
-            IActionResult aRes = res.Result;
-
-            Assert.IsType<BadRequestObjectResult>(aRes);
-        }
-
-        [Fact]
-        public void UpdateWeekWithNull_ExpectBadRequest()
-        {
-            var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
 
             var res = wc.UpdateWeek(WEEK_ZERO, null);
             IActionResult aRes = res.Result;
 
             Assert.IsType<BadRequestObjectResult>(aRes);
         }
-
+        #endregion
+        #region CreateWeek
         [Fact]
-        public void CreateWeekWithNull_ExpectBadRequest()
+        public void CreateWeek_NewWeekValidDTO_Ok()
         {
             var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var week = _testContext.MockUsers[GUARDIAN_DEP_TWO].WeekSchedule.First();
+
+            var res = wc.CreateWeek(new WeekDTO(week));
+            IActionResult aRes = res.Result;
+
+            Assert.IsType<OkObjectResult>(aRes);
+
+            _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Remove(_testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Last());
+        }
+
+        [Fact(Skip = "Not implented yet!")]
+        public void CreateWeek_ExistingWeekValidDTO_BadRequest()
+        {
+            var wc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var week = _testContext.MockUsers[GUARDIAN_DEP_TWO].WeekSchedule.First();
+
+            var res = wc.CreateWeek(new WeekDTO(week));
+            IActionResult aRes = res.Result;
+
+            Assert.IsType<OkObjectResult>(aRes);
+
+            _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Remove(_testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Last());
+        }
+
+        [Fact(Skip = "Not implemented yet!")]
+        public void CreateWeek_NewWeekInvalidDTO_BadRequest()
+        {
+            var wc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var week = _testContext.MockUsers[GUARDIAN_DEP_TWO].WeekSchedule.First();
+
+            var res = wc.CreateWeek(new WeekDTO(week));
+            IActionResult aRes = res.Result;
+
+            Assert.IsType<OkObjectResult>(aRes);
+
+            _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Remove(_testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Last());
+        }
+
+        [Fact]
+        public void CreateWeek_NewWeekNullDTO_BadRequest()
+        {
+            var wc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
 
             var res = wc.CreateWeek(null);
             IActionResult aRes = res.Result;
 
             Assert.IsType<BadRequestObjectResult>(aRes);
         }
-
-        [Fact]
-        public void UpdateDayInNonExistingWeek_ExpectNotFound()
-        {
-            var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
-            var day = _testContext.MockUsers[OTHER_USER].WeekSchedule.First().Weekdays.First();
-            
-            var res = wc.UpdateDay(NONEXISTING, new WeekdayDTO(day));
-            IActionResult aRes = res.Result;
-
-            Assert.IsType<NotFoundResult>(aRes);
-        }
-
-        [Fact]
-        public void UpdateNonExistingWeek_ExpectNotFound()
-        {
-            var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER]);
-            var week = _testContext.MockUsers[OTHER_USER].WeekSchedule.First();
-
-            var res = wc.UpdateWeek(NONEXISTING, new WeekDTO(week));
-            IActionResult aRes = res.Result;
-
-            Assert.IsType<NotFoundResult>(aRes);
-        }
+        #endregion
     }
 }

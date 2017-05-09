@@ -141,7 +141,7 @@ namespace GirafRest.Controllers
             return Ok("You logged out.");
         }
 
-        #region Password recovery DOES NOT WORK YET
+        #region Password recovery
         /// <summary>
         /// Use this endpoint to request a password reset link, which is send to the user's email address.
         /// </summary>
