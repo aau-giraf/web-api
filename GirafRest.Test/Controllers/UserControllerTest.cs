@@ -161,7 +161,7 @@ namespace GirafRest.Test.Controllers
             Assert.IsType<OkObjectResult>(result);
         }
 
-        [Fact]
+        [Fact] 
         public void GetUser_GuardianLogin_OkListOfUsersInDepartmentAndGuardiansInfo()
         {
             var uc = initializeTest();
