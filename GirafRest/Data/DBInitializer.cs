@@ -46,6 +46,7 @@ namespace GirafRest.Setup
 				new GirafUser("Graatand", 1),
 				new GirafUser("Lee", 2)
 			};
+            //Note that the call to .Result is a dangerous way to run async methods synchonously and thus should not be used elsewhere!
             foreach (var user in users)
 			{
                 var x = userManager.CreateAsync(user, "password").Result;

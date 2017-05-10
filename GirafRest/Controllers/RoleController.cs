@@ -1,4 +1,5 @@
 ﻿using GirafRest.Models;
+using GirafRest.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -14,19 +15,27 @@ namespace GirafRest.Controllers
     public class RoleController : Controller
     {
         private readonly RoleManager<GirafRole> _roleManager;
+        private readonly IGirafService _giraf;
 
         public RoleController(RoleManager<GirafRole> roleManager)
         {
             _roleManager = roleManager;
         }
 
-        /*[HttpGet("{id}")]
+        [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetGirafRole(string id)
         {
-            return Ok();
+            var user = await _giraf.LoadUserAsync(HttpContext.User);
+            var role = await _giraf._userManager.GetRolesAsync(user);
+
+            if (role.Count == 0)
+                return Ok();
+
+            return Ok(role[0]);
         }
 
-        [HttpPost]
+        /*[HttpPost]
         public async Task<IActionResult> CreateGirafRole()
         {
             return Ok();
