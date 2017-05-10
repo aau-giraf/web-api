@@ -13,6 +13,7 @@ namespace GirafRest.Models
         public const string Admin = "Admin";
         public const string Parent = "Parent";
         public const string Guardian = "Guardian";
+        public const string Department = "Department";
 
         // Policies
         public const string RequireCitizen = "RequireCitizen";
@@ -20,6 +21,7 @@ namespace GirafRest.Models
         public const string RequireParent = "RequireParent";
         public const string RequireGuardian = "RequireGuardian";
         public const string RequireGuardianOrAdmin = "RequireGuardianOrAdmin";
+        public const string RequireDepartment = "RequireDepartment";
 
         public GirafRole()
         {

@@ -44,7 +44,8 @@ namespace GirafRest.Setup
 			{
 				new GirafUser("Kurt", 1),
 				new GirafUser("Graatand", 1),
-				new GirafUser("Lee", 2)
+				new GirafUser("Lee", 2),
+				new GirafUser("Tobias", 1)
 			};
             //Note that the call to .Result is a dangerous way to run async methods synchonously and thus should not be used elsewhere!
             foreach (var user in users)
@@ -54,8 +55,11 @@ namespace GirafRest.Setup
 
             // Add users to roles
             var a = userManager.AddToRoleAsync(users[0], GirafRole.Citizen).Result;
-            a = userManager.AddToRoleAsync(users[1], GirafRole.Guardian).Result;
+            a =  userManager.AddToRoleAsync(users[1], GirafRole.Guardian).Result;
             a =  userManager.AddToRoleAsync(users[2], GirafRole.Admin).Result;
+            a =  userManager.AddToRoleAsync(users[3], GirafRole.Department).Result;
+
+			
 
             System.Console.WriteLine("Adding pictograms.");
             var Pictograms = new Pictogram[]
@@ -154,6 +158,18 @@ namespace GirafRest.Setup
             context.Choices.Add(_choice1);
             context.Choices.Add(_choice2);
             context.Choices.Add(_choice3);
+			
+			//Adding citizens to Guardian
+			foreach(var user in users)
+			{
+				if(userManager.IsInRoleAsync(user, GirafRole.Guardian).Result){
+					//user.GuardianOf = new List<GirafUser>();
+					user.GuardianOf = user.Department.Members
+					.Where(m => m.Id != user.Id 
+					&& !userManager.IsInRoleAsync(m, GirafRole.Guardian).Result 
+					&& !userManager.IsInRoleAsync(m, GirafRole.Department).Result).ToList();
+				}
+			}
             context.SaveChanges();
         }
     }

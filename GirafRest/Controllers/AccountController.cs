@@ -73,6 +73,7 @@ namespace GirafRest.Controllers
             var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
             if(currentUser != null)
             {
+                _giraf._logger.LogInformation("Guardian attempted to sign in as Citizen");
                 return await attemptCitizenLoginAsync(currentUser, model.Username);
             }
 

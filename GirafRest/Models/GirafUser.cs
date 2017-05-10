@@ -10,7 +10,17 @@ namespace GirafRest.Models
     /// </summary>
     [Table("User")]
     public class GirafUser : IdentityUser
-    {        
+    {       
+        /// <summary>
+        /// Whether or not the current user is a DepartmentUser
+        /// </summary>
+        public bool IsDepartment { get; set; }
+
+        /// <summary>
+        /// List of users the user is guardian of. Is simply null if the user isn't a guardian
+        /// </summary>
+        public List<GirafUser> GuardianOf { get; set; }
+
         /// <summary>
         /// The display name for the user.
         /// </summary>

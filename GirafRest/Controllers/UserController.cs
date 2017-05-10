@@ -90,11 +90,15 @@ namespace GirafRest.Controllers
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             if (await _giraf._userManager.IsInRoleAsync(user, GirafRole.Guardian))
             {
+                return Ok(new GirafUserDTO(user));
+            }
+            else if (await _giraf._userManager.IsInRoleAsync(user, GirafRole.Department))
+            {
                 var dep = await _giraf._context.Departments
                     .Where(d => d.Key == user.DepartmentKey)
                     .Include(d => d.Members)
                     .FirstOrDefaultAsync();
-                return Ok(dep.Members.Select(m => new GirafUserDTO(m)).ToList());
+                return Ok(dep.Members.Where(m => _giraf._userManager.IsInRoleAsync(m, GirafRole.Guardian).Result).Select(m => new GirafUserDTO(m)).ToList());
             }
 
             return Ok(new GirafUserDTO(user));

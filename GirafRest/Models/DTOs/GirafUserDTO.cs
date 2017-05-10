@@ -12,6 +12,10 @@ namespace GirafRest.Models.DTOs
     public class GirafUserDTO
     {
         /// <summary>
+        /// List of users the user is guardian of. Is simply null if the user isn't a guardian
+        /// </summary>
+        public List<GirafUserDTO> GuardianOf { get; set; }
+        /// <summary>
         /// The Id of the user.
         /// </summary>
         public string Id { get; set; }
@@ -67,6 +71,11 @@ namespace GirafRest.Models.DTOs
             Username = user.UserName;
             DisplayName = user.DisplayName;
             UserIcon = user.UserIcon;
+            if (user.GuardianOf != null){
+                GuardianOf = new List<GirafUserDTO>();
+                foreach(var usr in user.GuardianOf)
+                    GuardianOf.Add(new GirafUserDTO(usr));
+            }
             if (user.Department == null)
                 DepartmentKey = -1;
             else 

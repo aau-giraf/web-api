@@ -59,7 +59,8 @@ namespace GirafRest.Extensions
                 new GirafRole(GirafRole.Admin),
                 new GirafRole(GirafRole.Guardian),
                 new GirafRole(GirafRole.Parent),
-                new GirafRole(GirafRole.Citizen)
+                new GirafRole(GirafRole.Citizen),
+                new GirafRole(GirafRole.Department)
             };
             foreach (var role in Roles)
             {
@@ -90,6 +91,10 @@ namespace GirafRest.Extensions
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(GirafRole.RequireGuardianOrAdmin, policy => policy.RequireRole(GirafRole.Guardian, GirafRole.Admin));
+            });
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(GirafRole.RequireDepartment, policy => policy.RequireRole(GirafRole.Department));
             });
         }
 
