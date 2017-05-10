@@ -49,7 +49,7 @@ namespace GirafRest.Extensions
         /// An extension-method for setting up roles for use when authorizing users to methods.
         /// </summary>
         /// <param name="roleManager">A reference to the role manager for the application.</param>
-        public static async void EnsureRoleSetup(this RoleManager<GirafRole> roleManager)
+        public static void EnsureRoleSetup(this RoleManager<GirafRole> roleManager)
         {
             if (roleManager.Roles.AnyAsync().Result)
                 return;
@@ -63,7 +63,8 @@ namespace GirafRest.Extensions
             };
             foreach (var role in Roles)
             {
-                await roleManager.CreateAsync(role);
+                //A hacky way to run tasks synchronously
+                var r = roleManager.CreateAsync(role).Result;
             }
         }
 
