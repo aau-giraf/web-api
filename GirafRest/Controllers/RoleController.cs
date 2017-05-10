@@ -20,7 +20,7 @@ namespace GirafRest.Controllers
             _roleManager = roleManager;
         }
 
-        [HttpGet("{id}")]
+        /*[HttpGet("{id}")]
         public async Task<IActionResult> GetGirafRole(string id)
         {
             return Ok();
@@ -37,7 +37,7 @@ namespace GirafRest.Controllers
         {
             return Ok();
         }
-
+        */
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGirafRole(string id)
         {

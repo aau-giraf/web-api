@@ -51,6 +51,9 @@ namespace GirafRest.Extensions
         /// <param name="roleManager">A reference to the role manager for the application.</param>
         public static void EnsureRoleSetup(this RoleManager<GirafRole> roleManager)
         {
+            if (roleManager.Roles.AnyAsync().Result)
+                return;
+
             var Roles = new GirafRole[]
             {
                 new GirafRole(GirafRole.Admin),
@@ -60,10 +63,7 @@ namespace GirafRest.Extensions
             };
             foreach (var role in Roles)
             {
-                if (!roleManager.RoleExistsAsync(role.Name).Result)
-                {
-                    roleManager.CreateAsync(role).ConfigureAwait(false);
-                }
+                roleManager.CreateAsync(role);
             }
         }
 
