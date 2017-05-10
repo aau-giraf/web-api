@@ -156,6 +156,7 @@ namespace GirafRest.Controllers
             var result = await _giraf._userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
+                await _giraf._userManager.AddToRoleAsync(user, GirafRole.Citizen);
                 await _signInManager.SignInAsync(user, isPersistent: true);
                 _giraf._logger.LogInformation("User created a new account with password.");
                 return Ok(new GirafUserDTO(user));
