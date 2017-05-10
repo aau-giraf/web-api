@@ -45,53 +45,56 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns>NotFound either if there is no user with the given username or the user is not authorized to see the user
         /// or Ok and a serialized version of the sought-after user.</returns>
-        [HttpGet]
+        [HttpGet("{username}")]
         [Authorize]
-        public async Task<IActionResult> GetUser()
+        public async Task<IActionResult> GetUser(string username)
         {
             //Declare needed variables
             GirafUser user;
-            string usernameQuery = HttpContext.Request.Query["username"];
 
             //Check if the caller has supplied a query, find the user with the given name if so,
             //else find the user with the given username.
-            if (!string.IsNullOrEmpty(usernameQuery))
-            {
-                //First attempt to fetch the user and check that he exists
-                user = await _giraf.LoadByNameAsync(usernameQuery);
-                if (user == null)
-                    return NotFound();
+            if (string.IsNullOrEmpty(username))
+                BadRequest("Please specify a username to search for.");
 
-                //Get the current user and check if he is a guardian in the same department as the user
-                //or an Admin, in which cases the user is allowed to see the user.
-                var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
-                if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian))
-                {
-                    //Check if the guardian is in the same department as the user
-                    if (user.DepartmentKey != currentUser.DepartmentKey)
-                        //We do not reveal if a user with the given username exists
-                        return NotFound();
-                }
-                else if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Admin))
-                {
-                    //No additional checks required, simply skip to Ok.
-                }
-                else
+            //First attempt to fetch the user and check that he exists
+            user = await _giraf.LoadByNameAsync(username);
+            if (user == null)
+                return NotFound();
+
+            //Get the current user and check if he is a guardian in the same department as the user
+            //or an Admin, in which cases the user is allowed to see the user.
+            var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian))
+            {
+                //Check if the guardian is in the same department as the user
+                if (user.DepartmentKey != currentUser.DepartmentKey)
                     //We do not reveal if a user with the given username exists
                     return NotFound();
             }
-            else
+            else if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Admin))
             {
-                user = await _giraf.LoadUserAsync(HttpContext.User);
-                if(await _giraf._userManager.IsInRoleAsync(user, GirafRole.Guardian))
-                {
-                    var dep = await _giraf._context.Departments
-                        .Where(d => d.Key == user.DepartmentKey)
-                        .Include(d => d.Members)
-                        .FirstOrDefaultAsync();
+                //No additional checks required, simply skip to Ok.
+            }
+            else
+                //We do not reveal if a user with the given username exists
+                return NotFound();
 
-                    return Ok(dep.Members.Select(m => new GirafUserDTO(m)).ToList());
-                }
+            return Ok(new GirafUserDTO(user));
+        }
+
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> GetUser ()
+        {
+            var user = await _giraf.LoadUserAsync(HttpContext.User);
+            if (await _giraf._userManager.IsInRoleAsync(user, GirafRole.Guardian))
+            {
+                var dep = await _giraf._context.Departments
+                    .Where(d => d.Key == user.DepartmentKey)
+                    .Include(d => d.Members)
+                    .FirstOrDefaultAsync();
+                return Ok(dep.Members.Select(m => new GirafUserDTO(m)).ToList());
             }
 
             return Ok(new GirafUserDTO(user));
