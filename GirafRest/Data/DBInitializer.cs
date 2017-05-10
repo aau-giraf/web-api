@@ -20,7 +20,7 @@ namespace GirafRest.Setup
 		/// Initializes the local database with sample data.
 		/// </summary>
 		/// <param name="context">A reference to the database context.</param>
-		public static void Initialize(GirafDbContext context, UserManager<GirafUser> userManager)
+		public static async void Initialize(GirafDbContext context, UserManager<GirafUser> userManager)
 		{
             // Check if any data is in the database
             if (context.Users.Any())
@@ -48,13 +48,13 @@ namespace GirafRest.Setup
 			};
             foreach (var user in users)
 			{
-                userManager.CreateAsync(user, "password").ConfigureAwait(false);
+                await userManager.CreateAsync(user, "password");
             }
 
             // Add users to roles
-            userManager.AddToRoleAsync(users[0], GirafRole.Citizen).ConfigureAwait(false);
-            userManager.AddToRoleAsync(users[1], GirafRole.Guardian).ConfigureAwait(false);
-            userManager.AddToRoleAsync(users[2], GirafRole.Admin).ConfigureAwait(false);
+            await userManager.AddToRoleAsync(users[0], GirafRole.Citizen);
+            await userManager.AddToRoleAsync(users[1], GirafRole.Guardian);
+            await userManager.AddToRoleAsync(users[2], GirafRole.Admin);
 
             System.Console.WriteLine("Adding pictograms.");
             var Pictograms = new Pictogram[]
