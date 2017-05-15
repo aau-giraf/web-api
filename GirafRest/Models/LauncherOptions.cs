@@ -24,20 +24,20 @@ namespace GirafRest.Models
         /// <summary>
         /// A collection of all the user's applications.
         /// </summary>
-        public virtual ICollection<ApplicationOption> AvailableApplications { get; set; }
+        public virtual ICollection<ApplicationOption> appsUserCanAccess { get; set; }
 
         /// <summary>
         /// A field for storing how many rows to display in the GirafLauncher application.
         /// </summary>
-        public int LauncherRows { get; set; }
+        public int appGridSizeRows { get; set; }
         /// <summary>
         /// A field for storing how many columns to display in the GirafLauncher application.
         /// </summary>
-        public int LauncherColumns { get; set; }
+        public int appGridSizeColumns { get; set; }
 
         public LauncherOptions()
         {
-            AvailableApplications = new List<ApplicationOption>();
+            appsUserCanAccess = new List<ApplicationOption>();
         }
     }
 
