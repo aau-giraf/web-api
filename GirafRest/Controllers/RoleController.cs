@@ -41,7 +41,7 @@ namespace GirafRest.Controllers
         {
             return await addUserToRoleAsync(username, GirafRole.Guardian);
         }
-        [HttpDelete("guardian/{username]")]
+        [HttpDelete("guardian/{username}")]
         [Authorize(Policy = GirafRole.RequireGuardianOrAdmin)]
         public async Task<IActionResult> RemoveFromGuardian(string username)
         {
@@ -54,7 +54,7 @@ namespace GirafRest.Controllers
         {
             return await addUserToRoleAsync(username, GirafRole.Admin);
         }
-        [HttpDelete("guardian/{username]")]
+        [HttpDelete("guardian/{username}")]
         [Authorize(Policy = GirafRole.RequireGuardianOrAdmin)]
         public async Task<IActionResult> RemoveFromAdmin(string username)
         {

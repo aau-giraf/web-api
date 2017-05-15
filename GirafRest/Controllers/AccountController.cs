@@ -73,8 +73,14 @@ namespace GirafRest.Controllers
             var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
             if(currentUser != null)
             {
-                _giraf._logger.LogInformation("Guardian attempted to sign in as Citizen");
-                return await attemptCitizenLoginAsync(currentUser, model.Username);
+                if(await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian)){
+                    _giraf._logger.LogInformation("Guardian attempted to sign in as Citizen");
+                    return await attemptCitizenLoginAsync(currentUser, model.Username);
+                }
+                else{
+                    _giraf._logger.LogInformation("Department attempted to sign in as Guardian");
+                    return await attemptGuardianLoginAsync(currentUser, model.Username);
+                }
             }
 
             //There is no current user - check that a password is present.
@@ -105,7 +111,7 @@ namespace GirafRest.Controllers
             if (await _giraf._userManager.IsInRoleAsync(guardian, GirafRole.Guardian))
             {
                 //Attempt to find a user with the given username in the guardian's department
-                var citizenUser = await _giraf._userManager.FindByNameAsync(username);
+                var citizenUser = await _giraf.LoadByNameAsync(username);
                 
                 //Check if the user exists, sign out the guardian and sign in the user if so
                 if (citizenUser != null && citizenUser.DepartmentKey == guardian.DepartmentKey)
@@ -116,6 +122,32 @@ namespace GirafRest.Controllers
                     await _signInManager.SignOutAsync();
                     await _signInManager.SignInAsync(citizenUser, isPersistent: true);
                     return Ok(new GirafUserDTO(citizenUser));
+                }
+                //There was no user with the given username in the department - return NotFound.
+                else
+                    return NotFound($"There is no user with the given username in your department: {username}");
+            }
+            else
+                return Unauthorized();
+        }
+
+        private async Task<IActionResult> attemptGuardianLoginAsync(GirafUser department, string username)
+        {
+            //Check if the user is in the Guardian role - return unauthorized if not.
+            if (await _giraf._userManager.IsInRoleAsync(department, GirafRole.Department))
+            {
+                //Attempt to find a user with the given username in the guardian's department
+                var guardianUser = await _giraf.LoadByNameAsync(username);
+                
+                //Check if the user exists, sign out the guardian and sign in the user if so
+                if (guardianUser != null && guardianUser.DepartmentKey == department.DepartmentKey)
+                {
+                    if (!await _giraf._userManager.IsInRoleAsync(guardianUser, GirafRole.Guardian))
+                        return Unauthorized();
+
+                    await _signInManager.SignOutAsync();
+                    await _signInManager.SignInAsync(guardianUser, isPersistent: true);
+                    return Ok(new GirafUserDTO(guardianUser));
                 }
                 //There was no user with the given username in the department - return NotFound.
                 else

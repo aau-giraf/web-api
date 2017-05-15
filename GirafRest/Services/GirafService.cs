@@ -99,6 +99,7 @@ namespace GirafRest.Controllers
                     .ThenInclude(wd => wd.Elements)
                     .Include(u => u.LauncherOptions)
                     .ThenInclude(lo => lo.AvailableApplications)
+                    .Include(u => u.GuardianOf)
                     //And return it
                     .FirstOrDefaultAsync();
         }
