@@ -99,6 +99,8 @@ namespace GirafRest.Controllers
         {
             try
             {
+                if (dep == null || dep.Name == null)
+                    return BadRequest("Deparment name have to be specified!");
                 //Add the department to the database.
                 Department result = new Department(dep);
                 await _giraf._context.Departments.AddAsync(result);
@@ -148,7 +150,7 @@ namespace GirafRest.Controllers
         public async Task<IActionResult> AddUser(long ID, [FromBody]GirafUser usr)
         {
             //Fetch user and department and check that they exist
-            if(usr == null)
+            if(usr == null || usr.UserName == null)
                 return BadRequest("User was null");
             Department dep;
             
@@ -218,7 +220,7 @@ namespace GirafRest.Controllers
         [HttpPost("resource/{id}")]
         [Authorize]
         public async Task<IActionResult> AddResource(long id, ResourceIdDTO resourceDTO) {
-            if (resourceDTO == null)
+            if (resourceDTO == null || resourceDTO.ResourceId == null)
                 return BadRequest("You must specify a resource id in the request body.");
             //Fetch the department and check that it exists.
             var department = await _giraf._context.Departments.Where(d => d.Key == id).FirstOrDefaultAsync();
@@ -233,7 +235,7 @@ namespace GirafRest.Controllers
             //Fetch the resource with the given id, check that it exists and that the user owns it.
             var resource = await _giraf._context.Pictograms.Where(f => f.Id == resId).FirstOrDefaultAsync();
             if(resource == null) return NotFound($"There is no resource with id {id}.");
-            var resourceOwned = await _giraf.CheckProtectedOwnership(resource, usr);
+            var resourceOwned = await _giraf.CheckPrivateOwnership(resource, usr);
             if(!resourceOwned) return Unauthorized();
 
             //Check if the department already owns the resource
@@ -242,11 +244,21 @@ namespace GirafRest.Controllers
                 .AnyAsync();
             if(alreadyOwned) return BadRequest("The department already owns the given resource.");
 
+            //Remove resource from user
+            var usrResource = await _giraf._context.UserResources
+                .Where(ur => ur.ResourceKey == resource.Id && ur.OtherKey == usr.Id)
+                .FirstOrDefaultAsync();
+            usr.Resources.Remove(usrResource);
+            await _giraf._context.SaveChangesAsync();
+
+            //Change resource AccessLevel to Protected from Private
+            resource.AccessLevel = AccessLevel.PROTECTED;
+
             //Create a relationship between the department and the resource.
             var dr = new DepartmentResource(department, resource);
             await _giraf._context.DepartmentResources.AddAsync(dr);
             await _giraf._context.SaveChangesAsync();
-
+            
             //Return Ok and the department - the resource is now visible in deparment.Resources
             return Ok(new DepartmentDTO(department));
         }
@@ -254,9 +266,11 @@ namespace GirafRest.Controllers
         [HttpDelete("resource/{id}")]
         [Authorize]
         public async Task<IActionResult> RemoveResource(long id, ResourceIdDTO resourceDTO) {
+            if (resourceDTO == null)
+                return BadRequest("ResourceDTO must be specified!");
             //Fetch the department and check that it exists.
             var usr = await _giraf.LoadUserAsync(HttpContext.User);
-            var department = await _giraf._context.Departments.Where(d => d.Key == id).FirstAsync();
+            var department = await _giraf._context.Departments.Where(d => d.Key == id).FirstOrDefaultAsync();
             if(department == null) return NotFound($"There is no department with Id {id}.");
 
             long resId = -1;

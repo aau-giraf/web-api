@@ -101,7 +101,7 @@ namespace GirafRest.Controllers
         public async Task<IActionResult> UpdateWeek(int id, [FromBody]WeekDTO newWeek)
         {
             
-            if(newWeek == null) return BadRequest("The body of the request must contain a Week");
+            if(newWeek == null || newWeek.Id == null) return BadRequest("The body of the request must contain a Week");
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             if(user.WeekSchedule.Where(w => w.Id == id).Any())
             {
@@ -125,7 +125,7 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<IActionResult> CreateWeek([FromBody]WeekDTO newWeek)
         {
-            if (newWeek == null) return BadRequest("Failed to find a valid Week in the request body.");
+            if (newWeek == null || newWeek.Id == null) return BadRequest("Failed to find a valid Week in the request body.");
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             user.WeekSchedule.Add(new Week(newWeek));
             await _giraf._context.SaveChangesAsync();

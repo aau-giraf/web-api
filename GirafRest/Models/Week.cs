@@ -60,7 +60,10 @@ namespace GirafRest.Models
             {
                 this.Weekdays.Add(new Weekday(day));
             }
-            this.Id = weekDTO.Id;
+            if (weekDTO.Id != null)
+                this.Id = (long)weekDTO.Id;
+            else
+                this.Id = -1;
         }
 
         /// <summary>

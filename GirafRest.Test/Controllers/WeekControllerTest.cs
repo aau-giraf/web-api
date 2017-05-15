@@ -172,18 +172,17 @@ namespace GirafRest.Test
             _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule = tempWeek;
         }
 
-        [Fact(Skip = "Not implmented yet!")]
+        [Fact]
         public void UpdateWeek_ValidWeekInvalidDTO_BadRequest()
         {
             var wc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var week = _testContext.MockUsers[GUARDIAN_DEP_TWO].WeekSchedule.First();
             var tempWeek = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule;
 
-            var res = wc.UpdateWeek(WEEK_ZERO, new WeekDTO(week));
+            var res = wc.UpdateWeek(WEEK_ZERO, new WeekDTO());
             IActionResult aRes = res.Result;
 
-            Assert.IsType<OkObjectResult>(aRes);
+            Assert.IsType<BadRequestObjectResult>(aRes);
 
             _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule = tempWeek;
         }
@@ -216,32 +215,16 @@ namespace GirafRest.Test
             _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Remove(_testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Last());
         }
 
-        [Fact(Skip = "Not implented yet!")]
-        public void CreateWeek_ExistingWeekValidDTO_BadRequest()
-        {
-            var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var week = _testContext.MockUsers[GUARDIAN_DEP_TWO].WeekSchedule.First();
-
-            var res = wc.CreateWeek(new WeekDTO(week));
-            IActionResult aRes = res.Result;
-
-            Assert.IsType<OkObjectResult>(aRes);
-
-            _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Remove(_testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Last());
-        }
-
-        [Fact(Skip = "Not implemented yet!")]
+        [Fact]
         public void CreateWeek_NewWeekInvalidDTO_BadRequest()
         {
             var wc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var week = _testContext.MockUsers[GUARDIAN_DEP_TWO].WeekSchedule.First();
 
-            var res = wc.CreateWeek(new WeekDTO(week));
+            var res = wc.CreateWeek(new WeekDTO() { Id = null });
             IActionResult aRes = res.Result;
 
-            Assert.IsType<OkObjectResult>(aRes);
+            Assert.IsType<BadRequestObjectResult>(aRes);
 
             _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Remove(_testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Last());
         }

@@ -27,6 +27,7 @@ namespace GirafRest.Test
         private const int CITIZEN_DEP_TWO = 2;
         private const int CITIZEN_DEP_THREE = 3;
         private const int ADMIN_NO_DEP = 4;
+        private const int DEPARTMENT_DEP_TWO = 6;
 
 
         public AccountControllerTest(ITestOutputHelper outputHelpter)
@@ -68,7 +69,6 @@ namespace GirafRest.Test
 
             return ac;
         }
-
 
         #region Login
         [Fact]
@@ -208,6 +208,40 @@ namespace GirafRest.Test
 
             var result = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[GUARDIAN_DEP_TWO].UserName }).Result;
            
+
+            if (result is ObjectResult)
+                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
+
+
+            Assert.IsType<UnauthorizedResult>(result);
+        }
+
+        [Fact]
+        public void Login_LoginAsDepartmentDTOWithGuardianInSameDep_Ok()
+        {
+            var ac = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[DEPARTMENT_DEP_TWO]);
+
+
+            var result = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[GUARDIAN_DEP_TWO].UserName }).Result;
+
+
+            if (result is ObjectResult)
+                _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());
+
+
+            Assert.IsType<OkObjectResult>(result);
+        }
+
+        [Fact]
+        public void Login_LoginAsGuardianDTOWithDepartmentInSameDep_Unauthorized()
+        {
+            var ac = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
+
+
+            var result = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[DEPARTMENT_DEP_TWO].UserName }).Result;
+
 
             if (result is ObjectResult)
                 _outputHelpter.WriteLine((result as ObjectResult).Value.ToString());

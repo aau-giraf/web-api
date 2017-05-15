@@ -16,7 +16,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// The id of the week.
         /// </summary>
-        public long Id { get; set; }
+        public long? Id { get; set; }
         /// <summary>
         /// A list of the days of the week schedule.
         /// </summary>

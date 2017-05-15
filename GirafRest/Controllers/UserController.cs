@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.DTOs.UserDTOs;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace GirafRest.Controllers
 {
@@ -87,10 +88,18 @@ namespace GirafRest.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUser ()
         {
+            //First attempt to fetch the user and check that he exists
             var user = await _giraf.LoadUserAsync(HttpContext.User);
+            if (user == null)
+                return NotFound();
+
             if (await _giraf._userManager.IsInRoleAsync(user, GirafRole.Guardian))
             {
-                return Ok(new List<GirafUserDTO>{ new GirafUserDTO(user) });
+                var dep = await _giraf._context.Departments
+                    .Where(d => d.Key == user.DepartmentKey)
+                    .Include(d => d.Members)
+                    .FirstOrDefaultAsync();
+                return Ok(dep.Members.Where(m => _giraf._userManager.IsInRoleAsync(m, GirafRole.Citizen).Result).Select(m => new GirafUserDTO(m)).ToList());
             }
             else if (await _giraf._userManager.IsInRoleAsync(user, GirafRole.Department))
             {
@@ -117,6 +126,16 @@ namespace GirafRest.Controllers
         {
             //Fetch the user
             var user = await _giraf.LoadUserAsync(HttpContext.User);
+            if (user == null)
+                return NotFound("User not found!");
+
+            // Check if DTO or its properties is null
+            if (userDTO == null)
+                return BadRequest("DTO must not be null!");
+            foreach (var property in userDTO.GetType().GetProperties())
+                if (property.GetValue(userDTO) == null)
+                    if (property.Name == "LauncherOptions" || property.Name == "Username")
+                        return BadRequest("Info in userDTO must be set!");
 
             //Update all simple fields
             user.LauncherOptions = userDTO.LauncherOptions;
@@ -419,7 +438,8 @@ namespace GirafRest.Controllers
         /// <returns></returns>
         private async Task updateWeekAsync(GirafUser user, ICollection<long> weekscheduleIds)
         {
-            user.WeekSchedule.Clear();
+            if (user.WeekSchedule != null) user.WeekSchedule.Clear();
+            
             var newWeekschedules = new List<Week>();
             foreach (var id in weekscheduleIds)
             {

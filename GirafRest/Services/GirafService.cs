@@ -109,15 +109,24 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="bodyStream">A byte-stream from the body of the request.</param>
         /// <returns>The image found in the request represented as a byte array.</returns>
-        public async Task<byte[]> ReadRequestImage(Stream bodyStream) {
-            byte[] image;
-            using (var imageStream = new MemoryStream()) {
-                await bodyStream.CopyToAsync(imageStream);
-                await bodyStream.FlushAsync();
-                image = imageStream.ToArray();
-            }
+        public async Task<byte[]> ReadRequestImage(Stream bodyStream)
+        {
+            try
+            {
+                byte[] image;
+                using (var imageStream = new MemoryStream())
+                {
+                    await bodyStream.CopyToAsync(imageStream);
+                    await bodyStream.FlushAsync();
+                    image = imageStream.ToArray();
+                }
 
-            return image;
+                return image;
+            }
+            catch (Exception)
+            {
+                throw new ArgumentNullException("Input stream must not be null");
+            }
         }
 
         /// <summary>

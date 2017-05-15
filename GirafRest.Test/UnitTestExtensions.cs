@@ -86,6 +86,10 @@ namespace GirafRest.Test
                         new GirafUser("Guardian2 in dep2", 2)
                         {
                             Id = "guardian22"
+                        },
+                        new GirafUser("Department in dep2", 2)
+                        {
+                            Id = "department2"
                         }
                     };
 
@@ -276,6 +280,14 @@ namespace GirafRest.Test
                             new GirafRole(GirafRole.Citizen)
                             {
                                 Id = GirafRole.Citizen
+                            },
+                            new GirafRole(GirafRole.Parent)
+                            {
+                                Id = GirafRole.Parent
+                            },
+                            new GirafRole(GirafRole.Department)
+                            {
+                                Id = GirafRole.Department
                             }
                         };
 
@@ -309,6 +321,11 @@ namespace GirafRest.Test
                             {
                                 UserId = MockUsers[3].Id,
                                 RoleId = MockRoles[2].Id
+                            },
+                            new IdentityUserRole<string>()
+                            {
+                                UserId = MockUsers[6].Id,
+                                RoleId = MockRoles[4].Id
                             }
                         };
 
@@ -344,6 +361,7 @@ namespace GirafRest.Test
                 var mockUsers = CreateMockDbSet(MockUsers);
                 var mockRoles = CreateMockDbSet(MockRoles);
                 var mockUserRoles = CreateMockDbSet(MockUserRoles);
+                var mockWeeks = CreateMockDbSet(MockWeeks);
 
                 var dbMock = new Mock<MockDbContext>();
                 dbMock.Setup(c => c.Pictograms).Returns(mockSet.Object);
@@ -351,12 +369,7 @@ namespace GirafRest.Test
                 dbMock.Setup(c => c.DepartmentResources).Returns(mockDepRes.Object);
                 dbMock.Setup(c => c.Choices).Returns(mockChoices.Object);
                 dbMock.Setup(c => c.Departments).Returns(mockDeps.Object);
-                //dbMock.Setup(c => c.PictoFrames).Returns(mockPF.Object);
-                /* Does not work as all of them are inherited from IdentityDbContext and not marked as virtual.
-                dbMock.Setup(c => c.Users).Returns(mockUsers.Object);
-                dbMock.Setup(c => c.UserRoles).Returns(mockUserRoles.Object);
-                dbMock.Setup(c => c.Roles).Returns(mockRoles.Object);
-                */
+                dbMock.Setup(c => c.Weeks).Returns(mockWeeks.Object);
 
                 //Make sure that all references are setup - Entity does not handle it for us this time.
                 MockUsers[0].Department = MockDepartments[0];

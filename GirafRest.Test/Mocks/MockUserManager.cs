@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using static GirafRest.Test.UnitTestExtensions;
 using System.Linq;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace GirafRest.Test.Mocks
 {
@@ -97,6 +98,18 @@ namespace GirafRest.Test.Mocks
             }
             else
                 return Task.FromResult(IdentityResult.Failed());
+        }
+
+        public override Task<IdentityResult> AddToRoleAsync(GirafUser user, string role)
+        {
+            var mockRole = _testContext.MockRoles.Where(r => r.Id == role).FirstOrDefault();
+            var mockUser = _testContext.MockUsers.Where(u => u.Id == user.Id).FirstOrDefault();
+            _testContext.MockUserRoles.Add(new IdentityUserRole<string>()
+            {
+                UserId = mockUser.Id,
+                RoleId = mockRole.Id
+            });
+            return Task.FromResult(IdentityResult.Success);
         }
     }
 }

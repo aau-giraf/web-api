@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using static GirafRest.Test.UnitTestExtensions;
 using System.Linq;
 using System.IO;
+using System;
 
 namespace GirafRest.Test.Controllers
 {
@@ -38,7 +39,7 @@ namespace GirafRest.Test.Controllers
 
         #region ReadRequestImage
         [Fact]
-        public void ReadRequestImage_ValidImage_Ok()
+        public void ReadRequestImage_ValidImage_InputArrayEqualsOutputArray()
         {
             var gs = initializeTest();
             var testArray = new byte[] { 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26 };
@@ -49,16 +50,12 @@ namespace GirafRest.Test.Controllers
             Assert.Equal(testArray, res);
         }
 
-        [Fact(Skip = "Not implemented yet!")]
+        [Fact]
         public void ReadRequestImage_NullImage_BadRequest()
         {
             var gs = initializeTest();
-            var testArray = new byte[] { 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26 };
-            Stream byteStream = new MemoryStream(testArray);
 
-            var res = gs.ReadRequestImage(byteStream).Result;
-
-            Assert.Equal(testArray, res);
+            Assert.ThrowsAsync(typeof(ArgumentNullException), () => gs.ReadRequestImage(null));
         }
         #endregion
         #region CheckPrivateOwnership

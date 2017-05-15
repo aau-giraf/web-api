@@ -7,6 +7,6 @@ namespace GirafRest.Models.DTOs
 {
     public class ResourceIdDTO
     {
-        public long ResourceId { get; set; }
+        public long? ResourceId { get; set; }
     }
 }
