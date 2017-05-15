@@ -70,7 +70,7 @@ namespace GirafRest.Controllers
                     .ThenInclude(w => w.Weekdays)
                     .ThenInclude(wd => wd.Elements)
                     .Include(u => u.LauncherOptions)
-                    .ThenInclude(lo => lo.AvailableApplications)
+                    .ThenInclude(lo => lo.appsUserCanAccess)
                     .Include(u => u.GuardianOf)
                     //And return it
                     .FirstOrDefaultAsync();
@@ -98,7 +98,7 @@ namespace GirafRest.Controllers
                     .ThenInclude(w => w.Weekdays)
                     .ThenInclude(wd => wd.Elements)
                     .Include(u => u.LauncherOptions)
-                    .ThenInclude(lo => lo.AvailableApplications)
+                    .ThenInclude(lo => lo.appsUserCanAccess)
                     .Include(u => u.GuardianOf)
                     //And return it
                     .FirstOrDefaultAsync();

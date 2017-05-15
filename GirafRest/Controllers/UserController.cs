@@ -209,11 +209,11 @@ namespace GirafRest.Controllers
             if (user == null)
                 return NotFound($"There is no user with id: {username}");
 
-            if (user.LauncherOptions.AvailableApplications.Where(aa => aa.ApplicationName.Equals(application.ApplicationName)).Any())
+            if (user.LauncherOptions.appsUserCanAccess.Where(aa => aa.ApplicationName.Equals(application.ApplicationName)).Any())
                 return BadRequest("The user already has access to the given application.");
 
             //Add the application for the user to see
-            user.LauncherOptions.AvailableApplications.Add(application);
+            user.LauncherOptions.appsUserCanAccess.Add(application);
             await _giraf._context.SaveChangesAsync();
             return Ok(new GirafUserDTO(user));
         }
@@ -238,12 +238,12 @@ namespace GirafRest.Controllers
                 return NotFound($"There is no user with id: {user}");
 
             //Check if the given application was previously available to the user
-            var app = user.LauncherOptions.AvailableApplications.Where(a => a.Id == application.Id).FirstOrDefault();
+            var app = user.LauncherOptions.appsUserCanAccess.Where(a => a.Id == application.Id).FirstOrDefault();
             if (app == null)
                 return NotFound("The user did not have an ApplicationOption with id " + application.Id);
 
             //Remove it and save changes
-            user.LauncherOptions.AvailableApplications.Remove(app);
+            user.LauncherOptions.appsUserCanAccess.Remove(app);
             await _giraf._context.SaveChangesAsync();
             return Ok(new GirafUserDTO(user));
         }
