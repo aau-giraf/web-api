@@ -315,7 +315,7 @@ namespace GirafRest.Test.Controllers
             Assert.IsType<OkObjectResult>(result);
             var user = (result as ObjectResult).Value as GirafUserDTO;
 
-            Assert.Contains(user.LauncherOptions.AvailableApplications, (a => a.ApplicationName == ao.ApplicationName));
+            Assert.Contains(user.LauncherOptions.appsUserCanAccess, (a => a.ApplicationName == ao.ApplicationName));
         }
 
 
