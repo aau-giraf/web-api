@@ -133,11 +133,13 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<IActionResult> CreateWeek([FromBody]WeekDTO newWeek)
         {
-            if (newWeek == null || newWeek.Id == null) return BadRequest("Failed to find a valid Week in the request body.");
+            if (newWeek == null) return BadRequest("Failed to find a valid Week in the request body.");
             var user = await _giraf.LoadUserAsync(HttpContext.User);
-            user.WeekSchedule.Add(new Week(newWeek));
+            var week = new Week(newWeek);
+            _giraf._context.Weeks.Add(week);
+            user.WeekSchedule.Add(week);
             await _giraf._context.SaveChangesAsync();
-            return Ok(user.WeekSchedule.Select(w => new WeekDTO(w)));
+            return Ok(user.WeekSchedule.Select(w => new WeekDTO(w)).ToList());
         }
 
         /// <summary>

@@ -17,7 +17,7 @@ namespace GirafRest.Models
         [Column("id")]
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public long Id { get; private set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// A collection of weekdays for each day of the week.
@@ -27,13 +27,13 @@ namespace GirafRest.Models
         /// <summary>
         /// The key of the weeks Thumbnail.
         /// </summary>
-        public long ThumbnailKey { get; set; }
+        public long? ThumbnailKey { get; set; }
         [ForeignKey("ThumbnailKey")]
 
         /// <summary>
         /// The thumbnail for the week.
         /// </summary>
-        public Pictogram Thumbnail { get; set; }
+        public virtual Pictogram Thumbnail { get; set; }
 
         /// <summary>
         /// DO NOT DELETE THIS.
@@ -69,12 +69,13 @@ namespace GirafRest.Models
             this.Weekdays = new Weekday[7];
             foreach (var day in weekDTO.Days)
             {
-                this.Weekdays.Add(new Weekday(day));
+                UpdateDay(new Weekday(day));
             }
             if (weekDTO.Id != null)
                 this.Id = (long)weekDTO.Id;
             else
-                this.Id = -1;
+                this.Id = 0;
+            this.ThumbnailKey = weekDTO.ThumbnailID;
         }
 
         /// <summary>

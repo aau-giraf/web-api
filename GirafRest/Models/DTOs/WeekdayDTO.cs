@@ -37,8 +37,10 @@ namespace GirafRest.Models.DTOs
             if(weekday.Elements != null){
                 foreach (var element in weekday.Elements)
                 {
-                    Elements.Add(new FrameDTO(element.Resource));
-                    ElementIDs.Add(element.Resource.Id);
+                    if(element.Resource != null){
+                        Elements.Add(new FrameDTO(element.Resource));
+                        ElementIDs.Add(element.Resource.Id);
+                    }
                 }
             }
             if(Elements.Count > 0)

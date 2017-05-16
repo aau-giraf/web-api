@@ -105,18 +105,18 @@ namespace GirafRest.Controllers
                     .Where(d => d.Key == user.DepartmentKey)
                     .Include(d => d.Members)
                     .FirstOrDefaultAsync();
-                return Ok(dep.Members.Where(m => _giraf._userManager.IsInRoleAsync(m, GirafRole.Citizen).Result).Select(m => new GirafUserDTO(m)).ToList());
-            }
+                user.GuardianOf = dep.Members.Where(m => _giraf._userManager.IsInRoleAsync(m, GirafRole.Citizen).Result).ToList();
+                }
             else if (await _giraf._userManager.IsInRoleAsync(user, GirafRole.Department))
             {
                 var dep = await _giraf._context.Departments
                     .Where(d => d.Key == user.DepartmentKey)
                     .Include(d => d.Members)
                     .FirstOrDefaultAsync();
-                return Ok(dep.Members.Where(m => _giraf._userManager.IsInRoleAsync(m, GirafRole.Guardian).Result).Select(m => new GirafUserDTO(m)).ToList());
+                user.GuardianOf = dep.Members.Where(m => _giraf._userManager.IsInRoleAsync(m, GirafRole.Guardian).Result).ToList();
             }
 
-            return Ok(new List <GirafUserDTO>{ new GirafUserDTO(user) });
+            return Ok(new GirafUserDTO(user));
         }
 
         /// <summary>

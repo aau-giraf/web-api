@@ -22,8 +22,10 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         /// <param name="frame"></param>
         public FrameDTO (Resource frame) {
-            this.Id = frame.Id;
-            this.LastEdit = frame.LastEdit;
+            if (frame != null){
+                this.Id = frame.Id;
+                this.LastEdit = frame.LastEdit;
+            }
         }
 
         /// <summary>
