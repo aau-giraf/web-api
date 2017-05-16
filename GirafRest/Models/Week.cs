@@ -57,7 +57,14 @@ namespace GirafRest.Models
         /// <param name="weekDTO">The data transfer object to create a new week from.</param>
         public Week(WeekDTO weekDTO)
         {
-            Merge(weekDTO);
+            this.Weekdays = new Weekday[7];
+            if(weekDTO.Days != null){
+                foreach (var day in weekDTO.Days)
+                {
+                    UpdateDay(new Weekday(day));
+                }
+            }
+            this.ThumbnailKey = weekDTO.ThumbnailID;
         }
 
         /// <summary>
@@ -67,9 +74,11 @@ namespace GirafRest.Models
         public void Merge(WeekDTO weekDTO)
         {
             this.Weekdays = new Weekday[7];
-            foreach (var day in weekDTO.Days)
-            {
-                UpdateDay(new Weekday(day));
+            if(weekDTO.Days != null){
+                foreach (var day in weekDTO.Days)
+                {
+                    UpdateDay(new Weekday(day));
+                }
             }
             if (weekDTO.Id != null)
                 this.Id = (long)weekDTO.Id;
