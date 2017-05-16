@@ -114,6 +114,8 @@ namespace GirafRest.Controllers
             if (newWeek == null) return BadRequest("Failed to find a valid Week in the request body.");
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             var week = new Week(newWeek);
+            if(await _giraf._context.Pictograms.Where(p => p.Id == week.ThumbnailKey).FirstOrDefaultAsync() == null)
+                return BadRequest("Thumbnail not found, make sure your Id is correct");
             _giraf._context.Weeks.Add(week);
             user.WeekSchedule.Add(week);
             await _giraf._context.SaveChangesAsync();
