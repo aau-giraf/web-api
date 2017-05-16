@@ -17,11 +17,20 @@ namespace GirafRest.Controllers
         private readonly RoleManager<GirafRole> _roleManager;
         private readonly IGirafService _giraf;
 
+        /// <summary>
+        /// Constructor for the Role-controller. This is called by the asp.net runtime.
+        /// </summary>
+        /// <param name="roleManager">A reference to the ASP.NET RoleManager with type GirafRole.</param>
         public RoleController(RoleManager<GirafRole> roleManager)
         {
             _roleManager = roleManager;
         }
 
+        /// <summary>
+        /// Gets the role of a given user
+        /// </summary>
+        /// <param name="id">The Id of the user in question
+        /// <returns> Returns Ok with the role of the user.</returns>
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> GetGirafRole(string id)
@@ -35,12 +44,23 @@ namespace GirafRest.Controllers
             return Ok(role[0]);
         }
 
+        /// <summary>
+        /// Adds the specified user to the Guardian role
+        /// </summary>
+        /// <param name="username">The username of the user in question
+        /// <returns> NotFound if no such user exists, Badrequest if the operation failed and Ok if successful</returns>
         [HttpPost("guardian/{username}")]
         [Authorize(Policy = GirafRole.RequireGuardianOrAdmin)]
         public async Task<IActionResult> AddToGuardian(string username)
         {
             return await addUserToRoleAsync(username, GirafRole.Guardian);
         }
+
+        /// <summary>
+        /// Removes the user from the Guardian role
+        /// </summary>
+        /// <param name="username">The username of the user in question
+        /// <returns> NotFound if no such user exists, Badrequest if the operation failed and Ok if successful</returns>
         [HttpDelete("guardian/{username}")]
         [Authorize(Policy = GirafRole.RequireGuardianOrAdmin)]
         public async Task<IActionResult> RemoveFromGuardian(string username)
@@ -48,12 +68,23 @@ namespace GirafRest.Controllers
             return await removeUserFromRoleAsync(username, GirafRole.Guardian);
         }
 
+        /// <summary>
+        /// Adds the user from the Admin role
+        /// </summary>
+        /// <param name="username">The username of the user in question
+        /// <returns> NotFound if no such user exists, Badrequest if the operation failed and Ok if successful</returns>
         [HttpPost("admin/{username}")]
         [Authorize(Policy = GirafRole.RequireAdmin)]
         public async Task<IActionResult> AddToAdmin(string username)
         {
             return await addUserToRoleAsync(username, GirafRole.Admin);
         }
+
+        /// <summary>
+        /// Removes the user from the Admin role
+        /// </summary>
+        /// <param name="username">The username of the user in question
+        /// <returns> NotFound if no such user exists, Badrequest if the operation failed and Ok if successful</returns>
         [HttpDelete("guardian/{username}")]
         [Authorize(Policy = GirafRole.RequireGuardianOrAdmin)]
         public async Task<IActionResult> RemoveFromAdmin(string username)
@@ -61,6 +92,11 @@ namespace GirafRest.Controllers
             return await removeUserFromRoleAsync(username, GirafRole.Admin);
         }
         
+        /// <summary>
+        /// Removes a specified role
+        /// </summary>
+        /// <param name="id">The Id of the role in need of removal
+        /// <returns> Badrequest if the role does not exist or if the id was null/emtpy and Ok if successful</returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGirafRole(string id)
         {
@@ -77,6 +113,13 @@ namespace GirafRest.Controllers
             return BadRequest("Null or empty role id");
         }
         #region Helpers
+
+        /// <summary>
+        /// Adds a specified user to the specified role.
+        /// </summary>
+        /// <param name="username">The username of the user in question
+        /// <param name="rolename">The name of the role
+        /// <returns> NotFound if no such user exists, Badrequest if the operation fails. And Ok if all is well</returns>
         private async Task<IActionResult> addUserToRoleAsync(string username, string rolename)
         {
             var user = await _giraf._userManager.FindByNameAsync(username);
@@ -90,6 +133,12 @@ namespace GirafRest.Controllers
                 return BadRequest(result.Errors);
         }
 
+        /// <summary>
+        /// Removes a specified user to the specified role.
+        /// </summary>
+        /// <param name="username">The username of the user in question
+        /// <param name="rolename">The name of the role
+        /// <returns> NotFound if no such user exists, Badrequest if the operation fails. And Ok if all is well</returns>
         private async Task<IActionResult> removeUserFromRoleAsync(string username, string rolename)
         {
             var user = await _giraf._userManager.FindByNameAsync(username);

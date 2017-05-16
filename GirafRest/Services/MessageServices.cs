@@ -17,9 +17,15 @@ namespace GirafRest.Services
     // For more details see this link http://go.microsoft.com/fwlink/?LinkID=532713
     public class MessageServices : IEmailService
     {
+        
         private readonly EmailConfig _emailConfig;
         private readonly ILogger _logger;
 
+        /// <summary>
+        /// Constructor for the class.
+        /// </summary>
+        /// <param name="emailConfig">A reference to the configurations of the EmailService.</param>
+        /// <param name="loggerFactory">A reference to an implementation of ILoggerFactory. Used to create a logger.</param>
         public MessageServices(IOptions<EmailConfig> emailConfig, ILoggerFactory loggerFactory)
         {
             _emailConfig = emailConfig.Value;

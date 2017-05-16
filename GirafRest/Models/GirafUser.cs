@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using GirafRest.Models.DTOs;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace GirafRest.Models
@@ -44,6 +45,7 @@ namespace GirafRest.Models
         /// A collection of the user's week schedules.
         /// </summary>
         public virtual ICollection<Week> WeekSchedule { get; set; }
+
         /// <summary>
         /// A collection of the user's resources.
         /// </summary>
@@ -52,7 +54,7 @@ namespace GirafRest.Models
         /// <summary>
         /// A field for storing all relevant options that the user has specified in the GirafLauncher.
         /// </summary>
-        public LauncherOptions LauncherOptions { get; set; }
+        public LauncherOptions settings { get; set; }
         
         /// <summary>
         /// Creates a new user with the specified user name, associated with the given department.
@@ -64,13 +66,14 @@ namespace GirafRest.Models
             this.UserName = userName;
             this.Resources = new List<UserResource>();
             this.WeekSchedule = new List<Week>();
-            this.WeekSchedule.Add(new Week());
-            this.WeekSchedule.First().InitWeek();
-            LauncherOptions = new LauncherOptions();
+            /*this.WeekSchedule.Add(new Week());
+            this.WeekSchedule.First().InitWeek();*/
+            settings = new LauncherOptions();
 
             if (departmentId != null)
                 DepartmentKey = (long) departmentId;
         }
+        
         /// <summary>
         /// DO NOT DELETE THIS.
         /// </summary>
@@ -80,7 +83,7 @@ namespace GirafRest.Models
             this.WeekSchedule = new List<Week>();
             this.WeekSchedule.Add(new Week());
             this.WeekSchedule.First().InitWeek();
-            LauncherOptions = new LauncherOptions();
+            settings = new LauncherOptions();
         }
     }
 }

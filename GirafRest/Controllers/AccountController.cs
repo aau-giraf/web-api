@@ -33,10 +33,9 @@ namespace GirafRest.Controllers
         /// Creates a new account controller. The account controller allows the users to sign in and out of their account
         /// as well as creating new users. The account controller is automatically instantiated by ASP.NET.
         /// </summary>
-        /// <param name="userManager">A reference to a user manager.</param>
         /// <param name="signInManager">A reference to a sign in manager</param>
         /// <param name="emailSender">A reference to an implementation of the IEmailSender interface.</param>
-        /// <param name="identityCookieOptions">A reference to a cookie-scheme.</param>
+        /// <param name="giraf">A reference to the implementation of the IGirafService interface.</param>
         /// <param name="loggerFactory">A reference to a logger factory</param>
         public AccountController(
             SignInManager<GirafUser> signInManager,
@@ -53,11 +52,12 @@ namespace GirafRest.Controllers
         /// <summary>
         /// This endpoint allows the user to sign in to his account by providing valid username and password.
         /// </summary>
-        /// <param name="model">A LoginViewModel, i.e. a json-string with a username and a password field.</param>
+        /// <param name="model">A LoginDTO(LoginViewModelDTO), i.e. a json-string with a username and a password field.</param>
         /// <returns>
         /// BadRequest if the caller fails to supply a valid username or password,
-        /// Unauthorized if either the username or pass is not recognized
-        /// or Ok if sign in was succesful.
+        /// Unauthorized if either the username or pass is not recognized or if a Guardian/Department attempted to log on
+        /// to another user that is not in their department.
+        /// Ok if sign in was succesful.
         /// </returns>
         [HttpPost]
         [AllowAnonymous]
@@ -130,6 +130,14 @@ namespace GirafRest.Controllers
             else
                 return Unauthorized();
         }
+        
+        /// <summary>
+        /// Attempts to login from a Department account to a guardian account. Departments does not require the guardians 
+        /// password in order to login, but they the guardian must be in the department. 
+        /// </summary>
+        /// <param name="department">The Department user who is currently authenticated.</param>
+        /// <param name="username">The username of the guardian to login as.</param>
+        /// <returns></returns>
 
         private async Task<IActionResult> attemptGuardianLoginAsync(GirafUser department, string username)
         {
@@ -160,7 +168,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Register a new user in the REST-API. The caller must supply a username, a password and a ConfirmPassword.
         /// </summary>
-        /// <param name="model">A refernece to a RegisterViewModel, i.e. a json string containing three strings;
+        /// <param name="model">A reference to a RegisterDTO(RegisterViewModelDTO), i.e. a json string containing three strings;
         /// Username, Password and ConfirmPassword.</param>
         /// <returns>
         /// BadRequest if the request lacks some information or the user could not be created and
@@ -199,7 +207,7 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Log the currently authenticated user out of the system.
+        /// Logs the currently authenticated user out of the system.
         /// </summary>
         /// <returns>Ok</returns>
         [HttpPost]
@@ -214,7 +222,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Use this endpoint to request a password reset link, which is send to the user's email address.
         /// </summary>
-        /// <param name="model">A json string containing username and email.</param>
+        /// <param name="model">A ForgotPasswordDTO, which contains a username and an email address.</param>
         /// <returns>
         /// BadRequest if the request does not contain all necesarry information,
         /// NotFound if the no user with the given username exists and 
@@ -259,7 +267,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Creates a new password for the currently authenticated user.
         /// </summary>
-        /// <param name="model">Information on the new password, i.e. a JSON string containing
+        /// <param name="model">Information on the new password in a SetPasswordDTO, i.e. a JSON string containing
         /// NewPassword and ConfirmPassword.</param>
         /// <returns>BadRequest if the server failed to update the password or Ok if everything went well.</returns>
         [HttpPost("set-password")]

@@ -26,7 +26,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Constructor for the department-controller. This is called by the asp.net runtime.
         /// </summary>
-        /// <param name="context">A reference to the database-context.</param>
+        /// <param name="giraf">A reference to the GirafService.</param>
         /// <param name="loggerFactory">A reference to an implementation of ILoggerFactory. Used to create a logger.</param>
         public DepartmentController(IGirafService giraf, ILoggerFactory loggerFactory)
         {
@@ -92,7 +92,7 @@ namespace GirafRest.Controllers
         /// Add a department to the database.
         /// </summary>
         /// <param name="dep">The department to add to the database.</param>
-        /// <returns>The new department with all database-generated information.</returns>
+        /// <returns>The new departmentDTO with all database-generated information.</returns>
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> Post([FromBody]DepartmentDTO dep)
@@ -208,10 +208,10 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Add a resource to the given department. After this call the department owns the resource and it is available to all its members.
+        /// Add a resource to the given department. After this call, the department owns the resource and it is available to all its members.
         /// </summary>
         /// <param name="id">Id of the department to add the resource to.</param>
-        /// <param name="resourceId">Id of the resource to add.</param>
+        /// <param name="resourceId">ResourceIdDTO containing relevant information about the resource.</param>
         /// <returns>
         /// NotFound if either the department or the resource does not exist,
         /// BadRequest if no resourceId has been specified as either query-parameter or in the request-body or
@@ -263,6 +263,16 @@ namespace GirafRest.Controllers
             return Ok(new DepartmentDTO(department));
         }
 
+        /// <summary>
+        /// Removes a resource to the given department.
+        /// </summary>
+        /// <param name="id">Id of the department to remove the resource from.</param>
+        /// <param name="resourceId">ResourceIdDTO containing relevant information about the resource.</param>
+        /// <returns>
+        /// NotFound if either the department or the resource does not exist,
+        /// BadRequest if no resourceId has been specified as either query-parameter or in the request-body or
+        /// Ok if no problems occured.
+        /// </returns>
         [HttpDelete("resource/{id}")]
         [Authorize]
         public async Task<IActionResult> RemoveResource(long id, ResourceIdDTO resourceDTO) {

@@ -10,8 +10,11 @@ namespace GirafRest.Models
     [ComplexType]
     public class LauncherOptions
     {
+        /// <summary>
+        /// Key for LauncherOptions
+        /// </summary>
         [Key]
-        public long Key { get; set; }
+        public long Key { get; private set; }
 
         /// <summary>
         /// A flag indicating whether to run applications in grayscale or not.

@@ -64,6 +64,7 @@ namespace GirafRest.Models
                 this.Elements.Add(new WeekdayResource(this, elem));
             }
         }
+        
         /// <summary>
         /// Creates a new weekday from the given WeekdayDTO.
         /// </summary>

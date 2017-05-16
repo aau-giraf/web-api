@@ -10,7 +10,7 @@ namespace GirafRest.Models.DTOs
     public class WeekDTO
     {
         /// <summary>
-        /// The id of the week's thumbnail.
+        /// The id of the weeks thumbnail.
         /// </summary>
         public long ThumbnailID { get; set; }
         /// <summary>
@@ -18,7 +18,7 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         public long? Id { get; set; }
         /// <summary>
-        /// A list of the days of the week schedule.
+        /// A list of the days in the week schedule.
         /// </summary>
         public ICollection<WeekdayDTO> Days { get; set; }
 

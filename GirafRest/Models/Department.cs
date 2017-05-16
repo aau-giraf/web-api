@@ -29,6 +29,7 @@ namespace GirafRest.Models
         /// A collection of members associated with the department.
         /// </summary>
         public virtual ICollection<GirafUser> Members { get; set; }
+
         /// <summary>
         /// A collection of all resources owned by the department.
         /// </summary>
@@ -45,9 +46,9 @@ namespace GirafRest.Models
         /// <summary>
         /// Creates a new department from the given department DTO.
         /// </summary>
-        /// <param name="depDto">The DTO containing all data on the new department.</param>
-        public Department(DepartmentDTO depDto) : this (){
-            this.Name = depDto.Name;
+        /// <param name="depDTO">The DTO containing all data on the new department.</param>
+        public Department(DepartmentDTO depDTO) : this (){
+            this.Name = depDTO.Name;
         }
     }
 }

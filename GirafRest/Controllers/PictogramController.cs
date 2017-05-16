@@ -28,6 +28,11 @@ namespace GirafRest.Controllers
         /// </summary>
         private readonly IGirafService _giraf;
 
+        /// <summary>
+        /// Constructor for the Pictogram-controller. This is called by the asp.net runtime.
+        /// </summary>
+        /// <param name="giraf">A reference to the GirafService.</param>
+        /// <param name="loggerFactory">A reference to an implementation of ILoggerFactory. Used to create a logger.</param>
         public PictogramController(IGirafService girafController, ILoggerFactory lFactory) 
         {
             _giraf = girafController;
@@ -287,7 +292,7 @@ namespace GirafRest.Controllers
         /// Checks if the user has some form of ownership of the pictogram.
         /// </summary>
         /// <param name="picto">The Pictogram in need of checking.</param>
-        /// <param name="titleQuery">The user in question.</param>
+        /// <param name="usr">The user in question.</param>
         /// <returns>A list of said pictograms.</returns>
         private async Task<bool> CheckOwnership(Pictogram picto, GirafUser usr)
         {

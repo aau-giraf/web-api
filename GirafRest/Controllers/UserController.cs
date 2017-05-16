@@ -23,7 +23,7 @@ namespace GirafRest.Controllers
     public class UserController : Controller
     {
         /// <summary>
-        /// An email sender that can be used to send emails to users that have lost their password. (DOES NOT WORK YET!)
+        /// An email sender that can be used to send emails to users that have lost their password.
         /// </summary>
         private readonly IEmailService _emailSender;
         /// <summary>
@@ -31,6 +31,12 @@ namespace GirafRest.Controllers
         /// </summary>
         private readonly IGirafService _giraf;
 
+        /// <summary>
+        /// Constructor for the User-controller. This is called by the asp.net runtime.
+        /// </summary>
+        /// <param name="giraf">A reference to the GirafService.</param>
+        /// <param name="emailSender">A reference to the emailservice.</param>
+        /// <param name="loggerFactory">A reference to an implementation of ILoggerFactory. Used to create a logger.</param>
         public UserController(
             IGirafService giraf,
           IEmailService emailSender,
@@ -122,7 +128,7 @@ namespace GirafRest.Controllers
         /// OK if the user was updated succesfully.
         /// </returns>
         [HttpPut]
-        public async Task<IActionResult> UpdateUser(GirafUserDTO userDTO)
+        public async Task<IActionResult> UpdateUser([FromBody]GirafUserDTO userDTO)
         {
             //Fetch the user
             var user = await _giraf.LoadUserAsync(HttpContext.User);
@@ -134,14 +140,16 @@ namespace GirafRest.Controllers
                 return BadRequest("DTO must not be null!");
             foreach (var property in userDTO.GetType().GetProperties())
                 if (property.GetValue(userDTO) == null)
-                    if (property.Name == "LauncherOptions" || property.Name == "Username")
+                    if (property.Name == "settings" || property.Name == "username")
                         return BadRequest("Info in userDTO must be set!");
 
             //Update all simple fields
-            user.LauncherOptions = userDTO.LauncherOptions;
+            user.settings = userDTO.settings;
             user.UserName = userDTO.Username;
             user.DisplayName = userDTO.DisplayName;
-            
+            user.UserIcon = userDTO.UserIcon;
+
+
             //Attempt to update all fields that require database access.
             try
             {
@@ -155,6 +163,7 @@ namespace GirafRest.Controllers
             }
 
             //Save changes and return the user with updated information.
+            
             _giraf._context.Users.Update(user);
             await _giraf._context.SaveChangesAsync();
             return Ok(new GirafUserDTO(user));
@@ -163,7 +172,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Allows the user to upload an icon for his profile.
         /// </summary>
-        /// <returns>Ok if the upload was succesful and BadRequest if not.</returns>
+        /// <returns>Ok if the upload was successful and BadRequest if not.</returns>
         [HttpPost("icon")]
         public async Task<IActionResult> CreateUserIcon() {
             var usr = await _giraf._userManager.GetUserAsync(HttpContext.User);
@@ -191,7 +200,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Allows the user to delete his profile icon.
         /// </summary>
-        /// <returns>Ok.</returns>
+        /// <returns>Ok on success and BadRequest if the user already has an icon.</returns>
         [HttpDelete("icon")]
         public async Task<IActionResult> DeleteUserIcon() {
             var usr = await _giraf._userManager.GetUserAsync(HttpContext.User);
@@ -204,7 +213,7 @@ namespace GirafRest.Controllers
             return Ok(new GirafUserDTO(usr));
         }
         #endregion
-        #region Not strictly necesarry methods, but more efficient than a PUT to user, as they only update a single value
+        #region Not strictly necessary methods, but more efficient than a PUT to user, as they only update a single value
         /// <summary>
         /// Adds an application to the specified user's list of applications.
         /// </summary>
@@ -228,11 +237,11 @@ namespace GirafRest.Controllers
             if (user == null)
                 return NotFound($"There is no user with id: {username}");
 
-            if (user.LauncherOptions.appsUserCanAccess.Where(aa => aa.ApplicationName.Equals(application.ApplicationName)).Any())
+            if (user.settings.appsUserCanAccess.Where(aa => aa.ApplicationName.Equals(application.ApplicationName)).Any())
                 return BadRequest("The user already has access to the given application.");
 
             //Add the application for the user to see
-            user.LauncherOptions.appsUserCanAccess.Add(application);
+            user.settings.appsUserCanAccess.Add(application);
             await _giraf._context.SaveChangesAsync();
             return Ok(new GirafUserDTO(user));
         }
@@ -257,12 +266,12 @@ namespace GirafRest.Controllers
                 return NotFound($"There is no user with id: {user}");
 
             //Check if the given application was previously available to the user
-            var app = user.LauncherOptions.appsUserCanAccess.Where(a => a.Id == application.Id).FirstOrDefault();
+            var app = user.settings.appsUserCanAccess.Where(a => a.Id == application.Id).FirstOrDefault();
             if (app == null)
                 return NotFound("The user did not have an ApplicationOption with id " + application.Id);
 
             //Remove it and save changes
-            user.LauncherOptions.appsUserCanAccess.Remove(app);
+            user.settings.appsUserCanAccess.Remove(app);
             await _giraf._context.SaveChangesAsync();
             return Ok(new GirafUserDTO(user));
         }
@@ -389,7 +398,7 @@ namespace GirafRest.Controllers
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
 
-            user.LauncherOptions.UseGrayscale = enabled;
+            user.settings.UseGrayscale = enabled;
             await _giraf._context.SaveChangesAsync();
             return Ok(new GirafUserDTO(user));
         }
@@ -404,7 +413,7 @@ namespace GirafRest.Controllers
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
 
-            user.LauncherOptions.DisplayLauncherAnimations = enabled;
+            user.settings.DisplayLauncherAnimations = enabled;
             await _giraf._context.SaveChangesAsync();
             return Ok(new GirafUserDTO(user));
         }
@@ -435,20 +444,24 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="user">The user to update the week schedules of.</param>
         /// <param name="weekscheduleIds">A list of ids for the user's new week schedules.</param>
-        /// <returns></returns>
         private async Task updateWeekAsync(GirafUser user, ICollection<long> weekscheduleIds)
         {
-            if (user.WeekSchedule != null) user.WeekSchedule.Clear();
             
             var newWeekschedules = new List<Week>();
             foreach (var id in weekscheduleIds)
             {
+                var weekids = await _giraf._context.Weeks.Where(w => w.Id != 8172368).ToListAsync();
+                foreach (var ids in weekids)
+                {
+                    System.Console.WriteLine(ids.Id);
+                }
                 var week = await _giraf._context.Weeks
                     .Where(w => w.Id == id)
                     .FirstOrDefaultAsync();
                 if (week == null) throw new KeyNotFoundException("There is no week with the given id: " + id);
                 newWeekschedules.Add(week);
             }
+            if (user.WeekSchedule != null) user.WeekSchedule.Clear();
             user.WeekSchedule = newWeekschedules;
         }
         /// <summary>
@@ -456,7 +469,6 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="user">The user, whose department should be updated.</param>
         /// <param name="departmentId">The id of the user's new department.</param>
-        /// <returns></returns>
         private async Task updateDepartmentAsync(GirafUser user, long departmentId)
         {
             user.DepartmentKey = departmentId;

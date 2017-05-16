@@ -7,8 +7,7 @@ using GirafRest.Models.DTOs;
 namespace GirafRest.Models
 {
     /// <summary>
-    /// A week defines the schedule of some citizen in the course of the week. A week schedule may be used
-    /// across several actual weeks.
+    /// A week defines the schedule of some citizen in the course of the week.
     /// </summary>
     public class Week
     {
@@ -24,8 +23,16 @@ namespace GirafRest.Models
         /// A collection of weekdays for each day of the week.
         /// </summary>
         public ICollection<Weekday> Weekdays { get; set; }
+        
+        /// <summary>
+        /// The key of the weeks Thumbnail.
+        /// </summary>
         public long ThumbnailKey { get; set; }
         [ForeignKey("ThumbnailKey")]
+
+        /// <summary>
+        /// The thumbnail for the week.
+        /// </summary>
         public Pictogram Thumbnail { get; set; }
 
         /// <summary>
@@ -35,6 +42,10 @@ namespace GirafRest.Models
         {
             this.Weekdays = new List<Weekday>();
         }
+
+        /// <summary>
+        /// A constructor for week setting only the thumbnail.
+        /// </summary>
         public Week(Pictogram thumbnail)
         {
             this.Thumbnail = thumbnail;

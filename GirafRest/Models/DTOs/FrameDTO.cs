@@ -18,7 +18,7 @@ namespace GirafRest.Models.DTOs
         public DateTime LastEdit { get; set; }
 
         /// <summary>
-        /// Creates a ResourceDTO from the given resource, fit for sending as a request or response.
+        /// Creates a FrameDTO from the given resource, fit for sending as a request or response.
         /// </summary>
         /// <param name="frame"></param>
         public FrameDTO (Resource frame) {

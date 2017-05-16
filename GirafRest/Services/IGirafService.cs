@@ -33,7 +33,7 @@ namespace GirafRest.Services
             get;
         }
         /// <summary>
-        /// A reference to the user manager, that is used to fetch users.
+        /// A reference to the user manager, used to fetch users.
         /// </summary>
         UserManager<GirafUser> _userManager
         {
@@ -46,18 +46,21 @@ namespace GirafRest.Services
         /// <param name="principal">A reference to HttpContext.User</param>
         /// <returns>The loaded user.</returns>
         Task<GirafUser> LoadUserAsync(ClaimsPrincipal principal);
+
         /// <summary>
         /// Loads the user with the given username and also includes all related data.
         /// </summary>
         /// <param name="username">The username of the user to fetch.</param>
         /// <returns>A loaded user, i.e. a user with all related data.</returns>
         Task<GirafUser> LoadByNameAsync(string username);
+
         /// <summary>
         /// Loads the image of the request body.
         /// </summary>
         /// <param name="bodyStream">A stream from which the request body may be read.</param>
         /// <returns>The image as a byte array.</returns>
         Task<byte[]> ReadRequestImage(Stream bodyStream);
+
         /// <summary>
         /// Checks if the current user owns the given resource.
         /// </summary>
@@ -65,6 +68,7 @@ namespace GirafRest.Services
         /// <param name="user">A reference to the user in question.</param>
         /// <returns>True if the user owns the resource, false if not.</returns>
         Task<bool> CheckPrivateOwnership(Pictogram resource, GirafUser user);
+
         /// <summary>
         /// Checks if the current user's department owns the given resource.
         /// </summary>
@@ -72,5 +76,6 @@ namespace GirafRest.Services
         /// <param name="user">A reference to the user in question.</param>
         /// <returns>True if the user's department owns the resource, false if not.</returns>
         Task<bool> CheckProtectedOwnership(Pictogram resource, GirafUser user);
+        
     }
 }

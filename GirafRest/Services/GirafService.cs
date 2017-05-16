@@ -24,23 +24,23 @@ namespace GirafRest.Controllers
     public class GirafService : IGirafService
     {
         /// <summary>
-        /// A reference to the database context - used to access the database and query for data. Handled by Asp.net's dependency injection.
+        /// A reference to the database context - used to access the database and query for data. Handled by asp.net's dependency injection.
         /// </summary>
         public GirafDbContext _context { get;  }
         /// <summary>
-        /// Asp.net's user manager. Can be used to fetch user data from the request's cookie. Handled by Asp.net's dependency injection.
+        /// Asp.net's user manager. Can be used to fetch user data from the request's cookie. Handled by asp.net's dependency injection.
         /// </summary>
         public UserManager<GirafUser> _userManager { get;  }
         /// <summary>
-        /// A data-logger used to write messages to the console. Handled by Asp.net's dependency injection.
+        /// A data-logger used to write messages to the console. Handled by asp.net's dependency injection.
         /// </summary>
         public ILogger _logger { get; set; }
 
         /// <summary>
-        /// A constructor for the PictogramController. This is automatically called by Asp.net when receiving the first request for a pictogram.
+        /// A constructor for the PictogramController. This is automatically called by asp.net when receiving the first request for a pictogram.
         /// </summary>
         /// <param name="context">Reference to the database context.</param>
-        /// <param name="userManager">Reference to Asp.net's user-manager.</param>
+        /// <param name="userManager">Reference to asp.net's user-manager.</param>
         public GirafService(GirafDbContext context, UserManager<GirafUser> userManager)
         {
             this._context = context;
@@ -69,7 +69,7 @@ namespace GirafRest.Controllers
                     .Include(u => u.WeekSchedule)
                     .ThenInclude(w => w.Weekdays)
                     .ThenInclude(wd => wd.Elements)
-                    .Include(u => u.LauncherOptions)
+                    .Include(u => u.settings)
                     .ThenInclude(lo => lo.appsUserCanAccess)
                     .Include(u => u.GuardianOf)
                     //And return it
@@ -97,7 +97,7 @@ namespace GirafRest.Controllers
                     .Include(u => u.WeekSchedule)
                     .ThenInclude(w => w.Weekdays)
                     .ThenInclude(wd => wd.Elements)
-                    .Include(u => u.LauncherOptions)
+                    .Include(u => u.settings)
                     .ThenInclude(lo => lo.appsUserCanAccess)
                     .Include(u => u.GuardianOf)
                     //And return it
@@ -145,11 +145,8 @@ namespace GirafRest.Controllers
             var ownedByUser = await _context.UserResources
                 .Where(ur => ur.ResourceKey == pictogram.Id && ur.OtherKey == user.Id)
                 .AnyAsync();
-            if (ownedByUser)
-            {
-                return true;
-            }
-            return false;
+
+            return ownedByUser;
         }
 
         /// <summary>
@@ -169,9 +166,8 @@ namespace GirafRest.Controllers
             var ownedByDepartment = await _context.DepartmentResources
                 .Where(dr => dr.ResourceKey == resource.Id && dr.OtherKey == user.Department.Key)
                 .AnyAsync();
-            if (ownedByDepartment) return true;
-
-            return false;
+                
+            return ownedByDepartment;
         }
 
     }

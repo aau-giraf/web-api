@@ -7,15 +7,24 @@ namespace GirafRest.Models.DTOs.AccountDTOs
     /// </summary>
     public class ResetPasswordDTO
     {
+        /// <summary>
+        /// The users username.
+        /// </summary>
         [Required(ErrorMessage = "Indtast venligst dit brugernavn her.")]
         [Display(Name = "Brugernavn")]
         public string Username { get; set; }
 
+        /// <summary>
+        /// The users password.
+        /// </summary>
         [Required(ErrorMessage = "Indtast venligst dit kodeord her.")]
         [DataType(DataType.Password)]
         [Display(Name = "Kodeord")]
         public string Password { get; set; }
 
+        /// <summary>
+        /// The users password again to avoid typos/mistakes.
+        /// </summary>
         [Required(ErrorMessage = "Gentag venligst dit kodeord her.")]
         [DataType(DataType.Password)]
         [Display(Name = "Bekræft Kodeord")]

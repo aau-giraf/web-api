@@ -13,7 +13,7 @@ namespace GirafRest.Models {
     }
 
     /// <summary>
-    /// A pictogram is an image with an associated title. They are used by Guardians and Citizens alike to 
+    /// A pictogram is an image with an associated title. They are used by Guardians and Citizens and so on to 
     /// communicate visually.
     /// </summary>
     public class Pictogram : Resource{
@@ -22,41 +22,26 @@ namespace GirafRest.Models {
         /// </summary>
         public string Title { get; set; }
         /// <summary>
-        /// The accesslevel, PRIVATE means owning user only, PROTECTED means all in the owning department and PUBLIC is everyone.
+        /// The accesslevel, PRIVATE means only the owner can see it, PROTECTED means everyone in the owning department and PUBLIC is everyone.
         /// </summary>
         [Required]
         public AccessLevel AccessLevel { get; set; }
 
         /// <summary>
-        /// Creates a new PictoFrame.
-        /// </summary>
-        /// <param name="title">The title.</param>
-        /// <param name="accessLevel">The access level.</param>
-        /*public PictoFrame(string title, AccessLevel accessLevel) : this()
-        {
-            this.Title = title;
-            this.AccessLevel = accessLevel;
-        }
-        /// <summary>
-        /// DO NOT DELETE THIS.
-        /// </summary>
-        protected PictoFrame() : base() {
-            AccessLevel = AccessLevel.PUBLIC;
-        }*/
-
-        /// <summary>
-        /// Overrides the information of this PictoFrame with new information found in the DTO.
+        /// Overrides the information of this Pictogram with new information found in the DTO.
         /// </summary>
         /// <param name="other">The new information.</param>
         public virtual void Merge(PictogramDTO other) {
             base.Merge(other);
             this.AccessLevel = other.AccessLevel;
         }
+
         /// <summary>
         /// A byte array containing the pictogram's image.
         /// </summary>
         [Column("Image")]
         public byte[] Image { get; set; }
+        
         /// <summary>
         /// Defines the file type of the pictogram's image.
         /// </summary>
