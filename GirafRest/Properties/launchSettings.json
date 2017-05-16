@@ -17,7 +17,7 @@
     },
     "GirafRest": {
       "commandName": "Project",
-      "commandLineArgs": "--logfile=log.txt --prod=true",
+      "commandLineArgs": "--logfile=log.txt --prod=true --sample-data",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

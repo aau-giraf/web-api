@@ -69,7 +69,7 @@ namespace GirafRest.Controllers
                     .Include(u => u.WeekSchedule)
                     .ThenInclude(w => w.Weekdays)
                     .ThenInclude(wd => wd.Elements)
-                    .Include(u => u.settings)
+                    .Include(u => u.Settings)
                     .ThenInclude(lo => lo.appsUserCanAccess)
                     .Include(u => u.GuardianOf)
                     //And return it
@@ -97,7 +97,7 @@ namespace GirafRest.Controllers
                     .Include(u => u.WeekSchedule)
                     .ThenInclude(w => w.Weekdays)
                     .ThenInclude(wd => wd.Elements)
-                    .Include(u => u.settings)
+                    .Include(u => u.Settings)
                     .ThenInclude(lo => lo.appsUserCanAccess)
                     .Include(u => u.GuardianOf)
                     //And return it

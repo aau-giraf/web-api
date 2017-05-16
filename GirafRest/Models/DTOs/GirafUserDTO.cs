@@ -35,7 +35,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// The key of the user's department.
         /// </summary>
-        public long DepartmentKey { get; set; }
+        public long? DepartmentKey { get; set; }
 
         /// <summary>
         /// A list of the id's of the user's week schedules.
@@ -49,7 +49,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// A field for storing all the relevant GirafLauncher options.
         /// </summary>
-        public LauncherOptions settings { get; set; }
+        public LauncherOptions Settings { get; set; }
 
         /// <summary>
         /// DO NOT DELETE THIS! NEWTONSOFT REQUIRES AN EMPTY CONSTRUCTOR!
@@ -58,7 +58,7 @@ namespace GirafRest.Models.DTOs
         {
             WeekScheduleIds = new List<long>();
             Resources = new List<long>();
-            settings = new LauncherOptions();
+            Settings = new LauncherOptions();
         }
 
         /// <summary>
@@ -67,26 +67,31 @@ namespace GirafRest.Models.DTOs
         /// <param name="user">The user to create a DTO for.</param>
         public GirafUserDTO(GirafUser user) 
         {
+            //Add all trivial values
             Id = user.Id;
             Username = user.UserName;
             DisplayName = user.DisplayName;
             UserIcon = user.UserIcon;
+
+            //Check if the user is guardian of any users and add DTOs for those if that is the case
             if (user.GuardianOf != null){
                 GuardianOf = new List<GirafUserDTO>();
                 foreach(var usr in user.GuardianOf)
                     GuardianOf.Add(new GirafUserDTO(usr));
             }
+
+            //Check if a user is in a department, add null as key if not.
             if (user.Department == null)
-                DepartmentKey = -1;
+                DepartmentKey = null;
             else 
                 DepartmentKey = user.DepartmentKey;
+
+            //Add the ids of the user's weeks and resources
             WeekScheduleIds = user.WeekSchedule.Select(w => w.Id).ToList();
-            Resources = new List<long>();
-            foreach (var res in user.Resources)
-            {
-                Resources.Add(res.Key);
-            }
-            settings = user.settings;
+            Resources = user.Resources.Select(r => r.ResourceKey).ToList();
+            
+            //And finally the user's settings
+            Settings = user.Settings;
         }
     }
 }

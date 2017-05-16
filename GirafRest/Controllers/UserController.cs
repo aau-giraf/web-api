@@ -144,11 +144,10 @@ namespace GirafRest.Controllers
                         return BadRequest("Info in userDTO must be set!");
 
             //Update all simple fields
-            user.settings = userDTO.settings;
+            user.Settings = userDTO.Settings;
             user.UserName = userDTO.Username;
             user.DisplayName = userDTO.DisplayName;
             user.UserIcon = userDTO.UserIcon;
-
 
             //Attempt to update all fields that require database access.
             try
@@ -237,11 +236,11 @@ namespace GirafRest.Controllers
             if (user == null)
                 return NotFound($"There is no user with id: {username}");
 
-            if (user.settings.appsUserCanAccess.Where(aa => aa.ApplicationName.Equals(application.ApplicationName)).Any())
+            if (user.Settings.appsUserCanAccess.Where(aa => aa.ApplicationName.Equals(application.ApplicationName)).Any())
                 return BadRequest("The user already has access to the given application.");
 
             //Add the application for the user to see
-            user.settings.appsUserCanAccess.Add(application);
+            user.Settings.appsUserCanAccess.Add(application);
             await _giraf._context.SaveChangesAsync();
             return Ok(new GirafUserDTO(user));
         }
@@ -266,12 +265,12 @@ namespace GirafRest.Controllers
                 return NotFound($"There is no user with id: {user}");
 
             //Check if the given application was previously available to the user
-            var app = user.settings.appsUserCanAccess.Where(a => a.Id == application.Id).FirstOrDefault();
+            var app = user.Settings.appsUserCanAccess.Where(a => a.Id == application.Id).FirstOrDefault();
             if (app == null)
                 return NotFound("The user did not have an ApplicationOption with id " + application.Id);
 
             //Remove it and save changes
-            user.settings.appsUserCanAccess.Remove(app);
+            user.Settings.appsUserCanAccess.Remove(app);
             await _giraf._context.SaveChangesAsync();
             return Ok(new GirafUserDTO(user));
         }
@@ -398,7 +397,7 @@ namespace GirafRest.Controllers
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
 
-            user.settings.UseGrayscale = enabled;
+            user.Settings.UseGrayscale = enabled;
             await _giraf._context.SaveChangesAsync();
             return Ok(new GirafUserDTO(user));
         }
@@ -413,7 +412,7 @@ namespace GirafRest.Controllers
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
 
-            user.settings.DisplayLauncherAnimations = enabled;
+            user.Settings.DisplayLauncherAnimations = enabled;
             await _giraf._context.SaveChangesAsync();
             return Ok(new GirafUserDTO(user));
         }
@@ -428,16 +427,14 @@ namespace GirafRest.Controllers
         private async Task updateResourceAsync(GirafUser user, ICollection<long> resouceIds)
         {
             user.Resources.Clear();
-            var newResources = new List<UserResource>();
             foreach (var id in resouceIds)
             {
                 var pict = await _giraf._context.Pictograms
                     .Where(p => p.Id == id)
                     .FirstOrDefaultAsync();
                 if (pict == null) throw new KeyNotFoundException("There is no pictogram with the given id: " + id);
-                newResources.Add(new UserResource(user, pict));
+                user.Resources.Add(new UserResource(user, pict));
             }
-            user.Resources = newResources;
         }
         /// <summary>
         /// Attempts to update the user's list of week schedules.
@@ -446,27 +443,27 @@ namespace GirafRest.Controllers
         /// <param name="weekscheduleIds">A list of ids for the user's new week schedules.</param>
         private async Task updateWeekAsync(GirafUser user, ICollection<long> weekscheduleIds)
         {
-            
-            var newWeekschedules = new List<Week>();
             foreach (var id in weekscheduleIds)
             {
                 var week = await _giraf._context.Weeks
                     .Where(w => w.Id == id)
                     .FirstOrDefaultAsync();
                 if (week == null) throw new KeyNotFoundException("There is no week with the given id: " + id);
-                newWeekschedules.Add(week);
+                user.WeekSchedule.Add(week);
             }
             if (user.WeekSchedule != null) user.WeekSchedule.Clear();
-            user.WeekSchedule = newWeekschedules;
         }
         /// <summary>
         /// Attempts to update the user's department from the given id.
         /// </summary>
         /// <param name="user">The user, whose department should be updated.</param>
         /// <param name="departmentId">The id of the user's new department.</param>
-        private async Task updateDepartmentAsync(GirafUser user, long departmentId)
+        private async Task updateDepartmentAsync(GirafUser user, long? departmentId)
         {
-            user.DepartmentKey = departmentId;
+            if (departmentId == null)
+                return;
+
+            user.DepartmentKey = (long) departmentId;
             var dep = await _giraf._context.Departments.Where(d => d.Key == departmentId).FirstOrDefaultAsync();
             if (dep == null)
                 throw new KeyNotFoundException("There is no department with the given id: " + departmentId);

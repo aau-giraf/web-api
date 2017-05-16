@@ -19,7 +19,7 @@ namespace GirafRest.Test
 {
     public static class UnitTestExtensions
     {
-        public class TestContext : IDisposable
+        public class TestContext
         {
             #region Mock Data
             private List<Pictogram> mockPictograms;
@@ -394,11 +394,6 @@ namespace GirafRest.Test
                 lfMock.Setup(lf => lf.CreateLogger(It.IsAny<string>())).Returns(lMock.Object);
 
                 return lfMock;
-            }
-
-            public void Dispose()
-            {
-
             }
         }
 

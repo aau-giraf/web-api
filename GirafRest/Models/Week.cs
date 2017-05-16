@@ -22,7 +22,7 @@ namespace GirafRest.Models
         /// <summary>
         /// A collection of weekdays for each day of the week.
         /// </summary>
-        public ICollection<Weekday> Weekdays { get; set; }
+        public IList<Weekday> Weekdays { get; set; }
         
         /// <summary>
         /// The key of the weeks Thumbnail.
@@ -49,7 +49,7 @@ namespace GirafRest.Models
         public Week(Pictogram thumbnail)
         {
             this.Thumbnail = thumbnail;
-            this.Weekdays = new List<Weekday>();
+            this.Weekdays = new Weekday[7];
         }
         /// <summary>
         /// Creates a new Week from the given WeekDTO.
@@ -66,7 +66,7 @@ namespace GirafRest.Models
         /// <param name="weekDTO">New data.</param>
         public void Merge(WeekDTO weekDTO)
         {
-            this.Weekdays = new List<Weekday>();
+            this.Weekdays = new Weekday[7];
             foreach (var day in weekDTO.Days)
             {
                 this.Weekdays.Add(new Weekday(day));
@@ -78,20 +78,12 @@ namespace GirafRest.Models
         }
 
         /// <summary>
-        /// Initializes the weekdays of the week.
+        /// Updates the given weekday of the Week with the new information found in 'day'.
         /// </summary>
-        public void InitWeek() 
+        /// <param name="day">A day instance to update the week with - the old one is completely overridden.</param>
+        public void UpdateDay(Weekday day)
         {
-            if(!Weekdays.Any())
-            {
-                for(int i = 0; i < 7; i++){
-                    this.Weekdays.Add(
-                        new Weekday()
-                        {
-                            Day = (Days) i
-                        });
-                }
-            }
+            Weekdays[(int)day.Day] = day;
         }
     }
 }

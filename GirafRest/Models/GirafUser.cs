@@ -54,7 +54,7 @@ namespace GirafRest.Models
         /// <summary>
         /// A field for storing all relevant options that the user has specified in the GirafLauncher.
         /// </summary>
-        public LauncherOptions settings { get; set; }
+        public LauncherOptions Settings { get; set; }
         
         /// <summary>
         /// Creates a new user with the specified user name, associated with the given department.
@@ -66,9 +66,7 @@ namespace GirafRest.Models
             this.UserName = userName;
             this.Resources = new List<UserResource>();
             this.WeekSchedule = new List<Week>();
-            /*this.WeekSchedule.Add(new Week());
-            this.WeekSchedule.First().InitWeek();*/
-            settings = new LauncherOptions();
+            Settings = new LauncherOptions();
 
             if (departmentId != null)
                 DepartmentKey = (long) departmentId;
@@ -81,9 +79,7 @@ namespace GirafRest.Models
         {
             this.Resources = new List<UserResource>();
             this.WeekSchedule = new List<Week>();
-            this.WeekSchedule.Add(new Week());
-            this.WeekSchedule.First().InitWeek();
-            settings = new LauncherOptions();
+            Settings = new LauncherOptions();
         }
     }
 }
