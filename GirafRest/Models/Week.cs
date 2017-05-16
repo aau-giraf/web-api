@@ -27,7 +27,7 @@ namespace GirafRest.Models
         /// <summary>
         /// The key of the weeks Thumbnail.
         /// </summary>
-        public long? ThumbnailKey { get; set; }
+        public long ThumbnailKey { get; set; }
         [ForeignKey("ThumbnailKey")]
 
         /// <summary>
@@ -57,7 +57,8 @@ namespace GirafRest.Models
         /// <param name="weekDTO">The data transfer object to create a new week from.</param>
         public Week(WeekDTO weekDTO)
         {
-            this.Weekdays = new Weekday[7];
+            //Must be initialised like this, otherwise the Weekdays will not receive a key.
+            this.Weekdays = new Weekday[7] { new Weekday(), new Weekday(), new Weekday(), new Weekday(), new Weekday(), new Weekday(), new Weekday()};
             if(weekDTO.Days != null){
                 foreach (var day in weekDTO.Days)
                 {
@@ -73,7 +74,8 @@ namespace GirafRest.Models
         /// <param name="weekDTO">New data.</param>
         public void Merge(WeekDTO weekDTO)
         {
-            this.Weekdays = new Weekday[7];
+            //Must be initialised like this, otherwise the Weekdays will not receive a key.
+            this.Weekdays = new Weekday[7] { new Weekday(), new Weekday(), new Weekday(), new Weekday(), new Weekday(), new Weekday(), new Weekday()};
             if(weekDTO.Days != null){
                 foreach (var day in weekDTO.Days)
                 {
