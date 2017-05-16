@@ -450,11 +450,6 @@ namespace GirafRest.Controllers
             var newWeekschedules = new List<Week>();
             foreach (var id in weekscheduleIds)
             {
-                var weekids = await _giraf._context.Weeks.Where(w => w.Id != 8172368).ToListAsync();
-                foreach (var ids in weekids)
-                {
-                    System.Console.WriteLine(ids.Id);
-                }
                 var week = await _giraf._context.Weeks
                     .Where(w => w.Id == id)
                     .FirstOrDefaultAsync();

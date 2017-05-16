@@ -315,7 +315,7 @@ namespace GirafRest.Test.Controllers
             Assert.IsType<OkObjectResult>(result);
             var user = (result as ObjectResult).Value as GirafUserDTO;
 
-            Assert.Contains(user.LauncherOptions.appsUserCanAccess, (a => a.ApplicationName == ao.ApplicationName));
+            Assert.Contains(user.settings.appsUserCanAccess, (a => a.ApplicationName == ao.ApplicationName));
         }
 
 
@@ -923,7 +923,7 @@ namespace GirafRest.Test.Controllers
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
 
             Assert.IsType<OkObjectResult>(result);
-            Assert.True(_testContext.MockUsers[CITIZEN_DEP_TWO].LauncherOptions.UseGrayscale);
+            Assert.True(_testContext.MockUsers[CITIZEN_DEP_TWO].settings.UseGrayscale);
         }
 
         [Fact]
@@ -938,7 +938,7 @@ namespace GirafRest.Test.Controllers
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
 
             Assert.IsType<OkObjectResult>(result);
-            Assert.True(!_testContext.MockUsers[CITIZEN_DEP_TWO].LauncherOptions.UseGrayscale);
+            Assert.True(!_testContext.MockUsers[CITIZEN_DEP_TWO].settings.UseGrayscale);
         }
         #endregion
         #region ToggleAnimations
@@ -954,7 +954,7 @@ namespace GirafRest.Test.Controllers
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
 
             Assert.IsType<OkObjectResult>(result);
-            Assert.True(_testContext.MockUsers[CITIZEN_DEP_TWO].LauncherOptions.DisplayLauncherAnimations);
+            Assert.True(_testContext.MockUsers[CITIZEN_DEP_TWO].settings.DisplayLauncherAnimations);
         }
 
         [Fact]
@@ -969,7 +969,7 @@ namespace GirafRest.Test.Controllers
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
 
             Assert.IsType<OkObjectResult>(result);
-            Assert.True(!_testContext.MockUsers[CITIZEN_DEP_TWO].LauncherOptions.DisplayLauncherAnimations);
+            Assert.True(!_testContext.MockUsers[CITIZEN_DEP_TWO].settings.DisplayLauncherAnimations);
         }
         #endregion
     }
