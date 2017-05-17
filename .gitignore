@@ -4,8 +4,8 @@
 */obj/
 */bin/
 */.idea/
-*/migrations/
-*/Migrations/
+*/migrations/Sqlite*
+*/Migrations/Sqlite*
 */images/
 html/
 doxygen*
