@@ -58,7 +58,6 @@ namespace GirafRest.Extensions
             {
                 new GirafRole(GirafRole.Admin),
                 new GirafRole(GirafRole.Guardian),
-                new GirafRole(GirafRole.Parent),
                 new GirafRole(GirafRole.Citizen),
                 new GirafRole(GirafRole.Department)
             };

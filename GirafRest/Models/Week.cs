@@ -17,7 +17,7 @@ namespace GirafRest.Models
         [Column("id")]
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public long Id { get; private set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// A collection of weekdays for each day of the week.
@@ -33,7 +33,7 @@ namespace GirafRest.Models
         /// <summary>
         /// The thumbnail for the week.
         /// </summary>
-        public Pictogram Thumbnail { get; set; }
+        public virtual Pictogram Thumbnail { get; set; }
 
         /// <summary>
         /// DO NOT DELETE THIS.
@@ -57,7 +57,15 @@ namespace GirafRest.Models
         /// <param name="weekDTO">The data transfer object to create a new week from.</param>
         public Week(WeekDTO weekDTO)
         {
-            Merge(weekDTO);
+            //Must be initialised like this, otherwise the Weekdays will not receive a key.
+            this.Weekdays = new Weekday[7] { new Weekday(), new Weekday(), new Weekday(), new Weekday(), new Weekday(), new Weekday(), new Weekday()};
+            if(weekDTO.Days != null){
+                foreach (var day in weekDTO.Days)
+                {
+                    UpdateDay(new Weekday(day));
+                }
+            }
+            this.ThumbnailKey = weekDTO.ThumbnailID;
         }
 
         /// <summary>
@@ -66,15 +74,19 @@ namespace GirafRest.Models
         /// <param name="weekDTO">New data.</param>
         public void Merge(WeekDTO weekDTO)
         {
-            this.Weekdays = new Weekday[7];
-            foreach (var day in weekDTO.Days)
-            {
-                this.Weekdays.Add(new Weekday(day));
+            //Must be initialised like this, otherwise the Weekdays will not receive a key.
+            this.Weekdays = new Weekday[7] { new Weekday(), new Weekday(), new Weekday(), new Weekday(), new Weekday(), new Weekday(), new Weekday()};
+            if(weekDTO.Days != null){
+                foreach (var day in weekDTO.Days)
+                {
+                    UpdateDay(new Weekday(day));
+                }
             }
             if (weekDTO.Id != null)
                 this.Id = (long)weekDTO.Id;
             else
-                this.Id = -1;
+                this.Id = 0;
+            this.ThumbnailKey = weekDTO.ThumbnailID;
         }
 
         /// <summary>

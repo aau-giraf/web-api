@@ -30,7 +30,7 @@ namespace GirafRest.Models.DTOs
         {
             try
             {
-                this.ThumbnailID = week.ThumbnailKey;
+                this.ThumbnailID = (long)week.ThumbnailKey;
             }
             catch (NullReferenceException)
             {
