@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,14 +12,17 @@ namespace GirafRest.Models.DTOs
     /// </summary>
     public class GirafUserDTO
     {
+        [Required]
         /// <summary>
         /// List of users the user is guardian of. Is simply null if the user isn't a guardian
         /// </summary>
         public List<GirafUserDTO> GuardianOf { get; set; }
+        [Required]
         /// <summary>
         /// The Id of the user.
         /// </summary>
         public string Id { get; set; }
+        [Required]
         /// <summary>
         /// The username of the user.
         /// </summary>
@@ -36,16 +40,17 @@ namespace GirafRest.Models.DTOs
         /// The key of the user's department.
         /// </summary>
         public long? DepartmentKey { get; set; }
-
+        [Required]
         /// <summary>
         /// A list of the id's of the user's week schedules.
         /// </summary>
         public ICollection<WeekDTO> WeekScheduleIds { get; set; }
+        [Required]
         /// <summary>
         /// A list of the id's of the user's resources.
         /// </summary>
         public virtual ICollection<long> Resources { get; set; }
-
+        [Required]
         /// <summary>
         /// A field for storing all the relevant GirafLauncher options.
         /// </summary>

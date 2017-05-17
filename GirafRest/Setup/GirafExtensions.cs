@@ -33,7 +33,7 @@ namespace GirafRest.Extensions
             var connectionString = connectionStringBuilder.ToString();
             var connection = new SqliteConnection(connectionString);
 
-            services.AddDbContext<GirafDbContext>(options => options.UseSqlite(connection));
+            services.AddDbContext<GirafSqliteDbContext>(options => options.UseSqlite(connection));
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace GirafRest.Extensions
         /// <param name="services">A reference to the services of the application.</param>
         public static void AddMySql(this IServiceCollection services, IConfigurationRoot Configuration) {
             //Setup the connection to the sql server
-            services.AddDbContext<GirafDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<GirafMySqlDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
         }
 
         /// <summary>

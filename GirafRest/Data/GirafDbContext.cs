@@ -22,7 +22,11 @@ namespace GirafRest.Data
         public virtual DbSet<WeekdayResource> WeekdayResources {get; set;}
 
         protected GirafDbContext () {}
-        public GirafDbContext(DbContextOptions<GirafDbContext> options)
+        public GirafDbContext(DbContextOptions<GirafSqliteDbContext> options)
+            : base(options)
+        {
+        }
+        public GirafDbContext(DbContextOptions<GirafMySqlDbContext> options)
             : base(options)
         {
         }

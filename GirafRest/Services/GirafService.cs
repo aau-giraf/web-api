@@ -41,12 +41,22 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="context">Reference to the database context.</param>
         /// <param name="userManager">Reference to asp.net's user-manager.</param>
-        public GirafService(GirafDbContext context, UserManager<GirafUser> userManager)
+        public GirafService(GirafMySqlDbContext context, UserManager<GirafUser> userManager)
         {
             this._context = context;
             this._userManager = userManager;
         }
-        
+        /// <summary>
+        /// A constructor for the PictogramController. This is automatically called by asp.net when receiving the first request for a pictogram.
+        /// </summary>
+        /// <param name="context">Reference to the database context.</param>
+        /// <param name="userManager">Reference to asp.net's user-manager.</param>
+        public GirafService(GirafSqliteDbContext context, UserManager<GirafUser> userManager)
+        {
+            this._context = context;
+            this._userManager = userManager;
+        }
+
         /// <summary>
         /// Load the user from the <see cref="HttpContext"/> - both his information and all related data.
         /// </summary>

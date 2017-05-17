@@ -138,12 +138,14 @@ namespace GirafRest.Controllers
                 return NotFound("User not found!");
 
             // Check if DTO or its properties is null
-            if (userDTO == null)
+            /*if (userDTO == null)
                 return BadRequest("DTO must not be null!");
             foreach (var property in userDTO.GetType().GetProperties())
                 if (property.GetValue(userDTO) == null)
                     if (property.Name == "settings" || property.Name == "username")
-                        return BadRequest("Info in userDTO must be set!");
+                        return BadRequest("Info in userDTO must be set!");*/
+            if (!ModelState.IsValid)
+                return BadRequest("Some data was missing from the serialized user");
 
             //Update all simple fields
             user.Settings = userDTO.Settings;
@@ -162,9 +164,12 @@ namespace GirafRest.Controllers
             {
                 return NotFound(e.Message);
             }
+            catch (InvalidOperationException e)
+            {
+                return BadRequest(e.Message);
+            }
 
             //Save changes and return the user with updated information.
-            
             _giraf._context.Users.Update(user);
             await _giraf._context.SaveChangesAsync();
             return Ok(new GirafUserDTO(user));
@@ -367,6 +372,8 @@ namespace GirafRest.Controllers
 
             //Check if the caller owns the resource
             var curUsr = await _giraf.LoadUserAsync(HttpContext.User);
+            if (curUsr == null)
+                return BadRequest("No user is currently authorized.");
 
             //Fetch the relationship from the database and check that it exists
             var relationship = await _giraf._context.UserResources

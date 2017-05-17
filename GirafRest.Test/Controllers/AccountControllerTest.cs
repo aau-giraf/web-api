@@ -354,12 +354,7 @@ namespace GirafRest.Test
         public void Register_NoUsername_BadRequest()
         {
             var accountController = initializeTest();
-
-
-
-
-
-
+            
             var res = accountController.Register(new RegisterDTO()
             {
                 Password = "password",
@@ -369,30 +364,15 @@ namespace GirafRest.Test
 
             if (res is ObjectResult)
                 _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
-
-
-
-
-
-
+            
             Assert.IsType<BadRequestObjectResult>(res);
         }
-
-
-
-
-
 
         [Fact]
         public void Register_NoDepartment_OkDepKeyIsMinus1()
         {
             var accountController = initializeTest();
-
-
-
-
-
-
+            
             var res = accountController.Register(new RegisterDTO()
             {
                 Username = "NewUser",
@@ -402,22 +382,12 @@ namespace GirafRest.Test
 
             if (res is ObjectResult)
                 _outputHelpter.WriteLine((res as ObjectResult).Value.ToString());
-
-
-
-
-
-
+            
             Assert.IsType<OkObjectResult>(res);
             var user = (res as ObjectResult).Value as GirafUserDTO;
-            Assert.Equal(-1, user.DepartmentKey);
+            Assert.Equal(null, user.DepartmentKey);
         }
-
-
-
-
-
-
+        
         [Fact]
         public void Register_PasswordMismatch_BadRequest()
         {

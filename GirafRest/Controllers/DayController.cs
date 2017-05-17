@@ -35,7 +35,7 @@ namespace GirafRest.Controllers
         /// Ok if everything goes well.</returns>
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<IActionResult> UpdateDay(int id, [FromBody]WeekdayDTO newDay)	
+        public async Task<IActionResult> UpdateDay(long id, [FromBody]WeekdayDTO newDay)	
         {	
             if(newDay == null) return BadRequest("The body of the request must contain a Weekday");
             var user = await _giraf.LoadUserAsync(HttpContext.User);

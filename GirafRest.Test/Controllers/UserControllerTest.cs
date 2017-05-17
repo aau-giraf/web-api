@@ -174,7 +174,6 @@ namespace GirafRest.Test.Controllers
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
             
             Assert.IsType<OkObjectResult>(result);
-            Assert.IsType<List<GirafUserDTO>>((result as ObjectResult).Value);
         }
 
         [Fact]
@@ -276,6 +275,7 @@ namespace GirafRest.Test.Controllers
             Assert.IsType<BadRequestObjectResult>(result);
         }
 
+        /*We use ModelState.IsValid in this test - ASP.NET fills this for us and thus we cannot unit test it.
         [Fact]
         public void UpdateUser_ValidUserNullDTOContent_BadRequest()
         {
@@ -285,18 +285,22 @@ namespace GirafRest.Test.Controllers
             var result = uc.UpdateUser(new GirafUserDTO()).Result;
 
             Assert.IsType<BadRequestObjectResult>(result);
-        }
+        }*/
 
         [Fact]
-        public void UpdateUser_ValidUserInvalidDTOContent_NotFound()
+        public void UpdateUser_ValidUserInvalidDTOContent_BadRequest()
         {
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
 
+            //Create a DTO with an invalid pictogram id
             var result = uc.UpdateUser(new GirafUserDTO(
-                _testContext.MockUsers[ADMIN_DEP_ONE]){ WeekScheduleIds = new List<long>() { 999 }}).Result;
+                _testContext.MockUsers[ADMIN_DEP_ONE])
+                {
+                    Resources = new List<long> () { -1 }
+                }).Result;
 
-            Assert.IsType<NotFoundObjectResult>(result);
+            Assert.IsType<BadRequestObjectResult>(result);
         }
         #endregion
         #region AddApplication
@@ -758,8 +762,7 @@ namespace GirafRest.Test.Controllers
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var result = uc.DeleteResource(_testContext.MockUsers[GUARDIAN_DEP_TWO].UserName,
-                                           new ResourceIdDTO() { ResourceId = GUARDIAN_PRIVATE_PICTOGRAM }).Result;
+            var result = uc.DeleteResource(new ResourceIdDTO() { ResourceId = GUARDIAN_PRIVATE_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
@@ -768,54 +771,50 @@ namespace GirafRest.Test.Controllers
         }
 
         [Fact]
-        public void DeleteResource_OwnPrivateInvalidUser_NotFound()
+        public void DeleteResource_PrivateNoUser_BadRequest()
         {
             var uc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var result = uc.DeleteResource("InvalidUser",
-                                           new ResourceIdDTO() { ResourceId = GUARDIAN_PRIVATE_PICTOGRAM }).Result;
+            var result = uc.DeleteResource(new ResourceIdDTO() { ResourceId = GUARDIAN_PRIVATE_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
 
-            Assert.IsType<NotFoundObjectResult>(result);
+            Assert.IsType<BadRequestObjectResult>(result);
         }
 
 
         [Fact]
-        public void DeleteResource_OwnProtectedValidUser_Unauthorized()
+        public void DeleteResource_OwnProtectedValidUser_BadRequest()
         {
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var result = uc.DeleteResource(_testContext.MockUsers[GUARDIAN_DEP_TWO].UserName,
-                                           new ResourceIdDTO() { ResourceId = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
+            var result = uc.DeleteResource(new ResourceIdDTO() { ResourceId = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
 
-            Assert.IsType<UnauthorizedResult>(result);
+            Assert.IsType<BadRequestObjectResult>(result);
         }
 
 
         [Fact]
-        public void DeleteResource_OwnProtectedInvalidUser_NotFound()
+        public void DeleteResource_OwnProtectedInvalidUser_BadRequest()
         {
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var result = uc.DeleteResource("Invalid",
-                                           new ResourceIdDTO() { ResourceId = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
+            var result = uc.DeleteResource(new ResourceIdDTO() { ResourceId = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
 
-            Assert.IsType<NotFoundObjectResult>(result);
+            Assert.IsType<BadRequestObjectResult>(result);
         }
 
 
-        [Fact]
+        /*[Fact]
         public void DeleteResource_AnotherProtectedValidUser_Unauthorized()
         {
             var uc = initializeTest();
@@ -845,41 +844,38 @@ namespace GirafRest.Test.Controllers
 
             Assert.IsType<NotFoundObjectResult>(result);
         }
-
+        */
 
         [Fact]
-        public void DeleteResource_PublicValidUser_Unauthorized()
+        public void DeleteResource_PublicValidUser_BadRequset()
         {
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var result = uc.DeleteResource(_testContext.MockUsers[GUARDIAN_DEP_TWO].UserName,
-                                           new ResourceIdDTO() { ResourceId = PUBLIC_PICTOGRAM }).Result;
+            var result = uc.DeleteResource(new ResourceIdDTO() { ResourceId = PUBLIC_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
 
-            Assert.IsType<UnauthorizedResult>(result);
+            Assert.IsType<BadRequestObjectResult>(result);
         }
 
 
         [Fact]
-        public void DeleteResource_PublicInvalidUser_NotFound()
+        public void DeleteResource_PublicInvalidUser_BadRequest()
         {
             var uc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var result = uc.DeleteResource("Invalid",
-                                           new ResourceIdDTO() { ResourceId = PUBLIC_PICTOGRAM }).Result;
+            var result = uc.DeleteResource(new ResourceIdDTO() { ResourceId = PUBLIC_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
 
-            Assert.IsType<NotFoundObjectResult>(result);
+            Assert.IsType<BadRequestObjectResult>(result);
         }
 
 
-        [Fact]
+        /*[Fact]
         public void DeleteResource_AnotherPrivateValidUser_Unauthorized()
         {
             var uc = initializeTest();
@@ -908,7 +904,7 @@ namespace GirafRest.Test.Controllers
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
 
             Assert.IsType<NotFoundObjectResult>(result);
-        }
+        }*/
         #endregion
         #region ToggleGrayscale
         [Fact]

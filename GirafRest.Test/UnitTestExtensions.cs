@@ -101,7 +101,7 @@ namespace GirafRest.Test
             {
                 get
                 {
-                    if (mockWeeks == null)
+                    if (mockWeeks == null) {
                         mockWeeks = new List<Week>()
                         {
                             new Week()
@@ -156,10 +156,11 @@ namespace GirafRest.Test
                                 }
                             },
                         };
-                    MockUsers[0].WeekSchedule.Add(mockWeeks[0]);
-                    MockUsers[1].WeekSchedule.Add(mockWeeks[1]);
-                    MockUsers[2].WeekSchedule.Clear();
-                    MockUsers[3].WeekSchedule.Clear();
+                        MockUsers[0].WeekSchedule.Add(mockWeeks[0]);
+                        MockUsers[1].WeekSchedule.Add(mockWeeks[1]);
+                        MockUsers[2].WeekSchedule.Clear();
+                        MockUsers[3].WeekSchedule.Clear();
+                    }
                     return mockWeeks;
                 }
             }
@@ -281,10 +282,6 @@ namespace GirafRest.Test
                             {
                                 Id = GirafRole.Citizen
                             },
-                            new GirafRole(GirafRole.Parent)
-                            {
-                                Id = GirafRole.Parent
-                            },
                             new GirafRole(GirafRole.Department)
                             {
                                 Id = GirafRole.Department
@@ -325,7 +322,7 @@ namespace GirafRest.Test
                             new IdentityUserRole<string>()
                             {
                                 UserId = MockUsers[6].Id,
-                                RoleId = MockRoles[4].Id
+                                RoleId = MockRoles[3].Id
                             }
                         };
 

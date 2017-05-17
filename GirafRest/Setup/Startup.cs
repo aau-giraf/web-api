@@ -10,6 +10,7 @@ using GirafRest.Extensions;
 using Microsoft.AspNetCore.Identity;
 using GirafRest.Controllers;
 using Serilog;
+using System;
 
 namespace GirafRest.Setup
 {
@@ -28,13 +29,20 @@ namespace GirafRest.Setup
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder().SetBasePath(env.ContentRootPath);
-            
-            builder.AddJsonFile(ProgramOptions.ConnectionStringName, optional: false, reloadOnChange: true);
+            Environment = env;
+
+            if (Environment.IsDevelopment())
+                builder.AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true);
+            else if(Environment.IsProduction())
+                builder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
+            else
+                throw new NotSupportedException("No database option is supported by this Environment mode");
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
         }
 
-        public IConfigurationRoot Configuration { get; }
+        private IConfigurationRoot Configuration { get; }
+        private IHostingEnvironment Environment { get; }
 
         /// <summary>
         /// This method gets called by the runtime. Use this method to add services to the application.
@@ -44,25 +52,16 @@ namespace GirafRest.Setup
         public void ConfigureServices(IServiceCollection services)
         {
             //Add the database context to the server using extension-methods
-            switch (ProgramOptions.DbOption) {
-                case DbOption.SQLite:
-                    services.AddSqlite();
-                    break;
-                case DbOption.MySQL:
-                    services.AddMySql(Configuration);
-                    break;
-                default:
-                    services.AddSqlite();
-                    break;
+            if (Environment.IsDevelopment())
+            {
+                services.AddSqlite();
+                configureIdentity<GirafSqliteDbContext>(services);
             }
-            
-            //Add Identity for user management.
-            services.AddIdentity<GirafUser, GirafRole>(options => {
-                options.RemovePasswordRequirements();
-                options.StopRedirectOnUnauthorized();
-            })
-                .AddEntityFrameworkStores<GirafDbContext>()
-                .AddDefaultTokenProviders();
+            else if (Environment.IsProduction())
+            {
+                services.AddMySql(Configuration);
+                configureIdentity<GirafMySqlDbContext>(services);
+            }
 
             // Add email sender for account recorvery.
             services.Configure<EmailConfig>(Configuration.GetSection("Email"));
@@ -75,7 +74,18 @@ namespace GirafRest.Setup
 
             services.ConfigurePolicies();
         }
-        
+        private void configureIdentity<T>(IServiceCollection services)
+            where T : GirafDbContext
+        {
+            //Add Identity for user management.
+            services.AddIdentity<GirafUser, GirafRole>(options => {
+                options.RemovePasswordRequirements();
+                options.StopRedirectOnUnauthorized();
+            })
+                .AddEntityFrameworkStores<T>()
+                .AddDefaultTokenProviders();
+        }
+
         /// <summary>
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         /// </summary>
@@ -92,7 +102,6 @@ namespace GirafRest.Setup
             IApplicationBuilder app,
             IHostingEnvironment env,
             ILoggerFactory loggerFactory,
-            GirafDbContext context,
             UserManager<GirafUser> userManager,
             RoleManager<GirafRole> roleManager,
             IApplicationLifetime appLifetime)
@@ -119,6 +128,12 @@ namespace GirafRest.Setup
                     template: "{controller=Account}/{action=AccessDenied}");
             });
 
+            GirafDbContext context;
+            if (env.IsDevelopment())
+                context = app.ApplicationServices.GetService<GirafSqliteDbContext>();
+            else
+                context = app.ApplicationServices.GetService<GirafMySqlDbContext>();
+
             // Create database + schemas if they do not exist
             context.Database.EnsureCreated();
 
@@ -126,7 +141,8 @@ namespace GirafRest.Setup
             roleManager.EnsureRoleSetup();
 
             //Fill some sample data into the database
-            if (ProgramOptions.GenerateSampleData) DBInitializer.Initialize(context, userManager);
+            if (ProgramOptions.GenerateSampleData)
+                DBInitializer.Initialize(context, userManager);
         }
     }
 }

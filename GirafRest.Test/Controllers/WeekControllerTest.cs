@@ -96,49 +96,6 @@ namespace GirafRest.Test
             Assert.IsType<NotFoundResult>(aRes);
         }
         #endregion
-        #region UpdateDay
-        [Fact]
-        public void UpdateDay_InExistingWeek_Ok()
-        {
-            var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var day = _testContext.MockUsers[GUARDIAN_DEP_TWO].WeekSchedule.First().Weekdays.First();
-            var tempWeek = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule;
-            
-            var res = wc.UpdateDay(DAY_ZERO, new WeekdayDTO(day));
-            IActionResult aRes = res.Result;
-
-            Assert.IsType<OkObjectResult>(aRes);
-            _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule = tempWeek;
-        }
-
-        [Fact]
-        public void UpdateDay_InNonExistingWeek_NotFound()
-        {
-            var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var day = _testContext.MockUsers[GUARDIAN_DEP_TWO].WeekSchedule.First().Weekdays.First();
-            var tempWeek = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule;
-
-            var res = wc.UpdateDay(NONEXISTING, new WeekdayDTO(day));
-            IActionResult aRes = res.Result;
-
-            Assert.IsType<NotFoundResult>(aRes);
-            _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule = tempWeek;
-        }
-
-        [Fact]
-        public void UpdateDay_InExistingWeekNullDTO_NotFound()
-        {
-            var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-
-            var res = wc.UpdateDay(DAY_ZERO, null);
-            IActionResult aRes = res.Result;
-
-            Assert.IsType<BadRequestObjectResult>(aRes);
-        }
-        #endregion
         #region UpdateWeek
         [Fact]
         public void UpdateWeek_ValidWeekValidDTO_Ok()
@@ -221,7 +178,7 @@ namespace GirafRest.Test
             var wc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
 
-            var res = wc.CreateWeek(new WeekDTO() { Id = null });
+            var res = wc.CreateWeek(new WeekDTO() { ThumbnailID = 999 });
             IActionResult aRes = res.Result;
 
             Assert.IsType<BadRequestObjectResult>(aRes);
