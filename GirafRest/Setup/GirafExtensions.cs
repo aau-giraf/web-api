@@ -1,9 +1,7 @@
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using GirafRest.Data;
-using GirafRest.Setup;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -11,12 +9,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Pomelo.EntityFrameworkCore.Extensions;
-using Pomelo.EntityFrameworkCore.MySql;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.FileProviders;
 using GirafRest.Models;
 using Microsoft.AspNetCore.Identity;
+using static GirafRest.Models.DTOs.GirafUserDTO;
 
 namespace GirafRest.Extensions
 {
@@ -66,6 +63,19 @@ namespace GirafRest.Extensions
                 //A hacky way to run tasks synchronously
                 var r = roleManager.CreateAsync(role).Result;
             }
+        }
+
+        /// <summary>
+        /// Makes a list of roles, which the user is a part of.
+        /// </summary>
+        /// <param name="result">The list of roles, which the user is part of.</param>
+        public static async Task<GirafRoles> makeRoleList(this RoleManager<GirafRole> roleManager, UserManager<GirafUser> userManager, GirafUser user)
+        {
+            GirafRoles userRole = new GirafRoles();
+            foreach (var role in roleManager.Roles)
+                if (await userManager.IsInRoleAsync(user, role.Name))
+                    userRole = (GirafRoles)Enum.Parse(typeof(GirafRoles), role.Name);
+            return userRole;
         }
 
         /// <summary>

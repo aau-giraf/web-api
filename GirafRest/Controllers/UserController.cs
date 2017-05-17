@@ -8,11 +8,11 @@ using GirafRest.Services;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using GirafRest.Models.DTOs;
-using GirafRest.Models.DTOs.UserDTOs;
 using System.Collections.Generic;
 using System.Reflection;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
+using static GirafRest.Models.DTOs.GirafUserDTO;
+using GirafRest.Extensions;
 
 namespace GirafRest.Controllers
 {
@@ -32,6 +32,14 @@ namespace GirafRest.Controllers
         /// A reference to GirafService, that defines common functionality for all controllers.
         /// </summary>
         private readonly IGirafService _giraf;
+        /// <summary>
+        /// A reference to the role manager for the project.
+        /// </summary>
+        private readonly RoleManager<GirafRole> _roleManager;
+        /// <summary>
+        /// A reference to the user manager for the project.
+        /// </summary>
+        private readonly UserManager<GirafUser> _userManager;
 
         /// <summary>
         /// Constructor for the User-controller. This is called by the asp.net runtime.
@@ -42,11 +50,15 @@ namespace GirafRest.Controllers
         public UserController(
             IGirafService giraf,
           IEmailService emailSender,
-          ILoggerFactory loggerFactory)
+          ILoggerFactory loggerFactory,
+          RoleManager<GirafRole> roleManager,
+          UserManager<GirafUser> userManager)
         {
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("User");
             _emailSender = emailSender;
+            _roleManager = roleManager;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -89,7 +101,10 @@ namespace GirafRest.Controllers
                 //We do not reveal if a user with the given username exists
                 return NotFound();
 
-            return Ok(new GirafUserDTO(user));
+            // Get the roles the user is associated with
+            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+
+            return Ok(new GirafUserDTO(user, userRole));
         }
 
         [Authorize]
@@ -118,7 +133,10 @@ namespace GirafRest.Controllers
                 user.GuardianOf = dep.Members.Where(m => _giraf._userManager.IsInRoleAsync(m, GirafRole.Guardian).Result).ToList();
             }
 
-            return Ok(new GirafUserDTO(user));
+            // Get the roles the user is associated with
+            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+
+            return Ok(new GirafUserDTO(user, userRole));
         }
 
         /// <summary>
@@ -172,7 +190,11 @@ namespace GirafRest.Controllers
             //Save changes and return the user with updated information.
             _giraf._context.Users.Update(user);
             await _giraf._context.SaveChangesAsync();
-            return Ok(new GirafUserDTO(user));
+
+            // Get the roles the user is associated with
+            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+
+            return Ok(new GirafUserDTO(user, userRole));
         }
         #region UserIcon
         /// <summary>
@@ -187,7 +209,10 @@ namespace GirafRest.Controllers
             usr.UserIcon = image;
             await _giraf._context.SaveChangesAsync();
 
-            return Ok(new GirafUserDTO(usr));
+            // Get the roles the user is associated with
+            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, usr);
+
+            return Ok(new GirafUserDTO(usr, userRole));
         }
         /// <summary>
         /// Allows the user to update his profile icon.
@@ -201,7 +226,10 @@ namespace GirafRest.Controllers
             usr.UserIcon = image;
             await _giraf._context.SaveChangesAsync();
 
-            return Ok(new GirafUserDTO(usr));
+            // Get the roles the user is associated with
+            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, usr);
+
+            return Ok(new GirafUserDTO(usr, userRole));
         }
         /// <summary>
         /// Allows the user to delete his profile icon.
@@ -216,7 +244,10 @@ namespace GirafRest.Controllers
             usr.UserIcon = null;
             await _giraf._context.SaveChangesAsync();
 
-            return Ok(new GirafUserDTO(usr));
+            // Get the roles the user is associated with
+            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, usr);
+
+            return Ok(new GirafUserDTO(usr, userRole));
         }
         #endregion
         #region Not strictly necessary methods, but more efficient than a PUT to user, as they only update a single value
@@ -249,7 +280,11 @@ namespace GirafRest.Controllers
             //Add the application for the user to see
             user.Settings.appsUserCanAccess.Add(application);
             await _giraf._context.SaveChangesAsync();
-            return Ok(new GirafUserDTO(user));
+
+            // Get the roles the user is associated with
+            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+
+            return Ok(new GirafUserDTO(user, userRole));
         }
         /// <summary>
         /// Delete an application from the given user's list of applications.
@@ -279,7 +314,11 @@ namespace GirafRest.Controllers
             //Remove it and save changes
             user.Settings.appsUserCanAccess.Remove(app);
             await _giraf._context.SaveChangesAsync();
-            return Ok(new GirafUserDTO(user));
+
+            // Get the roles the user is associated with
+            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+
+            return Ok(new GirafUserDTO(user, userRole));
         }
 
         /// <summary>
@@ -297,7 +336,11 @@ namespace GirafRest.Controllers
 
             user.DisplayName = displayName;
             await _giraf._context.SaveChangesAsync();
-            return Ok(new GirafUserDTO(user));
+
+            // Get the roles the user is associated with
+            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+
+            return Ok(new GirafUserDTO(user, userRole));
         }
 
         /// <summary>
@@ -346,7 +389,11 @@ namespace GirafRest.Controllers
             var userResource = new UserResource(user, resource);
             await _giraf._context.UserResources.AddAsync(userResource);
             await _giraf._context.SaveChangesAsync();
-            return Ok(new GirafUserDTO(user));
+
+            // Get the roles the user is associated with
+            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+
+            return Ok(new GirafUserDTO(user, userRole));
         }
 
         /// <summary>
@@ -386,8 +433,11 @@ namespace GirafRest.Controllers
             _giraf._context.UserResources.Remove(relationship);
             await _giraf._context.SaveChangesAsync();
 
+            // Get the roles the user is associated with
+            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, curUsr);
+
             //Return Ok and the user - the resource is now visible in user.Resources
-            return Ok(new GirafUserDTO(curUsr));
+            return Ok(new GirafUserDTO(curUsr, userRole));
         }
         
         /// <summary>
@@ -402,7 +452,11 @@ namespace GirafRest.Controllers
 
             user.Settings.UseGrayscale = enabled;
             await _giraf._context.SaveChangesAsync();
-            return Ok(new GirafUserDTO(user));
+
+            // Get the roles the user is associated with
+            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+
+            return Ok(new GirafUserDTO(user, userRole));
         }
 
         /// <summary>
@@ -417,7 +471,11 @@ namespace GirafRest.Controllers
 
             user.Settings.DisplayLauncherAnimations = enabled;
             await _giraf._context.SaveChangesAsync();
-            return Ok(new GirafUserDTO(user));
+
+            // Get the roles the user is associated with
+            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+
+            return Ok(new GirafUserDTO(user, userRole));
         }
         #endregion
         #region Helpers
@@ -499,7 +557,6 @@ namespace GirafRest.Controllers
                 _giraf._logger.LogError(error.Description);
             }
         }
-
         #endregion
     }
 }

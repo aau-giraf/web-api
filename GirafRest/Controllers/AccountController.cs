@@ -3,16 +3,15 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using GirafRest.Models;
 using GirafRest.Services;
+using GirafRest.Extensions;
 using GirafRest.Models.DTOs.AccountDTOs;
 using GirafRest.Models.DTOs.UserDTOs;
 using GirafRest.Models.DTOs;
 using Microsoft.AspNetCore.Http;
 using System;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
+using static GirafRest.Models.DTOs.GirafUserDTO;
 
 namespace GirafRest.Controllers
 {
@@ -27,7 +26,18 @@ namespace GirafRest.Controllers
         /// A reference to an email sender, that is used to send emails to users who request a new password.
         /// </summary>
         private readonly IEmailService _emailSender;
+        /// <summary>
+        /// 
+        /// </summary>
         private readonly IGirafService _giraf;
+        /// <summary>
+        /// A reference to the role manager for the project.
+        /// </summary>
+        private readonly RoleManager<GirafRole> _roleManager;
+        /// <summary>
+        /// A reference to the user manager for the project.
+        /// </summary>
+        private readonly UserManager<GirafUser> _userManager;
 
         /// <summary>
         /// Creates a new account controller. The account controller allows the users to sign in and out of their account
@@ -41,12 +51,16 @@ namespace GirafRest.Controllers
             SignInManager<GirafUser> signInManager,
             IEmailService emailSender,
             ILoggerFactory loggerFactory,
-            IGirafService giraf)
+            IGirafService giraf,
+            RoleManager<GirafRole> roleManager,
+            UserManager<GirafUser> userManager)
         {
             _signInManager = signInManager;
             _emailSender = emailSender;
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Account");
+            _roleManager = roleManager;
+            _userManager = userManager;
         }
 
         /// <summary>
@@ -121,7 +135,11 @@ namespace GirafRest.Controllers
 
                     await _signInManager.SignOutAsync();
                     await _signInManager.SignInAsync(citizenUser, isPersistent: true);
-                    return Ok(new GirafUserDTO(citizenUser));
+
+                    // Get the roles the user is associated with
+                    GirafRoles userRoles = await _roleManager.makeRoleList(_userManager, citizenUser);
+
+                    return Ok(new GirafUserDTO(citizenUser, userRoles));
                 }
                 //There was no user with the given username in the department - return NotFound.
                 else
@@ -155,7 +173,11 @@ namespace GirafRest.Controllers
 
                     await _signInManager.SignOutAsync();
                     await _signInManager.SignInAsync(guardianUser, isPersistent: true);
-                    return Ok(new GirafUserDTO(guardianUser));
+
+                    // Get the roles the user is associated with
+                    GirafRoles userRole = await _roleManager.makeRoleList(_userManager, guardianUser);
+
+                    return Ok(new GirafUserDTO(guardianUser, userRole));
                 }
                 //There was no user with the given username in the department - return NotFound.
                 else
@@ -200,7 +222,11 @@ namespace GirafRest.Controllers
                 await _giraf._userManager.AddToRoleAsync(user, GirafRole.Citizen);
                 await _signInManager.SignInAsync(user, isPersistent: true);
                 _giraf._logger.LogInformation("User created a new account with password.");
-                return Ok(new GirafUserDTO(user));
+
+                // Get the roles the user is associated with
+                GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+
+                return Ok(new GirafUserDTO(user, userRole));
             }
             AddErrors(result);
             return BadRequest();

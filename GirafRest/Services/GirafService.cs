@@ -1,19 +1,13 @@
 ﻿using GirafRest.Data;
 using GirafRest.Models;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.IO;
-using System.Threading;
 using GirafRest.Services;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace GirafRest.Controllers
 {
@@ -179,6 +173,5 @@ namespace GirafRest.Controllers
                 
             return ownedByDepartment;
         }
-
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -12,6 +13,14 @@ namespace GirafRest.Models.DTOs
     /// </summary>
     public class GirafUserDTO
     {
+        /// <summary>
+        /// Enum over roles.
+        /// </summary>
+        public enum GirafRoles { Admin, Citizen, Department, Guardian }
+        /// <summary>
+        /// List of the roles the current user is defined as in the system.
+        /// </summary>
+        public GirafRoles Role { get; set; }
         [Required]
         /// <summary>
         /// List of users the user is guardian of. Is simply null if the user isn't a guardian
@@ -70,19 +79,20 @@ namespace GirafRest.Models.DTOs
         /// Creates a new data transfer object from a given user.
         /// </summary>
         /// <param name="user">The user to create a DTO for.</param>
-        public GirafUserDTO(GirafUser user) 
+        public GirafUserDTO(GirafUser user, GirafRoles userRole) 
         {
             //Add all trivial values
             Id = user.Id;
             Username = user.UserName;
             DisplayName = user.DisplayName;
             UserIcon = user.UserIcon;
+            Role = userRole;
 
             //Check if the user is guardian of any users and add DTOs for those if that is the case
             if (user.GuardianOf != null){
                 GuardianOf = new List<GirafUserDTO>();
                 foreach(var usr in user.GuardianOf)
-                    GuardianOf.Add(new GirafUserDTO(usr));
+                    GuardianOf.Add(new GirafUserDTO(usr, GirafRoles.Citizen));
             }
 
             //Check if a user is in a department, add null as key if not.
