@@ -11,6 +11,8 @@ using GirafRest.Models.DTOs;
 using GirafRest.Models.DTOs.UserDTOs;
 using System.Collections.Generic;
 using System.Reflection;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System;
 
 namespace GirafRest.Controllers
 {
@@ -345,24 +347,17 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Deletes a resource with the specified id from the given user's list of resources.
         /// </summary>
-        /// <param name="userId">The id of the user to add the resource to.</param>
         /// <param name="resourceId">The id of the resource to add.</param>
         /// <returns>
         /// BadRequest if either of the two ids are missing or the resource is not PRIVATE, NotFound
         /// if either the user or the resource does not exist or Ok if everything went well.
         /// </returns>
-        [HttpDelete("resource/{username}")]
-        public async Task<IActionResult> DeleteResource(string username, [FromBody] ResourceIdDTO resourceIdDTO)
+        [HttpDelete("resource")]
+        public async Task<IActionResult> DeleteResource([FromBody] ResourceIdDTO resourceIdDTO)
         {
             //Check that valid parameters have been specified in the call
             if (resourceIdDTO == null)
                 return BadRequest("The body of the request must contain a resourceId");
-            if (string.IsNullOrEmpty(username))
-                return BadRequest("Please specify a userId to add the pictogram to");
-
-            //Fetch the user and check that it exists.
-            var user = await _giraf.LoadByNameAsync(username);
-            if (user == null) return NotFound($"There is no department with Id {username}.");
             
             //Fetch the resource with the given id, check that it exists.
             var resource = await _giraf._context.Pictograms
@@ -372,19 +367,20 @@ namespace GirafRest.Controllers
 
             //Check if the caller owns the resource
             var curUsr = await _giraf.LoadUserAsync(HttpContext.User);
-            var resourceOwned = await _giraf.CheckPrivateOwnership(resource, curUsr);
-            if (!resourceOwned) return Unauthorized();
 
-            //Check if the user already owns the resource and remove if so.
-            var drrelation = await _giraf._context.UserResources
-                .Where(ur => ur.ResourceKey == resource.Id && ur.OtherKey == user.Id)
+            //Fetch the relationship from the database and check that it exists
+            var relationship = await _giraf._context.UserResources
+                .Where(ur => ur.ResourceKey == resource.Id && ur.OtherKey == curUsr.Id)
                 .FirstOrDefaultAsync();
-            if (drrelation == null) return BadRequest("The user does not own the given resource.");
-            user.Resources.Remove(drrelation);
+            if (relationship == null) return BadRequest("The user does not own the given resource.");
+
+            //Remove the resource - both from the user's list and the database
+            curUsr.Resources.Remove(relationship);
+            _giraf._context.UserResources.Remove(relationship);
             await _giraf._context.SaveChangesAsync();
 
             //Return Ok and the user - the resource is now visible in user.Resources
-            return Ok(new GirafUserDTO(user));
+            return Ok(new GirafUserDTO(curUsr));
         }
         
         /// <summary>
@@ -426,32 +422,47 @@ namespace GirafRest.Controllers
         /// <returns></returns>
         private async Task updateResourceAsync(GirafUser user, ICollection<long> resouceIds)
         {
-            user.Resources.Clear();
-            foreach (var id in resouceIds)
+            //Remove all the resources that are in the user's list, but not in the id-list
+            foreach (var resource in user.Resources)
             {
-                var pict = await _giraf._context.Pictograms
-                    .Where(p => p.Id == id)
-                    .FirstOrDefaultAsync();
-                if (pict == null) throw new KeyNotFoundException("There is no pictogram with the given id: " + id);
-                user.Resources.Add(new UserResource(user, pict));
+                if(!resouceIds.Contains(resource.Key))
+                    _giraf._context.Remove(resource);
+            }
+
+            //Check if the user has attempted to add a resource in the PUT request - throw an exception if so.
+            foreach (var resourceId in resouceIds)
+            {
+                if (!user.Resources.Any(r => r.ResourceKey == resourceId))
+                {
+                    throw new InvalidOperationException("You may not add pictograms to a user by a PUT request. " +
+                        "Please use a POST to user/resource instead");
+                }
             }
         }
         /// <summary>
         /// Attempts to update the user's list of week schedules.
         /// </summary>
         /// <param name="user">The user to update the week schedules of.</param>
-        /// <param name="weekscheduleIds">A list of ids for the user's new week schedules.</param>
-        private async Task updateWeekAsync(GirafUser user, ICollection<long> weekscheduleIds)
+        /// <param name="weekschedule">A list of DTOs for the user's new week schedules.</param>
+        private async Task updateWeekAsync(GirafUser user, ICollection<WeekDTO> weekschedule)
         {
-            foreach (var id in weekscheduleIds)
+            //Run over the user's list of week schedules - delete those that are not in the list of DTOs
+            foreach (var week in user.WeekSchedule)
             {
-                var week = await _giraf._context.Weeks
-                    .Where(w => w.Id == id)
-                    .FirstOrDefaultAsync();
-                if (week == null) throw new KeyNotFoundException("There is no week with the given id: " + id);
-                user.WeekSchedule.Add(week);
+                if (!weekschedule.Any(w => w.Id == week.Id))
+                    _giraf._context.Remove(week);
             }
-            if (user.WeekSchedule != null) user.WeekSchedule.Clear();
+
+            //Run over the list of DTOs - add those that are not in the user's list of weeks
+            foreach (var week in weekschedule)
+            {
+                if(!user.WeekSchedule.Any(w => w.Id == week.Id))
+                {
+                    var newWeek = new Week(week);
+                    await _giraf._context.Weeks.AddAsync(newWeek);
+                    user.WeekSchedule.Add(newWeek);
+                }
+            }
         }
         /// <summary>
         /// Attempts to update the user's department from the given id.

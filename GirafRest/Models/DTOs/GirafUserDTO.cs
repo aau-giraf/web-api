@@ -40,7 +40,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// A list of the id's of the user's week schedules.
         /// </summary>
-        public ICollection<long> WeekScheduleIds { get; set; }
+        public ICollection<WeekDTO> WeekScheduleIds { get; set; }
         /// <summary>
         /// A list of the id's of the user's resources.
         /// </summary>
@@ -56,7 +56,7 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         public GirafUserDTO()
         {
-            WeekScheduleIds = new List<long>();
+            WeekScheduleIds = new List<WeekDTO>();
             Resources = new List<long>();
             Settings = new LauncherOptions();
         }
@@ -87,7 +87,7 @@ namespace GirafRest.Models.DTOs
                 DepartmentKey = user.DepartmentKey;
 
             //Add the ids of the user's weeks and resources
-            WeekScheduleIds = user.WeekSchedule.Select(w => w.Id).ToList();
+            WeekScheduleIds = user.WeekSchedule.Select(w => new WeekDTO(w)).ToList();
             Resources = user.Resources.Select(r => r.ResourceKey).ToList();
             
             //And finally the user's settings
