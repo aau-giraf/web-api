@@ -95,6 +95,7 @@ namespace GirafRest.Models.DTOs
                     GuardianOf.Add(new GirafUserDTO(usr, GirafRoles.Citizen));
             }
 
+            Console.WriteLine("Department = " + user.Department);
             //Check if a user is in a department, add null as key if not.
             if (user.Department == null)
                 DepartmentKey = null;

@@ -12,6 +12,8 @@ using GirafRest.Models.DTOs;
 using Microsoft.AspNetCore.Http;
 using System;
 using static GirafRest.Models.DTOs.GirafUserDTO;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace GirafRest.Controllers
 {
@@ -200,22 +202,23 @@ namespace GirafRest.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterDTO model)
         {
-            if (model == null)
-                return BadRequest("Please specify both 'Username', 'Password' and 'ConfirmPassword' " +
-                    "in the request body. You may optionally specify 'DepartmentId'.");
             //Check that all the necesarry data has been supplied
-            if (string.IsNullOrEmpty(model.Username))
-                return BadRequest("Please supply a username.");
-            if (string.IsNullOrEmpty(model.Password))
-                return BadRequest("Please supply a password");
-            if (string.IsNullOrEmpty(model.ConfirmPassword))
-                return BadRequest("Please supply a ConfirmPassword");
+            if (!ModelState.IsValid)
+                return BadRequest("Please specify both 'Username', 'Password' and 'ConfirmPassword' " +
+                    "in the request body. You must also specify 'DepartmentId'.");
 
+            // Check that password and confirm password match
             if (!model.Password.Equals(model.ConfirmPassword))
                 return BadRequest("The Password and ConfirmPassword must be equal.");
 
+            var department = await _giraf._context.Departments.Where(dep => dep.Key == model.DepartmentId).FirstOrDefaultAsync();
+
+            // Check that the department with the specified id exists
+            if (department == null)
+                return BadRequest("Department does not exist");
+
             //Create a new user with the supplied information
-            var user = new GirafUser (model.Username, model.DepartmentId);
+            var user = new GirafUser (model.Username, department);
             var result = await _giraf._userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {

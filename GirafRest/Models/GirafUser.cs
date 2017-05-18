@@ -34,11 +34,11 @@ namespace GirafRest.Models
         /// <summary>
         /// The key of the user's department.
         /// </summary>
-        public long? DepartmentKey { get; set; }
+        [ForeignKey("Department")]
+        public long DepartmentKey { get; set; }
         /// <summary>
         /// A reference to the user's department.
         /// </summary>
-        [ForeignKey("DepartmentKey")]
         public virtual Department Department { get; set; }
 
         /// <summary>
@@ -61,15 +61,13 @@ namespace GirafRest.Models
         /// </summary>
         /// <param name="userName">The username.</param>
         /// <param name="departmentId">The id of the department to which the user should be added.</param>
-        public GirafUser (string userName, long? departmentId) : base(userName)
+        public GirafUser (string userName, Department department) : base(userName)
         {
             this.UserName = userName;
             this.Resources = new List<UserResource>();
             this.WeekSchedule = new List<Week>();
             Settings = new LauncherOptions();
-
-            if (departmentId != null)
-                DepartmentKey = (long) departmentId;
+            Department = department;
         }
         
         /// <summary>
