@@ -144,7 +144,7 @@ namespace GirafRest.Controllers
             _giraf._context.Weeks.Add(week);
             user.WeekSchedule.Add(week);
             await _giraf._context.SaveChangesAsync();
-            return Ok(user.WeekSchedule.Select(w => new WeekDTO(w)).ToList());
+            return Ok(new WeekDTO(user.WeekSchedule.Last()));
         }
 
         /// <summary>
