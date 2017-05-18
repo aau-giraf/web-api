@@ -117,25 +117,28 @@ namespace GirafRest.Controllers
             if(thumbnail == null)
                 return NotFound($"Thumbnail does not exist");
             var week = new Week(thumbnail);
-            foreach (var day in newWeek.Days)
+            if(newWeek.Days != null)
             {
-                if(day.ElementsSet){
-                    Weekday wkDay = week.Weekdays[(int)day.Day];
-                    foreach(var elemId in day.ElementIDs) 
-                    {
-                        var picto = await _giraf._context.Frames.Where(p => p.Id == elemId).FirstOrDefaultAsync();
-                        if(picto != null)
-                            wkDay.Elements.Add(new WeekdayResource(wkDay, picto));
-                        else 
-                        {         
-                            var choice = await _giraf._context.Choices.Where(c => c.Id == elemId).FirstOrDefaultAsync();
-                            if(choice != null)
-                                wkDay.Elements.Add(new WeekdayResource(wkDay, choice));
-                            else
-                                return NotFound($"No resource with Id {elemId} exists");
+                foreach (var day in newWeek.Days)
+                {
+                    if(day.ElementsSet){
+                        Weekday wkDay = week.Weekdays[(int)day.Day];
+                        foreach(var elemId in day.ElementIDs) 
+                        {
+                            var picto = await _giraf._context.Frames.Where(p => p.Id == elemId).FirstOrDefaultAsync();
+                            if(picto != null)
+                                wkDay.Elements.Add(new WeekdayResource(wkDay, picto));
+                            else 
+                            {         
+                                var choice = await _giraf._context.Choices.Where(c => c.Id == elemId).FirstOrDefaultAsync();
+                                if(choice != null)
+                                    wkDay.Elements.Add(new WeekdayResource(wkDay, choice));
+                                else
+                                    return NotFound($"No resource with Id {elemId} exists");
+                            }
                         }
+                        week.Weekdays[(int)day.Day].Elements = wkDay.Elements;
                     }
-                    week.Weekdays[(int)day.Day].Elements = wkDay.Elements;
                 }
             }
             _giraf._context.Weeks.Add(week);
