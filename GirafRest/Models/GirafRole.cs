@@ -10,15 +10,15 @@ namespace GirafRest.Models
     {
         // Roles
         public const string Citizen = "Citizen";
-        public const string Admin = "Admin";
         public const string Guardian = "Guardian";
         public const string Department = "Department";
+        public const string SuperUser = "SuperUser";
 
         // Policies
         public const string RequireCitizen = "RequireCitizen";
-        public const string RequireAdmin = "RequireAdmin";
+        public const string RequireSuperUser = "RequireSuperUser";
         public const string RequireGuardian = "RequireGuardian";
-        public const string RequireGuardianOrAdmin = "RequireGuardianOrAdmin";
+        public const string RequireGuardianOrSuperUser = "RequireGuardianOrSuperUser";
         public const string RequireDepartment = "RequireDepartment";
 
         public GirafRole()

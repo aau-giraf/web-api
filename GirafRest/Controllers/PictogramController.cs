@@ -160,7 +160,7 @@ namespace GirafRest.Controllers
         /// <returns>NotFound if there is no pictogram with the specified id or 
         /// the updated pictogram to maintain statelessness.</returns>
         [HttpPut("{id}")]
-        [Authorize(Policy = GirafRole.RequireGuardianOrAdmin)]
+        [Authorize(Policy = GirafRole.RequireGuardianOrSuperUser)]
         public async Task<IActionResult> UpdatePictogramInfo(long id, [FromBody] PictogramDTO pictogram)
         {
             if (pictogram == null) return BadRequest("Unable to parse the request body.");
@@ -190,7 +190,7 @@ namespace GirafRest.Controllers
         /// <param name="id">The id of the pictogram to delete.</param>
         /// <returns>Ok if the pictogram was deleted and NotFound if no pictogram with the id exists.</returns>
         [HttpDelete("{id}")]
-        [Authorize(Policy = GirafRole.RequireGuardianOrAdmin)]
+        [Authorize(Policy = GirafRole.RequireGuardianOrSuperUser)]
         public async Task<IActionResult> DeletePictogram(int id)
         {
             var usr = await _giraf.LoadUserAsync(HttpContext.User);

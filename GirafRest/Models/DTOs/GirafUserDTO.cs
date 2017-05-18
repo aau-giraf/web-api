@@ -16,7 +16,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// Enum over roles.
         /// </summary>
-        public enum GirafRoles { Admin, Citizen, Department, Guardian }
+        public enum GirafRoles { Citizen, Department, Guardian, SuperUser }
         /// <summary>
         /// List of the roles the current user is defined as in the system.
         /// </summary>
