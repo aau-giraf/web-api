@@ -3,15 +3,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using GirafRest.Models.DTOs;
 
 namespace GirafRest.Models {
-
-    /// <summary>
-    /// Stores the file type for each pictogram
-    /// </summary>
-    public enum PictogramImageFormat
-    {
-        none, png, jpg
-    }
-
     /// <summary>
     /// A pictogram is an image with an associated title. They are used by Guardians and Citizens and so on to 
     /// communicate visually.
@@ -26,26 +17,16 @@ namespace GirafRest.Models {
         /// </summary>
         [Required]
         public AccessLevel AccessLevel { get; set; }
-
-        /// <summary>
-        /// Overrides the information of this Pictogram with new information found in the DTO.
-        /// </summary>
-        /// <param name="other">The new information.</param>
-        public virtual void Merge(PictogramDTO other) {
-            base.Merge(other);
-            this.AccessLevel = other.AccessLevel;
-        }
-
         /// <summary>
         /// A byte array containing the pictogram's image.
         /// </summary>
         [Column("Image")]
         public byte[] Image { get; set; }
-        
+
         /// <summary>
-        /// Defines the file type of the pictogram's image.
+        /// Currently not used, but the SymmetricDS pictograms contained this field.
         /// </summary>
-        public PictogramImageFormat ImageFormat { get; set; }
+        public byte[] Sound { get; set; }
 
         /// <summary>
         /// Creates a new pictogram with the given title and access level.
@@ -56,16 +37,24 @@ namespace GirafRest.Models {
         {
             this.Title = title;
             this.AccessLevel = accessLevel;
-            ImageFormat = PictogramImageFormat.none;
         }
 
         /// <summary>
         /// DO NOT DELETE THIS.
         /// It is required by Newtonsoft
         /// </summary>
-        public Pictogram()
+        public Pictogram(){}
+
+        /// <summary>
+        /// Overrides the information of this Pictogram with new information found in the DTO.
+        /// </summary>
+        /// <param name="other">The new information.</param>
+        public virtual void Merge(PictogramDTO other)
         {
-            ImageFormat = PictogramImageFormat.none;
+            base.Merge(other);
+            this.AccessLevel = (AccessLevel)other.AccessLevel;
+            this.Title = other.Title;
+            this.Image = other.Image;
         }
     }
 }

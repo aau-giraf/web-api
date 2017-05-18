@@ -173,18 +173,5 @@ namespace GirafRest.Extensions
                 });
             }
         }
-
-        public static string ToContentType(this PictogramImageFormat format)
-        {
-            switch (format)
-            {
-                case PictogramImageFormat.png:
-                    return "image/png";
-                case PictogramImageFormat.jpg:
-                    return "image/jpeg";
-                default:
-                    return "";
-            }
-        }
     }
 }

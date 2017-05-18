@@ -1172,9 +1172,9 @@ namespace GirafRest.Test
         public void FilterByTitle(string query, int expectedPictograms) {
             var pc = initializeTest();
             
-            var res = pc.FilterByTitle(_testContext.MockPictograms, query);
+            var res = pc.FilterByTitle(_testContext.MockPictograms.AsQueryable(), query);
 
-            Assert.Equal(expectedPictograms, res.Count);
+            Assert.Equal(expectedPictograms, res.ToList().Count);
         }
         #endregion
         #region Helpers

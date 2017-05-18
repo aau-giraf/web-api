@@ -23,12 +23,6 @@ namespace GirafRest
         public static bool GenerateSampleData = false;
 
         /// <summary>
-        /// A static field for storing the choice of database option.
-        /// Defaults to MySQL
-        /// </summary>
-        public static DbOption DbOption = DbOption.MySQL;
-
-        /// <summary>
         /// A field for storing the port on which to host the server.
         /// </summary>
         public static Int16 Port = 5000;

@@ -6,12 +6,13 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using GirafRest.Data;
 using GirafRest.Models;
 
-namespace GirafRest.Migrations.MySQL
+namespace GirafRest.Migrations.MySql
 {
     [DbContext(typeof(GirafMySqlDbContext))]
-    partial class GirafMySqlDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170518075206_AddedPictogramSound")]
+    partial class AddedPictogramSound
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.1");

@@ -14,8 +14,7 @@ namespace GirafRest
         /// <summary>
         /// A list of arguments that are allowed by the application.
         /// </summary>
-        private const string _options = "\n\t--db=[mysql|sqlite]\t\t| Connect to MySQL or SQLite database, defaults to SQLite.\n" +
-                          "\t--prod=[true|false]\t\t| If true then connect to production db, defaults to false.\n" +
+        private const string _options = "\t--prod=[true|false]\t\t| If true then connect to production db, defaults to false.\n" +
                           "\t--port=integer\t\t\t| Specify which port to host the server on, defaults to 5000.\n" +
                           "\t--list\t\t\t\t| List options\n" +
                           "\t--sample-data\t\t| Tells the rest-api to generate some sample data. This only works on an empty database." +
@@ -42,7 +41,6 @@ namespace GirafRest
         public ProgramArgumentParser()
         {
             programArgumentDictionary = new Dictionary<string, ProgramArgumentHandler>();
-            programArgumentDictionary["--db"] = programArgumentDb;
             programArgumentDictionary["--prod"] = programArgumentProduction;
             programArgumentDictionary["--port"] = programArgumentPort;
             programArgumentDictionary["--list"] = (x) => Console.WriteLine(_options);
@@ -92,24 +90,6 @@ namespace GirafRest
                 Console.WriteLine(e.Message);
                 return false;
             }
-        }
-
-        /// <summary>
-        /// Attempts to configure the database option to the user's liking.
-        /// </summary>
-        /// <param name="dbOption">A string stating which database to use, mysql for MySQL and sqlite for SQLite</param>
-        private void programArgumentDb(params string[] dbOption)
-        {
-            if (dbOption[0].Equals("mysql"))
-                ProgramOptions.DbOption = DbOption.MySQL;
-            else if (dbOption[0].Equals("sqlite"))
-                ProgramOptions.DbOption = DbOption.SQLite;
-            else
-            {
-                throw new ArgumentException("\tERROR: Invalid database parameter was specified. Expected [sqlite|mysql] but found "
-                    + dbOption[0]);
-            }
-            Console.WriteLine("\tSetting database option to: " + dbOption[0]);
         }
 
         /// <summary>

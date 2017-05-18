@@ -31,21 +31,28 @@ namespace GirafRest.Controllers
         public ILogger _logger { get; set; }
 
         /// <summary>
-        /// A constructor for the PictogramController. This is automatically called by asp.net when receiving the first request for a pictogram.
+        /// A constructor for the GirafService. This constructor is used when running in Production-mode.
         /// </summary>
         /// <param name="context">Reference to the database context.</param>
         /// <param name="userManager">Reference to asp.net's user-manager.</param>
-        public GirafService(GirafMySqlDbContext context, UserManager<GirafUser> userManager)
-        {
-            this._context = context;
-            this._userManager = userManager;
-        }
+        public GirafService(GirafMySqlDbContext context, UserManager<GirafUser> userManager) 
+            : this(context as GirafDbContext, userManager)
+        {}
         /// <summary>
-        /// A constructor for the PictogramController. This is automatically called by asp.net when receiving the first request for a pictogram.
+        /// A constructor for the GirafService. This constructor is used when running in Development-mode.
         /// </summary>
         /// <param name="context">Reference to the database context.</param>
         /// <param name="userManager">Reference to asp.net's user-manager.</param>
         public GirafService(GirafSqliteDbContext context, UserManager<GirafUser> userManager)
+            : this(context as GirafDbContext, userManager)
+        {}
+
+        /// <summary>
+        /// The most general constructor for GirafService. This constructor is used by both the other constructors and the unit tests.
+        /// </summary>
+        /// <param name="context">Reference to the database context.</param>
+        /// <param name="userManager">Reference to asp.net's user-manager.</param>
+        public GirafService(GirafDbContext context, UserManager<GirafUser> userManager)
         {
             this._context = context;
             this._userManager = userManager;

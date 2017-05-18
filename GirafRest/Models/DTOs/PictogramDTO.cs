@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace GirafRest.Models.DTOs
 {
     /// <summary>
@@ -6,23 +8,21 @@ namespace GirafRest.Models.DTOs
     /// </summary>
     public class PictogramDTO : FrameDTO
     {
+        [Required]
         /// <summary>
         /// The title of the pictogram.
         /// </summary>
         public string Title { get; set; }
+        [Required]
         /// <summary>
         /// The accesslevel of the pictogram.
         /// </summary>
-        public AccessLevel AccessLevel { get; set; }
+        public AccessLevel? AccessLevel { get; set; }
 
         /// <summary>
         /// An array of bytes containing the pictogram's image.
         /// </summary>
         public byte[] Image { get; set; }
-        /// <summary>
-        /// Defines the file type of the pictogram's image.
-        /// </summary>
-        public PictogramImageFormat ImageFormat { get; set; }
 
         /// <summary>
         /// Creates a new pictogram data transfer object from a given pictogram.

@@ -48,6 +48,18 @@ namespace GirafRest.Controllers
         [HttpGet]
         public async Task<IActionResult> ReadPictograms()
         {
+            int limit = int.MaxValue;
+            int startFrom = 0;
+            try
+            {
+                limit = parseQueryInteger("limit", int.MaxValue);
+                startFrom = parseQueryInteger("start_from", 0);
+            }
+            catch
+            {
+                return BadRequest("The request query contained an invalid value.");
+            }
+
             //Produce a list of all pictograms available to the user
             var userPictograms = await ReadAllPictograms();
             if (userPictograms == null)
@@ -57,10 +69,7 @@ namespace GirafRest.Controllers
             var titleQuery = HttpContext.Request.Query["title"];
             if(!String.IsNullOrEmpty(titleQuery)) userPictograms = FilterByTitle(userPictograms, titleQuery);
 
-            if (userPictograms.Count == 0)
-                return NotFound();
-            else
-                return Ok(userPictograms.Select(p => new PictogramDTO(p, p.Image)).ToList());
+            return Ok(await userPictograms.Skip(startFrom).Take(limit).ToListAsync());
         }
 
         /// <summary>
@@ -113,11 +122,13 @@ namespace GirafRest.Controllers
         /// <returns>The new pictogram with all database-generated information.</returns>
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CreatePictogram(PictogramDTO pictogram)
+        public async Task<IActionResult> CreatePictogram([FromBody]PictogramDTO pictogram)
         {
             if(pictogram == null) return BadRequest("The body of the request must contain a pictogram.");
+            if (!ModelState.IsValid) return BadRequest("Some data was missing from the request.");
+
             //Create the actual pictogram instance
-            Pictogram pict = new Pictogram(pictogram.Title, pictogram.AccessLevel);
+            Pictogram pict = new Pictogram(pictogram.Title, (AccessLevel) pictogram.AccessLevel);
             pict.Image = pictogram.Image;
 
             var user = await _giraf.LoadUserAsync(HttpContext.User);
@@ -152,6 +163,9 @@ namespace GirafRest.Controllers
         [Authorize(Policy = GirafRole.RequireGuardianOrAdmin)]
         public async Task<IActionResult> UpdatePictogramInfo(long id, [FromBody] PictogramDTO pictogram)
         {
+            if (pictogram == null) return BadRequest("Unable to parse the request body.");
+            if (!ModelState.IsValid) return BadRequest(ModelState.Values);
+
             var usr = await _giraf.LoadUserAsync(HttpContext.User);
             //Fetch the pictogram from the database and check that it exists
             var pict = await _giraf._context.Pictograms
@@ -164,7 +178,6 @@ namespace GirafRest.Controllers
 
             //Update the existing database entry and save the changes.
             pict.Merge(pictogram);
-            pict.Image = pictogram.Image;
             _giraf._context.Pictograms.Update(pict);
             await _giraf._context.SaveChangesAsync();
 
@@ -224,7 +237,6 @@ namespace GirafRest.Controllers
             }
 
             pict.Image = image;
-            setPictogramImageType(pict);
 
             var pictoResult = await _giraf._context.SaveChangesAsync();
             return Ok(new PictogramDTO(pict, image));
@@ -254,7 +266,6 @@ namespace GirafRest.Controllers
             //Update the image
             byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body);
             picto.Image = image;
-            setPictogramImageType(picto);
 
             await _giraf._context.SaveChangesAsync();
             return Ok(new PictogramDTO(picto, image));
@@ -282,7 +293,7 @@ namespace GirafRest.Controllers
             if (!CheckOwnership(picto, usr).Result)
                 return Unauthorized();
 
-            return File(picto.Image, picto.ImageFormat.ToContentType());
+            return Ok(picto.Image);
         }
         #endregion
 
@@ -320,43 +331,41 @@ namespace GirafRest.Controllers
         /// Read all pictograms available to the current user (or only the PUBLIC ones if no user is authorized).
         /// </summary>
         /// <returns>A list of said pictograms.</returns>
-        private async Task<List<Pictogram>> ReadAllPictograms() {
+        private async Task<IQueryable<Pictogram>> ReadAllPictograms() {
             try
             {
                 //Fetch all public pictograms and cask to a list - using Union'ing two IEnumerables gives an exception.
-                var _pictograms = await _giraf._context.Pictograms
-                    .Where(p => p.AccessLevel == AccessLevel.PUBLIC)
-                    .ToListAsync();
+                var pictograms = _giraf._context.Pictograms
+                    .Where(p => p.AccessLevel == AccessLevel.PUBLIC);
 
                 //Find the user and add his pictograms to the result
                 var user = await _giraf.LoadUserAsync(HttpContext.User);
                 if (user != null)
                 {
                     _giraf._logger.LogInformation($"Fetching user pictograms for user {user.UserName}");
-                    var userPictograms = user.Resources
-                        .Select(ur => ur.Resource)
+                    var userPictograms = _giraf._context.UserResources
+                        .Where(ur => ur.OtherKey == user.Id)
                         .OfType<Pictogram>();
-                    _pictograms = _pictograms
-                        .Union(userPictograms)
-                        .ToList();
+
+                    pictograms = pictograms.Union(userPictograms);
+
                     //Also find his department and their pictograms
                     var dep = user.Department;
                     if (dep != null)
                     {
                         _giraf._logger.LogInformation($"Fetching pictograms for department {dep.Name}");
-                        var depPictograms = dep.Resources
-                            .Select(dr => dr.Resource)
+                        var depPictograms = _giraf._context.DepartmentResources
+                            .Where(dr => dr.OtherKey == dep.Key)
                             .OfType<Pictogram>();
-                        _pictograms = _pictograms
-                            .Union(depPictograms)
-                            .ToList();
+
+                        pictograms = pictograms.Union(depPictograms);
                     }
                     else _giraf._logger.LogWarning($"{user.UserName} has no department.");
                 }
 
                 //Return the list of pictograms as Pictogram DTOs
                 //- returning Pictograms directly causes an exception due to circular references
-                return _pictograms;
+                return pictograms;
             } catch (Exception e)
             {
                 _giraf._logger.LogError("An exception occurred when reading all pictograms.", $"Message: {e.Message}", $"Source: {e.Source}");
@@ -364,12 +373,11 @@ namespace GirafRest.Controllers
             }
         }
 
-        private void setPictogramImageType(Pictogram picto)
+        private int parseQueryInteger(string queryStringName, int fallbackValue)
         {
-            if (HttpContext.Request.ContentType == IMAGE_TYPE_PNG)
-                picto.ImageFormat = PictogramImageFormat.png;
-            else if (HttpContext.Request.ContentType == IMAGE_TYPE_JPEG)
-                picto.ImageFormat = PictogramImageFormat.jpg;
+            if (string.IsNullOrEmpty(HttpContext.Request.Query[queryStringName]))
+                return fallbackValue;
+            return int.Parse(HttpContext.Request.Query[queryStringName]);
         }
         #endregion
         #region query filters
@@ -379,11 +387,9 @@ namespace GirafRest.Controllers
         /// <param name="pictos">A list of pictograms that should be filtered.</param>
         /// <param name="titleQuery">The string that specifies what to search for.</param>
         /// <returns>A list of all pictograms with 'titleQuery' as substring.</returns>
-        public List<Pictogram> FilterByTitle(List<Pictogram> pictos, string titleQuery) { 
-            var matches = pictos
+        public IQueryable<Pictogram> FilterByTitle(IQueryable<Pictogram> pictos, string titleQuery) { 
+            return pictos
                 .Where(p => p.Title.ToLower().Contains(titleQuery.ToLower()));
-
-            return matches.ToList();
         }
         #endregion
     }

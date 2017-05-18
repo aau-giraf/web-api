@@ -262,7 +262,7 @@ namespace GirafRest.Test.Controllers
             var dc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
 
-            var res = dc.RemoveResource(DEPARTMENT_ONE, new ResourceIdDTO() { ResourceId = RESOURCE_FIVE }).Result;
+            var res = dc.RemoveResource(new ResourceIdDTO() { ResourceId = RESOURCE_FIVE }).Result;
             Assert.IsType<OkObjectResult>(res);
         }
 
@@ -272,27 +272,17 @@ namespace GirafRest.Test.Controllers
             var dc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
 
-            var res = dc.RemoveResource(DEPARTMENT_ONE, null).Result;
+            var res = dc.RemoveResource(null).Result;
             Assert.IsType<BadRequestObjectResult>(res);
-        }
-
-        [Fact]
-        public void RemoveResource_RemoveResourceNonExistingDepartment_NotFound()
-        {
-            var dc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-
-            var res = dc.RemoveResource(DEPARTMENT_TEN, new ResourceIdDTO() { ResourceId = RESOURCE_FIVE }).Result;
-            Assert.IsType<NotFoundObjectResult>(res);
         }
 
         [Fact]
         public void RemoveResource_RemoveResourceWrongDepartment_BadRequest()
         {
             var dc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[3]);
 
-            var res = dc.RemoveResource(DEPARTMENT_TWO, new ResourceIdDTO() { ResourceId = RESOURCE_FIVE }).Result;
+            var res = dc.RemoveResource(new ResourceIdDTO() { ResourceId = RESOURCE_FIVE }).Result;
             Assert.IsType<BadRequestObjectResult>(res);
         }
         #endregion

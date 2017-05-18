@@ -273,15 +273,13 @@ namespace GirafRest.Controllers
         /// BadRequest if no resourceId has been specified as either query-parameter or in the request-body or
         /// Ok if no problems occured.
         /// </returns>
-        [HttpDelete("resource/{id}")]
+        [HttpDelete("resource/")]
         [Authorize]
-        public async Task<IActionResult> RemoveResource(long id, ResourceIdDTO resourceDTO) {
+        public async Task<IActionResult> RemoveResource(ResourceIdDTO resourceDTO) {
             if (resourceDTO == null)
                 return BadRequest("ResourceDTO must be specified!");
             //Fetch the department and check that it exists.
             var usr = await _giraf.LoadUserAsync(HttpContext.User);
-            var department = await _giraf._context.Departments.Where(d => d.Key == id).FirstOrDefaultAsync();
-            if(department == null) return NotFound($"There is no department with Id {id}.");
 
             long resId = -1;
             var resourceIdValid = CheckResourceId(resourceDTO.ResourceId, ref resId);
@@ -294,19 +292,18 @@ namespace GirafRest.Controllers
             if(resource == null) return NotFound($"There is no resource with id {resourceDTO.ResourceId}.");
             
             var resourceOwned = await _giraf.CheckProtectedOwnership(resource, usr);
-            
             if(!resourceOwned) return Unauthorized();
 
             //Check if the department already owns the resource and remove if so.
             var drrelation = await _giraf._context.DepartmentResources
-                .Where(dr => dr.ResourceKey == resource.Id && dr.OtherKey == department.Key)
+                .Where(dr => dr.ResourceKey == resource.Id && dr.OtherKey == usr.Department.Key)
                 .FirstOrDefaultAsync();
             if(drrelation == null) return BadRequest("The department does not own the given resource.");
-            department.Resources.Remove(drrelation);
+            usr.Department.Resources.Remove(drrelation);
             await _giraf._context.SaveChangesAsync();
 
             //Return Ok and the department - the resource is now visible in deparment.Resources
-            return Ok(new DepartmentDTO(department));
+            return Ok(new DepartmentDTO(usr.Department));
         }
 
         #region Helpers
