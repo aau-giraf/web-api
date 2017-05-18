@@ -53,7 +53,7 @@ namespace GirafRest.Extensions
 
             var Roles = new GirafRole[]
             {
-                new GirafRole(GirafRole.Admin),
+                new GirafRole(GirafRole.SuperUser),
                 new GirafRole(GirafRole.Guardian),
                 new GirafRole(GirafRole.Citizen),
                 new GirafRole(GirafRole.Department)
@@ -95,11 +95,11 @@ namespace GirafRest.Extensions
             });
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(GirafRole.RequireAdmin, policy => policy.RequireRole(GirafRole.Admin));
+                options.AddPolicy(GirafRole.RequireSuperUser, policy => policy.RequireRole(GirafRole.SuperUser));
             });
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(GirafRole.RequireGuardianOrAdmin, policy => policy.RequireRole(GirafRole.Guardian, GirafRole.Admin));
+                options.AddPolicy(GirafRole.RequireGuardianOrSuperUser, policy => policy.RequireRole(GirafRole.Guardian, GirafRole.SuperUser));
             });
             services.AddAuthorization(options =>
             {

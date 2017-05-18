@@ -158,7 +158,6 @@ namespace GirafRest.Controllers
         /// <param name="department">The Department user who is currently authenticated.</param>
         /// <param name="username">The username of the guardian to login as.</param>
         /// <returns></returns>
-
         private async Task<IActionResult> attemptGuardianLoginAsync(GirafUser department, string username)
         {
             //Check if the user is in the Guardian role - return unauthorized if not.

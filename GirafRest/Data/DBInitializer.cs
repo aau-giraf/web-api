@@ -114,7 +114,7 @@ namespace GirafRest.Setup
             // Add users to roles
             var a = userManager.AddToRoleAsync(users[0], GirafRole.Citizen).Result;
             a = userManager.AddToRoleAsync(users[1], GirafRole.Guardian).Result;
-            a = userManager.AddToRoleAsync(users[2], GirafRole.Admin).Result;
+            a = userManager.AddToRoleAsync(users[2], GirafRole.SuperUser).Result;
             a = userManager.AddToRoleAsync(users[3], GirafRole.Department).Result;
 
             return users;

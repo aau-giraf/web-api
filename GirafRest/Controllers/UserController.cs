@@ -93,7 +93,7 @@ namespace GirafRest.Controllers
                     //We do not reveal if a user with the given username exists
                     return NotFound();
             }
-            else if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Admin))
+            else if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser))
             {
                 //No additional checks required, simply skip to Ok.
             }
