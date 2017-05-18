@@ -147,10 +147,10 @@ namespace GirafRest.Controllers
         ///  NotFound if there is no department with the given ID or
         ///  Ok if there was no problems.</returns>
         [HttpPost("user/{id}")]
-        public async Task<IActionResult> AddUser(long ID, [FromBody]GirafUser usr)
+        public async Task<IActionResult> AddUser(long ID, [FromBody]GirafUserDTO usr)
         {
             //Fetch user and department and check that they exist
-            if(usr == null || usr.UserName == null)
+            if(usr == null || usr.Username == null)
                 return BadRequest("User was null");
             Department dep;
             
@@ -161,11 +161,16 @@ namespace GirafRest.Controllers
             if(dep == null) return NotFound("Department not found");
 
             //Check if the user is already in the department
-            if(dep.Members.Where(u => u.UserName == usr.UserName).Any())
+            if(dep.Members.Where(u => u.UserName == usr.Username).Any())
                 return BadRequest("User already exists in Department");
 
-            //Add the user and sace the changes
-            dep.Members.Add(usr);
+            //Add the user and save these changes
+
+            var user = await _giraf._context.Users.Where(u => u.Id == usr.Id).FirstOrDefaultAsync();
+            if(user == null)
+                return NotFound("No such user was found");
+            user.DepartmentKey = dep.Key;
+            dep.Members.Add(user);
             await _giraf._context.SaveChangesAsync();
             return Ok(new DepartmentDTO(dep));
         }
