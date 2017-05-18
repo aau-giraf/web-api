@@ -175,7 +175,7 @@ namespace GirafRest.Controllers
             try
             {
                 await updateDepartmentAsync(user, userDTO.DepartmentKey);
-                await updateResourceAsync(user, userDTO.Resources);
+                updateResourceAsync(user, userDTO.Resources);
                 await updateWeekAsync(user, userDTO.WeekScheduleIds);
             }
             catch (KeyNotFoundException e)
@@ -485,7 +485,7 @@ namespace GirafRest.Controllers
         /// <param name="user">The user, whose resources should be updated.</param>
         /// <param name="resouceIds">The ids of the users new resources.</param>
         /// <returns></returns>
-        private async Task updateResourceAsync(GirafUser user, ICollection<long> resouceIds)
+        private void updateResourceAsync(GirafUser user, ICollection<long> resouceIds)
         {
             //Remove all the resources that are in the user's list, but not in the id-list
             foreach (var resource in user.Resources)
