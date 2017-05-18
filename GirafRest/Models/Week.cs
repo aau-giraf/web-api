@@ -64,7 +64,7 @@ namespace GirafRest.Models
                     UpdateDay(new Weekday(day));
                 }
             }
-            this.ThumbnailKey = weekDTO.ThumbnailID;
+            this.ThumbnailKey = weekDTO.Thumbnail.Id;
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace GirafRest.Models
                 this.Id = (long)weekDTO.Id;
             else
                 this.Id = 0;
-            this.ThumbnailKey = weekDTO.ThumbnailID;
+            this.ThumbnailKey = weekDTO.Thumbnail.Id;
         }
 
         /// <summary>
