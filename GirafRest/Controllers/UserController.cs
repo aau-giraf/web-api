@@ -163,7 +163,7 @@ namespace GirafRest.Controllers
                     if (property.Name == "settings" || property.Name == "username")
                         return BadRequest("Info in userDTO must be set!");*/
             if (!ModelState.IsValid)
-                return BadRequest("Some data was missing from the serialized user \n\n" + ModelState.Values);
+                return BadRequest("Some data was missing from the serialized user \n\n" + ModelState.Values.SelectMany(v => v.Errors));
 
             //Update all simple fields
             user.Settings = userDTO.Settings;
