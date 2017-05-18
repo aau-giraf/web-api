@@ -34,7 +34,7 @@ namespace GirafRest.Models
         /// <summary>
         /// The key of the user's department.
         /// </summary>
-        public long DepartmentKey { get; set; }
+        public long? DepartmentKey { get; set; }
         /// <summary>
         /// A reference to the user's department.
         /// </summary>

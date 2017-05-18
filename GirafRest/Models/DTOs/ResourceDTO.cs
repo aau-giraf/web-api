@@ -6,7 +6,7 @@ namespace GirafRest.Models.DTOs
     /// Defines the structure of a resource when serializing and deserializing data. Data transfer objects (DTOs) 
     /// were introduced in the project due to problems with circular references in the model classes.
     /// </summary>
-    public class FrameDTO
+    public class ResourceDTO
     {
         /// <summary>
         /// The id of the resource.
@@ -18,10 +18,10 @@ namespace GirafRest.Models.DTOs
         public DateTime LastEdit { get; set; }
 
         /// <summary>
-        /// Creates a FrameDTO from the given resource, fit for sending as a request or response.
+        /// Creates a ResourceDTO from the given resource, fit for sending as a request or response.
         /// </summary>
         /// <param name="frame"></param>
-        public FrameDTO (Resource frame) {
+        public ResourceDTO (Resource frame) {
             if (frame != null){
                 this.Id = frame.Id;
                 this.LastEdit = frame.LastEdit;
@@ -31,6 +31,6 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// DO NOT DELETE THIS! NEWTONSOFT REQUIRES AN EMPTY CONSTRUCTOR!
         /// </summary>
-        public FrameDTO () {}
+        public ResourceDTO () {}
     }
 }

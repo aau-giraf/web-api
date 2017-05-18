@@ -40,7 +40,6 @@ namespace GirafRest.Models
         /// </summary>
         public Week()
         {
-            this.Weekdays = new List<Weekday>();
         }
 
         /// <summary>
@@ -49,7 +48,7 @@ namespace GirafRest.Models
         public Week(Pictogram thumbnail)
         {
             this.Thumbnail = thumbnail;
-            this.Weekdays = new Weekday[7];
+            this.Weekdays = new Weekday[7] { new Weekday(), new Weekday(), new Weekday(), new Weekday(), new Weekday(), new Weekday(), new Weekday()};
         }
         /// <summary>
         /// Creates a new Week from the given WeekDTO.

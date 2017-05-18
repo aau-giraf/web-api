@@ -37,7 +37,8 @@ namespace GirafRest.Models {
         /// Overrides the data of the current instance with the information found in 'other'.
         /// </summary>
         /// <param name="other">The data to override with.</param>
-        public virtual void Merge(FrameDTO other) {
+        public virtual void Merge(ResourceDTO other) {
+            if(other.Id != this.Id) throw new ArgumentException("Two pictograms with different IDs may not be merged.");
             this.LastEdit = DateTime.Now;
         }
 
