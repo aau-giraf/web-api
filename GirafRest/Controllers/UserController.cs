@@ -102,7 +102,7 @@ namespace GirafRest.Controllers
                 return NotFound();
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+            GirafRoles userRole = await _roleManager.findUserRole(_userManager, user);
 
             return Ok(new GirafUserDTO(user, userRole));
         }
@@ -134,7 +134,7 @@ namespace GirafRest.Controllers
             }
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+            GirafRoles userRole = await _roleManager.findUserRole(_userManager, user);
 
             return Ok(new GirafUserDTO(user, userRole));
         }
@@ -192,7 +192,7 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+            GirafRoles userRole = await _roleManager.findUserRole(_userManager, user);
 
             return Ok(new GirafUserDTO(user, userRole));
         }
@@ -210,7 +210,7 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, usr);
+            GirafRoles userRole = await _roleManager.findUserRole(_userManager, usr);
 
             return Ok(new GirafUserDTO(usr, userRole));
         }
@@ -227,7 +227,7 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, usr);
+            GirafRoles userRole = await _roleManager.findUserRole(_userManager, usr);
 
             return Ok(new GirafUserDTO(usr, userRole));
         }
@@ -245,7 +245,7 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, usr);
+            GirafRoles userRole = await _roleManager.findUserRole(_userManager, usr);
 
             return Ok(new GirafUserDTO(usr, userRole));
         }
@@ -282,7 +282,7 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+            GirafRoles userRole = await _roleManager.findUserRole(_userManager, user);
 
             return Ok(new GirafUserDTO(user, userRole));
         }
@@ -316,7 +316,7 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+            GirafRoles userRole = await _roleManager.findUserRole(_userManager, user);
 
             return Ok(new GirafUserDTO(user, userRole));
         }
@@ -338,7 +338,7 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+            GirafRoles userRole = await _roleManager.findUserRole(_userManager, user);
 
             return Ok(new GirafUserDTO(user, userRole));
         }
@@ -391,7 +391,7 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+            GirafRoles userRole = await _roleManager.findUserRole(_userManager, user);
 
             return Ok(new GirafUserDTO(user, userRole));
         }
@@ -434,7 +434,7 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, curUsr);
+            GirafRoles userRole = await _roleManager.findUserRole(_userManager, curUsr);
 
             //Return Ok and the user - the resource is now visible in user.Resources
             return Ok(new GirafUserDTO(curUsr, userRole));
@@ -454,7 +454,7 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+            GirafRoles userRole = await _roleManager.findUserRole(_userManager, user);
 
             return Ok(new GirafUserDTO(user, userRole));
         }
@@ -473,7 +473,7 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+            GirafRoles userRole = await _roleManager.findUserRole(_userManager, user);
 
             return Ok(new GirafUserDTO(user, userRole));
         }

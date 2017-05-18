@@ -69,7 +69,7 @@ namespace GirafRest.Extensions
         /// Makes a list of roles, which the user is a part of.
         /// </summary>
         /// <param name="result">The list of roles, which the user is part of.</param>
-        public static async Task<GirafRoles> makeRoleList(this RoleManager<GirafRole> roleManager, UserManager<GirafUser> userManager, GirafUser user)
+        public static async Task<GirafRoles> findUserRole(this RoleManager<GirafRole> roleManager, UserManager<GirafUser> userManager, GirafUser user)
         {
             GirafRoles userRole = new GirafRoles();
             foreach (var role in roleManager.Roles)

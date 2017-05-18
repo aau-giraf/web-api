@@ -139,7 +139,7 @@ namespace GirafRest.Controllers
                     await _signInManager.SignInAsync(citizenUser, isPersistent: true);
 
                     // Get the roles the user is associated with
-                    GirafRoles userRoles = await _roleManager.makeRoleList(_userManager, citizenUser);
+                    GirafRoles userRoles = await _roleManager.findUserRole(_userManager, citizenUser);
 
                     return Ok(new GirafUserDTO(citizenUser, userRoles));
                 }
@@ -176,7 +176,7 @@ namespace GirafRest.Controllers
                     await _signInManager.SignInAsync(guardianUser, isPersistent: true);
 
                     // Get the roles the user is associated with
-                    GirafRoles userRole = await _roleManager.makeRoleList(_userManager, guardianUser);
+                    GirafRoles userRole = await _roleManager.findUserRole(_userManager, guardianUser);
 
                     return Ok(new GirafUserDTO(guardianUser, userRole));
                 }
@@ -226,7 +226,7 @@ namespace GirafRest.Controllers
                 _giraf._logger.LogInformation("User created a new account with password.");
 
                 // Get the roles the user is associated with
-                GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+                GirafRoles userRole = await _roleManager.findUserRole(_userManager, user);
 
                 return Ok(new GirafUserDTO(user, userRole));
             }
