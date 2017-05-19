@@ -371,7 +371,7 @@ namespace GirafRest.Controllers
                 .Where(pf => pf.Id == resourceIdDTO.Id)
                 .FirstOrDefaultAsync();
             if (resource == null)
-                return NotFound("The is no resource with id " + resourceIdDTO.Id);
+                return NotFound("There is no resource with id " + resourceIdDTO.Id);
             if (resource.AccessLevel != AccessLevel.PRIVATE)
                 return BadRequest("Resources must be PRIVATE (2) in order for users to own them.");
 
