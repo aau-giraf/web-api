@@ -483,18 +483,16 @@ namespace GirafRest.Controllers
             if(user == null)
                 return NotFound("No user is currently authorized.");
 
-            return Ok(user.Settings);    
+            return Ok(new LauncherOptionsDTO(user.Settings));    
         }
 
         [HttpPut("settings")]
         [Authorize]
-        public async Task<IActionResult> UpdateUserSettings ([FromBody] LauncherOptions options) {
+        public async Task<IActionResult> UpdateUserSettings ([FromBody] LauncherOptionsDTO options) {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
 
             if(user == null)
                 return NotFound("No user is currently authorized.");
-            if(user.Settings.Key != options.Key)
-                return BadRequest("The supplied settings object must have the same key as the user's current.");
 
             user.Settings.UpdateFrom(options);
             await _giraf._context.SaveChangesAsync();

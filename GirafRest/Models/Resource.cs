@@ -9,6 +9,12 @@ namespace GirafRest.Models {
     /// Resource is the base class of all classes used by the users, e.g. pictograms and choices.
     /// </summary>
     public abstract class Resource {
+        [Required]
+        /// <summary>
+        /// The title of the Pictogram.
+        /// </summary>
+        public string Title { get; set; }
+
         /// <summary>
         /// The id of the resource.
         /// </summary>

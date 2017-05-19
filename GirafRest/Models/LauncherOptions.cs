@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using GirafRest.Models.DTOs;
 
 namespace GirafRest.Models
 {
@@ -43,7 +44,7 @@ namespace GirafRest.Models
             appsUserCanAccess = new List<ApplicationOption>();
         }
 
-        public void UpdateFrom (LauncherOptions newOptions) {
+        public void UpdateFrom (LauncherOptionsDTO newOptions) {
             this.appGridSizeColumns = newOptions.appGridSizeColumns;
             this.appGridSizeRows = newOptions.appGridSizeRows;
             this.appsUserCanAccess = newOptions.appsUserCanAccess;

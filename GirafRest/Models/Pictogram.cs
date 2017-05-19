@@ -9,10 +9,6 @@ namespace GirafRest.Models {
     /// </summary>
     public class Pictogram : Resource{
         /// <summary>
-        /// The title of the Pictogram.
-        /// </summary>
-        public string Title { get; set; }
-        /// <summary>
         /// The accesslevel, PRIVATE means only the owner can see it, PROTECTED means everyone in the owning department and PUBLIC is everyone.
         /// </summary>
         [Required]

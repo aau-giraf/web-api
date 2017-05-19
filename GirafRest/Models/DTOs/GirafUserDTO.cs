@@ -62,7 +62,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// A field for storing all the relevant GirafLauncher options.
         /// </summary>
-        public LauncherOptions Settings { get; set; }
+        public LauncherOptionsDTO Settings { get; set; }
 
         /// <summary>
         /// DO NOT DELETE THIS! NEWTONSOFT REQUIRES AN EMPTY CONSTRUCTOR!
@@ -71,7 +71,7 @@ namespace GirafRest.Models.DTOs
         {
             WeekScheduleIds = new List<WeekDTO>();
             Resources = new List<long>();
-            Settings = new LauncherOptions();
+            Settings = new LauncherOptionsDTO();
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace GirafRest.Models.DTOs
             Resources = user.Resources.Select(r => r.ResourceKey).ToList();
             
             //And finally the user's settings
-            Settings = user.Settings;
+            Settings = new LauncherOptionsDTO(user.Settings);
         }
     }
 }
