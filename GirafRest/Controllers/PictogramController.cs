@@ -125,7 +125,13 @@ namespace GirafRest.Controllers
         public async Task<IActionResult> CreatePictogram([FromBody]PictogramDTO pictogram)
         {
             if(pictogram == null) return BadRequest("The body of the request must contain a pictogram.");
-            if (!ModelState.IsValid) return BadRequest("Some data was missing from the request.");
+            if (!ModelState.IsValid)
+                return BadRequest("Some data was missing from the serialized user \n\n" +
+                                  string.Join(",",
+                                  ModelState.Values.Where(E => E.Errors.Count > 0)
+                                  .SelectMany(E => E.Errors)
+                                  .Select(E => E.ErrorMessage)
+                                  .ToArray()));
 
             //Create the actual pictogram instance
             Pictogram pict = new Pictogram(pictogram.Title, (AccessLevel) pictogram.AccessLevel);
@@ -164,7 +170,13 @@ namespace GirafRest.Controllers
         public async Task<IActionResult> UpdatePictogramInfo(long id, [FromBody] PictogramDTO pictogram)
         {
             if (pictogram == null) return BadRequest("Unable to parse the request body.");
-            if (!ModelState.IsValid) return BadRequest(ModelState.Values);
+            if (!ModelState.IsValid)
+                return BadRequest("Some data was missing from the serialized user \n\n" +
+                                  string.Join(",",
+                                  ModelState.Values.Where(E => E.Errors.Count > 0)
+                                  .SelectMany(E => E.Errors)
+                                  .Select(E => E.ErrorMessage)
+                                  .ToArray()));
 
             var usr = await _giraf.LoadUserAsync(HttpContext.User);
             //Fetch the pictogram from the database and check that it exists

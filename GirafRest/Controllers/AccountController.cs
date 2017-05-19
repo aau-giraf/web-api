@@ -196,8 +196,12 @@ namespace GirafRest.Controllers
         {
             //Check that all the necesarry data has been supplied
             if (!ModelState.IsValid)
-                return BadRequest("Please specify both 'Username', 'Password' and 'ConfirmPassword' " +
-                    "in the request body. You must also specify 'DepartmentId'.");
+                return BadRequest("Some data was missing from the serialized object \n\n" +
+                                  string.Join(",",
+                                  ModelState.Values.Where(E => E.Errors.Count > 0)
+                                  .SelectMany(E => E.Errors)
+                                  .Select(E => E.ErrorMessage)
+                                  .ToArray()));
 
             // Check that password and confirm password match
             if (!model.Password.Equals(model.ConfirmPassword))

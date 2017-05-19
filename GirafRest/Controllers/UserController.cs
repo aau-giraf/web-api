@@ -24,6 +24,9 @@ namespace GirafRest.Controllers
     [Route("[controller]")]
     public class UserController : Controller
     {
+        private const string IMAGE_TYPE_PNG = "image/png";
+        private const string IMAGE_TYPE_JPEG = "image/jpeg";
+        private const int IMAGE_CONTENT_TYPE_DEFINITION = 25;
         /// <summary>
         /// An email sender that can be used to send emails to users that have lost their password.
         /// </summary>
@@ -168,7 +171,7 @@ namespace GirafRest.Controllers
             try
             {
                 await updateDepartmentAsync(user, userDTO.DepartmentKey);
-                updateResourceAsync(user, userDTO.Resources);
+                updateResource(user, userDTO.Resources);
                 await updateWeekAsync(user, userDTO.WeekScheduleIds);
             }
             catch (KeyNotFoundException e)
@@ -194,11 +197,14 @@ namespace GirafRest.Controllers
         /// Allows the user to upload an icon for his profile.
         /// </summary>
         /// <returns>Ok if the upload was successful and BadRequest if not.</returns>
+        [Consumes(IMAGE_TYPE_PNG, IMAGE_TYPE_JPEG)]
         [HttpPost("icon")]
         public async Task<IActionResult> CreateUserIcon() {
             var usr = await _giraf._userManager.GetUserAsync(HttpContext.User);
-            if(usr.UserIcon != null) return BadRequest("The user already has an icon - please PUT instead.");
+            if (usr == null) return BadRequest("No user is logged in.");
+            if (usr.UserIcon != null) return BadRequest("The user already has an icon - please PUT instead.");
             byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body);
+            if (image.Length < IMAGE_CONTENT_TYPE_DEFINITION) return BadRequest("The request contained no image.");
             usr.UserIcon = image;
             await _giraf._context.SaveChangesAsync();
 
@@ -216,6 +222,7 @@ namespace GirafRest.Controllers
             var usr = await _giraf._userManager.GetUserAsync(HttpContext.User);
             if(usr.UserIcon == null) return BadRequest("The user does not have an icon - please POST instead.");
             byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body);
+            if (image.Length < IMAGE_CONTENT_TYPE_DEFINITION) return BadRequest("The request contained no image.");
             usr.UserIcon = image;
             await _giraf._context.SaveChangesAsync();
 
@@ -259,8 +266,13 @@ namespace GirafRest.Controllers
             //Check that an application has been specified
             if (application == null)
                 return BadRequest("No application was specified in the request body.");
-            if (application.ApplicationName == null || application.ApplicationPackage == null)
-                return BadRequest("You need to specify both an application name and an application package.");
+            if (!ModelState.IsValid)
+                return BadRequest("Some data was missing from the serialized user \n\n" +
+                                  string.Join(",",
+                                  ModelState.Values.Where(E => E.Errors.Count > 0)
+                                  .SelectMany(E => E.Errors)
+                                  .Select(E => E.ErrorMessage)
+                                  .ToArray()));
 
             //Fetch the target user and check that he exists
             var user = await _giraf.LoadByNameAsync(username);
@@ -508,23 +520,23 @@ namespace GirafRest.Controllers
         /// <param name="user">The user, whose resources should be updated.</param>
         /// <param name="resouceIds">The ids of the users new resources.</param>
         /// <returns></returns>
-        private void updateResourceAsync(GirafUser user, ICollection<long> resouceIds)
+        private void updateResource(GirafUser user, ICollection<long> resourceIds)
         {
-            //Remove all the resources that are in the user's list, but not in the id-list
-            foreach (var resource in user.Resources)
-            {
-                if(!resouceIds.Contains(resource.Key))
-                    _giraf._context.Remove(resource);
-            }
-
             //Check if the user has attempted to add a resource in the PUT request - throw an exception if so.
-            foreach (var resourceId in resouceIds)
+            foreach (var resourceId in resourceIds)
             {
                 if (!user.Resources.Any(r => r.ResourceKey == resourceId))
                 {
                     throw new InvalidOperationException("You may not add pictograms to a user by a PUT request. " +
                         "Please use a POST to user/resource instead");
                 }
+            }
+
+            //Remove all the resources that are in the user's list, but not in the id-list
+            foreach (var resource in user.Resources)
+            {
+                if(!resourceIds.Contains(resource.ResourceKey))
+                    _giraf._context.Remove(resource);
             }
         }
         /// <summary>
