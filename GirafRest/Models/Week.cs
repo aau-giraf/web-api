@@ -40,7 +40,6 @@ namespace GirafRest.Models
         /// </summary>
         public Week()
         {
-            initWeek();
         }
 
         /// <summary>
@@ -49,7 +48,7 @@ namespace GirafRest.Models
         public Week(Pictogram thumbnail)
         {
             this.Thumbnail = thumbnail;
-            this.Weekdays = new Weekday[7] { new Weekday(), new Weekday(), new Weekday(), new Weekday(), new Weekday(), new Weekday(), new Weekday()};
+            initWeek();
         }
         /// <summary>
         /// Creates a new Week from the given WeekDTO.
@@ -68,26 +67,6 @@ namespace GirafRest.Models
         }
 
         /// <summary>
-        /// Overrides the data of this week with the data of the given DTO.
-        /// </summary>
-        /// <param name="weekDTO">New data.</param>
-        public void Merge(WeekDTO weekDTO)
-        {
-            initWeek();
-            if(weekDTO.Days != null){
-                foreach (var day in weekDTO.Days)
-                {
-                    UpdateDay(new Weekday(day));
-                }
-            }
-            if (weekDTO.Id != null)
-                this.Id = (long)weekDTO.Id;
-            else
-                this.Id = 0;
-            this.ThumbnailKey = weekDTO.Thumbnail.Id;
-        }
-
-        /// <summary>
         /// Updates the given weekday of the Week with the new information found in 'day'.
         /// </summary>
         /// <param name="day">A day instance to update the week with - the old one is completely overridden.</param>
@@ -95,6 +74,7 @@ namespace GirafRest.Models
         {
             Weekdays[(int)day.Day] = day;
         }
+        
         /// <summary>
         /// Initialises the week. Must be initialised like this, otherwise the Weekdays will not receive a key
         /// </summary>
