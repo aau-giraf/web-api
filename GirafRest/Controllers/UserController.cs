@@ -150,6 +150,25 @@ namespace GirafRest.Controllers
         {
             //Fetch the user
             var user = await _giraf.LoadUserAsync(HttpContext.User);
+            return await UpdateUser(user.Id, userDTO);
+        }
+
+        /// <summary>
+        /// Updates all the information of the currently authenticated user with the information from the given DTO.
+        /// </summary>
+        /// <param name="id">The id of the user to update.</param>
+        /// <param name="userDTO">A DTO containing ALL the new information for the given user.</param>
+        /// <returns>
+        /// NotFound if the DTO contains either an invalid pictogram ID or an invalid week ID and
+        /// OK if the user was updated succesfully.
+        /// </returns>
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(string id, [FromBody]GirafUserDTO userDTO)
+        {
+            var usr = await _giraf._userManager.FindByIdAsync(id);
+
+            //Fetch the user
+            var user = await _giraf.LoadByNameAsync(usr.UserName);
             if (user == null)
                 return NotFound("User not found!");
 
@@ -371,7 +390,7 @@ namespace GirafRest.Controllers
                 .Where(pf => pf.Id == resourceIdDTO.Id)
                 .FirstOrDefaultAsync();
             if (resource == null)
-                return NotFound("The is no resource with id " + resourceIdDTO.Id);
+                return NotFound("There is no resource with id " + resourceIdDTO.Id);
             if (resource.AccessLevel != AccessLevel.PRIVATE)
                 return BadRequest("Resources must be PRIVATE (2) in order for users to own them.");
 
@@ -495,18 +514,16 @@ namespace GirafRest.Controllers
             if(user == null)
                 return NotFound("No user is currently authorized.");
 
-            return Ok(user.Settings);    
+            return Ok(new LauncherOptionsDTO(user.Settings));    
         }
 
         [HttpPut("settings")]
         [Authorize]
-        public async Task<IActionResult> UpdateUserSettings ([FromBody] LauncherOptions options) {
+        public async Task<IActionResult> UpdateUserSettings ([FromBody] LauncherOptionsDTO options) {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
 
             if(user == null)
                 return NotFound("No user is currently authorized.");
-            if(user.Settings.Key != options.Key)
-                return BadRequest("The supplied settings object must have the same key as the user's current.");
 
             user.Settings.UpdateFrom(options);
             await _giraf._context.SaveChangesAsync();

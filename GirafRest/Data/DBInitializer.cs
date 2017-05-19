@@ -167,7 +167,7 @@ namespace GirafRest.Setup
         }
         private static Choice createChoice(params Pictogram[] pictograms)
         {
-            return new Choice(pictograms.ToList());
+            return new Choice(pictograms.ToList(), "Choice" + pictograms.Length);
         }
 
         private static void AddSampleWeekAndWeekdays(GirafDbContext context, IList<Pictogram> Pictograms, 
