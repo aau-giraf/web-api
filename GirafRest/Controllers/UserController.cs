@@ -164,14 +164,14 @@ namespace GirafRest.Controllers
             //Update all simple fields
             user.Settings.UpdateFrom(userDTO.Settings);
             user.UserName = userDTO.Username;
-            user.DisplayName = userDTO.DisplayName;
+            user.DisplayName = userDTO.ScreenName;
             user.UserIcon = userDTO.UserIcon;
 
             //Attempt to update all fields that require database access.
             try
             {
-                await updateDepartmentAsync(user, userDTO.DepartmentKey);
-                updateResource(user, userDTO.Resources);
+                await updateDepartmentAsync(user, userDTO.Department);
+                updateResource(user, userDTO.Resources.Select(i => i.Id).ToList());
                 await updateWeekAsync(user, userDTO.WeekScheduleIds);
             }
             catch (KeyNotFoundException e)
