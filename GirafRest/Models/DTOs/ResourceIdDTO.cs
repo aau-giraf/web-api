@@ -10,6 +10,6 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// The Id of the Resource.
         /// </summary>
-        public long? ResourceId { get; set; }
+        public long? Id { get; set; }
     }
 }

@@ -17,7 +17,7 @@ namespace GirafRest
         private const string _options = "\t--prod=[true|false]\t\t| If true then connect to production db, defaults to false.\n" +
                           "\t--port=integer\t\t\t| Specify which port to host the server on, defaults to 5000.\n" +
                           "\t--list\t\t\t\t| List options\n" +
-                          "\t--sample-data\t\t| Tells the rest-api to generate some sample data. This only works on an empty database." +
+                          "\t--sample-data\t\t| Tells the rest-api to generate some sample data. This only works on an empty database.\n" +
                           "\t--logfile=string\t\t| Toggles logging to a file, the string specifies the path to the file relative to the working directory.";
         /// <summary>
         /// A short help message telling the user how to see all program arguments.

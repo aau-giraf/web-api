@@ -225,7 +225,7 @@ namespace GirafRest.Controllers
         [HttpPost("resource/{id}")]
         [Authorize]
         public async Task<IActionResult> AddResource(long id, ResourceIdDTO resourceDTO) {
-            if (resourceDTO == null || resourceDTO.ResourceId == null)
+            if (resourceDTO == null || resourceDTO.Id == null)
                 return BadRequest("You must specify a resource id in the request body.");
             //Fetch the department and check that it exists.
             var department = await _giraf._context.Departments.Where(d => d.Key == id).FirstOrDefaultAsync();
@@ -234,7 +234,7 @@ namespace GirafRest.Controllers
 
             //Check if there is a resourceId specified in the body or as a query-paramater
             long resId = -1;
-            var resourceIdValid = CheckResourceId(resourceDTO.ResourceId, ref resId);
+            var resourceIdValid = CheckResourceId(resourceDTO.Id, ref resId);
             if(!resourceIdValid) return BadRequest("Unable to find a valid resource-id. Please specify one in request-body or as url-query.");
 
             //Fetch the resource with the given id, check that it exists and that the user owns it.
@@ -282,19 +282,19 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<IActionResult> RemoveResource(ResourceIdDTO resourceDTO) {
             if (resourceDTO == null)
-                return BadRequest("ResourceDTO must be specified!");
+                return BadRequest("ResourceDTO must be specified");
             //Fetch the department and check that it exists.
             var usr = await _giraf.LoadUserAsync(HttpContext.User);
 
             long resId = -1;
-            var resourceIdValid = CheckResourceId(resourceDTO.ResourceId, ref resId);
+            var resourceIdValid = CheckResourceId(resourceDTO.Id, ref resId);
             if(!resourceIdValid) return BadRequest("Unable to find a valid resource-id. Please specify one in request-body or as url-query.");
 
             //Fetch the resource with the given id, check that it exists.
             var resource = await _giraf._context.Pictograms
                 .Where(f => f.Id == resId)
                 .FirstOrDefaultAsync();
-            if(resource == null) return NotFound($"There is no resource with id {resourceDTO.ResourceId}.");
+            if(resource == null) return NotFound($"There is no resource with id {resourceDTO.Id}.");
             
             var resourceOwned = await _giraf.CheckProtectedOwnership(resource, usr);
             if(!resourceOwned) return Unauthorized();

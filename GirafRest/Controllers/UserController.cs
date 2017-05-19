@@ -362,10 +362,10 @@ namespace GirafRest.Controllers
 
             //Find the resource and check that it actually does exist - also verify that the resource is private
             var resource = await _giraf._context.Pictograms
-                .Where(pf => pf.Id == resourceIdDTO.ResourceId)
+                .Where(pf => pf.Id == resourceIdDTO.Id)
                 .FirstOrDefaultAsync();
             if (resource == null)
-                return NotFound("The is no resource with id " + resourceIdDTO.ResourceId);
+                return NotFound("The is no resource with id " + resourceIdDTO.Id);
             if (resource.AccessLevel != AccessLevel.PRIVATE)
                 return BadRequest("Resources must be PRIVATE (2) in order for users to own them.");
 
@@ -381,7 +381,7 @@ namespace GirafRest.Controllers
                 return NotFound("There is no user with username " + username);
 
             //Check if the target user already owns the resource
-            if (user.Resources.Where(ur => ur.ResourceKey == resourceIdDTO.ResourceId).Any())
+            if (user.Resources.Where(ur => ur.ResourceKey == resourceIdDTO.Id).Any())
                 return BadRequest("The user already owns the resource.");
 
             //Create the relation and save changes.
@@ -412,9 +412,9 @@ namespace GirafRest.Controllers
             
             //Fetch the resource with the given id, check that it exists.
             var resource = await _giraf._context.Pictograms
-                .Where(f => f.Id == resourceIdDTO.ResourceId)
+                .Where(f => f.Id == resourceIdDTO.Id)
                 .FirstOrDefaultAsync();
-            if (resource == null) return NotFound($"There is no resource with id {resourceIdDTO.ResourceId}.");
+            if (resource == null) return NotFound($"There is no resource with id {resourceIdDTO.Id}.");
 
             //Check if the caller owns the resource
             var curUsr = await _giraf.LoadUserAsync(HttpContext.User);
@@ -475,6 +475,36 @@ namespace GirafRest.Controllers
             GirafRoles userRole = await _roleManager.findUserRole(_userManager, user);
 
             return Ok(new GirafUserDTO(user, userRole));
+        }
+
+        /// <summary>
+        /// Read the currently authorized user's settings object.
+        /// </summary>
+        /// <returns>The current user's settings.</returns>
+        [HttpGet("settings")]
+        [Authorize]
+        public async Task<IActionResult> ReadUserSettins () {
+            var user = await _giraf.LoadUserAsync(HttpContext.User);
+
+            if(user == null)
+                return NotFound("No user is currently authorized.");
+
+            return Ok(user.Settings);    
+        }
+
+        [HttpPut("settings")]
+        [Authorize]
+        public async Task<IActionResult> UpdateUserSettings ([FromBody] LauncherOptions options) {
+            var user = await _giraf.LoadUserAsync(HttpContext.User);
+
+            if(user == null)
+                return NotFound("No user is currently authorized.");
+            if(user.Settings.Key != options.Key)
+                return BadRequest("The supplied settings object must have the same key as the user's current.");
+
+            user.Settings.UpdateFrom(options);
+            await _giraf._context.SaveChangesAsync();
+            return Ok(user.Settings);
         }
         #endregion
         #region Helpers

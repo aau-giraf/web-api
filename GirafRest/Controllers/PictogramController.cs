@@ -69,7 +69,7 @@ namespace GirafRest.Controllers
             var titleQuery = HttpContext.Request.Query["title"];
             if(!String.IsNullOrEmpty(titleQuery)) userPictograms = FilterByTitle(userPictograms, titleQuery);
 
-            return Ok(await userPictograms.Skip(startFrom).Take(limit).ToListAsync());
+            return Ok(await userPictograms.OfType<Pictogram>().Skip(startFrom).Take(limit).Select(p => new PictogramDTO(p)).ToListAsync());
         }
 
         /// <summary>
@@ -333,40 +333,37 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns>A list of said pictograms.</returns>
         private async Task<IQueryable<Pictogram>> ReadAllPictograms() {
+            //In this method .AsNoTracking is used due to a bug in EntityFramework Core, where we are not allowed to call a constructor in .Select,
+            //i.e. convert the pictograms to PictogramDTOs.
             try
             {
-                //Fetch all public pictograms and cask to a list - using Union'ing two IEnumerables gives an exception.
-                var pictograms = _giraf._context.Pictograms
-                    .Where(p => p.AccessLevel == AccessLevel.PUBLIC);
-
                 //Find the user and add his pictograms to the result
                 var user = await _giraf.LoadUserAsync(HttpContext.User);
+                
                 if (user != null)
                 {
-                    _giraf._logger.LogInformation($"Fetching user pictograms for user {user.UserName}");
-                    var userPictograms = _giraf._context.UserResources
-                        .Where(ur => ur.OtherKey == user.Id)
-                        .OfType<Pictogram>();
-
-                    pictograms = pictograms.Union(userPictograms);
-
-                    //Also find his department and their pictograms
-                    var dep = user.Department;
-                    if (dep != null)
+                    if (user.Department != null)
                     {
-                        _giraf._logger.LogInformation($"Fetching pictograms for department {dep.Name}");
-                        var depPictograms = _giraf._context.DepartmentResources
-                            .Where(dr => dr.OtherKey == dep.Key)
-                            .OfType<Pictogram>();
-
-                        pictograms = pictograms.Union(depPictograms);
+                        _giraf._logger.LogInformation($"Fetching pictograms for department {user.Department.Name}");
+                        return _giraf._context.Pictograms.AsNoTracking()
+                            //All public pictograms
+                            .Where(p => p.AccessLevel == AccessLevel.PUBLIC 
+                            //All the users pictograms
+                            || p.Users.Any(ur => ur.OtherKey == user.Id)
+                            //All the department's pictograms
+                            || p.Departments.Any(dr => dr.OtherKey == user.DepartmentKey));
                     }
-                    else _giraf._logger.LogWarning($"{user.UserName} has no department.");
+
+                    return _giraf._context.Pictograms.AsNoTracking()
+                            //All public pictograms
+                            .Where(p => p.AccessLevel == AccessLevel.PUBLIC 
+                            //All the users pictograms
+                            || p.Users.Any(ur => ur.OtherKey == user.Id));
                 }
 
-                //Return the list of pictograms as Pictogram DTOs
-                //- returning Pictograms directly causes an exception due to circular references
-                return pictograms;
+                //Fetch all public pictograms as there is no user.
+                return _giraf._context.Pictograms.AsNoTracking()
+                    .Where(p => p.AccessLevel == AccessLevel.PUBLIC);
             } catch (Exception e)
             {
                 _giraf._logger.LogError("An exception occurred when reading all pictograms.", $"Message: {e.Message}", $"Source: {e.Source}");
