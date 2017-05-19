@@ -224,8 +224,9 @@ namespace GirafRest.Controllers
         /// </returns>
         [HttpPost("resource/{id}")]
         [Authorize]
-        public async Task<IActionResult> AddResource(long id, ResourceIdDTO resourceDTO) {
+        public async Task<IActionResult> AddResource(long id, [FromBody] ResourceIdDTO resourceDTO) {
             if (resourceDTO == null || resourceDTO.Id == null)
+
                 return BadRequest("You must specify a resource id in the request body.");
             //Fetch the department and check that it exists.
             var department = await _giraf._context.Departments.Where(d => d.Key == id).FirstOrDefaultAsync();
@@ -269,9 +270,8 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Removes a resource to the given department.
+        /// Removes a resource from the users department.
         /// </summary>
-        /// <param name="id">Id of the department to remove the resource from.</param>
         /// <param name="resourceId">ResourceIdDTO containing relevant information about the resource.</param>
         /// <returns>
         /// NotFound if either the department or the resource does not exist,
@@ -280,7 +280,7 @@ namespace GirafRest.Controllers
         /// </returns>
         [HttpDelete("resource/")]
         [Authorize]
-        public async Task<IActionResult> RemoveResource(ResourceIdDTO resourceDTO) {
+        public async Task<IActionResult> RemoveResource([FromBody]ResourceIdDTO resourceDTO) {
             if (resourceDTO == null)
                 return BadRequest("ResourceDTO must be specified");
             //Fetch the department and check that it exists.

@@ -121,9 +121,9 @@ namespace GirafRest.Test.Controllers
         public void AddUser_ExistingDepartment_OK()
         {
             var dc = initializeTest();
-            var user = new GirafUser()
+            var user = new GirafUserDTO()
             {
-                UserName = "TestUser"
+                Username = "TestUser"
             };
 
             var res = dc.AddUser(DEPARTMENT_ONE, user).Result;
@@ -134,9 +134,9 @@ namespace GirafRest.Test.Controllers
         public void AddUser_NonExistingDepartment_NotFound()
         {
             var dc = initializeTest();
-            var user = new GirafUser()
+            var user = new GirafUserDTO()
             {
-                UserName = "AddUserTest"
+                Username = "AddUserTest"
             };
 
             var res = dc.AddUser(DEPARTMENT_TEN, user).Result;
@@ -147,7 +147,7 @@ namespace GirafRest.Test.Controllers
         public void AddUser_ExistingDepartmentInvalidUser_BadRequest()
         {
             var dc = initializeTest();
-            var user = new GirafUser()
+            var user = new GirafUserDTO()
             {
             };
 
