@@ -54,7 +54,8 @@ namespace GirafRest.Models {
             base.Merge(other);
             this.AccessLevel = (AccessLevel)other.AccessLevel;
             this.Title = other.Title;
-            this.Image = other.Image;
+            if(other.Image != null)
+                this.Image = other.Image;
         }
     }
 }

@@ -32,6 +32,7 @@ namespace GirafRest.Models.DTOs
         {
             this.Title = Pictogram.Title;
             this.AccessLevel = Pictogram.AccessLevel;
+            this.Image = Pictogram.Image;
         }
 
         /// <summary>

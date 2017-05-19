@@ -175,7 +175,8 @@ namespace GirafRest.Controllers
 
             if (!CheckOwnership(pict, usr).Result)
                 return Unauthorized();
-
+            //Ensure that Id is not changed.
+            pictogram.Id = id;
             //Update the existing database entry and save the changes.
             pict.Merge(pictogram);
             _giraf._context.Pictograms.Update(pict);
