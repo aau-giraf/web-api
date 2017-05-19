@@ -49,7 +49,7 @@ namespace GirafRest.Controllers
         /// <param name="username">The username of the user in question
         /// <returns> NotFound if no such user exists, Badrequest if the operation failed and Ok if successful</returns>
         [HttpPost("guardian/{username}")]
-        [Authorize(Policy = GirafRole.RequireGuardianOrAdmin)]
+        [Authorize(Policy = GirafRole.RequireGuardianOrSuperUser)]
         public async Task<IActionResult> AddToGuardian(string username)
         {
             return await addUserToRoleAsync(username, GirafRole.Guardian);
@@ -61,7 +61,7 @@ namespace GirafRest.Controllers
         /// <param name="username">The username of the user in question
         /// <returns> NotFound if no such user exists, Badrequest if the operation failed and Ok if successful</returns>
         [HttpDelete("guardian/{username}")]
-        [Authorize(Policy = GirafRole.RequireGuardianOrAdmin)]
+        [Authorize(Policy = GirafRole.RequireGuardianOrSuperUser)]
         public async Task<IActionResult> RemoveFromGuardian(string username)
         {
             return await removeUserFromRoleAsync(username, GirafRole.Guardian);
@@ -73,10 +73,10 @@ namespace GirafRest.Controllers
         /// <param name="username">The username of the user in question
         /// <returns> NotFound if no such user exists, Badrequest if the operation failed and Ok if successful</returns>
         [HttpPost("admin/{username}")]
-        [Authorize(Policy = GirafRole.RequireAdmin)]
+        [Authorize(Policy = GirafRole.RequireSuperUser)]
         public async Task<IActionResult> AddToAdmin(string username)
         {
-            return await addUserToRoleAsync(username, GirafRole.Admin);
+            return await addUserToRoleAsync(username, GirafRole.SuperUser);
         }
 
         /// <summary>
@@ -85,10 +85,10 @@ namespace GirafRest.Controllers
         /// <param name="username">The username of the user in question
         /// <returns> NotFound if no such user exists, Badrequest if the operation failed and Ok if successful</returns>
         [HttpDelete("guardian/{username}")]
-        [Authorize(Policy = GirafRole.RequireAdmin)]
+        [Authorize(Policy = GirafRole.RequireSuperUser)]
         public async Task<IActionResult> RemoveFromAdmin(string username)
         {
-            return await removeUserFromRoleAsync(username, GirafRole.Admin);
+            return await removeUserFromRoleAsync(username, GirafRole.SuperUser);
         }
         
         /// <summary>

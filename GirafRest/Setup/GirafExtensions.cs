@@ -53,7 +53,7 @@ namespace GirafRest.Extensions
 
             var Roles = new GirafRole[]
             {
-                new GirafRole(GirafRole.Admin),
+                new GirafRole(GirafRole.SuperUser),
                 new GirafRole(GirafRole.Guardian),
                 new GirafRole(GirafRole.Citizen),
                 new GirafRole(GirafRole.Department)
@@ -69,7 +69,7 @@ namespace GirafRest.Extensions
         /// Makes a list of roles, which the user is a part of.
         /// </summary>
         /// <param name="result">The list of roles, which the user is part of.</param>
-        public static async Task<GirafRoles> makeRoleList(this RoleManager<GirafRole> roleManager, UserManager<GirafUser> userManager, GirafUser user)
+        public static async Task<GirafRoles> findUserRole(this RoleManager<GirafRole> roleManager, UserManager<GirafUser> userManager, GirafUser user)
         {
             GirafRoles userRole = new GirafRoles();
             foreach (var role in roleManager.Roles)
@@ -95,11 +95,11 @@ namespace GirafRest.Extensions
             });
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(GirafRole.RequireAdmin, policy => policy.RequireRole(GirafRole.Admin));
+                options.AddPolicy(GirafRole.RequireSuperUser, policy => policy.RequireRole(GirafRole.SuperUser));
             });
             services.AddAuthorization(options =>
             {
-                options.AddPolicy(GirafRole.RequireGuardianOrAdmin, policy => policy.RequireRole(GirafRole.Guardian, GirafRole.Admin));
+                options.AddPolicy(GirafRole.RequireGuardianOrSuperUser, policy => policy.RequireRole(GirafRole.Guardian, GirafRole.SuperUser));
             });
             services.AddAuthorization(options =>
             {

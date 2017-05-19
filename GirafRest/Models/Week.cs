@@ -40,6 +40,7 @@ namespace GirafRest.Models
         /// </summary>
         public Week()
         {
+            initWeek();
         }
 
         /// <summary>
@@ -56,15 +57,14 @@ namespace GirafRest.Models
         /// <param name="weekDTO">The data transfer object to create a new week from.</param>
         public Week(WeekDTO weekDTO)
         {
-            //Must be initialised like this, otherwise the Weekdays will not receive a key.
-            this.Weekdays = new Weekday[7] { new Weekday(), new Weekday(), new Weekday(), new Weekday(), new Weekday(), new Weekday(), new Weekday()};
+            initWeek();
             if(weekDTO.Days != null){
                 foreach (var day in weekDTO.Days)
                 {
                     UpdateDay(new Weekday(day));
                 }
             }
-            this.ThumbnailKey = weekDTO.ThumbnailID;
+            this.ThumbnailKey = weekDTO.Thumbnail.Id;
         }
 
         /// <summary>
@@ -73,8 +73,7 @@ namespace GirafRest.Models
         /// <param name="weekDTO">New data.</param>
         public void Merge(WeekDTO weekDTO)
         {
-            //Must be initialised like this, otherwise the Weekdays will not receive a key.
-            this.Weekdays = new Weekday[7] { new Weekday(), new Weekday(), new Weekday(), new Weekday(), new Weekday(), new Weekday(), new Weekday()};
+            initWeek();
             if(weekDTO.Days != null){
                 foreach (var day in weekDTO.Days)
                 {
@@ -85,7 +84,7 @@ namespace GirafRest.Models
                 this.Id = (long)weekDTO.Id;
             else
                 this.Id = 0;
-            this.ThumbnailKey = weekDTO.ThumbnailID;
+            this.ThumbnailKey = weekDTO.Thumbnail.Id;
         }
 
         /// <summary>
@@ -95,6 +94,21 @@ namespace GirafRest.Models
         public void UpdateDay(Weekday day)
         {
             Weekdays[(int)day.Day] = day;
+        }
+        /// <summary>
+        /// Initialises the week. Must be initialised like this, otherwise the Weekdays will not receive a key
+        /// </summary>
+        public void initWeek()
+        {
+            this.Weekdays = new Weekday[7] 
+            { 
+                new Weekday() { Day = Days.Monday }, 
+                new Weekday() { Day = Days.Tuesday }, 
+                new Weekday() { Day = Days.Wednesday }, 
+                new Weekday() { Day = Days.Thursday }, 
+                new Weekday() { Day = Days.Friday }, 
+                new Weekday() { Day = Days.Saturday }, 
+                new Weekday() { Day = Days.Sunday }};
         }
     }
 }

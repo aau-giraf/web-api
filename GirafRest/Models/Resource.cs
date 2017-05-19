@@ -20,7 +20,6 @@ namespace GirafRest.Models {
         /// <summary>
         /// The last time the given resource was edited.
         /// </summary>
-        [Required]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{yyyy-MM-dd HH:mm:ss}")]
         public DateTime LastEdit { get; set; }
 
