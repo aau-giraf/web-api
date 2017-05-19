@@ -42,6 +42,14 @@ namespace GirafRest.Models
         {
             appsUserCanAccess = new List<ApplicationOption>();
         }
+
+        public void UpdateFrom (LauncherOptions newOptions) {
+            this.appGridSizeColumns = newOptions.appGridSizeColumns;
+            this.appGridSizeRows = newOptions.appGridSizeRows;
+            this.appsUserCanAccess = newOptions.appsUserCanAccess;
+            this.DisplayLauncherAnimations = newOptions.DisplayLauncherAnimations;
+            this.UseGrayscale = newOptions.UseGrayscale;
+        }
     }
 
     /// <summary>
