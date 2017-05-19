@@ -37,11 +37,6 @@ namespace GirafRest.Controllers
         /// </summary>
         private readonly RoleManager<GirafRole> _roleManager;
         /// <summary>
-        /// A reference to the user manager for the project.
-        /// </summary>
-        private readonly UserManager<GirafUser> _userManager;
-
-        /// <summary>
         /// Creates a new account controller. The account controller allows the users to sign in and out of their account
         /// as well as creating new users. The account controller is automatically instantiated by ASP.NET.
         /// </summary>
@@ -54,15 +49,13 @@ namespace GirafRest.Controllers
             IEmailService emailSender,
             ILoggerFactory loggerFactory,
             IGirafService giraf,
-            RoleManager<GirafRole> roleManager,
-            UserManager<GirafUser> userManager)
+            RoleManager<GirafRole> roleManager)
         {
             _signInManager = signInManager;
             _emailSender = emailSender;
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Account");
             _roleManager = roleManager;
-            _userManager = userManager;
         }
 
         /// <summary>
@@ -139,7 +132,7 @@ namespace GirafRest.Controllers
                     await _signInManager.SignInAsync(citizenUser, isPersistent: true);
 
                     // Get the roles the user is associated with
-                    GirafRoles userRoles = await _roleManager.findUserRole(_userManager, citizenUser);
+                    GirafRoles userRoles = await _roleManager.findUserRole(_giraf._userManager, citizenUser);
 
                     return Ok(new GirafUserDTO(citizenUser, userRoles));
                 }
@@ -176,7 +169,7 @@ namespace GirafRest.Controllers
                     await _signInManager.SignInAsync(guardianUser, isPersistent: true);
 
                     // Get the roles the user is associated with
-                    GirafRoles userRole = await _roleManager.findUserRole(_userManager, guardianUser);
+                    GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, guardianUser);
 
                     return Ok(new GirafUserDTO(guardianUser, userRole));
                 }
@@ -226,7 +219,7 @@ namespace GirafRest.Controllers
                 _giraf._logger.LogInformation("User created a new account with password.");
 
                 // Get the roles the user is associated with
-                GirafRoles userRole = await _roleManager.findUserRole(_userManager, user);
+                GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
                 return Ok(new GirafUserDTO(user, userRole));
             }
