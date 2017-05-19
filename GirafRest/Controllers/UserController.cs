@@ -86,7 +86,8 @@ namespace GirafRest.Controllers
             //Get the current user and check if he is a guardian in the same department as the user
             //or an Admin, in which cases the user is allowed to see the user.
             var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
-            if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian))
+            if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian) ||
+                await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Department))
             {
                 //Check if the guardian is in the same department as the user
                 if (user.DepartmentKey != currentUser.DepartmentKey)
@@ -155,18 +156,16 @@ namespace GirafRest.Controllers
             if (user == null)
                 return NotFound("User not found!");
 
-            // Check if DTO or its properties is null
-            /*if (userDTO == null)
-                return BadRequest("DTO must not be null!");
-            foreach (var property in userDTO.GetType().GetProperties())
-                if (property.GetValue(userDTO) == null)
-                    if (property.Name == "settings" || property.Name == "username")
-                        return BadRequest("Info in userDTO must be set!");*/
             if (!ModelState.IsValid)
-                return BadRequest("Some data was missing from the serialized user \n\n" + ModelState.Values.SelectMany(v => v.Errors));
+                return BadRequest("Some data was missing from the serialized user \n\n" +
+                                  string.Join(",",
+                                  ModelState.Values.Where(E => E.Errors.Count > 0)
+                                  .SelectMany(E => E.Errors)
+                                  .Select(E => E.ErrorMessage)
+                                  .ToArray()));
 
             //Update all simple fields
-            user.Settings = userDTO.Settings;
+            user.Settings.UpdateFrom(userDTO.Settings);
             user.UserName = userDTO.Username;
             user.DisplayName = userDTO.DisplayName;
             user.UserIcon = userDTO.UserIcon;

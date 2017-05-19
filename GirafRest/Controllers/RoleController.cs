@@ -119,7 +119,7 @@ namespace GirafRest.Controllers
         /// <param name="username">The username of the user in question
         /// <param name="rolename">The name of the role
         /// <returns> NotFound if no such user exists, Badrequest if the operation fails. And Ok if all is well</returns>
-        [Authorize(Policy = GirafRole.RequireGuardianOrAdmin)]
+        [Authorize(Policy = GirafRole.SuperUser)]
         private async Task<IActionResult> addUserToRoleAsync(string username, string rolename)
         {
             var user = await _giraf._userManager.FindByNameAsync(username);
@@ -139,7 +139,6 @@ namespace GirafRest.Controllers
         /// <param name="username">The username of the user in question
         /// <param name="rolename">The name of the role
         /// <returns> NotFound if no such user exists, Badrequest if the operation fails. And Ok if all is well</returns>
-        [Authorize(Policy = GirafRole.RequireGuardianOrAdmin)]
         private async Task<IActionResult> removeUserFromRoleAsync(string username, string rolename)
         {
             var user = await _giraf._userManager.FindByNameAsync(username);

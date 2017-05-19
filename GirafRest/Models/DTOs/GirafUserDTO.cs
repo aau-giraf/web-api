@@ -21,7 +21,6 @@ namespace GirafRest.Models.DTOs
         /// List of the roles the current user is defined as in the system.
         /// </summary>
         public GirafRoles Role { get; set; }
-        [Required]
         /// <summary>
         /// List of users the user is guardian of. Is simply null if the user isn't a guardian
         /// </summary>
