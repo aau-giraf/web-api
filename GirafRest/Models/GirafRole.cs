@@ -20,6 +20,7 @@ namespace GirafRest.Models
         public const string RequireGuardian = "RequireGuardian";
         public const string RequireGuardianOrSuperUser = "RequireGuardianOrSuperUser";
         public const string RequireDepartment = "RequireDepartment";
+        public const string RequireDepartmentOrSuperUser = "RequireDepartmentOrSuperUser";
 
         public GirafRole()
         {

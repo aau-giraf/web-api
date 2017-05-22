@@ -105,6 +105,9 @@ namespace GirafRest.Extensions
             {
                 options.AddPolicy(GirafRole.RequireDepartment, policy => policy.RequireRole(GirafRole.Department));
             });
+            services.AddAuthorization(options => 
+                options.AddPolicy(GirafRole.RequireDepartmentOrSuperUser, policy => policy.RequireRole(GirafRole.Department, GirafRole.SuperUser))
+            );
         }
 
         /// <summary>

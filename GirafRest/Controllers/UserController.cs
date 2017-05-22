@@ -588,8 +588,11 @@ namespace GirafRest.Controllers
         /// <param name="departmentId">The id of the user's new department.</param>
         private async Task updateDepartmentAsync(GirafUser user, long? departmentId)
         {
-            if (departmentId == null)
+            if (departmentId == null) {
+                user.Department.Members.Remove(user);
+                user.Department = null;
                 return;
+            }
 
             user.DepartmentKey = (long) departmentId;
             var dep = await _giraf._context.Departments.Where(d => d.Key == departmentId).FirstOrDefaultAsync();
