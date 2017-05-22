@@ -178,7 +178,7 @@ namespace GirafRest.Test
             var wc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
 
-            var res = wc.CreateWeek(new WeekDTO() { ThumbnailID = 999 });
+            var res = wc.CreateWeek(new WeekDTO());
             IActionResult aRes = res.Result;
 
             Assert.IsType<BadRequestObjectResult>(aRes);
