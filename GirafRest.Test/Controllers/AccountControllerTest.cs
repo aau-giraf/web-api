@@ -10,7 +10,8 @@ using GirafRest.Services;
 using System.Threading.Tasks;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.DTOs.UserDTOs;
-
+using Microsoft.AspNetCore.Identity;
+using GirafRest.Models;
 
 namespace GirafRest.Test
 {
@@ -54,7 +55,8 @@ namespace GirafRest.Test
                 new MockSignInManager(_testContext.MockUserManager, _testContext),
                 mockEmail.Object,
                 _testContext.MockLoggerFactory.Object,
-                new MockGirafService(_testContext.MockDbContext.Object, _testContext.MockUserManager));
+                new MockGirafService(_testContext.MockDbContext.Object, _testContext.MockUserManager),
+                new Mock<RoleManager<GirafRole>>().Object);
 
 
             _testContext.MockHttpContext = ac.MockHttpContext();

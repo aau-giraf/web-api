@@ -9,6 +9,12 @@ namespace GirafRest.Models {
     /// Resource is the base class of all classes used by the users, e.g. pictograms and choices.
     /// </summary>
     public abstract class Resource {
+        [Required]
+        /// <summary>
+        /// The title of the Pictogram.
+        /// </summary>
+        public string Title { get; set; }
+
         /// <summary>
         /// The id of the resource.
         /// </summary>
@@ -20,7 +26,6 @@ namespace GirafRest.Models {
         /// <summary>
         /// The last time the given resource was edited.
         /// </summary>
-        [Required]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{yyyy-MM-dd HH:mm:ss}")]
         public DateTime LastEdit { get; set; }
 
@@ -37,7 +42,8 @@ namespace GirafRest.Models {
         /// Overrides the data of the current instance with the information found in 'other'.
         /// </summary>
         /// <param name="other">The data to override with.</param>
-        public virtual void Merge(FrameDTO other) {
+        public virtual void Merge(ResourceDTO other) {
+            if(other.Id != this.Id) throw new ArgumentException("Two pictograms with different IDs may not be merged.");
             this.LastEdit = DateTime.Now;
         }
 

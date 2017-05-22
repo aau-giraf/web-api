@@ -6,11 +6,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using GirafRest.Data;
 using GirafRest.Models;
 
-namespace GirafRest.Migrations
+namespace GirafRest.Migrations.MySQL
 {
-    [DbContext(typeof(GirafDbContext))]
-    [Migration("20170426134802_roles3")]
-    partial class roles3
+    [DbContext(typeof(GirafMySqlDbContext))]
+    [Migration("20170519124419_ResourceTitle")]
+    partial class ResourceTitle
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -28,11 +28,11 @@ namespace GirafRest.Migrations
                     b.Property<string>("ApplicationPackage")
                         .IsRequired();
 
-                    b.Property<string>("GirafUserId");
+                    b.Property<long?>("LauncherOptionsKey");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GirafUserId");
+                    b.HasIndex("LauncherOptionsKey");
 
                     b.ToTable("ApplicationOption");
                 });
@@ -74,24 +74,6 @@ namespace GirafRest.Migrations
                     b.ToTable("DeparmentResources");
                 });
 
-            modelBuilder.Entity("GirafRest.Models.Frame", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("id");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired();
-
-                    b.Property<DateTime>("LastEdit");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Frames");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("Frame");
-                });
-
             modelBuilder.Entity("GirafRest.Models.GirafRole", b =>
                 {
                     b.Property<string>("Id")
@@ -99,12 +81,6 @@ namespace GirafRest.Migrations
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
-
-                    b.Property<DateTime>("CreatedDate");
-
-                    b.Property<string>("Description");
-
-                    b.Property<string>("IPAddress");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256);
@@ -133,14 +109,16 @@ namespace GirafRest.Migrations
 
                     b.Property<long>("DepartmentKey");
 
-                    b.Property<bool>("DisplayLauncherAnimations");
-
                     b.Property<string>("DisplayName");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256);
 
                     b.Property<bool>("EmailConfirmed");
+
+                    b.Property<string>("GirafUserId");
+
+                    b.Property<bool>("IsDepartment");
 
                     b.Property<bool>("LockoutEnabled");
 
@@ -160,9 +138,9 @@ namespace GirafRest.Migrations
 
                     b.Property<string>("SecurityStamp");
 
-                    b.Property<bool>("TwoFactorEnabled");
+                    b.Property<long?>("SettingsKey");
 
-                    b.Property<bool>("UseGrayscale");
+                    b.Property<bool>("TwoFactorEnabled");
 
                     b.Property<byte[]>("UserIcon");
 
@@ -173,6 +151,8 @@ namespace GirafRest.Migrations
 
                     b.HasIndex("DepartmentKey");
 
+                    b.HasIndex("GirafUserId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasName("EmailIndex");
 
@@ -180,7 +160,27 @@ namespace GirafRest.Migrations
                         .IsUnique()
                         .HasName("UserNameIndex");
 
+                    b.HasIndex("SettingsKey");
+
                     b.ToTable("AspNetUsers");
+                });
+
+            modelBuilder.Entity("GirafRest.Models.LauncherOptions", b =>
+                {
+                    b.Property<long>("Key")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<bool>("DisplayLauncherAnimations");
+
+                    b.Property<bool>("UseGrayscale");
+
+                    b.Property<int>("appGridSizeColumns");
+
+                    b.Property<int>("appGridSizeRows");
+
+                    b.HasKey("Key");
+
+                    b.ToTable("LauncherOptions");
                 });
 
             modelBuilder.Entity("GirafRest.Models.Many_to_Many_Relationships.ChoiceResource", b =>
@@ -199,6 +199,27 @@ namespace GirafRest.Migrations
                     b.HasIndex("ResourceKey");
 
                     b.ToTable("ChoiceResource");
+                });
+
+            modelBuilder.Entity("GirafRest.Models.Resource", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("id");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired();
+
+                    b.Property<DateTime>("LastEdit");
+
+                    b.Property<string>("Title")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Frames");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Resource");
                 });
 
             modelBuilder.Entity("GirafRest.Models.UserResource", b =>
@@ -350,16 +371,11 @@ namespace GirafRest.Migrations
 
                     b.Property<string>("RoleId");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired();
-
                     b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("RoleId");
 
                     b.ToTable("AspNetUserRoles");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("IdentityUserRole<string>");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserToken<string>", b =>
@@ -379,7 +395,7 @@ namespace GirafRest.Migrations
 
             modelBuilder.Entity("GirafRest.Models.Choice", b =>
                 {
-                    b.HasBaseType("GirafRest.Models.Frame");
+                    b.HasBaseType("GirafRest.Models.Resource");
 
 
                     b.ToTable("Choices");
@@ -387,35 +403,16 @@ namespace GirafRest.Migrations
                     b.HasDiscriminator().HasValue("Choice");
                 });
 
-            modelBuilder.Entity("GirafRest.Models.PictoFrame", b =>
+            modelBuilder.Entity("GirafRest.Models.Pictogram", b =>
                 {
-                    b.HasBaseType("GirafRest.Models.Frame");
+                    b.HasBaseType("GirafRest.Models.Resource");
 
                     b.Property<int>("AccessLevel");
 
-                    b.Property<string>("Title");
-
-                    b.ToTable("PictoFrames");
-
-                    b.HasDiscriminator().HasValue("PictoFrame");
-                });
-
-            modelBuilder.Entity("GirafRest.Models.UserRole", b =>
-                {
-                    b.HasBaseType("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityUserRole<string>");
-
-
-                    b.ToTable("UserRoles");
-
-                    b.HasDiscriminator().HasValue("UserRole");
-                });
-
-            modelBuilder.Entity("GirafRest.Models.Pictogram", b =>
-                {
-                    b.HasBaseType("GirafRest.Models.PictoFrame");
-
                     b.Property<byte[]>("Image")
                         .HasColumnName("Image");
+
+                    b.Property<byte[]>("Sound");
 
                     b.ToTable("Pictograms");
 
@@ -424,9 +421,9 @@ namespace GirafRest.Migrations
 
             modelBuilder.Entity("GirafRest.Models.ApplicationOption", b =>
                 {
-                    b.HasOne("GirafRest.Models.GirafUser")
-                        .WithMany("AvailableApplications")
-                        .HasForeignKey("GirafUserId");
+                    b.HasOne("GirafRest.Models.LauncherOptions")
+                        .WithMany("appsUserCanAccess")
+                        .HasForeignKey("LauncherOptionsKey");
                 });
 
             modelBuilder.Entity("GirafRest.Models.DepartmentResource", b =>
@@ -436,7 +433,7 @@ namespace GirafRest.Migrations
                         .HasForeignKey("OtherKey")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("GirafRest.Models.Frame", "Resource")
+                    b.HasOne("GirafRest.Models.Resource", "Resource")
                         .WithMany("Departments")
                         .HasForeignKey("ResourceKey")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -448,6 +445,14 @@ namespace GirafRest.Migrations
                         .WithMany("Members")
                         .HasForeignKey("DepartmentKey")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("GirafRest.Models.GirafUser")
+                        .WithMany("GuardianOf")
+                        .HasForeignKey("GirafUserId");
+
+                    b.HasOne("GirafRest.Models.LauncherOptions", "Settings")
+                        .WithMany()
+                        .HasForeignKey("SettingsKey");
                 });
 
             modelBuilder.Entity("GirafRest.Models.Many_to_Many_Relationships.ChoiceResource", b =>
@@ -457,7 +462,7 @@ namespace GirafRest.Migrations
                         .HasForeignKey("OtherKey")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("GirafRest.Models.Frame", "Resource")
+                    b.HasOne("GirafRest.Models.Resource", "Resource")
                         .WithMany()
                         .HasForeignKey("ResourceKey")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -470,7 +475,7 @@ namespace GirafRest.Migrations
                         .HasForeignKey("OtherKey")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("GirafRest.Models.Frame", "Resource")
+                    b.HasOne("GirafRest.Models.Resource", "Resource")
                         .WithMany("Users")
                         .HasForeignKey("ResourceKey")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -502,7 +507,7 @@ namespace GirafRest.Migrations
                         .HasForeignKey("OtherKey")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("GirafRest.Models.Frame", "Resource")
+                    b.HasOne("GirafRest.Models.Resource", "Resource")
                         .WithMany()
                         .HasForeignKey("ResourceKey")
                         .OnDelete(DeleteBehavior.Cascade);

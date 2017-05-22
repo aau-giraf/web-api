@@ -211,6 +211,9 @@ namespace GirafRest.Migrations.MySQL
 
                     b.Property<DateTime>("LastEdit");
 
+                    b.Property<string>("Title")
+                        .IsRequired();
+
                     b.HasKey("Id");
 
                     b.ToTable("Frames");
@@ -409,8 +412,6 @@ namespace GirafRest.Migrations.MySQL
                         .HasColumnName("Image");
 
                     b.Property<byte[]>("Sound");
-
-                    b.Property<string>("Title");
 
                     b.ToTable("Pictograms");
 

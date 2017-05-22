@@ -10,9 +10,9 @@ namespace GirafRest.Models.DTOs
     public class WeekDTO
     {
         /// <summary>
-        /// The id of the weeks thumbnail.
+        /// The weeks thumbnail.
         /// </summary>
-        public long ThumbnailID { get; set; }
+        public PictogramDTO Thumbnail { get; set; }
         /// <summary>
         /// The id of the week.
         /// </summary>
@@ -30,11 +30,11 @@ namespace GirafRest.Models.DTOs
         {
             try
             {
-                this.ThumbnailID = (long)week.ThumbnailKey;
+                this.Thumbnail = new PictogramDTO(week.Thumbnail);
             }
             catch (NullReferenceException)
             {
-                this.ThumbnailID = 0;
+                this.Thumbnail = new PictogramDTO();
             }
             this.Id = week.Id;
             Days = new List<WeekdayDTO>();

@@ -12,7 +12,6 @@ namespace GirafRest.Models.DTOs.AccountDTOs
         /// The users username.
         /// </summary>
         [Required]
-        [EmailAddress]
         [Display(Name = "Brugernavn")]
         public string Username { get; set; }
 

@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using GirafRest.Services;
+using System;
 
 namespace GirafRest.Controllers
 {
@@ -86,19 +87,43 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<IActionResult> UpdateWeek(int id, [FromBody]WeekDTO newWeek)
         {
-            
-            if(newWeek == null || newWeek.Id == null) return BadRequest("The body of the request must contain a Week");
+            //return Ok(newWeek);
+            if(newWeek == null) return BadRequest("The body of the request must contain a Week");
             var user = await _giraf.LoadUserAsync(HttpContext.User);
-            if(user.WeekSchedule.Where(w => w.Id == id).Any())
+            var week = user.WeekSchedule.Where(w => w.Id == id).FirstOrDefault();
+            if (week == null)
+                return NotFound("No week with the given Id exists");
+            if (newWeek.Thumbnail != null)
             {
-                var week = user.WeekSchedule.Where(w => w.Id == id).FirstOrDefault();
-                if (week == null) return NotFound();
-                week.Merge(newWeek);
-                await _giraf._context.SaveChangesAsync();
-                return Ok(user.WeekSchedule.Select(w => new WeekDTO(w)));
+                var thumbnail = await _giraf._context.Pictograms.Where(p => p.Id == newWeek.Thumbnail.Id).FirstOrDefaultAsync();
+                if(thumbnail == null)
+                    return NotFound($"Thumbnail does not exist");
+                week.Thumbnail = thumbnail;
             }
-            else    
-                return NotFound();
+            foreach (var day in newWeek.Days)
+            {
+                Weekday wkDay = new Weekday(day);
+                if(day.ElementsSet){
+                    foreach(var elemId in day.ElementIDs) 
+                    {
+                        var picto = await _giraf._context.Frames.Where(p => p.Id == elemId).FirstOrDefaultAsync();
+                        if(picto != null)
+                            wkDay.Elements.Add(new WeekdayResource(wkDay, picto));
+                        else 
+                        {         
+                            var choice = await _giraf._context.Choices.Where(c => c.Id == elemId).FirstOrDefaultAsync();
+                            if(choice != null)
+                                wkDay.Elements.Add(new WeekdayResource(wkDay, choice));
+                            else
+                                return NotFound($"No resource with Id {elemId} exists");
+                            }
+                    }
+                }
+                week.Weekdays[(int)day.Day].Elements = wkDay.Elements;
+            }
+            _giraf._context.Weeks.Update(week);
+            await _giraf._context.SaveChangesAsync();
+            return Ok(new WeekDTO(week));
         }
 
         /// <summary>
@@ -113,13 +138,38 @@ namespace GirafRest.Controllers
         {
             if (newWeek == null) return BadRequest("Failed to find a valid Week in the request body.");
             var user = await _giraf.LoadUserAsync(HttpContext.User);
-            var week = new Week(newWeek);
-            if(await _giraf._context.Pictograms.Where(p => p.Id == week.ThumbnailKey).FirstOrDefaultAsync() == null)
-                return BadRequest("Thumbnail not found, make sure your Id is correct");
+            var thumbnail = await _giraf._context.Pictograms.Where(p => p.Id == newWeek.Thumbnail.Id).FirstOrDefaultAsync();
+            if(thumbnail == null)
+                return NotFound($"Thumbnail does not exist");
+            var week = new Week(thumbnail);
+            if(newWeek.Days != null)
+            {
+                foreach (var day in newWeek.Days)
+                {
+                    if(day.ElementsSet){
+                        Weekday wkDay = week.Weekdays[(int)day.Day];
+                        foreach(var elemId in day.ElementIDs) 
+                        {
+                            var picto = await _giraf._context.Frames.Where(p => p.Id == elemId).FirstOrDefaultAsync();
+                            if(picto != null)
+                                wkDay.Elements.Add(new WeekdayResource(wkDay, picto));
+                            else 
+                            {         
+                                var choice = await _giraf._context.Choices.Where(c => c.Id == elemId).FirstOrDefaultAsync();
+                                if(choice != null)
+                                    wkDay.Elements.Add(new WeekdayResource(wkDay, choice));
+                                else
+                                    return NotFound($"No resource with Id {elemId} exists");
+                            }
+                        }
+                        week.Weekdays[(int)day.Day].Elements = wkDay.Elements;
+                    }
+                }
+            }
             _giraf._context.Weeks.Add(week);
             user.WeekSchedule.Add(week);
             await _giraf._context.SaveChangesAsync();
-            return Ok(user.WeekSchedule.Select(w => new WeekDTO(w)).ToList());
+            return Ok(new WeekDTO(user.WeekSchedule.Last()));
         }
 
         /// <summary>
@@ -128,7 +178,7 @@ namespace GirafRest.Controllers
         /// <param name="id">If of the week to delete.</param>
         /// <returns>NotFound if the user does not have a week schedule or
         /// Ok and a serialized version of the updated week if everything went well.</returns>
-        [HttpPut("{id}")]
+        [HttpDelete("{id}")]
         [Authorize]
         public async Task<IActionResult> DeleteWeek(int id)
         {
@@ -137,7 +187,7 @@ namespace GirafRest.Controllers
             if(user.WeekSchedule.Where(w => w.Id == id).Any())
             {
                 var week = user.WeekSchedule.Where(w => w.Id == id).FirstOrDefault();
-                if (week == null) return NotFound();
+                if (week == null) return NotFound("No week with the given Id was found");
                 user.WeekSchedule.Remove(week);
                 await _giraf._context.SaveChangesAsync();
                 return Ok(user.WeekSchedule.Select(w => new WeekDTO(w)));

@@ -24,6 +24,9 @@ namespace GirafRest.Controllers
     [Route("[controller]")]
     public class UserController : Controller
     {
+        private const string IMAGE_TYPE_PNG = "image/png";
+        private const string IMAGE_TYPE_JPEG = "image/jpeg";
+        private const int IMAGE_CONTENT_TYPE_DEFINITION = 25;
         /// <summary>
         /// An email sender that can be used to send emails to users that have lost their password.
         /// </summary>
@@ -36,10 +39,6 @@ namespace GirafRest.Controllers
         /// A reference to the role manager for the project.
         /// </summary>
         private readonly RoleManager<GirafRole> _roleManager;
-        /// <summary>
-        /// A reference to the user manager for the project.
-        /// </summary>
-        private readonly UserManager<GirafUser> _userManager;
 
         /// <summary>
         /// Constructor for the User-controller. This is called by the asp.net runtime.
@@ -51,14 +50,12 @@ namespace GirafRest.Controllers
             IGirafService giraf,
           IEmailService emailSender,
           ILoggerFactory loggerFactory,
-          RoleManager<GirafRole> roleManager,
-          UserManager<GirafUser> userManager)
+          RoleManager<GirafRole> roleManager)
         {
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("User");
             _emailSender = emailSender;
             _roleManager = roleManager;
-            _userManager = userManager;
         }
 
         /// <summary>
@@ -86,14 +83,15 @@ namespace GirafRest.Controllers
             //Get the current user and check if he is a guardian in the same department as the user
             //or an Admin, in which cases the user is allowed to see the user.
             var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
-            if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian))
+            if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian) ||
+                await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Department))
             {
                 //Check if the guardian is in the same department as the user
                 if (user.DepartmentKey != currentUser.DepartmentKey)
                     //We do not reveal if a user with the given username exists
                     return NotFound();
             }
-            else if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Admin))
+            else if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser))
             {
                 //No additional checks required, simply skip to Ok.
             }
@@ -102,7 +100,7 @@ namespace GirafRest.Controllers
                 return NotFound();
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
             return Ok(new GirafUserDTO(user, userRole));
         }
@@ -134,7 +132,7 @@ namespace GirafRest.Controllers
             }
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
             return Ok(new GirafUserDTO(user, userRole));
         }
@@ -152,30 +150,47 @@ namespace GirafRest.Controllers
         {
             //Fetch the user
             var user = await _giraf.LoadUserAsync(HttpContext.User);
+            return await UpdateUser(user.Id, userDTO);
+        }
+
+        /// <summary>
+        /// Updates all the information of the currently authenticated user with the information from the given DTO.
+        /// </summary>
+        /// <param name="id">The id of the user to update.</param>
+        /// <param name="userDTO">A DTO containing ALL the new information for the given user.</param>
+        /// <returns>
+        /// NotFound if the DTO contains either an invalid pictogram ID or an invalid week ID and
+        /// OK if the user was updated succesfully.
+        /// </returns>
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(string id, [FromBody]GirafUserDTO userDTO)
+        {
+            var usr = await _giraf._userManager.FindByIdAsync(id);
+
+            //Fetch the user
+            var user = await _giraf.LoadByNameAsync(usr.UserName);
             if (user == null)
                 return NotFound("User not found!");
 
-            // Check if DTO or its properties is null
-            /*if (userDTO == null)
-                return BadRequest("DTO must not be null!");
-            foreach (var property in userDTO.GetType().GetProperties())
-                if (property.GetValue(userDTO) == null)
-                    if (property.Name == "settings" || property.Name == "username")
-                        return BadRequest("Info in userDTO must be set!");*/
             if (!ModelState.IsValid)
-                return BadRequest("Some data was missing from the serialized user");
+                return BadRequest("Some data was missing from the serialized user \n\n" +
+                                  string.Join(",",
+                                  ModelState.Values.Where(E => E.Errors.Count > 0)
+                                  .SelectMany(E => E.Errors)
+                                  .Select(E => E.ErrorMessage)
+                                  .ToArray()));
 
             //Update all simple fields
-            user.Settings = userDTO.Settings;
+            user.Settings.UpdateFrom(userDTO.Settings);
             user.UserName = userDTO.Username;
-            user.DisplayName = userDTO.DisplayName;
+            user.DisplayName = userDTO.ScreenName;
             user.UserIcon = userDTO.UserIcon;
 
             //Attempt to update all fields that require database access.
             try
             {
-                await updateDepartmentAsync(user, userDTO.DepartmentKey);
-                await updateResourceAsync(user, userDTO.Resources);
+                await updateDepartmentAsync(user, userDTO.Department);
+                updateResource(user, userDTO.Resources.Select(i => i.Id).ToList());
                 await updateWeekAsync(user, userDTO.WeekScheduleIds);
             }
             catch (KeyNotFoundException e)
@@ -192,7 +207,7 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
             return Ok(new GirafUserDTO(user, userRole));
         }
@@ -201,16 +216,19 @@ namespace GirafRest.Controllers
         /// Allows the user to upload an icon for his profile.
         /// </summary>
         /// <returns>Ok if the upload was successful and BadRequest if not.</returns>
+        [Consumes(IMAGE_TYPE_PNG, IMAGE_TYPE_JPEG)]
         [HttpPost("icon")]
         public async Task<IActionResult> CreateUserIcon() {
             var usr = await _giraf._userManager.GetUserAsync(HttpContext.User);
-            if(usr.UserIcon != null) return BadRequest("The user already has an icon - please PUT instead.");
+            if (usr == null) return BadRequest("No user is logged in.");
+            if (usr.UserIcon != null) return BadRequest("The user already has an icon - please PUT instead.");
             byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body);
+            if (image.Length < IMAGE_CONTENT_TYPE_DEFINITION) return BadRequest("The request contained no image.");
             usr.UserIcon = image;
             await _giraf._context.SaveChangesAsync();
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, usr);
+            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, usr);
 
             return Ok(new GirafUserDTO(usr, userRole));
         }
@@ -223,11 +241,12 @@ namespace GirafRest.Controllers
             var usr = await _giraf._userManager.GetUserAsync(HttpContext.User);
             if(usr.UserIcon == null) return BadRequest("The user does not have an icon - please POST instead.");
             byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body);
+            if (image.Length < IMAGE_CONTENT_TYPE_DEFINITION) return BadRequest("The request contained no image.");
             usr.UserIcon = image;
             await _giraf._context.SaveChangesAsync();
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, usr);
+            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, usr);
 
             return Ok(new GirafUserDTO(usr, userRole));
         }
@@ -245,7 +264,7 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, usr);
+            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, usr);
 
             return Ok(new GirafUserDTO(usr, userRole));
         }
@@ -266,8 +285,13 @@ namespace GirafRest.Controllers
             //Check that an application has been specified
             if (application == null)
                 return BadRequest("No application was specified in the request body.");
-            if (application.ApplicationName == null || application.ApplicationPackage == null)
-                return BadRequest("You need to specify both an application name and an application package.");
+            if (!ModelState.IsValid)
+                return BadRequest("Some data was missing from the serialized user \n\n" +
+                                  string.Join(",",
+                                  ModelState.Values.Where(E => E.Errors.Count > 0)
+                                  .SelectMany(E => E.Errors)
+                                  .Select(E => E.ErrorMessage)
+                                  .ToArray()));
 
             //Fetch the target user and check that he exists
             var user = await _giraf.LoadByNameAsync(username);
@@ -282,7 +306,7 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
             return Ok(new GirafUserDTO(user, userRole));
         }
@@ -316,7 +340,7 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
             return Ok(new GirafUserDTO(user, userRole));
         }
@@ -338,7 +362,7 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
             return Ok(new GirafUserDTO(user, userRole));
         }
@@ -363,10 +387,10 @@ namespace GirafRest.Controllers
 
             //Find the resource and check that it actually does exist - also verify that the resource is private
             var resource = await _giraf._context.Pictograms
-                .Where(pf => pf.Id == resourceIdDTO.ResourceId)
+                .Where(pf => pf.Id == resourceIdDTO.Id)
                 .FirstOrDefaultAsync();
             if (resource == null)
-                return NotFound("The is no resource with id " + resourceIdDTO.ResourceId);
+                return NotFound("There is no resource with id " + resourceIdDTO.Id);
             if (resource.AccessLevel != AccessLevel.PRIVATE)
                 return BadRequest("Resources must be PRIVATE (2) in order for users to own them.");
 
@@ -382,7 +406,7 @@ namespace GirafRest.Controllers
                 return NotFound("There is no user with username " + username);
 
             //Check if the target user already owns the resource
-            if (user.Resources.Where(ur => ur.ResourceKey == resourceIdDTO.ResourceId).Any())
+            if (user.Resources.Where(ur => ur.ResourceKey == resourceIdDTO.Id).Any())
                 return BadRequest("The user already owns the resource.");
 
             //Create the relation and save changes.
@@ -391,7 +415,7 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
             return Ok(new GirafUserDTO(user, userRole));
         }
@@ -413,9 +437,9 @@ namespace GirafRest.Controllers
             
             //Fetch the resource with the given id, check that it exists.
             var resource = await _giraf._context.Pictograms
-                .Where(f => f.Id == resourceIdDTO.ResourceId)
+                .Where(f => f.Id == resourceIdDTO.Id)
                 .FirstOrDefaultAsync();
-            if (resource == null) return NotFound($"There is no resource with id {resourceIdDTO.ResourceId}.");
+            if (resource == null) return NotFound($"There is no resource with id {resourceIdDTO.Id}.");
 
             //Check if the caller owns the resource
             var curUsr = await _giraf.LoadUserAsync(HttpContext.User);
@@ -434,7 +458,7 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, curUsr);
+            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, curUsr);
 
             //Return Ok and the user - the resource is now visible in user.Resources
             return Ok(new GirafUserDTO(curUsr, userRole));
@@ -454,7 +478,7 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
             return Ok(new GirafUserDTO(user, userRole));
         }
@@ -473,9 +497,46 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
             return Ok(new GirafUserDTO(user, userRole));
+        }
+
+        /// <summary>
+        /// Read the currently authorized user's settings object.
+        /// </summary>
+        /// <returns>The current user's settings.</returns>
+        [HttpGet("settings")]
+        [Authorize]
+        public async Task<IActionResult> ReadUserSettins () {
+            var user = await _giraf.LoadUserAsync(HttpContext.User);
+
+            if(user == null)
+                return NotFound("No user is currently authorized.");
+
+            return Ok(new LauncherOptionsDTO(user.Settings));    
+        }
+
+        [HttpPut("settings")]
+        [Authorize]
+        public async Task<IActionResult> UpdateUserSettings ([FromBody] LauncherOptionsDTO options) {
+            var user = await _giraf.LoadUserAsync(HttpContext.User);
+
+            if (user == null)
+                return NotFound("No user is currently authorized.");
+            if (options == null)
+                return NotFound("No options in input.");
+            if (!ModelState.IsValid)
+                return BadRequest("Some data was missing from the serialized user \n\n" +
+                                  string.Join(",",
+                                  ModelState.Values.Where(E => E.Errors.Count > 0)
+                                  .SelectMany(E => E.Errors)
+                                  .Select(E => E.ErrorMessage)
+                                  .ToArray()));
+
+            user.Settings.UpdateFrom(options);
+            await _giraf._context.SaveChangesAsync();
+            return Ok(user.Settings);
         }
         #endregion
         #region Helpers
@@ -485,23 +546,23 @@ namespace GirafRest.Controllers
         /// <param name="user">The user, whose resources should be updated.</param>
         /// <param name="resouceIds">The ids of the users new resources.</param>
         /// <returns></returns>
-        private async Task updateResourceAsync(GirafUser user, ICollection<long> resouceIds)
+        private void updateResource(GirafUser user, ICollection<long> resourceIds)
         {
-            //Remove all the resources that are in the user's list, but not in the id-list
-            foreach (var resource in user.Resources)
-            {
-                if(!resouceIds.Contains(resource.Key))
-                    _giraf._context.Remove(resource);
-            }
-
             //Check if the user has attempted to add a resource in the PUT request - throw an exception if so.
-            foreach (var resourceId in resouceIds)
+            foreach (var resourceId in resourceIds)
             {
                 if (!user.Resources.Any(r => r.ResourceKey == resourceId))
                 {
                     throw new InvalidOperationException("You may not add pictograms to a user by a PUT request. " +
                         "Please use a POST to user/resource instead");
                 }
+            }
+
+            //Remove all the resources that are in the user's list, but not in the id-list
+            foreach (var resource in user.Resources)
+            {
+                if(!resourceIds.Contains(resource.ResourceKey))
+                    _giraf._context.Remove(resource);
             }
         }
         /// <summary>

@@ -25,20 +25,20 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// A list of all the elements of the week.
         /// </summary>
-        public ICollection<FrameDTO> Elements { get; set; }
+        public ICollection<ResourceDTO> Elements { get; set; }
         /// <summary>
         /// Creates a new data transfer object for the given week.
         /// </summary>
         /// <param name="weekday">The weekday to create a DTO for.</param>
         public WeekdayDTO(Weekday weekday) {
             this.Day = weekday.Day;
-            Elements = new List<FrameDTO>();
+            Elements = new List<ResourceDTO>();
             ElementIDs = new List<long>();
             if(weekday.Elements != null){
                 foreach (var element in weekday.Elements)
                 {
                     if(element.Resource != null){
-                        Elements.Add(new FrameDTO(element.Resource));
+                        Elements.Add(new ResourceDTO(element.Resource));
                         ElementIDs.Add(element.Resource.Id);
                     }
                 }

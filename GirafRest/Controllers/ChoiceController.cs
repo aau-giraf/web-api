@@ -100,7 +100,7 @@ namespace GirafRest.Controllers
             }
 
             //Create an object for the choice
-            Choice _choice = new Choice(pictogramList);
+            Choice _choice = new Choice(pictogramList, choice.Title);
             //Check if the user has access to all options of the choice
             if (!(await checkAccess(_choice))) return Unauthorized();
 
@@ -167,7 +167,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="id">The id of the choice to delete.</param>
         /// <returns> Ok if the choice was deleted after checking authorization and NotFound if no choice with the id exists.</returns>
-        [Authorize(Policy = GirafRole.RequireGuardianOrAdmin)]
+        [Authorize(Policy = GirafRole.RequireGuardianOrSuperUser)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteChoice(long id)
         {

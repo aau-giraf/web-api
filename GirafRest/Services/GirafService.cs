@@ -96,7 +96,7 @@ namespace GirafRest.Controllers
         {
             return await _context.Users
                     //First load the user from the database
-                    .Where(u => u.UserName == username)
+                    .Where(u => u.UserName.ToLower() == username.ToLower())
                     //Then load his pictograms - both the relationship and the actual pictogram
                     .Include(u => u.Resources)
                     .ThenInclude(ur => ur.Resource)

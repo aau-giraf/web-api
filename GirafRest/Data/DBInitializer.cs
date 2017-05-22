@@ -23,7 +23,7 @@ namespace GirafRest.Setup
 				return;
 
             var Departments = AddSampleDepartments(context);
-            var Users = AddSampleUsers(context, userManager);
+            var Users = AddSampleUsers(context, userManager, Departments);
             var Pictograms = AddSamplePictograms(context);
             var choices = AddSampleChoices(context, Pictograms);
             AddSampleWeekAndWeekdays(context, Pictograms, choices);
@@ -95,15 +95,15 @@ namespace GirafRest.Setup
             return Departments;
         } 
 
-        private static IList<GirafUser> AddSampleUsers(GirafDbContext context, UserManager<GirafUser> userManager)
+        private static IList<GirafUser> AddSampleUsers(GirafDbContext context, UserManager<GirafUser> userManager, IList<Department> Departments)
         {
             System.Console.WriteLine("Adding users.");
             var users = new GirafUser[]
             {
-                new GirafUser("Kurt", 1),
-                new GirafUser("Graatand", 1),
-                new GirafUser("Lee", 2),
-                new GirafUser("Tobias", 1)
+                new GirafUser("Kurt", Departments[0]),
+                new GirafUser("Graatand", Departments[0]),
+                new GirafUser("Lee", Departments[1]),
+                new GirafUser("Tobias", Departments[0])
             };
             //Note that the call to .Result is a dangerous way to run async methods synchonously and thus should not be used elsewhere!
             foreach (var user in users)
@@ -114,7 +114,7 @@ namespace GirafRest.Setup
             // Add users to roles
             var a = userManager.AddToRoleAsync(users[0], GirafRole.Citizen).Result;
             a = userManager.AddToRoleAsync(users[1], GirafRole.Guardian).Result;
-            a = userManager.AddToRoleAsync(users[2], GirafRole.Admin).Result;
+            a = userManager.AddToRoleAsync(users[2], GirafRole.SuperUser).Result;
             a = userManager.AddToRoleAsync(users[3], GirafRole.Department).Result;
 
             return users;
@@ -167,7 +167,7 @@ namespace GirafRest.Setup
         }
         private static Choice createChoice(params Pictogram[] pictograms)
         {
-            return new Choice(pictograms.ToList());
+            return new Choice(pictograms.ToList(), "Choice" + pictograms.Length);
         }
 
         private static void AddSampleWeekAndWeekdays(GirafDbContext context, IList<Pictogram> Pictograms, 

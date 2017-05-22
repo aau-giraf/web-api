@@ -16,12 +16,11 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// Enum over roles.
         /// </summary>
-        public enum GirafRoles { Admin, Citizen, Department, Guardian }
+        public enum GirafRoles { Citizen, Department, Guardian, SuperUser }
         /// <summary>
         /// List of the roles the current user is defined as in the system.
         /// </summary>
         public GirafRoles Role { get; set; }
-        [Required]
         /// <summary>
         /// List of users the user is guardian of. Is simply null if the user isn't a guardian
         /// </summary>
@@ -39,7 +38,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// The display name of the user.
         /// </summary>
-        public string DisplayName { get; set; }
+        public string ScreenName { get; set; }
         /// <summary>
         /// A byte array containing the user's profile icon.
         /// </summary>
@@ -48,7 +47,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// The key of the user's department.
         /// </summary>
-        public long? DepartmentKey { get; set; }
+        public long? Department { get; set; }
         [Required]
         /// <summary>
         /// A list of the id's of the user's week schedules.
@@ -58,12 +57,12 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// A list of the id's of the user's resources.
         /// </summary>
-        public virtual ICollection<long> Resources { get; set; }
+        public virtual ICollection<ResourceDTO> Resources { get; set; }
         [Required]
         /// <summary>
         /// A field for storing all the relevant GirafLauncher options.
         /// </summary>
-        public LauncherOptions Settings { get; set; }
+        public LauncherOptionsDTO Settings { get; set; }
 
         /// <summary>
         /// DO NOT DELETE THIS! NEWTONSOFT REQUIRES AN EMPTY CONSTRUCTOR!
@@ -71,8 +70,8 @@ namespace GirafRest.Models.DTOs
         public GirafUserDTO()
         {
             WeekScheduleIds = new List<WeekDTO>();
-            Resources = new List<long>();
-            Settings = new LauncherOptions();
+            Resources = new List<ResourceDTO>();
+            Settings = new LauncherOptionsDTO();
         }
 
         /// <summary>
@@ -84,7 +83,7 @@ namespace GirafRest.Models.DTOs
             //Add all trivial values
             Id = user.Id;
             Username = user.UserName;
-            DisplayName = user.DisplayName;
+            ScreenName = user.DisplayName;
             UserIcon = user.UserIcon;
             Role = userRole;
 
@@ -95,18 +94,21 @@ namespace GirafRest.Models.DTOs
                     GuardianOf.Add(new GirafUserDTO(usr, GirafRoles.Citizen));
             }
 
+            Console.WriteLine("Department = " + user.Department);
             //Check if a user is in a department, add null as key if not.
             if (user.Department == null)
-                DepartmentKey = null;
+                Department = null;
             else 
-                DepartmentKey = user.DepartmentKey;
+                Department = user.DepartmentKey;
 
             //Add the ids of the user's weeks and resources
             WeekScheduleIds = user.WeekSchedule.Select(w => new WeekDTO(w)).ToList();
-            Resources = user.Resources.Select(r => r.ResourceKey).ToList();
+            var choices = user.Resources.Select(r => r.Resource).OfType<Choice>().Select(c => new ChoiceDTO(c)).AsEnumerable<ResourceDTO>();
+            var pictograms = user.Resources.Select(r => r.Resource).OfType<Pictogram>().Select(c => new PictogramDTO(c)).AsEnumerable<ResourceDTO>();
+            Resources = choices.Union(pictograms).ToList();
             
             //And finally the user's settings
-            Settings = user.Settings;
+            Settings = new LauncherOptionsDTO(user.Settings);
         }
     }
 }

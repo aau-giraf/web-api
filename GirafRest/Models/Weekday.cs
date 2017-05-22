@@ -61,7 +61,7 @@ namespace GirafRest.Models
             this.Day = day;
             this.Elements = new List<WeekdayResource>();
             foreach(var elem in elements) {
-                this.Elements.Add(new WeekdayResource(this, elem));
+                this.Elements.Add(new WeekdayResource(this, (elem)));
             }
         }
         
@@ -72,7 +72,7 @@ namespace GirafRest.Models
         public Weekday(WeekdayDTO day)
         {
             this.Day = day.Day;
-            
+            this.Elements = new List<WeekdayResource>();
         }
     }
 }

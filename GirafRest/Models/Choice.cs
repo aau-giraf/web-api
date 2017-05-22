@@ -25,8 +25,9 @@ namespace GirafRest.Models {
         /// Creates a new Choice with the given list of options.
         /// </summary>
         /// <param name="options">A list of options to add to the choice.</param>
-        public Choice(List<Pictogram> options)
+        public Choice(List<Pictogram> options, string title)
         {
+            this.Title = title;
             LastEdit = DateTime.Now;
             Options = new List<ChoiceResource>();
             foreach (Pictogram option in options)

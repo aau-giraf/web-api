@@ -12,6 +12,8 @@ using GirafRest.Models.DTOs;
 using Microsoft.AspNetCore.Http;
 using System;
 using static GirafRest.Models.DTOs.GirafUserDTO;
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace GirafRest.Controllers
 {
@@ -35,11 +37,6 @@ namespace GirafRest.Controllers
         /// </summary>
         private readonly RoleManager<GirafRole> _roleManager;
         /// <summary>
-        /// A reference to the user manager for the project.
-        /// </summary>
-        private readonly UserManager<GirafUser> _userManager;
-
-        /// <summary>
         /// Creates a new account controller. The account controller allows the users to sign in and out of their account
         /// as well as creating new users. The account controller is automatically instantiated by ASP.NET.
         /// </summary>
@@ -52,15 +49,13 @@ namespace GirafRest.Controllers
             IEmailService emailSender,
             ILoggerFactory loggerFactory,
             IGirafService giraf,
-            RoleManager<GirafRole> roleManager,
-            UserManager<GirafUser> userManager)
+            RoleManager<GirafRole> roleManager)
         {
             _signInManager = signInManager;
             _emailSender = emailSender;
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Account");
             _roleManager = roleManager;
-            _userManager = userManager;
         }
 
         /// <summary>
@@ -137,7 +132,7 @@ namespace GirafRest.Controllers
                     await _signInManager.SignInAsync(citizenUser, isPersistent: true);
 
                     // Get the roles the user is associated with
-                    GirafRoles userRoles = await _roleManager.makeRoleList(_userManager, citizenUser);
+                    GirafRoles userRoles = await _roleManager.findUserRole(_giraf._userManager, citizenUser);
 
                     return Ok(new GirafUserDTO(citizenUser, userRoles));
                 }
@@ -156,7 +151,6 @@ namespace GirafRest.Controllers
         /// <param name="department">The Department user who is currently authenticated.</param>
         /// <param name="username">The username of the guardian to login as.</param>
         /// <returns></returns>
-
         private async Task<IActionResult> attemptGuardianLoginAsync(GirafUser department, string username)
         {
             //Check if the user is in the Guardian role - return unauthorized if not.
@@ -175,7 +169,7 @@ namespace GirafRest.Controllers
                     await _signInManager.SignInAsync(guardianUser, isPersistent: true);
 
                     // Get the roles the user is associated with
-                    GirafRoles userRole = await _roleManager.makeRoleList(_userManager, guardianUser);
+                    GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, guardianUser);
 
                     return Ok(new GirafUserDTO(guardianUser, userRole));
                 }
@@ -200,22 +194,27 @@ namespace GirafRest.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterDTO model)
         {
-            if (model == null)
-                return BadRequest("Please specify both 'Username', 'Password' and 'ConfirmPassword' " +
-                    "in the request body. You may optionally specify 'DepartmentId'.");
             //Check that all the necesarry data has been supplied
-            if (string.IsNullOrEmpty(model.Username))
-                return BadRequest("Please supply a username.");
-            if (string.IsNullOrEmpty(model.Password))
-                return BadRequest("Please supply a password");
-            if (string.IsNullOrEmpty(model.ConfirmPassword))
-                return BadRequest("Please supply a ConfirmPassword");
+            if (!ModelState.IsValid)
+                return BadRequest("Some data was missing from the serialized object \n\n" +
+                                  string.Join(",",
+                                  ModelState.Values.Where(E => E.Errors.Count > 0)
+                                  .SelectMany(E => E.Errors)
+                                  .Select(E => E.ErrorMessage)
+                                  .ToArray()));
 
+            // Check that password and confirm password match
             if (!model.Password.Equals(model.ConfirmPassword))
                 return BadRequest("The Password and ConfirmPassword must be equal.");
 
+            var department = await _giraf._context.Departments.Where(dep => dep.Key == model.DepartmentId).FirstOrDefaultAsync();
+
+            // Check that the department with the specified id exists
+            if (department == null)
+                return BadRequest("Department does not exist");
+
             //Create a new user with the supplied information
-            var user = new GirafUser (model.Username, model.DepartmentId);
+            var user = new GirafUser (model.Username, department);
             var result = await _giraf._userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
@@ -224,7 +223,7 @@ namespace GirafRest.Controllers
                 _giraf._logger.LogInformation("User created a new account with password.");
 
                 // Get the roles the user is associated with
-                GirafRoles userRole = await _roleManager.makeRoleList(_userManager, user);
+                GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
                 return Ok(new GirafUserDTO(user, userRole));
             }
