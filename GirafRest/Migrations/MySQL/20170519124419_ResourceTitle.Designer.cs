@@ -9,9 +9,10 @@ using GirafRest.Models;
 namespace GirafRest.Migrations.MySQL
 {
     [DbContext(typeof(GirafMySqlDbContext))]
-    partial class GirafMySqlDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170519124419_ResourceTitle")]
+    partial class ResourceTitle
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.1");

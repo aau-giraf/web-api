@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace GirafRest.Models.DTOs
 {
@@ -8,6 +9,12 @@ namespace GirafRest.Models.DTOs
     /// </summary>
     public class ResourceDTO
     {
+        [Required]
+        /// <summary>
+        /// The title of the pictogram.
+        /// </summary>
+        public string Title { get; set; }
+        
         /// <summary>
         /// The id of the resource.
         /// </summary>

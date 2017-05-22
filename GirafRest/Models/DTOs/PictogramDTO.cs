@@ -10,11 +10,6 @@ namespace GirafRest.Models.DTOs
     {
         [Required]
         /// <summary>
-        /// The title of the pictogram.
-        /// </summary>
-        public string Title { get; set; }
-        [Required]
-        /// <summary>
         /// The accesslevel of the pictogram.
         /// </summary>
         public AccessLevel? AccessLevel { get; set; }

@@ -22,6 +22,7 @@ namespace GirafRest.Models.DTOs
         /// <param name="choice">The Choice to create the ChoiceDTO from.</param>
         public ChoiceDTO(Choice choice) :base(choice)
         {
+            this.Title = choice.Title;
             this.Id = choice.Id;
             this.LastEdit = choice.LastEdit;
             Options = new List<PictogramDTO>();
@@ -36,7 +37,7 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         public ChoiceDTO()
         {
-
+            this.Title = "";
         }
     }
 }

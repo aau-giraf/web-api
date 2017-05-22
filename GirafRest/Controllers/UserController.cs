@@ -150,6 +150,25 @@ namespace GirafRest.Controllers
         {
             //Fetch the user
             var user = await _giraf.LoadUserAsync(HttpContext.User);
+            return await UpdateUser(user.Id, userDTO);
+        }
+
+        /// <summary>
+        /// Updates all the information of the currently authenticated user with the information from the given DTO.
+        /// </summary>
+        /// <param name="id">The id of the user to update.</param>
+        /// <param name="userDTO">A DTO containing ALL the new information for the given user.</param>
+        /// <returns>
+        /// NotFound if the DTO contains either an invalid pictogram ID or an invalid week ID and
+        /// OK if the user was updated succesfully.
+        /// </returns>
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateUser(string id, [FromBody]GirafUserDTO userDTO)
+        {
+            var usr = await _giraf._userManager.FindByIdAsync(id);
+
+            //Fetch the user
+            var user = await _giraf.LoadByNameAsync(usr.UserName);
             if (user == null)
                 return NotFound("User not found!");
 

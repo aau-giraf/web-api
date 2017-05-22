@@ -100,7 +100,7 @@ namespace GirafRest.Controllers
             }
 
             //Create an object for the choice
-            Choice _choice = new Choice(pictogramList);
+            Choice _choice = new Choice(pictogramList, choice.Title);
             //Check if the user has access to all options of the choice
             if (!(await checkAccess(_choice))) return Unauthorized();
 
