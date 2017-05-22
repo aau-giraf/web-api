@@ -27,7 +27,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// Creates a ResourceDTO from the given resource, fit for sending as a request or response.
         /// </summary>
-        /// <param name="frame"></param>
+        /// <param name="frame">The resource in need of transfer</param>
         public ResourceDTO (Resource frame) {
             if (frame != null){
                 this.Id = frame.Id;

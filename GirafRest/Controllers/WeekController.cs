@@ -79,10 +79,9 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="id">If of the week to update information for.</param>
         /// <param name="newWeek">A serialized Week with new information.</param>
-        /// <returns>NotFound if the user does not have a week schedule or
+        /// <returns>NotFound if the user does not have a week schedule or if there exists no week with the given id,
         /// Ok and a serialized version of the updated week if everything went well.
-        /// BadRequest if the body of the request does not contain a Week
-        /// NotFound if there exists no week with the given Id</returns>
+        /// BadRequest if the body of the request does not contain a Week</returns>
         [HttpPut("{id}")]
         [Authorize]
         public async Task<IActionResult> UpdateWeek(int id, [FromBody]WeekDTO newWeek)
@@ -175,7 +174,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Deletes the entire week with the given id.
         /// </summary>
-        /// <param name="id">If of the week to delete.</param>
+        /// <param name="id">Id of the week to delete.</param>
         /// <returns>NotFound if the user does not have a week schedule or
         /// Ok and a serialized version of the updated week if everything went well.</returns>
         [HttpDelete("{id}")]

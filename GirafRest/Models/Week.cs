@@ -82,6 +82,7 @@ namespace GirafRest.Models
         {
             this.Weekdays = new Weekday[7] 
             { 
+                // Each day must be set individually, otherwise all days will simply be monday
                 new Weekday() { Day = Days.Monday }, 
                 new Weekday() { Day = Days.Tuesday }, 
                 new Weekday() { Day = Days.Wednesday }, 

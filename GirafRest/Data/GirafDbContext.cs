@@ -9,6 +9,10 @@ using GirafRest.Models.Many_to_Many_Relationships;
 
 namespace GirafRest.Data
 {
+    /// <summary>
+    /// The GirafDbContext, this is the Database Context for the Giraf database, it defines the various relations between objects in the database.
+    /// and which objects exist.
+    /// </summary>
     public class GirafDbContext : IdentityDbContext<GirafUser, GirafRole, string>
     {
         public virtual DbSet<Department> Departments { get; set; }
@@ -22,10 +26,18 @@ namespace GirafRest.Data
         public virtual DbSet<WeekdayResource> WeekdayResources {get; set;}
 
         protected GirafDbContext () {}
+        /// <summary>
+        /// Constructor for use when debugging and using the Sqlite database
+        /// </summary>
+        /// <param name="options">DbContext options when the Sqlite database is in use</param>
         public GirafDbContext(DbContextOptions<GirafSqliteDbContext> options)
             : base(options)
         {
         }
+        /// <summary>
+        /// Constructor for use when deployed and using the MySql database
+        /// </summary>
+        /// <param name="options">DbContext options when the MySql database is in use</param>
         public GirafDbContext(DbContextOptions<GirafMySqlDbContext> options)
             : base(options)
         {

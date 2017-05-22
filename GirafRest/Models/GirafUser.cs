@@ -60,7 +60,7 @@ namespace GirafRest.Models
         /// Creates a new user with the specified user name, associated with the given department.
         /// </summary>
         /// <param name="userName">The username.</param>
-        /// <param name="departmentId">The id of the department to which the user should be added.</param>
+        /// <param name="department">The department to which the user should be added.</param>
         public GirafUser (string userName, Department department) : base(userName)
         {
             this.UserName = userName;

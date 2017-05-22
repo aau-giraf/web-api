@@ -7,7 +7,7 @@ using System.Collections;
 
 namespace GirafRest.Models {
     /// <summary>
-    /// A Choice may be present in the Citizen's Weekday's and indicates that the user may choose between a
+    /// A Choice may be present in the Citizens Weekdays and indicates that the user may choose between a
     /// series of activities.
     /// </summary>
     public class Choice : Resource { 
@@ -37,7 +37,7 @@ namespace GirafRest.Models {
         }
 
         /// <summary>
-        /// Adds a option to the choice.
+        /// Adds an option to the choice.
         /// </summary>
         /// <param name="option">The pictogram to be added as an option.</param>
         public void Add (Pictogram option) => Options.Add(new ChoiceResource(this, option));

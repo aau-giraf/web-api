@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using GirafRest.Models.DTOs;
 using System.IO;
 using System;
+using static GirafRest.Models.DTOs.GirafUserDTO;
+using Microsoft.AspNetCore.Identity;
 
 namespace GirafRest.Test.Controllers
 {
@@ -47,7 +49,8 @@ namespace GirafRest.Test.Controllers
                 new MockGirafService(_testContext.MockDbContext.Object,
                 _testContext.MockUserManager),
                 new Mock<IEmailService>().Object,
-                _testContext.MockLoggerFactory.Object);
+                _testContext.MockLoggerFactory.Object,
+                _testContext.MockRoleManager.Object);
             _testContext.MockHttpContext = pc.MockHttpContext();
             _testContext.MockHttpContext.MockQuery("username", null);
 
@@ -259,7 +262,7 @@ namespace GirafRest.Test.Controllers
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
 
-            var result = uc.UpdateUser(new GirafUserDTO(_testContext.MockUsers[ADMIN_DEP_ONE])).Result;
+            var result = uc.UpdateUser(new GirafUserDTO(_testContext.MockUsers[ADMIN_DEP_ONE], GirafRoles.Citizen)).Result;
 
             Assert.IsType<OkObjectResult>(result);
         }
@@ -295,7 +298,7 @@ namespace GirafRest.Test.Controllers
 
             //Create a DTO with an invalid pictogram id
             var result = uc.UpdateUser(new GirafUserDTO(
-                _testContext.MockUsers[ADMIN_DEP_ONE])
+                _testContext.MockUsers[ADMIN_DEP_ONE], GirafRoles.Citizen)
                 {
                     Resources = new List<long> () { -1 }
                 }).Result;
@@ -603,7 +606,7 @@ namespace GirafRest.Test.Controllers
             string targetUser = _testContext.MockUsers[CITIZEN_DEP_TWO].UserName;
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { ResourceId = GUARDIAN_PRIVATE_PICTOGRAM }).Result;
+            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { Id = GUARDIAN_PRIVATE_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
@@ -619,7 +622,7 @@ namespace GirafRest.Test.Controllers
             string targetUser = "INVALID";
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { ResourceId = GUARDIAN_PRIVATE_PICTOGRAM }).Result;
+            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { Id = GUARDIAN_PRIVATE_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
@@ -635,7 +638,7 @@ namespace GirafRest.Test.Controllers
             string targetUser = _testContext.MockUsers[CITIZEN_DEP_THREE].UserName;
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { ResourceId = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
+            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { Id = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
@@ -651,7 +654,7 @@ namespace GirafRest.Test.Controllers
             string targetUser = "INVALID";
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { ResourceId = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
+            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { Id = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
@@ -667,7 +670,7 @@ namespace GirafRest.Test.Controllers
             string targetUser = _testContext.MockUsers[CITIZEN_DEP_TWO].UserName;
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_THREE]);
 
-            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { ResourceId = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
+            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { Id = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
@@ -683,7 +686,7 @@ namespace GirafRest.Test.Controllers
             string targetUser = "INVALID";
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_THREE]);
 
-            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { ResourceId = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
+            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { Id = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
@@ -699,7 +702,7 @@ namespace GirafRest.Test.Controllers
             string targetUser = _testContext.MockUsers[GUARDIAN_DEP_TWO].UserName;
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_TWO]);
 
-            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { ResourceId = PUBLIC_PICTOGRAM }).Result;
+            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { Id = PUBLIC_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
@@ -715,7 +718,7 @@ namespace GirafRest.Test.Controllers
             string targetUser = "INVALID";
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_TWO]);
 
-            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { ResourceId = PUBLIC_PICTOGRAM }).Result;
+            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { Id = PUBLIC_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
@@ -731,7 +734,7 @@ namespace GirafRest.Test.Controllers
             string targetUser = _testContext.MockUsers[GUARDIAN_DEP_TWO].UserName;
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_TWO]);
 
-            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { ResourceId = GUARDIAN_PRIVATE_PICTOGRAM }).Result;
+            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { Id = GUARDIAN_PRIVATE_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
@@ -747,7 +750,7 @@ namespace GirafRest.Test.Controllers
             string targetUser = "INVALID";
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_TWO]);
 
-            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { ResourceId = GUARDIAN_PRIVATE_PICTOGRAM }).Result;
+            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { Id = GUARDIAN_PRIVATE_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
@@ -762,7 +765,7 @@ namespace GirafRest.Test.Controllers
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var result = uc.DeleteResource(new ResourceIdDTO() { ResourceId = GUARDIAN_PRIVATE_PICTOGRAM }).Result;
+            var result = uc.DeleteResource(new ResourceIdDTO() { Id = GUARDIAN_PRIVATE_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
@@ -775,7 +778,7 @@ namespace GirafRest.Test.Controllers
         {
             var uc = initializeTest();
 
-            var result = uc.DeleteResource(new ResourceIdDTO() { ResourceId = GUARDIAN_PRIVATE_PICTOGRAM }).Result;
+            var result = uc.DeleteResource(new ResourceIdDTO() { Id = GUARDIAN_PRIVATE_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
@@ -790,7 +793,7 @@ namespace GirafRest.Test.Controllers
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var result = uc.DeleteResource(new ResourceIdDTO() { ResourceId = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
+            var result = uc.DeleteResource(new ResourceIdDTO() { Id = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
@@ -805,7 +808,7 @@ namespace GirafRest.Test.Controllers
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var result = uc.DeleteResource(new ResourceIdDTO() { ResourceId = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
+            var result = uc.DeleteResource(new ResourceIdDTO() { Id = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
@@ -821,7 +824,7 @@ namespace GirafRest.Test.Controllers
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
             var result = uc.DeleteResource(_testContext.MockUsers[GUARDIAN_DEP_TWO].UserName,
-                                           new ResourceIdDTO() { ResourceId = ADMIN_PROTECTED_PICTOGRAM }).Result;
+                                           new ResourceIdDTO() { Id = ADMIN_PROTECTED_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
@@ -837,7 +840,7 @@ namespace GirafRest.Test.Controllers
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
             var result = uc.DeleteResource("Invalid",
-                                           new ResourceIdDTO() { ResourceId = ADMIN_PROTECTED_PICTOGRAM }).Result;
+                                           new ResourceIdDTO() { Id = ADMIN_PROTECTED_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
@@ -852,7 +855,7 @@ namespace GirafRest.Test.Controllers
             var uc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var result = uc.DeleteResource(new ResourceIdDTO() { ResourceId = PUBLIC_PICTOGRAM }).Result;
+            var result = uc.DeleteResource(new ResourceIdDTO() { Id = PUBLIC_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
@@ -866,7 +869,7 @@ namespace GirafRest.Test.Controllers
         {
             var uc = initializeTest();
 
-            var result = uc.DeleteResource(new ResourceIdDTO() { ResourceId = PUBLIC_PICTOGRAM }).Result;
+            var result = uc.DeleteResource(new ResourceIdDTO() { Id = PUBLIC_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
@@ -882,7 +885,7 @@ namespace GirafRest.Test.Controllers
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
             var result = uc.DeleteResource(_testContext.MockUsers[GUARDIAN_DEP_TWO].UserName,
-                                           new ResourceIdDTO() { ResourceId = ADMIN_PRIVATE_PICTOGRAM }).Result;
+                                           new ResourceIdDTO() { Id = ADMIN_PRIVATE_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
@@ -898,7 +901,7 @@ namespace GirafRest.Test.Controllers
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
             var result = uc.DeleteResource("Invalid",
-                                           new ResourceIdDTO() { ResourceId = ADMIN_PRIVATE_PICTOGRAM }).Result;
+                                           new ResourceIdDTO() { Id = ADMIN_PRIVATE_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());

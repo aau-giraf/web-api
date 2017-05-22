@@ -275,6 +275,7 @@ namespace GirafRest.Controllers
         /// <param name="resourceId">ResourceIdDTO containing relevant information about the resource.</param>
         /// <returns>
         /// NotFound if either the department or the resource does not exist,
+        /// Unauthorized if the user attempt to remove a resource he does not own,
         /// BadRequest if no resourceId has been specified as either query-parameter or in the request-body or
         /// Ok if no problems occured.
         /// </returns>

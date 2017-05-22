@@ -8,6 +8,9 @@ using GirafRest.Models.DTOs;
 
 namespace GirafRest.Models
 {
+    /// <summary>
+    /// The LauncherOptions, which is the various settings the users can add to customize the Launcher App.
+    /// </summary>
     [ComplexType]
     public class LauncherOptions
     {
@@ -38,12 +41,17 @@ namespace GirafRest.Models
         /// A field for storing how many columns to display in the GirafLauncher application.
         /// </summary>
         public int appGridSizeColumns { get; set; }
-
+        /// <summary>
+        /// Required empty constructor
+        /// </summary>
         public LauncherOptions()
         {
             appsUserCanAccess = new List<ApplicationOption>();
         }
-
+        /// <summary>
+        /// Updates all settings based on a DTO
+        /// </summary>
+        /// <param name="newOptions">The DTO containing new settings</param>
         public void UpdateFrom (LauncherOptionsDTO newOptions) {
             this.appGridSizeColumns = newOptions.appGridSizeColumns;
             this.appGridSizeRows = newOptions.appGridSizeRows;

@@ -522,8 +522,17 @@ namespace GirafRest.Controllers
         public async Task<IActionResult> UpdateUserSettings ([FromBody] LauncherOptionsDTO options) {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
 
-            if(user == null)
+            if (user == null)
                 return NotFound("No user is currently authorized.");
+            if (options == null)
+                return NotFound("No options in input.");
+            if (!ModelState.IsValid)
+                return BadRequest("Some data was missing from the serialized user \n\n" +
+                                  string.Join(",",
+                                  ModelState.Values.Where(E => E.Errors.Count > 0)
+                                  .SelectMany(E => E.Errors)
+                                  .Select(E => E.ErrorMessage)
+                                  .ToArray()));
 
             user.Settings.UpdateFrom(options);
             await _giraf._context.SaveChangesAsync();

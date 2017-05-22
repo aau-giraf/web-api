@@ -40,8 +40,13 @@ namespace GirafRest.Setup
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
         }
-
+        /// <summary>
+        /// The configuration, contains information regarding connecting to the database
+        /// </summary>
         private IConfigurationRoot Configuration { get; }
+        /// <summary>
+        /// Contains information regarding the environment the application is hosted in
+        /// </summary>
         private IHostingEnvironment Environment { get; }
 
         /// <summary>
@@ -74,6 +79,10 @@ namespace GirafRest.Setup
 
             services.ConfigurePolicies();
         }
+        /// <summary>
+        /// Configures the GirafUser Identity, changing what is needed by it, and how it should act
+        /// </summary>
+        /// <param name="services">A collection of all services in the application</param>
         private void configureIdentity<T>(IServiceCollection services)
             where T : GirafDbContext
         {
@@ -94,7 +103,7 @@ namespace GirafRest.Setup
         /// on how the server should be hosted.</param>
         /// <param name="loggerFactory">A logger factory, in this context used to configure how the loggers
         /// should behave.</param>
-        /// <param name="context">A reference to the database context, in this case used to populate the database with sample data.</param>
+        /// <param name="roleManager">A reference to the roleManager, used here to ensure that roles are setup</param>
         /// <param name="userManager">A reference to the usermanager, in this case used to create sample users.</param>
         /// <param name="appLifetime">A reference to an implementation of IApplicationLifetime, that has a set of events,
         /// that signal when the application starts, end and so fourth.</param>
