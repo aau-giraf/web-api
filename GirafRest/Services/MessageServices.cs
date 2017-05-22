@@ -17,8 +17,13 @@ namespace GirafRest.Services
     // For more details see this link http://go.microsoft.com/fwlink/?LinkID=532713
     public class MessageServices : IEmailService
     {
-        
+        /// <summary>
+        /// Contains information needed by the email service
+        /// </summary>
         private readonly EmailConfig _emailConfig;
+        /// <summary>
+        /// The logger, used to log.
+        /// </summary>
         private readonly ILogger _logger;
 
         /// <summary>

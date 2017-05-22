@@ -31,6 +31,9 @@ namespace GirafRest.Models.DTOs.AccountDTOs
         [Compare("Password", ErrorMessage = "De indtastede kodeord passer ikke sammen.")]
         public string ConfirmPassword { get; set; }
 
+        /// <summary>
+        /// Reset password confirmation code. Used when a user request a password reset, this code needs to be added to the url in order to reset.
+        /// </summary>
         public string Code { get; set; }
     }
 }

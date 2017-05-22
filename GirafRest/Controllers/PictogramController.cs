@@ -20,6 +20,9 @@ namespace GirafRest.Controllers
     [Route("[controller]")]
     public class PictogramController : Controller
     {
+        /// <summary>
+        /// Consts for image types.
+        /// </summary>
         private const string IMAGE_TYPE_PNG = "image/png";
         private const string IMAGE_TYPE_JPEG = "image/jpeg";
 
@@ -44,7 +47,9 @@ namespace GirafRest.Controllers
         /// Get all public <see cref="Pictogram"/> pictograms available to the user
         /// (i.e the public pictograms and those owned by the user (PRIVATE) and his department (PROTECTED)).
         /// </summary>
-        /// <returns> All the user's <see cref="Pictogram"/> pictograms.</returns>
+        /// <returns> All the user's <see cref="Pictogram"/> pictograms.
+        /// BadRequest if the request query was invalid, or if no pictograms were found
+        /// </returns>
         [HttpGet]
         public async Task<IActionResult> ReadPictograms()
         {
@@ -76,9 +81,9 @@ namespace GirafRest.Controllers
         /// Read the <see cref="Pictogram"/> pictogram with the specified <paramref name="id"/> id and
         /// check if the user is authorized to see it.
         /// </summary>
-        /// <param name="id">The ID of the pictogram to fetch.</param>
+        /// <param name="id">The id of the pictogram to fetch.</param>
         /// <returns> The <see cref="Pictogram"/> pictogram with the specified ID,
-        /// NotFound (404) if no such <see cref="Pictogram"/> pictogram exists,
+        /// NotFound  if no such <see cref="Pictogram"/> pictogram exists,
         /// BadRequest if the <see cref="Pictogram"/> was not succesfully uploaded to the server or
         /// Unauthorized if the pictogram is private and user does not own it.
         /// </returns>
@@ -119,7 +124,8 @@ namespace GirafRest.Controllers
         /// Create a new <see cref="Pictogram"/> pictogram.
         /// </summary>
         /// <param name="pictogram">A <see cref="PictogramDTO"/> with all relevant information about the new pictogram.</param>
-        /// <returns>The new pictogram with all database-generated information.</returns>
+        /// <returns>The new pictogram with all database-generated information.
+        /// BadRequest if some data was missing from either the PictogramDTO or the user</returns>
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> CreatePictogram([FromBody]PictogramDTO pictogram)
@@ -163,7 +169,9 @@ namespace GirafRest.Controllers
         /// <param name="pictogram">A <see cref="PictogramDTO"/> with all new information to update with.
         /// The Id found in this DTO is the target pictogram.
         /// </param>
-        /// <returns>NotFound if there is no pictogram with the specified id or 
+        /// <returns> BadRequest if the PictogramDTO or user were invalid
+        /// Unauthorized if the user does not own the Pictogram he is attempting to update
+        /// NotFound if there is no pictogram with the specified id or 
         /// the updated pictogram to maintain statelessness.</returns>
         [HttpPut("{id}")]
         [Authorize(Policy = GirafRole.RequireGuardianOrSuperUser)]
@@ -201,7 +209,9 @@ namespace GirafRest.Controllers
         /// Delete the <see cref="Pictogram"/> pictogram with the specified id.
         /// </summary>
         /// <param name="id">The id of the pictogram to delete.</param>
-        /// <returns>Ok if the pictogram was deleted and NotFound if no pictogram with the id exists.</returns>
+        /// <returns>Ok if the pictogram was deleted,
+        /// NotFound if no pictogram with the id exists.
+        /// Unauthorized if the user does not own the pictogram</returns>
         [HttpDelete("{id}")]
         [Authorize(Policy = GirafRole.RequireGuardianOrSuperUser)]
         public async Task<IActionResult> DeletePictogram(int id)
@@ -225,7 +235,9 @@ namespace GirafRest.Controllers
         /// Upload an image for the <see cref="Pictogram"/> pictogram with the given id.
         /// </summary>
         /// <param name="id">Id of the pictogram to upload an image for.</param>
-        /// <returns>The pictogram's information along with its image.</returns>
+        /// <returns>The pictogram's information along with its image.
+        /// BadRequest if the Pictogram already has an image or if the request body did not contain an image
+        /// Unauthorized if the user does not own the Pictogram</returns>
         [HttpPost("image/{id}")]
         [Consumes(IMAGE_TYPE_PNG, IMAGE_TYPE_JPEG)]
         [Authorize]
@@ -259,7 +271,10 @@ namespace GirafRest.Controllers
         /// Update the image of a <see cref="Pictogram"/> pictogram with the given Id.
         /// </summary>
         /// <param name="id">Id of the pictogram to update the image for.</param>
-        /// <returns>The updated pictogram along with its image.</returns>
+        /// <returns>The updated pictogram along with its image.
+        /// Unauthorized if the user does not own the Pictogram,
+        /// BadRequest if the Pictogram does not have an image yet
+        /// NotFound if it does not exist</returns>
         [Consumes(IMAGE_TYPE_PNG, IMAGE_TYPE_JPEG)]
         [HttpPut("image/{id}")]
         [Authorize]
@@ -288,7 +303,9 @@ namespace GirafRest.Controllers
         /// Read the image of a given pictogram.
         /// </summary>
         /// <param name="id">The id of the pictogram to read the image of.</param>
-        /// <returns>A FileResult with the desired image.</returns>
+        /// <returns>A FileResult with the desired image.
+        /// NotFound if the image does not exist
+        /// Unauthorized if the user does not have access to it</returns>
         [HttpGet("image/{id}")]
         public async Task<IActionResult> ReadPictogramImage(long id) {
             var usr = await _giraf.LoadUserAsync(HttpContext.User);
@@ -317,7 +334,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="picto">The Pictogram in need of checking.</param>
         /// <param name="usr">The user in question.</param>
-        /// <returns>A list of said pictograms.</returns>
+        /// <returns>A bool indicating whether the user owns the pictogram or not.</returns>
         private async Task<bool> CheckOwnership(Pictogram picto, GirafUser usr)
         {
             var ownsPictogram = false;
@@ -382,7 +399,12 @@ namespace GirafRest.Controllers
                 return null;
             }
         }
-
+        /// <summary>
+        /// Helper method for parsing queries involving integers
+        /// </summary>
+        /// <param name="queryStringName">The string to look for in the request</param>
+        /// <param name="fallbackValue">The value to return should the request not contain a query</param>
+        /// <returns>Either the fallback value, or the Integer found in the query</returns>
         private int parseQueryInteger(string queryStringName, int fallbackValue)
         {
             if (string.IsNullOrEmpty(HttpContext.Request.Query[queryStringName]))

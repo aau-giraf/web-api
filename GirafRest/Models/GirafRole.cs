@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace GirafRest.Models
 {
+    /// <summary>
+    /// All the roles and policies available in the system. 
+    /// </summary>
     public class GirafRole : IdentityRole
     {
         // Roles

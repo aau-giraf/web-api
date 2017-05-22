@@ -37,6 +37,7 @@ namespace GirafRest.Extensions
         /// An extension-method for configuring the application to use a MySQL database.
         /// </summary>
         /// <param name="services">A reference to the services of the application.</param>
+        /// <param name="Configuration">Contains the ConnectionString</param>
         public static void AddMySql(this IServiceCollection services, IConfigurationRoot Configuration) {
             //Setup the connection to the sql server
             services.AddDbContext<GirafMySqlDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
@@ -60,15 +61,18 @@ namespace GirafRest.Extensions
             };
             foreach (var role in Roles)
             {
-                //A hacky way to run tasks synchronously
+                //A hacky way to run tasks synchronously, do not use this if at all avoidable
                 var r = roleManager.CreateAsync(role).Result;
             }
         }
 
         /// <summary>
-        /// Makes a list of roles, which the user is a part of.
+        /// Creates a list of roles a given user is part of
         /// </summary>
-        /// <param name="result">The list of roles, which the user is part of.</param>
+        /// <param name="roleManager">Reference to the roleManager</param>
+        /// <param name="userManager">Reference to the userManager</param>
+        /// <param name="user">The user in question</param>
+        /// <returns></returns>
         public static async Task<GirafRoles> findUserRole(this RoleManager<GirafRole> roleManager, UserManager<GirafUser> userManager, GirafUser user)
         {
             GirafRoles userRole = new GirafRoles();

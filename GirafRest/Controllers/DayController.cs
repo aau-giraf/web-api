@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 using GirafRest.Services;
 
 namespace GirafRest.Controllers
-{
+{    
     [Route("[controller]")]
     public class DayController : Controller
     {
@@ -21,18 +21,26 @@ namespace GirafRest.Controllers
         /// A reference to GirafService, that contains common functionality for all controllers.
         /// </summary>
         private readonly IGirafService _giraf;
+        /// <summary>
+        /// Creates a new DayController, as with all controllers, this is instantiated by ASP.NET and the parametersa re
+        /// dependency injected.
+        /// </summary>
+        /// <param name="giraf"> Reference to the implementation of GirafService </param>
+        /// <param name="loggerFactory"> Reference to the logger allowing for uniform logging of all controllers</param>
         public DayController(IGirafService giraf, ILoggerFactory loggerFactory)
         {
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Day");
         }
+
         /// <summary>
-        /// Updates one of the days of the week with the given id.
+        /// Updates a specified day of the week with the given id.
         /// </summary>
         /// <param name="id">The id of the week to update a day for.</param>
         /// <param name="newDay">A serialized version of the day to update.</param>
         /// <returns>NotFound if no week with the given id is owned by the user or 
-        /// Ok if everything goes well.</returns>
+        /// Ok if everything goes well.
+        /// BadRequest if the body does not contain a parseable WeekdayDTO</returns>
         [HttpPut("{id}")]
         [Authorize]
         public async Task<IActionResult> UpdateDay(long id, [FromBody]WeekdayDTO newDay)	

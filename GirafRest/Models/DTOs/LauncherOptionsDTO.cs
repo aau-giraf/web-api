@@ -3,6 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GirafRest.Models.DTOs
 {
+    /// <summary>
+    /// A Data Transfer Object for the user settings used by the launcher
+    /// </summary>
     public class LauncherOptionsDTO
     {
         /// <summary>
@@ -31,7 +34,10 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         [Required]
         public int appGridSizeColumns { get; set; }
-
+        /// <summary>
+        /// Constructor to create a DTO based on the actual object
+        /// </summary>
+        /// <param name="options">The launcher options in need of transfer</param>
         public LauncherOptionsDTO(LauncherOptions options)
         {
             this.appGridSizeColumns = options.appGridSizeColumns;
@@ -40,7 +46,9 @@ namespace GirafRest.Models.DTOs
             this.DisplayLauncherAnimations = options.DisplayLauncherAnimations;
             this.UseGrayscale = options.UseGrayscale;
         }
-
+        /// <summary>
+        /// Simple constructor ensuring that appsUserCanAccess isn't null
+        /// </summary>
         public LauncherOptionsDTO()
         {
             appsUserCanAccess = new List<ApplicationOption>();

@@ -16,6 +16,7 @@ namespace GirafRest.Setup
 		/// Initializes the local database with sample data.
 		/// </summary>
 		/// <param name="context">A reference to the database context.</param>
+		/// <param name="userManager">A reference to the userManager</param>
 		public static void Initialize(GirafDbContext context, UserManager<GirafUser> userManager)
 		{
             // Check if any data is in the database

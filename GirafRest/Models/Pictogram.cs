@@ -42,7 +42,7 @@ namespace GirafRest.Models {
         public Pictogram(){}
 
         /// <summary>
-        /// Overrides the information of this Pictogram with new information found in the DTO.
+        /// Overrides the information of this Pictogram with new information found in the given DTO.
         /// </summary>
         /// <param name="other">The new information.</param>
         public virtual void Merge(PictogramDTO other)

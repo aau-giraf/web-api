@@ -29,7 +29,7 @@ namespace GirafRest.Controllers
         /// </summary>
         private readonly IEmailService _emailSender;
         /// <summary>
-        /// 
+        /// Reference to the GirafService, which contains helper methods used by most controllers.
         /// </summary>
         private readonly IGirafService _giraf;
         /// <summary>
@@ -64,7 +64,7 @@ namespace GirafRest.Controllers
         /// <param name="model">A LoginDTO(LoginViewModelDTO), i.e. a json-string with a username and a password field.</param>
         /// <returns>
         /// BadRequest if the caller fails to supply a valid username or password,
-        /// Unauthorized if either the username or pass is not recognized or if a Guardian/Department attempted to log on
+        /// Unauthorized if either the username or password is not recognized or if a Guardian/Department attempted to log on
         /// to another user that is not in their department.
         /// Ok if sign in was succesful.
         /// </returns>
@@ -123,6 +123,7 @@ namespace GirafRest.Controllers
                 
             //Check if the user exists, sign out the guardian and sign in the user if so
             if (loginUser != null && loginUser.DepartmentKey == superior.DepartmentKey)
+
             {
                 if (!await _giraf._userManager.IsInRoleAsync(loginUser, role))
                     return Unauthorized();
@@ -284,7 +285,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Allows the user to change his password.
         /// </summary>
-        /// <param name="model">All information needed to change the password, i.e. old password, new password
+        /// <param name="model">All information needed to change the password in a ChangePasswordDTO, i.e. old password, new password
         /// and a confirmation of the new password.</param>
         /// <returns>BadRequest if something went wrong and ok if everything went well.</returns>
         [HttpPost("change-password")]
@@ -338,7 +339,7 @@ namespace GirafRest.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(ResetPasswordDTO model)
         {
-            //Check that all the necesarry information was specified
+            //Check that all the necessary information was specified
             if (!ModelState.IsValid)
             {
                 //It was not, return the user to the view, where he may try again.

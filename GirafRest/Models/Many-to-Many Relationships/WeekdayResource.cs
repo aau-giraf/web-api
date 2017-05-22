@@ -44,12 +44,9 @@ namespace GirafRest.Models
         /// <param name="resource">The involved resource.</param>
         public WeekdayResource(Weekday weekday, Resource resource)
         {
-            //this.OtherKey = weekday.Id;
             this.Other = weekday;
             this.ResourceKey = resource.Id;
             this.Resource = resource;
-
-            //weekday.Elements.Add(this);
         }
 
         /// <summary>

@@ -13,7 +13,7 @@ namespace GirafRest.Controllers
 {
     /// <summary>
     /// The GirafService class implements the <see cref="IGirafService"/> interface and thus implements common
-    /// functionality that is needed by all controllers.
+    /// functionality that is needed by most controllers.
     /// </summary>
     public class GirafService : IGirafService
     {
@@ -141,8 +141,7 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Checks if the user owns the given <paramref name="pictogram"/> and returns true if so.
-        /// Returns false if the user the <see cref="Pictogram"/>. 
+        /// Checks if the user owns the given <paramref name="pictogram"/>.
         /// </summary>
         /// <param name="pictogram">The pictogram to check the ownership for.</param>
         /// <param name="httpContext">A reference to the current HttpContext.</param>

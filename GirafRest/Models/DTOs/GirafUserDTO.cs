@@ -22,7 +22,7 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         public GirafRoles Role { get; set; }
         /// <summary>
-        /// List of users the user is guardian of. Is simply null if the user isn't a guardian
+        /// List of users the user is guardian of. Is simply null if the user isn't a guardian. Contains guardians if the user is a Department
         /// </summary>
         public List<GirafUserDTO> GuardianOf { get; set; }
         [Required]

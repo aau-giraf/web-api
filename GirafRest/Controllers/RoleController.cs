@@ -8,16 +8,26 @@ using System.Threading.Tasks;
 
 namespace GirafRest.Controllers
 {
+    /// <summary>
+    /// The RoleController is responsible for managing the roles of the system, and should be used to add or remove various users from roles
+    /// </summary>
     [Authorize]
     [Route("[controller]")]
     public class RoleController : Controller
     {
+        /// <summary>
+        /// Reference to the girafservice which contains helper method shared by most controllers
+        /// </summary>
         private readonly IGirafService _giraf;
+        /// <summary>
+        /// Reference to the RoleManager, which is necessary to use when manipulating roles in asp.net
+        /// </summary>
         private readonly RoleManager<GirafRole> _roleManager;
 
         /// <summary>
         /// Constructor for the Role-controller. This is called by the asp.net runtime.
         /// </summary>
+        /// <param name="giraf"> A reference to the girafservce </param>
         /// <param name="roleManager">A reference to the ASP.NET RoleManager with type GirafRole.</param>
         public RoleController(IGirafService giraf, RoleManager<GirafRole> roleManager)
         {
@@ -44,10 +54,10 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Adds the specified user to the Guardian role
+        /// Adds a specified user to the Guardian role
         /// </summary>
-        /// <param name="username">The username of the user in question
-        /// <returns> NotFound if no such user exists, Badrequest if the operation failed and Ok if successful</returns>
+        /// <param name="username">Username of the user who needs be to made guardian</param>
+        /// <returns> NotFound if no such user exists, Badrequest if the operation fails. And Ok if all is well</returns>
         [HttpPost("guardian/{username}")]
         [Authorize(Policy = GirafRole.RequireGuardianOrSuperUser)]
         public async Task<IActionResult> AddToGuardian(string username)
@@ -58,7 +68,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Removes the user from the Guardian role
         /// </summary>
-        /// <param name="username">The username of the user in question
+        /// <param name="username">The username of the user in question</param>
         /// <returns> NotFound if no such user exists, Badrequest if the operation failed and Ok if successful</returns>
         [HttpDelete("guardian/{username}")]
         [Authorize(Policy = GirafRole.RequireGuardianOrSuperUser)]
