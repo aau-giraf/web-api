@@ -300,7 +300,7 @@ namespace GirafRest.Test.Controllers
             var result = uc.UpdateUser(new GirafUserDTO(
                 _testContext.MockUsers[ADMIN_DEP_ONE], GirafRoles.Citizen)
                 {
-                    Resources = new List<long> () { -1 }
+                    Resources = new List<ResourceDTO> () { new ResourceDTO() }    //I just blindly create an empty object here. Possible source of bug.
                 }).Result;
 
             Assert.IsType<BadRequestObjectResult>(result);

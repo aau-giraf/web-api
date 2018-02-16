@@ -220,21 +220,23 @@ namespace GirafRest.Test
                     if (mockChoices == null)
                         mockChoices = new List<Choice>()
                         {
-                            new Choice(MockPictograms.Where(p => p.AccessLevel == AccessLevel.PUBLIC).Cast<Pictogram>().ToList())
+                            new Choice(
+                                MockPictograms.Where(p => p.AccessLevel == AccessLevel.PUBLIC).Cast<Pictogram>().ToList(), 
+                                "TestChoiche")
                             {
                                 Id = 0
                             },
                             //A private pictogram for mock user 0
                             new Choice(new List<Pictogram>() {
                                 MockPictograms[3]
-                            })
+                            }, "TestChoiche")
                             {
                                 Id = 1
                             },
                             //A choice for department 0 (with id 1)
                             new Choice(new List<Pictogram>() {
                                 MockPictograms[5]
-                            })
+                            }, "TestChoiche")
                             {
                                 Id = 2
                             },
@@ -242,7 +244,7 @@ namespace GirafRest.Test
                             new Choice(new List<Pictogram>()
                             {
                                 MockPictograms[6]
-                            })
+                            }, "TestChoiche")
                             {
                                 Id = 3
                             },
