@@ -8,11 +8,13 @@ namespace GirafRest.Models {
     /// communicate visually.
     /// </summary>
     public class Pictogram : Resource{
+        
         /// <summary>
         /// The accesslevel, PRIVATE means only the owner can see it, PROTECTED means everyone in the owning department and PUBLIC is everyone.
         /// </summary>
         [Required]
         public AccessLevel AccessLevel { get; set; }
+        
         /// <summary>
         /// A byte array containing the pictogram's image.
         /// </summary>
@@ -36,8 +38,7 @@ namespace GirafRest.Models {
         }
 
         /// <summary>
-        /// DO NOT DELETE THIS.
-        /// It is required by Newtonsoft
+        /// Empty constructor is required by Newtonsoft.
         /// </summary>
         public Pictogram(){}
 

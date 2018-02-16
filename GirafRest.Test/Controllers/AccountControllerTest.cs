@@ -387,7 +387,7 @@ namespace GirafRest.Test
             
             Assert.IsType<OkObjectResult>(res);
             var user = (res as ObjectResult).Value as GirafUserDTO;
-            Assert.Equal(null, user.DepartmentKey);
+            Assert.Equal(null, user.Department);
         }
         
         [Fact]

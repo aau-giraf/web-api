@@ -12,3 +12,4 @@ doxygen*
 \.vs/GirafRest/v15/\.suo
 */wwwroot/Logs/*
 */wwwroot/logs/*
+\.idea/

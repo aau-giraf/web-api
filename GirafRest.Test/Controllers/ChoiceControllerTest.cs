@@ -145,7 +145,7 @@ namespace GirafRest.Test
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
             List<Pictogram> options = _testContext.MockPictograms.Cast<Pictogram>().Where(p => p.AccessLevel == AccessLevel.PUBLIC).ToList();
-            var res = cc.CreateChoice(new ChoiceDTO(new Choice(options) { Id = CREATE_CHOICE_ID }));
+            var res = cc.CreateChoice(new ChoiceDTO(new Choice(options, "TestChoiche") { Id = CREATE_CHOICE_ID }));
             Assert.IsType<OkObjectResult>(res.Result);
         }
 
@@ -158,7 +158,7 @@ namespace GirafRest.Test
                 .Cast<Pictogram>()
                 .Where(p => p.AccessLevel == AccessLevel.PUBLIC)
                 .ToList();
-            var res = choiceController.CreateChoice(new ChoiceDTO(new Choice(options) { Id = CREATE_CHOICE_ID }));
+            var res = choiceController.CreateChoice(new ChoiceDTO(new Choice(options, "TestChoiche") { Id = CREATE_CHOICE_ID }));
             Assert.IsType<OkObjectResult>(res.Result);
         }
 
@@ -168,7 +168,7 @@ namespace GirafRest.Test
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
             List<Pictogram> options = new List<Pictogram> { _testContext.MockPictograms[PRIVATE_PICTOGRAM] };
-            var res = cc.CreateChoice(new ChoiceDTO(new Choice(options) { Id = CREATE_CHOICE_ID }));
+            var res = cc.CreateChoice(new ChoiceDTO(new Choice(options, "TestChoiche") { Id = CREATE_CHOICE_ID }));
             Assert.IsType<UnauthorizedResult>(res.Result);
         }
 
@@ -178,7 +178,7 @@ namespace GirafRest.Test
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             List<Pictogram> options = new List<Pictogram> { _testContext.MockPictograms[PRIVATE_PICTOGRAM] };
-            var res = choiceController.CreateChoice(new ChoiceDTO(new Choice(options) { Id = CREATE_CHOICE_ID }));
+            var res = choiceController.CreateChoice(new ChoiceDTO(new Choice(options, "TestChoiche") { Id = CREATE_CHOICE_ID }));
             Assert.IsType<OkObjectResult>(res.Result);
         }
 
@@ -188,7 +188,7 @@ namespace GirafRest.Test
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             List<Pictogram> options = new List<Pictogram> { _testContext.MockPictograms[PRIVATE_PICTOGRAM] };
-            var res = choiceController.CreateChoice(new ChoiceDTO(new Choice(options) { Id = CREATE_CHOICE_ID }));
+            var res = choiceController.CreateChoice(new ChoiceDTO(new Choice(options, "TestChoiche") { Id = CREATE_CHOICE_ID }));
             Assert.IsType<UnauthorizedResult>(res.Result);
         }
         #endregion
@@ -199,7 +199,7 @@ namespace GirafRest.Test
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
-            Choice c = new Choice(new List<Pictogram>()) { Id = _testContext.MockChoices[PUBLIC_CHOICE].Id };
+            Choice c = new Choice(new List<Pictogram>(), "TestChoiche") { Id = _testContext.MockChoices[PUBLIC_CHOICE].Id };
             foreach (var option in _testContext.MockChoices[PUBLIC_CHOICE])
             {
                 c.Add(option);
@@ -215,7 +215,7 @@ namespace GirafRest.Test
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            Choice c = new Choice(new List<Pictogram>()) { Id = _testContext.MockChoices[PUBLIC_CHOICE].Id };
+            Choice c = new Choice(new List<Pictogram>(), "TestChoiche") { Id = _testContext.MockChoices[PUBLIC_CHOICE].Id };
             foreach (var option in _testContext.MockChoices[PUBLIC_CHOICE])
             {
                 c.Add(option);
@@ -231,7 +231,7 @@ namespace GirafRest.Test
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
-            Choice c = new Choice(new List<Pictogram>()) { Id = _testContext.MockChoices[PRIVATE_CHOICE].Id };
+            Choice c = new Choice(new List<Pictogram>(), "TestChoiche") { Id = _testContext.MockChoices[PRIVATE_CHOICE].Id };
             foreach (var option in _testContext.MockChoices[PRIVATE_CHOICE])
             {
                 c.Add(option);
@@ -247,7 +247,7 @@ namespace GirafRest.Test
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            Choice c = new Choice(new List<Pictogram>()) { Id = _testContext.MockChoices[PRIVATE_CHOICE].Id };
+            Choice c = new Choice(new List<Pictogram>(), "TestChoiche") { Id = _testContext.MockChoices[PRIVATE_CHOICE].Id };
             foreach (var option in _testContext.MockChoices[PRIVATE_CHOICE])
             {
                 c.Add(option);
@@ -264,7 +264,7 @@ namespace GirafRest.Test
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-            Choice c = new Choice(new List<Pictogram>()) { Id = _testContext.MockChoices[PRIVATE_CHOICE].Id };
+            Choice c = new Choice(new List<Pictogram>(), "TestChoiche") { Id = _testContext.MockChoices[PRIVATE_CHOICE].Id };
             foreach (var option in _testContext.MockChoices[PRIVATE_CHOICE])
             {
                 c.Add(option);
@@ -280,7 +280,7 @@ namespace GirafRest.Test
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
-            Choice c = new Choice(new List<Pictogram>()) { Id = _testContext.MockChoices[PROTECTED_CHOICE].Id };
+            Choice c = new Choice(new List<Pictogram>(), "TestChoiche") { Id = _testContext.MockChoices[PROTECTED_CHOICE].Id };
             foreach (var option in _testContext.MockChoices[PROTECTED_CHOICE])
             {
                 c.Add(option);
@@ -296,7 +296,7 @@ namespace GirafRest.Test
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            Choice c = new Choice(new List<Pictogram>()) { Id = _testContext.MockChoices[PROTECTED_CHOICE].Id };
+            Choice c = new Choice(new List<Pictogram>(), "TestChoiche") { Id = _testContext.MockChoices[PROTECTED_CHOICE].Id };
             foreach (var option in _testContext.MockChoices[PROTECTED_CHOICE])
             {
                 c.Add(option);
@@ -312,7 +312,7 @@ namespace GirafRest.Test
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-            Choice c = new Choice(new List<Pictogram>()) { Id = _testContext.MockChoices[PROTECTED_CHOICE].Id };
+            Choice c = new Choice(new List<Pictogram>(), "TestChoiche") { Id = _testContext.MockChoices[PROTECTED_CHOICE].Id };
             foreach (var option in _testContext.MockChoices[PROTECTED_CHOICE])
             {
                 c.Add(option);
@@ -328,7 +328,7 @@ namespace GirafRest.Test
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
-            Choice c = new Choice(new List<Pictogram>()) { Id = NONEXISTING };
+            Choice c = new Choice(new List<Pictogram>(), "TestChoiche") { Id = NONEXISTING };
             c.AddAll(_testContext.MockPictograms.Cast<Pictogram>().Where(p => p.AccessLevel == AccessLevel.PUBLIC).Take(TWO).ToList());
             var res = cc.UpdateChoice(c.Id, new ChoiceDTO(c));
             Assert.IsType<NotFoundObjectResult>(res.Result);
@@ -339,7 +339,7 @@ namespace GirafRest.Test
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            Choice c = new Choice(new List<Pictogram>()) { Id = NONEXISTING };
+            Choice c = new Choice(new List<Pictogram>(), "TestChoiche") { Id = NONEXISTING };
             c.AddAll(_testContext.MockPictograms
                 .Cast<Pictogram>()
                 .Where(p => p.AccessLevel == AccessLevel.PUBLIC)

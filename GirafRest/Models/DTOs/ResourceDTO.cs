@@ -36,7 +36,7 @@ namespace GirafRest.Models.DTOs
         }
 
         /// <summary>
-        /// DO NOT DELETE THIS! NEWTONSOFT REQUIRES AN EMPTY CONSTRUCTOR!
+        /// Empty constructor required by Newtonsoft.
         /// </summary>
         public ResourceDTO () {}
     }
