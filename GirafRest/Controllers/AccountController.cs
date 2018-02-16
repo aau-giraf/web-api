@@ -95,6 +95,7 @@ namespace GirafRest.Controllers
             //There is no current user - check that a password is present.
             if(string.IsNullOrEmpty(model.Password))
                 return BadRequest("No password specified.");
+            
             //Attempt to sign in with the given credentials.
             var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, lockoutOnFailure: false);
             if (result.Succeeded)
@@ -120,10 +121,8 @@ namespace GirafRest.Controllers
         {
             //Attempt to find a user with the given username in the guardian's department
             var loginUser = await _giraf.LoadByNameAsync(username);
-                
-            //Check if the user exists, sign out the guardian and sign in the user if so
+            
             if (loginUser != null && loginUser.DepartmentKey == superior.DepartmentKey)
-
             {
                 if (!await _giraf._userManager.IsInRoleAsync(loginUser, role))
                     return Unauthorized();
@@ -136,6 +135,7 @@ namespace GirafRest.Controllers
 
                 return Ok(new GirafUserDTO(loginUser, userRoles));
             }
+            
             //There was no user with the given username in the department - return NotFound.
             else
                 return NotFound($"There is no user with the given username in your department: {username}");

@@ -17,7 +17,7 @@ namespace GirafRest.Models {
         public ICollection<ChoiceResource> Options { get; private set; }
 
         /// <summary>
-        /// DO NOT DELETE THIS.
+        /// Empty constructor is required by Newtonsoft.
         /// </summary>
         public Choice () {}
 
