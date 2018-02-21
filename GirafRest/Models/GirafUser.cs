@@ -65,6 +65,7 @@ namespace GirafRest.Models
         {
             this.UserName = userName;
             this.Resources = new List<UserResource>();
+            this.GuardianOf = new List<GirafUser>();
             this.WeekSchedule = new List<Week>();
             Settings = new LauncherOptions();
             Department = department;

@@ -154,6 +154,49 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
+        /// Patch authenticated user to be guardian of the citizen given in body
+        /// </summary>
+        [Authorize]
+        [HttpPatch("add-Guardian-Ship-Of-Citizen")]
+        public async Task<IActionResult> AddGuardianShipOfCitizen([FromBody] GirafUserDTO citizenDTO)
+        {
+            var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            if (citizenDTO == null) {
+                return BadRequest("Invalid user-format in body");      
+            }
+            if (citizenDTO.Role != GirafRoles.Citizen) {
+                return BadRequest($"{citizenDTO.ScreenName} must be a citizen, but is a {citizenDTO.Role}");
+            }
+
+            if(user.Id == citizenDTO.Id){
+                return BadRequest($"You cannot be guardian of yourself (atleast not in this app)");
+            }
+
+            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
+
+            if(userRole != GirafRoles.Guardian){
+                return BadRequest($"{user.UserName} is not a {GirafRoles.Guardian}, but a {userRole}");
+            }
+
+            var CurrentGuardian = await _giraf._context.Users?.FirstOrDefaultAsync(x => x.GuardianOf.Any(y => y.Id == citizenDTO.Id));
+
+            if(CurrentGuardian != null){
+                return BadRequest($"{citizenDTO.Username} already has a guardian");
+            }
+
+            var citizen = _giraf._context.Users?.FirstOrDefault(g => g.Id == citizenDTO.Id);
+
+            if(user?.Department?.Key != citizen?.Department?.Key){
+                return BadRequest($"Department of {citizen.UserName} and {user.UserName} is not the same");
+            }
+
+            user.GuardianOf.Add(citizen);
+            var success = await _giraf._context.SaveChangesAsync();
+
+            return Ok();  
+        }
+
+        /// <summary>
         /// Updates all the information of the currently authenticated user with the information from the given DTO.
         /// </summary>
         /// <param name="id">The id of the user to update.</param>
