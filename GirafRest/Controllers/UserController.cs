@@ -161,6 +161,7 @@ namespace GirafRest.Controllers
         public async Task<IActionResult> AddGuardianShipOfCitizen([FromBody] GirafUserDTO citizenDTO)
         {
             var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            user = _giraf._context.Users.Include(u => u.GuardianOf).FirstOrDefault(x => x.Id == user.Id);
             if (citizenDTO == null) {
                 return BadRequest("Invalid user-format in body");      
             }
@@ -178,7 +179,7 @@ namespace GirafRest.Controllers
                 return BadRequest($"{user.UserName} is not a {GirafRoles.Guardian}, but a {userRole}");
             }
 
-            var CurrentGuardian = await _giraf._context.Users?.FirstOrDefaultAsync(x => x.GuardianOf.Any(y => y.Id == citizenDTO.Id));
+            var CurrentGuardian = await _giraf._context.Users.Include(u => u.GuardianOf).FirstOrDefaultAsync(x => x.GuardianOf.Any(y => y.Id == citizenDTO.Id));
 
             if(CurrentGuardian != null){
                 return BadRequest($"{citizenDTO.Username} already has a guardian");
@@ -293,6 +294,26 @@ namespace GirafRest.Controllers
 
             return Ok(new GirafUserDTO(usr, userRole));
         }
+
+        [HttpDelete("delete-Guardian-Ship-Of-Citizen/{id}")]
+        public async Task<IActionResult> DeleteGuardianShipOfCitizen(string id)
+        {
+            var usr = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, usr);
+            if(userRole != GirafRoles.Guardian){
+                return BadRequest($"{usr.UserName} is not a {GirafRole.Guardian}");
+            }
+            var citizenToDelete = _giraf._context.Users.Include(x => x.GuardianOf).FirstOrDefault(u => u.Id == usr.Id).GuardianOf.FirstOrDefault(g => g.Id == id);
+            if(citizenToDelete == null){
+                return BadRequest($"cannot find user to delete");
+            }
+            usr.GuardianOf.Remove(citizenToDelete);
+            var success = _giraf._context.SaveChanges();
+ 
+            return Ok();
+        }
+
+
         /// <summary>
         /// Allows the user to delete his profile icon.
         /// </summary>
