@@ -18,6 +18,7 @@ using Microsoft.EntityFrameworkCore;
 namespace GirafRest.Controllers
 {
     [Authorize]
+    [Route("[controller]")]
     public class AccountController : Controller
     {
         /// <summary>

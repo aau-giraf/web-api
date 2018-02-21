@@ -1,44 +1,31 @@
 ﻿<Properties StartupConfiguration="{78EB1BCB-4963-481F-B05C-E826353ACCFE}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="GirafRest/Program.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="GirafRest/Controllers/ChoiceController.cs">
     <Files>
-      <File FileName="GirafRest/Controllers/WeekController.cs" Line="147" Column="18" />
-      <File FileName="GirafRest/Controllers/DayController.cs" Line="1" Column="1" />
-      <File FileName="GirafRest/Controllers/DepartmentController.cs" Line="13" Column="2" />
-      <File FileName="GirafRest/Controllers/RoleController.cs" Line="174" Column="38" />
-      <File FileName="GirafRest/Program.cs" Line="34" Column="1" />
-      <File FileName="GirafRest/Controllers/PictogramController.cs" Line="1" Column="1" />
-      <File FileName="GirafRest/Models/GirafRole.cs" Line="1" Column="1" />
-      <File FileName="GirafRest/Models/Pictogram.cs" Line="1" Column="1" />
-      <File FileName="GirafRest/Models/Department.cs" Line="1" Column="1" />
-      <File FileName="GirafRest/Controllers/ChoiceController.cs" Line="1" Column="1" />
-      <File FileName="GirafRest/Controllers/AccountController.cs" Line="1" Column="1" />
-      <File FileName="GirafRest/Models/Choice.cs" Line="1" Column="1" />
-      <File FileName="GirafRest/Models/GirafUser.cs" Line="1" Column="1" />
-      <File FileName="GirafRest/Models/LauncherOptions.cs" Line="1" Column="1" />
-      <File FileName="GirafRest/Models/Resource.cs" Line="1" Column="1" />
-      <File FileName="GirafRest/Models/Week.cs" Line="1" Column="1" />
-      <File FileName="GirafRest/Models/Weekday.cs" Line="1" Column="1" />
-      <File FileName="GirafRest/Models/AccessLevel.cs" Line="18" Column="2" />
-      <File FileName="GirafRest/Views/Shared/_LoginPartial.cshtml" Line="12" Column="28" />
-      <File FileName="GirafRest/Views/Shared/_Layout.cshtml" Line="1" Column="1" />
-      <File FileName="GirafRest/Views/Shared/Error.cshtml" Line="1" Column="1" />
-      <File FileName="GirafRest/Views/Shared/_ValidationScriptsPartial.cshtml" Line="1" Column="1" />
-      <File FileName="GirafRest/appsettings.json" Line="1" Column="1" />
-      <File FileName="GirafRest/appsettings.Development.json" Line="43" Column="17" />
-      <File FileName="GirafRest/bower.json" Line="1" Column="1" />
-      <File FileName="GirafRest/bundleconfig.json" Line="1" Column="1" />
-      <File FileName="GirafRest/ProgramArguments.cs" Line="1" Column="1" />
-      <File FileName="GirafRest/ProgramOptions.cs" Line="32" Column="16" />
-      <File FileName="GirafRest/Services/GirafService.cs" Line="1" Column="1" />
-      <File FileName="GirafRest/Properties/launchSettings.json" Line="1" Column="1" />
       <File FileName="GirafRest/Controllers/ValuesController.cs" Line="1" Column="1" />
       <File FileName="GirafRest/Services/EmailConfig.cs" Line="1" Column="1" />
       <File FileName="GirafRest/Services/IEmailService.cs" Line="1" Column="1" />
       <File FileName="GirafRest/Services/MessageServices.cs" Line="1" Column="1" />
       <File FileName="GirafRest/Services/IGirafService.cs" Line="1" Column="1" />
       <File FileName="GirafRest/Setup/GirafExtensions.cs" Line="1" Column="1" />
-      <File FileName="GirafRest/Setup/Startup.cs" Line="138" Column="54" />
       <File FileName="GirafRest/Controllers/UserController.cs" Line="1" Column="1" />
+      <File FileName="GirafRest/Data/GirafDbContext.cs" Line="1" Column="1" />
+      <File FileName="GirafRest/Data/GirafMySqlDbContext.cs" Line="1" Column="1" />
+      <File FileName="GirafRest/Data/GirafSqliteDbContext.cs" Line="1" Column="1" />
+      <File FileName="GirafRest/.bowerrc" Line="1" Column="1" />
+      <File FileName="GirafRest/Models/AccessLevel.cs" Line="18" Column="2" />
+      <File FileName="GirafRest/Models/LauncherOptions.cs" Line="1" Column="1" />
+      <File FileName="GirafRest/Data/DBInitializer.cs" Line="104" Column="25" />
+      <File FileName="GirafRest/Models/GirafRole.cs" Line="1" Column="1" />
+      <File FileName="GirafRest/Controllers/AccountController.cs" Line="22" Column="29" />
+      <File FileName="GirafRest/Controllers/DayController.cs" Line="18" Column="31" />
+      <File FileName="GirafRest/Controllers/ChoiceController.cs" Line="24" Column="1" />
+      <File FileName="GirafRest/Models/Resource.cs" Line="1" Column="1" />
+      <File FileName="GirafRest/Properties/launchSettings.json" Line="1" Column="1" />
+      <File FileName="GirafRest/Setup/Startup.cs" Line="153" Column="25" />
+      <File FileName="GirafRest/Controllers/DepartmentController.cs" Line="12" Column="32" />
+      <File FileName="GirafRest/Controllers/WeekController.cs" Line="147" Column="18" />
+      <File FileName="GirafRest/Controllers/RoleController.cs" Line="174" Column="38" />
+      <File FileName="GirafRest/Controllers/PictogramController.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
