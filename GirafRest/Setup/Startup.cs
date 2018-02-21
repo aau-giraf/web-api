@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using GirafRest.Controllers;
 using Serilog;
 using System;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace GirafRest.Setup
 {
@@ -77,6 +78,12 @@ namespace GirafRest.Setup
             services.AddTransient<IGirafService, GirafService>();
             services.AddMvc();
 
+            // Register the Swagger generator, defining one or more Swagger documents
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+            });
+
             services.ConfigurePolicies();
         }
         /// <summary>
@@ -124,6 +131,15 @@ namespace GirafRest.Setup
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "¨Giraf REST API V1");
+            });
 
             //Configures Identity, i.e. user management
             app.UseIdentity();

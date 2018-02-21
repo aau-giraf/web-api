@@ -68,7 +68,7 @@ namespace GirafRest.Controllers
         /// to another user that is not in their department.
         /// Ok if sign in was succesful.
         /// </returns>
-        [HttpPost]
+        [HttpPost("login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login([FromBody] LoginDTO model)
         {
@@ -150,7 +150,7 @@ namespace GirafRest.Controllers
         /// BadRequest if the request lacks some information or the user could not be created and
         /// Ok if the user was actually created.
         /// </returns>
-        [HttpPost]
+        [HttpPost("register")]
         [AllowAnonymous]
         public async Task<IActionResult> Register([FromBody] RegisterDTO model)
         {
@@ -195,7 +195,7 @@ namespace GirafRest.Controllers
         /// Logs the currently authenticated user out of the system.
         /// </summary>
         /// <returns>Ok</returns>
-        [HttpPost]
+        [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
@@ -213,7 +213,7 @@ namespace GirafRest.Controllers
         /// NotFound if the no user with the given username exists and 
         /// Ok if the user was found.
         /// </returns>
-        [HttpPost]
+        [HttpPost("forgot-password")]
         [AllowAnonymous]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDTO model)
         {
@@ -319,7 +319,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="code"The reset password token that has been sent to the user via his email.></param>
         /// <returns>BadRequest if there is no valid code or the view if the code was valid.</returns>
-        [HttpGet]
+        [HttpGet("reset-password")]
         [AllowAnonymous]
         public IActionResult ResetPassword(string code = null)
         {
@@ -334,7 +334,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="model">A DTO containing the user's Username, Password and a ConfirmPassword.</param>
         /// <returns></returns>
-        [HttpPost]
+        [HttpPost("reset-password")]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ResetPassword(ResetPasswordDTO model)
@@ -367,7 +367,7 @@ namespace GirafRest.Controllers
         /// Get the view associated with the ResetPasswordConfirmation page.
         /// </summary>
         /// <returns>The view.</returns>
-        [HttpGet]
+        [HttpGet("reset-password-confirmation")]
         [AllowAnonymous]
         public IActionResult ResetPasswordConfirmation()
         {
@@ -379,7 +379,7 @@ namespace GirafRest.Controllers
         /// to an end-point with the [Authorize] attribute is encountered.
         /// </summary>
         /// <returns>Unauthorized.</returns>
-        [HttpGet]
+        [HttpGet("access-denied")]
         public IActionResult AccessDenied()
         {
             return Unauthorized();

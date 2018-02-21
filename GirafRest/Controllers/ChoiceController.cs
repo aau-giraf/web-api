@@ -80,7 +80,7 @@ namespace GirafRest.Controllers
         /// BadRequest if no valid ChoiceDTO is supplied, NotFound if the list of options contains an invalid pictogram
         /// id and Ok with the new choice with all database-generated information if the creation succeeded.
         /// </returns>
-        [HttpPost]
+        [HttpPost("")]
         public async Task<IActionResult> CreateChoice([FromBody] ChoiceDTO choice)
         {
             //Check if a valid ChoiceDTO has been specified

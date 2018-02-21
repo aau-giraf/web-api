@@ -106,7 +106,7 @@ namespace GirafRest.Controllers
         }
 
         [Authorize]
-        [HttpGet]
+        [HttpGet("")]
         public async Task<IActionResult> GetUser ()
         {
             //First attempt to fetch the user and check that he exists
@@ -145,7 +145,7 @@ namespace GirafRest.Controllers
         /// NotFound if the DTO contains either an invalid pictogram ID or an invalid week ID and
         /// OK if the user was updated succesfully.
         /// </returns>
-        [HttpPut]
+        [HttpPut("")]
         public async Task<IActionResult> UpdateUser([FromBody]GirafUserDTO userDTO)
         {
             //Fetch the user

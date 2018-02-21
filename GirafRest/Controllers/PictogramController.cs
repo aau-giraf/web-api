@@ -50,7 +50,7 @@ namespace GirafRest.Controllers
         /// <returns> All the user's <see cref="Pictogram"/> pictograms.
         /// BadRequest if the request query was invalid, or if no pictograms were found
         /// </returns>
-        [HttpGet]
+        [HttpGet("")]
         public async Task<IActionResult> ReadPictograms()
         {
             int limit = int.MaxValue;
@@ -126,7 +126,7 @@ namespace GirafRest.Controllers
         /// <param name="pictogram">A <see cref="PictogramDTO"/> with all relevant information about the new pictogram.</param>
         /// <returns>The new pictogram with all database-generated information.
         /// BadRequest if some data was missing from either the PictogramDTO or the user</returns>
-        [HttpPost]
+        [HttpPost("")]
         [Authorize]
         public async Task<IActionResult> CreatePictogram([FromBody]PictogramDTO pictogram)
         {
@@ -419,7 +419,7 @@ namespace GirafRest.Controllers
         /// <param name="pictos">A list of pictograms that should be filtered.</param>
         /// <param name="titleQuery">The string that specifies what to search for.</param>
         /// <returns>A list of all pictograms with 'titleQuery' as substring.</returns>
-        public IQueryable<Pictogram> FilterByTitle(IQueryable<Pictogram> pictos, string titleQuery) { 
+        private IQueryable<Pictogram> FilterByTitle(IQueryable<Pictogram> pictos, string titleQuery) { 
             return pictos
                 .Where(p => p.Title.ToLower().Contains(titleQuery.ToLower()));
         }

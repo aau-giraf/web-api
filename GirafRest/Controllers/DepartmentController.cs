@@ -38,7 +38,7 @@ namespace GirafRest.Controllers
         /// Get all departments registered in the database or search for a department name as a query string.
         /// </summary>
         /// <returns>A list of all departments.</returns>
-        [HttpGet]
+        [HttpGet("")]
         public async Task<IActionResult> Get()
         {
             try {
@@ -68,14 +68,14 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Get the department with the specified id.
         /// </summary>
-        /// <param name="ID">The id of the department to search for.</param>
+        /// <param name="id">The id of the department to search for.</param>
         /// <returns>The department with the given id or NotFound.</returns>
         [HttpGet("{id}")]
-        public async Task<IActionResult> Get(long ID)
+        public async Task<IActionResult> Get(long id)
         {
             //.Include is used to get information on members aswell when getting the Department
             var department = _giraf._context.Departments
-                .Where(dep => dep.Key == ID);
+                .Where(dep => dep.Key == id);
 
             var depa = await department
                 .Include(dep => dep.Members)
@@ -93,7 +93,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="dep">The department to add to the database.</param>
         /// <returns>The new departmentDTO with all database-generated information.</returns>
-        [HttpPost]
+        [HttpPost("")]
         [Authorize]
         public async Task<IActionResult> Post([FromBody]DepartmentDTO dep)
         {
@@ -147,7 +147,7 @@ namespace GirafRest.Controllers
         ///  NotFound if there is no department with the given ID or
         ///  Ok if there was no problems.</returns>
         [HttpPost("user/{id}")]
-        public async Task<IActionResult> AddUser(long ID, [FromBody]GirafUserDTO usr)
+        public async Task<IActionResult> AddUser(long id, [FromBody]GirafUserDTO usr)
         {
             //Fetch user and department and check that they exist
             if(usr == null || usr.Username == null)
@@ -155,7 +155,7 @@ namespace GirafRest.Controllers
             Department dep;
             
             dep = await _giraf._context.Departments
-                .Where(d => d.Key == ID)
+                .Where(d => d.Key == id)
                 .Include(d => d.Members)
                 .FirstOrDefaultAsync();
             if(dep == null) return NotFound("Department not found");
@@ -178,7 +178,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Removes a user from a given department.
         /// </summary>
-        /// <param name="ID">Id of the department from which the user should be removed</param>
+        /// <param name="id">Id of the department from which the user should be removed</param>
         /// <param name="usr">A serialized instance of a <see cref="GirafUser"/> user.</param>
         /// <returns>
         /// BadRequest if no user is given or he does not exist in the department,

@@ -10,7 +10,7 @@ namespace GirafRest.Controllers
     {
         private string[] values = { "Hest", "Mel", "Lotte" };
 
-        [HttpGet]
+        [HttpGet("")]
         public IActionResult Get()
         {
             return Ok(values);

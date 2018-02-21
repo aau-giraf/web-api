@@ -42,7 +42,7 @@ namespace GirafRest.Controllers
         /// Gets all week schedule for the currently authenticated user.
         /// </summary>
         /// <returns>Ok along with the week schedules, or NotFound if there is no such user or if there are no weeks.</returns>
-        [HttpGet]	
+        [HttpGet("")]	
         [Authorize]
         public async Task<IActionResult> ReadWeekSchedules()
         {
@@ -131,7 +131,7 @@ namespace GirafRest.Controllers
         /// <param name="newWeek">A serialized version of the new week.</param>
         /// <returns>Ok, along with a list of all the current users week schedules or BadRequest if no valid Week was
         /// found in the request body.</returns>
-        [HttpPost]
+        [HttpPost("")]
         [Authorize]
         public async Task<IActionResult> CreateWeek([FromBody]WeekDTO newWeek)
         {
