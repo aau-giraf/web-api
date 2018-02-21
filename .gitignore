@@ -13,3 +13,14 @@ doxygen*
 */wwwroot/Logs/*
 */wwwroot/logs/*
 \.idea/
+
+# .NET-core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
