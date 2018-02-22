@@ -1,0 +1,32 @@
+﻿namespace GirafRest.Models.Responses
+{
+    public enum ErrorCode
+    {
+        NoError,
+        Error,
+        NotFound,
+        FormatError,
+        RoleMustBeCitizin,
+        UserCannotBeGuardianOfYourself,
+        UserMustBeGuardian,
+        CitizinAlreadyHasGuardian,
+        UserAndCitizinMustBeInSameDepartment,
+        MissingProperties,
+        NotAuthorized,
+        UserAlreadyHasIconUsePut,
+        UserHasNoIcon,
+        UserHasNoIconUsePost,
+        CitizinNotFound,
+        InvalidProperties,
+        UserNotFound,
+        UserAlreadyHasAccess,
+        ApplicationNotFound,
+        ResourceNotFound,
+        ResourceMustBePrivate,
+        UserAlreadyOwnsResource,
+        UserDoesNotOwnResource,
+        DepartmentNotFound,
+        EmailServiceUnavailable,
+        PasswordNotUpdated
+    }
+}
