@@ -31,6 +31,14 @@
         NoWeekScheduleFound,
         WeekScheduleNotFound,
         ThumbnailDoesNotExist,
-        RessourceNotFound
+        RessourceNotFound,
+        QueryFailed,
+        PictogramsNotFound,
+        PictogramNotFound,
+        InvalidModelState,
+        ImageAlreadyExistOnPictogram,
+        ImageNotContainedInRequest,
+        PictogramHasNoImage,
+        PictogramImageNotFound
     }
 }

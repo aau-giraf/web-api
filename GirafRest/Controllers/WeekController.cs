@@ -75,7 +75,9 @@ namespace GirafRest.Controllers
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             var week = user.WeekSchedule.Where(w => w.Id == id).FirstOrDefault();
             if (week != null)
+            {
                 return new Response<WeekDTO>(new WeekDTO(week));
+            }
             else
                 return new ErrorResponse<WeekDTO>(ErrorCode.WeekScheduleNotFound);
         }
