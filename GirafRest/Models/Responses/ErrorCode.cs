@@ -27,6 +27,10 @@
         UserDoesNotOwnResource,
         DepartmentNotFound,
         EmailServiceUnavailable,
-        PasswordNotUpdated
+        PasswordNotUpdated,
+        NoWeekScheduleFound,
+        WeekScheduleNotFound,
+        ThumbnailDoesNotExist,
+        RessourceNotFound
     }
 }
