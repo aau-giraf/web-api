@@ -236,11 +236,11 @@ namespace GirafRest.Controllers
                 updateResource(user, userDTO.Resources.Select(i => i.Id).ToList());
                 await updateWeekAsync(user, userDTO.WeekScheduleIds);
             }
-            catch (KeyNotFoundException e)
+            catch (KeyNotFoundException)
             {
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.Error);
             }
-            catch (InvalidOperationException e)
+            catch (InvalidOperationException)
             {
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.Error);
             }
