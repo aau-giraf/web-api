@@ -7,6 +7,7 @@
         NotFound,
         FormatError,
         RoleMustBeCitizin,
+        RoleNotFound,
         UserCannotBeGuardianOfYourself,
         UserMustBeGuardian,
         CitizinAlreadyHasGuardian,
