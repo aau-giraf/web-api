@@ -30,7 +30,7 @@ namespace GirafRest.Setup
             AddSampleWeekAndWeekdays(context, Pictograms, choices);
             context.SaveChanges();
             //For simplicity we simply add all the private pictograms to all users.
-            foreach (var usr in Users)
+            foreach (var usr in context.Users)
             {
                 addPictogramsToUser(usr, Pictograms[0], Pictograms[1], Pictograms[2]);
             }
@@ -42,7 +42,7 @@ namespace GirafRest.Setup
 			context.SaveChanges();
 			
 			//Adding citizens to Guardian
-			foreach(var user in Users)
+			foreach(var user in context.Users)
 			{
 				if(userManager.IsInRoleAsync(user, GirafRole.Guardian).Result){
 					user.GuardianOf = user.Department.Members
