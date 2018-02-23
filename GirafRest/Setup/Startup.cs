@@ -142,7 +142,7 @@ namespace GirafRest.Setup
             });
 
             //Configures Identity, i.e. user management
-            app.UseIdentity();
+            app.UseAuthentication();
 
             //Overrides the default behaviour on unauthorized to simply return Unauthorized when accessing an
             //[Authorize] endpoint without logging in.

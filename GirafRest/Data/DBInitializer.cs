@@ -28,7 +28,7 @@ namespace GirafRest.Setup
             var Pictograms = AddSamplePictograms(context);
             var choices = AddSampleChoices(context, Pictograms);
             AddSampleWeekAndWeekdays(context, Pictograms, choices);
-
+            context.SaveChanges();
             //For simplicity we simply add all the private pictograms to all users.
             foreach (var usr in Users)
             {

@@ -133,20 +133,20 @@ namespace GirafRest.Extensions
         /// </summary>
         /// <param name="options">A reference to IdentityOptions, which is used to configure Identity.</param>
         public static void StopRedirectOnUnauthorized(this IdentityOptions options) {
-            options.Cookies.ApplicationCookie.Events = new CookieAuthenticationEvents
-                {
-                    OnRedirectToAccessDenied = context =>
-                    {
-                        context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                        return Task.FromResult(0);
-                    },
-                    OnRedirectToLogin = context =>
-                    {
-                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                        return Task.FromResult(0);
-                    }
-                };
-                options.Cookies.ApplicationCookie.AutomaticAuthenticate = true;
+            //options.Cookies.ApplicationCookie.Events = new CookieAuthenticationEvents
+            //    {
+            //        OnRedirectToAccessDenied = context =>
+            //        {
+            //            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            //            return Task.FromResult(0);
+            //        },
+            //        OnRedirectToLogin = context =>
+            //        {
+            //            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            //            return Task.FromResult(0);
+            //        }
+            //    };
+            //    options.Cookies.ApplicationCookie.AutomaticAuthenticate = true;
         }
 
         /// <summary>
