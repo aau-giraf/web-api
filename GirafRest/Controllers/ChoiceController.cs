@@ -14,6 +14,7 @@ using System;
 using GirafRest.Models.Many_to_Many_Relationships;
 using GirafRest.Services;
 using Microsoft.AspNetCore.Authorization;
+using GirafRest.Models.Responses;
 
 namespace GirafRest.Controllers
 {
@@ -51,7 +52,7 @@ namespace GirafRest.Controllers
         /// Unauthorized if the <see cref="Choice"/> choice is private and user does not own it.
         /// </returns>
         [HttpGet("{id}")]
-        public async Task<IActionResult> ReadChoice(long id)
+        public async Task<Response<ChoiceDTO>> ReadChoice(long id)
         {
             _giraf._logger.LogInformation($"Fetching choice which match the ID");
             Choice _choice;
@@ -65,11 +66,11 @@ namespace GirafRest.Controllers
             }
             catch (Exception)
             {
-                return NotFound();
+                return new ErrorResponse<ChoiceDTO>(ErrorCode.NotFound);
             }
-            if (!(await checkAccess(_choice))) return Unauthorized();
+            if (!(await checkAccess(_choice))) return new ErrorResponse<ChoiceDTO>(ErrorCode.NotAuthorized);
 
-            return Ok(new ChoiceDTO(_choice));  
+            return new Response<ChoiceDTO>(new ChoiceDTO(_choice));  
         }
         
         /// <summary>
@@ -81,35 +82,36 @@ namespace GirafRest.Controllers
         /// id and Ok with the new choice with all database-generated information if the creation succeeded.
         /// </returns>
         [HttpPost("")]
-        public async Task<IActionResult> CreateChoice([FromBody] ChoiceDTO choice)
+        public async Task<Response<ChoiceDTO>> CreateChoice([FromBody] ChoiceDTO choice)
         {
             //Check if a valid ChoiceDTO has been specified
             if (choice == null)
-                return BadRequest("Could not find a valid ChoiceDTO in the body of the request.");
+                return new ErrorResponse<ChoiceDTO>(ErrorCode.FormatError);
 
             //Attempt to find all resources that make up the choice
             List<Pictogram> pictogramList = new List<Pictogram>();
-            try
+            //Find all the involved resource and check that they exist
+            foreach (var option in choice.Options) 
             {
-                foreach (var option in choice.Options)
-                    pictogramList.Add(await _giraf._context.Pictograms.Where(p => p.Id == option.Id).FirstAsync());
-            }
-            catch
-            {
-                return NotFound("The choice options contains an id of a pictogram that does not exist.");
-            }
+                var pf = await _giraf._context.Pictograms
+                    .Where(p => p.Id == option.Id)
+                    .FirstOrDefaultAsync();
+                if (pf == null)
+                    return new ErrorResponse<ChoiceDTO>(ErrorCode.ChoiceContainsInvalidPictogramId, $"{option.Id}");
+                pictogramList.Add(pf);
+            } 
 
             //Create an object for the choice
             Choice _choice = new Choice(pictogramList, choice.Title);
             //Check if the user has access to all options of the choice
-            if (!(await checkAccess(_choice))) return Unauthorized();
+            if (!(await checkAccess(_choice))) return new ErrorResponse<ChoiceDTO>(ErrorCode.NotAuthorized);
 
             //Add the choice to the database
-            _giraf._logger.LogInformation($"Adding the new choice to the database");
+            _giraf._logger.LogInformation("Adding the new choice to the database");
             var res = await _giraf._context.Choices.AddAsync(_choice);
             await _giraf._context.SaveChangesAsync();
 
-            return Ok(new ChoiceDTO(_choice));
+            return new Response<ChoiceDTO>(new ChoiceDTO(_choice));
         }
 
         /// <summary>
@@ -122,8 +124,12 @@ namespace GirafRest.Controllers
         /// NotFound, if there is no choice with the specified id or the list of options contains an invalid pictogram id,
         /// or Ok and the updated choice.</returns>
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateChoice(long id, [FromBody] ChoiceDTO choice)
+        public async Task<Response<ChoiceDTO>> UpdateChoice(long id, [FromBody] ChoiceDTO choice)
         {
+            //Check if a valid ChoiceDTO has been specified
+            if (choice == null)
+                return new ErrorResponse<ChoiceDTO>(ErrorCode.FormatError);
+
             //Attempt to find the target choice.
             Choice _choice;
             List<Pictogram> pictogramList = new List<Pictogram>();
@@ -133,9 +139,9 @@ namespace GirafRest.Controllers
                 .ThenInclude(op => op.Resource)
                 .FirstOrDefaultAsync();
             if (_choice == null)
-                return NotFound("A choice with the given id was not found.");
+                return new ErrorResponse<ChoiceDTO>(ErrorCode.NotFound, $"ID={id} not found");
             //Check that the user actually owns the choice
-            if (!(await checkAccess(_choice))) return Unauthorized();
+            if (!(await checkAccess(_choice))) return new ErrorResponse<ChoiceDTO>(ErrorCode.NotAuthorized);
 
             //Find all the involved resource and check that they exist
             foreach (var option in choice.Options)
@@ -144,14 +150,14 @@ namespace GirafRest.Controllers
                     .Where(p => p.Id == option.Id)
                     .FirstOrDefaultAsync();
                 if (pf == null)
-                    return NotFound("The choice contained an id of a nonexisting pictogram.");
+                    return new ErrorResponse<ChoiceDTO>(ErrorCode.ChoiceContainsInvalidPictogramId, $"{option.Id}");
                 pictogramList.Add(pf);
             }
             
             //Modify the choice and check that the user has access to all pictograms that were added to the choice
             _choice.Clear();
             _choice.AddAll(pictogramList);
-            if (!(await checkAccess(_choice))) return Unauthorized();
+            if (!(await checkAccess(_choice))) return new ErrorResponse<ChoiceDTO>(ErrorCode.NotAuthorized);
 
             //Save the changes
             _giraf._logger.LogInformation($"Updating the choice with the new information and adding it to the database");
@@ -159,7 +165,7 @@ namespace GirafRest.Controllers
             _giraf._context.Choices.Update(_choice);
             _giraf._context.SaveChanges();
 
-            return Ok(new ChoiceDTO(_choice));
+            return new Response<ChoiceDTO>(new ChoiceDTO(_choice));
         }
 
         /// <summary>
@@ -169,7 +175,7 @@ namespace GirafRest.Controllers
         /// <returns> Ok if the choice was deleted after checking authorization and NotFound if no choice with the id exists.</returns>
         [Authorize(Policy = GirafRole.RequireGuardianOrSuperUser)]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteChoice(long id)
+        public async Task<Response> DeleteChoice(long id)
         {
             //Attempt to retrieve the choice
             Choice _choice;
@@ -183,18 +189,18 @@ namespace GirafRest.Controllers
             }
             catch (Exception)
             {
-                return NotFound();
+                return new ErrorResponse<ChoiceDTO>(ErrorCode.NotFound, $"ID={id} not found");
             }
 
             //Check if the user is authorized to delete it
-            if(!(await checkAccess(_choice))) return Unauthorized();
+            if(!(await checkAccess(_choice))) return new ErrorResponse<ChoiceDTO>(ErrorCode.NotAuthorized);
 
             //Remove it from the database
             _giraf._logger.LogInformation($"Removing selected choice from the database");
             _giraf._context.Choices.Remove(_choice);
-            await _giraf._context.SaveChangesAsync();
+            _giraf._context.SaveChangesAsync();
 
-            return Ok();
+            return new Response();
         }
 
         /// <summary>
