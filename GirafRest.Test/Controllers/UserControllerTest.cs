@@ -14,6 +14,7 @@ using System.IO;
 using System;
 using static GirafRest.Models.DTOs.GirafUserDTO;
 using Microsoft.AspNetCore.Identity;
+using GirafRest.Models.Responses;
 
 namespace GirafRest.Test.Controllers
 {
@@ -45,785 +46,701 @@ namespace GirafRest.Test.Controllers
         {
             _testContext = new TestContext();
 
-            var pc = new UserController(
+            var usercontroller = new UserController(
                 new MockGirafService(_testContext.MockDbContext.Object,
                 _testContext.MockUserManager),
                 new Mock<IEmailService>().Object,
                 _testContext.MockLoggerFactory.Object,
                 _testContext.MockRoleManager.Object);
-            _testContext.MockHttpContext = pc.MockHttpContext();
+            _testContext.MockHttpContext = usercontroller.MockHttpContext();
             _testContext.MockHttpContext.MockQuery("username", null);
 
-            return pc;
+            return usercontroller;
         }
 
         #region User icon
         [Fact]
-        public void CreateUserIcon_NoIcon_Ok()
+        public void CreateUserIcon_NoIcon_Success()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
 
-            var response = uc.CreateUserIcon().Result;
+            var response = usercontroller.CreateUserIcon();
 
-            if (response is ObjectResult)
-                _testLogger.WriteLine((response as ObjectResult).Value.ToString());
-
-            Assert.IsType<OkObjectResult>(response);
+            Assert.IsTrue(response.Success);
         }
 
         [Fact]
-        public void CreateUserIcon_ExistingIcon_BadRequest()
+        public void CreateUserIcon_ExistingIcon_ErrorUserAlreadyHasIconUsePut()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
-            uc.CreateUserIcon();
+            usercontroller.CreateUserIcon();
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
 
-            var response = uc.CreateUserIcon().Result;
+            var response = usercontroller.CreateUserIcon();
 
-            if (response is ObjectResult)
-                _testLogger.WriteLine((response as ObjectResult).Value.ToString());
-
-            Assert.IsType<BadRequestObjectResult>(response);
+            Assert.IsFalse(response.Success);
+            Assert.IsEqual<ErrorCode>(response.ErrorCode, ErrorCode.UserAlreadyHasIconUsePut);
         }
 
         [Fact]
-        public void UpdateUserIcon_ExistingIcon_Ok()
+        public void UpdateUserIcon_ExistingIcon_Success()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
-            uc.CreateUserIcon();
+            usercontroller.CreateUserIcon();
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
 
-            var response = uc.UpdateUserIcon().Result;
+            var response = usercontroller.UpdateUserIcon();
 
-            if (response is ObjectResult)
-                _testLogger.WriteLine((response as ObjectResult).Value.ToString());
-
-            Assert.IsType<OkObjectResult>(response);
+            Assert.IsTrue(response.Success);
         }
 
         [Fact]
-        public void UpdateUserIcon_NoIcon_BadRequest()
+        public void UpdateUserIcon_NoIcon_ErrorUserHasNoIconUsePost()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
 
-            var response = uc.UpdateUserIcon().Result;
+            var response = usercontroller.UpdateUserIcon();
 
-            if (response is ObjectResult)
-                _testLogger.WriteLine((response as ObjectResult).Value.ToString());
-
-            Assert.IsType<BadRequestObjectResult>(response);
+            Assert.IsFalse(response.Success);
+            Assert.IsType<ErrorCode>(response.ErrorCode, ErrorCode.UserHasNoIconUsePost);
         }
 
         [Fact]
-        public void DeleteUserIcon_ExistingIcon_Ok()
+        public void DeleteUserIcon_ExistingIcon_Success()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
-            uc.CreateUserIcon();
+            usercontroller.CreateUserIcon();
 
-            var response = uc.DeleteUserIcon().Result;
+            var response = usercontroller.DeleteUserIcon();
 
-            if (response is ObjectResult)
-                _testLogger.WriteLine((response as ObjectResult).Value.ToString());
-
-            Assert.IsType<OkObjectResult>(response);
+            Assert.IsTrue(response.Success);
         }
 
         [Fact]
-        public void DeleteUserIcon_NoIcon_BadRequest()
+        public void DeleteUserIcon_NoIcon_UserHasNoIcon()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
 
-            var response = uc.DeleteUserIcon().Result;
+            var response = usercontroller.DeleteUserIcon();
 
-            if (response is ObjectResult)
-                _testLogger.WriteLine((response as ObjectResult).Value.ToString());
-            Assert.IsType<BadRequestObjectResult>(response);
+            Assert.IsFalse(response.Success);
+            Assert.IsType<ErrorCode>(response.ErrorCode, ErrorCode.UserHasNoIcon);
         }
 
         #endregion
         #region GetUser
-        public void GetUser_CitizenLogin_OkUserInfo()
+        public void GetUser_CitizenLogin_Success()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_TWO]);
 
-            var result = uc.GetUser().Result;
+            var response = usercontroller.GetUser();
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<OkObjectResult>(result);
+            Assert.IsTrue(response.Success); // TODO: Check more than success (what info is sent back, etc)?
         }
 
         [Fact] 
-        public void GetUser_GuardianLogin_OkListOfUsersInDepartmentAndGuardiansInfo()
+        public void GetUser_GuardianLogin_Success()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-            var result = uc.GetUser().Result;
-
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
             
-            Assert.IsType<OkObjectResult>(result);
+            var response = usercontroller.GetUser();
+
+            Assert.IsTrue(response.Success); // TODO: Check more than success (what info is sent back, etc)?
         }
 
         [Fact]
-        public void GetUser_GuardianLoginUsernameInDep_Ok()
+        public void GetUser_GuardianLoginUsernameInDepartment_Success()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             _testContext.MockHttpContext.MockQuery("username", CITIZEN_USERNAME);
 
-            var result = uc.GetUser().Result;
-
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<OkObjectResult>(result);
+            var response = usercontroller.GetUser();
+            
+            Assert.IsTrue(response.Success);
         }
 
 
         [Fact]
-        public void GetUser_GuardianLoginUsernameNotInDep_NotFound()
+        public void GetUser_GuardianLoginUsernameNotInDepartment_Error()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var result = uc.GetUser("invalid").Result;
+            var response = usercontroller.GetUser("invalid");
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<NotFoundResult>(result);
+            Assert.IsFalse(response.Success);
+            Assert.IsType<ErrorCode>(response.ErrorCode, ErrorCode.Error);
         }
 
 
         [Fact]
-        public void GetUser_AdminLoginUsernameQuery_Ok()
+        public void GetUser_AdminLoginUsernameQuery_Success()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             _testContext.MockHttpContext.MockQuery("username", CITIZEN_USERNAME);
 
-            var result = uc.GetUser().Result;
+            var response = usercontroller.GetUser();
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<OkObjectResult>(result);
+            Assert.IsFalse(response.Success);
+            Assert.IsType<ErrorCode>(response.ErrorCode, ErrorCode.Error);
         }
 
 
         [Fact]
-        public void GetUser_AdminLoginInvalidUsername_NotFound()
+        public void GetUser_AdminLoginInvalidUsername_Error()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
 
-            var result = uc.GetUser("invalid").Result;
+            var response = usercontroller.GetUser("invalid");
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<NotFoundResult>(result);
+            Assert.IsFalse(response.Success);
+            Assert.IsType<ErrorCode>(response.ErrorCode, ErrorCode.Error);
         }
 
 
         [Fact]
-        public void GetUser_CitizenLoginUsernameQuery_NotFound()
+        public void GetUser_CitizenLoginUsernameQuery_Error()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_TWO]);
 
-            var result = uc.GetUser(CITIZEN_USERNAME).Result;
+            var response = usercontroller.GetUser(CITIZEN_USERNAME);
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<NotFoundResult>(result);
+            Assert.IsFalse(response.Success);
+            Assert.IsType<ErrorCode>(response.ErrorCode, ErrorCode.Error);
         }
         #endregion
         #region UpdateUser
         [Fact]
-        public void UpdateUser_ValidUserValidDTO_Ok()
+        public void UpdateUser_ValidUserValidDTO_Success()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
 
-            var result = uc.UpdateUser(new GirafUserDTO(_testContext.MockUsers[ADMIN_DEP_ONE], GirafRoles.Citizen)).Result;
+            var response = usercontroller.UpdateUser(new GirafUserDTO(_testContext.MockUsers[ADMIN_DEP_ONE], GirafRoles.Citizen));
 
-            Assert.IsType<OkObjectResult>(result);
+            Assert.IsTrue(response.Success);
         }
 
         [Fact]
-        public void UpdateUser_ValidUserNullDTO_BadRequest()
+        public void UpdateUser_ValidUserNullDTO_Error()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
 
-            var result = uc.UpdateUser(null).Result;
+            var response = usercontroller.UpdateUser(null);
 
-            Assert.IsType<BadRequestObjectResult>(result);
+            Assert.IsFalse(response.Success);
+            Assert.IsType<ErrorCode>(response.ErrorCode, ErrorCode.Error);
         }
 
         /*We use ModelState.IsValid in this test - ASP.NET fills this for us and thus we cannot unit test it.
         [Fact]
         public void UpdateUser_ValidUserNullDTOContent_BadRequest()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
 
-            var result = uc.UpdateUser(new GirafUserDTO()).Result;
+            var result = usercontroller.UpdateUser(new GirafUserDTO()).Result;
 
             Assert.IsType<BadRequestObjectResult>(result);
         }*/
 
         [Fact]
-        public void UpdateUser_ValidUserInvalidDTOContent_BadRequest()
+        public void UpdateUser_ValidUserInvalidDTOContent_Error()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
 
             //Create a DTO with an invalid pictogram id
-            var result = uc.UpdateUser(new GirafUserDTO(
+            var response = usercontroller.UpdateUser(new GirafUserDTO(
                 _testContext.MockUsers[ADMIN_DEP_ONE], GirafRoles.Citizen)
                 {
-                    Resources = new List<ResourceDTO> () { new ResourceDTO() }    //I just blindly create an empty object here. Possible source of bug.
-                }).Result;
+                    Resources = new List<ResourceDTO> () { new ResourceDTO() }    //I just blindly create an empty object here. Possible source of bug. TODO
+                });
 
-            Assert.IsType<BadRequestObjectResult>(result);
+            Assert.IsFalse(response.Success);
+            Assert.IsType<ErrorCode>(response.ErrorCode, ErrorCode.Error);
         }
         #endregion
         #region AddApplication
         [Fact]
-        public void AddApplication_ValidApplication_OkAppInList()
+        public void AddApplication_ValidApplication_Success_AppInList() // TODO Split this up into 2 tests 
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-            var ao = new ApplicationOption("Test application", "test.app");
+            var applicationOption = new ApplicationOption("Test application", "test.app");
 
-            var result = uc.AddApplication(_testContext.MockUsers[CITIZEN_DEP_TWO].UserName, ao).Result;
+            var response = usercontroller.AddApplication(_testContext.MockUsers[CITIZEN_DEP_TWO].UserName, applicationOption);
+            var user = response.Data as GirafUserDTO;
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<OkObjectResult>(result);
-            var user = (result as ObjectResult).Value as GirafUserDTO;
-
-            Assert.Contains(user.Settings.appsUserCanAccess, (a => a.ApplicationName == ao.ApplicationName));
+            Assert.IsTrue(response.Success);
+            Assert.Contains(user.Settings.appsUserCanAccess, (a => a.ApplicationName == applicationOption.ApplicationName));
         }
 
 
         [Fact]
-        public void AddApplication_NoApplicationName_BadRequest()
+        public void AddApplication_NoApplicationName_ErrorMissingProperties()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-            var ao = new ApplicationOption(null, "test.app");
+            var applicationOption = new ApplicationOption(null, "test.app");
 
-            var result = uc.AddApplication(_testContext.MockUsers[CITIZEN_DEP_TWO].UserName, ao).Result;
+            var response = usercontroller.AddApplication(_testContext.MockUsers[CITIZEN_DEP_TWO].UserName, applicationOption);
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<BadRequestObjectResult>(result);
+            Assert.IsFalse(response.Success);
+            Assert.IsEqual<ErrorCode>(reponse.ErrorCode, ErrorCode.MissingProperties), 
+            Assert.IsEqual<String>(reponse.Data, "application");
         }
 
 
         [Fact]
-        public void AddApplication_NoApplicationPackage_BadRequest()
+        public void AddApplication_NoApplicationPackage_ErrorMissingProperties()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-            var ao = new ApplicationOption("Test application", null);
+            var applicationOption = new ApplicationOption("Test application", null);
 
-            var result = uc.AddApplication(_testContext.MockUsers[CITIZEN_DEP_TWO].UserName, ao).Result;
+            var response = usercontroller.AddApplication(_testContext.MockUsers[CITIZEN_DEP_TWO].UserName, applicationOption);
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<BadRequestObjectResult>(result);
+            Assert.IsFalse(response.Success);
+            Assert.IsEqual<ErrorCode>(reponse.ErrorCode, ErrorCode.MissingProperties), 
+            Assert.IsEqual<String>(reponse.Data, "application");
         }
 
 
         [Fact]
-        public void AddApplication_NullAsInput_BadRequest()
+        public void AddApplication_NullAsApplicationOption_ErrorMissingProperties()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-            ApplicationOption ao = null;
+            ApplicationOption applicationOption = null;
 
-            var result = uc.AddApplication(_testContext.MockUsers[CITIZEN_DEP_TWO].UserName, ao).Result;
+            var response = usercontroller.AddApplication(_testContext.MockUsers[CITIZEN_DEP_TWO].UserName, applicationOption);
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<BadRequestObjectResult>(result);
+            Assert.IsFalse(response.Success);
+            Assert.IsEqual<ErrorCode>(reponse.ErrorCode, ErrorCode.MissingProperties), 
+            Assert.IsEqual<String>(reponse.Data, "application");
         }
 
 
         [Fact]
-        public void AddApplication_NullAsUsername_NotFound()
+        public void AddApplication_NullAsUsername_ErrorUserNotFound()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-            var ao = new ApplicationOption("Test application", "test.app");
+            var applicationOption = new ApplicationOption("Test application", "test.app");
 
-            var result = uc.AddApplication(null, ao).Result;
+            var response = usercontroller.AddApplication(null, applicationOption);
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<NotFoundObjectResult>(result);
+            Assert.IsFalse(response.Success);
+            Assert.IsEqual<ErrorCode>(reponse.ErrorCode, ErrorCode.UserNotFound);
         }
 
 
         [Fact]
-        public void AddApplication_InvalidUsername_NotFound()
+        public void AddApplication_InvalidUsername_ErrorUserNotFound()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-            var ao = new ApplicationOption("Test application", "test.app");
+            var applicationOption = new ApplicationOption("Test application", "test.app");
 
-            var result = uc.AddApplication("invalid", ao).Result;
+            var response = usercontroller.AddApplication("invalid", applicationOption);
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<NotFoundObjectResult>(result);
+            Assert.IsFalse(response.Success);
+            Assert.IsEqual<ErrorCode>(reponse.ErrorCode, ErrorCode.UserNotFound);
         }
 
 
         [Fact]
-        public void AddApplication_ApplicationAlreadyInList_BadRequest()
+        public void AddApplication_ApplicationAlreadyInList_ErrorUserAlreadyHasAccess()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-            var ao = new ApplicationOption("Test application", "test.app");
+            var applicationOption = new ApplicationOption("Test application", "test.app");
+            usercontroller.AddApplication(_testContext.MockUsers[CITIZEN_DEP_TWO].UserName, applicationOption);
 
-            uc.AddApplication(_testContext.MockUsers[CITIZEN_DEP_TWO].UserName, ao);
-            var result = uc.AddApplication(_testContext.MockUsers[CITIZEN_DEP_TWO].UserName, ao).Result;
+            var response = usercontroller.AddApplication(_testContext.MockUsers[CITIZEN_DEP_TWO].UserName, applicationOption);
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<BadRequestObjectResult>(result);
+            Assert.IsFalse(response.Success);
+            Assert.IsEqual<ErrorCode>(reponse.ErrorCode, ErrorCode.UserAlreadyHasAccess);
         }
         #endregion
         #region DeleteApplication
         [Fact]
-        public void DeleteApplication_ValidApplicationInList_Ok()
+        public void DeleteApplication_ValidApplicationInList_Success()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-            var ao = new ApplicationOption("Test Application", "test.app")
+            var applicationOption = new ApplicationOption("Test Application", "test.app")
             {
                 Id = NEW_APPLICATION_ID
             };
             var username = _testContext.MockUsers[CITIZEN_DEP_TWO].UserName;
-            uc.AddApplication(username, ao);
+            usercontroller.AddApplication(username, applicationOption);
 
-            var result = uc.DeleteApplication(username, ao).Result;
+            var result = usercontroller.DeleteApplication(username, applicationOption).Result;
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<OkObjectResult>(result);
+            Assert.IsTrue(response.Success);
         }
 
 
         [Fact]
-        public void DeleteApplication_ValidApplicationNotInList_NotFound()
+        public void DeleteApplication_ValidApplicationNotInList_ErrorMissingProperties()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-            var ao = new ApplicationOption("Test Application", "test.app")
+            var applicationOption = new ApplicationOption("Test Application", "test.app")
             {
                 Id = NEW_APPLICATION_ID
             };
             var username = _testContext.MockUsers[CITIZEN_DEP_TWO].UserName;
 
-            var result = uc.DeleteApplication(username, ao).Result;
+            var response = usercontroller.DeleteApplication(username, applicationOption);
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<NotFoundObjectResult>(result);
+            Assert.IsFalse(response.Success);
+            Assert.IsEqual<ErrorCode>(reponse.ErrorCode, ErrorCode.MissingProperties); // Måske skal det her være ApplicationNotFound?
+            Assert.IsEqual<String>(reponse.Data, "application");
         }
 
 
         [Fact]
-        public void DeleteApplication_NoIdOnDTO_NotFound()
+        public void DeleteApplication_NoIdOnDTO_NotFound() // NOT FIXED: I don't understand what this is testing
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-            var ao = new ApplicationOption("Test Application", "test.app")
+            var applicationOption = new ApplicationOption("Test Application", "test.app")
             {
                 Id = NEW_APPLICATION_ID
             };
             var username = _testContext.MockUsers[CITIZEN_DEP_TWO].UserName;
-            uc.AddApplication(username, ao);
-            ao = new ApplicationOption("Test Application", "test.app")
+            usercontroller.AddApplication(username, applicationOption);
+            applicationOption = new ApplicationOption("Test Application", "test.app")
             {
                 Id = -NEW_APPLICATION_ID
             };
 
-            var result = uc.DeleteApplication(username, ao).Result;
+            var response = usercontroller.DeleteApplication(username, applicationOption);
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<NotFoundObjectResult>(result);
+            //Assert.IsType<NotFoundObjectResult>(result);
+            Assert.Fail();
         }
 
 
         [Fact]
-        public void DeleteApplication_NullAsApplication_BadRequest()
+        public void DeleteApplication_NullAsApplication_ErrorMissingProperties()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-            var ao = new ApplicationOption("Test Application", "test.app")
+            var applicationOption = new ApplicationOption("Test Application", "test.app")
             {
                 Id = NEW_APPLICATION_ID
             };
             var username = _testContext.MockUsers[CITIZEN_DEP_TWO].UserName;
-            uc.AddApplication(username, ao);
+            usercontroller.AddApplication(username, applicationOption);
 
-            var result = uc.DeleteApplication(username, null).Result;
+            var response = usercontroller.DeleteApplication(username, null);
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<BadRequestObjectResult>(result);
+            Assert.IsFalse(response.Success);
+            Assert.IsEqual<ErrorCode>(reponse.ErrorCode, ErrorCode.MissingProperties);
+            Assert.IsEqual<String>(reponse.Data, "application");
         }
 
 
         [Fact]
-        public void DeleteApplication_InvalidUsername_NotFound()
+        public void DeleteApplication_InvalidUsername_ErrorUserNotFound()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-            var ao = new ApplicationOption("Test Application", "test.app")
+            var applicationOption = new ApplicationOption("Test Application", "test.app")
             {
                 Id = NEW_APPLICATION_ID
             };
             var username = _testContext.MockUsers[CITIZEN_DEP_TWO].UserName;
-            uc.AddApplication("INVALID USERNAME", ao);
+            usercontroller.AddApplication("INVALID USERNAME", applicationOption);
 
-            var result = uc.DeleteApplication(username, null).Result;
+            var response = usercontroller.DeleteApplication(username, null);
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<BadRequestObjectResult>(result);
+            Assert.IsFalse(response.Success);
+            Assert.IsEqual<ErrorCode>(reponse.ErrorCode, ErrorCode.UserNotFound);
         }
 
         [Fact]
-        public void DeleteApplication_NullUsername_NotFound()
+        public void DeleteApplication_NullUsername_ErrorUserNotFound()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-            var ao = new ApplicationOption("Test Application", "test.app")
+            var applicationOption = new ApplicationOption("Test Application", "test.app")
             {
                 Id = NEW_APPLICATION_ID
             };
             var username = _testContext.MockUsers[CITIZEN_DEP_TWO].UserName;
-            uc.AddApplication(null, ao);
+            usercontroller.AddApplication(null, applicationOption);
 
-            var result = uc.DeleteApplication(username, null).Result;
+            var response = usercontroller.DeleteApplication(username, null);
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<BadRequestObjectResult>(result);
+            Assert.IsFalse(response.Success);
+            Assert.IsEqual<ErrorCode>(reponse.ErrorCode, ErrorCode.UserNotFound);
         }
         #endregion
         #region UpdateDisplayName
         [Fact]
-        public void UpdateDisplayName_ValidStringInput_Ok()
+        public void UpdateDisplayName_ValidStringInput_Success()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_TWO]);
             string newDisplayName = "Display Name";
 
-            var result = uc.UpdateDisplayName(newDisplayName).Result;
+            var response = usercontroller.UpdateDisplayName(newDisplayName);
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<OkObjectResult>(result);
+            Assert.IsTrue(response.Success);
         }
 
 
         [Fact]
-        public void UpdateDisplayName_EmptyString_BadRequest()
+        public void UpdateDisplayName_EmptyString_ErrorMissingProperties()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_TWO]);
             string newDisplayName = "";
 
-            var result = uc.UpdateDisplayName(newDisplayName).Result;
+            var response = usercontroller.UpdateDisplayName(newDisplayName);
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<BadRequestObjectResult>(result);
+            Assert.IsFalse(response.Success);
+            Assert.IsEqual<ErrorCode>(reponse.ErrorCode, ErrorCode.MissingProperties);
+            Assert.IsEqual<String>(reponse.Data, "displayname");
         }
 
 
         [Fact]
-        public void UpdateDisplayName_NullInput_BadRequest()
+        public void UpdateDisplayName_NullInput_ErrorMissingProperties()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_TWO]);
             string newDisplayName = null;
 
-            var result = uc.UpdateDisplayName(newDisplayName).Result;
+            var response = usercontroller.UpdateDisplayName(newDisplayName);
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<BadRequestObjectResult>(result);
+            Assert.IsFalse(response.Success);
+            Assert.IsEqual<ErrorCode>(reponse.ErrorCode, ErrorCode.MissingProperties);
+            Assert.IsEqual<String>(reponse.Data, "displayname");
         }
         #endregion
         #region AddUserResource
         [Fact]
-        public void AddUserResource_OwnPrivateValidUser_Ok()
+        public void AddUserResource_OwnPrivateValidUser_Success()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             string targetUser = _testContext.MockUsers[CITIZEN_DEP_TWO].UserName;
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { Id = GUARDIAN_PRIVATE_PICTOGRAM }).Result;
+            var response = usercontroller.AddUserResource(targetUser, new ResourceIdDTO() { Id = GUARDIAN_PRIVATE_PICTOGRAM });
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<OkObjectResult>(result);
+            Assert.IsTrue(response.Success);
         }
 
 
         [Fact]
-        public void AddUserResource_OwnPrivateInvalidUser_NotFound()
+        public void AddUserResource_OwnPrivateInvalidUser_ErrorUserNotFound()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             string targetUser = "INVALID";
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { Id = GUARDIAN_PRIVATE_PICTOGRAM }).Result;
+            var response = usercontroller.AddUserResource(targetUser, new ResourceIdDTO() { Id = GUARDIAN_PRIVATE_PICTOGRAM });
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<NotFoundObjectResult>(result);
+            Assert.IsFalse(response.Success);
+            Assert.IsEqual<ErrorCode>(reponse.ErrorCode, ErrorCode.UserNotFound);
         }
 
 
         [Fact]
-        public void AddUserResource_OwnProtectedValidUser_BadRequest()
+        public void AddUserResource_OwnProtectedValidUser_ErrorResourceMustBePrivate()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             string targetUser = _testContext.MockUsers[CITIZEN_DEP_THREE].UserName;
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { Id = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
+            var response = usercontroller.AddUserResource(targetUser, new ResourceIdDTO() { Id = GUARDIAN_PROTECTED_PICTOGRAM });
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<BadRequestObjectResult>(result);
+            Assert.IsFalse(response.Success);
+            Assert.IsEqual<ErrorCode>(reponse.ErrorCode, ErrorCode.ResourceMustBePrivate);
         }
 
 
         [Fact]
-        public void AddUserResource_OwnProtectedInvalidUser_NotFound()
+        public void AddUserResource_OwnProtectedInvalidUser_NotFound() // Kombinerer 2 fejl
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             string targetUser = "INVALID";
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { Id = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
+            var result = usercontroller.AddUserResource(targetUser, new ResourceIdDTO() { Id = GUARDIAN_PROTECTED_PICTOGRAM });
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<BadRequestObjectResult>(result);
+            //Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Fail();
         }
 
 
         [Fact]
-        public void AddUserResource_AnotherProtectedValidUser_BadRequest()
+        public void AddUserResource_AnotherProtectedValidUser_BadRequest() 
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             string targetUser = _testContext.MockUsers[CITIZEN_DEP_TWO].UserName;
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_THREE]);
 
-            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { Id = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
+            var result = usercontroller.AddUserResource(targetUser, new ResourceIdDTO() { Id = GUARDIAN_PROTECTED_PICTOGRAM });
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<BadRequestObjectResult>(result);
+            //Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Fail();
         }
 
 
         [Fact]
         public void AddUserResource_AnotherProtectedInvalidUser_BadRequest()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             string targetUser = "INVALID";
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_THREE]);
 
-            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { Id = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
+            var result = usercontroller.AddUserResource(targetUser, new ResourceIdDTO() { Id = GUARDIAN_PROTECTED_PICTOGRAM });
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<BadRequestObjectResult>(result);
+            //Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Fail();
         }
 
 
         [Fact]
         public void AddUserResource_PublicValidUser_BadRequest()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             string targetUser = _testContext.MockUsers[GUARDIAN_DEP_TWO].UserName;
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_TWO]);
 
-            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { Id = PUBLIC_PICTOGRAM }).Result;
+            var result = usercontroller.AddUserResource(targetUser, new ResourceIdDTO() { Id = PUBLIC_PICTOGRAM });
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<BadRequestObjectResult>(result);
+            //Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Fail();
         }
 
 
         [Fact]
         public void AddUserResource_PublicInvalidUser_NotFound()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             string targetUser = "INVALID";
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_TWO]);
 
-            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { Id = PUBLIC_PICTOGRAM }).Result;
+            var result = usercontroller.AddUserResource(targetUser, new ResourceIdDTO() { Id = PUBLIC_PICTOGRAM });
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<BadRequestObjectResult>(result);
+            //Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Fail();
         }
 
 
         [Fact]
-        public void AddUserResource_AnotherPrivateValidUser_Unauthorized()
+        public void AddUserResource_AnotherPrivateValidUser_ErrorNotAuthorized()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             string targetUser = _testContext.MockUsers[GUARDIAN_DEP_TWO].UserName;
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_TWO]);
 
-            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { Id = GUARDIAN_PRIVATE_PICTOGRAM }).Result;
+            var response = usercontroller.AddUserResource(targetUser, new ResourceIdDTO() { Id = GUARDIAN_PRIVATE_PICTOGRAM });
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<UnauthorizedResult>(result);
-        }
+            Assert.IsFalse(response.Success);
+            Assert.IsEqual<ErrorCode>(reponse.ErrorCode, ErrorCode.NotAuthorized);
+       }
 
 
         [Fact]
-        public void AddUserResource_AnotherPrivateInvalidUser_Unauthorized()
+        public void AddUserResource_AnotherPrivateInvalidUser_Unauthorized() // Kombinerer 2 fejl
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             string targetUser = "INVALID";
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_TWO]);
 
-            var result = uc.AddUserResource(targetUser, new ResourceIdDTO() { Id = GUARDIAN_PRIVATE_PICTOGRAM }).Result;
+            var result = usercontroller.AddUserResource(targetUser, new ResourceIdDTO() { Id = GUARDIAN_PRIVATE_PICTOGRAM });
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<UnauthorizedResult>(result);
+            //Assert.IsType<UnauthorizedResult>(result);
+            Assert.Fail();
         }
         #endregion
         #region DeleteResource
         [Fact]
-        public void DeleteResource_OwnPrivateValidUser_Ok()
+        public void DeleteResource_OwnPrivateValidUser_Success()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var result = uc.DeleteResource(new ResourceIdDTO() { Id = GUARDIAN_PRIVATE_PICTOGRAM }).Result;
+            var response = usercontroller.DeleteResource(new ResourceIdDTO() { Id = GUARDIAN_PRIVATE_PICTOGRAM });
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<OkObjectResult>(result);
+            Assert.IsTrue(response.Success);
         }
 
         [Fact]
         public void DeleteResource_PrivateNoUser_BadRequest()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
 
-            var result = uc.DeleteResource(new ResourceIdDTO() { Id = GUARDIAN_PRIVATE_PICTOGRAM }).Result;
+            var result = usercontroller.DeleteResource(new ResourceIdDTO() { Id = GUARDIAN_PRIVATE_PICTOGRAM });
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<BadRequestObjectResult>(result);
+            Assert.IsFalse(response.Success);
+            Assert.IsEqual<ErrorCode>(reponse.ErrorCode, ErrorCode.UserNotFound);
         }
 
 
         [Fact]
         public void DeleteResource_OwnProtectedValidUser_BadRequest()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var result = uc.DeleteResource(new ResourceIdDTO() { Id = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
+            var result = usercontroller.DeleteResource(new ResourceIdDTO() { Id = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<BadRequestObjectResult>(result);
+            Assert.IsFalse(response.Success);
+            Assert.IsEqual<ErrorCode>(reponse.ErrorCode, ErrorCode.ResourceMustBePrivate);
         }
 
 
         [Fact]
-        public void DeleteResource_OwnProtectedInvalidUser_BadRequest()
+        public void DeleteResource_OwnProtectedInvalidUser_BadRequest() // Kombinerer 2 fejl
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var result = uc.DeleteResource(new ResourceIdDTO() { Id = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
+            var result = usercontroller.DeleteResource(new ResourceIdDTO() { Id = GUARDIAN_PROTECTED_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
 
-            Assert.IsType<BadRequestObjectResult>(result);
+            //Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Fail();
         }
 
 
         /*[Fact]
         public void DeleteResource_AnotherProtectedValidUser_Unauthorized()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var result = uc.DeleteResource(_testContext.MockUsers[GUARDIAN_DEP_TWO].UserName,
+            var result = usercontroller.DeleteResource(_testContext.MockUsers[GUARDIAN_DEP_TWO].UserName,
                                            new ResourceIdDTO() { Id = ADMIN_PROTECTED_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
@@ -836,10 +753,10 @@ namespace GirafRest.Test.Controllers
         [Fact]
         public void DeleteResource_AnotherProtectedInvalidUser_NotFound()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var result = uc.DeleteResource("Invalid",
+            var result = usercontroller.DeleteResource("Invalid",
                                            new ResourceIdDTO() { Id = ADMIN_PROTECTED_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
@@ -852,39 +769,41 @@ namespace GirafRest.Test.Controllers
         [Fact]
         public void DeleteResource_PublicValidUser_BadRequset()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var result = uc.DeleteResource(new ResourceIdDTO() { Id = PUBLIC_PICTOGRAM }).Result;
+            var result = usercontroller.DeleteResource(new ResourceIdDTO() { Id = PUBLIC_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
 
-            Assert.IsType<BadRequestObjectResult>(result);
+            Assert.IsFalse(response.Success);
+            Assert.IsEqual<ErrorCode>(reponse.ErrorCode, ErrorCode.ResourceMustBePrivate);
         }
 
 
         [Fact]
-        public void DeleteResource_PublicInvalidUser_BadRequest()
+        public void DeleteResource_PublicInvalidUser_BadRequest() // Kombinerer 2 fejl
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
 
-            var result = uc.DeleteResource(new ResourceIdDTO() { Id = PUBLIC_PICTOGRAM }).Result;
+            var result = usercontroller.DeleteResource(new ResourceIdDTO() { Id = PUBLIC_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
                 _testLogger.WriteLine((result as ObjectResult).Value.ToString());
 
-            Assert.IsType<BadRequestObjectResult>(result);
+            //Assert.IsType<BadRequestObjectResult>(result);
+            Assert.Fail();
         }
 
 
         /*[Fact]
         public void DeleteResource_AnotherPrivateValidUser_Unauthorized()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var result = uc.DeleteResource(_testContext.MockUsers[GUARDIAN_DEP_TWO].UserName,
+            var result = usercontroller.DeleteResource(_testContext.MockUsers[GUARDIAN_DEP_TWO].UserName,
                                            new ResourceIdDTO() { Id = ADMIN_PRIVATE_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
@@ -897,10 +816,10 @@ namespace GirafRest.Test.Controllers
         [Fact]
         public void DeleteResource_AnotherPrivateInvalidUser_NotFound()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var result = uc.DeleteResource("Invalid",
+            var result = usercontroller.DeleteResource("Invalid",
                                            new ResourceIdDTO() { Id = ADMIN_PRIVATE_PICTOGRAM }).Result;
 
             if (result is ObjectResult)
@@ -913,30 +832,22 @@ namespace GirafRest.Test.Controllers
         [Fact]
         public void ToggleGrayscale_True_GrayscaleIsTrue()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_TWO]);
 
-            var result = uc.ToggleGrayscale(true).Result;
+            usercontroller.ToggleGrayscale(true);
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<OkObjectResult>(result);
             Assert.True(_testContext.MockUsers[CITIZEN_DEP_TWO].Settings.UseGrayscale);
         }
 
         [Fact]
         public void ToggleGrayscale_False_GrayscaleIsFalse()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_TWO]);
 
-            var result = uc.ToggleGrayscale(false).Result;
+            usercontroller.ToggleGrayscale(false);
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<OkObjectResult>(result);
             Assert.True(!_testContext.MockUsers[CITIZEN_DEP_TWO].Settings.UseGrayscale);
         }
         #endregion
@@ -944,33 +855,24 @@ namespace GirafRest.Test.Controllers
         [Fact]
         public void ToggleAnimations_True_AnimationsIsTrue()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_TWO]);
 
-            var result = uc.ToggleAnimations(true).Result;
+            usercontroller.ToggleAnimations(true);
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<OkObjectResult>(result);
             Assert.True(_testContext.MockUsers[CITIZEN_DEP_TWO].Settings.DisplayLauncherAnimations);
         }
 
         [Fact]
         public void ToggleAnimations_False_AnimationsIsFalse()
         {
-            var uc = initializeTest();
+            var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_TWO]);
 
-            var result = uc.ToggleAnimations(false).Result;
+            usercontroller.ToggleAnimations(false);
 
-            if (result is ObjectResult)
-                _testLogger.WriteLine((result as ObjectResult).Value.ToString());
-
-            Assert.IsType<OkObjectResult>(result);
             Assert.True(!_testContext.MockUsers[CITIZEN_DEP_TWO].Settings.DisplayLauncherAnimations);
         }
         #endregion
     }
-
 }
