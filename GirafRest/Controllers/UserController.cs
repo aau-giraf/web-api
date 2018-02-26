@@ -258,7 +258,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Allows the user to upload an icon for his profile.
         /// </summary>
-        /// <returns>Ok if the upload was successful and BadRequest if not.</returns>
+        /// <returns>Response<GirafUserDTO> if succesfull, ErrorResponse<GirafUserDTO>(errorcode) if not </returns>
         [Consumes(IMAGE_TYPE_PNG, IMAGE_TYPE_JPEG)]
         [HttpPost("icon")]
         public async Task<Response<GirafUserDTO>> CreateUserIcon() {
