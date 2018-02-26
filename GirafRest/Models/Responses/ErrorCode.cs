@@ -34,11 +34,8 @@
         RoleMustBeCitizin,
         RoleNotFound,
         ThumbnailDoesNotExist,
-<<<<<<< HEAD
         UserAlreadyExists,
-=======
         UserNameAlreadyTakenWithinDepartment,
->>>>>>> a17505a6c2e4e2040413ceca29567126e2fc88d6
         UserAlreadyHasAccess,
         UserAlreadyHasIconUsePut,
         UserAlreadyOwnsResource,
