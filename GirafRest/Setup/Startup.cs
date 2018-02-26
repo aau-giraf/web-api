@@ -17,6 +17,10 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using GirafRest.Models.Responses;
+using System.IO;
+using System.Text;
 
 namespace GirafRest.Setup
 {
@@ -108,12 +112,14 @@ namespace GirafRest.Setup
             services.ConfigureApplicationCookie(options => {
                 options.Events.OnRedirectToAccessDenied = context =>
                 {
-                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                    context.Response.StatusCode = StatusCodes.Status200OK;
+                    context.Response.Body = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new ErrorResponse(ErrorCode.Forbidden))));
                     return Task.FromResult(0);
                 };
                 options.Events.OnRedirectToLogin = context =>
                 {
-                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    context.Response.StatusCode = StatusCodes.Status200OK;
+                    context.Response.Body = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new ErrorResponse(ErrorCode.NotAuthorized))));
                     return Task.FromResult(0);
                 };
             });
