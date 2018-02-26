@@ -12,6 +12,11 @@ using GirafRest.Controllers;
 using Serilog;
 using System;
 using Swashbuckle.AspNetCore.Swagger;
+using System.Net;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace GirafRest.Setup
 {
@@ -96,11 +101,30 @@ namespace GirafRest.Setup
             //Add Identity for user management.
             services.AddIdentity<GirafUser, GirafRole>(options => {
                 options.RemovePasswordRequirements();
-                options.StopRedirectOnUnauthorized();
             })
                 .AddEntityFrameworkStores<T>()
                 .AddDefaultTokenProviders();
+
+            services.ConfigureApplicationCookie(options => {
+                options.Events.OnRedirectToAccessDenied = context =>
+                {
+                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
+                    return Task.FromResult(0);
+                };
+                options.Events.OnRedirectToLogin = context =>
+                {
+                    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                    return Task.FromResult(0);
+                };
+            });
         }
+
+        //https://stackoverflow.com/questions/42030137/suppress-redirect-on-api-urls-in-asp-net-core
+        static Func<RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode, Func<RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector) =>
+    context => {
+            context.Response.StatusCode = (int)statusCode;
+            return Task.CompletedTask;
+    };
 
         /// <summary>
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
