@@ -1,4 +1,4 @@
-﻿using GirafRest.Controllers;
+using GirafRest.Controllers;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Test.Mocks;
@@ -21,7 +21,7 @@ namespace GirafRest.Test.Controllers
         private const int USER_0 = 0;
         private const int PUBLIC_PICTOGRAM = 0;
 
-        public List<GirafUser> users;
+        //public List<GirafUser> users; // UNUSED
         public WeekdayControllerTest(ITestOutputHelper output)
         {
             _testLogger = output;

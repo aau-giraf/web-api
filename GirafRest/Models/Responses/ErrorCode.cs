@@ -42,5 +42,6 @@
         UserMustBeGuardian,
         UserNotFound,
         WeekScheduleNotFound,
+        Forbidden,
     }
 }

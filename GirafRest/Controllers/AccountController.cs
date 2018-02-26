@@ -84,11 +84,13 @@ namespace GirafRest.Controllers
             var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
             if(currentUser != null)
             {
-                if(await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian)){
+                if(await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian))
+                {
                     _giraf._logger.LogInformation("Guardian attempted to sign in as Citizen");
                     return await attemptRoleLoginAsync(currentUser, model.Username, GirafRole.Citizen);
                 }
-                else if(await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Department)){
+                else if(await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Department))
+                {
                     _giraf._logger.LogInformation("Department attempted to sign in as Guardian");
                     return await attemptRoleLoginAsync(currentUser, model.Username, GirafRole.Guardian);
                 }
