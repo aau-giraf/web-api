@@ -1,4 +1,4 @@
-﻿using GirafRest.Controllers;
+using GirafRest.Controllers;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Test.Mocks;
@@ -14,7 +14,7 @@ namespace GirafRest.Test
     public class ChoiceControllerTest
     {
         private TestContext _testContext;
-        private readonly ITestOutputHelper _outputHelpter;
+        //private readonly ITestOutputHelper _outputHelper; // UNUSED
         private const int PUBLIC_CHOICE = 0;
         private const int PRIVATE_CHOICE = 1;
         private const int PROTECTED_CHOICE = 2;
@@ -26,7 +26,7 @@ namespace GirafRest.Test
         private const int ADMIN_DEP_ONE = 0;
         private const int GUARDIAN_DEP_TWO = 1;
 
-        public ChoiceControllerTest(ITestOutputHelper outputHelpter)
+        public ChoiceControllerTest(/*ITestOutputHelper outputHelpter*/)
         {
 
         }
