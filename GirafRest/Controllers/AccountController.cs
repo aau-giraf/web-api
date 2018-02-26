@@ -105,7 +105,9 @@ namespace GirafRest.Controllers
             if (result.Succeeded)
             {
                 _giraf._logger.LogInformation($"{model.Username} logged in.");
-                return new Response<GirafUserDTO>(null);
+                var loginUser = await _giraf.LoadByNameAsync(model.Username);
+                GirafRoles userRoles = await _roleManager.findUserRole(_giraf._userManager, loginUser);
+                return new Response<GirafUserDTO>(new GirafUserDTO(loginUser, userRoles));
             }
             else
             {
