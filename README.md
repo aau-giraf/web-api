@@ -2,8 +2,18 @@
 
 This repository contains the backend API for the Giraf Project. The API is a .net-core project.
 
-## Code Example
+To run the project locally with a sqlite database first do the following:
 
+1. Goto: /web-api/GirafRest
+
+2. In a shell:
+  - `export ASPNETCORE_ENVIRONMENT=Development`
+  - `dotnet restore`
+  - `dotnet run --sample-data`
+
+Once the API is running locally you can navigate to `http://localhost:5000/swagger/` to see and tryout requests to the endpoints
+
+## Code Example
 
 ## Motivation
 
