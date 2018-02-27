@@ -220,7 +220,7 @@ namespace GirafRest.Test
             var res = pc.ReadPictograms().Result;
 
             Assert.True(res.Success);
-            Assert.Equal(ErrorCode.PictogramsNotFoundNotFound, res.ErrorCode);
+            Assert.Equal(ErrorCode.PictogramsNotFound, res.ErrorCode);
         }
 
         [Fact]
