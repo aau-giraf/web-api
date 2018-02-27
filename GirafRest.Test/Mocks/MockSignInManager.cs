@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authentication;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,8 @@ namespace GirafRest.Test.Mocks
                   new Mock<IHttpContextAccessor>().Object, 
                   new Mock<IUserClaimsPrincipalFactory<GirafUser>>().Object,
                   new Mock<IOptions<IdentityOptions>>().Object,
-                  new Mock<ILogger<SignInManager<GirafUser>>>().Object)
+                  new Mock<ILogger<SignInManager<GirafUser>>>().Object,
+                  new Mock<IAuthenticationSchemeProvider>().Object)
         {
             mum._signInManager = this;
             usernamePasswordList = tc.MockUsers.Select(u => new Tuple<string, string>(u.UserName, "password")).ToList();
