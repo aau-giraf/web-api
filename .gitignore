@@ -1,17 +1,16 @@
 *.swp
-*/.vscode/
-*/.vs/
-*/obj/
-*/bin/
-*/.idea/
-*/migrations/Sqlite*
-*/Migrations/Sqlite*
-*/images/
+\.vscode/
+\.vs/
+obj/
+bin/
+\.idea/
+migrations/Sqlite*
+Migrations/Sqlite*
+images/
 html/
 doxygen*
-\.vs/GirafRest/v15/\.suo
-*/wwwroot/Logs/*
-*/wwwroot/logs/*
+wwwroot/Logs/*
+wwwroot/logs/*
 \.idea/
 
 # .NET-core
