@@ -24,3 +24,4 @@ artifacts/
 *.user
 *.userosscache
 *.sln.docstates
+*.userprefs
