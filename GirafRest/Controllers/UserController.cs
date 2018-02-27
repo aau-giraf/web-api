@@ -149,6 +149,9 @@ namespace GirafRest.Controllers
         [HttpPut("")]
         public async Task<Response<GirafUserDTO>> UpdateUser([FromBody]GirafUserDTO userDTO)
         {
+            if(userDTO == null)
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties);
+            
             //Fetch the user
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             return await UpdateUser(user.Id, userDTO);
@@ -346,8 +349,10 @@ namespace GirafRest.Controllers
         public async Task<Response<GirafUserDTO>> AddApplication(string username, [FromBody] ApplicationOption application)
         {
             //Check that an application has been specified
-            if (application == null)
+            if (string.IsNullOrEmpty(application?.ApplicationName) 
+                || string.IsNullOrEmpty(application.ApplicationPackage))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "application");
+            
             if (!ModelState.IsValid)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, ModelState.Values.Where(E => E.Errors.Count > 0)
                                   .SelectMany(E => E.Errors)
@@ -443,15 +448,24 @@ namespace GirafRest.Controllers
             //Check if valid parameters have been specified in the call
             if (string.IsNullOrEmpty(username))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "username");
+            
             if (resourceIdDTO == null)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "resourceIdDTO");
+            
+            //Attempt to find the target user and check that he exists
+            var user = await _giraf.LoadByNameAsync(username);
+            
+            if (user == null)
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
 
             //Find the resource and check that it actually does exist - also verify that the resource is private
             var resource = await _giraf._context.Pictograms
                 .Where(pf => pf.Id == resourceIdDTO.Id)
                 .FirstOrDefaultAsync();
+            
             if (resource == null)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.ResourceNotFound);
+            
             if (resource.AccessLevel != AccessLevel.PRIVATE)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.ResourceMustBePrivate);
 
@@ -460,11 +474,6 @@ namespace GirafRest.Controllers
             var resourceOwnedByCaller = await _giraf.CheckPrivateOwnership(resource, curUsr);
             if (!resourceOwnedByCaller)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
-
-            //Attempt to find the target user and check that he exists
-            var user = await _giraf.LoadByNameAsync(username);
-            if (user == null)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
 
             //Check if the target user already owns the resource
             if (user.Resources.Where(ur => ur.ResourceKey == resourceIdDTO.Id).Any())
