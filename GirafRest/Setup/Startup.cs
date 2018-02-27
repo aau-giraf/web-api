@@ -12,6 +12,15 @@ using GirafRest.Controllers;
 using Serilog;
 using System;
 using Swashbuckle.AspNetCore.Swagger;
+using System.Net;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
+using GirafRest.Models.Responses;
+using System.IO;
+using System.Text;
 
 namespace GirafRest.Setup
 {
@@ -96,11 +105,32 @@ namespace GirafRest.Setup
             //Add Identity for user management.
             services.AddIdentity<GirafUser, GirafRole>(options => {
                 options.RemovePasswordRequirements();
-                options.StopRedirectOnUnauthorized();
             })
                 .AddEntityFrameworkStores<T>()
                 .AddDefaultTokenProviders();
+
+            services.ConfigureApplicationCookie(options => {
+                options.Events.OnRedirectToAccessDenied = context =>
+                {
+                    context.Response.StatusCode = StatusCodes.Status200OK;
+                    context.Response.Body = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new ErrorResponse(ErrorCode.Forbidden))));
+                    return Task.FromResult(0);
+                };
+                options.Events.OnRedirectToLogin = context =>
+                {
+                    context.Response.StatusCode = StatusCodes.Status200OK;
+                    context.Response.Body = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new ErrorResponse(ErrorCode.NotAuthorized))));
+                    return Task.FromResult(0);
+                };
+            });
         }
+
+        //https://stackoverflow.com/questions/42030137/suppress-redirect-on-api-urls-in-asp-net-core
+        static Func<RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode, Func<RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector) =>
+    context => {
+            context.Response.StatusCode = (int)statusCode;
+            return Task.CompletedTask;
+    };
 
         /// <summary>
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -142,7 +172,7 @@ namespace GirafRest.Setup
             });
 
             //Configures Identity, i.e. user management
-            app.UseIdentity();
+            app.UseAuthentication();
 
             //Overrides the default behaviour on unauthorized to simply return Unauthorized when accessing an
             //[Authorize] endpoint without logging in.

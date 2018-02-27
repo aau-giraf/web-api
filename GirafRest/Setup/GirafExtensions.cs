@@ -128,28 +128,6 @@ namespace GirafRest.Extensions
         }
 
         /// <summary>
-        /// Configures the server to override the default behaviour on unauthorized request. This method
-        /// configures the server to simply return Unauthorized instead of redirecting to a login page.
-        /// </summary>
-        /// <param name="options">A reference to IdentityOptions, which is used to configure Identity.</param>
-        public static void StopRedirectOnUnauthorized(this IdentityOptions options) {
-            options.Cookies.ApplicationCookie.Events = new CookieAuthenticationEvents
-                {
-                    OnRedirectToAccessDenied = context =>
-                    {
-                        context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                        return Task.FromResult(0);
-                    },
-                    OnRedirectToLogin = context =>
-                    {
-                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                        return Task.FromResult(0);
-                    }
-                };
-                options.Cookies.ApplicationCookie.AutomaticAuthenticate = true;
-        }
-
-        /// <summary>
         /// Configures logging for the server. Depending on the program arguments the server will either log
         /// solely to the console or both the console and a log-file (that may be found on host/logs/log-yyyyMMdd.txt).
         /// </summary>

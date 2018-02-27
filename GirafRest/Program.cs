@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using GirafRest.Setup;
 using Microsoft.AspNetCore.Hosting;
+using MySql.Data.MySqlClient;
 
 namespace GirafRest
 {
@@ -29,9 +30,18 @@ namespace GirafRest
             if(!validArguments) return;
 
             //Build the host from the given arguments.
-            var host = ConfigureHost();
-            //Launch the rest-api.
-            host.Run();
+            try{
+                var host = ConfigureHost();
+                //Launch the rest-api.
+                host.Run();
+            }
+            catch(MySqlException e){
+                Console.WriteLine("Something went wrong in connecting to the MySql server: " +
+                                  $"{e.Message}");              
+            }
+            catch(Exception e){
+                Console.WriteLine("Error: " + e.Message);
+            }
         }
 
         /// <summary>

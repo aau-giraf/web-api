@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using GirafRest.Controllers;
 using GirafRest.Models.Responses;
 using GirafRest.Test.Mocks;
-using Microsoft.Extensions.ProjectModel.Resolution;
+// using Microsoft.Extensions.ProjectModel.Resolution;
 using Org.BouncyCastle.Asn1.Misc;
 using static GirafRest.Test.UnitTestExtensions;
 using Xunit.Abstractions;

@@ -9,7 +9,7 @@ namespace GirafRest.Test.Mocks
     public class MockRoleManager : RoleManager<GirafRole>
     {
         public MockRoleManager(IRoleStore<GirafRole> store)
-            : base(store, null, null, null, null, null)
+            : base(store, null, null, null, null)
         {
         }
     }

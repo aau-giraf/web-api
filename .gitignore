@@ -11,6 +11,7 @@
 doxygen*
 */wwwroot/Logs/*
 */wwwroot/logs/*
+*.userprefs
 
 # .NET-core
 project.lock.json
