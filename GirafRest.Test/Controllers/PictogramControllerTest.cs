@@ -154,7 +154,7 @@ namespace GirafRest.Test
             var res = pc.ReadPictogram(NONEXISTING_PICTOGRAM);
             var pRes = res.Result;
             Assert.False(pRes.Success);
-            Assert.Equal(ErrorCode.NotFound, pRes.ErrorCode);
+            Assert.Equal(ErrorCode.PictogramNotFound, pRes.ErrorCode);
         }
 
         [Fact]
@@ -165,7 +165,7 @@ namespace GirafRest.Test
             var res = pc.ReadPictogram(NONEXISTING_PICTOGRAM).Result;
 
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
+            Assert.Equal(ErrorCode.PictogramNotFound, res.ErrorCode);
         }
         #endregion
         #region ReadPictograms()
@@ -220,7 +220,7 @@ namespace GirafRest.Test
             var res = pc.ReadPictograms().Result;
 
             Assert.True(res.Success);
-            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
+            Assert.Equal(ErrorCode.PictogramsNotFoundNotFound, res.ErrorCode);
         }
 
         [Fact]
@@ -342,6 +342,7 @@ namespace GirafRest.Test
             var res = pc.CreatePictogram(dto).Result;
 
             Assert.False(res.Success);
+            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
         #endregion
         #region UpdatePictogramInfo
@@ -502,7 +503,7 @@ namespace GirafRest.Test
             var res = pc.UpdatePictogramInfo(PUBLIC_PICTOGRAM, dto).Result;
 
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
         #endregion
         #region DeletePictogram
@@ -919,10 +920,10 @@ namespace GirafRest.Test
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLogout();
-            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
 
             var img = pc.CreateImage(PUBLIC_PICTOGRAM).Result;
 
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
             img = pc.UpdatePictogramImage(PUBLIC_PICTOGRAM).Result;
 
             _testContext.MockHttpContext.MockRequestImage(JPEG_FILEPATH);
@@ -1042,7 +1043,7 @@ namespace GirafRest.Test
             var res = pc.ReadPictogramImage(NONEXISTING_PICTOGRAM).Result;
 
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.PictogramImageNotFound, res.ErrorCode);
+            Assert.Equal(ErrorCode.PictogramsNotFound, res.ErrorCode);
         }
 
         [Fact]

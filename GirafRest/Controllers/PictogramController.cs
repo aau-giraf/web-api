@@ -95,8 +95,6 @@ namespace GirafRest.Controllers
         {
             try
             {
-                var usr = await _giraf.LoadUserAsync(HttpContext.User);
-                if (usr == null) return new ErrorResponse<PictogramDTO>(ErrorCode.UserNotFound);
                 //Fetch the pictogram and check that it actually exists
                 var _pictogram = await _giraf._context.Pictograms
                     .Where(p => p.Id == id)
@@ -106,6 +104,9 @@ namespace GirafRest.Controllers
                 //Check if the pictogram is public and return it if so
                 if (_pictogram.AccessLevel == AccessLevel.PUBLIC) return new Response<PictogramDTO>(new PictogramDTO(_pictogram, _pictogram.Image));
 
+                var usr = await _giraf.LoadUserAsync(HttpContext.User);
+                if (usr == null) return new ErrorResponse<PictogramDTO>(ErrorCode.NotAuthorized);
+                
                 bool ownsResource = false;
                 if (_pictogram.AccessLevel == AccessLevel.PRIVATE)
                     ownsResource = await _giraf.CheckPrivateOwnership(_pictogram, usr);
