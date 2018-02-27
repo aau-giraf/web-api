@@ -22,13 +22,22 @@ namespace GirafRest.Test
         public class TestContext
         {
             #region Mock Data
-            private List<Pictogram> mockPictograms;
+
+            public const int PictogramPublic1 = 0;
+            public const int PictogramPublic2 = 1;
+            public const int PictogramNoRestrictions = 2;
+            public const int PictogramPrivateUser0 = 3;
+            public const int PictogramPrivateUser1 = 4;
+            public const int PictogramDepartment1 = 5;
+            public const int PictogramDepartment2 = 6;
+            
+            private List<Pictogram> _mockPictograms;
             public List<Pictogram> MockPictograms
             {
                 get
                 {
-                    if (mockPictograms == null)
-                        mockPictograms = new List<Pictogram> {
+                    if (_mockPictograms == null)
+                        _mockPictograms = new List<Pictogram> {
                         new Pictogram("Public Picto1", AccessLevel.PUBLIC) {
                             Id = 0
                         },
@@ -53,10 +62,18 @@ namespace GirafRest.Test
                         }
                     };
 
-                    return mockPictograms;
+                    return _mockPictograms;
                 }
             }
-           
+
+            public const int UserAdmin = 0;
+            public const int UserGuardianDepartment2 = 1;
+            public const int UserCitizenDepartment2 = 2;
+            public const int UserCitizenNoWeeks = 3;
+            public const int UserAdminNoDepartment = 4;
+            public const int UserGuardian2Department2 = 5;
+            public const int UserDepartment2 = 6;
+            
             private List<GirafUser> mockUsers;
             public List<GirafUser> MockUsers
             {

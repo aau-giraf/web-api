@@ -13,6 +13,7 @@ using static GirafRest.Test.UnitTestExtensions;
 using GirafRest.Models.DTOs;
 using System.IO;
 using Xunit.Abstractions;
+using GirafRest.Models.Responses;
 
 namespace GirafRest.Test
 {
@@ -53,9 +54,9 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
 
             var res = wc.ReadWeekSchedules();
-            IActionResult aRes = res.Result;
+            var aRes = res.Result;
 
-            Assert.IsType<OkObjectResult>(aRes);
+            Assert.True(aRes.Success);
         }
 
         [Fact]
@@ -66,9 +67,10 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITEZEN_DEP_THREE]);
 
             var res = wc.ReadWeekSchedules();
-            IActionResult aRes = res.Result;
+            var aRes = res.Result;
 
-            Assert.IsType<NotFoundResult>(aRes);
+            Assert.False(aRes.Success);
+            Assert.Equal(ErrorCode.NotFound, aRes.ErrorCode);
         }
         #endregion
         #region ReadWeekSchedule(id)
@@ -79,9 +81,9 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
 
             var res = wc.ReadUsersWeekSchedule(WEEK_ZERO);
-            IActionResult aRes = res.Result;
+            var aRes = res.Result;
             
-            Assert.IsType<OkObjectResult>(aRes);
+            Assert.True(aRes.Success);
         }
 
         [Fact]
@@ -91,9 +93,10 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITEZEN_DEP_THREE]);
 
             var res = wc.ReadUsersWeekSchedule(NONEXISTING);
-            IActionResult aRes = res.Result;
+            var aRes = res.Result;
 
-            Assert.IsType<NotFoundResult>(aRes);
+            Assert.False(aRes.Success);
+            Assert.Equal(ErrorCode.NotFound, aRes.ErrorCode);
         }
         #endregion
         #region UpdateWeek
@@ -106,9 +109,9 @@ namespace GirafRest.Test
             var tempWeek = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule;
 
             var res = wc.UpdateWeek(WEEK_ZERO, new WeekDTO(week));
-            IActionResult aRes = res.Result;
+            var aRes = res.Result;
 
-            Assert.IsType<OkObjectResult>(aRes);
+            Assert.True(aRes.Success);
 
             _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule = tempWeek;
         }
@@ -122,9 +125,10 @@ namespace GirafRest.Test
             var tempWeek = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule;
 
             var res = wc.UpdateWeek(NONEXISTING, new WeekDTO(week));
-            IActionResult aRes = res.Result;
+            var aRes = res.Result;
 
-            Assert.IsType<NotFoundResult>(aRes);
+            Assert.False(aRes.Success);
+            Assert.Equal(ErrorCode.NotFound, aRes.ErrorCode);
 
             _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule = tempWeek;
         }
@@ -137,9 +141,9 @@ namespace GirafRest.Test
             var tempWeek = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule;
 
             var res = wc.UpdateWeek(WEEK_ZERO, new WeekDTO());
-            IActionResult aRes = res.Result;
+            var aRes = res.Result;
 
-            Assert.IsType<BadRequestObjectResult>(aRes);
+            Assert.False(aRes.Success);
 
             _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule = tempWeek;
         }
@@ -151,9 +155,9 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
 
             var res = wc.UpdateWeek(WEEK_ZERO, null);
-            IActionResult aRes = res.Result;
+            var aRes = res.Result;
 
-            Assert.IsType<BadRequestObjectResult>(aRes);
+            Assert.False(aRes.Success);
         }
         #endregion
         #region CreateWeek
@@ -165,9 +169,9 @@ namespace GirafRest.Test
             var week = _testContext.MockUsers[GUARDIAN_DEP_TWO].WeekSchedule.First();
 
             var res = wc.CreateWeek(new WeekDTO(week));
-            IActionResult aRes = res.Result;
+            var aRes = res.Result;
 
-            Assert.IsType<OkObjectResult>(aRes);
+            Assert.True(aRes.Success);
 
             _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Remove(_testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Last());
         }
@@ -179,9 +183,9 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
 
             var res = wc.CreateWeek(new WeekDTO());
-            IActionResult aRes = res.Result;
+            var aRes = res.Result;
 
-            Assert.IsType<BadRequestObjectResult>(aRes);
+            Assert.False(aRes.Success);
 
             _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Remove(_testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Last());
         }
@@ -193,9 +197,9 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
 
             var res = wc.CreateWeek(null);
-            IActionResult aRes = res.Result;
+            var aRes = res.Result;
 
-            Assert.IsType<BadRequestObjectResult>(aRes);
+            Assert.False(aRes.Success);
         }
         #endregion
     }

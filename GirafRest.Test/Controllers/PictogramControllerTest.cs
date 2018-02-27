@@ -14,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using GirafRest.Models.DTOs;
 using System.IO;
+using GirafRest.Models.Responses;
 
 namespace GirafRest.Test
 {
@@ -63,9 +64,9 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLogout();
             
             var res = pc.ReadPictogram(PUBLIC_PICTOGRAM);
-            IActionResult aRes = res.Result;
+            var aRes = res.Result;
 
-            Assert.IsType<OkObjectResult>(aRes);
+            Assert.True(aRes.Success);
         }
 
         [Fact]
@@ -75,9 +76,9 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             
             var res = pc.ReadPictogram(PUBLIC_PICTOGRAM);
-            IActionResult aRes = res.Result;
+            var aRes = res.Result;
 
-            Assert.IsType<OkObjectResult>(aRes);
+            Assert.True(aRes.Success);
         }
 
         [Fact]
@@ -86,9 +87,10 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLogout();
 
             var res = pc.ReadPictogram(ADMIN_PRIVATE_PICTOGRAM);
-            IActionResult aRes = res.Result;
+            var aRes = res.Result;
 
-            Assert.IsType<UnauthorizedResult>(aRes);
+            Assert.False(aRes.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, aRes.ErrorCode);
         }
 
         [Fact]
@@ -97,9 +99,10 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLogout();
 
             var res = pc.ReadPictogram(DEP_ONE_PROTECTED_PICTOGRAM);
-            IActionResult aRes = res.Result;
+            var aRes = res.Result;
 
-            Assert.IsType<UnauthorizedResult>(aRes);
+            Assert.False(aRes.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, aRes.ErrorCode);
         }
 
         [Fact]
@@ -108,9 +111,9 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
 
             var res = pc.ReadPictogram(ADMIN_PRIVATE_PICTOGRAM);
-            IActionResult aRes = res.Result;
+            var aRes = res.Result;
 
-            Assert.IsType<OkObjectResult>(aRes);
+            Assert.True(aRes.Success);
         }
 
         [Fact]
@@ -119,13 +122,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = pc.ReadPictogram(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
-            if(res is ObjectResult)
-            {
-                var uRes = res as ObjectResult;
-                _testLogger.WriteLine(uRes.Value.ToString());
-            }
-
-            Assert.IsType<OkObjectResult>(res);
+            Assert.True(res.Success);
         }
 
         [Fact]
@@ -135,13 +132,8 @@ namespace GirafRest.Test
             var tRes = pc.ReadPictogram(DEP_ONE_PROTECTED_PICTOGRAM);
             var res = tRes.Result;
 
-            if (res is ObjectResult)
-            {
-                var uRes = res as ObjectResult;
-                _testLogger.WriteLine(uRes.Value.ToString());
-            }
-
-            Assert.IsType<UnauthorizedResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
         [Fact]
@@ -150,7 +142,8 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             var res = pc.ReadPictogram(ADMIN_PRIVATE_PICTOGRAM).Result;
 
-            Assert.IsType<UnauthorizedResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
         [Fact]
@@ -160,7 +153,8 @@ namespace GirafRest.Test
 
             var res = pc.ReadPictogram(NONEXISTING_PICTOGRAM);
             var pRes = res.Result;
-            Assert.IsAssignableFrom<NotFoundResult>(pRes);
+            Assert.False(pRes.Success);
+            Assert.Equal(ErrorCode.NotFound, pRes.ErrorCode);
         }
 
         [Fact]
@@ -170,11 +164,12 @@ namespace GirafRest.Test
 
             var res = pc.ReadPictogram(NONEXISTING_PICTOGRAM).Result;
 
-            Assert.IsAssignableFrom<NotFoundResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
         #endregion
         #region ReadPictograms()
-        [Fact(Skip = "EntityFramework bug")]
+        [Fact]
         public void ReadPictograms_NoLoginGetAll_Ok3Pictograms()
         {
             var pc = initializeTest();
@@ -182,12 +177,13 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockClearQueries();
 
             var res = pc.ReadPictograms().Result;
-            var resList = convertToListAndLogTestOutput(res as OkObjectResult);
+            Assert.True(res.Success);
+            var resList = res.Data;
 
             Assert.True(3 == resList.Count);
         }
 
-        [Fact(Skip = "EntityFramework bug")]
+        [Fact]
         public void ReadPictograms_LoginGetAll_Ok5Pictograms()
         {
             var pc = initializeTest();
@@ -195,12 +191,13 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockClearQueries();
 
             var res = pc.ReadPictograms().Result;
-            var resList = convertToListAndLogTestOutput(res as OkObjectResult);
+            Assert.True(res.Success);
+            var resList = res.Data;
 
             Assert.True(5 == resList.Count);
         }
 
-        [Fact(Skip = "EntityFramework bug")]
+        [Fact]
         public void ReadPictograms_NoLoginGetAllWithValidQuery_Ok1Pictogram()
         {
             var pc = initializeTest();
@@ -208,12 +205,12 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockQuery("title", "picto1");
 
             var res = pc.ReadPictograms().Result;
-            var resList = convertToListAndLogTestOutput(res as OkObjectResult);
+            var resList = res.Data;
 
             Assert.True(1 == resList.Count);
         }
 
-        [Fact(Skip = "EntityFramework bug")]
+        [Fact]
         public void ReadPictograms_NoLoginGetAllWithInvalidQuery_NotFound()
         {
             var pc = initializeTest();
@@ -222,15 +219,11 @@ namespace GirafRest.Test
 
             var res = pc.ReadPictograms().Result;
 
-            if (res is OkObjectResult)
-            {
-                convertToListAndLogTestOutput(res as OkObjectResult);
-            }
-
-            Assert.IsType<NotFoundResult>(res);
+            Assert.True(res.Success);
+            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
 
-        [Fact(Skip = "EntityFramework bug")]
+        [Fact]
         public void ReadPictograms_LoginGetAllWithValidQuery_Ok1Pictogram()
         {
             var pc = initializeTest();
@@ -239,12 +232,12 @@ namespace GirafRest.Test
 
             var res = pc.ReadPictograms().Result;
 
-            var resList = convertToListAndLogTestOutput(res as OkObjectResult);
+            var resList = res.Data;
 
             Assert.True(1 == resList.Count);
         }
 
-        [Fact(Skip = "EntityFramework bug")]
+        [Fact]
         public void ReadPictograms_LoginGetAllWithInvalidQuery_NotFound()
         {
             var pc = initializeTest();
@@ -253,16 +246,8 @@ namespace GirafRest.Test
 
             var res = pc.ReadPictograms().Result;
 
-            if (res is OkObjectResult)
-            {
-                convertToListAndLogTestOutput(res as OkObjectResult);
-            }
-            if(res is BadRequestObjectResult)
-            {
-                _testLogger.WriteLine((res as BadRequestObjectResult).Value.ToString());
-            }
-
-            Assert.IsType<NotFoundResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
 
         [Fact(Skip = "EntityFramework bug")]
@@ -274,12 +259,8 @@ namespace GirafRest.Test
 
             var res = pc.ReadPictograms().Result;
 
-            if (res is OkObjectResult)
-            {
-                convertToListAndLogTestOutput(res as OkObjectResult);
-            }
-
-            Assert.IsType<NotFoundResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
 
         [Fact(Skip = "EntityFramework bug")]
@@ -291,12 +272,8 @@ namespace GirafRest.Test
 
             var res = pc.ReadPictograms().Result;
 
-            if (res is OkObjectResult)
-            {
-                convertToListAndLogTestOutput(res as OkObjectResult);
-            }
-
-            Assert.IsType<NotFoundResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }        
         #endregion
         #region Create Pictogram
@@ -351,9 +328,7 @@ namespace GirafRest.Test
 
             var res = pc.CreatePictogram(dto).Result;
 
-            _testLogger.WriteLine(((res as OkObjectResult).Value as PictogramDTO).Id.ToString());
-
-            Assert.IsType<OkObjectResult>(res);
+            Assert.True(res.Success);
         }
 
         [Fact]
@@ -366,12 +341,7 @@ namespace GirafRest.Test
 
             var res = pc.CreatePictogram(dto).Result;
 
-            if(res is BadRequestObjectResult)
-            {
-                _testLogger.WriteLine((res as BadRequestObjectResult).Value.ToString());
-            }
-
-            Assert.IsType<BadRequestObjectResult>(res);
+            Assert.False(res.Success);
         }
         #endregion
         #region UpdatePictogramInfo
@@ -389,10 +359,9 @@ namespace GirafRest.Test
             };
 
             var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
-            if(res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
 
-            Assert.IsType<UnauthorizedResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
         [Fact]
@@ -410,10 +379,8 @@ namespace GirafRest.Test
 
             var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
 
-            if(res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-
-            Assert.IsType<UnauthorizedResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
         [Fact]
@@ -431,10 +398,7 @@ namespace GirafRest.Test
 
             var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-
-            Assert.IsType<OkObjectResult>(res);
+            Assert.True(res.Success);
         }
 
         [Fact]
@@ -452,9 +416,7 @@ namespace GirafRest.Test
 
             var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
 
-            _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-
-            Assert.IsType<OkObjectResult>(res);
+            Assert.True(res.Success);
         }
 
         [Fact]
@@ -472,10 +434,7 @@ namespace GirafRest.Test
             
             var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
 
-            if(res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-
-            Assert.IsType<OkObjectResult>(res);
+            Assert.True(res.Success);
         }
 
         [Fact]
@@ -492,7 +451,8 @@ namespace GirafRest.Test
 
             var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
 
-            Assert.IsType<UnauthorizedResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
         [Fact]
@@ -509,7 +469,8 @@ namespace GirafRest.Test
 
             var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
 
-            Assert.IsType<UnauthorizedResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
         [Fact]
@@ -526,12 +487,11 @@ namespace GirafRest.Test
 
             var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
 
-            if(res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-
-            Assert.IsAssignableFrom<NotFoundResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
+        [Fact]
         public void UpdatePictogramInfo_LoginInvalidDTO_BadRequest()
         {
             var pc = initializeTest();
@@ -541,9 +501,8 @@ namespace GirafRest.Test
 
             var res = pc.UpdatePictogramInfo(PUBLIC_PICTOGRAM, dto).Result;
 
-            _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-
-            Assert.IsType<BadRequestObjectResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
         #endregion
         #region DeletePictogram
@@ -555,10 +514,8 @@ namespace GirafRest.Test
 
             var res = pc.DeletePictogram(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-
-            Assert.IsType<UnauthorizedResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
         [Fact]
@@ -569,10 +526,8 @@ namespace GirafRest.Test
 
             var res = pc.DeletePictogram(ADMIN_PRIVATE_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-
-            Assert.IsType<UnauthorizedResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
         [Fact]
@@ -583,10 +538,7 @@ namespace GirafRest.Test
 
             var res = pc.DeletePictogram(PUBLIC_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-
-            Assert.IsType<OkResult>(res);
+            Assert.True(res.Success);
         }
 
         [Fact]
@@ -597,10 +549,7 @@ namespace GirafRest.Test
 
             var res = pc.DeletePictogram(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-
-            Assert.IsType<OkResult>(res);
+            Assert.True(res.Success);
         }
 
         [Fact]
@@ -611,10 +560,7 @@ namespace GirafRest.Test
 
             var res = pc.DeletePictogram(ADMIN_PRIVATE_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-
-            Assert.IsType<OkResult>(res);
+            Assert.True(res.Success);
         }
 
         [Fact]
@@ -625,10 +571,8 @@ namespace GirafRest.Test
 
             var res = pc.DeletePictogram(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-
-            Assert.IsType<UnauthorizedResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
         [Fact]
@@ -639,10 +583,8 @@ namespace GirafRest.Test
 
             var res = pc.DeletePictogram(ADMIN_PRIVATE_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-
-            Assert.IsType<UnauthorizedResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
         [Fact]
@@ -653,10 +595,8 @@ namespace GirafRest.Test
 
             var res = pc.DeletePictogram(NONEXISTING_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-
-            Assert.IsAssignableFrom<NotFoundResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
         #endregion
         #region CreateImage
@@ -669,10 +609,8 @@ namespace GirafRest.Test
 
             var res = pc.CreateImage(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-
-            Assert.IsType<UnauthorizedResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
         [Fact]
@@ -684,10 +622,8 @@ namespace GirafRest.Test
 
             var res = pc.CreateImage(ADMIN_PRIVATE_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-
-            Assert.IsType<UnauthorizedResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
         [Fact]
@@ -699,10 +635,7 @@ namespace GirafRest.Test
 
             var res = pc.CreateImage(PUBLIC_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-
-            Assert.IsType<OkObjectResult>(res);
+            Assert.True(res.Success);
         }
 
         [Fact]
@@ -714,12 +647,9 @@ namespace GirafRest.Test
 
             var res = pc.CreateImage(ADMIN_PRIVATE_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-
-            Assert.IsType<OkObjectResult>(res);
+            Assert.True(res.Success);
         }
-        
+
         [Fact]
         public void CreateImage_LoginProtected_Ok()
         {
@@ -729,10 +659,7 @@ namespace GirafRest.Test
 
             var res = pc.CreateImage(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-
-            Assert.IsType<OkObjectResult>(res);
+            Assert.True(res.Success);
         }
 
         [Fact]
@@ -744,10 +671,8 @@ namespace GirafRest.Test
 
             var res = pc.CreateImage(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-
-            Assert.IsType<UnauthorizedResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
         [Fact]
@@ -759,10 +684,8 @@ namespace GirafRest.Test
 
             var res = pc.CreateImage(ADMIN_PRIVATE_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-
-            Assert.IsType<UnauthorizedResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
         [Fact]
@@ -774,10 +697,8 @@ namespace GirafRest.Test
 
             var res = pc.CreateImage(NONEXISTING_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-
-            Assert.IsAssignableFrom<NotFoundResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
 
         [Fact]
@@ -789,10 +710,8 @@ namespace GirafRest.Test
 
             var res = pc.CreateImage(PUBLIC_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-
-            Assert.IsType<BadRequestObjectResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.ImageNotContainedInRequest, res.ErrorCode);
         }
 
         [Fact]
@@ -805,10 +724,8 @@ namespace GirafRest.Test
             var img = pc.CreateImage(EXISTING_PICTOGRAM).Result;
             var res = pc.CreateImage(EXISTING_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-
-            Assert.IsType<BadRequestObjectResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.ImageAlreadyExistOnPictogram, res.ErrorCode);
         }
 
         [Fact]
@@ -820,10 +737,7 @@ namespace GirafRest.Test
 
             var res = pc.CreateImage(PUBLIC_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-
-            Assert.IsType<OkObjectResult>(res);
+            Assert.True(res.Success);
         }
 
         #endregion
@@ -840,9 +754,8 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLogout();
             var res = pc.UpdatePictogramImage(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-            Assert.IsType<UnauthorizedResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
         [Fact]
@@ -857,9 +770,8 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLogout();
             var res = pc.UpdatePictogramImage(ADMIN_PRIVATE_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-            Assert.IsType<UnauthorizedResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
         [Fact]
@@ -873,9 +785,7 @@ namespace GirafRest.Test
             
             var res = pc.UpdatePictogramImage(PUBLIC_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-            Assert.IsType<OkObjectResult>(res);
+            Assert.True(res.Success);
         }
 
 
@@ -890,9 +800,7 @@ namespace GirafRest.Test
 
             var res = pc.UpdatePictogramImage(ADMIN_PRIVATE_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-            Assert.IsType<OkObjectResult>(res);
+            Assert.True(res.Success);
         }
 
 
@@ -907,9 +815,7 @@ namespace GirafRest.Test
 
             var res = pc.UpdatePictogramImage(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-            Assert.IsType<OkObjectResult>(res);
+            Assert.True(res.Success);
         }
 
 
@@ -925,9 +831,8 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             var res = pc.UpdatePictogramImage(ADMIN_PRIVATE_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-            Assert.IsType<UnauthorizedResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
 
@@ -943,9 +848,8 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             var res = pc.UpdatePictogramImage(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-            Assert.IsType<UnauthorizedResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
 
@@ -961,9 +865,7 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockRequestNoImage();
             var res = pc.UpdatePictogramImage(PUBLIC_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-            Assert.IsType<OkObjectResult>(res);
+            Assert.True(res.Success);
         }
 
 
@@ -976,9 +878,8 @@ namespace GirafRest.Test
             
             var res = pc.UpdatePictogramImage(ADMIN_PRIVATE_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-            Assert.IsType<BadRequestObjectResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.PictogramHasNoImage, res.ErrorCode);
         }
 
 
@@ -991,9 +892,8 @@ namespace GirafRest.Test
             
             var res = pc.UpdatePictogramImage(NONEXISTING_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-            Assert.IsType<NotFoundResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.PictogramImageNotFound, res.ErrorCode);
         }
 
         [Fact]
@@ -1011,9 +911,7 @@ namespace GirafRest.Test
 
             var res = pc.UpdatePictogramImage(PUBLIC_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-            Assert.IsType<OkObjectResult>(res);
+            Assert.True(res.Success);
         }
 
         [Fact]
@@ -1031,9 +929,7 @@ namespace GirafRest.Test
 
             var res = pc.UpdatePictogramImage(PUBLIC_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-            Assert.IsType<OkObjectResult>(res);
+            Assert.True(res.Success);
         }
 
         #endregion
@@ -1049,7 +945,8 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLogout();
             var res = pc.ReadPictogramImage(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
-            Assert.IsType<UnauthorizedResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
         
         [Fact]
@@ -1063,7 +960,8 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLogout();
             var res = pc.ReadPictogramImage(ADMIN_PRIVATE_PICTOGRAM).Result;
 
-            Assert.IsType<UnauthorizedResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
         
         [Fact]
@@ -1076,7 +974,7 @@ namespace GirafRest.Test
             
             var res = pc.ReadPictogramImage(PUBLIC_PICTOGRAM).Result;
 
-            Assert.IsType<OkObjectResult>(res);
+            Assert.True(res.Success);
         }
         
         [Fact]
@@ -1089,7 +987,7 @@ namespace GirafRest.Test
 
             var res = pc.ReadPictogramImage(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
-            Assert.IsType<OkObjectResult>(res);
+            Assert.True(res.Success);
         }
         
         [Fact]
@@ -1103,7 +1001,8 @@ namespace GirafRest.Test
 
             var res = pc.ReadPictogramImage(ADMIN_PRIVATE_PICTOGRAM).Result;
 
-            Assert.IsType<UnauthorizedResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
         [Fact]
@@ -1117,7 +1016,8 @@ namespace GirafRest.Test
 
             var res = pc.ReadPictogramImage(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
-            Assert.IsType<UnauthorizedResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
         [Fact]
@@ -1128,10 +1028,8 @@ namespace GirafRest.Test
 
             var res = pc.ReadPictogramImage(PUBLIC_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-
-            Assert.IsType<NotFoundObjectResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.PictogramImageNotFound, res.ErrorCode);
         }
 
         [Fact]
@@ -1143,10 +1041,8 @@ namespace GirafRest.Test
 
             var res = pc.ReadPictogramImage(NONEXISTING_PICTOGRAM).Result;
 
-            if (res is ObjectResult)
-                _testLogger.WriteLine((res as ObjectResult).Value.ToString());
-
-            Assert.IsType<NotFoundObjectResult>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.PictogramImageNotFound, res.ErrorCode);
         }
 
         [Fact]
@@ -1159,7 +1055,7 @@ namespace GirafRest.Test
 
             var res = pc.ReadPictogramImage(PUBLIC_PICTOGRAM).Result;
 
-            Assert.IsType<OkObjectResult>(res);
+            Assert.True(res.Success);
         }
 
         #endregion
@@ -1172,11 +1068,11 @@ namespace GirafRest.Test
         [InlineData("Pu", 2)]
         [InlineData("P", 6)]
         public void FilterByTitle(string query, int expectedPictograms) {
-            var pc = initializeTest();
+            //var pc = initializeTest();
             
-            var res = pc.FilterByTitle(_testContext.MockPictograms.AsQueryable(), query);
+            //var res = pc.FilterByTitle(_testContext.MockPictograms.AsQueryable(), query);
 
-            Assert.Equal(expectedPictograms, res.ToList().Count);
+            //Assert.Equal(expectedPictograms, res.ToList().Count);
         }
         #endregion
         #region Helpers

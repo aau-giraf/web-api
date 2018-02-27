@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace GirafRest.Models.DTOs
 {
     /// <summary>
-    /// Defines the structure of GiradUsers when serializing and deserializing data. Data transfer objects (DTOs) 
+    /// Defines the structure of GirafUsers when serializing and deserializing data. Data transfer objects (DTOs) 
     /// were introduced in the project due to problems with circular references in the model classes.
     /// </summary>
     public class GirafUserDTO

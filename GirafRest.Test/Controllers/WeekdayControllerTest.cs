@@ -1,6 +1,7 @@
-﻿using GirafRest.Controllers;
+using GirafRest.Controllers;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
+using GirafRest.Models.Responses;
 using GirafRest.Test.Mocks;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,7 +13,7 @@ using static GirafRest.Test.UnitTestExtensions;
 
 namespace GirafRest.Test.Controllers
 {
-    class WeekdayControllerTest
+    public class WeekdayControllerTest
     {
         private readonly ITestOutputHelper _testLogger;
         private TestContext _testContext;
@@ -21,7 +22,7 @@ namespace GirafRest.Test.Controllers
         private const int USER_0 = 0;
         private const int PUBLIC_PICTOGRAM = 0;
 
-        public List<GirafUser> users;
+        //public List<GirafUser> users; // UNUSED
         public WeekdayControllerTest(ITestOutputHelper output)
         {
             _testLogger = output;
@@ -49,7 +50,7 @@ namespace GirafRest.Test.Controllers
 
             var res = wc.UpdateDay(day.Id, new WeekdayDTO(day)).Result;
 
-            Assert.IsType<OkObjectResult>(res);
+            Assert.True(res.Success);
         }
 
         [Fact]
@@ -61,9 +62,10 @@ namespace GirafRest.Test.Controllers
             day.Elements.Add(new WeekdayResource(day, _testContext.MockPictograms[PUBLIC_PICTOGRAM]));
 
             var res = wc.UpdateDay(999, new WeekdayDTO(day));
-            IActionResult aRes = res.Result;
+            var aRes = res.Result;
 
-            Assert.IsType<NotFoundResult>(aRes);
+            Assert.False(aRes.Success);
+            Assert.Equal(ErrorCode.WeekScheduleNotFound, aRes.ErrorCode);
         }
 
         [Fact]
@@ -73,9 +75,10 @@ namespace GirafRest.Test.Controllers
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER_0]);
 
             var res = wc.UpdateDay(USER_0_DAY, null);
-            IActionResult aRes = res.Result;
+            var aRes = res.Result;
 
-            Assert.IsType<BadRequestObjectResult>(aRes);
+            Assert.False(aRes.Success);
+            Assert.Equal(ErrorCode.FormatError, aRes.ErrorCode);
         }
         #endregion
     }

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using GirafRest.Models.DTOs;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace GirafRest.Models
@@ -10,7 +11,7 @@ namespace GirafRest.Models
     /// GirafUser defines all relavant data for the user's of Giraf.
     /// </summary>
     [Table("User")]
-    public class GirafUser : IdentityUser
+    public class GirafUser : IdentityUser<string>
     {       
         /// <summary>
         /// Whether or not the current user is a DepartmentUser
@@ -65,9 +66,10 @@ namespace GirafRest.Models
         {
             this.UserName = userName;
             this.Resources = new List<UserResource>();
+            this.GuardianOf = new List<GirafUser>();
             this.WeekSchedule = new List<Week>();
             Settings = new LauncherOptions();
-            Department = department;
+            DepartmentKey = department.Key;
         }
         
         /// <summary>

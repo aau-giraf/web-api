@@ -1,9 +1,9 @@
 *.swp
-*/.vscode/
-*/.vs/
+*/\.vscode/
+*/\.vs/
 */obj/
 */bin/
-*/.idea/
+*/\.idea/
 */migrations/Sqlite*
 */Migrations/Sqlite*
 */images/
@@ -14,3 +14,14 @@ doxygen*
 */wwwroot/logs/*
 \.idea/
 *.userprefs
+
+# .NET-core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
