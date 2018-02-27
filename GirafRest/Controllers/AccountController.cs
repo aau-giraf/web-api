@@ -94,6 +94,13 @@ namespace GirafRest.Controllers
                     _giraf._logger.LogInformation("Department attempted to sign in as Guardian");
                     return await attemptRoleLoginAsync(currentUser, model.Username, GirafRole.Guardian);
                 }
+                else if(await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Citizen)){
+                    var loginUser = await _giraf.LoadByNameAsync(model.Username);
+                    if (await _giraf._userManager.IsInRoleAsync(loginUser, GirafRole.Guardian)){
+                        return new ErrorResponse<GirafUserDTO>(ErrorCode.UserMustBeGuardian);
+                    }
+
+                }
             }
 
             //There is no current user - check that a password is present.
@@ -111,7 +118,7 @@ namespace GirafRest.Controllers
             }
             else
             {
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidCredentials);
             }
         }
         /// <summary>
@@ -161,8 +168,15 @@ namespace GirafRest.Controllers
         public async Task<Response<GirafUserDTO>> Register([FromBody] RegisterDTO model)
         {
             //Check that all the necesarry data has been supplied
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid || model?.ConfirmPassword == null)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties);
+
+            if (String.IsNullOrEmpty(model.Username) || String.IsNullOrEmpty(model.Password))
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidCredentials);
+            var doesUserAlreadyExist = (await _giraf.LoadByNameAsync(model.Username) != null);
+
+            if (doesUserAlreadyExist)
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserAlreadyExists);
 
             // Check that password and confirm password match
             if (!model.Password.Equals(model.ConfirmPassword))
@@ -171,7 +185,7 @@ namespace GirafRest.Controllers
             var department = await _giraf._context.Departments.Where(dep => dep.Key == model.DepartmentId).FirstOrDefaultAsync();
 
             // Check that the department with the specified id exists
-            if (department == null)
+            if (department == null && model.DepartmentId != null)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.DepartmentNotFound);
 
             //Create a new user with the supplied information
@@ -267,7 +281,7 @@ namespace GirafRest.Controllers
             if (string.IsNullOrEmpty(model.ConfirmPassword))
                 return new ErrorResponse(ErrorCode.MissingProperties, "confirmPassword");
             if (model.NewPassword != model.ConfirmPassword)
-                return new ErrorResponse(ErrorCode.InvalidProperties, "confirmPassword");
+                return new ErrorResponse(ErrorCode.PasswordMissMatch, "confirmPassword");
 
             var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
             if (user != null)

@@ -48,5 +48,6 @@
         UserNotFound,
         WeekScheduleNotFound,
         Forbidden,
+        PasswordMissMatch
     }
 }

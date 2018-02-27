@@ -101,9 +101,9 @@ namespace GirafRest.Test
                         },
                         new GirafUser()
                         {
-                            UserName = "Citizen with no weeks",
+                            UserName = "Citizen of dep 3",
                             Id = "citizen3",
-                            DepartmentKey = 2
+                            DepartmentKey = 3
                         },
                         new GirafUser()
                         {
