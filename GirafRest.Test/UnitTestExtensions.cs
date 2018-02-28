@@ -409,6 +409,7 @@ namespace GirafRest.Test
                 dbMock.Setup(c => c.Choices).Returns(mockChoices.Object);
                 dbMock.Setup(c => c.Departments).Returns(mockDeps.Object);
                 dbMock.Setup(c => c.Weeks).Returns(mockWeeks.Object);
+                //dbMock.Setup(c => c.Users).Returns(mockUsers.Object);
 
                 //Make sure that all references are setup - Entity does not handle it for us this time.
                 MockUsers[0].Department = MockDepartments[0];

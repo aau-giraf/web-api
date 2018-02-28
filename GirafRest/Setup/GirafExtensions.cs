@@ -27,6 +27,8 @@ namespace GirafRest.Extensions
         /// <param name="services">A reference to the services of the application.</param>
         public static void AddSqlite(this IServiceCollection services) {
             var connectionStringBuilder = new SqliteConnectionStringBuilder { DataSource = "giraf.db" };
+            var path = Directory.GetCurrentDirectory();
+            Console.WriteLine(path);
             var connectionString = connectionStringBuilder.ToString();
             var connection = new SqliteConnection(connectionString);
 

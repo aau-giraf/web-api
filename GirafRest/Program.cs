@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using GirafRest.Setup;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
 
 namespace GirafRest
@@ -15,14 +14,19 @@ namespace GirafRest
     /// </summary>
     public enum DbOption { SQLite, MySQL }
 
+
     /// <summary>
     /// The main class for the Giraf REST-api.
     /// </summary>
     public class Program
     {
+        public static IConfiguration Configuration { get; set; }
+
         public static void Main(string[] args)
         {
             Console.WriteLine("Welcome to Giraf REST Server.");
+
+            
 
             //Parse all the program arguments and stop execution if any invalid arguments were found.
             var pa = new ProgramArgumentParser();
@@ -30,10 +34,9 @@ namespace GirafRest
             if(!validArguments) return;
 
             //Build the host from the given arguments.
+
             try{
-                var host = ConfigureHost();
-                //Launch the rest-api.
-                host.Run();
+                BuildWebHost(args).Run();
             }
             catch(MySqlException e){
                 Console.WriteLine("Something went wrong in connecting to the MySql server: " +
@@ -43,7 +46,6 @@ namespace GirafRest
                 Console.WriteLine("Error: " + e.Message);
             }
         }
-
         /// <summary>
         /// Builds the host environment from a specified config class.
         /// <see cref="Startup"/> sets the general environment (authentication, logging i.e)
@@ -51,17 +53,20 @@ namespace GirafRest
         /// <see cref="StartupDeployment"/> sets up the environment for deployment.
         /// </summary>
         /// <returns>A <see cref="IWebHost"/> host fit for running the server.</returns>
-        private static IWebHost ConfigureHost() {
-            var host = new WebHostBuilder()
-                .UseKestrel()
-                .UseUrls($"http://+:{ProgramOptions.Port}")
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseIISIntegration()
-                .UseStartup<Startup>()
-                .UseApplicationInsights()
-                .Build();
 
-            return host;
-        }
+        public static IWebHost BuildWebHost(string[] args) =>
+        WebHost.CreateDefaultBuilder()
+               .UseKestrel()
+               .UseUrls($"http://+:{ProgramOptions.Port}")
+               .UseIISIntegration()
+               .UseStartup<Startup>()
+               .ConfigureAppConfiguration((hostContext, config) =>
+               {
+                   config.Sources.Clear();
+                   var env = hostContext.HostingEnvironment;                
+               })
+               .UseDefaultServiceProvider(options =>options.ValidateScopes = false)
+               .UseApplicationInsights()
+               .Build();
     }
 }
