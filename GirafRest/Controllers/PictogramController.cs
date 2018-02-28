@@ -185,7 +185,7 @@ namespace GirafRest.Controllers
             }
 
             var usr = await _giraf.LoadUserAsync(HttpContext.User);
-            if (usr == null) return new ErrorResponse<PictogramDTO>(ErrorCode.UserNotFound);
+            if (usr == null) return new ErrorResponse<PictogramDTO>(ErrorCode.NotAuthorized);
             //Fetch the pictogram from the database and check that it exists
             var pict = await _giraf._context.Pictograms
                 .Where(pic => pic.Id == id)
@@ -243,7 +243,7 @@ namespace GirafRest.Controllers
         public async Task<Response<PictogramDTO>> CreateImage(long id)
         {
             var usr = await _giraf.LoadUserAsync(HttpContext.User);
-            if (usr == null) return new ErrorResponse<PictogramDTO>(ErrorCode.UserNotFound);
+            if (usr == null) return new ErrorResponse<PictogramDTO>(ErrorCode.NotAuthorized);
             //Fetch the image and check that it exists
             var pict = await _giraf._context
                 .Pictograms

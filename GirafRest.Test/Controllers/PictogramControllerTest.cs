@@ -211,7 +211,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void ReadPictograms_NoLoginGetAllWithInvalidQuery_NotFound()
+        public void ReadPictograms_NoLoginGetAllWithInvalidQuery_Ok0Pictograms()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLogout();
@@ -220,7 +220,8 @@ namespace GirafRest.Test
             var res = pc.ReadPictograms().Result;
 
             Assert.True(res.Success);
-            Assert.Equal(ErrorCode.PictogramsNotFound, res.ErrorCode);
+            Assert.Equal(0, res.Data.Count);
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
         }
 
         [Fact]
@@ -238,7 +239,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void ReadPictograms_LoginGetAllWithInvalidQuery_NotFound()
+        public void ReadPictograms_LoginGetAllWithInvalidQuery_OK0Pictograms()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
@@ -246,8 +247,9 @@ namespace GirafRest.Test
 
             var res = pc.ReadPictograms().Result;
 
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
+            Assert.True(res.Success);
+            Assert.Equal(0, res.Data.Count);
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
         }
 
         [Fact(Skip = "EntityFramework bug")]
@@ -293,7 +295,7 @@ namespace GirafRest.Test
             };
 
             var res = pc.CreatePictogram(dto).Result;
-            Assert.IsType<OkObjectResult>(res);
+            Assert.True(res.Success);
         }
 
         [Fact]
@@ -310,7 +312,7 @@ namespace GirafRest.Test
             };
 
             var res = pc.CreatePictogram(dto).Result;
-            Assert.IsType<OkObjectResult>(res);
+            Assert.True(res.Success);
         }
 
         [Fact]
@@ -489,7 +491,7 @@ namespace GirafRest.Test
             var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
 
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+            Assert.Equal(ErrorCode.PictogramNotFound, res.ErrorCode);
         }
 
         [Fact]
@@ -699,7 +701,7 @@ namespace GirafRest.Test
             var res = pc.CreateImage(NONEXISTING_PICTOGRAM).Result;
 
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
+            Assert.Equal(ErrorCode.PictogramNotFound, res.ErrorCode);
         }
 
         [Fact]
@@ -894,7 +896,7 @@ namespace GirafRest.Test
             var res = pc.UpdatePictogramImage(NONEXISTING_PICTOGRAM).Result;
 
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.PictogramImageNotFound, res.ErrorCode);
+            Assert.Equal(ErrorCode.PictogramNotFound, res.ErrorCode);
         }
 
         [Fact]
@@ -1030,7 +1032,7 @@ namespace GirafRest.Test
             var res = pc.ReadPictogramImage(PUBLIC_PICTOGRAM).Result;
 
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.PictogramImageNotFound, res.ErrorCode);
+            Assert.Equal(ErrorCode.PictogramHasNoImage, res.ErrorCode);
         }
 
         [Fact]
