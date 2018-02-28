@@ -69,6 +69,7 @@ namespace GirafRest.Models
             this.GuardianOf = new List<GirafUser>();
             this.WeekSchedule = new List<Week>();
             Settings = new LauncherOptions();
+
             DepartmentKey = department?.Key ?? -1;
         }
         

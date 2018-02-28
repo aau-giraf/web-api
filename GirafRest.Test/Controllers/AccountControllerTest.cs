@@ -316,6 +316,7 @@ namespace GirafRest.Test
 
         [Fact]
         // Account may exist without department
+        // If user is without department, then Department=null, otherwise department = user.DepartmentKey
         public void Register_NoDepartment_OkDepKeyIsMinus1()
         {
             var accountController = InitializeTest();
