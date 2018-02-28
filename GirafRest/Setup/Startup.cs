@@ -202,7 +202,11 @@ namespace GirafRest.Setup
             context.Database.Migrate();
 
             // Create roles if they do not exist
-            roleManager.EnsureRoleSetup();
+            try
+            {
+                roleManager.EnsureRoleSetup();
+            }
+            catch { }
 
             //Fill some sample data into the database
             if (ProgramOptions.GenerateSampleData)

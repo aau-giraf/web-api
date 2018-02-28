@@ -13,7 +13,7 @@ using System;
 namespace GirafRest.Migrations
 {
     [DbContext(typeof(GirafSqliteDbContext))]
-    [Migration("20180228122537_Initial")]
+    [Migration("20180228140854_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
