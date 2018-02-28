@@ -38,18 +38,21 @@ namespace GirafRest.Setup
         /// <param name="env"></param>
         public Startup(IHostingEnvironment env)
         {
+            HostingEnvironment = env;
+            //var builder = new ConfigurationBuilder().SetBasePath(env.ContentRootPath);
             var builder = new ConfigurationBuilder().SetBasePath(env.ContentRootPath);
-            Environment = env;
-
-            if (Environment.IsDevelopment())
+            // delete all default configuration providers
+            if (env.IsDevelopment())
                 builder.AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true);
-            else if(Environment.IsProduction())
+            else if (env.IsProduction())
                 builder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
             else
                 throw new NotSupportedException("No database option is supported by this Environment mode");
             builder.AddEnvironmentVariables();
             Configuration = builder.Build();
         }
+
+        public IHostingEnvironment HostingEnvironment { get; }
         /// <summary>
         /// The configuration, contains information regarding connecting to the database
         /// </summary>
@@ -67,12 +70,12 @@ namespace GirafRest.Setup
         public void ConfigureServices(IServiceCollection services)
         {
             //Add the database context to the server using extension-methods
-            if (Environment.IsDevelopment())
+            if (HostingEnvironment.IsDevelopment())
             {
                 services.AddSqlite();
                 configureIdentity<GirafSqliteDbContext>(services);
             }
-            else if (Environment.IsProduction())
+            else if (HostingEnvironment.IsProduction())
             {
                 services.AddMySql(Configuration);
                 configureIdentity<GirafMySqlDbContext>(services);
@@ -186,14 +189,15 @@ namespace GirafRest.Setup
             GirafDbContext context;
             if (env.IsDevelopment())
                 context = app.ApplicationServices.GetService<GirafSqliteDbContext>();
+            
             else
                 context = app.ApplicationServices.GetService<GirafMySqlDbContext>();
-
+            
             // Create database + schemas if they do not exist
-            context.Database.EnsureCreated();
+            //context.Database.EnsureCreated();
 
             // Create roles if they do not exist
-            roleManager.EnsureRoleSetup();
+            //roleManager.EnsureRoleSetup();
 
             //Fill some sample data into the database
             if (ProgramOptions.GenerateSampleData)

@@ -21,7 +21,7 @@ namespace GirafRest.Models
         /// <summary>
         /// List of users the user is guardian of. Is simply null if the user isn't a guardian
         /// </summary>
-        public List<GirafUser> GuardianOf { get; set; }
+        public virtual List<GirafUser> GuardianOf { get; set; }
 
         /// <summary>
         /// The display name for the user.
@@ -30,7 +30,7 @@ namespace GirafRest.Models
         /// <summary>
         /// The profile icon of the user.
         /// </summary>
-        public byte[] UserIcon { get; set; }
+        public virtual byte[] UserIcon { get; set; }
 
         /// <summary>
         /// The key of the user's department.
@@ -55,7 +55,7 @@ namespace GirafRest.Models
         /// <summary>
         /// A field for storing all relevant options that the user has specified in the GirafLauncher.
         /// </summary>
-        public LauncherOptions Settings { get; set; }
+        public virtual LauncherOptions Settings { get; set; }
         
         /// <summary>
         /// Creates a new user with the specified user name, associated with the given department.
