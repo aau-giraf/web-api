@@ -1,0 +1,279 @@
+/srv/GirafRest.Test/GirafRest.Test.csproj : warning NU1603: Castle.Core 4.0.0 depends on System.ComponentModel.TypeConverter (>= 4.0.1) but System.ComponentModel.TypeConverter 4.0.1 was not found. An approximate best match of System.ComponentModel.TypeConverter 4.1.0 was resolved. [/srv/GirafRest.Test/GirafRest.Test.sln]
+Build started, please wait...
+/srv/GirafRest.Test/GirafRest.Test.csproj : warning NU1603: Castle.Core 4.0.0 depends on System.ComponentModel.TypeConverter (>= 4.0.1) but System.ComponentModel.TypeConverter 4.0.1 was not found. An approximate best match of System.ComponentModel.TypeConverter 4.1.0 was resolved.
+Build started, please wait...
+Build completed.
+
+Test run for /srv/GirafRest/bin/Debug/netcoreapp2.0/GirafRest.dll(.NETCoreApp,Version=v2.0)
+Microsoft (R) Test Execution Command Line Tool Version 15.5.0
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+
+Build completed.
+
+Test run for /srv/GirafRest.Test/bin/Debug/netcoreapp2.0/GirafRest.Test.dll(.NETCoreApp,Version=v2.0)
+Microsoft (R) Test Execution Command Line Tool Version 15.5.0
+Copyright (c) Microsoft Corporation.  All rights reserved.
+
+Starting test execution, please wait...
+[xUnit.net 00:00:03.7747166]   Discovering: GirafRest.Test
+[xUnit.net 00:00:05.0784844]   Discovered:  GirafRest.Test
+[xUnit.net 00:00:06.0791176]   Starting:    GirafRest.Test
+Department = 
+Department = GirafRest.Models.Department
+Department = GirafRest.Models.Department
+[xUnit.net 00:00:11.5837440]       Assert.Equal() Failure
+[xUnit.net 00:00:11.5838438]       Expected: NotAuthorized
+[xUnit.net 00:00:11.5838622]       Actual:   ResourceNotOwnedByDepartment
+[xUnit.net 00:00:11.5856329]       Stack Trace:
+[xUnit.net 00:00:11.5883910]         /srv/GirafRest.Test/Controllers/DepartmentControllerTest.cs(302,0): at GirafRest.Test.Controllers.DepartmentControllerTest.RemoveResource_RemoveResourceWrongDepartment_BadRequest()
+Failed   GirafRest.Test.Controllers.DepartmentControllerTest.RemoveResource_RemoveResourceWrongDepartment_BadRequest
+Error Message:
+ Assert.Equal() Failure
+Expected: NotAuthorized
+Actual:   ResourceNotOwnedByDepartment
+Stack Trace:
+   at GirafRest.Test.Controllers.DepartmentControllerTest.RemoveResource_RemoveResourceWrongDepartment_BadRequest() in /srv/GirafRest.Test/Controllers/DepartmentControllerTest.cs:line 302
+[xUnit.net 00:00:11.6077254]       Assert.True() Failure
+[xUnit.net 00:00:11.6077433]       Expected: True
+[xUnit.net 00:00:11.6077558]       Actual:   False
+[xUnit.net 00:00:11.6077750]       Stack Trace:
+[xUnit.net 00:00:11.6078019]         /srv/GirafRest.Test/Controllers/PictogramControllerTest.cs(1069,0): at GirafRest.Test.PictogramControllerTest.ReadPictogramImage_GetPublicJpeg_ok()
+[xUnit.net 00:00:11.6131939]       Assert.Equal() Failure
+[xUnit.net 00:00:11.6132351]       Expected: UserNotFound
+[xUnit.net 00:00:11.6132485]       Actual:   NotAuthorized
+[xUnit.net 00:00:11.6132663]       Stack Trace:
+[xUnit.net 00:00:11.6132931]         /srv/GirafRest.Test/Controllers/DepartmentControllerTest.cs(201,0): at GirafRest.Test.Controllers.DepartmentControllerTest.RemoveUser_RemoveUserWrongDepartment_BadRequest()
+Failed   GirafRest.Test.PictogramControllerTest.ReadPictogramImage_GetPublicJpeg_ok
+Error Message:
+ Assert.True() Failure
+Expected: True
+Actual:   False
+Stack Trace:
+   at GirafRest.Test.PictogramControllerTest.ReadPictogramImage_GetPublicJpeg_ok() in /srv/GirafRest.Test/Controllers/PictogramControllerTest.cs:line 1069
+Failed   GirafRest.Test.Controllers.DepartmentControllerTest.RemoveUser_RemoveUserWrongDepartment_BadRequest
+Error Message:
+ Assert.Equal() Failure
+Expected: UserNotFound
+Actual:   NotAuthorized
+Stack Trace:
+   at GirafRest.Test.Controllers.DepartmentControllerTest.RemoveUser_RemoveUserWrongDepartment_BadRequest() in /srv/GirafRest.Test/Controllers/DepartmentControllerTest.cs:line 201
+[xUnit.net 00:00:11.6632620]       Assert.Equal() Failure
+[xUnit.net 00:00:11.6632783]       Expected: NotAuthorized
+[xUnit.net 00:00:11.6632897]       Actual:   PictogramHasNoImage
+[xUnit.net 00:00:11.6633026]       Stack Trace:
+[xUnit.net 00:00:11.6633244]         /srv/GirafRest.Test/Controllers/PictogramControllerTest.cs(765,0): at GirafRest.Test.PictogramControllerTest.UpdatePictogramImage_NoLoginProtected_Unauthorized()
+Department = 
+[xUnit.net 00:00:11.7188056]       System.AggregateException : One or more errors occurred. (Value cannot be null.
+[xUnit.net 00:00:11.7188332]       Parameter name: source)
+[xUnit.net 00:00:11.7188440]       ---- System.ArgumentNullException : Value cannot be null.
+[xUnit.net 00:00:11.7188555]       Parameter name: source
+[xUnit.net 00:00:11.7188714]       Stack Trace:
+[xUnit.net 00:00:11.7188946]            at System.Threading.Tasks.Task`1.GetResultCore(Boolean waitCompletionNotification)
+[xUnit.net 00:00:11.7189194]         /srv/GirafRest.Test/Controllers/DepartmentControllerTest.cs(133,0): at GirafRest.Test.Controllers.DepartmentControllerTest.AddUser_ExistingDepartment_OK()
+[xUnit.net 00:00:11.7189378]         ----- Inner Stack Trace -----
+[xUnit.net 00:00:11.7189534]            at System.Linq.Queryable.Where[TSource](IQueryable`1 source, Expression`1 predicate)
+[xUnit.net 00:00:11.7189708]         /srv/GirafRest/Controllers/DepartmentController.cs(180,0): at GirafRest.Controllers.DepartmentController.<AddUser>d__5.MoveNext()
+Failed   GirafRest.Test.PictogramControllerTest.UpdatePictogramImage_NoLoginProtected_Unauthorized
+Error Message:
+ Assert.Equal() Failure
+Expected: NotAuthorized
+Actual:   PictogramHasNoImage
+Stack Trace:
+   at GirafRest.Test.PictogramControllerTest.UpdatePictogramImage_NoLoginProtected_Unauthorized() in /srv/GirafRest.Test/Controllers/PictogramControllerTest.cs:line 765
+Failed   GirafRest.Test.Controllers.DepartmentControllerTest.AddUser_ExistingDepartment_OK
+Error Message:
+ System.AggregateException : One or more errors occurred. (Value cannot be null.
+Parameter name: source)
+---- System.ArgumentNullException : Value cannot be null.
+Parameter name: source
+Stack Trace:
+   at System.Threading.Tasks.Task`1.GetResultCore(Boolean waitCompletionNotification)
+   at GirafRest.Test.Controllers.DepartmentControllerTest.AddUser_ExistingDepartment_OK() in /srv/GirafRest.Test/Controllers/DepartmentControllerTest.cs:line 133
+----- Inner Stack Trace -----
+   at System.Linq.Queryable.Where[TSource](IQueryable`1 source, Expression`1 predicate)
+   at GirafRest.Controllers.DepartmentController.<AddUser>d__5.MoveNext() in /srv/GirafRest/Controllers/DepartmentController.cs:line 180
+Department = 
+[xUnit.net 00:00:11.7841404]       System.AggregateException : One or more errors occurred. (Object reference not set to an instance of an object.)
+[xUnit.net 00:00:11.7841772]       ---- System.NullReferenceException : Object reference not set to an instance of an object.
+[xUnit.net 00:00:11.7842146]       Stack Trace:
+[xUnit.net 00:00:11.7842448]            at System.Threading.Tasks.Task`1.GetResultCore(Boolean waitCompletionNotification)
+[xUnit.net 00:00:11.7842705]         /srv/GirafRest.Test/Controllers/WeekControllerTest.cs(183,0): at GirafRest.Test.WeekControllerTest.CreateWeek_NewWeekInvalidDTO_BadRequest()
+[xUnit.net 00:00:11.7842830]         ----- Inner Stack Trace -----
+[xUnit.net 00:00:11.7842967]            at lambda_method(Closure , Pictogram )
+[xUnit.net 00:00:11.7843101]            at System.Linq.Enumerable.WhereListIterator`1.MoveNext()
+[xUnit.net 00:00:11.7843261]            at System.Linq.Enumerable.TryGetFirst[TSource](IEnumerable`1 source, Boolean& found)
+[xUnit.net 00:00:11.7843381]            at lambda_method(Closure )
+[xUnit.net 00:00:11.7843517]            at System.Linq.EnumerableExecutor`1.Execute()
+[xUnit.net 00:00:11.7843679]            at System.Linq.EnumerableQuery`1.System.Linq.IQueryProvider.Execute[TElement](Expression expression)
+[xUnit.net 00:00:11.7843846]         /srv/GirafRest.Test/AsyncDbQueryProvider.cs(44,0): at GirafRest.Test.TestDbAsyncQueryProvider`1.Execute[TResult](Expression expression)
+[xUnit.net 00:00:11.7844025]         /srv/GirafRest.Test/AsyncDbQueryProvider.cs(55,0): at GirafRest.Test.TestDbAsyncQueryProvider`1.ExecuteAsync[TResult](Expression expression, CancellationToken cancellationToken)
+[xUnit.net 00:00:11.7844298]            at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ExecuteAsync[TSource,TResult](MethodInfo operatorMethodInfo, IQueryable`1 source, CancellationToken cancellationToken)
+[xUnit.net 00:00:11.7844573]            at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.FirstOrDefaultAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+[xUnit.net 00:00:11.7845282]         /srv/GirafRest/Controllers/WeekController.cs(153,0): at GirafRest.Controllers.WeekController.<CreateWeek>d__5.MoveNext()
+Failed   GirafRest.Test.WeekControllerTest.CreateWeek_NewWeekInvalidDTO_BadRequest
+Error Message:
+ System.AggregateException : One or more errors occurred. (Object reference not set to an instance of an object.)
+---- System.NullReferenceException : Object reference not set to an instance of an object.
+Stack Trace:
+   at System.Threading.Tasks.Task`1.GetResultCore(Boolean waitCompletionNotification)
+   at GirafRest.Test.WeekControllerTest.CreateWeek_NewWeekInvalidDTO_BadRequest() in /srv/GirafRest.Test/Controllers/WeekControllerTest.cs:line 183
+----- Inner Stack Trace -----
+   at lambda_method(Closure , Pictogram )
+   at System.Linq.Enumerable.WhereListIterator`1.MoveNext()
+   at System.Linq.Enumerable.TryGetFirst[TSource](IEnumerable`1 source, Boolean& found)
+   at lambda_method(Closure )
+   at System.Linq.EnumerableExecutor`1.Execute()
+   at System.Linq.EnumerableQuery`1.System.Linq.IQueryProvider.Execute[TElement](Expression expression)
+   at GirafRest.Test.TestDbAsyncQueryProvider`1.Execute[TResult](Expression expression) in /srv/GirafRest.Test/AsyncDbQueryProvider.cs:line 44
+   at GirafRest.Test.TestDbAsyncQueryProvider`1.ExecuteAsync[TResult](Expression expression, CancellationToken cancellationToken) in /srv/GirafRest.Test/AsyncDbQueryProvider.cs:line 55
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.ExecuteAsync[TSource,TResult](MethodInfo operatorMethodInfo, IQueryable`1 source, CancellationToken cancellationToken)
+   at Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions.FirstOrDefaultAsync[TSource](IQueryable`1 source, CancellationToken cancellationToken)
+   at GirafRest.Controllers.WeekController.<CreateWeek>d__5.MoveNext() in /srv/GirafRest/Controllers/WeekController.cs:line 153
+Department = GirafRest.Models.Department
+[xUnit.net 00:00:11.9261936]     GirafRest.Test.PictogramControllerTest.ReadPictograms_LoginGetAllWithValidQueryOnAnotherUsersPrivate_NotFound [SKIP]
+[xUnit.net 00:00:11.9264088]       EntityFramework bug
+Skipped  GirafRest.Test.PictogramControllerTest.ReadPictograms_LoginGetAllWithValidQueryOnAnotherUsersPrivate_NotFound
+[xUnit.net 00:00:11.9488184]       System.AggregateException : One or more errors occurred. (Object reference not set to an instance of an object.)
+[xUnit.net 00:00:11.9488432]       ---- System.NullReferenceException : Object reference not set to an instance of an object.
+[xUnit.net 00:00:11.9488630]       Stack Trace:
+[xUnit.net 00:00:11.9489010]            at System.Threading.Tasks.Task`1.GetResultCore(Boolean waitCompletionNotification)
+[xUnit.net 00:00:11.9489255]         /srv/GirafRest.Test/Controllers/UserControllerTest.cs(234,0): at GirafRest.Test.UserControllerTest.UpdateUser_ValidUserValidDTO_Success()
+[xUnit.net 00:00:11.9489428]         ----- Inner Stack Trace -----
+[xUnit.net 00:00:11.9489601]         /srv/GirafRest/Controllers/UserController.cs(252,0): at GirafRest.Controllers.UserController.<UpdateUser>d__11.MoveNext()
+[xUnit.net 00:00:11.9489790]         --- End of stack trace from previous location where exception was thrown ---
+[xUnit.net 00:00:11.9489931]            at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+[xUnit.net 00:00:11.9490095]            at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+[xUnit.net 00:00:11.9490239]            at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+[xUnit.net 00:00:11.9490407]         /srv/GirafRest/Controllers/UserController.cs(157,0): at GirafRest.Controllers.UserController.<UpdateUser>d__9.MoveNext()
+Failed   GirafRest.Test.UserControllerTest.UpdateUser_ValidUserValidDTO_Success
+Error Message:
+ System.AggregateException : One or more errors occurred. (Object reference not set to an instance of an object.)
+---- System.NullReferenceException : Object reference not set to an instance of an object.
+Stack Trace:
+   at System.Threading.Tasks.Task`1.GetResultCore(Boolean waitCompletionNotification)
+   at GirafRest.Test.UserControllerTest.UpdateUser_ValidUserValidDTO_Success() in /srv/GirafRest.Test/Controllers/UserControllerTest.cs:line 234
+----- Inner Stack Trace -----
+   at GirafRest.Controllers.UserController.<UpdateUser>d__11.MoveNext() in /srv/GirafRest/Controllers/UserController.cs:line 252
+--- End of stack trace from previous location where exception was thrown ---
+   at System.Runtime.ExceptionServices.ExceptionDispatchInfo.Throw()
+   at System.Runtime.CompilerServices.TaskAwaiter.HandleNonSuccessAndDebuggerNotification(Task task)
+   at System.Runtime.CompilerServices.TaskAwaiter`1.GetResult()
+   at GirafRest.Controllers.UserController.<UpdateUser>d__9.MoveNext() in /srv/GirafRest/Controllers/UserController.cs:line 157
+Department = GirafRest.Models.Department
+Department = 
+Department = 
+Department = GirafRest.Models.Department
+Department = 
+Department = 
+Department = GirafRest.Models.Department
+[xUnit.net 00:00:12.6687067]       Assert.Equal() Failure
+[xUnit.net 00:00:12.6687251]       Expected: NotAuthorized
+[xUnit.net 00:00:12.6687368]       Actual:   UserNotFound
+[xUnit.net 00:00:12.6687522]       Stack Trace:
+[xUnit.net 00:00:12.6687815]         /srv/GirafRest.Test/Controllers/PictogramControllerTest.cs(93,0): at GirafRest.Test.PictogramControllerTest.ReadPictogram_NoLoginGetExistingPrivate_Unauthorized()
+Failed   GirafRest.Test.PictogramControllerTest.ReadPictogram_NoLoginGetExistingPrivate_Unauthorized
+Error Message:
+ Assert.Equal() Failure
+Expected: NotAuthorized
+Actual:   UserNotFound
+Stack Trace:
+   at GirafRest.Test.PictogramControllerTest.ReadPictogram_NoLoginGetExistingPrivate_Unauthorized() in /srv/GirafRest.Test/Controllers/PictogramControllerTest.cs:line 93
+Department = GirafRest.Models.Department
+Department = 
+[xUnit.net 00:00:12.7352430]       Assert.Equal() Failure
+[xUnit.net 00:00:12.7352667]       Expected: NotAuthorized
+[xUnit.net 00:00:12.7352775]       Actual:   UserNotFound
+[xUnit.net 00:00:12.7352899]       Stack Trace:
+[xUnit.net 00:00:12.7353130]         /srv/GirafRest.Test/Controllers/PictogramControllerTest.cs(105,0): at GirafRest.Test.PictogramControllerTest.ReadPictogram_NoLoginGetExistingProtected_Unauthorized()
+Department = GirafRest.Models.Department
+Department = 
+Department = GirafRest.Models.Department
+Failed   GirafRest.Test.PictogramControllerTest.ReadPictogram_NoLoginGetExistingProtected_Unauthorized
+Error Message:
+ Assert.Equal() Failure
+Expected: NotAuthorized
+Actual:   UserNotFound
+Stack Trace:
+   at GirafRest.Test.PictogramControllerTest.ReadPictogram_NoLoginGetExistingProtected_Unauthorized() in /srv/GirafRest.Test/Controllers/PictogramControllerTest.cs:line 105
+Department = 
+[xUnit.net 00:00:12.8335803]       Assert.Equal() Failure
+[xUnit.net 00:00:12.8335994]       Expected: NotAuthorized
+[xUnit.net 00:00:12.8336110]       Actual:   UserNotFound
+[xUnit.net 00:00:12.8336247]       Stack Trace:
+[xUnit.net 00:00:12.8336562]         /srv/GirafRest.Test/Controllers/PictogramControllerTest.cs(781,0): at GirafRest.Test.PictogramControllerTest.UpdatePictogramImage_NoLoginPrivate_Unauthorized()
+Failed   GirafRest.Test.PictogramControllerTest.UpdatePictogramImage_NoLoginPrivate_Unauthorized
+Error Message:
+ Assert.Equal() Failure
+Expected: NotAuthorized
+Actual:   UserNotFound
+Stack Trace:
+   at GirafRest.Test.PictogramControllerTest.UpdatePictogramImage_NoLoginPrivate_Unauthorized() in /srv/GirafRest.Test/Controllers/PictogramControllerTest.cs:line 781
+[xUnit.net 00:00:12.9424236]       Assert.Equal() Failure
+[xUnit.net 00:00:12.9424483]       Expected: NotFound
+[xUnit.net 00:00:12.9433949]       Actual:   PictogramNotFound
+[xUnit.net 00:00:12.9434415]       Stack Trace:
+[xUnit.net 00:00:12.9434771]         /srv/GirafRest.Test/Controllers/PictogramControllerTest.cs(602,0): at GirafRest.Test.PictogramControllerTest.DeletePictogram_LoginNonexisting_NotFound()
+Failed   GirafRest.Test.PictogramControllerTest.DeletePictogram_LoginNonexisting_NotFound
+Error Message:
+ Assert.Equal() Failure
+Expected: NotFound
+Actual:   PictogramNotFound
+Stack Trace:
+   at GirafRest.Test.PictogramControllerTest.DeletePictogram_LoginNonexisting_NotFound() in /srv/GirafRest.Test/Controllers/PictogramControllerTest.cs:line 602
+Department = 
+Department = 
+Department = 
+Department = GirafRest.Models.Department
+Department = 
+[xUnit.net 00:00:13.3442376]     GirafRest.Test.PictogramControllerTest.ReadPictograms_NoLoginGetAllWithValidQueryOnPrivate_NotFound [SKIP]
+[xUnit.net 00:00:13.3443613]       EntityFramework bug
+Department = GirafRest.Models.Department
+Skipped  GirafRest.Test.PictogramControllerTest.ReadPictograms_NoLoginGetAllWithValidQueryOnPrivate_NotFound
+Department = 
+Department = GirafRest.Models.Department
+Department = GirafRest.Models.Department
+[xUnit.net 00:00:13.8982444]       Assert.Equal() Failure
+[xUnit.net 00:00:13.8982687]       Expected: NotAuthorized
+[xUnit.net 00:00:13.8982802]       Actual:   UserNotFound
+[xUnit.net 00:00:13.8982941]       Stack Trace:
+[xUnit.net 00:00:13.8983179]         /srv/GirafRest.Test/Controllers/PictogramControllerTest.cs(533,0): at GirafRest.Test.PictogramControllerTest.DeletePictogram_NoLoginPrivate_Unauthorized()
+Failed   GirafRest.Test.PictogramControllerTest.DeletePictogram_NoLoginPrivate_Unauthorized
+Error Message:
+ Assert.Equal() Failure
+Expected: NotAuthorized
+Actual:   UserNotFound
+Stack Trace:
+   at GirafRest.Test.PictogramControllerTest.DeletePictogram_NoLoginPrivate_Unauthorized() in /srv/GirafRest.Test/Controllers/PictogramControllerTest.cs:line 533
+Department = 
+Department = GirafRest.Models.Department
+Department = 
+[xUnit.net 00:00:15.5955917]       Assert.Equal() Failure
+[xUnit.net 00:00:15.5956241]       Expected: NotAuthorized
+[xUnit.net 00:00:15.5956384]       Actual:   UserNotFound
+[xUnit.net 00:00:15.5956538]       Stack Trace:
+[xUnit.net 00:00:15.5956788]         /srv/GirafRest.Test/Controllers/PictogramControllerTest.cs(521,0): at GirafRest.Test.PictogramControllerTest.DeletePictogram_NoLoginProtected_Unauthorized()
+[xUnit.net 00:00:15.6879323]       Assert.True() Failure
+[xUnit.net 00:00:15.6879508]       Expected: True
+[xUnit.net 00:00:15.6879766]       Actual:   False
+[xUnit.net 00:00:15.6879906]       Stack Trace:
+[xUnit.net 00:00:15.6880141]         /srv/GirafRest.Test/Controllers/PictogramControllerTest.cs(743,0): at GirafRest.Test.PictogramControllerTest.CreateImage_PublicJpeg_Ok()
+[xUnit.net 00:00:15.9401264]   Finished:    GirafRest.Test
+Failed   GirafRest.Test.PictogramControllerTest.DeletePictogram_NoLoginProtected_Unauthorized
+Error Message:
+ Assert.Equal() Failure
+Expected: NotAuthorized
+Actual:   UserNotFound
+Stack Trace:
+   at GirafRest.Test.PictogramControllerTest.DeletePictogram_NoLoginProtected_Unauthorized() in /srv/GirafRest.Test/Controllers/PictogramControllerTest.cs:line 521
+Failed   GirafRest.Test.PictogramControllerTest.CreateImage_PublicJpeg_Ok
+Error Message:
+ Assert.True() Failure
+Expected: True
+Actual:   False
+Stack Trace:
+   at GirafRest.Test.PictogramControllerTest.CreateImage_PublicJpeg_Ok() in /srv/GirafRest.Test/Controllers/PictogramControllerTest.cs:line 743
+
+Total tests: 230. Passed: 214. Failed: 14. Skipped: 2.
+Test execution time: 17.3891 Seconds
