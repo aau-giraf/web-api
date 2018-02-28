@@ -178,8 +178,8 @@ namespace GirafRest.Controllers
 
             //Add the user and save these changes
             var user = await _giraf._context.Users.Where(u => u.Id == usr.Id).FirstOrDefaultAsync();
-            
-            if(user == null)
+
+            if (user == null)
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.UserNotFound);
             
             user.DepartmentKey = dep.Key;

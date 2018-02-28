@@ -65,7 +65,7 @@ namespace GirafRest.Test.Controllers
             AddEmptyDepartmentList();
 
             var res = dc.Get().Result;
-            
+
             Assert.IsType<ErrorResponse<List<DepartmentDTO>>>(res);
             Assert.Equal(res.ErrorCode, ErrorCode.NotFound);
         }
@@ -97,7 +97,7 @@ namespace GirafRest.Test.Controllers
         {
             var dc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var depDTO = new DepartmentDTO (new Department(){
+            var depDTO = new DepartmentDTO(new Department() {
                 Name = "dep1"
             });
 
@@ -121,16 +121,19 @@ namespace GirafRest.Test.Controllers
         #endregion
 
         #region AddUser
-        [Fact(Skip = "dc.AddUser uses await _giraf._context.SaveChangesAsync(); which does not currently work")]
+        [Fact]
         public void AddUser_ExistingDepartment_OK()
         {
             var dc = initializeTest();
             var user = new GirafUserDTO()
             {
-                Username = "TestUser"
+                Username = "Admin",
+                Id = "admin"
             };
 
-            var res = dc.AddUser(DEPARTMENT_ONE, user).Result;
+            var res = dc.AddUser(DEPARTMENT_TWO, user).Result;
+
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.IsType<Response<DepartmentDTO>>(res);
         }
 
