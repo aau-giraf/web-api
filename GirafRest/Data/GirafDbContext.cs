@@ -24,6 +24,7 @@ namespace GirafRest.Data
         public virtual DbSet<UserResource> UserResources { get; set; }
         public virtual DbSet<DepartmentResource> DepartmentResources { get; set; }
         public virtual DbSet<WeekdayResource> WeekdayResources {get; set;}
+        public new virtual DbSet<GirafUser> Users { get { return base.Users; } set { base.Users = value; } }
 
         protected GirafDbContext () {}
         /// <summary>
