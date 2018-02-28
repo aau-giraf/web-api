@@ -30,6 +30,9 @@ namespace GirafRest.Test
         private const int NONEXISTING_PICTOGRAM = 999;
         private readonly string PNG_FILEPATH;
         private readonly string JPEG_FILEPATH;
+        private const int GUARDIAN_DEP_ONE = 7;
+        private const int CITIZEN_DEP_ONE = 8;
+
 
         private TestContext _testContext;
         
@@ -749,20 +752,21 @@ namespace GirafRest.Test
         public void UpdatePictogramImage_NoLoginProtected_Unauthorized()
         {
             var pc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
 
-            var img = pc.CreateImage(PUBLIC_PICTOGRAM).Result;
+            var img = pc.CreateImage(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
             Assert.IsType<Response<PictogramDTO>>(img);
             Assert.True(img.Success);
             Assert.Equal(ErrorCode.NoError, img.ErrorCode);
 
+            _testContext.MockUserManager.MockLogout();
             var res = pc.UpdatePictogramImage(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
             Assert.IsType<ErrorResponse<PictogramDTO>>(res);
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+            Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
 
         [Fact]
