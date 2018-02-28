@@ -154,6 +154,7 @@ namespace GirafRest.Controllers
             
             //Fetch the user
             var user = await _giraf.LoadUserAsync(HttpContext.User);
+
             return await UpdateUser(user.Id, userDTO);
         }
 
