@@ -148,6 +148,7 @@ namespace GirafRest.Controllers
         public async Task<Response<WeekDTO>> CreateWeek([FromBody]WeekDTO newWeek)
         {
             if (newWeek == null) return new ErrorResponse<WeekDTO>(ErrorCode.InvalidProperties, "newWeek");
+            if (newWeek.Days == null || newWeek.Id == null || newWeek.Days.Count == 7) { return new ErrorResponse<WeekDTO>(ErrorCode.MissingProperties, "newWeek"); }
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             if (user == null) return new ErrorResponse<WeekDTO>(ErrorCode.UserNotFound);
             var thumbnail = await _giraf._context.Pictograms.Where(p => p.Id == newWeek.Thumbnail.Id).FirstOrDefaultAsync();
