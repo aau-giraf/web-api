@@ -108,6 +108,9 @@ namespace GirafRest.Controllers
                     return new ErrorResponse<WeekDTO>(ErrorCode.ThumbnailDoesNotExist);
                 week.Thumbnail = thumbnail;
             }
+            // If newWeek.Days should support number of days other than 7, change this check to if(newWeek.Days.Count < 1)
+            if (newWeek.Days == null || newWeek.Days.Count != 7) return new ErrorResponse<WeekDTO>(ErrorCode.MissingProperties, "days");
+
             foreach (var day in newWeek.Days)
             {
                 Weekday wkDay = new Weekday(day);
