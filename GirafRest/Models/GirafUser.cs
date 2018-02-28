@@ -69,7 +69,14 @@ namespace GirafRest.Models
             this.GuardianOf = new List<GirafUser>();
             this.WeekSchedule = new List<Week>();
             Settings = new LauncherOptions();
-            DepartmentKey = department.Key;
+            if(department != null)
+            {
+                DepartmentKey = department.Key;
+            }
+            else
+            {
+                DepartmentKey = -1;
+            }
         }
         
         /// <summary>

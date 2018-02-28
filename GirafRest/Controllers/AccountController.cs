@@ -182,7 +182,7 @@ namespace GirafRest.Controllers
             if (!model.Password.Equals(model.ConfirmPassword))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidProperties, "confirmPassword");
 
-            var department = await _giraf._context.Departments.Where(dep => dep.Key == model.DepartmentId).FirstOrDefaultAsync();
+            Department department = await _giraf._context.Departments.Where(dep => dep.Key == model.DepartmentId).FirstOrDefaultAsync();
 
             // Check that the department with the specified id exists
             if (department == null && model.DepartmentId != null)
