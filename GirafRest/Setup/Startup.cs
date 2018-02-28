@@ -21,6 +21,7 @@ using Newtonsoft.Json;
 using GirafRest.Models.Responses;
 using System.IO;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 
 namespace GirafRest.Setup
 {
@@ -192,16 +193,18 @@ namespace GirafRest.Setup
             
             else
                 context = app.ApplicationServices.GetService<GirafMySqlDbContext>();
-            
+
             // Create database + schemas if they do not exist
-            //context.Database.EnsureCreated();
+            context.Database.Migrate();
 
             // Create roles if they do not exist
-            //roleManager.EnsureRoleSetup();
+            roleManager.EnsureRoleSetup();
 
             //Fill some sample data into the database
             if (ProgramOptions.GenerateSampleData)
+            {
                 DBInitializer.Initialize(context, userManager);
+            }
         }
     }
 }
