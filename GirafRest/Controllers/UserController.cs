@@ -613,7 +613,7 @@ namespace GirafRest.Controllers
         /// Attempts to update the users resources from the ids given in the collection.
         /// </summary>
         /// <param name="user">The user, whose resources should be updated.</param>
-        /// <param name="resouceIds">The ids of the users new resources.</param>
+        /// <param name="resourceIds">The ids of the users new resources.</param>
         /// <returns></returns>
         private void updateResource(GirafUser user, ICollection<long> resourceIds)
         {
