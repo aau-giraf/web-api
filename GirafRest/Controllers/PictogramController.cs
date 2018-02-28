@@ -70,7 +70,7 @@ namespace GirafRest.Controllers
             var userPictograms = await ReadAllPictograms();
             if (userPictograms == null)
             {
-                return new ErrorResponse<List<PictogramDTO>>(ErrorCode.PictogramsNotFound);
+                return new ErrorResponse<List<PictogramDTO>>(ErrorCode.PictogramNotFound);
             }
 
             //Filter out all that does not satisfy the query string, if such is present.
@@ -105,7 +105,7 @@ namespace GirafRest.Controllers
                 if (_pictogram.AccessLevel == AccessLevel.PUBLIC) return new Response<PictogramDTO>(new PictogramDTO(_pictogram, _pictogram.Image));
 
                 var usr = await _giraf.LoadUserAsync(HttpContext.User);
-                if (usr == null) return new ErrorResponse<PictogramDTO>(ErrorCode.NotAuthorized);
+                if (usr == null) return new ErrorResponse<PictogramDTO>(ErrorCode.UserNotFound);
                 
                 bool ownsResource = false;
                 if (_pictogram.AccessLevel == AccessLevel.PRIVATE)
@@ -317,7 +317,7 @@ namespace GirafRest.Controllers
                 .Where(p => p.Id == id)
                 .FirstOrDefaultAsync();
             if (picto == null)
-                return new ErrorResponse<byte[]>(ErrorCode.PictogramsNotFound);
+                return new ErrorResponse<byte[]>(ErrorCode.PictogramNotFound);
             else if (picto.Image == null)
                 return new ErrorResponse<byte[]>(ErrorCode.PictogramHasNoImage);
 
