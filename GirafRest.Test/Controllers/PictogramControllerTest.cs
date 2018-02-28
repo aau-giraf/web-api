@@ -738,7 +738,7 @@ namespace GirafRest.Test
         public void CreateImage_PublicJpeg_Ok()
         {
             var pc = initializeTest();
-            _testContext.MockUserManager.MockLogout();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_ONE]);
             _testContext.MockHttpContext.MockRequestImage(JPEG_FILEPATH);
 
             var res = pc.CreateImage(PUBLIC_PICTOGRAM).Result;
