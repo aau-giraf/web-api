@@ -90,7 +90,7 @@ namespace GirafRest.Test
             var aRes = res.Result;
 
             Assert.False(aRes.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, aRes.ErrorCode);
+            Assert.Equal(ErrorCode.UserNotFound, aRes.ErrorCode);
         }
 
         [Fact]
@@ -102,7 +102,7 @@ namespace GirafRest.Test
             var aRes = res.Result;
 
             Assert.False(aRes.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, aRes.ErrorCode);
+            Assert.Equal(ErrorCode.UserNotFound, aRes.ErrorCode);
         }
 
         [Fact]
@@ -518,7 +518,7 @@ namespace GirafRest.Test
             var res = pc.DeletePictogram(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+            Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
 
         [Fact]
@@ -530,7 +530,7 @@ namespace GirafRest.Test
             var res = pc.DeletePictogram(ADMIN_PRIVATE_PICTOGRAM).Result;
 
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+            Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
 
         [Fact]
@@ -752,17 +752,17 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
 
-            var img = pc.CreateImage(DEP_ONE_PROTECTED_PICTOGRAM).Result;
+            var img = pc.CreateImage(PUBLIC_PICTOGRAM).Result;
 
-            Assert.IsType<ErrorResponse<PictogramDTO>>(img);
-            Assert.False(img.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, img.ErrorCode);
+            Assert.IsType<Response<PictogramDTO>>(img);
+            Assert.True(img.Success);
+            Assert.Equal(ErrorCode.NoError, img.ErrorCode);
 
             var res = pc.UpdatePictogramImage(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
             Assert.IsType<ErrorResponse<PictogramDTO>>(res);
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.PictogramHasNoImage, res.ErrorCode);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
         [Fact]
@@ -778,7 +778,7 @@ namespace GirafRest.Test
             var res = pc.UpdatePictogramImage(ADMIN_PRIVATE_PICTOGRAM).Result;
 
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+            Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
 
         [Fact]
