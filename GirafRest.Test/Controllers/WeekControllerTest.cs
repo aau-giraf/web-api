@@ -164,12 +164,11 @@ namespace GirafRest.Test
         {
             var wc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var week = _testContext.MockUsers[GUARDIAN_DEP_TWO].WeekSchedule.First();
+            var week = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.FirstOrDefault();
 
-            var res = wc.CreateWeek(new WeekDTO(week));
-            var aRes = res.Result;
+            var res = wc.CreateWeek(new WeekDTO(week)).Result;
 
-            Assert.True(aRes.Success);
+            Assert.True(res.Success);
 
             _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Remove(_testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Last());
         }
