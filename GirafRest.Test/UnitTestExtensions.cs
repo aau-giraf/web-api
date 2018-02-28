@@ -121,7 +121,19 @@ namespace GirafRest.Test
                             UserName = "Departmant in dep2",
                             Id = "department2",
                             DepartmentKey = 2
-                        }
+                        },
+                        new GirafUser()
+                        {
+                            UserName = "Guardian 3 in dep 3",
+                            Id = "guardian3",
+                            DepartmentKey = 1
+                        },
+                        new GirafUser()
+                        {
+                            UserName = "Citizen of dep 1",
+                            Id = "citizen4",
+                            DepartmentKey = 1
+                        },
                     };
 
                     return mockUsers;
