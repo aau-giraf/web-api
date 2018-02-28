@@ -749,7 +749,7 @@ namespace GirafRest.Test
         public void UpdateImage_NoLoginProtected_Unauthorized()
         {
             var pc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
 
             var img = pc.CreateImage(DEP_ONE_PROTECTED_PICTOGRAM);
@@ -903,7 +903,7 @@ namespace GirafRest.Test
         public void UpdateImage_PublicJpegToJpeg_Ok()
         {
             var pc = initializeTest();
-            _testContext.MockUserManager.MockLogout();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             _testContext.MockHttpContext.MockRequestImage(JPEG_FILEPATH);
 
             var img = pc.CreateImage(PUBLIC_PICTOGRAM).Result;
@@ -914,25 +914,29 @@ namespace GirafRest.Test
 
             var res = pc.UpdatePictogramImage(PUBLIC_PICTOGRAM).Result;
 
+            Assert.IsType<Response<PictogramDTO>>(res);
             Assert.True(res.Success);
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
         }
 
         [Fact]
         public void UpdateImage_PublicPngToJpeg_Ok()
         {
             var pc = initializeTest();
-            _testContext.MockUserManager.MockLogout();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
 
             var img = pc.CreateImage(PUBLIC_PICTOGRAM).Result;
 
-            _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
             img = pc.UpdatePictogramImage(PUBLIC_PICTOGRAM).Result;
 
             _testContext.MockHttpContext.MockRequestImage(JPEG_FILEPATH);
 
             var res = pc.UpdatePictogramImage(PUBLIC_PICTOGRAM).Result;
 
+            Assert.IsType<Response<PictogramDTO>>(res);
             Assert.True(res.Success);
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
         }
 
         #endregion
