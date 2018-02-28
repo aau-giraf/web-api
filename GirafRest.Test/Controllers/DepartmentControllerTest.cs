@@ -198,7 +198,7 @@ namespace GirafRest.Test.Controllers
 
             var res = dc.RemoveUser(DEPARTMENT_TWO, _testContext.MockUsers[ADMIN_DEP_ONE]).Result;
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
-            Assert.Equal(res.ErrorCode, ErrorCode.NotAuthorized);
+            Assert.Equal(res.ErrorCode, ErrorCode.UserNotFound);
         }
         #endregion
 
