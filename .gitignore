@@ -28,3 +28,4 @@ artifacts/
 out
 *.db
 *.user
+appsettings.json
