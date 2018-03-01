@@ -42,15 +42,15 @@ namespace GirafRest.Controllers
         /// <returns> Returns Ok with the role of the user.</returns>
         [HttpGet("")]
         [Authorize]
-        public string GetGirafRole()
+        public async Task<Response<string>> GetGirafRole()
         {
-            var user = _giraf.LoadUserAsync(HttpContext.User);
-            var role = _giraf._userManager.GetRolesAsync(user.Result);
+            var user = await _giraf.LoadUserAsync(HttpContext.User);
+            var role = await _giraf._userManager.GetRolesAsync(user);
 
-            if (role.Result.Count == 0)
-                return "";
+            if (role.Count == 0)
+                return new Response<string>("");
 
-            return role.Result[0];
+            return new Response<string>(role[0]);
         }
 
         /// <summary>

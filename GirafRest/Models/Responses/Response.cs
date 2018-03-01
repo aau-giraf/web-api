@@ -16,11 +16,11 @@ namespace GirafRest.Models.Responses
         public ErrorCode ErrorCode { get; set; }
         public string[] ErrorProperties { get; set; }
 
-        public string ErrorKey
+        public ErrorCode ErrorKey
         {
             get
             {
-                return ErrorCode.ToString();
+                return ErrorCode;
             }
         }
     }

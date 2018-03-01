@@ -94,6 +94,7 @@ namespace GirafRest.Setup
             // Register the Swagger generator, defining one or more Swagger documents
             services.AddSwaggerGen(c =>
             {
+                c.DescribeAllEnumsAsStrings();
                 c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
                 var basePath = AppContext.BaseDirectory;
                 var xmlPath = Path.Combine(basePath, "GirafRest.xml");
