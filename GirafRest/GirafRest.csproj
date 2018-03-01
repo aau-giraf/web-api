@@ -10,7 +10,7 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\netcoreapp2.0\GirafRest.xml</DocumentationFile>
-    <NoWarn>1701;1702;1705;1591</NoWarn>
+    <NoWarn>1701;1702;1705;1591;1572;1571;1573;1587;1570;1574;1587</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="NETCore.MailKit" Version="2.0.2" />

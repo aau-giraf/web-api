@@ -1,4 +1,6 @@
-﻿namespace GirafRest.Models.Responses
+﻿using Newtonsoft.Json;
+
+namespace GirafRest.Models.Responses
 {
     public class Response
     {
@@ -10,6 +12,7 @@
         }
 
         public bool Success { get; set; }
+        [JsonIgnore]
         public ErrorCode ErrorCode { get; set; }
         public string[] ErrorProperties { get; set; }
 
