@@ -331,7 +331,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Gets the view associated with the ResetPassword page.
         /// </summary>
-        /// <param name="code"The reset password token that has been sent to the user via his email.></param>
+        /// <param name="code">The reset password token that has been sent to the user via his email.</param>
         /// <returns>BadRequest if there is no valid code or the view if the code was valid.</returns>
         [HttpGet("reset-password")]
         [AllowAnonymous]
