@@ -19,7 +19,7 @@ Once the API is running locally you can navigate to `http://localhost:5000/swagg
 
 ## Installation
 
-Make sure you have .netcore 1.1.1 and that you restore nugets: dotnet restore
+Make sure you have .netcore 2 and that you restore nugets: dotnet restore
 
 ## API Reference
 
