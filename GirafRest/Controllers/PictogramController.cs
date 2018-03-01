@@ -310,7 +310,7 @@ namespace GirafRest.Controllers
         [HttpGet("image/{id}")]
         public async Task<Response<byte[]>> ReadPictogramImage(long id) {
             var usr = await _giraf.LoadUserAsync(HttpContext.User);
-            if (usr == null) return new ErrorResponse<byte[]>(ErrorCode.UserNotFound);
+            if (usr == null) return new ErrorResponse<byte[]>(ErrorCode.NotAuthorized);
             //Fetch the pictogram and check that it actually exists and has an image.
             var picto = await _giraf._context
                 .Pictograms
