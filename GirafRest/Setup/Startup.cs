@@ -44,13 +44,19 @@ namespace GirafRest.Setup
             var builder = new ConfigurationBuilder().SetBasePath(env.ContentRootPath);
             // delete all default configuration providers
             if (env.IsDevelopment())
-                builder.AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true);
+                builder.AddJsonFile("appsettings.development.json", optional: false, reloadOnChange: true);
             else if (env.IsProduction())
                 builder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
             else
                 throw new NotSupportedException("No database option is supported by this Environment mode");
             builder.AddEnvironmentVariables();
-            Configuration = builder.Build();
+            try {
+                Configuration = builder.Build();
+            } catch(FileNotFoundException ex) {
+                Console.WriteLine("ERROR: Missing appsettings file");
+                Console.WriteLine("Exiting...");
+                System.Environment.Exit(1);
+            }
         }
 
         public IHostingEnvironment HostingEnvironment { get; }
