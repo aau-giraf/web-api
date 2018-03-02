@@ -159,50 +159,6 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Patch authenticated user to be guardian of the citizen given in body
-        /// </summary>
-        [Authorize]
-        [HttpPatch("add-Guardian-Ship-Of-Citizen")]
-        public async Task<Response> AddGuardianShipOfCitizen([FromBody] GirafUserDTO citizenDTO)
-        {
-            var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
-            user = _giraf._context.Users.Include(u => u.GuardianOf).FirstOrDefault(x => x.Id == user.Id);
-            if (citizenDTO == null) {
-                return new ErrorResponse(ErrorCode.FormatError);      
-            }
-            if (citizenDTO.Role != GirafRoles.Citizen) {
-                return new ErrorResponse(ErrorCode.RoleMustBeCitizin);
-            }
-
-            if(user.Id == citizenDTO.Id){
-                return new ErrorResponse(ErrorCode.UserCannotBeGuardianOfYourself);
-            }
-
-            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
-
-            if(userRole != GirafRoles.Guardian){
-                return new ErrorResponse(ErrorCode.UserMustBeGuardian);
-            }
-
-            var CurrentGuardian = await _giraf._context.Users.Include(u => u.GuardianOf).FirstOrDefaultAsync(x => x.GuardianOf.Any(y => y.Id == citizenDTO.Id));
-
-            if(CurrentGuardian != null){
-                return new ErrorResponse(ErrorCode.CitizinAlreadyHasGuardian);
-            }
-
-            var citizen = _giraf._context.Users?.FirstOrDefault(g => g.Id == citizenDTO.Id);
-
-            if(user?.Department?.Key != citizen?.Department?.Key){
-                return new ErrorResponse(ErrorCode.UserAndCitizinMustBeInSameDepartment);
-            }
-
-            user.GuardianOf.Add(citizen);
-            var success = await _giraf._context.SaveChangesAsync();
-
-            return new Response();  
-        }
-
-        /// <summary>
         /// Updates all the information of the currently authenticated user with the information from the given DTO.
         /// </summary>
         /// <param name="id">The id of the user to update.</param>
@@ -296,24 +252,6 @@ namespace GirafRest.Controllers
             GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, usr);
 
             return new Response<GirafUserDTO>(new GirafUserDTO(usr, userRole));
-        }
-
-        [HttpDelete("delete-Guardian-Ship-Of-Citizen/{id}")]
-        public async Task<Response> DeleteGuardianShipOfCitizen(string id)
-        {
-            var usr = await _giraf._userManager.GetUserAsync(HttpContext.User);
-            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, usr);
-            if(userRole != GirafRoles.Guardian){
-                return new ErrorResponse(ErrorCode.UserMustBeGuardian);
-            }
-            var citizenToDelete = _giraf._context.Users.Include(x => x.GuardianOf).FirstOrDefault(u => u.Id == usr.Id).GuardianOf.FirstOrDefault(g => g.Id == id);
-            if(citizenToDelete == null){
-                return new ErrorResponse(ErrorCode.CitizinNotFound);
-            }
-            usr.GuardianOf.Remove(citizenToDelete);
-            var success = _giraf._context.SaveChanges();
- 
-            return new Response();
         }
 
 
