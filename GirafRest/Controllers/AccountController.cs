@@ -82,8 +82,16 @@ namespace GirafRest.Controllers
 
             //Check if a user is already logged in and attempt to login with the username given in the DTO
             var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            var loginUser = await _giraf.LoadByNameAsync(model.Username);
+            GirafRoles userRoles = await _roleManager.findUserRole(_giraf._userManager, loginUser);
+            //Attempt to sign in with the given credentials.
+            var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, lockoutOnFailure: false);
             if(currentUser != null)
             {
+                if (currentUser.UserName == model.Username && result.Succeeded)
+                    return new Response<GirafUserDTO>(new GirafUserDTO(loginUser, userRoles));
+                else if (!result.Succeeded) return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidCredentials);
+                
                 if(await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian))
                 {
                     _giraf._logger.LogInformation("Guardian attempted to sign in as Citizen");
@@ -95,11 +103,8 @@ namespace GirafRest.Controllers
                     return await attemptRoleLoginAsync(currentUser, model.Username, GirafRole.Guardian);
                 }
                 else if(await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Citizen)){
-                    var loginUser = await _giraf.LoadByNameAsync(model.Username);
-                    if (await _giraf._userManager.IsInRoleAsync(loginUser, GirafRole.Guardian)){
+                    if (await _giraf._userManager.IsInRoleAsync(loginUser, GirafRole.Guardian))
                         return new ErrorResponse<GirafUserDTO>(ErrorCode.UserMustBeGuardian);
-                    }
-
                 }
             }
 
@@ -107,13 +112,9 @@ namespace GirafRest.Controllers
             if (string.IsNullOrEmpty(model.Password))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "password");
             
-            //Attempt to sign in with the given credentials.
-            var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, lockoutOnFailure: false);
             if (result.Succeeded)
             {
                 _giraf._logger.LogInformation($"{model.Username} logged in.");
-                var loginUser = await _giraf.LoadByNameAsync(model.Username);
-                GirafRoles userRoles = await _roleManager.findUserRole(_giraf._userManager, loginUser);
                 return new Response<GirafUserDTO>(new GirafUserDTO(loginUser, userRoles));
             }
             else
