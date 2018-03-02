@@ -43,7 +43,7 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Read the <see cref="Choice"/> choice with the specified <paramref name="ID"/> ID and
+        /// Read the <see cref="Choice"/> choice with the specified <paramref name="id"/> ID and
         /// check if the user is authorized to see it.
         /// </summary>
         /// <param name="ID"> The ID of the choice to fetch.</param>

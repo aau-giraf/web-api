@@ -8,6 +8,8 @@ To run the project locally with a sqlite database first do the following:
 
 2. In a shell:
   - `export ASPNETCORE_ENVIRONMENT=Development`
+  - `cp appsettings.example.json appsettings.development.json`
+  - update appsettings.development.json as necessary
   - `dotnet restore`
   - `dotnet run --sample-data`
 
@@ -19,7 +21,7 @@ Once the API is running locally you can navigate to `http://localhost:5000/swagg
 
 ## Installation
 
-Make sure you have .netcore 2 and that you restore nugets: dotnet restore
+Make sure you have .netcore v2 and that you restore nugets: `dotnet restore`
 
 ## API Reference
 

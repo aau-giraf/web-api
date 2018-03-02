@@ -1,4 +1,8 @@
-﻿namespace GirafRest.Models.Responses
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using System.ComponentModel.DataAnnotations;
+
+namespace GirafRest.Models.Responses
 {
     public class Response
     {
@@ -10,14 +14,17 @@
         }
 
         public bool Success { get; set; }
+        [JsonIgnore]
         public ErrorCode ErrorCode { get; set; }
         public string[] ErrorProperties { get; set; }
 
-        public string ErrorKey
+        [EnumDataType(typeof(ErrorCode))]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public ErrorCode ErrorKey
         {
             get
             {
-                return ErrorCode.ToString();
+                return ErrorCode;
             }
         }
     }
