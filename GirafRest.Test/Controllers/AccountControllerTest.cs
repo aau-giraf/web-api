@@ -117,7 +117,7 @@ namespace GirafRest.Test
             }).Result;
 
             Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
-            Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
+            Assert.Equal(ErrorCode.InvalidProperties, res.ErrorCode);
         }
 
         [Fact]

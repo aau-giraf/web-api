@@ -76,7 +76,7 @@ namespace GirafRest.Controllers
         {
             if (model == null)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "model");
-            //Check that the caller has supplied username and password in the request
+            //Check that the caller has supplied username in the request
             if (string.IsNullOrEmpty(model.Username))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "username");
 
@@ -84,7 +84,7 @@ namespace GirafRest.Controllers
             var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
             var loginUser = await _giraf.LoadByNameAsync(model.Username);
             if(loginUser == null) // If username is invalid
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidCredentials);
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidProperties, "username");
             GirafRoles userRoles = await _roleManager.findUserRole(_giraf._userManager, loginUser);
             //Attempt to sign in with the given credentials.
             var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, lockoutOnFailure: false);
@@ -92,7 +92,7 @@ namespace GirafRest.Controllers
             {
                 if (currentUser.UserName == model.Username && result.Succeeded)
                     return new Response<GirafUserDTO>(new GirafUserDTO(loginUser, userRoles));
-                else if (!result.Succeeded && currentUser.UserName == model.Username ) 
+                if (!result.Succeeded && currentUser.UserName == model.Username ) 
                     return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidCredentials);
                 
                 if(await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian))
@@ -110,19 +110,13 @@ namespace GirafRest.Controllers
                         return new ErrorResponse<GirafUserDTO>(ErrorCode.UserMustBeGuardian);
                 }
             } else {
+                if(!result.Succeeded) return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidCredentials);
                 //There is no current user - check that a password is present.
                 if (string.IsNullOrEmpty(model.Password))
                     return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "password");
-                
-                if (result.Succeeded)
-                {
-                    _giraf._logger.LogInformation($"{model.Username} logged in.");
-                    return new Response<GirafUserDTO>(new GirafUserDTO(loginUser, userRoles));
-                }
-                else
-                {
-                    return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidCredentials);
-                }
+
+                _giraf._logger.LogInformation($"{model.Username} logged in.");
+                return new Response<GirafUserDTO>(new GirafUserDTO(loginUser, userRoles));
             }
             return null;
         }
