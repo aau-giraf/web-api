@@ -92,7 +92,7 @@ namespace GirafRest.Controllers
             {
                 if (currentUser.UserName == model.Username && result.Succeeded)
                     return new Response<GirafUserDTO>(new GirafUserDTO(loginUser, userRoles));
-                else if (!result.Succeeded) 
+                else if (!result.Succeeded && currentUser.UserName == model.Username ) 
                     return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidCredentials);
                 
                 if(await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian))
