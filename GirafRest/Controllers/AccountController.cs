@@ -83,6 +83,8 @@ namespace GirafRest.Controllers
             //Check if a user is already logged in and attempt to login with the username given in the DTO
             var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
             var loginUser = await _giraf.LoadByNameAsync(model.Username);
+            if(loginUser == null) // If username is invalid
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidCredentials);
             GirafRoles userRoles = await _roleManager.findUserRole(_giraf._userManager, loginUser);
             //Attempt to sign in with the given credentials.
             var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, lockoutOnFailure: false);
@@ -90,7 +92,8 @@ namespace GirafRest.Controllers
             {
                 if (currentUser.UserName == model.Username && result.Succeeded)
                     return new Response<GirafUserDTO>(new GirafUserDTO(loginUser, userRoles));
-                else if (!result.Succeeded) return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidCredentials);
+                else if (!result.Succeeded) 
+                    return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidCredentials);
                 
                 if(await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian))
                 {
@@ -106,21 +109,22 @@ namespace GirafRest.Controllers
                     if (await _giraf._userManager.IsInRoleAsync(loginUser, GirafRole.Guardian))
                         return new ErrorResponse<GirafUserDTO>(ErrorCode.UserMustBeGuardian);
                 }
+            } else {
+                //There is no current user - check that a password is present.
+                if (string.IsNullOrEmpty(model.Password))
+                    return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "password");
+                
+                if (result.Succeeded)
+                {
+                    _giraf._logger.LogInformation($"{model.Username} logged in.");
+                    return new Response<GirafUserDTO>(new GirafUserDTO(loginUser, userRoles));
+                }
+                else
+                {
+                    return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidCredentials);
+                }
             }
-
-            //There is no current user - check that a password is present.
-            if (string.IsNullOrEmpty(model.Password))
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "password");
-            
-            if (result.Succeeded)
-            {
-                _giraf._logger.LogInformation($"{model.Username} logged in.");
-                return new Response<GirafUserDTO>(new GirafUserDTO(loginUser, userRoles));
-            }
-            else
-            {
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidCredentials);
-            }
+            return null;
         }
         /// <summary>
         /// Attempts to login from to a user's account from one of his supperior's. This allows departments
