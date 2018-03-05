@@ -1,16 +1,16 @@
 *.swp
-*/\.vscode/
-*/\.vs/
-*/obj/
-*/bin/
-*/\.idea/
-*/migrations/Sqlite*
-*/Migrations/Sqlite*
-*/images/
-*/html/
+**/\.vscode/
+**/\.vs/
+**/obj/
+**/bin/
+**/\.idea/
+**/migrations/Sqlite*
+**/Migrations/Sqlite*
+**/images/
+html/
 doxygen*
-*/wwwroot/Logs/*
-*/wwwroot/logs/*
+**/wwwroot/Logs/*
+**/wwwroot/logs/*
 *.userprefs
 
 # .NET-core

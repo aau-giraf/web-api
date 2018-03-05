@@ -104,6 +104,30 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
         }
 
+        // Same user log in twice no problem
+        [Fact]
+        public void Login_SameUserLoginTwice_OK()
+        {
+            var accountController = InitializeTest();
+            var username = _testContext.MockUsers[ADMIN_DEP_ONE].UserName;
+
+            var resA = accountController.Login(new LoginDTO()
+            {
+                Username = username,
+                Password = "password"
+            }).Result;
+
+            var resB = accountController.Login(new LoginDTO()
+            {
+                Username = username,
+                Password = "password"
+            }).Result;
+
+            // accountController.Login returns: new Response<GirafUserDTO>(new GirafUserDTO(loginUser, userRoles)) if login succeded
+            Assert.IsType<Response<GirafUserDTO>>(resB);
+            Assert.Equal(resB.Data.Username, username);
+        }
+
         [Fact]
         // If no user is found with given user name, return ErrorResponse with relevant ErrorCode (invalid credentials ensures we do not give the bad guys any information)
         public void Login_UsernameInvalidPasswordOk_Unauthorized()
@@ -138,7 +162,7 @@ namespace GirafRest.Test
         {
             var ac = InitializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-
+            
             var res = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[CITIZEN_DEP_TWO].UserName }).Result;
 
             Assert.IsType<Response<GirafUserDTO>>(res);
