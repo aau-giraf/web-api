@@ -15,6 +15,13 @@ To run the project locally with a sqlite database first do the following:
 
 Once the API is running locally you can navigate to `http://localhost:5000/swagger/` to see and tryout requests to the endpoints
 
+## Migrations Sqlite
+  Add migration:
+  - `dotnet ef migrations add InitialMigration -o Migrations/Sqlite -e Development -c GirafSqliteDbContext`
+
+  Update:
+  - `dotnet ef database update InitialMigration -c GirafSqliteDbContext -e Development`
+
 ## Code Example
 
 ## Motivation
