@@ -88,11 +88,20 @@ namespace GirafRest.Controllers
             GirafRoles userRoles = await _roleManager.findUserRole(_giraf._userManager, loginUser);
             //Attempt to sign in with the given credentials.
             var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, lockoutOnFailure: false);
+            if(result.Succeeded) return new Response<GirafUserDTO>(new GirafUserDTO(loginUser, userRoles));
+            if (!result.Succeeded && currentUser == null){
+                if (string.IsNullOrEmpty(model.Password)) return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "password");
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidCredentials);
+            }
+
             if(currentUser != null)
             {
-                if (currentUser.UserName == model.Username && result.Succeeded)
+                if(currentUser.UserName.ToLower() == model.Username.ToLower()){
+                    if (!result.Succeeded) return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidCredentials);
                     return new Response<GirafUserDTO>(new GirafUserDTO(loginUser, userRoles));
-                if (!result.Succeeded && currentUser.UserName == model.Username ) 
+
+                }
+                if (!result.Succeeded && !string.IsNullOrEmpty(model.Password)) 
                     return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidCredentials);
                 
                 if(await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian))
