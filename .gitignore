@@ -28,4 +28,5 @@ artifacts/
 out
 *.db
 *.user
+*.sln
 appsettings.json
