@@ -167,6 +167,7 @@ namespace GirafRest.Setup
             RoleManager<GirafRole> roleManager,
             IApplicationLifetime appLifetime)
         {
+            //app.UsePathBase("/v1");
             //Configure logging for the application
             app.ConfigureLogging(loggerFactory);
             appLifetime.ApplicationStopped.Register(Log.CloseAndFlush);
@@ -193,7 +194,7 @@ namespace GirafRest.Setup
             //[Authorize] endpoint without logging in.
             app.UseMvc(routes =>
             {
-                routes.MapRoute(
+                routes.MapRoute( 
                     name: "default",
                     template: "{controller=Account}/{action=AccessDenied}");
             });

@@ -22,7 +22,7 @@ namespace GirafRest.Controllers
     /// and resources to users.
     /// </summary>
     [Authorize]
-    [Route("[controller]")]
+    [Route("v1/[controller]")]
     public class UserController : Controller
     {
         private const string IMAGE_TYPE_PNG = "image/png";

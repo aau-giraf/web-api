@@ -15,7 +15,7 @@ using GirafRest.Models.Responses;
 
 namespace GirafRest.Controllers
 {    
-    [Route("[controller]")]
+    [Route("v1/[controller]")]
     public class DayController : Controller
     {
         /// <summary>

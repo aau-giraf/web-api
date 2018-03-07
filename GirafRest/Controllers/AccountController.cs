@@ -19,7 +19,7 @@ using GirafRest.Models.Responses;
 namespace GirafRest.Controllers
 {
     [Authorize]
-    [Route("[controller]")]
+    [Route("v1/[controller]")]
     public class AccountController : Controller
     {
         /// <summary>

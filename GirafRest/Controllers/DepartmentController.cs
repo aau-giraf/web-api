@@ -18,7 +18,7 @@ namespace GirafRest.Controllers
     /// The department controller serves the purpose of handling departments. It is capable of producing a
     /// list of all departments in the system as well as adding resources and users to departments.
     /// </summary>
-    [Route("[controller]")]
+    [Route("v1/[controller]")]
     public class DepartmentController : Controller
     {
         /// <summary>

@@ -22,7 +22,7 @@ namespace GirafRest.Controllers
     /// The ChoiceController serves the purpose of presenting choices on request. It also allows the user to
     /// select either of the options in a choice.
     /// </summary>
-    [Route("[controller]")]
+    [Route("v1/[controller]")]
     public class ChoiceController : Controller
     {
         /// <summary>
