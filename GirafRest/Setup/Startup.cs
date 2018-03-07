@@ -44,7 +44,7 @@ namespace GirafRest.Setup
             var builder = new ConfigurationBuilder().SetBasePath(env.ContentRootPath);
             // delete all default configuration providers
             if (env.IsDevelopment())
-                builder.AddJsonFile("appsettings.development.json", optional: false, reloadOnChange: true);
+                builder.AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true);
             else if (env.IsProduction())
                 builder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
             else

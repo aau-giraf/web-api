@@ -8,8 +8,8 @@ To run the project locally with a sqlite database first do the following:
 
 2. In a shell:
   - `export ASPNETCORE_ENVIRONMENT=Development`
-  - `cp appsettings.example.json appsettings.development.json`
-  - update appsettings.development.json as necessary
+  - `cp appsettings.example.json appsettings.Development.json`
+  - update appsettings.Development.json as necessary
   - `dotnet restore`
   - `dotnet run --sample-data`
 
