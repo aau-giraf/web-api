@@ -40,6 +40,10 @@ namespace GirafRest.Setup
         public Startup(IHostingEnvironment env)
         {
             HostingEnvironment = env;
+            var coreEnvironement = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            if (coreEnvironement != null) env.EnvironmentName = coreEnvironement;
+            else env.EnvironmentName = "Development";
+
             //var builder = new ConfigurationBuilder().SetBasePath(env.ContentRootPath);
             var builder = new ConfigurationBuilder().SetBasePath(env.ContentRootPath);
             // delete all default configuration providers
@@ -64,10 +68,6 @@ namespace GirafRest.Setup
         /// The configuration, contains information regarding connecting to the database
         /// </summary>
         private IConfigurationRoot Configuration { get; }
-        /// <summary>
-        /// Contains information regarding the environment the application is hosted in
-        /// </summary>
-        private IHostingEnvironment Environment { get; }
 
         /// <summary>
         /// This method gets called by the runtime. Use this method to add services to the application.
