@@ -19,7 +19,7 @@ namespace GirafRest.Controllers
     /// <summary>
     /// The WeekController allows the user to view and update his week schedule along with deleting it.
     /// </summary>
-    [Route("[controller]")]
+    [Route("v1/[controller]")]
     public class WeekController : Controller
     {
         /// <summary>

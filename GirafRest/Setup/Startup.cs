@@ -44,7 +44,7 @@ namespace GirafRest.Setup
             var builder = new ConfigurationBuilder().SetBasePath(env.ContentRootPath);
             // delete all default configuration providers
             if (env.IsDevelopment())
-                builder.AddJsonFile("appsettings.development.json", optional: false, reloadOnChange: true);
+                builder.AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true);
             else if (env.IsProduction())
                 builder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
             else
@@ -101,6 +101,7 @@ namespace GirafRest.Setup
             services.AddSwaggerGen(c =>
             { 
                 c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+                c.DescribeAllEnumsAsStrings();
                 var basePath = AppContext.BaseDirectory;
                 var xmlPath = Path.Combine(basePath, "GirafRest.xml");
                 c.IncludeXmlComments(xmlPath);
@@ -166,6 +167,7 @@ namespace GirafRest.Setup
             RoleManager<GirafRole> roleManager,
             IApplicationLifetime appLifetime)
         {
+            //app.UsePathBase("/v1");
             //Configure logging for the application
             app.ConfigureLogging(loggerFactory);
             appLifetime.ApplicationStopped.Register(Log.CloseAndFlush);
@@ -192,7 +194,7 @@ namespace GirafRest.Setup
             //[Authorize] endpoint without logging in.
             app.UseMvc(routes =>
             {
-                routes.MapRoute(
+                routes.MapRoute( 
                     name: "default",
                     template: "{controller=Account}/{action=AccessDenied}");
             });

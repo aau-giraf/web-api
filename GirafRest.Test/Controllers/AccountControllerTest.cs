@@ -40,7 +40,6 @@ namespace GirafRest.Test
             _outputHelper = outputHelper;
         }
 
-
         private void OutputEmail(string r, string s, string m)
         {
             _outputHelper.WriteLine($"Email sent:\nReceiver: {r}\nSubject: {s}\n\n{m}");
@@ -54,7 +53,6 @@ namespace GirafRest.Test
             mockEmail.Setup(e => e.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
                 .Callback(new System.Action<string, string, string>(OutputEmail))
                 .Returns(Task.FromResult(0));
-
 
             var mockSignInManager = new MockSignInManager(_testContext.MockUserManager, _testContext);
             var mockGirafService = new MockGirafService(_testContext.MockDbContext.Object, _testContext.MockUserManager);
@@ -70,24 +68,21 @@ namespace GirafRest.Test
                 mockGirafService,
                 roleManager);
 
-
             _testContext.MockHttpContext = ac.MockHttpContext();
             _testContext.MockHttpContext
                 .Setup(mhc => mhc.Request.Scheme)
                 .Returns("Scheme?");
 
-
             var mockUrlHelper = new Mock<IUrlHelper>();
             ac.Url = mockUrlHelper.Object;
-
 
             return ac;
         }
 
         #region Login
         // When logging in, one is only allowed to login as users below them in the hierarchy. The hierarchy in order is: Admin, Department, Guardian, Citizen
-        
         // Check if possible to login with mock credentials. All passwords are initialised (Data folder, DBInitializer.cs) to be "password"
+
         [Fact]
         public void Login_CredentialsOk_OK()
         {
@@ -104,6 +99,30 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
         }
 
+        // Same user log in twice no problem
+        [Fact]
+        public void Login_SameUserLoginTwice_OK()
+        {
+            var accountController = InitializeTest();
+            var username = _testContext.MockUsers[ADMIN_DEP_ONE].UserName;
+
+            var resA = accountController.Login(new LoginDTO()
+            {
+                Username = username,
+                Password = "password"
+            }).Result;
+
+            var resB = accountController.Login(new LoginDTO()
+            {
+                Username = username,
+                Password = "password"
+            }).Result;
+
+            // accountController.Login returns: new Response<GirafUserDTO>(new GirafUserDTO(loginUser, userRoles)) if login succeded
+            Assert.IsType<Response<GirafUserDTO>>(resB);
+            Assert.Equal(resB.Data.Username, username);
+        }
+
         [Fact]
         // If no user is found with given user name, return ErrorResponse with relevant ErrorCode (invalid credentials ensures we do not give the bad guys any information)
         public void Login_UsernameInvalidPasswordOk_Unauthorized()
@@ -117,7 +136,7 @@ namespace GirafRest.Test
             }).Result;
 
             Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
-            Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
+            Assert.Equal(ErrorCode.InvalidProperties, res.ErrorCode);
         }
 
         [Fact]
@@ -138,7 +157,7 @@ namespace GirafRest.Test
         {
             var ac = InitializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-
+            
             var res = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[CITIZEN_DEP_TWO].UserName }).Result;
 
             Assert.IsType<Response<GirafUserDTO>>(res);
@@ -158,7 +177,6 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
 
-
         [Fact]
         // Guardian cannot login as another guardian (not even if in same department)
         public void Login_LoginAsGuardianDTOWithGuardianInSameDep_Unauthorized()
@@ -171,7 +189,6 @@ namespace GirafRest.Test
             Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
-
 
         [Fact]
         // Guardian cannot login as user that is not in their own department
@@ -227,8 +244,8 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
         #endregion
-        #region Register
 
+        #region Register
         [Fact]
         public void Register_InputOk_ExpectOK()
         {
@@ -236,7 +253,6 @@ namespace GirafRest.Test
 
             var res = accountController.Register( new RegisterDTO()
             {
-                // temp change from InputOk to Generic..., may be changed back
                 Username = "GenericName",
                 Password = "GenericPassword",
                 ConfirmPassword = "GenericPassword",
@@ -377,6 +393,7 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
         #endregion
+
         #region ForgotPassword
         [Fact]
         public void ForgotPassword_UserExist_Ok()
@@ -450,6 +467,7 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
         #endregion
+
         #region SetPassword
         [Fact]
         public void SetPassword_ValidInput_Ok()
@@ -538,10 +556,9 @@ namespace GirafRest.Test
             Assert.IsType<ErrorResponse>(res);
             Assert.Equal(ErrorCode.PasswordMissMatch, res.ErrorCode);
         }
-
         #endregion
-        #region ChangePassword
 
+        #region ChangePassword
         [Fact]
         public void ChangePassword_ValidInput_Ok()
         {
@@ -673,8 +690,7 @@ namespace GirafRest.Test
             Assert.IsType<ErrorResponse>(res);
             Assert.Equal(ErrorCode.PasswordNotUpdated, res.ErrorCode);
         }
-
+        
         #endregion
-
     }
 }

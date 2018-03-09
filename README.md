@@ -8,14 +8,27 @@ To run the project locally with a sqlite database first do the following:
 
 2. In a shell:
   - `export ASPNETCORE_ENVIRONMENT=Development`
-  - `cp appsettings.example.json appsettings.development.json`
-  - update appsettings.development.json as necessary
+  - `cp appsettings.example.json appsettings.Development.json`
+  - update appsettings.Development.json as necessary
   - `dotnet restore`
   - `dotnet run --sample-data`
 
 Once the API is running locally you can navigate to `http://localhost:5000/swagger/` to see and tryout requests to the endpoints
 
-## Code Example
+## Migrations Sqlite
+  Add migration:
+  - `dotnet ef migrations add InitialMigration -o Migrations/Sqlite -e Development -c GirafSqliteDbContext`
+
+  Update:
+  - `dotnet ef database update InitialMigration -c GirafSqliteDbContext -e Development`
+
+## Generate Client
+Because the REST-API integrates swagger as middle-ware it is possible to generate a client-side API in your prefered language. To do so start up the REST-API navigate to swagger: `http://localhost:5000/swagger/` and copy the url to the swagger json file on the top of the side.
+
+To make a client download swagger-codegen and navigate to the folder:
+
+You can now generate a client side API in for example C# by running the following command:   `java -jar modules/swagger-codegen-cli/target/swagger-codegen-cli.jar generate  -i http://localhost:5000/swagger/v1/swagger.json -l csharp -o Client/Generated/
+` 
 
 ## Motivation
 

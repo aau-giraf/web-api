@@ -13,7 +13,7 @@ namespace GirafRest.Controllers
     /// The RoleController is responsible for managing the roles of the system, and should be used to add or remove various users from roles
     /// </summary>
     [Authorize]
-    [Route("[controller]")]
+    [Route("v1/[controller]")]
     public class RoleController : Controller
     {
         /// <summary>

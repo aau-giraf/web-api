@@ -18,7 +18,7 @@ namespace GirafRest.Controllers
     /// The pictogram controller fetches an delivers pictograms on request. It also has endpoints for fetching
     /// and uploading images to pictograms. Supported image-types are .png and .jpg.
     /// </summary>
-    [Route("[controller]")]
+    [Route("v1/[controller]")]
     public class PictogramController : Controller
     {
         /// <summary>
