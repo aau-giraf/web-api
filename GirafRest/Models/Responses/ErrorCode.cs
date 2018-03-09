@@ -46,6 +46,7 @@
         UserNotFound,
         WeekScheduleNotFound,
         Forbidden,
-        PasswordMissMatch
+        PasswordMissMatch,
+        TwoDaysCannotHaveSameDayProperty
     }
 }
