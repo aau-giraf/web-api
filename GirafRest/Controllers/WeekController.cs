@@ -109,7 +109,14 @@ namespace GirafRest.Controllers
                 week.Thumbnail = thumbnail;
             }
             // If newWeek.Days should support number of days other than 7, change this check to if(newWeek.Days.Count < 1)
-            if (newWeek.Days == null || newWeek.Days.Count != 7) return new ErrorResponse<WeekDTO>(ErrorCode.MissingProperties, "days");
+            if (newWeek.Days == null || newWeek.Days.Count != 7)
+                return new ErrorResponse<WeekDTO>(ErrorCode.MissingProperties, "days");
+
+            //If two days have the same day index
+            if(newWeek.Days.GroupBy(d => d.Day).Any(g => g.Count() != 1))
+                return new ErrorResponse<WeekDTO>(ErrorCode.TwoDaysCannotHaveSameDayProperty);
+
+            var orderedDays = week.Weekdays.OrderBy(w => w.Day).ToArray();
 
             foreach (var day in newWeek.Days)
             {
@@ -130,7 +137,7 @@ namespace GirafRest.Controllers
                             }
                     }
                 }
-                week.Weekdays[(int)day.Day].Elements = wkDay.Elements;
+                orderedDays[(int)day.Day].Elements = wkDay.Elements;
             }
             _giraf._context.Weeks.Update(week);
             await _giraf._context.SaveChangesAsync();
