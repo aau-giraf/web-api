@@ -84,7 +84,7 @@ namespace GirafRest.Controllers
             var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
             var loginUser = await _giraf.LoadByNameAsync(model.Username);
             if(loginUser == null) // If username is invalid
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidProperties, "username");
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidCredentials, "username");
             GirafRoles userRoles = await _roleManager.findUserRole(_giraf._userManager, loginUser);
             //Attempt to sign in with the given credentials.
             var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, lockoutOnFailure: false);
@@ -186,7 +186,7 @@ namespace GirafRest.Controllers
             if (doesUserAlreadyExist)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.UserAlreadyExists);
 
-            // Check that password and confirm password match
+            // Check that password and confirm password match 
             if (!model.Password.Equals(model.ConfirmPassword))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidProperties, "confirmPassword");
 
