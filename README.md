@@ -17,10 +17,11 @@ Once the API is running locally you can navigate to `http://localhost:5000/swagg
 
 ## Migrations Sqlite
   Add migration:
-  - `dotnet ef migrations add InitialMigration -o Migrations/Sqlite -e Development -c GirafSqliteDbContext`
+  -  `dotnet ef migrations add <MigrationName> -o Migrations --context` GirafSqliteDbContext
 
-  Update:
-  - `dotnet ef database update InitialMigration -c GirafSqliteDbContext -e Development`
+  Update local Sqlite db:
+  - Delete /GirafRest/bin and /GirafRest/Giraf.db
+  - `dotnet run`
 
 ## Generate Client
 Because the REST-API integrates swagger as middle-ware it is possible to generate a client-side API in your prefered language. To do so start up the REST-API navigate to swagger: `http://localhost:5000/swagger/` and copy the url to the swagger json file on the top of the side.
