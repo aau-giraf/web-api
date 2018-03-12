@@ -115,23 +115,6 @@ namespace GirafRest.Controllers
             if (user == null)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.NotFound);
 
-            if (await _giraf._userManager.IsInRoleAsync(user, GirafRole.Guardian))
-            {
-                var dep = await _giraf._context.Departments
-                    .Where(d => d.Key == user.DepartmentKey)
-                    .Include(d => d.Members)
-                    .FirstOrDefaultAsync();
-                user.AddCitizens(dep.Members.Where(m => _giraf._userManager.IsInRoleAsync(m, GirafRole.Citizen).Result).ToList());
-                }
-            else if (await _giraf._userManager.IsInRoleAsync(user, GirafRole.Department))
-            {
-                var dep = await _giraf._context.Departments
-                    .Where(d => d.Key == user.DepartmentKey)
-                    .Include(d => d.Members)
-                    .FirstOrDefaultAsync();
-                user.AddCitizens(dep.Members.Where(m => _giraf._userManager.IsInRoleAsync(m, GirafRole.Guardian).Result).ToList());
-            }
-
             // Get the roles the user is associated with
             GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
