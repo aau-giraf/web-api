@@ -17,7 +17,7 @@ Once the API is running locally you can navigate to `http://localhost:5000/swagg
 
 ## Migrations Sqlite
   Add migration:
-  -  `dotnet ef migrations add <MigrationName> -o Migrations --context` GirafSqliteDbContext
+  -  `dotnet ef migrations add <MigrationName> -o Migrations --context GirafSqliteDbContext`
 
   Update local Sqlite db:
   - Delete /GirafRest/bin and /GirafRest/Giraf.db
