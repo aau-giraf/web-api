@@ -25,6 +25,11 @@ namespace GirafRest.Models.DTOs
         /// List of users the user is guardian of. Is simply null if the user isn't a guardian. Contains guardians if the user is a Department
         /// </summary>
         public List<GirafUserDTO> GuardianOf { get; set; }
+        /// <summary>
+        /// Gets or sets guardians of a user.
+        /// </summary>
+        /// <value>My guardians.</value>
+        public List<GirafUserDTO> MyGuardians { get; set; }
         [Required]
         /// <summary>
         /// The Id of the user.
@@ -88,10 +93,18 @@ namespace GirafRest.Models.DTOs
             Role = userRole;
 
             //Check if the user is guardian of any users and add DTOs for those if that is the case
-            if (user.GuardianOf != null){
+            if (user.Citizens != null && user.Citizens.Any()){
                 GuardianOf = new List<GirafUserDTO>();
-                foreach(var usr in user.GuardianOf)
-                    GuardianOf.Add(new GirafUserDTO(usr, GirafRoles.Citizen));
+                foreach(var usr in user.Citizens)
+                    GuardianOf.Add(new GirafUserDTO(usr.Citizen, GirafRoles.Citizen));
+            }
+
+            //Check if the user has guardians and add DTO's for those if that is the case
+            if (user.Citizens != null && user.Citizens.Any())
+            {
+                MyGuardians = new List<GirafUserDTO>();
+                foreach (var usr in user.Citizens)
+                    MyGuardians.Add(new GirafUserDTO(usr.Guardian, GirafRoles.Citizen));
             }
 
             Console.WriteLine("Department = " + user.Department);

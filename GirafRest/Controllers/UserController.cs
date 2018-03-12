@@ -121,7 +121,7 @@ namespace GirafRest.Controllers
                     .Where(d => d.Key == user.DepartmentKey)
                     .Include(d => d.Members)
                     .FirstOrDefaultAsync();
-                user.GuardianOf = dep.Members.Where(m => _giraf._userManager.IsInRoleAsync(m, GirafRole.Citizen).Result).ToList();
+                user.AddCitizens(dep.Members.Where(m => _giraf._userManager.IsInRoleAsync(m, GirafRole.Citizen).Result).ToList());
                 }
             else if (await _giraf._userManager.IsInRoleAsync(user, GirafRole.Department))
             {
@@ -129,7 +129,7 @@ namespace GirafRest.Controllers
                     .Where(d => d.Key == user.DepartmentKey)
                     .Include(d => d.Members)
                     .FirstOrDefaultAsync();
-                user.GuardianOf = dep.Members.Where(m => _giraf._userManager.IsInRoleAsync(m, GirafRole.Guardian).Result).ToList();
+                user.AddCitizens(dep.Members.Where(m => _giraf._userManager.IsInRoleAsync(m, GirafRole.Guardian).Result).ToList());
             }
 
             // Get the roles the user is associated with

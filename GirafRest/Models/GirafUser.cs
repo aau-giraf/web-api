@@ -21,7 +21,13 @@ namespace GirafRest.Models
         /// <summary>
         /// List of users the user is guardian of. Is simply null if the user isn't a guardian
         /// </summary>
-        public virtual List<GirafUser> GuardianOf { get; set; }
+        public virtual List<GuardianRelation> Guardians { get; set; }
+
+        /// <summary>
+        /// Gets or sets my guardians.
+        /// </summary>
+        /// <value>My guardians.</value>
+        public virtual List<GuardianRelation> Citizens { get; set; }
 
         /// <summary>
         /// The display name for the user.
@@ -66,7 +72,8 @@ namespace GirafRest.Models
         {
             this.UserName = userName;
             this.Resources = new List<UserResource>();
-            this.GuardianOf = new List<GirafUser>();
+            this.Citizens = new List<GuardianRelation>();
+            this.Guardians = new List<GuardianRelation>();
             this.WeekSchedule = new List<Week>();
             Settings = new LauncherOptions();
 
@@ -81,6 +88,31 @@ namespace GirafRest.Models
             this.Resources = new List<UserResource>();
             this.WeekSchedule = new List<Week>();
             Settings = new LauncherOptions();
+            this.Citizens = new List<GuardianRelation>();
+            this.Guardians = new List<GuardianRelation>();
+        }
+
+        /// <summary>
+        /// Adds the citizens.
+        /// </summary>
+        /// <param name="citizens">Citizens.</param>
+        public void AddCitizens(List<GirafUser> citizens){
+            foreach (var citizen in citizens)
+            {
+                this.Citizens.Add(new GuardianRelation(this, citizen));
+            }
+        }
+
+        /// <summary>
+        /// Adds the guardians.
+        /// </summary>
+        /// <param name="guardians">Guardians.</param>
+        public void AddGuardians(List<GirafUser> guardians)
+        {
+            foreach (var guardian in guardians)
+            {
+                this.Guardians.Add(new GuardianRelation(guardian, this));
+            }
         }
     }
 }

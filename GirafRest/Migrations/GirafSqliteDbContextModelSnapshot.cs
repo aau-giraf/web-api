@@ -21,6 +21,19 @@ namespace GirafRest.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "2.0.1-rtm-125");
 
+            modelBuilder.Entity("GirafRest.GuardianRelation", b =>
+                {
+                    b.Property<string>("CitizenKey");
+
+                    b.Property<string>("GuardianKey");
+
+                    b.HasKey("CitizenKey", "GuardianKey");
+
+                    b.HasIndex("GuardianKey");
+
+                    b.ToTable("GuardianRelations");
+                });
+
             modelBuilder.Entity("GirafRest.Models.ApplicationOption", b =>
                 {
                     b.Property<long>("Id")
@@ -120,8 +133,6 @@ namespace GirafRest.Migrations
 
                     b.Property<bool>("EmailConfirmed");
 
-                    b.Property<string>("GirafUserId");
-
                     b.Property<bool>("IsDepartment");
 
                     b.Property<bool>("LockoutEnabled");
@@ -154,8 +165,6 @@ namespace GirafRest.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentKey");
-
-                    b.HasIndex("GirafUserId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasName("EmailIndex");
@@ -423,6 +432,19 @@ namespace GirafRest.Migrations
                     b.HasDiscriminator().HasValue("Pictogram");
                 });
 
+            modelBuilder.Entity("GirafRest.GuardianRelation", b =>
+                {
+                    b.HasOne("GirafRest.Models.GirafUser", "Citizen")
+                        .WithMany("Guardians")
+                        .HasForeignKey("CitizenKey")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("GirafRest.Models.GirafUser", "Guardian")
+                        .WithMany("Citizens")
+                        .HasForeignKey("GuardianKey")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("GirafRest.Models.ApplicationOption", b =>
                 {
                     b.HasOne("GirafRest.Models.LauncherOptions")
@@ -449,10 +471,6 @@ namespace GirafRest.Migrations
                         .WithMany("Members")
                         .HasForeignKey("DepartmentKey")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("GirafRest.Models.GirafUser")
-                        .WithMany("GuardianOf")
-                        .HasForeignKey("GirafUserId");
 
                     b.HasOne("GirafRest.Models.LauncherOptions", "Settings")
                         .WithMany()

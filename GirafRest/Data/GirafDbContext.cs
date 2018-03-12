@@ -121,6 +121,24 @@ namespace GirafRest.Data
             builder.Entity<WeekdayResource>().ToTable("WeekdayResources");
             //builder.Entity<Weekday>().ToTable("Weekdays").HasDiscriminator<string>("Discriminator").HasValue<Weekday>(nameof(Weekday));
             builder.Entity<Week>().ToTable("Weeks").HasDiscriminator<string>("Discriminator").HasValue<Week>(nameof(Week));
+
+
+            // Configure that a citizen can have many guardians and that a citizen can have many guardians
+
+            builder.Entity<GuardianRelation>()
+                   .HasKey(g => new { g.CitizenKey, g.GuardianKey});
+
+            builder.Entity<GuardianRelation>()
+                   .HasOne(gr => gr.Guardian)
+                   .WithMany(g => g.Citizens)
+                   .HasForeignKey(go => go.GuardianKey);
+
+            builder.Entity<GuardianRelation>()
+                   .HasOne(gr => gr.Citizen)
+                   .WithMany(c => c.Guardians)
+                   .HasForeignKey(mg => mg.CitizenKey);
+
+            builder.Entity<GuardianRelation>().ToTable("GuardianRelations");
         }
     }
 }

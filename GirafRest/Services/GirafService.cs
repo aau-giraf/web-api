@@ -82,7 +82,8 @@ namespace GirafRest.Controllers
                     .ThenInclude(wd => wd.Elements)
                     .Include(u => u.Settings)
                     .ThenInclude(lo => lo.appsUserCanAccess)
-                    .Include(u => u.GuardianOf)
+                    .Include(u => u.Guardians)
+                    .Include(u => u.Citizens)
                     //And return it
                     .FirstOrDefaultAsync();
         }
@@ -103,14 +104,15 @@ namespace GirafRest.Controllers
                     //Then load his department and their pictograms
                     .Include(u => u.Department)
                     .ThenInclude(d => d.Resources)
-                    .ThenInclude(dr => dr.Resource)
                     // then load his week schedule
                     .Include(u => u.WeekSchedule)
                     .ThenInclude(w => w.Weekdays)
                     .ThenInclude(wd => wd.Elements)
                     .Include(u => u.Settings)
-                    .ThenInclude(lo => lo.appsUserCanAccess)
-                    .Include(u => u.GuardianOf)
+                    .ThenInclude(lo => lo.appsUserCanAccess).Include(t => t.Citizens)
+                    .Include(u => u.Guardians)
+                    .Include(u => u.Citizens)
+
                     //And return it
                     .FirstOrDefaultAsync();
         }
