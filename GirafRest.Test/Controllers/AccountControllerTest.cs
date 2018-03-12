@@ -16,6 +16,7 @@ using GirafRest.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using GirafRest.Models.Responses;
+using Microsoft.Extensions.Options;
 
 namespace GirafRest.Test
 {
@@ -66,6 +67,12 @@ namespace GirafRest.Test
                 mockEmail.Object,
                 _testContext.MockLoggerFactory.Object,
                 mockGirafService,
+                Options.Create(new JwtConfig()
+                {
+                    JwtKey = "123456789123456789123456789",
+                    JwtIssuer = "example.com",
+                    JwtExpireDays = 30
+                }),
                 roleManager);
 
             _testContext.MockHttpContext = ac.MockHttpContext();
