@@ -11,7 +11,6 @@ namespace GirafRest.Models
         //Accessible to all users associated with the owning department.
         PROTECTED = 1,
 
-
         //Accessible only to the owning user.
         PRIVATE = 2
     }
