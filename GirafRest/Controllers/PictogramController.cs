@@ -141,9 +141,12 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<PictogramDTO>(ErrorCode.InvalidModelState);
 
             //Create the actual pictogram instance
+            // if access level is not specified, missing properties
+            if(pictogram.AccessLevel == null) return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties, "access level, pictogram");
+
             Pictogram pict = new Pictogram(pictogram.Title, (AccessLevel) pictogram.AccessLevel);
             pict.Image = pictogram.Image;
-
+            
             var user = await _giraf.LoadUserAsync(HttpContext.User);
 
             if(pictogram.AccessLevel == AccessLevel.PRIVATE) {

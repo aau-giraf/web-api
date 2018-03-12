@@ -171,6 +171,7 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.PictogramNotFound, res.ErrorCode);
         }
         #endregion
+
         #region ReadPictograms()
         [Fact]
         public void ReadPictograms_NoLoginGetAll_Ok3Pictograms()
@@ -281,6 +282,7 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }        
         #endregion
+
         #region Create Pictogram
         private const string pictogramName = "TP";
 
@@ -332,7 +334,6 @@ namespace GirafRest.Test
             };
 
             var res = pc.CreatePictogram(dto).Result;
-
             Assert.True(res.Success);
         }
 
@@ -349,7 +350,27 @@ namespace GirafRest.Test
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
+
+        [Fact]
+        public void CreatePictogram_NoAccessLevel_BadRequest()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
+
+            var dto = new PictogramDTO()
+            {
+                Title = "newpictogram",
+                Id = NEW_PICTOGRAM_ID
+            };
+
+            var res = pc.CreatePictogram(dto).Result;
+
+            Assert.False(res.Success);
+            Assert.Equal(res.ErrorCode, ErrorCode.MissingProperties);
+        }
+
         #endregion
+
         #region UpdatePictogramInfo
         [Fact]
         public void UpdatePictogramInfo_NoLoginPrivate_Unauthorized()
@@ -390,7 +411,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void UpdatePictogramInfo_LoginPublic_Ok()
+        public void UpdatePictogramInfo_LoginOwnPublic_Ok()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -510,7 +531,29 @@ namespace GirafRest.Test
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
+
+        [Fact]
+        public void UpdatePictogramInfo_PictogramOwnerModifyAccessLevel_Ok()
+        {
+            // ADMIN_DEP_ONE has pictogram with id = ADMIN_PRIVATE_PICTOGRAM, it is private, update to public
+
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+
+            var dto = new PictogramDTO()
+            {
+                Title = "Updated Pictogram",
+                AccessLevel = AccessLevel.PUBLIC,
+                Id = ADMIN_PRIVATE_PICTOGRAM
+            };
+
+            var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
+
+            Assert.Equal(res.Data.AccessLevel, AccessLevel.PUBLIC);
+        }
+
         #endregion
+
         #region DeletePictogram
         [Fact]
         public void DeletePictogram_NoLoginProtected_Unauthorized()
@@ -605,6 +648,7 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.PictogramNotFound, res.ErrorCode);
         }
         #endregion
+
         #region CreateImage
         [Fact]
         public void CreateImage_NoLoginProtected_Unauthorized()
@@ -747,6 +791,7 @@ namespace GirafRest.Test
         }
 
         #endregion
+
         #region UpdatePictogramImage
         [Fact]
         public void UpdatePictogramImage_NoLoginProtected_Unauthorized()
@@ -948,6 +993,7 @@ namespace GirafRest.Test
         }
 
         #endregion
+
         #region ReadPictogramImage
         [Fact]
         public void ReadPictogramImage_NoLoginProtected_Unauthorized()
@@ -1078,6 +1124,7 @@ namespace GirafRest.Test
         }
 
         #endregion
+
         #region FilterByTitle
         [Theory]
         [InlineData("PUBLIC", 2)]
@@ -1094,6 +1141,7 @@ namespace GirafRest.Test
             //Assert.Equal(expectedPictograms, res.ToList().Count);
         }
         #endregion
+
         #region Helpers
         private List<PictogramDTO> convertToListAndLogTestOutput(OkObjectResult result)
         {
