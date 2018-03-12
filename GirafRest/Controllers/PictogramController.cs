@@ -182,6 +182,8 @@ namespace GirafRest.Controllers
         public async Task<Response<PictogramDTO>> UpdatePictogramInfo(long id, [FromBody] PictogramDTO pictogram)
         {
             if (pictogram == null) return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties, "pictogram");
+            if (pictogram.AccessLevel == null) return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties, "missing access level");
+
             if (!ModelState.IsValid)
             {
                 return new ErrorResponse<PictogramDTO>(ErrorCode.InvalidModelState);

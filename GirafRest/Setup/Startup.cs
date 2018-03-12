@@ -97,6 +97,14 @@ namespace GirafRest.Setup
             services.AddTransient<IGirafService, GirafService>();
             services.AddMvc();
 
+            // Set up Cross-Origin Requests
+            services.AddCors(o => o.AddPolicy("AllowAll", builder =>
+            {
+                builder.AllowAnyOrigin();
+                builder.AllowAnyMethod();
+                builder.AllowAnyHeader();
+            }));
+
             // Register the Swagger generator, defining one or more Swagger documents
             services.AddSwaggerGen(c =>
             { 
@@ -171,7 +179,10 @@ namespace GirafRest.Setup
             //Configure logging for the application
             app.ConfigureLogging(loggerFactory);
             appLifetime.ApplicationStopped.Register(Log.CloseAndFlush);
-            
+
+            // Enable Cors, see configuration in ConfigureServices
+            app.UseCors("AllowAll");
+
             //Tells ASP.NET to generate an HTML exception page, if an exception occurs
             if (env.IsDevelopment())
             {
