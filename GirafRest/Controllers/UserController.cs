@@ -659,6 +659,8 @@ namespace GirafRest.Controllers
         private void updateGuardians(GirafUser user, List<GirafUserDTO> guardians)
         {
             if(guardians != null && guardians.Any()){
+                // delete old guardians
+                user.Guardians = new List<GuardianRelation>(); 
                 var guardianUsers = new List<GuardianRelation>();
                 foreach (var guardian in guardians)
                 {
@@ -674,6 +676,8 @@ namespace GirafRest.Controllers
         {
             if (citizens != null && citizens.Any())
             {
+                // delete old citizens
+                user.Citizens = new List<GuardianRelation>(); 
                 var citizenUsers = new List<GuardianRelation>();
                 foreach (var guardian in citizens)
                 {

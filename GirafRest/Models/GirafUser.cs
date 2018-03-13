@@ -105,7 +105,7 @@ namespace GirafRest.Models
 
         public void AddCitizen(GirafUser citizen)
         {
-            this.Guardians.Add(new GuardianRelation(this, citizen));
+            this.Citizens.Add(new GuardianRelation(this, citizen));
         }
 
         /// <summary>

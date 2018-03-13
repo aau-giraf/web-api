@@ -83,7 +83,9 @@ namespace GirafRest.Controllers
                     .Include(u => u.Settings)
                     .ThenInclude(lo => lo.appsUserCanAccess)
                     .Include(u => u.Guardians)
+                    .ThenInclude(g => g.Guardian)
                     .Include(u => u.Citizens)
+                    .ThenInclude(c => c.Citizen)
                     //And return it
                     .FirstOrDefaultAsync();
         }
@@ -111,9 +113,9 @@ namespace GirafRest.Controllers
                     .Include(u => u.Settings)
                     .ThenInclude(lo => lo.appsUserCanAccess).Include(t => t.Citizens)
                     .Include(u => u.Guardians)
-                    .ThenInclude(g => g.Citizen)
+                    .ThenInclude(g => g.Guardian)
                     .Include(u => u.Citizens)
-                    .ThenInclude(c => c.Guardian)
+                    .ThenInclude(c => c.Citizen)
                     //And return it
                     .FirstOrDefaultAsync();
 
