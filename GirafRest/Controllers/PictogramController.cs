@@ -235,42 +235,6 @@ namespace GirafRest.Controllers
         }
         #endregion
         #region ImageHandling
-        /// <summary>
-        /// Upload an image for the <see cref="Pictogram"/> pictogram with the given id.
-        /// </summary>
-        /// <param name="id">Id of the pictogram to upload an image for.</param>
-        /// <returns>The pictogram's information along with its image.
-        /// BadRequest if the Pictogram already has an image or if the request body did not contain an image
-        /// Unauthorized if the user does not own the Pictogram</returns>
-        [HttpPost("image/{id}")]
-        [Consumes(IMAGE_TYPE_PNG, IMAGE_TYPE_JPEG)]
-        [Authorize]
-        public async Task<Response<PictogramDTO>> CreateImage(long id)
-        {
-            var usr = await _giraf.LoadUserAsync(HttpContext.User);
-            if (usr == null) return new ErrorResponse<PictogramDTO>(ErrorCode.NotAuthorized);
-            //Fetch the image and check that it exists
-            var pict = await _giraf._context
-                .Pictograms
-                .Where(p => p.Id == id)
-                .FirstOrDefaultAsync();
-            if(pict == null) return new ErrorResponse<PictogramDTO>(ErrorCode.PictogramNotFound);
-            if (pict.Image != null) return new ErrorResponse<PictogramDTO>(ErrorCode.ImageAlreadyExistOnPictogram);
-
-            if (!CheckOwnership(pict, usr).Result)
-                return new ErrorResponse<PictogramDTO>(ErrorCode.NotAuthorized);
-            //Read the image from the request body
-            byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body);
-            if(image.Length == 0)
-            {
-                return new ErrorResponse<PictogramDTO>(ErrorCode.ImageNotContainedInRequest);
-            }
-
-            pict.Image = image;
-
-            var pictoResult = await _giraf._context.SaveChangesAsync();
-            return new Response<PictogramDTO>(new PictogramDTO(pict, image));
-        }
 
         /// <summary>
         /// Update the image of a <see cref="Pictogram"/> pictogram with the given Id.
@@ -283,26 +247,34 @@ namespace GirafRest.Controllers
         [Consumes(IMAGE_TYPE_PNG, IMAGE_TYPE_JPEG)]
         [HttpPut("image/{id}")]
         [Authorize]
-        public async Task<Response<PictogramDTO>> UpdatePictogramImage(long id) {
-            var usr = await _giraf.LoadUserAsync(HttpContext.User);
-            if (usr == null) return new ErrorResponse<PictogramDTO>(ErrorCode.UserNotFound);
+        public async Task<Response<PictogramDTO>> SetPictogramImage(long id) {
+            var user = await _giraf.LoadUserAsync(HttpContext.User);
+            
+            if (user == null) 
+                return new ErrorResponse<PictogramDTO>(ErrorCode.UserNotFound);
+            
             //Attempt to fetch the pictogram from the database.
-            var picto = await _giraf._context
+            var pictogram = await _giraf._context
                 .Pictograms
                 .Where(p => p.Id == id)
                 .FirstOrDefaultAsync();
-            if (picto == null) return new ErrorResponse<PictogramDTO>(ErrorCode.PictogramNotFound);
-            else if(picto.Image == null) return new ErrorResponse<PictogramDTO>(ErrorCode.PictogramHasNoImage);
+            
+            if (pictogram == null) 
+                return new ErrorResponse<PictogramDTO>(ErrorCode.PictogramNotFound);
 
-            if (!CheckOwnership(picto, usr).Result)
+            if (!CheckOwnership(pictogram, user).Result)
                 return new ErrorResponse<PictogramDTO>(ErrorCode.NotAuthorized);
 
             //Update the image
             byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body);
-            picto.Image = image;
+            
+            if(image.Length == 0)
+                return new ErrorResponse<PictogramDTO>(ErrorCode.ImageNotContainedInRequest);
+            
+            pictogram.Image = image;
 
             await _giraf._context.SaveChangesAsync();
-            return new Response<PictogramDTO>(new PictogramDTO(picto, image));
+            return new Response<PictogramDTO>(new PictogramDTO(pictogram, image));
         }
 
         /// <summary>
