@@ -111,18 +111,12 @@ namespace GirafRest.Controllers
                     .Include(u => u.Settings)
                     .ThenInclude(lo => lo.appsUserCanAccess).Include(t => t.Citizens)
                     .Include(u => u.Guardians)
+                    .ThenInclude(g => g.Citizen)
                     .Include(u => u.Citizens)
-
+                    .ThenInclude(c => c.Guardian)
                     //And return it
                     .FirstOrDefaultAsync();
-            foreach (var relation in user.Citizens)
-            {
-                relation.Citizen = _context.Users.FirstOrDefault(u => u.Id == relation.CitizenId);
-            }
-            foreach (var relation in user.Guardians)
-            {
-                relation.Guardian = _context.Users.FirstOrDefault(u => u.Id == relation.GuardianId);
-            }
+
             return user;
         }
 
