@@ -99,8 +99,13 @@ namespace GirafRest.Models
         public void AddCitizens(List<GirafUser> citizens){
             foreach (var citizen in citizens)
             {
-                this.Citizens.Add(new GuardianRelation(this, citizen));
+                AddCitizen(citizen);
             }
+        }
+
+        public void AddCitizen(GirafUser citizen)
+        {
+            this.Guardians.Add(new GuardianRelation(this, citizen));
         }
 
         /// <summary>
@@ -111,8 +116,13 @@ namespace GirafRest.Models
         {
             foreach (var guardian in guardians)
             {
-                this.Guardians.Add(new GuardianRelation(guardian, this));
+                AddGuardian(guardian);
             }
+        }
+
+        public void AddGuardian(GirafUser guardian)
+        {
+            this.Guardians.Add(new GuardianRelation(guardian, this));
         }
     }
 }

@@ -178,6 +178,8 @@ namespace GirafRest.Controllers
                 await updateDepartmentAsync(user, userDTO.Department);
                 updateResource(user, userDTO.Resources.Select(i => i.Id).ToList());
                 await updateWeekAsync(user, userDTO.WeekScheduleIds);
+                updateCitizens(user, userDTO.Citizens);
+                updateGuardians(user, userDTO.Guardians);
             }
             catch (KeyNotFoundException)
             {
@@ -197,6 +199,7 @@ namespace GirafRest.Controllers
 
             return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));
         }
+
         #region UserIcon
         /// <summary>
         /// Allows the user to upload an icon for his profile.
@@ -651,6 +654,35 @@ namespace GirafRest.Controllers
             if (dep == null)
                 throw new KeyNotFoundException("There is no department with the given id: " + departmentId);
             user.Department = dep;
+        }
+
+        private void updateGuardians(GirafUser user, List<GirafUserDTO> guardians)
+        {
+            if(guardians != null && guardians.Any()){
+                var guardianUsers = new List<GuardianRelation>();
+                foreach (var guardian in guardians)
+                {
+                    var gUser = _giraf._context.Users.FirstOrDefaultAsync(u => u.Id == guardian.Id).Result;
+                                 
+                    if (gUser != null)
+                        user.AddGuardian(gUser);
+                }
+            }
+        }
+
+        private void updateCitizens(GirafUser user, List<GirafUserDTO> citizens)
+        {
+            if (citizens != null && citizens.Any())
+            {
+                var citizenUsers = new List<GuardianRelation>();
+                foreach (var guardian in citizens)
+                {
+                    var cUser = _giraf._context.Users.FirstOrDefaultAsync(u => u.Id == guardian.Id).Result;
+
+                    if (cUser != null)
+                        user.AddCitizen(cUser);
+                }
+            }
         }
 
         /// <summary>
