@@ -21,13 +21,13 @@ namespace GirafRest.Models
         /// <summary>
         /// List of users the user is guardian of. Is simply null if the user isn't a guardian
         /// </summary>
-        public virtual List<GuardianRelation> Guardians { get; set; }
+        public virtual ICollection<GuardianRelation> Guardians { get; set; }
 
         /// <summary>
         /// Gets or sets my guardians.
         /// </summary>
         /// <value>My guardians.</value>
-        public virtual List<GuardianRelation> Citizens { get; set; }
+        public virtual ICollection<GuardianRelation> Citizens { get; set; }
 
         /// <summary>
         /// The display name for the user.

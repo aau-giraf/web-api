@@ -23,13 +23,20 @@ namespace GirafRest.Migrations
 
             modelBuilder.Entity("GirafRest.GuardianRelation", b =>
                 {
-                    b.Property<string>("CitizenKey");
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<string>("GuardianKey");
+                    b.Property<string>("CitizenId")
+                        .IsRequired();
 
-                    b.HasKey("CitizenKey", "GuardianKey");
+                    b.Property<string>("GuardianId")
+                        .IsRequired();
 
-                    b.HasIndex("GuardianKey");
+                    b.HasKey("Id");
+
+                    b.HasIndex("CitizenId");
+
+                    b.HasIndex("GuardianId");
 
                     b.ToTable("GuardianRelations");
                 });
@@ -436,12 +443,12 @@ namespace GirafRest.Migrations
                 {
                     b.HasOne("GirafRest.Models.GirafUser", "Citizen")
                         .WithMany("Guardians")
-                        .HasForeignKey("CitizenKey")
+                        .HasForeignKey("CitizenId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("GirafRest.Models.GirafUser", "Guardian")
                         .WithMany("Citizens")
-                        .HasForeignKey("GuardianKey")
+                        .HasForeignKey("GuardianId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

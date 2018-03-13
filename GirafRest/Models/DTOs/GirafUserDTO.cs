@@ -24,12 +24,12 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// List of users the user is guardian of. Is simply null if the user isn't a guardian. Contains guardians if the user is a Department
         /// </summary>
-        public List<GirafUserDTO> GuardianOf { get; set; }
+        public List<GirafUserDTO> Citizens { get; set; }
         /// <summary>
         /// Gets or sets guardians of a user.
         /// </summary>
         /// <value>My guardians.</value>
-        public List<GirafUserDTO> MyGuardians { get; set; }
+        public List<GirafUserDTO> Guardians { get; set; }
         [Required]
         /// <summary>
         /// The Id of the user.
@@ -80,10 +80,12 @@ namespace GirafRest.Models.DTOs
         }
 
         /// <summary>
-        /// Creates a new data transfer object from a given user.
+        /// Initializes a new instance of the <see cref="T:GirafRest.Models.DTOs.GirafUserDTO"/> class.
         /// </summary>
-        /// <param name="user">The user to create a DTO for.</param>
-        public GirafUserDTO(GirafUser user, GirafRoles userRole) 
+        /// <param name="user">User.</param>
+        /// <param name="userRole">User role.</param>
+        /// <param name="addGuardianRelation">If set to <c>true</c> add guardian relation.</param>
+        public GirafUserDTO(GirafUser user, GirafRoles userRole, bool addGuardianRelation = true)
         {
             //Add all trivial values
             Id = user.Id;
@@ -92,26 +94,38 @@ namespace GirafRest.Models.DTOs
             UserIcon = user.UserIcon;
             Role = userRole;
 
-            //Check if the user is guardian of any users and add DTOs for those if that is the case
-            if (user.Citizens != null && user.Citizens.Any()){
-                GuardianOf = new List<GirafUserDTO>();
-                foreach(var usr in user.Citizens)
-                    GuardianOf.Add(new GirafUserDTO(usr.Citizen, GirafRoles.Citizen));
-            }
-
-            //Check if the user has guardians and add DTO's for those if that is the case
-            if (user.Citizens != null && user.Citizens.Any())
+            if (addGuardianRelation)
             {
-                MyGuardians = new List<GirafUserDTO>();
-                foreach (var usr in user.Citizens)
-                    MyGuardians.Add(new GirafUserDTO(usr.Guardian, GirafRoles.Citizen));
-            }
+                //Check if the user is guardian of any users and add DTOs for those if that is the case
+                if (user.Citizens != null && user.Citizens.Any())
+                {
+                    Citizens = new List<GirafUserDTO>();
+                    foreach (var usr in user.Citizens)
+                    {
+                        if(usr.Citizen != null){
+                            Citizens.Add(new GirafUserDTO(usr.Citizen, GirafRoles.Citizen, false));
+                        }
+                    }
+                }
 
+                //Check if the user has guardians and add DTO's for those if that is the case
+                if (user.Citizens != null && user.Guardians.Any())
+                {
+                    Guardians = new List<GirafUserDTO>();
+                    foreach (var usr in user.Citizens){
+                        if (usr.Guardian != null)
+                        {
+                            Guardians.Add(new GirafUserDTO(usr.Guardian, GirafRoles.Guardian, false));
+                        }
+                    }
+
+                }
+            }
             Console.WriteLine("Department = " + user.Department);
             //Check if a user is in a department, add null as key if not.
             if (user.Department == null)
                 Department = null;
-            else 
+            else
                 Department = user.DepartmentKey;
 
             //Add the ids of the user's weeks and resources
@@ -119,7 +133,7 @@ namespace GirafRest.Models.DTOs
             var choices = user.Resources.Select(r => r.Resource).OfType<Choice>().Select(c => new ChoiceDTO(c)).AsEnumerable<ResourceDTO>();
             var pictograms = user.Resources.Select(r => r.Resource).OfType<Pictogram>().Select(c => new PictogramDTO(c)).AsEnumerable<ResourceDTO>();
             Resources = choices.Union(pictograms).ToList();
-            
+
             //And finally the user's settings
             Settings = new LauncherOptionsDTO(user.Settings);
         }

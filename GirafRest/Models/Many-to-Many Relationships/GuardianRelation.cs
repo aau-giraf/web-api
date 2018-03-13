@@ -8,23 +8,30 @@ namespace GirafRest
     public class GuardianRelation
     {
         /// <summary>
+        /// The key of the relationship entity.
+        /// </summary>
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public long Id { get; set; }
+        /// <summary>
         /// The key of the weekday to which the resource is attached.
         /// </summary>
         [Required]
-        public string CitizenKey { get; set; }
-
-        /// A reference to the actual user.
-        /// </summary>
-        [ForeignKey("CitizenKey")]
-        public virtual GirafUser Citizen { get; set; }
+        public string CitizenId { get; set; }
 
         /// <summary>
         /// The key of the involved resource.
         /// </summary>
         [Required]
-        public string GuardianKey { get; set; }
+        public string GuardianId { get; set; }
+
+        /// A reference to the actual user.
+        /// </summary>
+        [ForeignKey("CitizenId")]
+        public virtual GirafUser Citizen { get; set; }
+
         //A reference to the actual resource.
-        [ForeignKey("GuardianKey")]
+        [ForeignKey("GuardianId")]
         public virtual GirafUser Guardian { get; set; }
 
         public GuardianRelation(GirafUser guardian, GirafUser citizen)

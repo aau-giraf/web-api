@@ -13,8 +13,8 @@ using System;
 namespace GirafRest.Migrations
 {
     [DbContext(typeof(GirafSqliteDbContext))]
-    [Migration("20180312195528_GuardiansManyMany")]
-    partial class GuardiansManyMany
+    [Migration("20180313105018_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -24,13 +24,20 @@ namespace GirafRest.Migrations
 
             modelBuilder.Entity("GirafRest.GuardianRelation", b =>
                 {
-                    b.Property<string>("CitizenKey");
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
 
-                    b.Property<string>("GuardianKey");
+                    b.Property<string>("CitizenId")
+                        .IsRequired();
 
-                    b.HasKey("CitizenKey", "GuardianKey");
+                    b.Property<string>("GuardianId")
+                        .IsRequired();
 
-                    b.HasIndex("GuardianKey");
+                    b.HasKey("Id");
+
+                    b.HasIndex("CitizenId");
+
+                    b.HasIndex("GuardianId");
 
                     b.ToTable("GuardianRelations");
                 });
@@ -437,12 +444,12 @@ namespace GirafRest.Migrations
                 {
                     b.HasOne("GirafRest.Models.GirafUser", "Citizen")
                         .WithMany("Guardians")
-                        .HasForeignKey("CitizenKey")
+                        .HasForeignKey("CitizenId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("GirafRest.Models.GirafUser", "Guardian")
                         .WithMany("Citizens")
-                        .HasForeignKey("GuardianKey")
+                        .HasForeignKey("GuardianId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

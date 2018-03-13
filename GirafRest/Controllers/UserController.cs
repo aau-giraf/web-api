@@ -528,6 +528,7 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
             return new Response<LauncherOptions>(user.Settings);
         }
+
         #endregion
         #region Helpers
         /// <summary>

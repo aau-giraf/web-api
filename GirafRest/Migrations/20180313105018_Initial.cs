@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace GirafRest.Migrations
 {
-    public partial class GuardiansManyMany : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -295,21 +295,23 @@ namespace GirafRest.Migrations
                 name: "GuardianRelations",
                 columns: table => new
                 {
-                    CitizenKey = table.Column<string>(nullable: false),
-                    GuardianKey = table.Column<string>(nullable: false)
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    CitizenId = table.Column<string>(nullable: false),
+                    GuardianId = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_GuardianRelations", x => new { x.CitizenKey, x.GuardianKey });
+                    table.PrimaryKey("PK_GuardianRelations", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_GuardianRelations_AspNetUsers_CitizenKey",
-                        column: x => x.CitizenKey,
+                        name: "FK_GuardianRelations_AspNetUsers_CitizenId",
+                        column: x => x.CitizenId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_GuardianRelations_AspNetUsers_GuardianKey",
-                        column: x => x.GuardianKey,
+                        name: "FK_GuardianRelations_AspNetUsers_GuardianId",
+                        column: x => x.GuardianId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -490,9 +492,14 @@ namespace GirafRest.Migrations
                 column: "ResourceKey");
 
             migrationBuilder.CreateIndex(
-                name: "IX_GuardianRelations_GuardianKey",
+                name: "IX_GuardianRelations_CitizenId",
                 table: "GuardianRelations",
-                column: "GuardianKey");
+                column: "CitizenId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GuardianRelations_GuardianId",
+                table: "GuardianRelations",
+                column: "GuardianId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserResources_OtherKey",

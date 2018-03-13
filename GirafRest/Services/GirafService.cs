@@ -95,7 +95,7 @@ namespace GirafRest.Controllers
         /// <returns>A loaded user, i.e. a user with all related data.</returns>
         public async Task<GirafUser> LoadByNameAsync(string username)
         {
-            return await _context.Users
+            var user = await  _context.Users
                     //First load the user from the database
                     .Where(u => u.UserName.ToLower() == username.ToLower())
                     //Then load his pictograms - both the relationship and the actual pictogram
@@ -115,6 +115,15 @@ namespace GirafRest.Controllers
 
                     //And return it
                     .FirstOrDefaultAsync();
+            foreach (var relation in user.Citizens)
+            {
+                relation.Citizen = _context.Users.FirstOrDefault(u => u.Id == relation.CitizenId);
+            }
+            foreach (var relation in user.Guardians)
+            {
+                relation.Guardian = _context.Users.FirstOrDefault(u => u.Id == relation.GuardianId);
+            }
+            return user;
         }
 
         /// <summary>
