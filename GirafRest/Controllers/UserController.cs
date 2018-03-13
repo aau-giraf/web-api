@@ -495,6 +495,58 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
+        /// Gets the citizens for the specific user corresponding to the provided username.
+        /// </summary>
+        /// <returns>The citizens.</returns>
+        /// <param name="username">Username.</param>
+        [HttpGet("getCitizens/{username}")]
+        public async Task<Response<List<GirafUserDTO>>> GetCitizens(string username){
+            if (username == null)
+                return new ErrorResponse<List<GirafUserDTO>>(ErrorCode.MissingProperties, "username");
+            var user = await _giraf.LoadByNameAsync(username);
+            var citizens = new List<GirafUserDTO>();
+
+            foreach (var citizen in user.Citizens)
+            {
+                var girafUser = _giraf._context.Users.FirstOrDefault(u => u.Id == citizen.CitizenId);
+                citizens.Add(new GirafUserDTO(girafUser, GirafRoles.Citizen));
+            }
+
+            if (!citizens.Any())
+            {
+                return new ErrorResponse<List<GirafUserDTO>>(ErrorCode.UserHasNoCitizens);
+            }
+
+            return new Response<List<GirafUserDTO>>(citizens);
+        }
+
+        /// <summary>
+        /// Gets the guardians for the specific user corresponding to the provided username.
+        /// </summary>
+        /// <returns>The guardians.</returns>
+        /// <param name="username">Username.</param>
+        [HttpGet("getGuardians/{username}")]
+        public async Task<Response<List<GirafUserDTO>>> GetGuardians(string username)
+        {
+            if (username == null)
+                return new ErrorResponse<List<GirafUserDTO>>(ErrorCode.MissingProperties, "username");
+            var user = await _giraf.LoadByNameAsync(username);
+            var guardians = new List<GirafUserDTO>();
+            foreach (var guardian in user.Guardians)
+            {
+                var girafUser = _giraf._context.Users.FirstOrDefault(u => u.Id == guardian.GuardianId);
+                guardians.Add(new GirafUserDTO(girafUser, GirafRoles.Guardian));
+            }
+
+            if (!guardians.Any())
+            {
+                return new ErrorResponse<List<GirafUserDTO>>(ErrorCode.UserHasNoGuardians);
+            }
+
+            return new Response<List<GirafUserDTO>>(guardians);
+        }
+
+        /// <summary>
         /// Read the currently authorized user's settings object.
         /// </summary>
         /// <returns>The current user's settings.</returns>
