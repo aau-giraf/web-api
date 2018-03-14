@@ -92,10 +92,10 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Get the department with the specified id.
+        /// Gets the citizen names.
         /// </summary>
-        /// <param name="id">The id of the department to search for.</param>
-        /// <returns>The department with the given id or NotFound.</returns>
+        /// <returns>The citizen names.</returns>
+        /// <param name="id">Identifier.</param>
         [HttpGet("{id}/citizens")]
         public Response<List<UserNameDTO>> GetCitizenNames(long id)
         {
