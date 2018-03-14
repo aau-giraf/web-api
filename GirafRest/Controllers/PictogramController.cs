@@ -269,9 +269,6 @@ namespace GirafRest.Controllers
             //Update the image
             byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body);
             
-            if(image.Length == 0)
-                return new ErrorResponse<PictogramDTO>(ErrorCode.ImageNotContainedInRequest);
-            
             pictogram.Image = image;
 
             await _giraf._context.SaveChangesAsync();
