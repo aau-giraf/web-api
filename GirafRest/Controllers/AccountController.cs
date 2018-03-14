@@ -108,12 +108,12 @@ namespace GirafRest.Controllers
                 if(await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian))
                 {
                     _giraf._logger.LogInformation("Guardian attempted to sign in as Citizen");
-                    return await attemptRoleLoginAsync(currentUser, model.Username, GirafRole.Citizen);
+                    return await AttemptRoleLoginAsync(currentUser, model.Username, GirafRole.Citizen);
                 }
                 else if(await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Department))
                 {
                     _giraf._logger.LogInformation("Department attempted to sign in as Guardian");
-                    return await attemptRoleLoginAsync(currentUser, model.Username, GirafRole.Guardian);
+                    return await AttemptRoleLoginAsync(currentUser, model.Username, GirafRole.Guardian);
                 }
                 else if(await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Citizen)){
                     if (await _giraf._userManager.IsInRoleAsync(loginUser, GirafRole.Guardian))
@@ -139,7 +139,7 @@ namespace GirafRest.Controllers
         /// <param name="username">The username of the citizen to login as.</param>
         /// <param name="role">A string describing which role the target user is in.</param>
         /// <returns></returns>
-        private async Task<Response<GirafUserDTO>> attemptRoleLoginAsync(GirafUser superior, string username, string role)
+        private async Task<Response<GirafUserDTO>> AttemptRoleLoginAsync(GirafUser superior, string username, string role)
         {
             //Attempt to find a user with the given username in the guardian's department
             var loginUser = await _giraf.LoadByNameAsync(username);
