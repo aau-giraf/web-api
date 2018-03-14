@@ -86,6 +86,7 @@ namespace GirafRest.Controllers
             if(loginUser == null) // If username is invalid
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidCredentials, "username");
             GirafRoles userRoles = await _roleManager.findUserRole(_giraf._userManager, loginUser);
+
             //Attempt to sign in with the given credentials.
             var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, lockoutOnFailure: false);
             if(result.Succeeded) return new Response<GirafUserDTO>(new GirafUserDTO(loginUser, userRoles));

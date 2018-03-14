@@ -175,7 +175,6 @@ namespace GirafRest.Migrations
                     DisplayName = table.Column<string>(nullable: true),
                     Email = table.Column<string>(maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(nullable: false),
-                    GirafUserId = table.Column<string>(nullable: true),
                     IsDepartment = table.Column<bool>(nullable: false),
                     LockoutEnabled = table.Column<bool>(nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
@@ -199,12 +198,6 @@ namespace GirafRest.Migrations
                         principalTable: "Departments",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AspNetUsers_AspNetUsers_GirafUserId",
-                        column: x => x.GirafUserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_AspNetUsers_LauncherOptions_SettingsKey",
                         column: x => x.SettingsKey,
@@ -293,6 +286,32 @@ namespace GirafRest.Migrations
                     table.ForeignKey(
                         name: "FK_AspNetUserTokens_AspNetUsers_UserId",
                         column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "GuardianRelations",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    CitizenId = table.Column<string>(nullable: false),
+                    GuardianId = table.Column<string>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_GuardianRelations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_GuardianRelations_AspNetUsers_CitizenId",
+                        column: x => x.CitizenId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_GuardianRelations_AspNetUsers_GuardianId",
+                        column: x => x.GuardianId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -437,11 +456,6 @@ namespace GirafRest.Migrations
                 column: "DepartmentKey");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_GirafUserId",
-                table: "AspNetUsers",
-                column: "GirafUserId");
-
-            migrationBuilder.CreateIndex(
                 name: "EmailIndex",
                 table: "AspNetUsers",
                 column: "NormalizedEmail");
@@ -476,6 +490,16 @@ namespace GirafRest.Migrations
                 name: "IX_DeparmentResources_ResourceKey",
                 table: "DeparmentResources",
                 column: "ResourceKey");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GuardianRelations_CitizenId",
+                table: "GuardianRelations",
+                column: "CitizenId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_GuardianRelations_GuardianId",
+                table: "GuardianRelations",
+                column: "GuardianId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserResources_OtherKey",
@@ -538,6 +562,9 @@ namespace GirafRest.Migrations
 
             migrationBuilder.DropTable(
                 name: "DeparmentResources");
+
+            migrationBuilder.DropTable(
+                name: "GuardianRelations");
 
             migrationBuilder.DropTable(
                 name: "UserResources");

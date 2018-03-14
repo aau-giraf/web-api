@@ -45,10 +45,11 @@ namespace GirafRest.Setup
 			//Adding citizens to Guardian
 			foreach(var user in context.Users)
 			{
-				if(userManager.IsInRoleAsync(user, GirafRole.Guardian).Result){
-					user.GuardianOf = user.Department.Members
-					.Where(m => userManager.IsInRoleAsync(m, GirafRole.Citizen).Result).ToList();
-				}
+                if(userManager.IsInRoleAsync(user, GirafRole.Guardian).Result){
+                    var citizens = user.Department.Members
+                    .Where(m => userManager.IsInRoleAsync(m, GirafRole.Citizen).Result).ToList();
+                    user.AddCitizens(citizens);
+                }
 			}
             context.SaveChanges();
         }

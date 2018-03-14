@@ -82,7 +82,10 @@ namespace GirafRest.Controllers
                     .ThenInclude(wd => wd.Elements)
                     .Include(u => u.Settings)
                     .ThenInclude(lo => lo.appsUserCanAccess)
-                    .Include(u => u.GuardianOf)
+                    .Include(u => u.Guardians)
+                    .ThenInclude(g => g.Guardian)
+                    .Include(u => u.Citizens)
+                    .ThenInclude(c => c.Citizen)
                     //And return it
                     .FirstOrDefaultAsync();
         }
@@ -94,7 +97,7 @@ namespace GirafRest.Controllers
         /// <returns>A loaded user, i.e. a user with all related data.</returns>
         public async Task<GirafUser> LoadByNameAsync(string username)
         {
-            return await _context.Users
+            var user = await  _context.Users
                     //First load the user from the database
                     .Where(u => u.UserName.ToLower() == username.ToLower())
                     //Then load his pictograms - both the relationship and the actual pictogram
@@ -103,16 +106,20 @@ namespace GirafRest.Controllers
                     //Then load his department and their pictograms
                     .Include(u => u.Department)
                     .ThenInclude(d => d.Resources)
-                    .ThenInclude(dr => dr.Resource)
                     // then load his week schedule
                     .Include(u => u.WeekSchedule)
                     .ThenInclude(w => w.Weekdays)
                     .ThenInclude(wd => wd.Elements)
                     .Include(u => u.Settings)
-                    .ThenInclude(lo => lo.appsUserCanAccess)
-                    .Include(u => u.GuardianOf)
+                    .ThenInclude(lo => lo.appsUserCanAccess).Include(t => t.Citizens)
+                    .Include(u => u.Guardians)
+                    .ThenInclude(g => g.Guardian)
+                    .Include(u => u.Citizens)
+                    .ThenInclude(c => c.Citizen)
                     //And return it
                     .FirstOrDefaultAsync();
+
+            return user;
         }
 
         /// <summary>
