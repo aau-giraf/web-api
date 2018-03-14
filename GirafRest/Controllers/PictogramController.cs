@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using GirafRest.Services;
 using GirafRest.Extensions;
 using GirafRest.Models.Responses;
+using System.IO;
 
 namespace GirafRest.Controllers
 {
@@ -141,9 +142,12 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<PictogramDTO>(ErrorCode.InvalidModelState);
 
             //Create the actual pictogram instance
+            // if access level is not specified, missing properties
+            if(pictogram.AccessLevel == null) return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties, "access level, pictogram");
+
             Pictogram pict = new Pictogram(pictogram.Title, (AccessLevel) pictogram.AccessLevel);
             pict.Image = pictogram.Image;
-
+            
             var user = await _giraf.LoadUserAsync(HttpContext.User);
 
             if(pictogram.AccessLevel == AccessLevel.PRIVATE) {
@@ -179,6 +183,8 @@ namespace GirafRest.Controllers
         public async Task<Response<PictogramDTO>> UpdatePictogramInfo(long id, [FromBody] PictogramDTO pictogram)
         {
             if (pictogram == null) return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties, "pictogram");
+            if (pictogram.AccessLevel == null) return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties, "missing access level");
+
             if (!ModelState.IsValid)
             {
                 return new ErrorResponse<PictogramDTO>(ErrorCode.InvalidModelState);
@@ -237,7 +243,7 @@ namespace GirafRest.Controllers
         /// <returns>The pictogram's information along with its image.
         /// BadRequest if the Pictogram already has an image or if the request body did not contain an image
         /// Unauthorized if the user does not own the Pictogram</returns>
-        [HttpPost("image/{id}")]
+        [HttpPost("{id}/image")]
         [Consumes(IMAGE_TYPE_PNG, IMAGE_TYPE_JPEG)]
         [Authorize]
         public async Task<Response<PictogramDTO>> CreateImage(long id)
@@ -276,7 +282,7 @@ namespace GirafRest.Controllers
         /// BadRequest if the Pictogram does not have an image yet
         /// NotFound if it does not exist</returns>
         [Consumes(IMAGE_TYPE_PNG, IMAGE_TYPE_JPEG)]
-        [HttpPut("image/{id}")]
+        [HttpPut("{id}/image")]
         [Authorize]
         public async Task<Response<PictogramDTO>> UpdatePictogramImage(long id) {
             var usr = await _giraf.LoadUserAsync(HttpContext.User);
@@ -307,7 +313,7 @@ namespace GirafRest.Controllers
         /// <returns>A FileResult with the desired image.
         /// NotFound if the image does not exist
         /// Unauthorized if the user does not have access to it</returns>
-        [HttpGet("image/{id}")]
+        [HttpGet("{id}/image")]
         public async Task<Response<byte[]>> ReadPictogramImage(long id) {
             var usr = await _giraf.LoadUserAsync(HttpContext.User);
             if (usr == null) return new ErrorResponse<byte[]>(ErrorCode.NotAuthorized);
@@ -325,6 +331,41 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<byte[]>(ErrorCode.NotAuthorized);
 
             return new Response<byte[]>(picto.Image);
+        }
+
+        /// <summary>
+        /// Returns the pictogram image as a png file
+        /// </summary>
+        /// <param name="id">The id of the pictogram to read the image of.</param>
+        /// <returns>The desired image as a PNG file.
+        /// NotFound if the image does not exist
+        /// Unauthorized if the user does not have access to it</returns>
+        [HttpGet("{id}/image/raw")]
+        public async Task<IActionResult> ReadRawPictogramImage(long id) {
+            var usr = await _giraf.LoadUserAsync(HttpContext.User);
+            if (usr == null) 
+                return NotFound(); 
+                // return new ErrorResponse<byte[]>(ErrorCode.NotAuthorized);
+            //Fetch the pictogram and check that it actually exists and has an image.
+            var picto = await _giraf._context
+                .Pictograms
+                .Where(p => p.Id == id)
+                .FirstOrDefaultAsync();
+            if (picto == null)
+                return NotFound(); 
+                // return new ErrorResponse<byte[]>(ErrorCode.PictogramNotFound);
+            else if (picto.Image == null)
+                return NotFound(); 
+                // return new ErrorResponse<byte[]>(ErrorCode.PictogramHasNoImage);
+
+            if (!CheckOwnership(picto, usr).Result)
+                return NotFound(); 
+                // return new ErrorResponse<byte[]>(ErrorCode.NotAuthorized);
+
+            return File(Convert.FromBase64String(System.Text.Encoding.UTF8.GetString(picto.Image)), "image/png");
+            
+            // return File(SixLabors.ImageSharp.Image.FromStream(new MemoryStream(picto.Image)), "image/png");
+            // return new Response<byte[]>(picto.Image);
         }
         #endregion
 

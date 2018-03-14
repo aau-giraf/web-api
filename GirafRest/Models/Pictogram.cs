@@ -38,6 +38,19 @@ namespace GirafRest.Models {
         }
 
         /// <summary>
+        /// Creates a new pictogram with the given title, access level and image.
+        /// </summary>
+        /// <param name="title"></param>
+        /// <param name="accessLevel"></param>
+        /// <param name="image"></param>
+        public Pictogram(string title, AccessLevel accessLevel, byte[] image)
+        {
+            this.Title = title;
+            this.AccessLevel = accessLevel;
+            this.Image = image;
+        }
+
+        /// <summary>
         /// Empty constructor is required by Newtonsoft.
         /// </summary>
         public Pictogram(){}

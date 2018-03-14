@@ -13,6 +13,7 @@
     <NoWarn>1701;1702;1705;1591;1572;1571;1573;1587;1570;1574;1587</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNet.WebApi.Cors" Version="5.2.4" />
     <PackageReference Include="NETCore.MailKit" Version="2.0.2" />
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.0.1" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.2.0" />
