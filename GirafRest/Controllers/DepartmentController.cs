@@ -92,6 +92,36 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
+        /// Get the department with the specified id.
+        /// </summary>
+        /// <param name="id">The id of the department to search for.</param>
+        /// <returns>The department with the given id or NotFound.</returns>
+        [HttpGet("{id}/citizens")]
+        public Response<List<UserNameDTO>> GetCitizenNames(long id)
+        {
+            var department = _giraf._context.Departments
+                .Where(dep => dep.Key == id);
+
+            if (department == null) return new ErrorResponse<List<UserNameDTO>>(ErrorCode.DepartmentNotFound);
+
+            var roleCitizenId = _giraf._context.Roles.Where(r => r.Name == GirafRole.Citizen)
+                                                     .Select(c => c.Id).FirstOrDefault();
+
+            if(roleCitizenId == null) return new ErrorResponse<List<UserNameDTO>>(ErrorCode.DepartmentHasNoCitizens);
+
+            var userIds = _giraf._context.UserRoles.Where(u => u.RoleId == roleCitizenId)
+                                                   .Select(r => r.UserId).Distinct().ToList();
+
+            if(userIds == null) return new ErrorResponse<List<UserNameDTO>>(ErrorCode.DepartmentHasNoCitizens);
+
+            var usersNamesInDepartment = _giraf._context.Users
+                                               .Where(u => userIds.Any(ui => ui == u.Id))
+                                               .Select(u => new UserNameDTO(u.UserName, u.Id)).ToList();
+
+            return new Response<List<UserNameDTO>>(usersNamesInDepartment);
+        }
+
+        /// <summary>
         /// Add a department to the database.
         /// </summary>
         /// <param name="dep">The department to add to the database.</param>

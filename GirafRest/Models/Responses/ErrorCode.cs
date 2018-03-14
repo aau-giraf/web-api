@@ -49,6 +49,7 @@
         PasswordMissMatch,
         TwoDaysCannotHaveSameDayProperty,
         UserHasNoCitizens,
-        UserHasNoGuardians
+        UserHasNoGuardians,
+        DepartmentHasNoCitizens
     }
 }
