@@ -148,7 +148,6 @@ namespace GirafRest.Setup
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
                 })
                 .AddJwtBearer(cfg =>
                 {
@@ -163,13 +162,6 @@ namespace GirafRest.Setup
                     };
                 });
         }
-
-        //https://stackoverflow.com/questions/42030137/suppress-redirect-on-api-urls-in-asp-net-core
-        static Func<RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode, Func<RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector) =>
-    context => {
-            context.Response.StatusCode = (int)statusCode;
-            return Task.CompletedTask;
-    };
 
         /// <summary>
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -195,7 +187,7 @@ namespace GirafRest.Setup
             //Configure logging for the application
             app.ConfigureLogging(loggerFactory);
             appLifetime.ApplicationStopped.Register(Log.CloseAndFlush);
-            
+            app.UseStatusCodePagesWithReExecute("/v1/Error", "?status={0}");
             //Tells ASP.NET to generate an HTML exception page, if an exception occurs
             if (env.IsDevelopment())
             {
