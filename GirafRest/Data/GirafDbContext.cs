@@ -16,17 +16,18 @@ namespace GirafRest.Data
     public class GirafDbContext : IdentityDbContext<GirafUser, GirafRole, string>
     {
         public virtual DbSet<Department> Departments { get; set; }
-        public virtual  DbSet<Pictogram> Pictograms { get; set; }
+        public virtual DbSet<Pictogram> Pictograms { get; set; }
         public virtual DbSet<Choice> Choices { get; set; }
         public virtual DbSet<Week> Weeks { get; set; }
         public virtual DbSet<Weekday> Weekdays { get; set; }
-        public virtual DbSet<Resource> Frames {get; set;}
+        public virtual DbSet<Resource> Frames { get; set; }
         public virtual DbSet<UserResource> UserResources { get; set; }
         public virtual DbSet<DepartmentResource> DepartmentResources { get; set; }
-        public virtual DbSet<WeekdayResource> WeekdayResources {get; set;}
+        public virtual DbSet<WeekdayResource> WeekdayResources { get; set; }
+        public virtual DbSet<GuardianRelation> GuardianRelations { get; set; }
         public new virtual DbSet<GirafUser> Users { get { return base.Users; } set { base.Users = value; } }
 
-        protected GirafDbContext () {}
+        protected GirafDbContext() { }
         /// <summary>
         /// Constructor for use when debugging and using the Sqlite database
         /// </summary>
@@ -102,7 +103,7 @@ namespace GirafRest.Data
                 .WithMany(w => w.Elements)
                 .HasForeignKey(wr => wr.OtherKey);
             builder.Entity<WeekdayResource>()
-                .HasOne<Resource> (wr => wr.Resource)
+                .HasOne<Resource>(wr => wr.Resource)
                 .WithMany()
                 .HasForeignKey(wr => wr.ResourceKey);
             //And between Choice and Resource(Pictogram)
@@ -114,13 +115,27 @@ namespace GirafRest.Data
                 .HasOne<Resource>(cr => cr.Resource)
                 .WithMany()
                 .HasForeignKey(cr => cr.ResourceKey);
-            
+
             //Create tables for all many-to-many relationships.
             builder.Entity<UserResource>().ToTable("UserResources");
             builder.Entity<DepartmentResource>().ToTable("DeparmentResources");
             builder.Entity<WeekdayResource>().ToTable("WeekdayResources");
             //builder.Entity<Weekday>().ToTable("Weekdays").HasDiscriminator<string>("Discriminator").HasValue<Weekday>(nameof(Weekday));
             builder.Entity<Week>().ToTable("Weeks").HasDiscriminator<string>("Discriminator").HasValue<Week>(nameof(Week));
+
+            // Configure that a citizen can have many guardians and that a citizen can have many guardians
+
+            builder.Entity<GuardianRelation>()
+                   .HasOne(gr => gr.Guardian)
+                   .WithMany(g => g.Citizens)
+                   .HasForeignKey(go => go.GuardianId);
+
+            builder.Entity<GuardianRelation>()
+                   .HasOne(gr => gr.Citizen)
+                   .WithMany(c => c.Guardians)
+                   .HasForeignKey(mg => mg.CitizenId);
+
+            builder.Entity<GuardianRelation>().ToTable("GuardianRelations");
         }
     }
 }

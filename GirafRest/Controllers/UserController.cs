@@ -115,23 +115,6 @@ namespace GirafRest.Controllers
             if (user == null)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.NotFound);
 
-            if (await _giraf._userManager.IsInRoleAsync(user, GirafRole.Guardian))
-            {
-                var dep = await _giraf._context.Departments
-                    .Where(d => d.Key == user.DepartmentKey)
-                    .Include(d => d.Members)
-                    .FirstOrDefaultAsync();
-                user.GuardianOf = dep.Members.Where(m => _giraf._userManager.IsInRoleAsync(m, GirafRole.Citizen).Result).ToList();
-                }
-            else if (await _giraf._userManager.IsInRoleAsync(user, GirafRole.Department))
-            {
-                var dep = await _giraf._context.Departments
-                    .Where(d => d.Key == user.DepartmentKey)
-                    .Include(d => d.Members)
-                    .FirstOrDefaultAsync();
-                user.GuardianOf = dep.Members.Where(m => _giraf._userManager.IsInRoleAsync(m, GirafRole.Guardian).Result).ToList();
-            }
-
             // Get the roles the user is associated with
             GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
@@ -195,6 +178,8 @@ namespace GirafRest.Controllers
                 await updateDepartmentAsync(user, userDTO.Department);
                 updateResource(user, userDTO.Resources.Select(i => i.Id).ToList());
                 await updateWeekAsync(user, userDTO.WeekScheduleIds);
+                updateCitizens(user, userDTO.Citizens);
+                updateGuardians(user, userDTO.Guardians);
             }
             catch (KeyNotFoundException)
             {
@@ -214,6 +199,7 @@ namespace GirafRest.Controllers
 
             return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));
         }
+
         #region UserIcon
         /// <summary>
         /// Allows the user to upload an icon for his profile.
@@ -512,6 +498,58 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
+        /// Gets the citizens for the specific user corresponding to the provided username.
+        /// </summary>
+        /// <returns>The citizens.</returns>
+        /// <param name="username">Username.</param>
+        [HttpGet("getCitizens/{username}")]
+        public async Task<Response<List<GirafUserDTO>>> GetCitizens(string username){
+            if (username == null)
+                return new ErrorResponse<List<GirafUserDTO>>(ErrorCode.MissingProperties, "username");
+            var user = await _giraf.LoadByNameAsync(username);
+            var citizens = new List<GirafUserDTO>();
+
+            foreach (var citizen in user.Citizens)
+            {
+                var girafUser = _giraf._context.Users.FirstOrDefault(u => u.Id == citizen.CitizenId);
+                citizens.Add(new GirafUserDTO(girafUser, GirafRoles.Citizen));
+            }
+
+            if (!citizens.Any())
+            {
+                return new ErrorResponse<List<GirafUserDTO>>(ErrorCode.UserHasNoCitizens);
+            }
+
+            return new Response<List<GirafUserDTO>>(citizens);
+        }
+
+        /// <summary>
+        /// Gets the guardians for the specific user corresponding to the provided username.
+        /// </summary>
+        /// <returns>The guardians.</returns>
+        /// <param name="username">Username.</param>
+        [HttpGet("getGuardians/{username}")]
+        public async Task<Response<List<GirafUserDTO>>> GetGuardians(string username)
+        {
+            if (username == null)
+                return new ErrorResponse<List<GirafUserDTO>>(ErrorCode.MissingProperties, "username");
+            var user = await _giraf.LoadByNameAsync(username);
+            var guardians = new List<GirafUserDTO>();
+            foreach (var guardian in user.Guardians)
+            {
+                var girafUser = _giraf._context.Users.FirstOrDefault(u => u.Id == guardian.GuardianId);
+                guardians.Add(new GirafUserDTO(girafUser, GirafRoles.Guardian));
+            }
+
+            if (!guardians.Any())
+            {
+                return new ErrorResponse<List<GirafUserDTO>>(ErrorCode.UserHasNoGuardians);
+            }
+
+            return new Response<List<GirafUserDTO>>(guardians);
+        }
+
+        /// <summary>
         /// Read the currently authorized user's settings object.
         /// </summary>
         /// <returns>The current user's settings.</returns>
@@ -545,6 +583,7 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
             return new Response<LauncherOptions>(user.Settings);
         }
+
         #endregion
         #region Helpers
         /// <summary>
@@ -615,6 +654,39 @@ namespace GirafRest.Controllers
             if (dep == null)
                 throw new KeyNotFoundException("There is no department with the given id: " + departmentId);
             user.Department = dep;
+        }
+
+        private void updateGuardians(GirafUser user, List<GirafUserDTO> guardians)
+        {
+            if(guardians != null && guardians.Any()){
+                // delete old guardians
+                user.Guardians = new List<GuardianRelation>(); 
+                var guardianUsers = new List<GuardianRelation>();
+                foreach (var guardian in guardians)
+                {
+                    var gUser = _giraf._context.Users.FirstOrDefaultAsync(u => u.Id == guardian.Id).Result;
+                                 
+                    if (gUser != null)
+                        user.AddGuardian(gUser);
+                }
+            }
+        }
+
+        private void updateCitizens(GirafUser user, List<GirafUserDTO> citizens)
+        {
+            if (citizens != null && citizens.Any())
+            {
+                // delete old citizens
+                user.Citizens = new List<GuardianRelation>(); 
+                var citizenUsers = new List<GuardianRelation>();
+                foreach (var guardian in citizens)
+                {
+                    var cUser = _giraf._context.Users.FirstOrDefaultAsync(u => u.Id == guardian.Id).Result;
+
+                    if (cUser != null)
+                        user.AddCitizen(cUser);
+                }
+            }
         }
 
         /// <summary>
