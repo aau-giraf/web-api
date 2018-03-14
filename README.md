@@ -6,10 +6,9 @@ To run the project locally with a sqlite database first do the following:
 
 1. Goto: /web-api/GirafRest
 
-2a.
+2. In a shell:
   - `cp appsettings.example.json appsettings.Development.json`
   - update appsettings.Development.json as necessary
-2b. In a shell:
   - `dotnet restore`
   - `dotnet run --sample-data`
 
