@@ -268,8 +268,11 @@ namespace GirafRest.Controllers
 
             //Update the image
             byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body);
-            
-            pictogram.Image = image;
+
+            if (image.Length == 0)
+                pictogram.Image = null;
+            else
+                pictogram.Image = image;
 
             await _giraf._context.SaveChangesAsync();
             return new Response<PictogramDTO>(new PictogramDTO(pictogram, image));
