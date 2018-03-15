@@ -30,7 +30,7 @@ namespace GirafRest.Test
             public const int PictogramPrivateUser1 = 4;
             public const int PictogramDepartment1 = 5;
             public const int PictogramDepartment2 = 6;
-            
+            private const int DepartmentTwoUser = 6;
             private List<Pictogram> _mockPictograms;
             public List<Pictogram> MockPictograms
             {
@@ -120,7 +120,7 @@ namespace GirafRest.Test
                         {
                             UserName = "Departmant in dep2",
                             Id = "department2",
-                            DepartmentKey = 2
+                            DepartmentKey = 2,
                         },
                         new GirafUser()
                         {
@@ -236,7 +236,9 @@ namespace GirafRest.Test
                                 }
                             }
                         };
-
+                    if (mockUsers != null) { 
+                        mockUsers[DepartmentTwoUser].Department = mockDepartments[1];
+                    }
                     return mockDepartments;
                 }
             }
@@ -413,7 +415,6 @@ namespace GirafRest.Test
                 var mockRoles = CreateMockDbSet(MockRoles);
                 var mockUserRoles = CreateMockDbSet(MockUserRoles);
                 var mockWeeks = CreateMockDbSet(MockWeeks);
-
                 var dbMock = new Mock<MockDbContext>();
                 dbMock.Setup(c => c.Pictograms).Returns(mockSet.Object);
                 dbMock.Setup(c => c.UserResources).Returns(mockRelationSet.Object);
@@ -422,6 +423,8 @@ namespace GirafRest.Test
                 dbMock.Setup(c => c.Departments).Returns(mockDeps.Object);
                 dbMock.Setup(c => c.Weeks).Returns(mockWeeks.Object);
                 dbMock.Setup(c => c.Users).Returns(mockUsers.Object);
+                dbMock.Setup(c => c.Roles).Returns(mockRoles.Object);
+                dbMock.Setup(c => c.UserRoles).Returns(mockUserRoles.Object);
 
                 //Make sure that all references are setup - Entity does not handle it for us this time.
                 MockUsers[0].Department = MockDepartments[0];
