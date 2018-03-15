@@ -755,19 +755,6 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void CreateImage_LoginPublicNullBody_BadRequest()
-        {
-            var pc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            _testContext.MockHttpContext.MockRequestNoImage();
-
-            var res = pc.SetPictogramImage(PUBLIC_PICTOGRAM).Result;
-
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.ImageNotContainedInRequest, res.ErrorCode);
-        }
-
-        [Fact]
         public void CreateImage_PublicJpeg_Ok()
         {
             var pc = initializeTest();
