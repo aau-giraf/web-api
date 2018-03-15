@@ -22,6 +22,10 @@ using GirafRest.Models.Responses;
 using System.IO;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Collections.Generic;
 
 namespace GirafRest.Setup
 {
@@ -76,6 +80,8 @@ namespace GirafRest.Setup
         /// <param name="services">A collection of all services in the application</param>
         public void ConfigureServices(IServiceCollection services)
         {
+            services.Configure<JwtConfig>(Configuration.GetSection("Jwt"));
+
             //Add the database context to the server using extension-methods
             if (HostingEnvironment.IsDevelopment())
             {
@@ -113,7 +119,17 @@ namespace GirafRest.Setup
                 var basePath = AppContext.BaseDirectory;
                 var xmlPath = Path.Combine(basePath, "GirafRest.xml");
                 c.IncludeXmlComments(xmlPath);
-
+                c.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                    Name = "Authorization",
+                    In = "header",
+                    Type = "apiKey"
+                });
+                c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+                {
+                    { "Bearer", new string[] { } }
+                });
             });
 
             services.ConfigurePolicies();
@@ -132,28 +148,28 @@ namespace GirafRest.Setup
                 .AddEntityFrameworkStores<T>()
                 .AddDefaultTokenProviders();
 
-            services.ConfigureApplicationCookie(options => {
-                options.Events.OnRedirectToAccessDenied = context =>
+            // Add Jwt Authentication
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear(); // => remove default claims
+            services
+                .AddAuthentication(options =>
                 {
-                    context.Response.StatusCode = StatusCodes.Status200OK;
-                    context.Response.Body = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new ErrorResponse(ErrorCode.Forbidden))));
-                    return Task.FromResult(0);
-                };
-                options.Events.OnRedirectToLogin = context =>
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
+                .AddJwtBearer(cfg =>
                 {
-                    context.Response.StatusCode = StatusCodes.Status200OK;
-                    context.Response.Body = new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(new ErrorResponse(ErrorCode.NotAuthorized))));
-                    return Task.FromResult(0);
-                };
-            });
+                    cfg.RequireHttpsMetadata = false;
+                    cfg.SaveToken = true;
+                    cfg.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidIssuer = Configuration["Jwt:JwtIssuer"],
+                        ValidAudience = Configuration["Jwt:JwtIssuer"],
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:JwtKey"])),
+                        ClockSkew = TimeSpan.Zero // remove delay of token when expire
+                    };
+                });
         }
-
-        //https://stackoverflow.com/questions/42030137/suppress-redirect-on-api-urls-in-asp-net-core
-        static Func<RedirectContext<CookieAuthenticationOptions>, Task> ReplaceRedirector(HttpStatusCode statusCode, Func<RedirectContext<CookieAuthenticationOptions>, Task> existingRedirector) =>
-    context => {
-            context.Response.StatusCode = (int)statusCode;
-            return Task.CompletedTask;
-    };
 
         /// <summary>
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -180,9 +196,11 @@ namespace GirafRest.Setup
             app.ConfigureLogging(loggerFactory);
             appLifetime.ApplicationStopped.Register(Log.CloseAndFlush);
 
+            app.UseStatusCodePagesWithReExecute("/v1/Error", "?status={0}");
+
             // Enable Cors, see configuration in ConfigureServices
             app.UseCors("AllowAll");
-
+            
             //Tells ASP.NET to generate an HTML exception page, if an exception occurs
             if (env.IsDevelopment())
             {
@@ -196,6 +214,7 @@ namespace GirafRest.Setup
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Giraf REST API V1");
+                c.DocExpansion(DocExpansion.None);
             });
 
             //Configures Identity, i.e. user management

@@ -469,7 +469,7 @@ namespace GirafRest.Test
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-
+                
             var dto = new PictogramDTO()
             {
                 Title = "Updated Pictogram",
@@ -480,7 +480,6 @@ namespace GirafRest.Test
             var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
 
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
         [Fact]
@@ -499,7 +498,6 @@ namespace GirafRest.Test
             var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
 
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
         [Fact]
@@ -518,7 +516,6 @@ namespace GirafRest.Test
             var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
 
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.PictogramNotFound, res.ErrorCode);
         }
 
         [Fact]

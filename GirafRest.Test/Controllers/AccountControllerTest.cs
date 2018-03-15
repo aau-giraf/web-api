@@ -16,6 +16,7 @@ using GirafRest.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using GirafRest.Models.Responses;
+using Microsoft.Extensions.Options;
 
 namespace GirafRest.Test
 {
@@ -66,6 +67,12 @@ namespace GirafRest.Test
                 mockEmail.Object,
                 _testContext.MockLoggerFactory.Object,
                 mockGirafService,
+                Options.Create(new JwtConfig()
+                {
+                    JwtKey = "123456789123456789123456789",
+                    JwtIssuer = "example.com",
+                    JwtExpireDays = 30
+                }),
                 roleManager);
 
             _testContext.MockHttpContext = ac.MockHttpContext();
@@ -95,7 +102,7 @@ namespace GirafRest.Test
             }).Result;
 
             // Assert if type is reponse (verfies that it is the exact type and not a derived type (ErrorResponse)). No functionality enforces that we should not have type=ErrorResponse, ErrorCode=NoError OR type=Response, ErrorCode=some actual error
-            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.IsType<Response<string>>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
         }
 
@@ -119,8 +126,8 @@ namespace GirafRest.Test
             }).Result;
 
             // accountController.Login returns: new Response<GirafUserDTO>(new GirafUserDTO(loginUser, userRoles)) if login succeded
-            Assert.IsType<Response<GirafUserDTO>>(resB);
-            Assert.Equal(resB.Data.Username, username);
+            Assert.IsType<Response<string>>(resB);
+            Assert.Equal(ErrorCode.NoError, resB.ErrorCode);
         }
 
         [Fact]
@@ -135,7 +142,7 @@ namespace GirafRest.Test
                 Password = "password"
             }).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<string>>(res);
             Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
         }
 
@@ -147,7 +154,7 @@ namespace GirafRest.Test
 
             var res = accountController.Login(null).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<string>>(res);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
 
@@ -160,7 +167,7 @@ namespace GirafRest.Test
             
             var res = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[CITIZEN_DEP_TWO].UserName }).Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.IsType<Response<string>>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
         }
 
@@ -173,7 +180,7 @@ namespace GirafRest.Test
 
             var res = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[ADMIN_NO_DEP].UserName }).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<string>>(res);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
 
@@ -186,7 +193,7 @@ namespace GirafRest.Test
 
             var res = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[ANOTHER_GUARDIAN_DEP_TWO].UserName }).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<string>>(res);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
@@ -202,7 +209,7 @@ namespace GirafRest.Test
                 Username = _testContext.MockUsers[CITIZEN_DEP_THREE].UserName
             }).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<string>>(res);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
 
@@ -215,7 +222,7 @@ namespace GirafRest.Test
 
             var res = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[GUARDIAN_DEP_TWO].UserName}).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<string>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserMustBeGuardian, res.ErrorCode);
         }
@@ -228,7 +235,7 @@ namespace GirafRest.Test
 
             var res = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[GUARDIAN_DEP_TWO].UserName }).Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.IsType<Response<string>>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
         }
 
@@ -240,7 +247,7 @@ namespace GirafRest.Test
 
             var res = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[DEPARTMENT_DEP_TWO].UserName }).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<string>>(res);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
         #endregion

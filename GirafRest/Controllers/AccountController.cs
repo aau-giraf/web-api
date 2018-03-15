@@ -15,6 +15,13 @@ using static GirafRest.Models.DTOs.GirafUserDTO;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using GirafRest.Models.Responses;
+using System.Collections.Generic;
+using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace GirafRest.Controllers
 {
@@ -39,6 +46,11 @@ namespace GirafRest.Controllers
         /// </summary>
         private readonly RoleManager<GirafRole> _roleManager;
         /// <summary>
+        /// Configuration
+        /// </summary>
+        private readonly IOptions<JwtConfig> _configuration;
+
+        /// <summary>
         /// Creates a new account controller. The account controller allows the users to sign in and out of their account
         /// as well as creating new users. The account controller is automatically instantiated by ASP.NET.
         /// </summary>
@@ -51,13 +63,39 @@ namespace GirafRest.Controllers
             IEmailService emailSender,
             ILoggerFactory loggerFactory,
             IGirafService giraf,
+            IOptions<JwtConfig> configuration,
             RoleManager<GirafRole> roleManager)
         {
             _signInManager = signInManager;
             _emailSender = emailSender;
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Account");
+            _configuration = configuration;
             _roleManager = roleManager;
+        }
+
+        //https://github.com/jatarga/WebApiJwt/blob/master/Controllers/AccountController.cs
+        private string GenerateJwtToken(GirafUser user, GirafRoles roles)
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.NameIdentifier, user.Id)
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.Value.JwtKey));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var expires = DateTime.Now.AddDays(Convert.ToDouble(_configuration.Value.JwtExpireDays));
+
+            var token = new JwtSecurityToken(
+                _configuration.Value.JwtIssuer,
+                _configuration.Value.JwtIssuer,
+                claims,
+                expires: expires,
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
         /// <summary>
@@ -65,71 +103,74 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="model">A LoginDTO(LoginViewModelDTO), i.e. a json-string with a username and a password field.</param>
         /// <returns>
-        /// BadRequest if the caller fails to supply a valid username or password,
-        /// Unauthorized if either the username or password is not recognized or if a Guardian/Department attempted to log on
-        /// to another user that is not in their department.
-        /// Ok if sign in was succesful.
+        /// token if credentials are valid
         /// </returns>
         [HttpPost("login")]
         [AllowAnonymous]
-        public async Task<Response<GirafUserDTO>> Login([FromBody] LoginDTO model)
+        public async Task<Response<string>> Login([FromBody]LoginDTO model)
         {
             if (model == null)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "model");
+                return new ErrorResponse<string>(ErrorCode.MissingProperties, "model");
             //Check that the caller has supplied username in the request
             if (string.IsNullOrEmpty(model.Username))
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "username");
+                return new ErrorResponse<string>(ErrorCode.MissingProperties, "username");
 
             //Check if a user is already logged in and attempt to login with the username given in the DTO
             var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
             var loginUser = await _giraf.LoadByNameAsync(model.Username);
-            if(loginUser == null) // If username is invalid
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidCredentials, "username");
+            if (loginUser == null) // If username is invalid
+                return new ErrorResponse<string>(ErrorCode.InvalidCredentials, "username");
             GirafRoles userRoles = await _roleManager.findUserRole(_giraf._userManager, loginUser);
 
             //Attempt to sign in with the given credentials.
-            var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, lockoutOnFailure: false);
-            if(result.Succeeded) return new Response<GirafUserDTO>(new GirafUserDTO(loginUser, userRoles));
-            if (!result.Succeeded && currentUser == null){
-                if (string.IsNullOrEmpty(model.Password)) return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "password");
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidCredentials);
+            var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password ?? "quickfix", true, lockoutOnFailure: false);
+            if (result.Succeeded) return new Response<string>(GenerateJwtToken(loginUser, userRoles));
+            if (!result.Succeeded && currentUser == null)
+            {
+                if (string.IsNullOrEmpty(model.Password)) return new ErrorResponse<string>(ErrorCode.MissingProperties, "password");
+                return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
             }
 
-            if(currentUser != null)
+            if (currentUser != null)
             {
-                if(currentUser.UserName.ToLower() == model.Username.ToLower()){
-                    if (!result.Succeeded) return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidCredentials);
-                    return new Response<GirafUserDTO>(new GirafUserDTO(loginUser, userRoles));
+                if (currentUser.UserName.ToLower() == model.Username.ToLower())
+                {
+                    if (!result.Succeeded) return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
+                    return new Response<string>(GenerateJwtToken(loginUser, userRoles));
 
                 }
-                if (!result.Succeeded && !string.IsNullOrEmpty(model.Password)) 
-                    return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidCredentials);
-                
-                if(await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian))
+                if (!result.Succeeded && !string.IsNullOrEmpty(model.Password))
+                    return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
+
+                if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian))
                 {
                     _giraf._logger.LogInformation("Guardian attempted to sign in as Citizen");
-                    return await attemptRoleLoginAsync(currentUser, model.Username, GirafRole.Citizen);
+                    return await AttemptRoleLoginTokenAsync(currentUser, model.Username, GirafRole.Citizen);
                 }
-                else if(await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Department))
+                else if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Department))
                 {
                     _giraf._logger.LogInformation("Department attempted to sign in as Guardian");
-                    return await attemptRoleLoginAsync(currentUser, model.Username, GirafRole.Guardian);
+                    return await AttemptRoleLoginTokenAsync(currentUser, model.Username, GirafRole.Guardian);
                 }
-                else if(await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Citizen)){
+                else if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Citizen))
+                {
                     if (await _giraf._userManager.IsInRoleAsync(loginUser, GirafRole.Guardian))
-                        return new ErrorResponse<GirafUserDTO>(ErrorCode.UserMustBeGuardian);
+                        return new ErrorResponse<string>(ErrorCode.UserMustBeGuardian);
                 }
-            } else {
-                if(!result.Succeeded) return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidCredentials);
+            }
+            else
+            {
+                if (!result.Succeeded) return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
                 //There is no current user - check that a password is present.
                 if (string.IsNullOrEmpty(model.Password))
-                    return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "password");
+                    return new ErrorResponse<string>(ErrorCode.MissingProperties, "password");
 
                 _giraf._logger.LogInformation($"{model.Username} logged in.");
-                return new Response<GirafUserDTO>(new GirafUserDTO(loginUser, userRoles));
+                return new Response<string>(GenerateJwtToken(loginUser, userRoles));
             }
             return null;
         }
+
         /// <summary>
         /// Attempts to login from to a user's account from one of his supperior's. This allows departments
         /// to login as Guardians and guardians to login as citizens. The superiors does not require 
@@ -139,7 +180,7 @@ namespace GirafRest.Controllers
         /// <param name="username">The username of the citizen to login as.</param>
         /// <param name="role">A string describing which role the target user is in.</param>
         /// <returns></returns>
-        private async Task<Response<GirafUserDTO>> attemptRoleLoginAsync(GirafUser superior, string username, string role)
+        private async Task<Response<string>> AttemptRoleLoginTokenAsync(GirafUser superior, string username, string role)
         {
             //Attempt to find a user with the given username in the guardian's department
             var loginUser = await _giraf.LoadByNameAsync(username);
@@ -147,7 +188,7 @@ namespace GirafRest.Controllers
             if (loginUser != null && loginUser.DepartmentKey == superior.DepartmentKey)
             {
                 if (!await _giraf._userManager.IsInRoleAsync(loginUser, role))
-                    return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
+                    return new ErrorResponse<string>(ErrorCode.NotAuthorized);
 
                 await _signInManager.SignOutAsync();
                 await _signInManager.SignInAsync(loginUser, isPersistent: true);
@@ -155,12 +196,12 @@ namespace GirafRest.Controllers
                 // Get the roles the user is associated with
                 GirafRoles userRoles = await _roleManager.findUserRole(_giraf._userManager, loginUser);
 
-                return new Response<GirafUserDTO>(new GirafUserDTO(loginUser, userRoles));
+                return new Response<string>(GenerateJwtToken(loginUser, userRoles));
             }
 
             //There was no user with the given username in the department - return NotFound.
             else
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
+                return new ErrorResponse<string>(ErrorCode.UserNotFound);
         }
 
         /// <summary>
