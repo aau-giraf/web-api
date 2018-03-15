@@ -100,7 +100,7 @@ namespace GirafRest.Controllers
         public Response<List<UserNameDTO>> GetCitizenNames(long id)
         {
             var department = _giraf._context.Departments
-                .Where(dep => dep.Key == id);
+                                   .Where(dep => dep.Key == id).FirstOrDefault();
 
             if (department == null) return new ErrorResponse<List<UserNameDTO>>(ErrorCode.DepartmentNotFound);
 
@@ -115,7 +115,8 @@ namespace GirafRest.Controllers
             if(userIds == null) return new ErrorResponse<List<UserNameDTO>>(ErrorCode.DepartmentHasNoCitizens);
 
             var usersNamesInDepartment = _giraf._context.Users
-                                               .Where(u => userIds.Any(ui => ui == u.Id))
+                                               .Where(u => userIds.Any(ui => ui == u.Id) 
+                                                      && u.Department.Key == department.Key)
                                                .Select(u => new UserNameDTO(u.UserName, u.Id)).ToList();
 
             return new Response<List<UserNameDTO>>(usersNamesInDepartment);
