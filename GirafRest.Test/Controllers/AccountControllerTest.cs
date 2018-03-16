@@ -675,7 +675,7 @@ namespace GirafRest.Test
             var res = ac.ChangePassword(cpDTO).Result;
 
             Assert.IsType<ErrorResponse>(res);
-            Assert.Equal(ErrorCode.InvalidProperties, res.ErrorCode);
+            Assert.Equal(ErrorCode.PasswordMissMatch, res.ErrorCode);
         }
 
         [Fact]

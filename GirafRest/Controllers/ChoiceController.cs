@@ -47,9 +47,10 @@ namespace GirafRest.Controllers
         /// check if the user is authorized to see it.
         /// </summary>
         /// <param name="ID"> The ID of the choice to fetch.</param>
-        /// <returns> The <see cref="Choice"/> choice with the specified ID,
-        /// NotFound (404) if no such <see cref="Choice"/> choice exists or
-        /// Unauthorized if the <see cref="Choice"/> choice is private and user does not own it.
+        /// <returns> 
+        /// Response with the ChoiceDTO requested
+        /// NotFound if no choice was found
+        /// NotAuthorized the user does no have access to the found choice
         /// </returns>
         [HttpGet("{id}")]
         public async Task<Response<ChoiceDTO>> ReadChoice(long id)
@@ -76,10 +77,12 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Create a new <see cref="Choice"/> choice.
         /// </summary>
-        /// <param name="choice"> A <see cref="ChoiceDTO"/> with all relevant information about the new cho�ce.</param>
-        /// <returns>
-        /// BadRequest if no valid ChoiceDTO is supplied, NotFound if the list of options contains an invalid pictogram
-        /// id and Ok with the new choice with all database-generated information if the creation succeeded.
+        /// <param name="choice"> A <see cref="ChoiceDTO"/> with all relevant information about the new choice.</param>
+        /// <returns> 
+        /// Response with ChoiceDTO containing the created choice if succeeded
+        /// FormatError if the argument was null
+        /// NotAuthorized if the user does not have access to some of the choices
+        /// ChoiceContainsInvalidPictogramId if the supplied ID was not found
         /// </returns>
         [HttpPost("")]
         public async Task<Response<ChoiceDTO>> CreateChoice([FromBody] ChoiceDTO choice)
@@ -121,8 +124,11 @@ namespace GirafRest.Controllers
         /// The Id found in this DTO is the target choice.
         /// </param>
         /// <returns>
-        /// NotFound, if there is no choice with the specified id or the list of options contains an invalid pictogram id,
-        /// or Ok and the updated choice.</returns>
+        /// Response containing the updated choice
+        /// FormatError if the argument was null
+        /// NotAuthorized if the user does not own the choice
+        /// ChoiceContainsInvalidPictogramId if the pictogram could not be found
+        /// </returns>
         [HttpPut("{id}")]
         public async Task<Response<ChoiceDTO>> UpdateChoice(long id, [FromBody] ChoiceDTO choice)
         {
@@ -172,7 +178,11 @@ namespace GirafRest.Controllers
         /// Delete the <see cref="Choice"/> choice with the specified id.
         /// </summary>
         /// <param name="id">The id of the choice to delete.</param>
-        /// <returns> Ok if the choice was deleted after checking authorization and NotFound if no choice with the id exists.</returns>
+        /// <returns>
+        /// Empty Response on success
+        /// NotFound if the choice was not found
+        /// NotAuthorized if the user does not own the choice
+        /// </returns>
         [Authorize(Policy = GirafRole.RequireGuardianOrSuperUser)]
         [HttpDelete("{id}")]
         public async Task<Response> DeleteChoice(long id)
@@ -207,7 +217,9 @@ namespace GirafRest.Controllers
         /// Check if the current user has access to all resources in Choice.Option.
         /// </summary>
         /// <param name="choice">A reference to the choice to check ownership for.</param>
-        /// <returns>True if the user owns all the involved resources, false if not.</returns>
+        /// <returns>
+        /// True if the user owns all the involved resources, false if not.
+        /// </returns>
         private async Task<bool> checkAccess(Choice choice)
         {
             var usr = await _giraf.LoadUserAsync(HttpContext.User);
