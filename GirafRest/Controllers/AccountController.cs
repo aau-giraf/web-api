@@ -308,7 +308,7 @@ namespace GirafRest.Controllers
                 // Don't reveal that the user does not exist or is not confirmed
                 return new Response();
             }
-            
+
             var code = await _giraf._userManager.GeneratePasswordResetTokenAsync(user);
             var callbackUrl = Url.Action(nameof(ResetPassword), "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
             try
