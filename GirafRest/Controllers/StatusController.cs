@@ -8,11 +8,7 @@ namespace GirafRest
     [Route("[controller]")]
     public class StatusController : Controller
     {
-        /// Reference to the GirafService, which contains helper methods used by most controllers.
-        /// </summary>
         private readonly IGirafService _giraf;
-        /// <summary>
-        /// 
         public StatusController(IGirafService giraf)
         {
             _giraf = giraf;
