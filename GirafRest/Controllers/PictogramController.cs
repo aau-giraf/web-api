@@ -160,8 +160,6 @@ namespace GirafRest.Controllers
                 new DepartmentResource(user.Department, pict);
             }
 
-            //Stamp the pictogram with current time and add it to the database
-            pict.LastEdit = DateTime.Now;
             await _giraf._context.Pictograms.AddAsync(pict);
             await _giraf._context.SaveChangesAsync();
 
@@ -179,7 +177,7 @@ namespace GirafRest.Controllers
         /// NotFound if there is no pictogram with the specified id or 
         /// the updated pictogram to maintain statelessness.</returns>
         [HttpPut("{id}")]
-        [Authorize(Policy = GirafRole.RequireGuardianOrSuperUser)]
+        [Authorize]
         public async Task<Response<PictogramDTO>> UpdatePictogramInfo(long id, [FromBody] PictogramDTO pictogram)
         {
             if (pictogram == null) return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties, "pictogram");

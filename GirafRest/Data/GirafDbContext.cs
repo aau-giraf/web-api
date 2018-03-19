@@ -28,7 +28,7 @@ namespace GirafRest.Data
         public virtual DbSet<GuardianRelation> GuardianRelations { get; set; }
         public new virtual DbSet<GirafUser> Users { get { return base.Users; } set { base.Users = value; } }
         public new virtual DbSet<GirafRole> Roles { get { return base.Roles; } set { base.Roles = value; } }
-        public new virtual DbSet<IdentityUserRole<string>> UserRoles{ get { return base.UserRoles; } set { base.UserRoles = value; } }
+        public new virtual DbSet<IdentityUserRole<string>> UserRoles { get { return base.UserRoles; } set { base.UserRoles = value; } }
 
         protected GirafDbContext() { }
         /// <summary>

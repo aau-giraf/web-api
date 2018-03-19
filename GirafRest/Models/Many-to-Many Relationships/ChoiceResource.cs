@@ -52,6 +52,7 @@ namespace GirafRest.Models.Many_to_Many_Relationships
             this.Other = choice;
             this.ResourceKey = resource.Id;
             this.Resource = resource;
+            resource.LastEdit = DateTime.Now;
         }
         
         /// <summary>

@@ -172,6 +172,7 @@ namespace GirafRest.Controllers
                     var dr = new DepartmentResource(result, res);
                     await _giraf._context.DepartmentResources.AddAsync(dr);
                 }
+
                 //Save the changes and return the entity
                 await _giraf._context.SaveChangesAsync();
                 return new Response<DepartmentDTO>(new DepartmentDTO(result));
