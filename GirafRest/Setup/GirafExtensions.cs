@@ -95,25 +95,36 @@ namespace GirafRest.Extensions
             {
                 options.AddPolicy(GirafRole.RequireCitizen, policy => policy.RequireRole(GirafRole.Citizen));
             });
+
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(GirafRole.RequireGuardian, policy => policy.RequireRole(GirafRole.Guardian));
             });
+
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(GirafRole.RequireSuperUser, policy => policy.RequireRole(GirafRole.SuperUser));
             });
+
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(GirafRole.RequireGuardianOrSuperUser, policy => policy.RequireRole(GirafRole.Guardian, GirafRole.SuperUser));
             });
+
             services.AddAuthorization(options =>
             {
                 options.AddPolicy(GirafRole.RequireDepartment, policy => policy.RequireRole(GirafRole.Department));
             });
-            services.AddAuthorization(options => 
-                options.AddPolicy(GirafRole.RequireDepartmentOrSuperUser, policy => policy.RequireRole(GirafRole.Department, GirafRole.SuperUser))
-            );
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(GirafRole.RequireDepartmentOrSuperUser, policy => policy.RequireRole(GirafRole.Department, GirafRole.SuperUser));
+            });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(GirafRole.RequireSuperUserOrGuardianOrDepartment, policy => policy.RequireRole(GirafRole.SuperUser, GirafRole.Guardian, GirafRole.Department));
+            });
         }
 
         /// <summary>

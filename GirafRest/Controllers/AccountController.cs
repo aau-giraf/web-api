@@ -273,7 +273,8 @@ namespace GirafRest.Controllers
         /// <returns>
         /// A response object
         /// </returns>
-        [HttpPost("logout")]
+        [HttpPost("logout")]        
+        [AllowAnonymous]
         public async Task<Response> Logout()
         {
             await _signInManager.SignOutAsync();

@@ -90,7 +90,7 @@ namespace GirafRest.Controllers
                 //Check if the guardian is in the same department as the user
                 if (user.DepartmentKey != currentUser.DepartmentKey)
                     //We do not reveal if a user with the given username exists
-                    return new ErrorResponse<GirafUserDTO>(ErrorCode.Error);
+                    return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
             }
             else if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser))
             {
@@ -651,9 +651,7 @@ namespace GirafRest.Controllers
 
             user.DepartmentKey = (long) departmentId;
             var dep = await _giraf._context.Departments.Where(d => d.Key == departmentId).FirstOrDefaultAsync();
-            if (dep == null)
-                throw new KeyNotFoundException("There is no department with the given id: " + departmentId);
-            user.Department = dep;
+            user.Department = dep ?? throw new KeyNotFoundException("There is no department with the given id: " + departmentId);
         }
 
         private void updateGuardians(GirafUser user, List<GirafUserDTO> guardians)
