@@ -16,6 +16,9 @@ def request(requestType, url, data=''):
 def newTest():
 	assert(request('POST', 'account/logout')['success'])
 
+def isLoggedIn():
+	return request('GET', 'user/username')['success']
+
 if(datetime.datetime.today().weekday() > 4):
 	# Send en mail til anton om at stræberne kører integrationtests i weekenderne:
 	message = getpass.getuser() + ' is a nerd and runs integration-tests on the weekends!'
