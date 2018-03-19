@@ -131,7 +131,7 @@ namespace GirafRest.Controllers
 
                 department.Members.Add(depUser);
                 //Create a new user with the supplied information
-                var user = new GirafUser (dep.Username, department);
+                var user = new GirafUser (depDTO.Name, department);
                 var identityUser = await _giraf._userManager.CreateAsync(user, "0000");
                 if (identityUser.Succeeded == false)
                 {
@@ -139,13 +139,6 @@ namespace GirafRest.Controllers
                 }
                 
                 await _giraf._userManager.AddToRoleAsync(user, GirafRole.Department);
-                await _signInManager.SignInAsync(user, isPersistent: true);
-                _giraf._logger.LogInformation("User created a new account with password.");
-
-                // Get the roles the user is associated with
-                GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
-
-                return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));            
                 
                 //Add all the resources with the given ids
                 if(depDTO.Resources != null) {
