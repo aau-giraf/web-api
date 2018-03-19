@@ -60,6 +60,25 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
+        /// Returns currently logged in users username
+        /// </summary>
+        /// <returns>
+        /// Reponse with username.
+        /// UnAuthorized if user is not logged in.
+        /// </returns>
+        [HttpGet("username")]
+        [Authorize]
+        public async Task<Response<string>> Username()
+        {
+            //First attempt to fetch the user and check that he exists
+            var user = await _giraf.LoadUserAsync(HttpContext.User);
+            if (user == null)
+                return new ErrorResponse<string>(ErrorCode.NotAuthorized);
+
+            return new Response<string>(user.UserName);
+        }
+
+        /// <summary>
         /// Find information on the user with the username supplied as a url query parameter or the current user.
         /// </summary>
         /// <returns>NotFound either if there is no user with the given username or the user is not authorized to see the user
@@ -108,7 +127,7 @@ namespace GirafRest.Controllers
 
         [Authorize]
         [HttpGet("")]
-        public async Task<Response<GirafUserDTO>> GetUser ()
+        public async Task<Response<GirafUserDTO>> GetUser()
         {
             //First attempt to fetch the user and check that he exists
             var user = await _giraf.LoadUserAsync(HttpContext.User);
