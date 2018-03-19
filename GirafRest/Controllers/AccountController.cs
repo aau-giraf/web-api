@@ -227,6 +227,8 @@ namespace GirafRest.Controllers
         [AllowAnonymous]
         public async Task<Response<GirafUserDTO>> Register([FromBody] RegisterDTO model)
         {
+            if(model == null)
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties);
             //Check that all the necesarry data has been supplied
             if (!ModelState.IsValid)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties);
