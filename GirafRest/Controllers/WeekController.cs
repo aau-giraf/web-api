@@ -121,6 +121,7 @@ namespace GirafRest.Controllers
             foreach (var day in newWeek.Days)
             {
                 Weekday wkDay = new Weekday(day);
+                wkDay.LastEdit = DateTime.Now;
                 if (day.ElementsSet)
                 {
                     if (!(await CreateWeekDayHelper(wkDay, day.ElementIDs)))
@@ -158,6 +159,7 @@ namespace GirafRest.Controllers
                     if (day.ElementsSet)
                     {
                         Weekday wkDay = week.Weekdays[(int)day.Day];
+                        wkDay.LastEdit = DateTime.Now;
                         if(!(await CreateWeekDayHelper(wkDay, day.ElementIDs)))
                             return new ErrorResponse<WeekDTO>(ErrorCode.ResourceNotFound);
 
@@ -199,6 +201,12 @@ namespace GirafRest.Controllers
 
         #region helpers
 
+        /// <summary>
+        /// Helper for adding pictograms to a weekday
+        /// </summary>
+        /// <returns>The week day helper.</returns>
+        /// <param name="wkDay">Wk day.</param>
+        /// <param name="Ids">Identifiers.</param>
         private async Task<bool> CreateWeekDayHelper(Weekday wkDay, List<long> Ids){
             foreach (var elemId in Ids)
             {
