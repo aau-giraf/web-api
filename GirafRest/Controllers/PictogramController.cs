@@ -49,36 +49,49 @@ namespace GirafRest.Controllers
         /// Get all public <see cref="Pictogram"/> pictograms available to the user
         /// (i.e the public pictograms and those owned by the user (PRIVATE) and his department (PROTECTED)).
         /// </summary>
+        /// <param name="q">The query string. pictograms are filtered based on this string if passed</param>
+        /// <param name="p">Page number</param>
+        /// <param name="n">Number of pictograms per page, defaults to 10</param>
         /// <returns> All the user's <see cref="Pictogram"/> pictograms.
         /// BadRequest if the request query was invalid, or if no pictograms were found
         /// </returns>
         [HttpGet("")]
-        public async Task<Response<List<PictogramDTO>>> ReadPictograms()
+        public async Task<Response<List<PictogramDTO>>> ReadPictograms([FromQuery]string q, [FromQuery]int p = 0, [FromQuery]int n = 10)
         {
-            int limit = int.MaxValue;
-            int startFrom = 0;
-            try
-            {
-                limit = parseQueryInteger("limit", int.MaxValue);
-                startFrom = parseQueryInteger("start_from", 0);
-            }
-            catch
-            {
-                return new ErrorResponse<List<PictogramDTO>>(ErrorCode.QueryFailed);
-            }
-
             //Produce a list of all pictograms available to the user
             var userPictograms = await ReadAllPictograms();
             if (userPictograms == null)
-            {
                 return new ErrorResponse<List<PictogramDTO>>(ErrorCode.PictogramNotFound);
+
+            System.Console.WriteLine($"GET ALL THE PICTOGRAMS WITH QUERY {q}");
+            //Filter out all that does not satisfy the query string, if such is present.
+            if(!String.IsNullOrEmpty(q)) 
+                userPictograms = userPictograms.OrderBy((Pictogram _p) => IbsenDistance(q, _p.Title));
+
+            foreach (var gram in userPictograms)
+            {
+                var a = q;
+                var b = gram.Title;
+                var distance = IbsenDistance(a,b);
+                System.Console.WriteLine($"Distance between \"{a}\" and \"{b}\" is {distance}");
             }
 
-            //Filter out all that does not satisfy the query string, if such is present.
-            var titleQuery = HttpContext.Request.Query["title"];
-            if(!String.IsNullOrEmpty(titleQuery)) userPictograms = FilterByTitle(userPictograms, titleQuery);
             return new Response<List<PictogramDTO>>(await userPictograms.OfType<Pictogram>().
-                                                Skip(startFrom).Take(limit).Select(p => new PictogramDTO(p)).ToListAsync());
+                                                Skip(p*n).Take(n).Select(_p => new PictogramDTO(_p)).ToListAsync());
+        }
+
+        private int IbsenDistance(string a, string b) {
+            return IbsenDistance(a,b,a.Length,b.Length);
+        }
+        private int IbsenDistance(string a, string b, int aLen, int bLen) {
+            const int insertCost = 1;
+            const int deleteCost = 4;
+            const int substituteCost = 2;
+            if(aLen <= 0 || bLen <= 0) return Math.Max(aLen, bLen)*insertCost;
+            return Math.Min(IbsenDistance(a,b, aLen-1, bLen) +deleteCost,
+                   Math.Min(IbsenDistance(a,b, aLen,   bLen-1) +insertCost,
+                           IbsenDistance(a,b, aLen-1, bLen-1) +(a[aLen-1] == b[bLen-1] ? 0 : substituteCost))
+            );
         }
 
         /// <summary>
