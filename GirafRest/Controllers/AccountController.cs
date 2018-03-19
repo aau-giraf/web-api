@@ -219,7 +219,7 @@ namespace GirafRest.Controllers
         /// Register a new user in the REST-API
         /// </summary>
         /// <param name="model">A reference to a RegisterDTO(RegisterViewModelDTO), i.e. a json string containing three strings;
-        /// Username, Password and ConfirmPassword.</param>
+        /// Username and Password.</param>
         /// <returns>
         /// Response with a GirafUserDTO with either the new user or an error
         /// </returns>
@@ -227,8 +227,10 @@ namespace GirafRest.Controllers
         [AllowAnonymous]
         public async Task<Response<GirafUserDTO>> Register([FromBody] RegisterDTO model)
         {
+            if(model == null)
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties);
             //Check that all the necesarry data has been supplied
-            if (!ModelState.IsValid || model?.ConfirmPassword == null)
+            if (!ModelState.IsValid)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties);
 
             if (String.IsNullOrEmpty(model.Username) || String.IsNullOrEmpty(model.Password))
@@ -237,11 +239,6 @@ namespace GirafRest.Controllers
 
             if (doesUserAlreadyExist)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.UserAlreadyExists);
-
-            // Check that password and confirm password match
- 
-            if (!model.Password.Equals(model.ConfirmPassword))
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidProperties, "confirmPassword");
 
             Department department = await _giraf._context.Departments.Where(dep => dep.Key == model.DepartmentId).FirstOrDefaultAsync();
 
@@ -273,7 +270,8 @@ namespace GirafRest.Controllers
         /// <returns>
         /// A response object
         /// </returns>
-        [HttpPost("logout")]
+        [HttpPost("logout")]        
+        [AllowAnonymous]
         public async Task<Response> Logout()
         {
             await _signInManager.SignOutAsync();
@@ -327,12 +325,10 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Creates a new password for the currently authenticated user.
         /// </summary>
-        /// <param name="model">Information on the new password in a SetPasswordDTO, i.e. a JSON string containing
-        /// NewPassword and ConfirmPassword.</param>
+        /// <param name="model">Information on the new password in a SetPasswordDTO, i.e. a JSON string containing and NewPassword.</param>
         /// <returns>
         /// Empty Response on success. 
         /// MissingProperties if there was missing properties
-        /// PasswordMissmatch if the NewPassword and ConfirmPassword is not equal
         /// PasswordNotUpdated if the user wasn't logged in
         /// </returns>
         [HttpPost("set-password")]
@@ -341,13 +337,9 @@ namespace GirafRest.Controllers
         public async Task<Response> SetPassword(SetPasswordDTO model)
         {
             if (model == null)
-                return new ErrorResponse(ErrorCode.MissingProperties, "newPassword", "confirmPassword");
+                return new ErrorResponse(ErrorCode.MissingProperties, "newPassword");
             if (string.IsNullOrEmpty(model.NewPassword))
                 return new ErrorResponse(ErrorCode.MissingProperties, "newPassword");
-            if (string.IsNullOrEmpty(model.ConfirmPassword))
-                return new ErrorResponse(ErrorCode.MissingProperties, "confirmPassword");
-            if (model.NewPassword != model.ConfirmPassword)
-                return new ErrorResponse(ErrorCode.PasswordMissMatch, "confirmPassword");
 
             var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
             if (user != null)
@@ -370,7 +362,6 @@ namespace GirafRest.Controllers
         /// <returns>
         /// Empty Response on success. 
         /// MissingProperties if there was missing properties
-        /// PasswordMissmatch if the NewPassword and ConfirmPassword is not equal
         /// PasswordNotUpdated if the user wasn't logged in
         /// </returns>
         [HttpPost("change-password")]
@@ -379,11 +370,9 @@ namespace GirafRest.Controllers
         public async Task<Response> ChangePassword(ChangePasswordDTO model)
         {
             if (model == null)
-                return new ErrorResponse(ErrorCode.MissingProperties, "newPassword", "confirmPassword", "oldPassword");
-            if (model.OldPassword == null || model.NewPassword == null || model.ConfirmPassword == null)
-                return new ErrorResponse(ErrorCode.MissingProperties, "newPassword", "confirmPassword", "oldPassword");
-            if (model.NewPassword != model.ConfirmPassword)
-                return new ErrorResponse(ErrorCode.PasswordMissMatch, "confirmPassword");
+                return new ErrorResponse(ErrorCode.MissingProperties, "newPassword", "oldPassword");
+            if (model.OldPassword == null || model.NewPassword == null)
+                return new ErrorResponse(ErrorCode.MissingProperties, "newPassword", "oldPassword");
 
             var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
             if (user != null)
@@ -419,7 +408,7 @@ namespace GirafRest.Controllers
         /// Attempts to change the given user's password. If the DTO did not contain valid information simply returns the view with
         /// the current information that the user has specified.
         /// </summary>
-        /// <param name="model">A DTO containing the user's Username, Password and a ConfirmPassword.</param>
+        /// <param name="model">A DTO containing the user's Username and Password.</param>
         /// <returns>
         /// The view if password was wrong or redirects to ResetPasswordConfirmation.
         /// </returns>

@@ -225,7 +225,7 @@ namespace GirafRest.Test
         }
         #endregion
         #region UpdateUser
-        // does not work since usercontroller.UpdateUser(...) calls _giraf._context.Users.Update(user); which does not work
+
         [Fact] 
         public void UpdateUser_ValidUserValidDTO_Success()
         {
@@ -250,6 +250,25 @@ namespace GirafRest.Test
             Assert.False(response.Success);
             Assert.Equal(ErrorCode.MissingProperties, response.ErrorCode);
         }
+
+        /*
+        [Fact]
+        public void UpdateUser_CitizenPermissionToUpdateOtherCitizenInSameDep_NotAuthorized()
+        {
+            var uc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepThree]);
+            //_testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GuardianDepTwo]);
+
+            var resGet = uc.GetUser(CitizenUsername).Result;
+
+
+            Assert.Equal(resGet.ErrorCode, ErrorCode.NotAuthorized);
+            Assert.True(resGet.Success);
+
+            //var res = uc.UpdateUser
+
+        }
+        */
 
         /*We use ModelState.IsValid in this test - ASP.NET fills this for us and thus we cannot unit test it.
         [Fact]
