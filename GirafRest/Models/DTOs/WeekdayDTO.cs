@@ -14,18 +14,22 @@ namespace GirafRest.Models.DTOs
         /// Defines whether elements has been added to the weekday or not.
         /// </summary>
         public bool ElementsSet { get; set; }
+        
         /// <summary>
         /// A list of all id's of the resources that make up the weekday.
         /// </summary>
         public List<long> ElementIDs { get; set; }
+        
         /// <summary>
         /// An enum defining which day of the week this Weekday represents.
         /// </summary>
         public Days Day { get; set; }
+        
         /// <summary>
         /// A list of all the elements of the week.
         /// </summary>
         public ICollection<ResourceDTO> Elements { get; set; }
+        
         /// <summary>
         /// Creates a new data transfer object for the given week.
         /// </summary>

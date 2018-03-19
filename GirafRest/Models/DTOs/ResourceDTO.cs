@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using GirafRest.Controllers;
 
 namespace GirafRest.Models.DTOs
 {
@@ -28,8 +30,10 @@ namespace GirafRest.Models.DTOs
         /// Creates a ResourceDTO from the given resource, fit for sending as a request or response.
         /// </summary>
         /// <param name="frame">The resource in need of transfer</param>
-        public ResourceDTO (Resource frame) {
-            if (frame != null){
+        public ResourceDTO (Resource frame) 
+        {
+            if (frame != null)
+            {
                 this.Id = frame.Id;
                 this.LastEdit = frame.LastEdit;
             }
