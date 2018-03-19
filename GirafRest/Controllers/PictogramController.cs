@@ -68,14 +68,6 @@ namespace GirafRest.Controllers
             if(!String.IsNullOrEmpty(q)) 
                 userPictograms = userPictograms.OrderBy((Pictogram _p) => IbsenDistance(q, _p.Title));
 
-            foreach (var gram in userPictograms)
-            {
-                var a = q;
-                var b = gram.Title;
-                var distance = IbsenDistance(a,b);
-                System.Console.WriteLine($"Distance between \"{a}\" and \"{b}\" is {distance}");
-            }
-
             return new Response<List<PictogramDTO>>(await userPictograms.OfType<Pictogram>().
                                                 Skip(p*n).Take(n).Select(_p => new PictogramDTO(_p)).ToListAsync());
         }
