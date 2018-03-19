@@ -42,7 +42,13 @@ namespace GirafRest.Models.DTOs
                 foreach (var element in weekday.Elements)
                 {
                     if(element.Resource != null){
-                        Elements.Add(new ResourceDTO(element.Resource));
+                        //Be sure to add as right type, not just superclass.
+                        if(element.Resource is Pictogram pictogram)
+                            Elements.Add(new PictogramDTO(pictogram));
+                        
+                        else if(element.Resource is Choice choice)
+                            Elements.Add(new ChoiceDTO(choice));
+                        
                         ElementIDs.Add(element.Resource.Id);
                     }
                 }
