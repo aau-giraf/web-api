@@ -314,25 +314,21 @@ namespace GirafRest.Controllers
         /// Unauthorized if the user does not have access to it</returns>
         [HttpGet("{id}/image/raw")]
         public async Task<IActionResult> ReadRawPictogramImage(long id) {
-            var usr = await _giraf.LoadUserAsync(HttpContext.User);
-            if (usr == null) 
-                return NotFound(); 
                 // return new ErrorResponse<byte[]>(ErrorCode.NotAuthorized);
             //Fetch the pictogram and check that it actually exists and has an image.
             var picto = await _giraf._context
                 .Pictograms
                 .Where(p => p.Id == id)
                 .FirstOrDefaultAsync();
+
+            if (picto.AccessLevel != AccessLevel.PUBLIC) return NotFound();
+
             if (picto == null)
                 return NotFound(); 
                 // return new ErrorResponse<byte[]>(ErrorCode.PictogramNotFound);
             else if (picto.Image == null)
                 return NotFound(); 
                 // return new ErrorResponse<byte[]>(ErrorCode.PictogramHasNoImage);
-
-            if (!CheckOwnership(picto, usr).Result)
-                return NotFound(); 
-                // return new ErrorResponse<byte[]>(ErrorCode.NotAuthorized);
 
             return File(Convert.FromBase64String(System.Text.Encoding.UTF8.GetString(picto.Image)), "image/png");
             
