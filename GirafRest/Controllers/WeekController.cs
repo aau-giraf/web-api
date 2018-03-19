@@ -92,7 +92,7 @@ namespace GirafRest.Controllers
         /// BadRequest if the body of the request does not contain a Week</returns>
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<Response<WeekDTO>> UpdateWeek(int id, [FromBody]WeekDTO newWeek)
+        public async Task<Response<WeekDTO>> UpdateWeek(long id, [FromBody]WeekDTO newWeek)
         {
             //return Ok(newWeek);
             if (newWeek == null) return new ErrorResponse<WeekDTO>(ErrorCode.InvalidProperties, "newWeek");
