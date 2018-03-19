@@ -92,52 +92,80 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Add a department to the database.
+        /// Create a new department. it's only necesary to supply the departments name
         /// </summary>
-        /// <param name="dep">The department to add to the database.</param>
+        /// <param name="depDTO">The department to add to the database.</param>
         /// <returns>The new departmentDTO with all database-generated information.</returns>
         [HttpPost("")]
         [Authorize]
-        public async Task<Response<DepartmentDTO>> Post([FromBody]DepartmentDTO dep)
+        public async Task<Response<DepartmentDTO>> Post([FromBody]DepartmentDTO depDTO)
         {
             try
             {
-                if (dep == null || dep.Name == null)
+                if (depDTO == null || depDTO.Name == null)
                     return new ErrorResponse<DepartmentDTO>(ErrorCode.MissingProperties,
                         "Deparment name has to be specified!");
+
                 //Add the department to the database.
-                Department result = new Department(dep);
-                await _giraf._context.Departments.AddAsync(result);
-
+                Department department = new Department(depDTO);
+                await _giraf._context.Departments.AddAsync(department);
                 //Add all members specified by either id or username in the DTO
-                foreach(var mem in dep.Members) {
-                    var usr = await _giraf._context.Users
-                        .Where(u => u.UserName == mem || u.Id == mem)
-                        .FirstOrDefaultAsync();
+                if(depDTO.Members != null) {
+                    foreach(var mem in depDTO.Members) {
+                        var usr = await _giraf._context.Users
+                            .Where(u => u.UserName == mem || u.Id == mem)
+                            .FirstOrDefaultAsync();
+                        if (usr == null)
+                            return new ErrorResponse<DepartmentDTO>(ErrorCode.InvalidProperties, 
+                                "The member list contained an invalid id: " + mem);
+                        department.Members.Add(usr);
+                        usr.Department = department;
+                    }
+                }
 
-                    if (usr == null)
-                        return new ErrorResponse<DepartmentDTO>(ErrorCode.InvalidProperties, 
-                            "The member list contained an invalid id: " + mem);
+                //Add the department to the database.
+                GirafUser depUser = new GirafUser(depDTO.Name, department);
+                await _giraf._context.Users.AddAsync(depUser);
 
-                    result.Members.Add(usr);
-                    usr.Department = result;
+                depUser.IsDepartment = true;
+
+                department.Members.Add(depUser);
+                //Create a new user with the supplied information
+                var user = new GirafUser (dep.Username, department);
+                var identityUser = await _giraf._userManager.CreateAsync(user, "0000");
+                if (identityUser.Succeeded == false)
+                {
+                    return new ErrorResponse<DepartmentDTO>(ErrorCode.Error);
                 }
                 
-                //Add all the resources with the given ids
-                foreach (var reso in dep.Resources) {
-                    var res = await _giraf._context.Pictograms
-                        .Where(p => p.Id == reso)
-                        .FirstOrDefaultAsync();
+                await _giraf._userManager.AddToRoleAsync(user, GirafRole.Department);
+                await _signInManager.SignInAsync(user, isPersistent: true);
+                _giraf._logger.LogInformation("User created a new account with password.");
 
-                    if(res == null) 
-                        return new ErrorResponse<DepartmentDTO>(ErrorCode.InvalidProperties, 
-                            "The list of resources contained an invalid resource id: " + reso);
-                    var dr = new DepartmentResource(result, res);
-                    await _giraf._context.DepartmentResources.AddAsync(dr);
+                // Get the roles the user is associated with
+                GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
+
+                return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));            
+                
+                //Add all the resources with the given ids
+                if(depDTO.Resources != null) {
+                    foreach (var reso in depDTO.Resources) {
+                        var res = await _giraf._context.Pictograms
+                            .Where(p => p.Id == reso)
+                            .FirstOrDefaultAsync();
+                        if(res == null) 
+                            return new ErrorResponse<DepartmentDTO>(ErrorCode.InvalidProperties, 
+                                "The list of resources contained an invalid resource id: " + reso);
+                        var dr = new DepartmentResource(department, res);
+                        await _giraf._context.DepartmentResources.AddAsync(dr);
+                    }
                 }
+
+                await _giraf._context.Departments.AddAsync(department);
+                
                 //Save the changes and return the entity
                 await _giraf._context.SaveChangesAsync();
-                return new Response<DepartmentDTO>(new DepartmentDTO(result));
+                return new Response<DepartmentDTO>(new DepartmentDTO(department));
             }
             catch (System.Exception e)
             {
