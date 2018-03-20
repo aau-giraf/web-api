@@ -100,7 +100,7 @@ namespace GirafRest.Test.Controllers
             var dc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var depDTO = new DepartmentDTO(new Department() {
-                Name = "dep1"
+                Name = "dep9"
             });
 
             var res = dc.Post(depDTO).Result;

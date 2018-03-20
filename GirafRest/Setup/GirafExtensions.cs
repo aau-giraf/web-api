@@ -70,50 +70,6 @@ namespace GirafRest.Extensions
             return userRole;
         }
 
-        /// <summary>
-        /// An extension-method for setting up policies for use when authorizing users to methods.
-        /// </summary>
-        /// <param name="services">A reference to the services of the application.</param>
-        public static void ConfigurePolicies(this IServiceCollection services)
-        {
-            // Create policies for method access using attribute [Authorize(Policy = "PolicyName")]
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy(GirafRole.RequireCitizen, policy => policy.RequireRole(GirafRole.Citizen));
-            });
-
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy(GirafRole.RequireGuardian, policy => policy.RequireRole(GirafRole.Guardian));
-            });
-
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy(GirafRole.RequireSuperUser, policy => policy.RequireRole(GirafRole.SuperUser));
-            });
-
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy(GirafRole.RequireGuardianOrSuperUser, policy => policy.RequireRole(GirafRole.Guardian, GirafRole.SuperUser));
-            });
-
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy(GirafRole.RequireDepartment, policy => policy.RequireRole(GirafRole.Department));
-            });
-
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy(GirafRole.RequireDepartmentOrSuperUser, policy => policy.RequireRole(GirafRole.Department, GirafRole.SuperUser));
-            });
-
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy(GirafRole.RequireSuperUserOrGuardianOrDepartment, policy => policy.RequireRole(GirafRole.SuperUser, GirafRole.Guardian, GirafRole.Department));
-            });
-        }
-
-        /// <summary>
         /// Removes the default password requirements from ASP.NET and set them to a bare minimum.
         /// </summary>
         /// <param name="options">A reference to IdentityOptions, which is used to configure Identity.</param>

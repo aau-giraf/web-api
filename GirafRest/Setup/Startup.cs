@@ -123,8 +123,6 @@ namespace GirafRest.Setup
                     { "Bearer", new string[] { } }
                 });
             });
-
-            services.ConfigurePolicies();
         }
         /// <summary>
         /// Configures the GirafUser Identity, changing what is needed by it, and how it should act
