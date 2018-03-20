@@ -83,16 +83,8 @@ namespace GirafRest.Setup
             services.Configure<JwtConfig>(Configuration.GetSection("Jwt"));
 
             //Add the database context to the server using extension-methods
-            if (HostingEnvironment.IsDevelopment())
-            {
-                services.AddSqlite();
-                configureIdentity<GirafSqliteDbContext>(services);
-            }
-            else if (HostingEnvironment.IsProduction())
-            {
-                services.AddMySql(Configuration);
-                configureIdentity<GirafMySqlDbContext>(services);
-            }
+            services.AddMySql(Configuration);
+            configureIdentity<GirafDbContext>(services);
 
             // Add email sender for account recorvery.
             services.Configure<EmailConfig>(Configuration.GetSection("Email"));
@@ -230,14 +222,7 @@ namespace GirafRest.Setup
             });
 
             GirafDbContext context;
-            if (env.IsDevelopment())
-                context = app.ApplicationServices.GetService<GirafSqliteDbContext>();
-            
-            else
-                context = app.ApplicationServices.GetService<GirafMySqlDbContext>();
-
-            // Create database + schemas if they do not exist
-            context.Database.Migrate();
+            context = app.ApplicationServices.GetService<GirafDbContext>();
 
             // Create roles if they do not exist
             try
