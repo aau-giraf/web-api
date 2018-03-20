@@ -193,7 +193,6 @@ namespace GirafRest.Controllers
         /// NotFound if the choice was not found
         /// NotAuthorized if the user does not own the choice
         /// </returns>
-        [Authorize(Policy = GirafRole.RequireGuardianOrSuperUser)]
         [HttpDelete("{id}")]
         public async Task<Response> DeleteChoice(long id)
         {

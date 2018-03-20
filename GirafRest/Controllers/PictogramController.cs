@@ -215,7 +215,6 @@ namespace GirafRest.Controllers
         /// NotFound if no pictogram with the id exists.
         /// Unauthorized if the user does not own the pictogram</returns>
         [HttpDelete("{id}")]
-        [Authorize(Policy = GirafRole.RequireGuardianOrSuperUser)]
         public async Task<Response> DeletePictogram(int id)
         {
             var usr = await _giraf.LoadUserAsync(HttpContext.User);
