@@ -179,7 +179,6 @@ namespace GirafRest.Controllers
         /// NotFound if there is no pictogram with the specified id or 
         /// the updated pictogram to maintain statelessness.</returns>
         [HttpPut("{id}")]
-        [Authorize(Policy = GirafRole.RequireGuardianOrSuperUser)]
         public async Task<Response<PictogramDTO>> UpdatePictogramInfo(long id, [FromBody] PictogramDTO pictogram)
         {
             if (pictogram == null) return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties, "pictogram");
@@ -217,7 +216,6 @@ namespace GirafRest.Controllers
         /// NotFound if no pictogram with the id exists.
         /// Unauthorized if the user does not own the pictogram</returns>
         [HttpDelete("{id}")]
-        [Authorize(Policy = GirafRole.RequireGuardianOrSuperUser)]
         public async Task<Response> DeletePictogram(int id)
         {
             var usr = await _giraf.LoadUserAsync(HttpContext.User);
