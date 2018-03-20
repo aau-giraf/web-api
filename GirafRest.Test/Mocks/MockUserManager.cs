@@ -24,6 +24,7 @@ namespace GirafRest.Test.Mocks
             : base(store, null, null, null, null, null, null, null, null)
         {
             _testContext = testContext;
+            _signInManager = new MockSignInManager(this, _testContext);
         }
 
         public void MockLoginAsUser(GirafUser user)
