@@ -50,6 +50,7 @@ namespace GirafRest.Models
             this.ResourceKey = resource.Id;
             this.Resource = resource;
 
+            resource.LastEdit = DateTime.Now;
             Other.Resources.Add(this);
             resource.Departments.Add(this);
         }

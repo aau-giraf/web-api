@@ -129,22 +129,23 @@ namespace GirafRest.Controllers
         /// <returns>The image found in the request represented as a byte array.</returns>
         public async Task<byte[]> ReadRequestImage(Stream bodyStream)
         {
-            try
+            byte[] image;
+            using (var imageStream = new MemoryStream())
             {
-                byte[] image;
-                using (var imageStream = new MemoryStream())
-                {
-                    await bodyStream.CopyToAsync(imageStream);
-                    await bodyStream.FlushAsync();
-                    image = imageStream.ToArray();
-                }
+                await bodyStream.CopyToAsync(imageStream);
 
-                return image;
+                try      //I assume this will always throw, but I dare not remove it, because why would it be here?
+                {
+                    await bodyStream.FlushAsync();
+                }
+                catch (NotSupportedException)
+                {
+                }
+                
+                image = imageStream.ToArray();
             }
-            catch (Exception)
-            {
-                throw new ArgumentNullException("Input stream must not be null");
-            }
+
+            return image;
         }
 
         /// <summary>

@@ -37,13 +37,13 @@ namespace GirafRest.Controllers
         {
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Week");
-        }		
+        }
 
         /// <summary>
         /// Gets all week schedule for the currently authenticated user.
         /// </summary>
         /// <returns>Ok along with the week schedules, or NotFound if there is no such user or if there are no weeks.</returns>
-        [HttpGet("")]	
+        [HttpGet("")]
         [Authorize]
         public async Task<Response<IEnumerable<WeekDTO>>> ReadWeekSchedules()
         {
@@ -68,7 +68,7 @@ namespace GirafRest.Controllers
         /// <param name="id">The id of the week schedule to fetch.</param>
         /// <returns>NotFound if the user does not have a week with the given id or
         /// Ok and a serialized version of the week if he does.</returns>
-        [HttpGet("{id}")]	
+        [HttpGet("{id}")]
         [Authorize]
         public async Task<Response<WeekDTO>> ReadUsersWeekSchedule(int id)
         {
@@ -81,7 +81,7 @@ namespace GirafRest.Controllers
             else
                 return new ErrorResponse<WeekDTO>(ErrorCode.WeekScheduleNotFound);
         }
-        
+
         /// <summary>
         /// Updates the entire information of the week with the given id.
         /// </summary>
@@ -92,7 +92,7 @@ namespace GirafRest.Controllers
         /// BadRequest if the body of the request does not contain a Week</returns>
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<Response<WeekDTO>> UpdateWeek(int id, [FromBody]WeekDTO newWeek)
+        public async Task<Response<WeekDTO>> UpdateWeek(long id, [FromBody]WeekDTO newWeek)
         {
             //return Ok(newWeek);
             if (newWeek == null) return new ErrorResponse<WeekDTO>(ErrorCode.InvalidProperties, "newWeek");
@@ -121,21 +121,11 @@ namespace GirafRest.Controllers
             foreach (var day in newWeek.Days)
             {
                 Weekday wkDay = new Weekday(day);
-                if(day.ElementsSet){
-                    foreach(var elemId in day.ElementIDs) 
-                    {
-                        var picto = await _giraf._context.Frames.Where(p => p.Id == elemId).FirstOrDefaultAsync();
-                        if(picto != null)
-                            wkDay.Elements.Add(new WeekdayResource(wkDay, picto));
-                        else 
-                        {         
-                            var choice = await _giraf._context.Choices.Where(c => c.Id == elemId).FirstOrDefaultAsync();
-                            if (choice != null)
-                                wkDay.Elements.Add(new WeekdayResource(wkDay, choice));
-                            else
-                                return new ErrorResponse<WeekDTO>(ErrorCode.ResourceNotFound);
-                            }
-                    }
+                wkDay.LastEdit = DateTime.Now;
+                if (day.ElementsSet)
+                {
+                    if (!(await CreateWeekDayHelper(wkDay, day.ElementIDs)))
+                            return new ErrorResponse<WeekDTO>(ErrorCode.ResourceNotFound);
                 }
                 orderedDays[(int)day.Day].Elements = wkDay.Elements;
             }
@@ -162,26 +152,17 @@ namespace GirafRest.Controllers
             if (thumbnail == null)
                 return new ErrorResponse<WeekDTO>(ErrorCode.ThumbnailDoesNotExist);
             var week = new Week(thumbnail);
-            if(newWeek.Days != null)
+            if (newWeek.Days != null)
             {
                 foreach (var day in newWeek.Days)
                 {
-                    if(day.ElementsSet){
+                    if (day.ElementsSet)
+                    {
                         Weekday wkDay = week.Weekdays[(int)day.Day];
-                        foreach(var elemId in day.ElementIDs) 
-                        {
-                            var picto = await _giraf._context.Frames.Where(p => p.Id == elemId).FirstOrDefaultAsync();
-                            if(picto != null)
-                                wkDay.Elements.Add(new WeekdayResource(wkDay, picto));
-                            else 
-                            {         
-                                var choice = await _giraf._context.Choices.Where(c => c.Id == elemId).FirstOrDefaultAsync();
-                                if (choice != null)
-                                    wkDay.Elements.Add(new WeekdayResource(wkDay, choice));
-                                else
-                                    return new ErrorResponse<WeekDTO>(ErrorCode.ResourceNotFound);
-                            }
-                        }
+                        wkDay.LastEdit = DateTime.Now;
+                        if(!(await CreateWeekDayHelper(wkDay, day.ElementIDs)))
+                            return new ErrorResponse<WeekDTO>(ErrorCode.ResourceNotFound);
+
                         week.Weekdays[(int)day.Day].Elements = wkDay.Elements;
                     }
                 }
@@ -206,7 +187,7 @@ namespace GirafRest.Controllers
 
             if (user == null) return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.UserNotFound);
 
-            if(user.WeekSchedule.Where(w => w.Id == id).Any())
+            if (user.WeekSchedule.Where(w => w.Id == id).Any())
             {
                 var week = user.WeekSchedule.Where(w => w.Id == id).FirstOrDefault();
                 if (week == null) return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.WeekScheduleNotFound);
@@ -214,8 +195,37 @@ namespace GirafRest.Controllers
                 await _giraf._context.SaveChangesAsync();
                 return new Response<IEnumerable<WeekDTO>>(user.WeekSchedule.Select(w => new WeekDTO(w)));
             }
-            else    
+            else
                 return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.NoWeekScheduleFound);
         }
+
+        #region helpers
+
+        /// <summary>
+        /// Helper for adding pictograms to a weekday
+        /// </summary>
+        /// <returns>The week day helper.</returns>
+        /// <param name="wkDay">Wk day.</param>
+        /// <param name="Ids">Identifiers.</param>
+        private async Task<bool> CreateWeekDayHelper(Weekday wkDay, List<long> Ids){
+            foreach (var elemId in Ids)
+            {
+                var picto = await _giraf._context.Frames.Where(p => p.Id == elemId).FirstOrDefaultAsync();
+                if (picto != null)
+                    wkDay.Elements.Add(new WeekdayResource(wkDay, picto));
+                else
+                {
+                    var choice = await _giraf._context.Choices.Where(c => c.Id == elemId).FirstOrDefaultAsync();
+                    if (choice != null)
+                        wkDay.Elements.Add(new WeekdayResource(wkDay, choice));
+                    else
+                        return false;
+                }
+            }
+            return true;
+        }
+
+
+        #endregion
     }
 }

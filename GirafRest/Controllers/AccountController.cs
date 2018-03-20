@@ -56,8 +56,10 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="signInManager">A reference to a sign in manager</param>
         /// <param name="emailSender">A reference to an implementation of the IEmailSender interface.</param>
-        /// <param name="giraf">A reference to the implementation of the IGirafService interface.</param>
         /// <param name="loggerFactory">A reference to a logger factory</param>
+        /// <param name="giraf">A reference to the implementation of the IGirafService interface.</param>
+        /// <param name="configuration">A configuration object</param>
+        /// <param name="roleManager">A roleManager object for finding user roles</param>
         public AccountController(
             SignInManager<GirafUser> signInManager,
             IEmailService emailSender,
@@ -74,7 +76,14 @@ namespace GirafRest.Controllers
             _roleManager = roleManager;
         }
 
-        //https://github.com/jatarga/WebApiJwt/blob/master/Controllers/AccountController.cs
+        /// <summary>
+        /// Generates a JSON Web Token Token (JwtToken) for a given user and role. Based on the method with the same name from https://github.com/jatarga/WebApiJwt/blob/master/Controllers/AccountController.cs
+        /// </summary>
+        /// <param name="user">Which user</param>
+        /// <param name="roles">Which roles</param>
+        /// <returns>
+        /// The Token as a string
+        /// </returns>
         private string GenerateJwtToken(GirafUser user, GirafRoles roles)
         {
             var claims = new List<Claim>
@@ -103,7 +112,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="model">A LoginDTO(LoginViewModelDTO), i.e. a json-string with a username and a password field.</param>
         /// <returns>
-        /// token if credentials are valid
+        /// JwtToken if credentials are valid
         /// </returns>
         [HttpPost("login")]
         [AllowAnonymous]
@@ -172,14 +181,16 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Attempts to login from to a user's account from one of his supperior's. This allows departments
+        /// Attempts to login from to a user's account from one of his superior's. This allows departments
         /// to login as Guardians and guardians to login as citizens. The superiors does not require 
         /// password in order to login, but they must be in the same department. 
         /// </summary>
         /// <param name="superior">The Guardian user who is currently authenticated.</param>
         /// <param name="username">The username of the citizen to login as.</param>
         /// <param name="role">A string describing which role the target user is in.</param>
-        /// <returns></returns>
+        /// <returns>
+        /// A response containing a JwtToken or an ErrorReponse
+        /// </returns>
         private async Task<Response<string>> AttemptRoleLoginTokenAsync(GirafUser superior, string username, string role)
         {
             //Attempt to find a user with the given username in the guardian's department
@@ -205,20 +216,21 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Register a new user in the REST-API. The caller must supply a username, a password and a ConfirmPassword.
+        /// Register a new user in the REST-API
         /// </summary>
         /// <param name="model">A reference to a RegisterDTO(RegisterViewModelDTO), i.e. a json string containing three strings;
-        /// Username, Password and ConfirmPassword.</param>
+        /// Username and Password.</param>
         /// <returns>
-        /// BadRequest if the request lacks some information or the user could not be created and
-        /// Ok if the user was actually created.
+        /// Response with a GirafUserDTO with either the new user or an error
         /// </returns>
         [HttpPost("register")]
         [AllowAnonymous]
         public async Task<Response<GirafUserDTO>> Register([FromBody] RegisterDTO model)
         {
+            if(model == null)
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties);
             //Check that all the necesarry data has been supplied
-            if (!ModelState.IsValid || model?.ConfirmPassword == null)
+            if (!ModelState.IsValid)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties);
 
             if (String.IsNullOrEmpty(model.Username) || String.IsNullOrEmpty(model.Password))
@@ -227,10 +239,6 @@ namespace GirafRest.Controllers
 
             if (doesUserAlreadyExist)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.UserAlreadyExists);
-
-            // Check that password and confirm password match 
-            if (!model.Password.Equals(model.ConfirmPassword))
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidProperties, "confirmPassword");
 
             Department department = await _giraf._context.Departments.Where(dep => dep.Key == model.DepartmentId).FirstOrDefaultAsync();
 
@@ -259,8 +267,11 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Logs the currently authenticated user out of the system.
         /// </summary>
-        /// <returns>Ok</returns>
-        [HttpPost("logout")]
+        /// <returns>
+        /// A response object
+        /// </returns>
+        [HttpPost("logout")]        
+        [AllowAnonymous]
         public async Task<Response> Logout()
         {
             await _signInManager.SignOutAsync();
@@ -274,9 +285,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="model">A ForgotPasswordDTO, which contains a username and an email address.</param>
         /// <returns>
-        /// BadRequest if the request does not contain all necesarry information,
-        /// NotFound if the no user with the given username exists and 
-        /// Ok if the user was found.
+        /// An empty response if succesfull or an ErrorResponse if not succesfull
         /// </returns>
         [HttpPost("forgot-password")]
         [AllowAnonymous]
@@ -297,7 +306,7 @@ namespace GirafRest.Controllers
                 // Don't reveal that the user does not exist or is not confirmed
                 return new Response();
             }
-            
+
             var code = await _giraf._userManager.GeneratePasswordResetTokenAsync(user);
             var callbackUrl = Url.Action(nameof(ResetPassword), "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
             try
@@ -316,22 +325,21 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Creates a new password for the currently authenticated user.
         /// </summary>
-        /// <param name="model">Information on the new password in a SetPasswordDTO, i.e. a JSON string containing
-        /// NewPassword and ConfirmPassword.</param>
-        /// <returns>BadRequest if the server failed to update the password or Ok if everything went well.</returns>
+        /// <param name="model">Information on the new password in a SetPasswordDTO, i.e. a JSON string containing and NewPassword.</param>
+        /// <returns>
+        /// Empty Response on success. 
+        /// MissingProperties if there was missing properties
+        /// PasswordNotUpdated if the user wasn't logged in
+        /// </returns>
         [HttpPost("set-password")]
         [ValidateAntiForgeryToken]
         [Authorize]
         public async Task<Response> SetPassword(SetPasswordDTO model)
         {
             if (model == null)
-                return new ErrorResponse(ErrorCode.MissingProperties, "newPassword", "confirmPassword");
+                return new ErrorResponse(ErrorCode.MissingProperties, "newPassword");
             if (string.IsNullOrEmpty(model.NewPassword))
                 return new ErrorResponse(ErrorCode.MissingProperties, "newPassword");
-            if (string.IsNullOrEmpty(model.ConfirmPassword))
-                return new ErrorResponse(ErrorCode.MissingProperties, "confirmPassword");
-            if (model.NewPassword != model.ConfirmPassword)
-                return new ErrorResponse(ErrorCode.PasswordMissMatch, "confirmPassword");
 
             var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
             if (user != null)
@@ -351,18 +359,20 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="model">All information needed to change the password in a ChangePasswordDTO, i.e. old password, new password
         /// and a confirmation of the new password.</param>
-        /// <returns>BadRequest if something went wrong and ok if everything went well.</returns>
+        /// <returns>
+        /// Empty Response on success. 
+        /// MissingProperties if there was missing properties
+        /// PasswordNotUpdated if the user wasn't logged in
+        /// </returns>
         [HttpPost("change-password")]
         [ValidateAntiForgeryToken]
         [Authorize]
         public async Task<Response> ChangePassword(ChangePasswordDTO model)
         {
             if (model == null)
-                return new ErrorResponse(ErrorCode.MissingProperties, "newPassword", "confirmPassword", "oldPassword");
-            if (model.OldPassword == null || model.NewPassword == null || model.ConfirmPassword == null)
-                return new ErrorResponse(ErrorCode.MissingProperties, "newPassword", "confirmPassword", "oldPassword");
-            if (model.NewPassword != model.ConfirmPassword)
-                return new ErrorResponse(ErrorCode.InvalidProperties, "newPassword", "confirmPassword");
+                return new ErrorResponse(ErrorCode.MissingProperties, "newPassword", "oldPassword");
+            if (model.OldPassword == null || model.NewPassword == null)
+                return new ErrorResponse(ErrorCode.MissingProperties, "newPassword", "oldPassword");
 
             var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
             if (user != null)
@@ -382,7 +392,9 @@ namespace GirafRest.Controllers
         /// Gets the view associated with the ResetPassword page.
         /// </summary>
         /// <param name="code">The reset password token that has been sent to the user via his email.</param>
-        /// <returns>BadRequest if there is no valid code or the view if the code was valid.</returns>
+        /// <returns>
+        /// BadRequest if there is no valid code or the view if the code was valid.
+        /// </returns>
         [HttpGet("reset-password")]
         [AllowAnonymous]
         public IActionResult ResetPassword(string code = null)
@@ -396,8 +408,10 @@ namespace GirafRest.Controllers
         /// Attempts to change the given user's password. If the DTO did not contain valid information simply returns the view with
         /// the current information that the user has specified.
         /// </summary>
-        /// <param name="model">A DTO containing the user's Username, Password and a ConfirmPassword.</param>
-        /// <returns></returns>
+        /// <param name="model">A DTO containing the user's Username and Password.</param>
+        /// <returns>
+        /// The view if password was wrong or redirects to ResetPasswordConfirmation.
+        /// </returns>
         [HttpPost("reset-password")]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -430,7 +444,9 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Get the view associated with the ResetPasswordConfirmation page.
         /// </summary>
-        /// <returns>The view.</returns>
+        /// <returns>
+        /// The view.
+        /// </returns>
         [HttpGet("reset-password-confirmation")]
         [AllowAnonymous]
         public IActionResult ResetPasswordConfirmation()
@@ -442,7 +458,9 @@ namespace GirafRest.Controllers
         /// An end-point that simply returns Unauthorized. It is redirected to by the runtime when an unauthorized request
         /// to an end-point with the [Authorize] attribute is encountered.
         /// </summary>
-        /// <returns>Unauthorized.</returns>
+        /// <returns>
+        /// Unauthorized.
+        /// </returns>
         [HttpGet("access-denied")]
         public IActionResult AccessDenied()
         {

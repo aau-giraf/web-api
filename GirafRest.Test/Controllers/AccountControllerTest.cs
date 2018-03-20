@@ -262,7 +262,6 @@ namespace GirafRest.Test
             {
                 Username = "GenericName",
                 Password = "GenericPassword",
-                ConfirmPassword = "GenericPassword",
                 DepartmentId = DEPARTMENT_ONE
             }).Result;
 
@@ -279,46 +278,11 @@ namespace GirafRest.Test
             {
                 Username = _testContext.MockUsers[ADMIN_DEP_ONE].UserName,
                 Password = "password",
-                ConfirmPassword = "password",
                 DepartmentId = DEPARTMENT_ONE
             }).Result;
 
             Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.Equal(ErrorCode.UserAlreadyExists, res.ErrorCode);
-        }
-
-        [Fact]
-        public void Register_NoConfirmPassword_BadRequest()
-        {
-            var accountController = InitializeTest();
-
-            var res = accountController.Register(new RegisterDTO()
-            {
-                Username = "NewUser",
-                Password = "password",
-                DepartmentId = DEPARTMENT_ONE
-            }).Result;
-
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
-        }
-
-        [Fact]
-        public void Register_NoPassword_BadRequest()
-        {
-            var accountController = InitializeTest();
-
-            var res = accountController.Register(new RegisterDTO()
-            {
-                Username = "NewUser",
-                ConfirmPassword = "password",
-                DepartmentId = DEPARTMENT_ONE
-            }).Result;
-
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
         }
 
         [Fact]
@@ -329,7 +293,6 @@ namespace GirafRest.Test
             var res = accountController.Register(new RegisterDTO()
             {
                 Password = "password",
-                ConfirmPassword = "password",
                 DepartmentId = DEPARTMENT_ONE
             }).Result;
 
@@ -347,8 +310,7 @@ namespace GirafRest.Test
             var res = accountController.Register(new RegisterDTO()
             {
                 Username = "NewUser",
-                Password = "password",
-                ConfirmPassword = "password"
+                Password = "password"
             }).Result;
 
             Assert.IsType<Response<GirafUserDTO>>(res);
@@ -357,23 +319,6 @@ namespace GirafRest.Test
         }
         
         [Fact]
-        public void Register_PasswordMismatch_BadRequest()
-        {
-            var accountController = InitializeTest();
-
-            var res = accountController.Register(new RegisterDTO()
-            {
-                Username = "NewUser",
-                Password = "password",
-                ConfirmPassword = "drowssap",
-                DepartmentId = DEPARTMENT_ONE
-            }).Result;
-
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
-            Assert.Equal(ErrorCode.InvalidProperties, res.ErrorCode);
-        }
-
-        [Fact]
         public void Register_BlankDTO_BadRequest()
         {
             var accountController = InitializeTest();
@@ -381,8 +326,7 @@ namespace GirafRest.Test
             var res = accountController.Register(new RegisterDTO()
             {
                 Username = "",
-                Password = "",
-                ConfirmPassword = ""
+                Password = ""
             }).Result;
 
             Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
@@ -484,50 +428,12 @@ namespace GirafRest.Test
             SetPasswordDTO spDTO = new SetPasswordDTO()
             {
                 NewPassword = "newPassword",
-                ConfirmPassword = "newPassword"
             };
             
             var res = ac.SetPassword(spDTO).Result;
 
             Assert.IsType<Response>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-        }
-
-        [Fact]
-        // Missing 'NewPassword', only has ConfirmedPassword
-        public void SetPassword_MissingNewPasswod_BadRequest()
-        {
-            var ac = InitializeTest();
-
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-
-            SetPasswordDTO spDTO = new SetPasswordDTO()
-            {
-                ConfirmPassword = "newPassword"
-            };
-
-            var res = ac.SetPassword(spDTO).Result;
-
-            Assert.IsType<ErrorResponse>(res);
-            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
-        }
-
-        [Fact]
-        public void SetPassword_MissingConfirmPassword_BadRequest()
-        {
-            var ac = InitializeTest();
-
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-
-            SetPasswordDTO spDTO = new SetPasswordDTO()
-            {
-                NewPassword = "newPassword"
-            };
-
-            var res = ac.SetPassword(spDTO).Result;
-
-            Assert.IsType<ErrorResponse>(res);
-            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
 
         [Fact]
@@ -544,25 +450,6 @@ namespace GirafRest.Test
             Assert.IsType<ErrorResponse>(res);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
-
-        [Fact]
-        public void SetPassword_PasswordMismatch_BadRequest()
-        {
-            var ac = InitializeTest();
-
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-
-            SetPasswordDTO spDTO = new SetPasswordDTO()
-            {
-                NewPassword = "newPassword",
-                ConfirmPassword = "NEWPassword"
-            };
-
-            var res = ac.SetPassword(spDTO).Result;
-
-            Assert.IsType<ErrorResponse>(res);
-            Assert.Equal(ErrorCode.PasswordMissMatch, res.ErrorCode);
-        }
         #endregion
 
         #region ChangePassword
@@ -576,71 +463,13 @@ namespace GirafRest.Test
             ChangePasswordDTO cpDTO = new ChangePasswordDTO()
             {
                 OldPassword = "password",
-                NewPassword = "PASSWORD",
-                ConfirmPassword = "PASSWORD"
+                NewPassword = "PASSWORD"
             };
 
             var res = ac.ChangePassword(cpDTO).Result;
 
             Assert.IsType<Response>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-        }
-
-        [Fact]
-        public void ChangePassword_NoNewPassword_BadRequest()
-        {
-            var ac = InitializeTest();
-
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-
-            ChangePasswordDTO cpDTO = new ChangePasswordDTO()
-            {
-                OldPassword = "password",
-                ConfirmPassword = "PASSWORD"
-            };
-
-            var res = ac.ChangePassword(cpDTO).Result;
-
-            Assert.IsType<ErrorResponse>(res);
-            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
-        }
-
-        [Fact]
-        public void ChangePassword_NoConfirmPassword_BadRequest()
-        {
-            var ac = InitializeTest();
-
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-
-            ChangePasswordDTO cpDTO = new ChangePasswordDTO()
-            {
-                OldPassword = "password",
-                NewPassword = "PASSWORD"
-            };
-
-            var res = ac.ChangePassword(cpDTO).Result;
-
-            Assert.IsType<ErrorResponse>(res);
-            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
-        }
-
-        [Fact]
-        public void ChangePassword_NoOldPasswod_BadRequest()
-        {
-            var ac = InitializeTest();
-
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-
-            ChangePasswordDTO cpDTO = new ChangePasswordDTO()
-            {
-                NewPassword = "PASSWORD",
-                ConfirmPassword = "PASSWORD"
-            };
-
-            var res = ac.ChangePassword(cpDTO).Result;
-
-            Assert.IsType<ErrorResponse>(res);
-            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
 
         [Fact]
@@ -659,26 +488,6 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void ChangePassword_PasswordMismatch_BadRequest()
-        {
-            var ac = InitializeTest();
-
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-
-            ChangePasswordDTO cpDTO = new ChangePasswordDTO()
-            {
-                OldPassword = "password",
-                NewPassword = "PASSWORD",
-                ConfirmPassword = "DROWSSAP"
-            };
-
-            var res = ac.ChangePassword(cpDTO).Result;
-
-            Assert.IsType<ErrorResponse>(res);
-            Assert.Equal(ErrorCode.InvalidProperties, res.ErrorCode);
-        }
-
-        [Fact]
         public void ChangePassword_WrongOldPassword_BadRequest()
         {
             var ac = InitializeTest();
@@ -689,7 +498,6 @@ namespace GirafRest.Test
             {
                 OldPassword = "drowssap",
                 NewPassword = "PASSWORD",
-                ConfirmPassword = "PASSWORD"
             };
 
             var res = ac.ChangePassword(cpDTO).Result;

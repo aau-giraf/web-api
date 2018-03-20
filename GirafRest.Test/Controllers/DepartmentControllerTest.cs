@@ -26,6 +26,8 @@ namespace GirafRest.Test.Controllers
         private const int RESOURCE_FIVE = 5;
         private const int NONEXISTING = 999;
         private const int ADMIN_DEP_ONE = 0;
+        private const int DEPARTMENT_TWO_USER = 6;
+        private const int DEPARTMENT_TWO_OBJECT = 1;
 
         public DepartmentControllerTest(ITestOutputHelper testLogger)
         {
@@ -98,9 +100,11 @@ namespace GirafRest.Test.Controllers
         {
             var dc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+
             var depDTO = new DepartmentDTO(new Department()
             {
                 Name = "dep1"
+
             });
 
             var res = dc.Post(depDTO).Result;
@@ -317,6 +321,18 @@ namespace GirafRest.Test.Controllers
             Assert.IsType<Response<DepartmentDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(res.ErrorCode, ErrorCode.NoError);
+        }
+
+        [Fact]
+        public void GetAllCitizensFromDepartment_OkRequest(){
+            var dc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[DEPARTMENT_TWO_USER]);
+            var departmentTwoId = _testContext.MockDepartments[DEPARTMENT_TWO_OBJECT].Key;
+            var res = dc.GetCitizenNamesAsync(departmentTwoId).Result;
+
+            Assert.IsType<Response<List<UserNameDTO>>>(res);
+            Assert.Equal(res.ErrorCode, ErrorCode.NoError);
+            Assert.True(res.Success);
         }
 
         #endregion

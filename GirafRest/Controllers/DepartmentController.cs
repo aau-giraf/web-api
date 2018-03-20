@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -98,6 +99,52 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.NotFound);
 
             return new Response<DepartmentDTO>(new DepartmentDTO(depa));
+        }
+
+        /// <summary>
+        /// Gets the citizen names.
+        /// </summary>
+        /// <returns>The citizen names.</returns>
+        /// <param name="id">Identifier.</param>
+        [HttpGet("{id}/citizens")]
+        [Authorize]
+        public async Task<Response<List<UserNameDTO>>> GetCitizenNamesAsync(long id)
+        {
+            var department = _giraf._context.Departments
+                                   .Where(dep => dep.Key == id).FirstOrDefault();
+            
+
+            var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
+
+            var userRole = _roleManager.findUserRole(_giraf._userManager, currentUser);
+
+          if (!(await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser)
+              || await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Department) 
+                || await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian))){
+            return new ErrorResponse<List<UserNameDTO>>(ErrorCode.NotAuthorized); 
+            }
+
+            if (currentUser.Department.Key != department.Key)
+                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.NotAuthorized);
+
+            if (department == null) return new ErrorResponse<List<UserNameDTO>>(ErrorCode.DepartmentNotFound);
+
+            var roleCitizenId = _giraf._context.Roles.Where(r => r.Name == GirafRole.Citizen)
+                                                     .Select(c => c.Id).FirstOrDefault();
+
+            if (roleCitizenId == null) return new ErrorResponse<List<UserNameDTO>>(ErrorCode.DepartmentHasNoCitizens);
+
+            var userIds = _giraf._context.UserRoles.Where(u => u.RoleId == roleCitizenId)
+                                                   .Select(r => r.UserId).Distinct().ToList();
+
+            if (userIds == null) return new ErrorResponse<List<UserNameDTO>>(ErrorCode.DepartmentHasNoCitizens);
+
+            var usersNamesInDepartment = _giraf._context.Users
+                                               .Where(u => userIds.Any(ui => ui == u.Id)
+                                                      && u.DepartmentKey == department.Key)
+                                               .Select(u => new UserNameDTO(u.UserName, u.Id)).ToList();
+
+            return new Response<List<UserNameDTO>>(usersNamesInDepartment);
         }
 
         /// <summary>

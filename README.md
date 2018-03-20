@@ -14,6 +14,14 @@ To run the project locally with a sqlite database first do the following:
 
 Once the API is running locally you can navigate to `http://localhost:5000/swagger/` to see and tryout requests to the endpoints
 
+3. (Optional) To login on swagger:
+  - Make a Account/Login request with valid login-info
+  - Copy the `data` field.
+  - Click on the green Authorize button (Or the padlocks)
+  - Write `bearer ` (note the space) in the input-field and paste your token. 
+  - Click Authorize and close the pop-up. 
+  - You are now authorized and can make autorized requests.
+
 ## Migrations Sqlite
   Add migration:
   -  `dotnet ef migrations add <MigrationName> -o Migrations --context GirafSqliteDbContext`
