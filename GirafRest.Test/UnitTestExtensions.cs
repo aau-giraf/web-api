@@ -14,6 +14,7 @@ using System.IO;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using GirafRest.Controllers;
 using GirafRest.Services;
+using System.Text;
 
 namespace GirafRest.Test
 {
@@ -32,6 +33,14 @@ namespace GirafRest.Test
             public const int PictogramDepartment2 = 6;
             private const int DepartmentTwoUser = 6;
             private List<Pictogram> _mockPictograms;
+
+            #region MockPictogramData
+            public byte[] en = Encoding.ASCII.GetBytes("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");
+            public byte[] epik = Encoding.ASCII.GetBytes("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");
+
+            #endregion
+
+
             public List<Pictogram> MockPictograms
             {
                 get
@@ -47,13 +56,13 @@ namespace GirafRest.Test
                         new Pictogram("No restrictions", AccessLevel.PUBLIC) {
                             Id = 2
                         },
-                        new Pictogram("Private for user 0", AccessLevel.PRIVATE) {
+                        new Pictogram("Private for user 0", AccessLevel.PRIVATE, en) {
                             Id = 3
                         },
                         new Pictogram("Private for user 1", AccessLevel.PRIVATE) {
                             Id = 4
                         },
-                        new Pictogram("Protected for Dep 1", AccessLevel.PROTECTED)
+                        new Pictogram("Protected for Dep 1", AccessLevel.PROTECTED, epik)
                         {
                             Id = 5
                         },
