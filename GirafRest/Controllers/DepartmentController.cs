@@ -163,6 +163,10 @@ namespace GirafRest.Controllers
                         "Deparment name has to be specified!");
 
                 var authenticatedUser = await _giraf.LoadUserAsync(HttpContext.User);
+                
+                if(authenticatedUser == null)
+                    return new ErrorResponse<DepartmentDTO>(ErrorCode.UserNotFound);
+                
                 var userRole = await _roleManager.findUserRole(_giraf._userManager, authenticatedUser);
 
                 if (!(await _giraf._userManager.IsInRoleAsync(authenticatedUser, GirafRole.SuperUser)))
@@ -170,7 +174,7 @@ namespace GirafRest.Controllers
 
                 //Add the department to the database.
                 Department department = new Department(depDTO);
-                await _giraf._context.Departments.AddAsync(department);
+                
                 //Add all members specified by either id or username in the DTO
                 if (depDTO.Members != null)
                 {
@@ -186,23 +190,6 @@ namespace GirafRest.Controllers
                         usr.Department = department;
                     }
                 }
-
-                //Add the department to the database.
-                GirafUser depUser = new GirafUser(depDTO.Name, department);
-                await _giraf._context.Users.AddAsync(depUser);
-
-                depUser.IsDepartment = true;
-
-                department.Members.Add(depUser);
-                //Create a new user with the supplied information
-                var user = new GirafUser(depDTO.Name, department);
-                var identityUser = await _giraf._userManager.CreateAsync(user, "0000");
-                if (identityUser.Succeeded == false)
-                {
-                    return new ErrorResponse<DepartmentDTO>(ErrorCode.Error);
-                }
-
-                await _giraf._userManager.AddToRoleAsync(user, GirafRole.Department);
 
                 //Add all the resources with the given ids
                 if (depDTO.Resources != null)
@@ -221,6 +208,20 @@ namespace GirafRest.Controllers
                 }
 
                 await _giraf._context.Departments.AddAsync(department);
+                
+                //Create a new user with the supplied information
+                
+                var departmentUser = new GirafUser(depDTO.Name, department);
+                departmentUser.IsDepartment = true;
+                
+                //department.Members.Add(user);
+                
+                var identityUser = await _giraf._userManager.CreateAsync(departmentUser, "0000");
+                
+                if (identityUser.Succeeded == false)
+                    return new ErrorResponse<DepartmentDTO>(ErrorCode.CouldNotCreateDepartmentUser, string.Join("\n", identityUser.Errors));
+
+                await _giraf._userManager.AddToRoleAsync(departmentUser, GirafRole.Department);
 
                 //Save the changes and return the entity
                 await _giraf._context.SaveChangesAsync();
