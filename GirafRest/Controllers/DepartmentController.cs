@@ -288,7 +288,7 @@ namespace GirafRest.Controllers
         /// DepartmentDTO in its updated state if no problems occured.
         /// </returns>
         [HttpDelete("user/{departmentID}")]
-        public async Task<Response<DepartmentDTO>> RemoveUser(long departmentID, [FromBody]GirafUser usr)
+        public async Task<Response<DepartmentDTO>> RemoveUser(long departmentID, [FromBody]GirafUserDTO usr)
         {
             //Check if a valid user was supplied and that the given department exists
             if (usr == null)
@@ -304,12 +304,12 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.DepartmentNotFound);
 
             //Check if the user actually is in the department
-            if (!dep.Members.Any(u => u.UserName == usr.UserName))
+            if (!dep.Members.Any(u => u.UserName == usr.Username))
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.UserNotFound,
                     "User does not exist in the given department.");
 
             //Remove the user from the department
-            dep.Members.Remove(dep.Members.First(u => u.UserName == usr.UserName));
+            dep.Members.Remove(dep.Members.First(u => u.UserName == usr.Username));
             _giraf._context.SaveChanges();
             return new Response<DepartmentDTO>(new DepartmentDTO(dep));
         }
