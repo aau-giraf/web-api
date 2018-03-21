@@ -7,15 +7,16 @@ To run the project locally with a MySQL database first do the following:
 0. Prerequisites:
   - Download and install .NET Core 2.1.101 SDK
   - Download and install MySQL Server and optionally MySQL Workbench or another database manager
-  - Create a database named giraf on the MySQL Server
+  - Create a database named giraf on the MySQL Server. This can be done from the workbench or via cli.
 
 1. open a terminal-emulator and navigate to {project-root}/web-api/GirafRest
 
 2. In a shell:
   - run `cp appsettings.example.json appsettings.Development.json`
-  - update appsettings.Development.json with connection string to the giraf database
-    - Jwt.JwtKey must be a random string of, at least 40, alpha-numeric charecters
-    - Jwt.JwtIssuer is your name or organization. For example "Aalborg University"
+  - update appsettings.Development.json with 
+	- All fields <> in the"DefaultConnection" string.
+    - Jwt.JwtKey field, which must be any (random) string of, at least 40, alpha-numeric charecters
+    - Jwt.JwtIssuer field, which is your name or organization. For example "Aalborg University"
   - run `dotnet restore`
   - run `dotnet ef database update`
   - run `dotnet run --sample-data`
