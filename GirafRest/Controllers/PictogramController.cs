@@ -136,8 +136,11 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<Response<PictogramDTO>> CreatePictogram([FromBody]PictogramDTO pictogram)
         {
-            if (pictogram == null) return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties, "pictogram");
-                BadRequest("The body of the request must contain a pictogram.");
+            if (pictogram == null) 
+                return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties, 
+                    "Could not read pictogram DTO. Please make sure not to include image data in this request. " +
+                    "Use POST localhost/v1/pictogram/{id}/image instead.");
+            
             if (!ModelState.IsValid)
                 return new ErrorResponse<PictogramDTO>(ErrorCode.InvalidModelState);
 
@@ -180,7 +183,9 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<Response<PictogramDTO>> UpdatePictogramInfo(long id, [FromBody] PictogramDTO pictogram)
         {
-            if (pictogram == null) return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties, "pictogram");
+            if (pictogram == null) return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties,  
+                "Could not read pictogram DTO. Please make sure not to include image data in this request. " +
+                "Use POST localhost/v1/pictogram/{id}/image instead.");
             if (pictogram.AccessLevel == null) return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties, "missing access level");
 
             if (!ModelState.IsValid)
