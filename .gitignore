@@ -30,3 +30,4 @@ out
 *.user
 *.sln
 appsettings.json
+appsettings.Development.json

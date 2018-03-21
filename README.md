@@ -6,25 +6,27 @@ To run the project locally with a MySQL database first do the following:
 
 0. Prerequisites:
   - Download and install .NET Core 2.1.101 SDK
-  - Download and install MySQL Server and MySQL Workbench
+  - Download and install MySQL Server and optionally MySQL Workbench or another database manager
   - Create a database named giraf on the MySQL Server
 
-1. Goto: /web-api/GirafRest
+1. open a terminal-emulator and navigate to {project-root}/web-api/GirafRest
 
 2. In a shell:
-  - `cp appsettings.example.json appsettings.Development.json`
+  - run `cp appsettings.example.json appsettings.Development.json`
   - update appsettings.Development.json with connection string to the giraf database
-  - `dotnet restore`
-  - `dotnet database update`
-  - `dotnet run --sample-data`
+    - Jwt.JwtKey must be a random string of, at least 40, alpha-numeric charecters
+    - Jwt.JwtIssuer is your name or organization. For example "Aalborg University"
+  - run `dotnet restore`
+  - run `dotnet ef database update`
+  - run `dotnet run --sample-data`
 
 Once the API is running locally you can navigate to `http://localhost:5000/swagger/` to see and tryout requests to the endpoints
 
-3. (Optional) To login on swagger:
+3. (Optional) To login via swagger:
   - Make a Account/Login request with valid login-info (username: `Tobias`, password: `password`)
   - Copy the `data` field containing the token.
   - Click on the green Authorize button (Or the padlocks)
-  - Write `Bearer ` (note the space) in the input-field and paste your token. 
+  - Write `Bearer [your-token]` (note the space) in the input-field. 
   - Click Authorize and close the pop-up. 
   - You are now authorized and can make autorized requests.
 
