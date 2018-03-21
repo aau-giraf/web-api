@@ -23,90 +23,6 @@ namespace GirafRest.Migrations.MySQL
                 name: "GirafUserId",
                 table: "AspNetUsers");
 
-            migrationBuilder.AlterColumn<long>(
-                name: "id",
-                table: "Weeks",
-                nullable: false,
-                oldClrType: typeof(long))
-                .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
-
-            migrationBuilder.AlterColumn<long>(
-                name: "id",
-                table: "Weekdays",
-                nullable: false,
-                oldClrType: typeof(long))
-                .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
-
-            migrationBuilder.AlterColumn<long>(
-                name: "Key",
-                table: "WeekdayResources",
-                nullable: false,
-                oldClrType: typeof(long))
-                .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
-
-            migrationBuilder.AlterColumn<long>(
-                name: "Key",
-                table: "UserResources",
-                nullable: false,
-                oldClrType: typeof(long))
-                .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
-
-            migrationBuilder.AlterColumn<long>(
-                name: "Key",
-                table: "LauncherOptions",
-                nullable: false,
-                oldClrType: typeof(long))
-                .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
-
-            migrationBuilder.AlterColumn<long>(
-                name: "id",
-                table: "Frames",
-                nullable: false,
-                oldClrType: typeof(long))
-                .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
-
-            migrationBuilder.AlterColumn<long>(
-                name: "id",
-                table: "Departments",
-                nullable: false,
-                oldClrType: typeof(long))
-                .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
-
-            migrationBuilder.AlterColumn<long>(
-                name: "Key",
-                table: "DeparmentResources",
-                nullable: false,
-                oldClrType: typeof(long))
-                .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
-
-            migrationBuilder.AlterColumn<long>(
-                name: "Key",
-                table: "ChoiceResource",
-                nullable: false,
-                oldClrType: typeof(long))
-                .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
-
-            migrationBuilder.AlterColumn<long>(
-                name: "Id",
-                table: "ApplicationOption",
-                nullable: false,
-                oldClrType: typeof(long))
-                .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
-
-            migrationBuilder.AlterColumn<int>(
-                name: "Id",
-                table: "AspNetUserClaims",
-                nullable: false,
-                oldClrType: typeof(int))
-                .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
-
-            migrationBuilder.AlterColumn<int>(
-                name: "Id",
-                table: "AspNetRoleClaims",
-                nullable: false,
-                oldClrType: typeof(int))
-                .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
-
             migrationBuilder.CreateTable(
                 name: "GuardianRelations",
                 columns: table => new
@@ -162,96 +78,12 @@ namespace GirafRest.Migrations.MySQL
 
             migrationBuilder.DropTable(
                 name: "GuardianRelations");
-
-            migrationBuilder.AlterColumn<long>(
-                name: "id",
-                table: "Weeks",
-                nullable: false,
-                oldClrType: typeof(long))
-                .OldAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
-
-            migrationBuilder.AlterColumn<long>(
-                name: "id",
-                table: "Weekdays",
-                nullable: false,
-                oldClrType: typeof(long))
-                .OldAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
-
-            migrationBuilder.AlterColumn<long>(
-                name: "Key",
-                table: "WeekdayResources",
-                nullable: false,
-                oldClrType: typeof(long))
-                .OldAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
-
-            migrationBuilder.AlterColumn<long>(
-                name: "Key",
-                table: "UserResources",
-                nullable: false,
-                oldClrType: typeof(long))
-                .OldAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
-
-            migrationBuilder.AlterColumn<long>(
-                name: "Key",
-                table: "LauncherOptions",
-                nullable: false,
-                oldClrType: typeof(long))
-                .OldAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
-
-            migrationBuilder.AlterColumn<long>(
-                name: "id",
-                table: "Frames",
-                nullable: false,
-                oldClrType: typeof(long))
-                .OldAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
-
-            migrationBuilder.AlterColumn<long>(
-                name: "id",
-                table: "Departments",
-                nullable: false,
-                oldClrType: typeof(long))
-                .OldAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
-
-            migrationBuilder.AlterColumn<long>(
-                name: "Key",
-                table: "DeparmentResources",
-                nullable: false,
-                oldClrType: typeof(long))
-                .OldAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
-
-            migrationBuilder.AlterColumn<long>(
-                name: "Key",
-                table: "ChoiceResource",
-                nullable: false,
-                oldClrType: typeof(long))
-                .OldAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
-
+            
             migrationBuilder.AddColumn<string>(
                 name: "GirafUserId",
                 table: "AspNetUsers",
                 maxLength: 255,
                 nullable: true);
-
-            migrationBuilder.AlterColumn<long>(
-                name: "Id",
-                table: "ApplicationOption",
-                nullable: false,
-                oldClrType: typeof(long))
-                .OldAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
-
-            migrationBuilder.AlterColumn<int>(
-                name: "Id",
-                table: "AspNetUserClaims",
-                nullable: false,
-                oldClrType: typeof(int))
-                .OldAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
-
-            migrationBuilder.AlterColumn<int>(
-                name: "Id",
-                table: "AspNetRoleClaims",
-                nullable: false,
-                oldClrType: typeof(int))
-                .OldAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_GirafUserId",
