@@ -106,7 +106,8 @@ namespace GirafRest.Setup
                 new GirafUser("Kurt", Departments[0]),
                 new GirafUser("Graatand", Departments[0]),
                 new GirafUser("Lee", Departments[1]),
-                new GirafUser("Tobias", Departments[0])
+                new GirafUser("Tobias", Departments[0]),
+                new GirafUser("Decker", Departments[0])
             };
             //Note that the call to .Result is a dangerous way to run async methods synchonously and thus should not be used elsewhere!
             foreach (var user in users)
@@ -119,6 +120,7 @@ namespace GirafRest.Setup
             a = userManager.AddToRoleAsync(users[1], GirafRole.Guardian).Result;
             a = userManager.AddToRoleAsync(users[2], GirafRole.SuperUser).Result;
             a = userManager.AddToRoleAsync(users[3], GirafRole.Department).Result;
+            a = userManager.AddToRoleAsync(users[4], GirafRole.Citizen).Result;
 
             return users;
         }
