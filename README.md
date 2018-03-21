@@ -26,7 +26,7 @@ Once the API is running locally you can navigate to `http://localhost:5000/swagg
   - Make a Account/Login request with valid login-info (username: `Tobias`, password: `password`)
   - Copy the `data` field containing the token.
   - Click on the green Authorize button (Or the padlocks)
-  - Write `Bearer [your-token]` (note the space) in the input-field. 
+  - Write `bearer [your-token]` (note the space) in the input-field. 
   - Click Authorize and close the pop-up. 
   - You are now authorized and can make autorized requests.
 
