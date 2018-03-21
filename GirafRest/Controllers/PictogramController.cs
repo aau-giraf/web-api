@@ -141,8 +141,11 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<Response<PictogramDTO>> CreatePictogram([FromBody]PictogramDTO pictogram)
         {
-            if (pictogram == null) return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties, "pictogram");
-                BadRequest("The body of the request must contain a pictogram.");
+            if (pictogram == null) 
+                return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties, 
+                    "Could not read pictogram DTO. Please make sure not to include image data in this request. " +
+                    "Use POST localhost/v1/pictogram/{id}/image instead.");
+            
             if (!ModelState.IsValid)
                 return new ErrorResponse<PictogramDTO>(ErrorCode.InvalidModelState);
 
@@ -165,8 +168,6 @@ namespace GirafRest.Controllers
                 new DepartmentResource(user.Department, pict);
             }
 
-            //Stamp the pictogram with current time and add it to the database
-            pict.LastEdit = DateTime.Now;
             await _giraf._context.Pictograms.AddAsync(pict);
             await _giraf._context.SaveChangesAsync();
 
@@ -184,10 +185,12 @@ namespace GirafRest.Controllers
         /// NotFound if there is no pictogram with the specified id or 
         /// the updated pictogram to maintain statelessness.</returns>
         [HttpPut("{id}")]
-        [Authorize(Policy = GirafRole.RequireGuardianOrSuperUser)]
+        [Authorize]
         public async Task<Response<PictogramDTO>> UpdatePictogramInfo(long id, [FromBody] PictogramDTO pictogram)
         {
-            if (pictogram == null) return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties, "pictogram");
+            if (pictogram == null) return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties,  
+                "Could not read pictogram DTO. Please make sure not to include image data in this request. " +
+                "Use POST localhost/v1/pictogram/{id}/image instead.");
             if (pictogram.AccessLevel == null) return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties, "missing access level");
 
             if (!ModelState.IsValid)
@@ -222,7 +225,6 @@ namespace GirafRest.Controllers
         /// NotFound if no pictogram with the id exists.
         /// Unauthorized if the user does not own the pictogram</returns>
         [HttpDelete("{id}")]
-        [Authorize(Policy = GirafRole.RequireGuardianOrSuperUser)]
         public async Task<Response> DeletePictogram(int id)
         {
             var usr = await _giraf.LoadUserAsync(HttpContext.User);
@@ -284,7 +286,7 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Read the image of a given pictogram.
+        /// Read the image of a given pictogram as raw.
         /// </summary>
         /// <param name="id">The id of the pictogram to read the image of.</param>
         /// <returns>A FileResult with the desired image.
@@ -311,39 +313,56 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Returns the pictogram image as a png file
+        /// Reads the raw pictogram image.
+        /// You are allowed to read all public pictograms aswell as your own pictograms
+        ///  or any pictograms shared within the department
         /// </summary>
-        /// <param name="id">The id of the pictogram to read the image of.</param>
-        /// <returns>The desired image as a PNG file.
-        /// NotFound if the image does not exist
-        /// Unauthorized if the user does not have access to it</returns>
+        /// <returns>The raw pictogram image.</returns>
+        /// <param name="id">Identifier.</param>
         [HttpGet("{id}/image/raw")]
-        public async Task<IActionResult> ReadRawPictogramImage(long id) {
-            var usr = await _giraf.LoadUserAsync(HttpContext.User);
-            if (usr == null) 
-                return NotFound(); 
-                // return new ErrorResponse<byte[]>(ErrorCode.NotAuthorized);
-            //Fetch the pictogram and check that it actually exists and has an image.
+        public async Task<IActionResult> ReadRawPictogramImage(long id)
+        {
             var picto = await _giraf._context
                 .Pictograms
                 .Where(p => p.Id == id)
                 .FirstOrDefaultAsync();
+
             if (picto == null)
-                return NotFound(); 
-                // return new ErrorResponse<byte[]>(ErrorCode.PictogramNotFound);
-            else if (picto.Image == null)
-                return NotFound(); 
-                // return new ErrorResponse<byte[]>(ErrorCode.PictogramHasNoImage);
-
-            if (!CheckOwnership(picto, usr).Result)
-                return NotFound(); 
-                // return new ErrorResponse<byte[]>(ErrorCode.NotAuthorized);
-
-            return File(Convert.FromBase64String(System.Text.Encoding.UTF8.GetString(picto.Image)), "image/png");
+                return NotFound();
             
-            // return File(SixLabors.ImageSharp.Image.FromStream(new MemoryStream(picto.Image)), "image/png");
-            // return new Response<byte[]>(picto.Image);
+           if (picto.Image == null)
+                return NotFound();
+
+            // you can get all public pictograms
+            if (picto.AccessLevel == AccessLevel.PUBLIC)
+                return File(Convert.FromBase64String(System.Text.Encoding.UTF8.GetString(picto.Image)), "image/png");
+
+            // fetch current authenticated user
+            var usr = await _giraf.LoadUserAsync(HttpContext.User);
+
+            if (usr == null)
+                return NotFound();
+
+            // you can only get a protected picogram if it is owned by your department
+            if (picto.AccessLevel == AccessLevel.PROTECTED)
+            {
+                if (!picto.Departments.Any(d => d.OtherKey == usr.DepartmentKey))
+                {
+                    return NotFound();
+                }
+            }
+
+            // you can only get a private pictogram if you are among the owners of the pictogram
+            if (picto.AccessLevel == AccessLevel.PRIVATE)
+            {
+                if (!picto.Users.Any(d => d.OtherKey == usr.Id))
+                {
+                    return NotFound();
+                }
+            }
+            return File(Convert.FromBase64String(System.Text.Encoding.UTF8.GetString(picto.Image)), "image/png");
         }
+
         #endregion
 
         #region helpers

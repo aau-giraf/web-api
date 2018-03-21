@@ -90,19 +90,21 @@ namespace GirafRest.Controllers
             //Check if a valid ChoiceDTO has been specified
             if (choice == null)
                 return new ErrorResponse<ChoiceDTO>(ErrorCode.FormatError);
-
-            //Attempt to find all resources that make up the choice
+            
+            //Find all the involved resources and check that they exist
             List<Pictogram> pictogramList = new List<Pictogram>();
-            //Find all the involved resource and check that they exist
-            foreach (var option in choice.Options) 
+            if(choice.Options != null)
             {
-                var pf = await _giraf._context.Pictograms
-                    .Where(p => p.Id == option.Id)
-                    .FirstOrDefaultAsync();
-                if (pf == null)
-                    return new ErrorResponse<ChoiceDTO>(ErrorCode.ChoiceContainsInvalidPictogramId, $"{option.Id}");
-                pictogramList.Add(pf);
-            } 
+                foreach (var option in choice.Options) 
+                {
+                    var pf = await _giraf._context.Pictograms
+                        .Where(p => p.Id == option.Id)
+                        .FirstOrDefaultAsync();
+                    if (pf == null)
+                        return new ErrorResponse<ChoiceDTO>(ErrorCode.ChoiceContainsInvalidPictogramId, $"{option.Id}");
+                    pictogramList.Add(pf);
+                } 
+            }
 
             //Create an object for the choice
             Choice _choice = new Choice(pictogramList, choice.Title);
@@ -120,7 +122,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Update info of a <see cref="Choice"/> choice.
         /// </summary>
-        /// <param name="choice"> A <see cref="ChoiceDTO"/> with all new information to update with.
+        /// <param name="newValues"> A <see cref="ChoiceDTO"/> with all new information to update with.
         /// The Id found in this DTO is the target choice.
         /// </param>
         /// <returns>
@@ -130,48 +132,56 @@ namespace GirafRest.Controllers
         /// ChoiceContainsInvalidPictogramId if the pictogram could not be found
         /// </returns>
         [HttpPut("{id}")]
-        public async Task<Response<ChoiceDTO>> UpdateChoice(long id, [FromBody] ChoiceDTO choice)
+        public async Task<Response<ChoiceDTO>> UpdateChoice(long id, [FromBody] ChoiceDTO newValues)
         {
             //Check if a valid ChoiceDTO has been specified
-            if (choice == null)
+            if (newValues == null)
                 return new ErrorResponse<ChoiceDTO>(ErrorCode.FormatError);
 
             //Attempt to find the target choice.
-            Choice _choice;
-            List<Pictogram> pictogramList = new List<Pictogram>();
-            _choice = await _giraf._context.Choices
+            Choice choice = await _giraf._context.Choices
                 .Where(ch => ch.Id == id)
                 .Include(ch => ch.Options)
                 .ThenInclude(op => op.Resource)
                 .FirstOrDefaultAsync();
-            if (_choice == null)
+            
+            if (choice == null)
                 return new ErrorResponse<ChoiceDTO>(ErrorCode.NotFound, $"ID={id} not found");
+            
             //Check that the user actually owns the choice
-            if (!(await checkAccess(_choice))) return new ErrorResponse<ChoiceDTO>(ErrorCode.NotAuthorized);
+            if (!(await checkAccess(choice))) 
+                return new ErrorResponse<ChoiceDTO>(ErrorCode.NotAuthorized);
 
-            //Find all the involved resource and check that they exist
-            foreach (var option in choice.Options)
+            //Find all the involved resources and check that they exist
+            List<Pictogram> pictogramList = new List<Pictogram>();
+            if(newValues.Options != null)
             {
-                var pf = await _giraf._context.Pictograms
-                    .Where(p => p.Id == option.Id)
-                    .FirstOrDefaultAsync();
-                if (pf == null)
-                    return new ErrorResponse<ChoiceDTO>(ErrorCode.ChoiceContainsInvalidPictogramId, $"{option.Id}");
-                pictogramList.Add(pf);
+                foreach (var option in newValues.Options)
+                {
+                    var pf = await _giraf._context.Pictograms
+                        .Where(p => p.Id == option.Id)
+                        .FirstOrDefaultAsync();
+                    if (pf == null)
+                        return new ErrorResponse<ChoiceDTO>(ErrorCode.ChoiceContainsInvalidPictogramId, $"{option.Id}");
+                    pictogramList.Add(pf);
+                }
             }
             
-            //Modify the choice and check that the user has access to all pictograms that were added to the choice
-            _choice.Clear();
-            _choice.AddAll(pictogramList);
-            if (!(await checkAccess(_choice))) return new ErrorResponse<ChoiceDTO>(ErrorCode.NotAuthorized);
+            //Check that the user has access to all pictograms that were added to the choice
+            if (!(await checkAccess(choice))) 
+                return new ErrorResponse<ChoiceDTO>(ErrorCode.NotAuthorized);
+            
+            //Modify the choice 
+            choice.Clear();
+            choice.AddAll(pictogramList);
 
             //Save the changes
             _giraf._logger.LogInformation($"Updating the choice with the new information and adding it to the database");
-            _choice.Merge(choice);
-            _giraf._context.Choices.Update(_choice);
+            choice.Merge(newValues);
+            _giraf._context.Choices.Update(choice);
             _giraf._context.SaveChanges();
 
-            return new Response<ChoiceDTO>(new ChoiceDTO(_choice));
+            return new Response<ChoiceDTO>(new ChoiceDTO(choice));
         }
 
         /// <summary>
@@ -183,7 +193,6 @@ namespace GirafRest.Controllers
         /// NotFound if the choice was not found
         /// NotAuthorized if the user does not own the choice
         /// </returns>
-        [Authorize(Policy = GirafRole.RequireGuardianOrSuperUser)]
         [HttpDelete("{id}")]
         public async Task<Response> DeleteChoice(long id)
         {

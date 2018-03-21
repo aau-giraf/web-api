@@ -42,7 +42,8 @@ namespace GirafRest.Test.Controllers
                 new MockGirafService(
                     _testContext.MockDbContext.Object,
                     _testContext.MockUserManager),
-                    _testContext.MockLoggerFactory.Object);
+                    _testContext.MockLoggerFactory.Object,
+                    _testContext.MockRoleManager.Object);
 
             _testContext.MockHttpContext = dc.MockHttpContext();
             _testContext.MockHttpContext.MockClearQueries();
@@ -99,8 +100,11 @@ namespace GirafRest.Test.Controllers
         {
             var dc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var depDTO = new DepartmentDTO(new Department() {
+
+            var depDTO = new DepartmentDTO(new Department()
+            {
                 Name = "dep1"
+
             });
 
             var res = dc.Post(depDTO).Result;
@@ -305,6 +309,18 @@ namespace GirafRest.Test.Controllers
             var res = dc.RemoveResource(new ResourceIdDTO() { Id = RESOURCE_FIVE }).Result;
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
             Assert.Equal(res.ErrorCode, ErrorCode.NotAuthorized);
+        }
+
+        [Fact]
+        public void AddDepartment_OkRequest(){
+            var dc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
+
+            var res = dc.Post(new DepartmentDTO() { Name = "Børnehave Toften"}).Result;
+
+            Assert.IsType<Response<DepartmentDTO>>(res);
+            Assert.True(res.Success);
+            Assert.Equal(res.ErrorCode, ErrorCode.NoError);
         }
 
         [Fact]

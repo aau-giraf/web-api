@@ -60,6 +60,25 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
+        /// Returns currently logged in users username
+        /// </summary>
+        /// <returns>
+        /// Reponse with username.
+        /// UnAuthorized if user is not logged in.
+        /// </returns>
+        [HttpGet("username")]
+        [Authorize]
+        public async Task<Response<string>> Username()
+        {
+            //First attempt to fetch the user and check that he exists
+            var user = await _giraf.LoadUserAsync(HttpContext.User);
+            if (user == null)
+                return new ErrorResponse<string>(ErrorCode.NotAuthorized);
+
+            return new Response<string>(user.UserName);
+        }
+
+        /// <summary>
         /// Find information on the user with the username supplied as a url query parameter or the current user.
         /// </summary>
         /// <returns>NotFound either if there is no user with the given username or the user is not authorized to see the user
@@ -108,7 +127,7 @@ namespace GirafRest.Controllers
 
         [Authorize]
         [HttpGet("")]
-        public async Task<Response<GirafUserDTO>> GetUser ()
+        public async Task<Response<GirafUserDTO>> GetUser()
         {
             //First attempt to fetch the user and check that he exists
             var user = await _giraf.LoadUserAsync(HttpContext.User);
@@ -137,6 +156,9 @@ namespace GirafRest.Controllers
             
             //Fetch the user
             var user = await _giraf.LoadUserAsync(HttpContext.User);
+            
+            if(user == null)
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
 
             return await UpdateUser(user.Id, userDTO);
         }
@@ -153,10 +175,13 @@ namespace GirafRest.Controllers
         [HttpPut("{id}")]
         public async Task<Response<GirafUserDTO>> UpdateUser(string id, [FromBody]GirafUserDTO userDTO)
         {
-            var usr = await _giraf._userManager.FindByIdAsync(id);
+            var userInfoBrief = await _giraf._userManager.FindByIdAsync(id);
 
+            if(userInfoBrief == null)
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
+            
             //Fetch the user
-            var user = await _giraf.LoadByNameAsync(usr.UserName);
+            var user = await _giraf.LoadByNameAsync(userInfoBrief.UserName);
             if (user == null)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.NotFound);
 
@@ -207,13 +232,23 @@ namespace GirafRest.Controllers
         /// <returns>Response<GirafUserDTO> if succesfull, ErrorResponse<GirafUserDTO>(errorcode) if not </returns>
         [Consumes(IMAGE_TYPE_PNG, IMAGE_TYPE_JPEG)]
         [HttpPost("icon")]
-        public async Task<Response<GirafUserDTO>> CreateUserIcon() {
+        public async Task<Response<GirafUserDTO>> CreateUserIcon() 
+        {
             var usr = await _giraf._userManager.GetUserAsync(HttpContext.User);
-            if (usr == null) return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
-            if (usr.UserIcon != null) return new ErrorResponse<GirafUserDTO>(ErrorCode.UserAlreadyHasIconUsePut);
+            
+            if (usr == null) 
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
+            
+            if (usr.UserIcon != null) 
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserAlreadyHasIconUsePut);
+            
             byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body);
-            if (image.Length < IMAGE_CONTENT_TYPE_DEFINITION) return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "Image");
+            
+            if (image.Length < IMAGE_CONTENT_TYPE_DEFINITION) 
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "Image");
+            
             usr.UserIcon = image;
+            
             await _giraf._context.SaveChangesAsync();
 
             // Get the roles the user is associated with
@@ -226,11 +261,21 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns>Ok on success and BadRequest if the user already has an icon.</returns>
         [HttpPut("icon")]
-        public async Task<Response<GirafUserDTO>> UpdateUserIcon() {
+        public async Task<Response<GirafUserDTO>> UpdateUserIcon() 
+        {
             var usr = await _giraf._userManager.GetUserAsync(HttpContext.User);
-            if (usr.UserIcon == null) return new ErrorResponse<GirafUserDTO>(ErrorCode.UserHasNoIconUsePost);
+            
+            if(usr == null)
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
+            
+            if (usr.UserIcon == null) 
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserHasNoIconUsePost);
+            
             byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body);
-            if (image.Length < IMAGE_CONTENT_TYPE_DEFINITION) return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "Image");
+            
+            if (image.Length < IMAGE_CONTENT_TYPE_DEFINITION) 
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "Image");
+            
             usr.UserIcon = image;
             await _giraf._context.SaveChangesAsync();
 

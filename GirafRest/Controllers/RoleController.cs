@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
 using GirafRest.Models.Responses;
+using GirafRest.Extensions;
 
 namespace GirafRest.Controllers
 {
@@ -45,8 +46,12 @@ namespace GirafRest.Controllers
         public async Task<Response<string>> GetGirafRole()
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
+            
+            if (user == null)
+                return new Response<string>("");
+            
             var role = await _giraf._userManager.GetRolesAsync(user);
-
+            
             if (role.Count == 0)
                 return new Response<string>("");
 
@@ -59,9 +64,10 @@ namespace GirafRest.Controllers
         /// <param name="username">Username of the user who needs be to made guardian</param>
         /// <returns> NotFound if no such user exists, Badrequest if the operation fails. And Ok if all is well</returns>
         [HttpPost("guardian/{username}")]
-        [Authorize(Policy = GirafRole.RequireDepartment)]
         public async Task<Response> AddToGuardian(string username)
         {
+            if (GetGirafRole().Result.Data != GirafRole.Department) return new ErrorResponse(ErrorCode.NotAuthorized);
+
             return await addUserToRoleAsync(username, GirafRole.Guardian);
         }
 
@@ -71,9 +77,10 @@ namespace GirafRest.Controllers
         /// <param name="username">The username of the user in question</param>
         /// <returns> NotFound if no such user exists, Badrequest if the operation failed and Ok if successful</returns>
         [HttpDelete("guardian/{username}")]
-        [Authorize(Policy = GirafRole.RequireDepartment)]
         public async Task<Response> RemoveFromGuardian(string username)
         {
+            if (GetGirafRole().Result.Data != GirafRole.Department) return new ErrorResponse(ErrorCode.NotAuthorized);
+
             return await removeUserFromRoleAsync(username, GirafRole.Guardian);
         }
 
@@ -83,9 +90,10 @@ namespace GirafRest.Controllers
         /// <param name="username">The username of the user in question</param>
         /// <returns> NotFound if no such user exists, Badrequest if the operation failed and Ok if successful</returns>
         [HttpPost("admin/{username}")]
-        [Authorize(Policy = GirafRole.RequireSuperUser)]
         public async Task<Response> AddToAdmin(string username)
         {
+            if (GetGirafRole().Result.Data != GirafRole.SuperUser) return new ErrorResponse(ErrorCode.NotAuthorized);
+
             return await addUserToRoleAsync(username, GirafRole.SuperUser);
         }
 
@@ -153,9 +161,10 @@ namespace GirafRest.Controllers
         /// <param name="username">The username of the user in question
         /// <param name="rolename">The name of the role
         /// <returns> NotFound if no such user exists, Badrequest if the operation fails. And Ok if all is well</returns>
-        [Authorize(Policy = GirafRole.SuperUser)]
         private async Task<Response> addUserToRoleAsync(string username, string rolename)
         {
+            if (GetGirafRole().Result.Data != GirafRole.SuperUser) return new ErrorResponse(ErrorCode.NotAuthorized);
+
             var user = await _giraf._userManager.FindByNameAsync(username);
             if (user == null)
                 return new ErrorResponse(ErrorCode.UserNotFound);

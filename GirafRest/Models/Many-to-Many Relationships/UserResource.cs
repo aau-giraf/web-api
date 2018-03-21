@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -47,6 +48,7 @@ namespace GirafRest.Models
             this.ResourceKey = resource.Id;
             this.Resource = resource;
 
+            Resource.LastEdit = DateTime.Now;
             Other.Resources.Add(this);
             Resource.Users.Add(this);
         }
