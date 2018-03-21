@@ -46,6 +46,10 @@ namespace GirafRest.Controllers
         public async Task<Response<string>> GetGirafRole()
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
+            
+            if (user == null)
+                return new Response<string>("");
+            
             var role = await _giraf._userManager.GetRolesAsync(user);
             
             if (role.Count == 0)

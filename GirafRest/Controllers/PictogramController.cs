@@ -49,36 +49,43 @@ namespace GirafRest.Controllers
         /// Get all public <see cref="Pictogram"/> pictograms available to the user
         /// (i.e the public pictograms and those owned by the user (PRIVATE) and his department (PROTECTED)).
         /// </summary>
+        /// <param name="q">The query string. pictograms are filtered based on this string if passed</param>
+        /// <param name="p">Page number</param>
+        /// <param name="n">Number of pictograms per page, defaults to 10</param>
         /// <returns> All the user's <see cref="Pictogram"/> pictograms.
         /// BadRequest if the request query was invalid, or if no pictograms were found
         /// </returns>
         [HttpGet("")]
-        public async Task<Response<List<PictogramDTO>>> ReadPictograms()
+        public async Task<Response<List<PictogramDTO>>> ReadPictograms([FromQuery]string q, [FromQuery]int p = 1, [FromQuery]int n = 10)
         {
-            int limit = int.MaxValue;
-            int startFrom = 0;
-            try
-            {
-                limit = parseQueryInteger("limit", int.MaxValue);
-                startFrom = parseQueryInteger("start_from", 0);
-            }
-            catch
-            {
-                return new ErrorResponse<List<PictogramDTO>>(ErrorCode.QueryFailed);
-            }
-
+            if(n < 1 || n > 100) return new ErrorResponse<List<PictogramDTO>>(ErrorCode.InvalidProperties, "n be in the range 1-100");
+            if(p < 1)          return new ErrorResponse<List<PictogramDTO>>(ErrorCode.InvalidProperties, "p");
             //Produce a list of all pictograms available to the user
             var userPictograms = await ReadAllPictograms();
             if (userPictograms == null)
-            {
                 return new ErrorResponse<List<PictogramDTO>>(ErrorCode.PictogramNotFound);
-            }
 
+            System.Console.WriteLine($"GET ALL THE PICTOGRAMS WITH QUERY {q}");
             //Filter out all that does not satisfy the query string, if such is present.
-            var titleQuery = HttpContext.Request.Query["title"];
-            if(!String.IsNullOrEmpty(titleQuery)) userPictograms = FilterByTitle(userPictograms, titleQuery);
+            if(!String.IsNullOrEmpty(q)) 
+                userPictograms = userPictograms.OrderBy((Pictogram _p) => IbsenDistance(q, _p.Title));
+
             return new Response<List<PictogramDTO>>(await userPictograms.OfType<Pictogram>().
-                                                Skip(startFrom).Take(limit).Select(p => new PictogramDTO(p)).ToListAsync());
+                                                Skip((p-1)*n).Take(n).Select(_p => new PictogramDTO(_p)).ToListAsync());
+        }
+
+        private int IbsenDistance(string a, string b) {
+            return IbsenDistance(a,b,a.Length,b.Length);
+        }
+        private int IbsenDistance(string a, string b, int aLen, int bLen) {
+            const int insertCost = 1;
+            const int deleteCost = 4;
+            const int substituteCost = 2;
+            if(aLen <= 0 || bLen <= 0) return Math.Max(aLen, bLen)*insertCost;
+            return Math.Min(IbsenDistance(a,b, aLen-1, bLen) +deleteCost,
+                   Math.Min(IbsenDistance(a,b, aLen,   bLen-1) +insertCost,
+                           IbsenDistance(a,b, aLen-1, bLen-1) +(a[aLen-1] == b[bLen-1] ? 0 : substituteCost))
+            );
         }
 
         /// <summary>
@@ -136,8 +143,11 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<Response<PictogramDTO>> CreatePictogram([FromBody]PictogramDTO pictogram)
         {
-            if (pictogram == null) return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties, "pictogram");
-                BadRequest("The body of the request must contain a pictogram.");
+            if (pictogram == null) 
+                return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties, 
+                    "Could not read pictogram DTO. Please make sure not to include image data in this request. " +
+                    "Use POST localhost/v1/pictogram/{id}/image instead.");
+            
             if (!ModelState.IsValid)
                 return new ErrorResponse<PictogramDTO>(ErrorCode.InvalidModelState);
 
@@ -180,7 +190,9 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<Response<PictogramDTO>> UpdatePictogramInfo(long id, [FromBody] PictogramDTO pictogram)
         {
-            if (pictogram == null) return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties, "pictogram");
+            if (pictogram == null) return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties,  
+                "Could not read pictogram DTO. Please make sure not to include image data in this request. " +
+                "Use POST localhost/v1/pictogram/{id}/image instead.");
             if (pictogram.AccessLevel == null) return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties, "missing access level");
 
             if (!ModelState.IsValid)
