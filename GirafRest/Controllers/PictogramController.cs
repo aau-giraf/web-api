@@ -56,9 +56,9 @@ namespace GirafRest.Controllers
         /// BadRequest if the request query was invalid, or if no pictograms were found
         /// </returns>
         [HttpGet("")]
-        public async Task<Response<List<PictogramDTO>>> ReadPictograms([FromQuery]string q, [FromQuery]int p = 1, [FromQuery]int n = 10)
+        public async Task<Response<List<PictogramDTO>>> ReadPictograms([FromQuery]string q = null, [FromQuery]int p = 1, [FromQuery]int n = 10)
         {
-            if(n < 1 || n > 100) return new ErrorResponse<List<PictogramDTO>>(ErrorCode.InvalidProperties, "n be in the range 1-100");
+            if(n < 1 || n > 100) return new ErrorResponse<List<PictogramDTO>>(ErrorCode.InvalidProperties, "n must be in the range 1-100");
             if(p < 1)          return new ErrorResponse<List<PictogramDTO>>(ErrorCode.InvalidProperties, "p");
             //Produce a list of all pictograms available to the user
             var userPictograms = await ReadAllPictograms();
