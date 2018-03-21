@@ -1082,6 +1082,61 @@ namespace GirafRest.Test
             Assert.Equal(res.ErrorCode, ErrorCode.NotAuthorized);
         }
 
+        [Fact]
+        public void ReadRawPictogramImage_GetPrivate_OK()
+        {
+            try
+            {
+                var pc = initializeTest();
+
+                _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+
+                var res = pc.ReadRawPictogramImage(ADMIN_PRIVATE_PICTOGRAM);
+
+
+                Assert.True(res.IsCompleted);
+                Assert.IsType<FileContentResult>(res.Result);
+            }
+            catch (Exception)
+            {
+                Assert.True(false);
+            }
+        }
+
+        [Fact]
+        public void ReadRawPictogramImage_GetPublic_OK()
+        {
+            try
+            {
+                var pc = initializeTest();
+
+                _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+
+                var res = pc.ReadRawPictogramImage(DEP_ONE_PROTECTED_PICTOGRAM);
+
+                Assert.True(res.IsCompleted);
+                Assert.IsType<FileContentResult>(res.Result);
+            }
+            catch(Exception)
+            {
+                Assert.True(false);
+            }
+        }
+
+        [Fact]
+        public void ReadRawPictogramImage_NoLoginPrivate_Unauthorized()
+        {
+            var pc = initializeTest();
+
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+
+            _testContext.MockUserManager.MockLogout();
+
+            var res = pc.ReadRawPictogramImage(ADMIN_PRIVATE_PICTOGRAM).Result;
+            
+            Assert.IsType<NotFoundResult>(res);
+        }
+
         #endregion
 
         #region FilterByTitle
