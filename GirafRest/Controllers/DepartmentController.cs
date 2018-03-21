@@ -116,7 +116,7 @@ namespace GirafRest.Controllers
 
             var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
 
-            var userRole = _roleManager.findUserRole(_giraf._userManager, currentUser);
+            var userRole = await _roleManager.findUserRole(_giraf._userManager, currentUser);
 
           if (!(await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser)
               || await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Department) 

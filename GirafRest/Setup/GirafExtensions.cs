@@ -22,27 +22,13 @@ namespace GirafRest.Extensions
     /// </summary>
     public static class GirafExtensions {
         /// <summary>
-        /// Extension-method for configuring the application to use a local SQLite database.
-        /// </summary>
-        /// <param name="services">A reference to the services of the application.</param>
-        public static void AddSqlite(this IServiceCollection services) {
-            var connectionStringBuilder = new SqliteConnectionStringBuilder { DataSource = "giraf.db" };
-            var path = Directory.GetCurrentDirectory();
-            Console.WriteLine(path);
-            var connectionString = connectionStringBuilder.ToString();
-            var connection = new SqliteConnection(connectionString);
-
-            services.AddDbContext<GirafSqliteDbContext>(options => options.UseSqlite(connection));
-        }
-
-        /// <summary>
         /// An extension-method for configuring the application to use a MySQL database.
         /// </summary>
         /// <param name="services">A reference to the services of the application.</param>
         /// <param name="Configuration">Contains the ConnectionString</param>
         public static void AddMySql(this IServiceCollection services, IConfigurationRoot Configuration) {
             //Setup the connection to the sql server
-            services.AddDbContext<GirafMySqlDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<GirafDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
         }
 
         /// <summary>

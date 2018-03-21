@@ -227,6 +227,46 @@ namespace GirafRest.Controllers
 
         #region UserIcon
         /// <summary>
+        /// Allows the user to retrieve his profile icon.
+        /// </summary>
+        /// <returns>Ok on success.</returns>
+        [HttpGet("{id}/icon")]
+        public async Task<Response<ImageDTO>> GetUserIcon(string id) 
+        {
+            // TODO:Check if request is authorized to get the users image  
+            GirafUser user = await _giraf._userManager.FindByIdAsync(id);
+
+            if(user == null)
+                return new ErrorResponse<ImageDTO>(ErrorCode.UserNotFound);
+            
+            if (user.UserIcon == null) 
+                return new ErrorResponse<ImageDTO>(ErrorCode.UserHasNoIcon);
+
+            // return File(Convert.FromBase64String(System.Text.Encoding.UTF8.GetString(picto.Image)), "image/png");
+            
+            return new Response<ImageDTO>(new ImageDTO(user.UserIcon));
+        }
+
+        /// <summary>
+        /// Allows the user to retrieve his profile icon.
+        /// </summary>
+        /// <returns>Ok on success.</returns>
+        [HttpGet("{id}/icon/raw")]
+        public async Task<IActionResult> GetRawUserIcon(string id) 
+        {
+            // TODO:Check if request is authorized to get the users image
+            GirafUser user = await _giraf._userManager.FindByIdAsync(id);
+
+            if(user == null)
+                return NotFound();
+            
+            if (user.UserIcon == null) 
+                return NotFound();
+
+            return File(Convert.FromBase64String(System.Text.Encoding.UTF8.GetString(user.UserIcon)), "image/png");
+        }
+
+        /// <summary>
         /// Allows the user to upload an icon for his profile.
         /// </summary>
         /// <returns>Response<GirafUserDTO> if succesfull, ErrorResponse<GirafUserDTO>(errorcode) if not </returns>
@@ -256,6 +296,7 @@ namespace GirafRest.Controllers
 
             return new Response<GirafUserDTO>(new GirafUserDTO(usr, userRole));
         }
+        
         /// <summary>
         /// Allows the user to update his profile icon.
         /// </summary>
