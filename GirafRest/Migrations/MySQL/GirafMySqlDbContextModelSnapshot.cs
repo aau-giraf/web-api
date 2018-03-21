@@ -280,6 +280,8 @@ namespace GirafRest.Migrations.MySQL
 
                     b.Property<string>("GirafUserId");
 
+                    b.Property<string>("Name");
+
                     b.Property<long>("ThumbnailKey");
 
                     b.HasKey("Id");
