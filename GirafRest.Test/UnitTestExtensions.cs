@@ -241,6 +241,7 @@ namespace GirafRest.Test
                                 {
                                     MockUsers[1],
                                     MockUsers[2],
+                                    MockUsers[3],
                                     MockUsers[5]
                                 }
                             }

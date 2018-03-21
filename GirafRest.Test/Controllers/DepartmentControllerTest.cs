@@ -11,6 +11,7 @@ using GirafRest.Test.Mocks;
 using Org.BouncyCastle.Asn1.Misc;
 using static GirafRest.Test.UnitTestExtensions;
 using Xunit.Abstractions;
+using System.Linq;
 
 namespace GirafRest.Test.Controllers
 {
@@ -56,9 +57,12 @@ namespace GirafRest.Test.Controllers
         public void Get_GetAllExistingDepartments_OK()
         {
             var dc = initializeTest();
-
             var res = dc.Get().Result;
+
             Assert.IsType<Response<List<DepartmentDTO>>>(res);
+            Assert.True(res.Success);
+            //Check data
+            Assert.Equal(_testContext.MockDepartments.Count, res.Data.Count);
         }
 
         [Fact]
@@ -66,7 +70,6 @@ namespace GirafRest.Test.Controllers
         {
             var dc = initializeTest();
             AddEmptyDepartmentList();
-
             var res = dc.Get().Result;
 
             Assert.IsType<ErrorResponse<List<DepartmentDTO>>>(res);
@@ -77,9 +80,13 @@ namespace GirafRest.Test.Controllers
         public void Get_GetExistingDepartmentByID_OK()
         {
             var dc = initializeTest();
-
             var res = dc.Get(DEPARTMENT_ONE).Result;
+
             Assert.IsType<Response<DepartmentDTO>>(res);
+            Assert.True(res.Success);
+            //Check data
+            Assert.Equal(_testContext.MockDepartments[0].Name, res.Data.Name);
+            Assert.Equal(_testContext.MockDepartments[0].Members.Count, res.Data.Members.Count);
         }
 
         [Fact]
@@ -87,8 +94,8 @@ namespace GirafRest.Test.Controllers
         {
             var dc = initializeTest();
             AddEmptyDepartmentList();
-
             var res = dc.Get(DEPARTMENT_ONE).Result;
+
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
             Assert.Equal(res.ErrorCode, ErrorCode.NotFound);
         }
@@ -99,16 +106,21 @@ namespace GirafRest.Test.Controllers
         public void Post_NewDepartmentValidDTO_OK()
         {
             var dc = initializeTest();
+            var name = "dep1";  
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
 
             var depDTO = new DepartmentDTO(new Department()
             {
-                Name = "dep1"
+                Name = name
 
             });
 
             var res = dc.Post(depDTO).Result;
+
             Assert.IsType<Response<DepartmentDTO>>(res);
+            Assert.True(res.Success);
+            //Check data
+            Assert.Equal(name, res.Data.Name);
         }
 
         [Fact]
@@ -121,6 +133,7 @@ namespace GirafRest.Test.Controllers
             });
 
             var res = dc.Post(depDTO).Result;
+
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
             Assert.Equal(res.ErrorCode, ErrorCode.MissingProperties);
         }
@@ -131,16 +144,19 @@ namespace GirafRest.Test.Controllers
         public void AddUser_ExistingDepartment_OK()
         {
             var dc = initializeTest();
+            var userName = "Admin";
             var user = new GirafUserDTO()
             {
-                Username = "Admin",
+                Username = userName,
                 Id = "admin"
             };
 
             var res = dc.AddUser(DEPARTMENT_TWO, user).Result;
 
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.IsType<Response<DepartmentDTO>>(res);
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            // Check data
+            Assert.True(res.Data.Members.Any(m => m == userName));
         }
 
         [Fact]
@@ -161,9 +177,7 @@ namespace GirafRest.Test.Controllers
         public void AddUser_ExistingDepartmentInvalidUser_BadRequest()
         {
             var dc = initializeTest();
-            var user = new GirafUserDTO()
-            {
-            };
+            var user = new GirafUserDTO(){};
 
             var res = dc.AddUser(DEPARTMENT_ONE, user).Result;
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
@@ -176,10 +190,12 @@ namespace GirafRest.Test.Controllers
         public void RemoveUser_RemoveExistingUser_OK()
         {
             var dc = initializeTest();
-
-
             var res = dc.RemoveUser(DEPARTMENT_ONE, _testContext.MockUsers[ADMIN_DEP_ONE]).Result;
+
             Assert.IsType<Response<DepartmentDTO>>(res);
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            // Check that department no longer has this user
+            Assert.True(!(res.Data.Members.Any(a => a ==_testContext.MockUsers[ADMIN_DEP_ONE].Id)));
         }
         
         [Fact]
@@ -187,6 +203,7 @@ namespace GirafRest.Test.Controllers
         {
             var dc = initializeTest();
             var res = dc.RemoveUser(DEPARTMENT_ONE, null).Result;
+
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
             Assert.Equal(res.ErrorCode, ErrorCode.MissingProperties);
         }
@@ -196,6 +213,7 @@ namespace GirafRest.Test.Controllers
         {
             var dc = initializeTest();
             var res = dc.RemoveUser(DEPARTMENT_TEN, _testContext.MockUsers[ADMIN_DEP_ONE]).Result;
+
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
             Assert.Equal(res.ErrorCode, ErrorCode.DepartmentNotFound);
         }
@@ -204,8 +222,8 @@ namespace GirafRest.Test.Controllers
         public void RemoveUser_RemoveUserWrongDepartment_BadRequest()
         {
             var dc = initializeTest();
-
             var res = dc.RemoveUser(DEPARTMENT_TWO, _testContext.MockUsers[ADMIN_DEP_ONE]).Result;
+
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
             Assert.Equal(res.ErrorCode, ErrorCode.UserNotFound);
         }
@@ -217,9 +235,12 @@ namespace GirafRest.Test.Controllers
         {
             var dc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-
             var res = dc.AddResource(DEPARTMENT_ONE, new ResourceIdDTO() { Id = RESOURCE_THREE }).Result;
+
             Assert.IsType<Response<DepartmentDTO>>(res);
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            //Check Data
+            Assert.True(res.Data.Resources.Any(r => r == RESOURCE_THREE));
         }
 
         [Fact]
@@ -227,8 +248,8 @@ namespace GirafRest.Test.Controllers
         {
             var dc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-
             var res = dc.AddResource(DEPARTMENT_ONE, new ResourceIdDTO()).Result;
+
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
             Assert.Equal(res.ErrorCode, ErrorCode.MissingProperties);
         }
@@ -238,8 +259,8 @@ namespace GirafRest.Test.Controllers
         {
             var dc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-
             var res = dc.AddResource(DEPARTMENT_TEN, new ResourceIdDTO() { Id = RESOURCE_THREE }).Result;
+
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
             Assert.Equal(res.ErrorCode, ErrorCode.DepartmentNotFound);
         }
@@ -249,9 +270,8 @@ namespace GirafRest.Test.Controllers
         {
             var dc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-
-
             var res = dc.AddResource(DEPARTMENT_ONE, null).Result;
+
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
             Assert.Equal(res.ErrorCode, ErrorCode.MissingProperties);
         }
@@ -261,8 +281,8 @@ namespace GirafRest.Test.Controllers
         {
             var dc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-
             var res = dc.AddResource(DEPARTMENT_ONE, new ResourceIdDTO() { Id = NONEXISTING }).Result;
+
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
             Assert.Equal(res.ErrorCode, ErrorCode.ResourceNotFound);
         }
@@ -271,8 +291,8 @@ namespace GirafRest.Test.Controllers
         public void AddResource_ValidDepartmentValidDTONoLogin_Unauthorized()
         {
             var dc = initializeTest();
-
             var res = dc.AddResource(DEPARTMENT_ONE, new ResourceIdDTO() { Id = RESOURCE_ONE }).Result;
+
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
             Assert.Equal(res.ErrorCode, ErrorCode.NotAuthorized);
         }
@@ -284,9 +304,12 @@ namespace GirafRest.Test.Controllers
         {
             var dc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-
             var res = dc.RemoveResource(new ResourceIdDTO() { Id = RESOURCE_FIVE }).Result;
+
             Assert.IsType<Response<DepartmentDTO>>(res);
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            //Check that ressource no longer exist
+            Assert.True(!(res.Data.Resources.Any(r => r == RESOURCE_FIVE)));
         }
 
         [Fact]
@@ -294,8 +317,8 @@ namespace GirafRest.Test.Controllers
         {
             var dc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-
             var res = dc.RemoveResource(null).Result;
+
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
             Assert.Equal(res.ErrorCode, ErrorCode.MissingProperties);
         }
@@ -305,8 +328,8 @@ namespace GirafRest.Test.Controllers
         {
             var dc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[3]);
-
             var res = dc.RemoveResource(new ResourceIdDTO() { Id = RESOURCE_FIVE }).Result;
+
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
             Assert.Equal(res.ErrorCode, ErrorCode.NotAuthorized);
         }
@@ -315,12 +338,14 @@ namespace GirafRest.Test.Controllers
         public void AddDepartment_OkRequest(){
             var dc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
-
-            var res = dc.Post(new DepartmentDTO() { Name = "Børnehave Toften"}).Result;
+            var depName = "Børnehave Toften";
+            var res = dc.Post(new DepartmentDTO() { Name = depName, ID = 666}).Result;
 
             Assert.IsType<Response<DepartmentDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(res.ErrorCode, ErrorCode.NoError);
+            // Check that there now exist a børnehave named toften
+            Assert.True(res.Data.Name == depName);
         }
 
         [Fact]
@@ -333,6 +358,10 @@ namespace GirafRest.Test.Controllers
             Assert.IsType<Response<List<UserNameDTO>>>(res);
             Assert.Equal(res.ErrorCode, ErrorCode.NoError);
             Assert.True(res.Success);
+            // Check that we found all citizens in department
+            var countCitizens = 1;
+
+            Assert.True(countCitizens == res.Data.Count);
         }
 
         #endregion
