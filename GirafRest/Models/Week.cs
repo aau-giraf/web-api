@@ -20,6 +20,11 @@ namespace GirafRest.Models
         public long Id { get; set; }
 
         /// <summary>
+        /// A Name describing the week.
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
         /// A collection of weekdays for each day of the week.
         /// </summary>
         public IList<Weekday> Weekdays { get; set; }
@@ -57,6 +62,7 @@ namespace GirafRest.Models
         public Week(WeekDTO weekDTO)
         {
             initWeek();
+            this.Name = weekDTO.Name;
             if(weekDTO.Days != null){
                 foreach (var day in weekDTO.Days)
                 {
