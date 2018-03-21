@@ -50,6 +50,8 @@
         TwoDaysCannotHaveSameDayProperty,
         UserHasNoCitizens,
         UserHasNoGuardians,
-        DepartmentHasNoCitizens
+        DepartmentHasNoCitizens,
+        UnkonwnError,
+        CouldNotCreateDepartmentUser
     }
 }

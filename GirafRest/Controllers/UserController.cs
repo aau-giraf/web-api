@@ -548,7 +548,8 @@ namespace GirafRest.Controllers
         /// <returns>The citizens.</returns>
         /// <param name="username">Username.</param>
         [HttpGet("getCitizens/{username}")]
-        public async Task<Response<List<GirafUserDTO>>> GetCitizens(string username){
+        public async Task<Response<List<GirafUserDTO>>> GetCitizens(string username)
+        {
             if (username == null)
                 return new ErrorResponse<List<GirafUserDTO>>(ErrorCode.MissingProperties, "username");
             var user = await _giraf.LoadByNameAsync(username);
