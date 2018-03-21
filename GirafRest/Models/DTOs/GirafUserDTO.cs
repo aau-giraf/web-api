@@ -121,9 +121,8 @@ namespace GirafRest.Models.DTOs
 
                 }
             }
-            Console.WriteLine("Department = " + user.Department);
             //Check if a user is in a department, add null as key if not.
-            if (user.Department == null)
+            if (user.Department == null && user.DepartmentKey == -1)
                 Department = null;
             else
                 Department = user.DepartmentKey;
