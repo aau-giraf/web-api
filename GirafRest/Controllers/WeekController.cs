@@ -70,7 +70,7 @@ namespace GirafRest.Controllers
         /// Ok and a serialized version of the week if he does.</returns>
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<Response<WeekDTO>> ReadUsersWeekSchedule(int id)
+        public async Task<Response<WeekDTO>> ReadUsersWeekSchedule(long id)
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             var week = user.WeekSchedule.Where(w => w.Id == id).FirstOrDefault();
@@ -184,7 +184,7 @@ namespace GirafRest.Controllers
         /// Ok and a serialized version of the updated week if everything went well.</returns>
         [HttpDelete("{id}")]
         [Authorize]
-        public async Task<Response<IEnumerable<WeekDTO>>> DeleteWeek(int id)
+        public async Task<Response<IEnumerable<WeekDTO>>> DeleteWeek(long id)
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
 
