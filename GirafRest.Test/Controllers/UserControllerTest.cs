@@ -65,24 +65,9 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
             _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
 
-            var response = usercontroller.CreateUserIcon().Result;
+            var response = usercontroller.SetUserIcon().Result;
 
             Assert.True(response.Success);
-        }
-
-        [Fact]
-        public void CreateUserIcon_ExistingIcon_ErrorUserAlreadyHasIconUsePut()
-        {
-            var usercontroller = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
-            _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
-            usercontroller.CreateUserIcon();
-            _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
-
-            var response = usercontroller.CreateUserIcon().Result;
-
-            Assert.False(response.Success);
-            Assert.Equal(ErrorCode.UserAlreadyHasIconUsePut, response.ErrorCode);
         }
 
         [Fact]
@@ -91,25 +76,12 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
             _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
-            usercontroller.CreateUserIcon();
+            usercontroller.SetUserIcon();
             _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
 
-            var response = usercontroller.UpdateUserIcon().Result;
+            var response = usercontroller.SetUserIcon().Result;
 
             Assert.True(response.Success);
-        }
-
-        [Fact]
-        public void UpdateUserIcon_NoIcon_ErrorUserHasNoIconUsePost()
-        {
-            var usercontroller = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
-            _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
-
-            var response = usercontroller.UpdateUserIcon().Result;
-
-            Assert.False(response.Success);
-            Assert.Equal(ErrorCode.UserHasNoIconUsePost, response.ErrorCode);
         }
 
         [Fact]
@@ -118,7 +90,7 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
             _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
-            usercontroller.CreateUserIcon();
+            usercontroller.SetUserIcon();
 
             var response = usercontroller.DeleteUserIcon().Result;
 
