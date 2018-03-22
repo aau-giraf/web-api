@@ -182,7 +182,7 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockClearQueries();
             var res = pc.ReadPictograms().Result;
 
-            Assert.IsType<Response<PictogramDTO>>(res);
+            Assert.IsType<Response<List<PictogramDTO>>>(res);
             Assert.True(res.Success);
             // Do we get the expected amount?
             Assert.True(3 == res.Data.Count);
@@ -194,91 +194,30 @@ namespace GirafRest.Test
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             _testContext.MockHttpContext.MockClearQueries();
-            var res = pc.ReadPictograms().Result;
+            var res = pc.ReadPictograms("", 1, 5).Result;
 
-            Assert.IsType<Response<PictogramDTO>>(res);
+            Assert.IsType<Response<List<PictogramDTO>>>(res);
             Assert.True(res.Success);
             Assert.True(5 == res.Data.Count);
         }
 
-        [Fact]
-        public void ReadPictograms_NoLoginGetAllWithValidQuery_Ok1Pictogram()
-        {
-            var pc = initializeTest();
-            _testContext.MockUserManager.MockLogout();
-            _testContext.MockHttpContext.MockQuery("title", "picto1");
-
-            var res = pc.ReadPictograms().Result;
-            Assert.True(1 == res.Data.Count());
-        }
-
-        [Fact]
-        public void ReadPictograms_NoLoginGetAllWithInvalidQuery_Ok0Pictograms()
-        {
-            var pc = initializeTest();
-            _testContext.MockUserManager.MockLogout();
-            _testContext.MockHttpContext.MockQuery("title", "invalid");
-
-            var res = pc.ReadPictograms().Result;
-
-            Assert.True(res.Success);
-            Assert.Equal(0, res.Data.Count);
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-        }
 
         [Fact]
         public void ReadPictograms_LoginGetAllWithValidQuery_Ok1Pictogram()
         {
             var pc = initializeTest();
+            var pictTitle = "picto1";
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            _testContext.MockHttpContext.MockQuery("title", "picto1");
+            var res = pc.ReadPictograms(pictTitle,1,1).Result;
 
-            var res = pc.ReadPictograms().Result;
-
-            var resList = res.Data;
-
-            Assert.True(1 == resList.Count);
-        }
-
-        [Fact]
-        public void ReadPictograms_LoginGetAllWithInvalidQuery_OK0Pictograms()
-        {
-            var pc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-            _testContext.MockHttpContext.MockQuery("title", "invalid");
-
-            var res = pc.ReadPictograms().Result;
-
+            Assert.IsType<Response<List<PictogramDTO>>>(res);
             Assert.True(res.Success);
-            Assert.Equal(0, res.Data.Count);
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            Assert.True(1 == res.Data.Count);
+            // check that we actually got the right pictogram
+            // public picto1 is the title closest to our search query
+            Assert.Equal(res.Data[0].Title, "Public Picto1");
         }
 
-        [Fact(Skip = "EntityFramework bug")]
-        public void ReadPictograms_LoginGetAllWithValidQueryOnAnotherUsersPrivate_NotFound()
-        {
-            var pc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            _testContext.MockHttpContext.MockQuery("title", "user 1");
-
-            var res = pc.ReadPictograms().Result;
-
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
-        }
-
-        [Fact(Skip = "EntityFramework bug")]
-        public void ReadPictograms_NoLoginGetAllWithValidQueryOnPrivate_NotFound()
-        {
-            var pc = initializeTest();
-            _testContext.MockUserManager.MockLogout();
-            _testContext.MockHttpContext.MockQuery("title", "user 1");
-
-            var res = pc.ReadPictograms().Result;
-
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
-        }        
         #endregion
 
         #region Create Pictogram

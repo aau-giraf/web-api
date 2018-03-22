@@ -178,8 +178,8 @@ namespace GirafRest.Test.Controllers
         {
             var dc = initializeTest();
             var user = new GirafUserDTO(){};
-
             var res = dc.AddUser(DEPARTMENT_ONE, user).Result;
+
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
             Assert.Equal(res.ErrorCode, ErrorCode.MissingProperties);
         }
@@ -190,7 +190,8 @@ namespace GirafRest.Test.Controllers
         public void RemoveUser_RemoveExistingUser_OK()
         {
             var dc = initializeTest();
-            var res = dc.RemoveUser(DEPARTMENT_ONE, _testContext.MockUsers[ADMIN_DEP_ONE]).Result;
+            var userToRemove = new GirafUserDTO(_testContext.MockUsers[ADMIN_DEP_ONE], GirafUserDTO.GirafRoles.Citizen);
+            var res = dc.RemoveUser(DEPARTMENT_ONE, userToRemove).Result;
 
             Assert.IsType<Response<DepartmentDTO>>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
@@ -212,7 +213,8 @@ namespace GirafRest.Test.Controllers
         public void RemoveUser_RemoveUserNonExistingDepartment_NotFound()
         {
             var dc = initializeTest();
-            var res = dc.RemoveUser(DEPARTMENT_TEN, _testContext.MockUsers[ADMIN_DEP_ONE]).Result;
+            var userToRemove = new GirafUserDTO(_testContext.MockUsers[ADMIN_DEP_ONE], GirafUserDTO.GirafRoles.Citizen);
+            var res = dc.RemoveUser(DEPARTMENT_TEN, userToRemove).Result;
 
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
             Assert.Equal(res.ErrorCode, ErrorCode.DepartmentNotFound);
@@ -222,7 +224,8 @@ namespace GirafRest.Test.Controllers
         public void RemoveUser_RemoveUserWrongDepartment_BadRequest()
         {
             var dc = initializeTest();
-            var res = dc.RemoveUser(DEPARTMENT_TWO, _testContext.MockUsers[ADMIN_DEP_ONE]).Result;
+            var userToRemove = new GirafUserDTO(_testContext.MockUsers[ADMIN_DEP_ONE], GirafUserDTO.GirafRoles.Citizen);
+            var res = dc.RemoveUser(DEPARTMENT_TWO, userToRemove).Result;
 
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
             Assert.Equal(res.ErrorCode, ErrorCode.UserNotFound);
