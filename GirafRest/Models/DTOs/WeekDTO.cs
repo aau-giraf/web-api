@@ -13,6 +13,12 @@ namespace GirafRest.Models.DTOs
         /// The weeks thumbnail.
         /// </summary>
         public PictogramDTO Thumbnail { get; set; }
+
+        /// <summary>
+        /// A Name describing the week.
+        /// </summary>
+        public string Name { get; set; }
+
         /// <summary>
         /// The id of the week.
         /// </summary>
@@ -28,6 +34,7 @@ namespace GirafRest.Models.DTOs
         /// <param name="week">The week to create a DTO for.</param>
         public WeekDTO(Week week)
         {
+            this.Name = week.Name;
             try
             {
                 this.Thumbnail = new PictogramDTO(week.Thumbnail);

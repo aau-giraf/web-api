@@ -8,7 +8,7 @@ using GirafRest.Models;
 
 namespace GirafRest.Migrations.MySql
 {
-    [DbContext(typeof(GirafMySqlDbContext))]
+    [DbContext(typeof(GirafDbContext))]
     [Migration("20170518075206_AddedPictogramSound")]
     partial class AddedPictogramSound
     {

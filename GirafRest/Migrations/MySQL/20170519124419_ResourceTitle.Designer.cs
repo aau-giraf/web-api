@@ -8,7 +8,7 @@ using GirafRest.Models;
 
 namespace GirafRest.Migrations.MySQL
 {
-    [DbContext(typeof(GirafMySqlDbContext))]
+    [DbContext(typeof(GirafDbContext))]
     [Migration("20170519124419_ResourceTitle")]
     partial class ResourceTitle
     {

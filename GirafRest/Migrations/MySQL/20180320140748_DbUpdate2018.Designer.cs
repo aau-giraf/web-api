@@ -10,22 +10,24 @@ using Microsoft.EntityFrameworkCore.Storage.Internal;
 using Microsoft.EntityFrameworkCore.ValueGeneration;
 using System;
 
-namespace GirafRest.Migrations
+namespace GirafRest.Migrations.MySQL
 {
-    [DbContext(typeof(GirafSqliteDbContext))]
-    [Migration("20180315141846_addsManyToManyRelationOnGuardians")]
-    partial class addsManyToManyRelationOnGuardians
+    [DbContext(typeof(GirafDbContext))]
+    [Migration("20180320140748_DbUpdate2018")]
+    partial class DbUpdate2018
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn)
                 .HasAnnotation("ProductVersion", "2.0.1-rtm-125");
 
             modelBuilder.Entity("GirafRest.GuardianRelation", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("CitizenId")
                         .IsRequired();
@@ -66,7 +68,8 @@ namespace GirafRest.Migrations
                 {
                     b.Property<long>("Key")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Discriminator")
                         .IsRequired();
@@ -84,7 +87,8 @@ namespace GirafRest.Migrations
             modelBuilder.Entity("GirafRest.Models.DepartmentResource", b =>
                 {
                     b.Property<long>("Key")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
                     b.Property<long>("OtherKey");
 
@@ -207,7 +211,8 @@ namespace GirafRest.Migrations
             modelBuilder.Entity("GirafRest.Models.Many_to_Many_Relationships.ChoiceResource", b =>
                 {
                     b.Property<long>("Key")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
                     b.Property<long>("OtherKey");
 
@@ -226,7 +231,8 @@ namespace GirafRest.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Discriminator")
                         .IsRequired();
@@ -246,7 +252,8 @@ namespace GirafRest.Migrations
             modelBuilder.Entity("GirafRest.Models.UserResource", b =>
                 {
                     b.Property<long>("Key")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("OtherKey")
                         .IsRequired();
@@ -266,7 +273,8 @@ namespace GirafRest.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Discriminator")
                         .IsRequired();
@@ -290,7 +298,8 @@ namespace GirafRest.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("Day");
 
@@ -315,7 +324,8 @@ namespace GirafRest.Migrations
             modelBuilder.Entity("GirafRest.Models.WeekdayResource", b =>
                 {
                     b.Property<long>("Key")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
                     b.Property<long>("OtherKey");
 

@@ -112,22 +112,26 @@ namespace GirafRest.Controllers
         {
             var department = _giraf._context.Departments
                                    .Where(dep => dep.Key == id).FirstOrDefault();
-            
+
+            if (department == null) return new ErrorResponse<List<UserNameDTO>>(ErrorCode.DepartmentNotFound);
 
             var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
 
-            var userRole = _roleManager.findUserRole(_giraf._userManager, currentUser);
+            // eager load department from context
+           currentUser =  _giraf._context.Users.Include(a => a.Department)
+                                               .FirstOrDefault(d => d.UserName == currentUser.UserName);
+                  
+            var userRole = await _roleManager.findUserRole(_giraf._userManager, currentUser);
+            var isSuperUser = await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser);
 
-          if (!(await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser)
-              || await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Department) 
-                || await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian))){
-            return new ErrorResponse<List<UserNameDTO>>(ErrorCode.NotAuthorized); 
+            if (!(isSuperUser || await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Department) 
+                              || await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian))){
+                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.NotAuthorized); 
             }
 
-            if (currentUser.Department.Key != department.Key)
+            if (currentUser?.Department.Key != department?.Key && !isSuperUser)
                 return new ErrorResponse<List<UserNameDTO>>(ErrorCode.NotAuthorized);
 
-            if (department == null) return new ErrorResponse<List<UserNameDTO>>(ErrorCode.DepartmentNotFound);
 
             var roleCitizenId = _giraf._context.Roles.Where(r => r.Name == GirafRole.Citizen)
                                                      .Select(c => c.Id).FirstOrDefault();
@@ -163,6 +167,10 @@ namespace GirafRest.Controllers
                         "Deparment name has to be specified!");
 
                 var authenticatedUser = await _giraf.LoadUserAsync(HttpContext.User);
+                
+                if(authenticatedUser == null)
+                    return new ErrorResponse<DepartmentDTO>(ErrorCode.UserNotFound);
+                
                 var userRole = await _roleManager.findUserRole(_giraf._userManager, authenticatedUser);
 
                 if (!(await _giraf._userManager.IsInRoleAsync(authenticatedUser, GirafRole.SuperUser)))
@@ -170,7 +178,7 @@ namespace GirafRest.Controllers
 
                 //Add the department to the database.
                 Department department = new Department(depDTO);
-                await _giraf._context.Departments.AddAsync(department);
+                
                 //Add all members specified by either id or username in the DTO
                 if (depDTO.Members != null)
                 {
@@ -186,23 +194,6 @@ namespace GirafRest.Controllers
                         usr.Department = department;
                     }
                 }
-
-                //Add the department to the database.
-                GirafUser depUser = new GirafUser(depDTO.Name, department);
-                await _giraf._context.Users.AddAsync(depUser);
-
-                depUser.IsDepartment = true;
-
-                department.Members.Add(depUser);
-                //Create a new user with the supplied information
-                var user = new GirafUser(depDTO.Name, department);
-                var identityUser = await _giraf._userManager.CreateAsync(user, "0000");
-                if (identityUser.Succeeded == false)
-                {
-                    return new ErrorResponse<DepartmentDTO>(ErrorCode.Error);
-                }
-
-                await _giraf._userManager.AddToRoleAsync(user, GirafRole.Department);
 
                 //Add all the resources with the given ids
                 if (depDTO.Resources != null)
@@ -221,6 +212,20 @@ namespace GirafRest.Controllers
                 }
 
                 await _giraf._context.Departments.AddAsync(department);
+                
+                //Create a new user with the supplied information
+                
+                var departmentUser = new GirafUser(depDTO.Name, department);
+                departmentUser.IsDepartment = true;
+                
+                //department.Members.Add(user);
+                
+                var identityUser = await _giraf._userManager.CreateAsync(departmentUser, "0000");
+                
+                if (identityUser.Succeeded == false)
+                    return new ErrorResponse<DepartmentDTO>(ErrorCode.CouldNotCreateDepartmentUser, string.Join("\n", identityUser.Errors));
+
+                await _giraf._userManager.AddToRoleAsync(departmentUser, GirafRole.Department);
 
                 //Save the changes and return the entity
                 await _giraf._context.SaveChangesAsync();
@@ -287,7 +292,7 @@ namespace GirafRest.Controllers
         /// DepartmentDTO in its updated state if no problems occured.
         /// </returns>
         [HttpDelete("user/{departmentID}")]
-        public async Task<Response<DepartmentDTO>> RemoveUser(long departmentID, [FromBody]GirafUser usr)
+        public async Task<Response<DepartmentDTO>> RemoveUser(long departmentID, [FromBody]GirafUserDTO usr)
         {
             //Check if a valid user was supplied and that the given department exists
             if (usr == null)
@@ -303,12 +308,12 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.DepartmentNotFound);
 
             //Check if the user actually is in the department
-            if (!dep.Members.Any(u => u.UserName == usr.UserName))
+            if (!dep.Members.Any(u => u.UserName == usr.Username))
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.UserNotFound,
                     "User does not exist in the given department.");
 
             //Remove the user from the department
-            dep.Members.Remove(dep.Members.First(u => u.UserName == usr.UserName));
+            dep.Members.Remove(dep.Members.First(u => u.UserName == usr.Username));
             _giraf._context.SaveChanges();
             return new Response<DepartmentDTO>(new DepartmentDTO(dep));
         }

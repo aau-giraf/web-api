@@ -20,7 +20,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse(ErrorCode.NotAuthorized);
             }
 
-            return new ErrorResponse(ErrorCode.Error);
+            return new ErrorResponse(ErrorCode.UnkonwnError);
         }
     }
 }

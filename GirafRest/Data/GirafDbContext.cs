@@ -32,18 +32,10 @@ namespace GirafRest.Data
 
         protected GirafDbContext() { }
         /// <summary>
-        /// Constructor for use when debugging and using the Sqlite database
-        /// </summary>
-        /// <param name="options">DbContext options when the Sqlite database is in use</param>
-        public GirafDbContext(DbContextOptions<GirafSqliteDbContext> options)
-            : base(options)
-        {
-        }
-        /// <summary>
         /// Constructor for use when deployed and using the MySql database
         /// </summary>
         /// <param name="options">DbContext options when the MySql database is in use</param>
-        public GirafDbContext(DbContextOptions<GirafMySqlDbContext> options)
+        public GirafDbContext(DbContextOptions<GirafDbContext> options)
             : base(options)
         {
         }
