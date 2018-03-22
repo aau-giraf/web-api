@@ -12,7 +12,7 @@ To run the project locally with a MySQL database first do the following:
 1. open a terminal-emulator and navigate to {project-root}/web-api/GirafRest
 
 2. In a shell:
-  - run `cp appsettings.example.json appsettings.Development.json`
+  - run `cp appsettings.template.json appsettings.Development.json`
   - update appsettings.Development.json with 
 	- All fields <> in the"DefaultConnection" string.
     - Jwt.JwtKey field, which must be any (random) string of, at least 40, alpha-numeric charecters

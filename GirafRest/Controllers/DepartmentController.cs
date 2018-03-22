@@ -112,22 +112,26 @@ namespace GirafRest.Controllers
         {
             var department = _giraf._context.Departments
                                    .Where(dep => dep.Key == id).FirstOrDefault();
-            
+
+            if (department == null) return new ErrorResponse<List<UserNameDTO>>(ErrorCode.DepartmentNotFound);
 
             var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
 
+            // eager load department from context
+           currentUser =  _giraf._context.Users.Include(a => a.Department)
+                                               .FirstOrDefault(d => d.UserName == currentUser.UserName);
+                  
             var userRole = await _roleManager.findUserRole(_giraf._userManager, currentUser);
+            var isSuperUser = await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser);
 
-          if (!(await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser)
-              || await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Department) 
-                || await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian))){
-            return new ErrorResponse<List<UserNameDTO>>(ErrorCode.NotAuthorized); 
+            if (!(isSuperUser || await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Department) 
+                              || await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian))){
+                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.NotAuthorized); 
             }
 
-            if (currentUser.Department.Key != department.Key)
+            if (currentUser?.Department.Key != department?.Key && !isSuperUser)
                 return new ErrorResponse<List<UserNameDTO>>(ErrorCode.NotAuthorized);
 
-            if (department == null) return new ErrorResponse<List<UserNameDTO>>(ErrorCode.DepartmentNotFound);
 
             var roleCitizenId = _giraf._context.Roles.Where(r => r.Name == GirafRole.Citizen)
                                                      .Select(c => c.Id).FirstOrDefault();
