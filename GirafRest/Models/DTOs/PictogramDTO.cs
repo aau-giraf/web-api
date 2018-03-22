@@ -23,7 +23,7 @@ namespace GirafRest.Models.DTOs
         [JsonIgnore]
         public byte[] Image { get; set; }
         public string ImageUrl {get {return $"/v1/pictogram/{Id}/image/raw";}}
-        public string ImageHash {get { return Convert.ToBase64String(MD5.Create().ComputeHash(Image)); }}
+        public string ImageHash {get  { return Image == null ? null : Convert.ToBase64String(MD5.Create().ComputeHash(Image)); }  }
 
         /// <summary>
         /// Creates a new pictogram data transfer object from a given pictogram.
