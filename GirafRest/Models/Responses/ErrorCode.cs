@@ -51,7 +51,7 @@
         UserHasNoCitizens,
         UserHasNoGuardians,
         DepartmentHasNoCitizens,
-        UnkonwnError,
+        UnknownError,
         CouldNotCreateDepartmentUser
     }
 }
