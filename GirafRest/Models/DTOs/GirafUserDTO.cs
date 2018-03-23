@@ -22,6 +22,10 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         public GirafRoles Role { get; set; }
         /// <summary>
+        /// List of the roles the current user is defined as in the system.
+        /// </summary>
+        public string RoleName { get; set; }
+        /// <summary>
         /// List of users the user is guardian of. Is simply null if the user isn't a guardian. Contains guardians if the user is a Department
         /// </summary>
         public List<GirafUserDTO> Citizens { get; set; }
@@ -93,6 +97,7 @@ namespace GirafRest.Models.DTOs
             ScreenName = user.DisplayName;
             UserIcon = user.UserIcon;
             Role = userRole;
+            RoleName = userRole.ToString();
 
             if (addGuardianRelation)
             {

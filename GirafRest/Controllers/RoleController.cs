@@ -62,7 +62,9 @@ namespace GirafRest.Controllers
         /// Adds a specified user to the Guardian role
         /// </summary>
         /// <param name="username">Username of the user who needs be to made guardian</param>
-        /// <returns> NotFound if no such user exists, Badrequest if the operation fails. And Ok if all is well</returns>
+        /// <returns>
+        ///  
+        /// </returns>
         [HttpPost("guardian/{username}")]
         public async Task<Response> AddToGuardian(string username)
         {
@@ -163,8 +165,6 @@ namespace GirafRest.Controllers
         /// <returns> NotFound if no such user exists, Badrequest if the operation fails. And Ok if all is well</returns>
         private async Task<Response> addUserToRoleAsync(string username, string rolename)
         {
-            if (GetGirafRole().Result.Data != GirafRole.SuperUser) return new ErrorResponse(ErrorCode.NotAuthorized);
-
             var user = await _giraf._userManager.FindByNameAsync(username);
             if (user == null)
                 return new ErrorResponse(ErrorCode.UserNotFound);

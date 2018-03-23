@@ -81,8 +81,11 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Find information on the user with the username supplied as a url query parameter or the current user.
         /// </summary>
-        /// <returns>NotFound either if there is no user with the given username or the user is not authorized to see the user
-        /// or Ok and a serialized version of the sought-after user.</returns>
+        /// <returns>
+        /// Data about the user
+        /// MissingProperties if no username is provided
+        /// UserNotFound if user was not found, or logged in user is not authorized to see user.
+        ///</returns>
         [HttpGet("{username}")]
         [Authorize]
         public async Task<Response<GirafUserDTO>> GetUser(string username)
@@ -98,7 +101,7 @@ namespace GirafRest.Controllers
             //First attempt to fetch the user and check that he exists
             user = await _giraf.LoadByNameAsync(username);
             if (user == null)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.Error);
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
 
             //Get the current user and check if he is a guardian in the same department as the user
             //or an Admin, in which cases the user is allowed to see the user.
@@ -109,7 +112,7 @@ namespace GirafRest.Controllers
                 //Check if the guardian is in the same department as the user
                 if (user.DepartmentKey != currentUser.DepartmentKey)
                     //We do not reveal if a user with the given username exists
-                    return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
+                    return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
             }
             else if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser))
             {
@@ -117,7 +120,7 @@ namespace GirafRest.Controllers
             }
             else
                 //We do not reveal if a user with the given username exists
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.Error);
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
 
             // Get the roles the user is associated with
             GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
@@ -125,6 +128,12 @@ namespace GirafRest.Controllers
             return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));
         }
 
+        /// <summary>
+        /// Get information about the logged in user.
+        /// </summary>
+        /// <returns>
+        /// Information about the logged in user
+        /// </returns>
         [Authorize]
         [HttpGet("")]
         public async Task<Response<GirafUserDTO>> GetUser()
@@ -132,7 +141,7 @@ namespace GirafRest.Controllers
             //First attempt to fetch the user and check that he exists
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             if (user == null)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.NotFound);
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
 
             // Get the roles the user is associated with
             GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);

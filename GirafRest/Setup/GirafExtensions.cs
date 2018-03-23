@@ -60,7 +60,9 @@ namespace GirafRest.Extensions
         /// <param name="roleManager">Reference to the roleManager</param>
         /// <param name="userManager">Reference to the userManager</param>
         /// <param name="user">The user in question</param>
-        /// <returns></returns>
+        /// <returns>
+        /// Instance of GirafRole enum
+        /// </returns>
         public static async Task<GirafRoles> findUserRole(this RoleManager<GirafRole> roleManager, UserManager<GirafUser> userManager, GirafUser user)
         {
             GirafRoles userRole = new GirafRoles();
