@@ -60,6 +60,6 @@ acc.ensure(response['success'] is True)
 
 # Check that gunnar is a guardian
 response = acc.request('GET', 'user', auth=gunnarToken)
-print(response)
+# print(response)
 acc.ensure(response['success'] is True)
 acc.ensure(response['data']['roleName'] == 'Guardian')

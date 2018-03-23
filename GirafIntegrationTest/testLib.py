@@ -32,4 +32,4 @@ class controllerTest:
 		if fact:
 			return;
 		else:
-			print("ENSURE failed in " + name + " for test `" + currentTest + "`\n " + errorMessage + "\n======================\n\n")
+			print("ENSURE failed in " + self.name + " for test `" + self.currentTest + "`\n " + errormessage + "\n======================\n\n")
