@@ -32,3 +32,5 @@ out
 appsettings.json
 appsettings.Development.json
 Dockerfile
+
+*.pyc
