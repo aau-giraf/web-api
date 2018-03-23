@@ -154,7 +154,7 @@ namespace GirafRest.Test
             var response = usercontroller.GetUser("invalid").Result;
 
             Assert.False(response.Success);
-            Assert.Equal(ErrorCode.Error, response.ErrorCode);
+            Assert.Equal(ErrorCode.UserNotFound, response.ErrorCode);
         }
 
 
@@ -180,7 +180,7 @@ namespace GirafRest.Test
             var response = usercontroller.GetUser("invalid").Result;
 
             Assert.False(response.Success);
-            Assert.Equal(ErrorCode.Error, response.ErrorCode);
+            Assert.Equal(ErrorCode.UserNotFound, response.ErrorCode);
         }
 
 
@@ -193,7 +193,7 @@ namespace GirafRest.Test
             var response = usercontroller.GetUser(CitizenUsername).Result;
 
             Assert.False(response.Success);
-            Assert.Equal(ErrorCode.Error, response.ErrorCode);
+            Assert.Equal(ErrorCode.UserNotFound, response.ErrorCode);
         }
         #endregion
         #region UpdateUser
