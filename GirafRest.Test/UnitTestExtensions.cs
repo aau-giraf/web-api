@@ -47,7 +47,7 @@ namespace GirafRest.Test
                 {
                     if (_mockPictograms == null)
                         _mockPictograms = new List<Pictogram> {
-                        new Pictogram("Public Picto1", AccessLevel.PUBLIC) {
+                        new Pictogram("Picto 1", AccessLevel.PUBLIC) {
                             Id = 0
                         },
                         new Pictogram("Public Picto2", AccessLevel.PUBLIC) {
@@ -68,6 +68,15 @@ namespace GirafRest.Test
                         },
                         new Pictogram("Protected for Dep 2", AccessLevel.PROTECTED) {
                             Id = 6
+                        },
+                        new Pictogram("cat", AccessLevel.PUBLIC) {
+                            Id = 7
+                        },
+                        new Pictogram("cap", AccessLevel.PUBLIC) {
+                            Id = 8
+                        },
+                        new Pictogram("cat1", AccessLevel.PUBLIC) {
+                            Id = 9
                         }
                     };
 
