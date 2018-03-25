@@ -51,8 +51,21 @@ namespace GirafRest.Controllers
             var week = user.WeekSchedule.Where(w => w.Id == id).FirstOrDefault();
             if(week != null && week.Weekdays.Any())
             {
+                var ressList = new List<Resource>();
                 week.Weekdays.Remove(week.Weekdays.Where(d => d.Day == newDay.Day).First());
-                week.Weekdays.Add(new Weekday(newDay));
+                foreach (var ress in newDay.Elements )
+                {
+                    if (ress is ChoiceDTO)
+                    {
+                        ressList.Add((_giraf._context.Choices.FirstOrDefault(c => c.Id == ress.Id)));
+                    }
+
+                    if (ress is PictogramDTO)
+                    {
+                        ressList.Add((_giraf._context.Pictograms.FirstOrDefault(p => p.Id == ress.Id)));
+                    }
+                }
+                week.Weekdays.Add(new Weekday(newDay.Day, ressList));
                 await _giraf._context.SaveChangesAsync();	
                 return new Response<WeekDTO>(new WeekDTO(week));	
             }

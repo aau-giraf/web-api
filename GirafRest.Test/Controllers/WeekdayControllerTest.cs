@@ -6,6 +6,7 @@ using GirafRest.Test.Mocks;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Xunit;
 using Xunit.Abstractions;
@@ -47,10 +48,13 @@ namespace GirafRest.Test.Controllers
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER_0]);
             var day = _testContext.MockWeeks[USER_0_DAY].Weekdays[(int)DayOfWeek.Monday];
             day.Elements.Add(new WeekdayResource(day, _testContext.MockPictograms[PUBLIC_PICTOGRAM]));
-
             var res = wc.UpdateDay(day.Id, new WeekdayDTO(day)).Result;
 
+            Assert.IsType<Response<WeekDTO>>(res);
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.True(res.Success);
+            Assert.True(res.Data.Days.FirstOrDefault(d => d.Day == day.Day).Elements
+                        .Any(el => el.Title == _testContext.MockPictograms[PUBLIC_PICTOGRAM].Title));
         }
 
         [Fact]
@@ -60,12 +64,11 @@ namespace GirafRest.Test.Controllers
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER_0]);
             var day = _testContext.MockWeeks[USER_0_DAY].Weekdays[(int)DayOfWeek.Monday];
             day.Elements.Add(new WeekdayResource(day, _testContext.MockPictograms[PUBLIC_PICTOGRAM]));
+            var res = wc.UpdateDay(999, new WeekdayDTO(day)).Result;
 
-            var res = wc.UpdateDay(999, new WeekdayDTO(day));
-            var aRes = res.Result;
-
-            Assert.False(aRes.Success);
-            Assert.Equal(ErrorCode.WeekScheduleNotFound, aRes.ErrorCode);
+            Assert.IsType<ErrorResponse<WeekDTO>>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.WeekScheduleNotFound, res.ErrorCode);
         }
 
         [Fact]
@@ -73,12 +76,11 @@ namespace GirafRest.Test.Controllers
         {
             var wc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER_0]);
+            var res = wc.UpdateDay(USER_0_DAY, null).Result;
 
-            var res = wc.UpdateDay(USER_0_DAY, null);
-            var aRes = res.Result;
-
-            Assert.False(aRes.Success);
-            Assert.Equal(ErrorCode.FormatError, aRes.ErrorCode);
+            Assert.IsType<ErrorResponse<WeekDTO>>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.FormatError, res.ErrorCode);
         }
         #endregion
     }
