@@ -188,7 +188,7 @@ namespace GirafRest.Test
             var res = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[ADMIN_NO_DEP].UserName }).Result;
 
             Assert.IsType<ErrorResponse<string>>(res);
-            Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
+            Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
             Assert.False(res.Success);
         }
 
@@ -219,7 +219,7 @@ namespace GirafRest.Test
             }).Result;
 
             Assert.IsType<ErrorResponse<string>>(res);
-            Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
+            Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
             Assert.False(res.Success);
         }
 
@@ -234,7 +234,7 @@ namespace GirafRest.Test
 
             Assert.IsType<ErrorResponse<string>>(res);
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.UserMustBeGuardian, res.ErrorCode);
+            Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
         }
 
         [Fact]
