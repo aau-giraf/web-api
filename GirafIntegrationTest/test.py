@@ -1,5 +1,6 @@
 from testLib import *
 from accountControllerTest import *
+from departmentControllerTest import *
 from roleControllerTest import *
 import time
 import sys
@@ -17,15 +18,11 @@ except:
 
 # Run ALL the tests!
 #testAccountController()
-testRoleController()
+#testRoleController()
+testDepartmentController()
 
 if controllerTest.testsFailed == 0:
     print '{0} tests were run. All tests passed.'.format(controllerTest.testsRun)
 else:
-    # Gotta be gramtically correct
-    pluralS = 's'
-    if controllerTest.testsFailed == 1:
-        pluralS = ''
-
-    print ('{0} test{1} failed out of {2} tests run. Happy debugging.'
-           .format(controllerTest.testsFailed, pluralS, controllerTest.testsRun))
+    print ('{0} test(s) failed out of {1} test(s) run. Happy debugging.'
+           .format(controllerTest.testsFailed, controllerTest.testsRun))

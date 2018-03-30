@@ -6,9 +6,9 @@ import getpass
 
 
 class controllerTest:
-    testsRun = 0
-    testHasFailed = False
-    testsFailed = 0
+    testsRun = 0     # Accross all controllertests
+    thisTestHasFailed = False
+    testsFailed = 0  # Accross all controllertests
 
     name = "unkonwn controller"
     currentTest = "unknown test"
@@ -45,12 +45,12 @@ class controllerTest:
                          )
 
     def newTest(self, title):
-        if self.testHasFailed:
+        if self.thisTestHasFailed:
             controllerTest.testsFailed += 1
         controllerTest.testsRun += 1
 
         self.currentTest = title
-        self.testHasFailed = False
+        self.thisTestHasFailed = False
 
     # self.ensure(self.request('POST', 'account/logout')['success']) #Logout should be explicit. No need for this.
 
@@ -61,7 +61,7 @@ class controllerTest:
         if fact:
             return
         else:
-            self.testHasFailed = True
+            self.thisTestHasFailed = True
             print("ENSURE failed in {0} for test `{1}`".format(self.name, self.currentTest))
             print(errormessage)
 

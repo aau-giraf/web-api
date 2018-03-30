@@ -309,7 +309,7 @@ namespace GirafRest.Controllers
 
             //Check if the user actually is in the department
             if (!dep.Members.Any(u => u.UserName == usr.Username))
-                return new ErrorResponse<DepartmentDTO>(ErrorCode.UserNotFound,
+                return new ErrorResponse<DepartmentDTO>(ErrorCode.UserNotFoundInDepartment,
                     "User does not exist in the given department.");
 
             //Remove the user from the department
