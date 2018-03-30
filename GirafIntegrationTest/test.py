@@ -22,5 +22,10 @@ testRoleController()
 if controllerTest.testsFailed == 0:
     print '{0} tests were run. All tests passed.'.format(controllerTest.testsRun)
 else:
-    print ('{0} tests failed out of {1} tests run. Happy debugging.'
-           .format(controllerTest.testsFailed, controllerTest.testsRun))
+    # Gotta be gramtically correct
+    pluralS = 's'
+    if controllerTest.testsFailed == 1:
+        pluralS = ''
+
+    print ('{0} test{1} failed out of {2} tests run. Happy debugging.'
+           .format(controllerTest.testsFailed, pluralS, controllerTest.testsRun))

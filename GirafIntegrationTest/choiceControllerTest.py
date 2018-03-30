@@ -89,8 +89,23 @@ def testChoiceController():
     test.ensure(response['success'] is True, 'Error: {0}'.format(response['errorKey']))
 
     ####
-    test.newTest('Check that changed is in database')
+    test.newTest('Check that it changed')
     response = test.request('GET', 'Choice/{0}'.format(postedChoiceId), auth=gunnar)
     test.ensure(response['success'] is True, 'Error: {0}'.format(response['errorKey']))
     test.ensure(response.get('title') == 'Tegn OR Sætte')
     test.ensure(response.get('options').get(2).get('title') == 'sætte')
+
+    ####
+    test.newTest('Delete the choice')
+    response = test.request('DELETE', 'Choice/{0}'.format(postedChoiceId), auth=gunnar)
+    test.ensure(response['success'] is True, errormessage='Error: {0}'.format(response['errorKey']))
+
+    ####
+    test.newTest('Check that it is no longer there')
+    response = test.request('GET', 'Choice/{0}'.format(postedChoiceId), auth=gunnar)
+    test.ensure(response['success'] is False, errormessage='Response says success')
+
+    ####
+    test.newTest('Delete the nonexistent choice')
+    response = test.request('DELETE', 'Choice/-1', auth=gunnar)
+    test.ensure(response['success'] is False, errormessage='Response says success')
