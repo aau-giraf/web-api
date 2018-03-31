@@ -12,7 +12,7 @@ def testChoiceController():
     gunnarUsername = 'Gunnar{0}'.format(str(time.time()))
     response = test.request('POST', 'account/register',
                             '{"username": "' + gunnarUsername + '","password": "password","departmentId": 1}')
-    test.ensure(response['success'] is True, 'Error: {0}'.format(response['errorKey']))
+    test.ensureSuccess(response)
 
     gunnar = test.login(gunnarUsername)
 
@@ -43,20 +43,20 @@ def testChoiceController():
     }'''
 
     response = test.request('POST', 'Choice', data=body, auth=gunnar)
-    test.ensure(response['success'] is True, 'Error: {0}'.format(response['errorKey']))
+    test.ensureSuccess(response)
     postedChoiceId = response.get('id')
 
     ####
     test.newTest('Check that choice is in database')
     response = test.request('GET', 'Choice/{0}'.format(postedChoiceId), auth=gunnar)
-    test.ensure(response['success'] is True, 'Error: {0}'.format(response['errorKey']))
+    test.ensureSuccess(response)
     test.ensure(response.get('title') == 'Tegn OR Sølv')
     test.ensure(response.get('options').get(2).get('title') == 'sølv')
 
     ####
     test.newTest('Check that choice is in database')
     response = test.request('GET', 'Choice/-1', auth=gunnar)
-    test.ensure(response['success'] is False, errormessage='Response says success')
+    test.ensureError(response)
 
 
     ####
@@ -86,12 +86,12 @@ def testChoiceController():
     }'''
 
     response = test.request('PUT', 'Choice/{0}'.format(postedChoiceId), data=body, auth=gunnar)
-    test.ensure(response['success'] is True, 'Error: {0}'.format(response['errorKey']))
+    test.ensureSuccess(response)
 
     ####
     test.newTest('Check that it changed')
     response = test.request('GET', 'Choice/{0}'.format(postedChoiceId), auth=gunnar)
-    test.ensure(response['success'] is True, 'Error: {0}'.format(response['errorKey']))
+    test.ensureSuccess(response)
     test.ensure(response.get('title') == 'Tegn OR Sætte')
     test.ensure(response.get('options').get(2).get('title') == 'sætte')
 
@@ -103,9 +103,9 @@ def testChoiceController():
     ####
     test.newTest('Check that it is no longer there')
     response = test.request('GET', 'Choice/{0}'.format(postedChoiceId), auth=gunnar)
-    test.ensure(response['success'] is False, errormessage='Response says success')
+    test.ensureError(response)
 
     ####
     test.newTest('Delete the nonexistent choice')
     response = test.request('DELETE', 'Choice/-1', auth=gunnar)
-    test.ensure(response['success'] is False, errormessage='Response says success')
+    test.ensureError(response)

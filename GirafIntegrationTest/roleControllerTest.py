@@ -14,19 +14,19 @@ def testRoleController():
     gunnarUsername = 'Gunnar{0}'.format(str(time.time()))
     response = test.request('POST', 'account/register',
                             '{"username": "' + gunnarUsername + '","password": "password","departmentId": 1}')
-    test.ensure(response['success'] is True, 'Error: {0}'.format(response['errorKey']))
+    test.ensureSuccess(response)
 
     gunnar = test.login(gunnarUsername)
 
     ####
     test.newTest('Gunnar tries to make himself guardian')
     response = test.request('POST', 'role/guardian/' + gunnarUsername, auth=gunnar)
-    test.ensure(response['success'] is False)
+    test.ensureError(response)
 
     ####
     test.newTest('Gunnar tries to make himself admin')
     response = test.request('POST', 'role/admin/' + gunnarUsername, auth=gunnar)
-    test.ensure(response['success'] is False)
+    test.ensureError(response)
 
     ####
     test.newTest('Gunnar should still be citizen')
@@ -39,24 +39,23 @@ def testRoleController():
     ####
     test.newTest('Add Gunnar to guardians')
     response = test.request('POST', 'role/guardian/' + gunnarUsername, auth=tobias)
-    test.ensure(response['success'] is True, 'Error: {0}'.format(response['errorKey']))
+    test.ensureSuccess(response)
 
     ####
     test.newTest('Check that Gunnar is a guardian')
     response = test.request('GET', 'user', auth=gunnar)
-    test.ensure(response['success'] is True, 'Error: {0}'.format(response['errorKey']))
+    test.ensureSuccess(response)
     test.ensure(response['data']['roleName'] == 'Guardian')
 
     ####
     test.newTest('Remove Gunnar from guardians')
     response = test.request('DELETE', 'role/guardian/' + gunnarUsername, auth=tobias)
-    test.ensure(response['success'] is True, 'Error: {0}'.format(response['errorKey']))
+    test.ensureSuccess(response)
 
     ####
     test.newTest('Try to remove Gunnar from guardians a second time')
     response = test.request('DELETE', 'role/guardian/' + gunnarUsername, auth=tobias)
-    test.ensure(response['success'] is False, 'Error: Should have reported failure '
-                                              'because he was not guardian in the first place')
+    test.ensureError(response)
 
     ####
     test.newTest('Gunnar should be citizen again')
@@ -69,7 +68,7 @@ def testRoleController():
     ####
     test.newTest('Add Gunnar to admin')
     response = test.request('POST', 'role/admin/{0}'.format(gunnarUsername), auth=lee)
-    test.ensure(response['success'] is True, 'Error: {0}'.format(response['errorKey']))
+    test.ensureSuccess(response)
 
     ####
     test.newTest('Gunnar should be admin')
@@ -82,7 +81,7 @@ def testRoleController():
     ####
     test.newTest('Remove Gunnar from admin(as gunnar himself)')
     response = test.request('DELETE', 'role/admin/' + gunnarUsername, data='{}', auth=gunnar)
-    test.ensure(response['success'] is True, 'Error: {0}'.format(response['errorKey']))
+    test.ensureSuccess(response)
 
     ####
     test.newTest('Gunnar should be citizen again')

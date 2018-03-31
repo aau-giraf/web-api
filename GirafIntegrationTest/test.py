@@ -2,6 +2,7 @@ from testLib import *
 from accountControllerTest import *
 from departmentControllerTest import *
 from roleControllerTest import *
+from pictogramControllerTest import *
 import time
 import sys
 import json
@@ -18,8 +19,9 @@ except:
 
 # Run ALL the tests!
 #testAccountController()
+#testDepartmentController()
+testPictogramController()
 #testRoleController()
-testDepartmentController()
 
 if controllerTest.testsFailed == 0:
     print '{0} tests were run. All tests passed.'.format(controllerTest.testsRun)
