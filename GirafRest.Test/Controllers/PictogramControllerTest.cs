@@ -201,6 +201,17 @@ namespace GirafRest.Test
             Assert.True(5 == res.Data.Count);
         }
 
+        [Fact]
+        public void ReadPictograms_NoLoginLongSearchQuery_Success()
+        {
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLogout();
+            _testContext.MockHttpContext.MockClearQueries();
+            var res = pc.ReadPictograms("NoTestWithoutHorsePleaseDontRaiseAnException", 1, 100).Result;
+
+            Assert.IsType<Response<List<PictogramDTO>>>(res);
+            Assert.True(res.Success);
+        }
 
         [Fact]
         public void ReadPictograms_LoginGetAllWithValidQuery_Ok1Pictogram()
