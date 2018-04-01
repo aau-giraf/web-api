@@ -333,6 +333,7 @@ namespace GirafRest.Test.Controllers
             var res = dc.RemoveResource(null).Result;
 
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
+            Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
 
