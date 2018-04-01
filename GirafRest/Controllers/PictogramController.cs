@@ -258,7 +258,22 @@ namespace GirafRest.Controllers
             if (!CheckOwnership(pict, usr).Result)
                 return new ErrorResponse(ErrorCode.NotAuthorized);
 
-            //Remove it and save changes
+            // Before we can remove a pictogram we must delete all its relations
+            var userRessourceRelations = _giraf._context.UserResources
+                .Where(ur => ur.ResourceKey == pict.Id);
+            _giraf._context.UserResources.RemoveRange(userRessourceRelations);
+
+            var depRessourceRelations = _giraf._context.DepartmentResources
+                .Where(ur => ur.ResourceKey == pict.Id);
+            _giraf._context.DepartmentResources.RemoveRange(depRessourceRelations);
+
+            var weekDayRessourceRelations = _giraf._context.WeekdayResources
+                .Where(ur => ur.ResourceKey == pict.Id);
+            _giraf._context.WeekdayResources.RemoveRange(weekDayRessourceRelations);
+
+            await _giraf._context.SaveChangesAsync();
+
+            // Now we can safely delete the pictogram
             _giraf._context.Pictograms.Remove(pict);
             await _giraf._context.SaveChangesAsync();
             return new Response();
