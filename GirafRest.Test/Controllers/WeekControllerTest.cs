@@ -1,17 +1,11 @@
-using System;
 using System.Linq;
 using Xunit;
-using Moq;
 using GirafRest.Models;
 using GirafRest.Controllers;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
 using GirafRest.Test.Mocks;
 using static GirafRest.Test.UnitTestExtensions;
 using GirafRest.Models.DTOs;
-using System.IO;
 using Xunit.Abstractions;
 using GirafRest.Models.Responses;
 
@@ -85,9 +79,9 @@ namespace GirafRest.Test
             Assert.IsType<Response<WeekDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            var AdminDepOneWeekZeroSchedule = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.FirstOrDefault(w => w.Id == WEEK_ZERO);
-            Assert.Equal(AdminDepOneWeekZeroSchedule.Name, res.Data.Name);
-            Assert.Equal(AdminDepOneWeekZeroSchedule.Id, res.Data.Id);
+            var adminDepOneWeekZeroSchedule = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.FirstOrDefault(w => w.Id == WEEK_ZERO);
+            Assert.Equal(adminDepOneWeekZeroSchedule?.Name, res.Data.Name);
+            Assert.Equal(adminDepOneWeekZeroSchedule?.Id, res.Data.Id);
         }
 
         [Fact]

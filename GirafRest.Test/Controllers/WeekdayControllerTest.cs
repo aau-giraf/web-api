@@ -3,11 +3,8 @@ using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
 using GirafRest.Test.Mocks;
-using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Xunit;
 using Xunit.Abstractions;
 using static GirafRest.Test.UnitTestExtensions;
@@ -53,7 +50,8 @@ namespace GirafRest.Test.Controllers
             Assert.IsType<Response<WeekDTO>>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.True(res.Success);
-            Assert.True(res.Data.Days.FirstOrDefault(d => d.Day == day.Day).Elements
+            Assert.True(res.Data?.Days?.FirstOrDefault(d => d.Day == day.Day)
+                ?.Elements
                         .Any(el => el.Title == _testContext.MockPictograms[PUBLIC_PICTOGRAM].Title));
         }
 
