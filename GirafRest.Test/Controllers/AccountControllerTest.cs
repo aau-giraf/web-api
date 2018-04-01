@@ -104,7 +104,9 @@ namespace GirafRest.Test
             // Assert if type is reponse (verfies that it is the exact type and not a derived type (ErrorResponse)). No functionality enforces that we should not have type=ErrorResponse, ErrorCode=NoError OR type=Response, ErrorCode=some actual error
             Assert.IsType<Response<string>>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            // Check that jwt token is not null and atleast contains 40 characters
             Assert.NotNull(res.Data);
+            Assert.True(res.Data.Length >= 40);
         }
 
         // Same user log in twice no problem
@@ -130,7 +132,9 @@ namespace GirafRest.Test
             Assert.IsType<Response<string>>(resB);
             Assert.Equal(ErrorCode.NoError, resB.ErrorCode);
             Assert.True(resB.Success);
-            Assert.NotNull(resB);
+            // Check that jwt token is not null and atleast contains 40 characters
+            Assert.NotNull(resB.Data);
+            Assert.True(resB.Data.Length >= 40);
         }
 
         [Fact]
@@ -175,7 +179,9 @@ namespace GirafRest.Test
             Assert.IsType<Response<string>>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.True(res.Success);
+            // Check that jwt token is not null and atleast contains 40 characters
             Assert.NotNull(res.Data);
+            Assert.True(res.Data.Length >= 40);
         }
 
         [Fact]
@@ -248,7 +254,9 @@ namespace GirafRest.Test
             Assert.IsType<Response<string>>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.True(res.Success);
-            Assert.NotNull(res.Data); 
+            // Check that jwt token is not null and atleast contains 40 characters
+            Assert.NotNull(res.Data);
+            Assert.True(res.Data.Length >= 40);
         }
 
         [Fact]
@@ -404,22 +412,6 @@ namespace GirafRest.Test
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
         }
-
-        /*[Fact]
-         * //THIS SHOULD BE CHANGED SO IT IS POSSIBLE TO FORGOTPASSWORD WITH ONLY MAIL
-        public void ForgotPassword_NoUsername_BadRequest()
-        {
-            var accountController = InitializeTest();
-
-            var res = accountController.ForgotPassword(new ForgotPasswordDTO()
-            {
-                Email = "unittest@giraf.cs.aau.dk"
-            }).Result;
-
-            Assert.IsType<ErrorResponse>(res);
-            Assert.Equal(ErrorCode.FormatError, );
-            Assert.IsType<BadRequestObjectResult>(res);
-        }*/
 
         [Fact]
         public void ForgotPassword_NoEmail_BadRequest()
