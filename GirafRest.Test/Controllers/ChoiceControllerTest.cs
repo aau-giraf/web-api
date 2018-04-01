@@ -586,6 +586,7 @@ namespace GirafRest.Test
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = choiceController.DeleteChoice(_testContext.MockChoices[PROTECTED_CHOICE].Id).Result;
+
             Assert.IsType<Response>(res);
             Assert.True(res.Success);
         }
