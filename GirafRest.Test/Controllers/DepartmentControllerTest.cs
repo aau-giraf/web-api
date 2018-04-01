@@ -1,14 +1,11 @@
 using Moq;
 using Xunit;
-using Microsoft.AspNetCore.Mvc;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using System.Collections.Generic;
 using GirafRest.Controllers;
 using GirafRest.Models.Responses;
 using GirafRest.Test.Mocks;
-// using Microsoft.Extensions.ProjectModel.Resolution;
-using Org.BouncyCastle.Asn1.Misc;
 using static GirafRest.Test.UnitTestExtensions;
 using Xunit.Abstractions;
 using System.Linq;

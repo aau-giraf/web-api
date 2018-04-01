@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using GirafRest.Controllers;
+﻿using GirafRest.Controllers;
 using GirafRest.Models.DTOs.AccountDTOs;
 using GirafRest.Test.Mocks;
 using Microsoft.AspNetCore.Mvc;
@@ -11,10 +10,6 @@ using GirafRest.Services;
 using System.Threading.Tasks;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.DTOs.UserDTOs;
-using Microsoft.AspNetCore.Identity;
-using GirafRest.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using GirafRest.Models.Responses;
 using Microsoft.Extensions.Options;
 

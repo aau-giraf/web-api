@@ -2,11 +2,9 @@ using GirafRest.Controllers;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Test.Mocks;
-using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
-using Xunit.Abstractions;
 using static GirafRest.Test.UnitTestExtensions;
 using GirafRest.Models.Responses;
 

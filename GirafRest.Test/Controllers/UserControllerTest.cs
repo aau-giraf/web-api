@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -8,7 +7,6 @@ using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
 using GirafRest.Services;
 using GirafRest.Test.Mocks;
-using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;
