@@ -86,8 +86,11 @@ class controllerTest:
                           attrs=['dark'])
 
     def ensureSuccess(self, response):
+        errormessages = ''
+        for message in response['errorProperties']:
+            errormessages += '\nMessage:  ' + message
         self.ensure(response['success'] is True,
-                    errormessage='Error: {0}'.format(response['errorKey']),
+                    errormessage='Error: {0}'.format(response['errorKey'] + errormessages),
                     calldepth=2)
 
     def ensureError(self, response):

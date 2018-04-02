@@ -150,12 +150,16 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<WeekDTO>(ErrorCode.InvalidProperties, "Invalid or missing properties in request body.");
             if (newWeek.Days == null || newWeek.Days.Count != 7) 
                 return new ErrorResponse<WeekDTO>(ErrorCode.MissingProperties, "Week should contain no more and no less than 7 days.");
+            
             var user = await _giraf.LoadUserAsync(HttpContext.User);
-            if (user == null) return new ErrorResponse<WeekDTO>(ErrorCode.UserNotFound);
+            if (user == null) 
+                return new ErrorResponse<WeekDTO>(ErrorCode.UserNotFound);
             var thumbnail = await _giraf._context.Pictograms.Where(p => p.Id == newWeek.Thumbnail.Id).FirstOrDefaultAsync();
+            
             if (thumbnail == null)
                 return new ErrorResponse<WeekDTO>(ErrorCode.ThumbnailDoesNotExist);
-            var week = new Week(thumbnail);
+            
+            Week week = new Week(thumbnail);
             week.Name = newWeek.Name;
             if (newWeek.Days != null)
             {

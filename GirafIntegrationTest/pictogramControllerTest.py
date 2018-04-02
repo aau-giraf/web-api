@@ -95,7 +95,7 @@ def testPictogramController():
     response = test.request('PUT', 'Pictogram/{0}/image'.format(fishID), data=rawSampleImage, auth=kurt)
 
     response = test.request('PUT', 'Pictogram/{0}/image'.format(fishID), auth=kurt)
-    test.ensure(response is not None, 'Image expected') # Let's see. This may crash the poor thing.
+    test.ensure(response is not None, 'Image expected')  # Let's see. This may crash the poor thing.
 
     ####
     test.newTest('Delete the Cursed Fish')

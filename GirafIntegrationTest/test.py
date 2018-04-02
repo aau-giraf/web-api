@@ -20,11 +20,11 @@ except:
     sys.exit()
 
 # Run ALL the tests!
-#testAccountController()
-#testDepartmentController()
-#testPictogramController()
-#testRoleController()
-#testUserController()
+testAccountController()
+testDepartmentController()
+testPictogramController()
+testRoleController()
+testUserController()
 testWeekController()
 
 if controllerTest.testsFailed == 0:
