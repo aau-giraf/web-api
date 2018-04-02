@@ -1,12 +1,14 @@
+# -*- coding: utf-8 -*-
 import inspect
 import subprocess
 import json
 import datetime
 import getpass
+from termcolor import colored
 
 
 class controllerTest:
-    testsRun = 0     # Accross all controllertests
+    testsRun = 0  # Accross all controllertests
     thisTestHasFailed = False
     testsFailed = 0  # Accross all controllertests
 
@@ -60,22 +62,28 @@ class controllerTest:
     def ensure(self, fact, errormessage="", calldepth=1):
         if fact:
             return
-        elif self.thisTestHasFailed:
-            return
         else:
+            # Extra thick line dividing different tests.
+            if not self.thisTestHasFailed:
+                print colored("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+                              attrs=['dark'])
+
             self.thisTestHasFailed = True
-            print("ENSURE failed in {0} for test `{1}`".format(self.name, self.currentTest))
-            print(errormessage)
+            print(colored('ENSURE', 'red') +
+                  ' failed in ' + colored(self.name, attrs=['underline']) +
+                  ' for test ' + colored(self.currentTest, attrs=['underline']))
+            print(colored(errormessage, attrs=['bold']))
 
             # code for geting debug-info gratefully borrowed from
             # https://stackoverflow.com/questions/6810999/how-to-determine-file-function-and-line-number
             callerframerecord = inspect.stack()[calldepth]
             frame = callerframerecord[0]
             info = inspect.getframeinfo(frame)
-            print ('\n  File:     {0}'.format(info.filename))
-            print ('  Function: {0}'.format(info.function))
-            print ('  Line:     {0}'.format(info.lineno))
-            print("======================\n")
+            print colored('\n  File:     {0}'.format(info.filename), attrs=['dark'])
+            print colored('  Function: {0}'.format(info.function), attrs=['dark'])
+            print colored('  Line:     {0}'.format(info.lineno), attrs=['dark'])
+            print colored("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
+                          attrs=['dark'])
 
     def ensureSuccess(self, response):
         self.ensure(response['success'] is True,
@@ -86,7 +94,6 @@ class controllerTest:
         self.ensure(response['success'] is False,
                     errormessage='Server responds success on illegal action.',
                     calldepth=2)
-        self.ensureNoData(response)
 
     def ensureNoData(self, response):
         self.ensure('data' not in response or response['data'] is None,
@@ -96,4 +103,14 @@ class controllerTest:
     def ensureSomeData(self, response):
         self.ensure('data' in response and response['data'] is not None,
                     errormessage='Data expected but none returned',
+                    calldepth=2)
+
+    def ensureEqual(self, expected, actual):
+        self.ensure(expected == actual,
+                    errormessage='Expected: {0}\nActual:   {1}'.format(expected, actual),
+                    calldepth=2)
+
+    def ensureNotEqual(self, expected, actual):
+        self.ensure(expected != actual,
+                    errormessage='Expected: {0}\nActual:   {1}'.format(expected, actual),
                     calldepth=2)
