@@ -15,11 +15,6 @@ namespace GirafRest.Controllers
         {
             Response.StatusCode = 200;
 
-            if (status == 401)
-            {
-                return new ErrorResponse(ErrorCode.NotAuthorized);
-            }
-
             return new ErrorResponse(ErrorCode.NotFound);
         }
     }
