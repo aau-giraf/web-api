@@ -12,80 +12,122 @@ def testUserstories():
     graatandToken = response['data']
 
     # Create week-schedule
-    #DISCLAIMER: I have no idea what i'm doing and this is obviously not working (Other people will likely have the same problem...)
     response = test.request('POST', 'week', 
-                    '''{
-                      "thumbnail": {
-                        "accessLevel": "PUBLIC",
-                        "title": "string",
-                        "id": 0,
-                        "lastEdit": "2018-04-02T23:34:04.043Z"
-                      },
-                      "name": "string",
-                      "id": 0,
-                      "days": [
-                        {
-                          "elementsSet": true,
-                          "elementIDs": [
-                            0, 1, 2, 3, 4, 5, 6
-                          ],
-                          "day": "Monday",
-                          "elements": [
+                     '''{
+                          "thumbnail": {
+                            "accessLevel": 2,
+                            "imageUrl": "/v1/pictogram/1/image/raw",
+                            "imageHash": "bjQ6eiEnZPp3CbW06iLZ6w==",
+                            "title": "Epik",
+                            "id": 1,
+                            "lastEdit": "2018-03-23T08:36:23.275831"
+                          },
+                          "name": null,
+                          "id": 1,
+                          "days": [
                             {
-                              "title": "string",
-                              "id": 0,
-                              "lastEdit": "2018-04-02T23:34:04.043Z"
+                              "elementsSet": true,
+                              "elementIDs": [
+                                1,
+                                74,
+                                75,
+                                76
+                              ],
+                              "day": 0,
+                              "elements": [
+                                {
+                                  "accessLevel": 2,
+                                  "imageUrl": "/v1/pictogram/1/image/raw",
+                                  "imageHash": "bjQ6eiEnZPp3CbW06iLZ6w==",
+                                  "title": "Epik",
+                                  "id": 1,
+                                  "lastEdit": "2018-03-23T08:36:23.275831"
+                                },
+                                {
+                                  "accessLevel": 1,
+                                  "imageUrl": "/v1/pictogram/74/image/raw",
+                                  "imageHash": "mZfa7s0eJJnWhC8VwPduNw==",
+                                  "title": "alting",
+                                  "id": 74,
+                                  "lastEdit": "2018-03-23T08:36:23.320533"
+                                },
+                                {
+                                  "accessLevel": 2,
+                                  "imageUrl": "/v1/pictogram/75/image/raw",
+                                  "imageHash": "mZfa7s0eJJnWhC8VwPduNw==",
+                                  "title": "alle",
+                                  "id": 75,
+                                  "lastEdit": "2018-03-23T08:36:23.275836"
+                                },
+                                {
+                                  "accessLevel": 2,
+                                  "imageUrl": "/v1/pictogram/76/image/raw",
+                                  "imageHash": "M3VYTIo8N47tsQ7pG5N8dA==",
+                                  "title": "alfabet",
+                                  "id": 76,
+                                  "lastEdit": "2018-03-23T08:36:23.275835"
+                                }
+                              ]
+                            },
+                            {
+                              "elementsSet": false,
+                              "elementIDs": [],
+                              "day": 1,
+                              "elements": []
+                            },
+                            {
+                              "elementsSet": false,
+                              "elementIDs": [],
+                              "day": 2,
+                              "elements": []
+                            },
+                            {
+                              "elementsSet": false,
+                              "elementIDs": [],
+                              "day": 3,
+                              "elements": []
+                            },
+                            {
+                              "elementsSet": true,
+                              "elementIDs": [
+                                1
+                              ],
+                              "day": 4,
+                              "elements": [
+                                {
+                                  "accessLevel": 2,
+                                  "imageUrl": "/v1/pictogram/1/image/raw",
+                                  "imageHash": "bjQ6eiEnZPp3CbW06iLZ6w==",
+                                  "title": "Epik",
+                                  "id": 1,
+                                  "lastEdit": "2018-03-23T08:36:23.275831"
+                                }
+                              ]
+                            },
+                            {
+                              "elementsSet": false,
+                              "elementIDs": [],
+                              "day": 5,
+                              "elements": []
+                            },
+                            {
+                              "elementsSet": true,
+                              "elementIDs": [
+                                74
+                              ],
+                              "day": 6,
+                              "elements": [
+                                {
+                                  "accessLevel": 1,
+                                  "imageUrl": "/v1/pictogram/74/image/raw",
+                                  "imageHash": "mZfa7s0eJJnWhC8VwPduNw==",
+                                  "title": "alting",
+                                  "id": 74,
+                                  "lastEdit": "2018-03-23T08:36:23.320533"
+                                }
+                              ]
                             }
                           ]
-                          "day": "Tuesday",
-                          "elements": [
-                            {
-                              "title": "string",
-                              "id": 1,
-                              "lastEdit": "2018-04-02T23:34:04.043Z"
-                            }
-                          ]
-                          "day": "Wednesdat",
-                          "elements": [
-                            {
-                              "title": "string",
-                              "id": 2,
-                              "lastEdit": "2018-04-02T23:34:04.043Z"
-                            }
-                          ]
-                          "day": "Thursdag",
-                          "elements": [
-                            {
-                              "title": "string",
-                              "id": 3,
-                              "lastEdit": "2018-04-02T23:34:04.043Z"
-                            }
-                          ]
-                          "day": "Friday",
-                          "elements": [
-                            {
-                              "title": "string",
-                              "id": 4,
-                              "lastEdit": "2018-04-02T23:34:04.043Z"
-                            }
-                          ]
-                          "day": "Saturday",
-                          "elements": [
-                            {
-                              "title": "string",
-                              "id": 5,
-                              "lastEdit": "2018-04-02T23:34:04.043Z"
-                            }
-                          ]
-                          "day": "Sunday",
-                          "elements": [
-                            {
-                              "title": "string",
-                              "id": 6,
-                              "lastEdit": "2018-04-02T23:34:04.043Z"
-                            }
-                          ]
-                        }
-                      ]
-                    }''', auth=graatandToken)
+                        }''', auth=graatandToken)
     test.ensureSuccess(response)
+    # TODO: Check that the database got updated correctly
