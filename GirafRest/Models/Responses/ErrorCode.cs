@@ -53,6 +53,7 @@
         DepartmentHasNoCitizens,
         UnknownError,
         CouldNotCreateDepartmentUser,
-        UserNotFoundInDepartment
+        UserNotFoundInDepartment,
+        NoWeekTemplateFound
     }
 }

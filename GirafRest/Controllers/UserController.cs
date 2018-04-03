@@ -591,6 +591,7 @@ namespace GirafRest.Controllers
         /// <returns>The guardians.</returns>
         /// <param name="username">Username.</param>
         [HttpGet("getGuardians/{username}")]
+        [Authorize]
         public async Task<Response<List<GirafUserDTO>>> GetGuardians(string username)
         {
             if (username == null)

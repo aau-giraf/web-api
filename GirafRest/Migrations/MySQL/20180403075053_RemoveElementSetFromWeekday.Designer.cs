@@ -13,9 +13,10 @@ using System;
 namespace GirafRest.Migrations.MySQL
 {
     [DbContext(typeof(GirafDbContext))]
-    partial class GirafMySqlDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180403075053_RemoveElementSetFromWeekday")]
+    partial class RemoveElementSetFromWeekday
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -449,19 +450,6 @@ namespace GirafRest.Migrations.MySQL
                     b.HasDiscriminator().HasValue("Pictogram");
                 });
 
-            modelBuilder.Entity("GirafRest.Models.WeekTemplate", b =>
-                {
-                    b.HasBaseType("GirafRest.Models.Week");
-
-                    b.Property<long>("DepartmentKey");
-
-                    b.HasIndex("DepartmentKey");
-
-                    b.ToTable("WeekTemplate");
-
-                    b.HasDiscriminator().HasValue("WeekTemplate");
-                });
-
             modelBuilder.Entity("GirafRest.GuardianRelation", b =>
                 {
                     b.HasOne("GirafRest.Models.GirafUser", "Citizen")
@@ -607,14 +595,6 @@ namespace GirafRest.Migrations.MySQL
                     b.HasOne("GirafRest.Models.GirafUser")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("GirafRest.Models.WeekTemplate", b =>
-                {
-                    b.HasOne("GirafRest.Models.Department", "Department")
-                        .WithMany("WeekTemplates")
-                        .HasForeignKey("DepartmentKey")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

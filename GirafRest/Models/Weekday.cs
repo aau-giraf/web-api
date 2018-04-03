@@ -28,11 +28,7 @@ namespace GirafRest.Models
         /// The last time the weekday was edited.
         /// </summary>
         public DateTime LastEdit { get; set; }
-        /// <summary>
-        /// A flag indicated whether or not the weekday has been populated.
-        /// </summary>
-        public bool ElementsSet { get; set; }
-
+        
         /// <summary>
         /// An enum defining which day of the week this instance represents.
         /// </summary>
@@ -44,7 +40,7 @@ namespace GirafRest.Models
         public ICollection<WeekdayResource> Elements { get; set; }
 
         /// <summary>
-        /// DO NOT DELETE THIS.
+        /// Empty contr required for testing framework.
         /// </summary>
         public Weekday()
         {
