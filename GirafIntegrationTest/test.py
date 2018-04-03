@@ -5,6 +5,8 @@ from roleControllerTest import *
 from pictogramControllerTest import *
 from userControllerTest import *
 from weekControllerTest import *
+from authorizationTest import *
+from userstoriesTest import *
 import time
 import sys
 import json
@@ -26,6 +28,9 @@ testPictogramController()
 testRoleController()
 testUserController()
 testWeekController()
+testAuthorization()
+testExpiredAuthorization()
+testUserstories()
 
 if controllerTest.testsFailed == 0:
     print '{0} tests were run. All tests passed.'.format(controllerTest.testsRun)

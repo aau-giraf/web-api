@@ -397,7 +397,7 @@ namespace GirafRest.Controllers
         /// <returns>
         /// DepartmentDTO of updated state if no problems occured.
         /// </returns>
-        [HttpDelete("resource/")]
+        [HttpDelete("resource")]
         [Authorize]
         public async Task<Response<DepartmentDTO>> RemoveResource([FromBody]ResourceIdDTO resourceDTO)
         {

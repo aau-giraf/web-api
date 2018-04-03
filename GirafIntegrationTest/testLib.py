@@ -98,6 +98,22 @@ class controllerTest:
                     errormessage='Server responds success on illegal action.',
                     calldepth=2)
 
+    def ensureErrorWithKey(self, response, errorKey):
+        try:
+            self.ensure(response['success'] is False and response['errorKey'] == errorKey,
+                        errormessage='Server did not respond correct errorKey or success-flag',
+                        calldepth=2)
+        except Exception as e:
+            self.fails("Server did not return valid JSON")
+
+    def ensureNotAuthorized(self, response):
+        try:
+            self.ensure(response['success'] is False and response['errorKey'] == 'NotAuthorized',
+                        errormessage='Server did not respond with NotAuthorized. Got "' + response['errorKey'] + '"',
+                        calldepth=2)
+        except Exception as e:
+            self.fails("Server did not return valid JSON")
+
     def ensureNoData(self, response):
         self.ensure('data' not in response or response['data'] is None,
                     errormessage='Data was returned when it should not have been.',
@@ -117,3 +133,5 @@ class controllerTest:
         self.ensure(expected != actual,
                     errormessage='Expected: {0}\nActual:   {1}'.format(expected, actual),
                     calldepth=2)
+    def fails(self, errormessage, calldepth=2):
+        self.ensure(False, errormessage=errormessage, calldepth=calldepth+1)
