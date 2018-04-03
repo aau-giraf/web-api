@@ -1,14 +1,11 @@
 using Moq;
 using Xunit;
-using Microsoft.AspNetCore.Mvc;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using System.Collections.Generic;
 using GirafRest.Controllers;
 using GirafRest.Models.Responses;
 using GirafRest.Test.Mocks;
-// using Microsoft.Extensions.ProjectModel.Resolution;
-using Org.BouncyCastle.Asn1.Misc;
 using static GirafRest.Test.UnitTestExtensions;
 using Xunit.Abstractions;
 using System.Linq;
@@ -73,6 +70,7 @@ namespace GirafRest.Test.Controllers
             var res = dc.Get().Result;
 
             Assert.IsType<ErrorResponse<List<DepartmentDTO>>>(res);
+            Assert.False(res.Success);
             Assert.Equal(res.ErrorCode, ErrorCode.NotFound);
         }
 
@@ -97,6 +95,7 @@ namespace GirafRest.Test.Controllers
             var res = dc.Get(DEPARTMENT_ONE).Result;
 
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
+            Assert.False(res.Success);
             Assert.Equal(res.ErrorCode, ErrorCode.NotFound);
         }
         #endregion
@@ -135,7 +134,7 @@ namespace GirafRest.Test.Controllers
             var res = dc.Post(depDTO).Result;
 
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
-            Assert.Equal(res.ErrorCode, ErrorCode.MissingProperties);
+            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
         #endregion
 
@@ -206,7 +205,8 @@ namespace GirafRest.Test.Controllers
             var res = dc.RemoveUser(DEPARTMENT_ONE, null).Result;
 
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
-            Assert.Equal(res.ErrorCode, ErrorCode.MissingProperties);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
         
         [Fact]
@@ -217,7 +217,8 @@ namespace GirafRest.Test.Controllers
             var res = dc.RemoveUser(DEPARTMENT_TEN, userToRemove).Result;
 
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
-            Assert.Equal(res.ErrorCode, ErrorCode.DepartmentNotFound);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.DepartmentNotFound, res.ErrorCode);
         }
         
         [Fact]
@@ -228,7 +229,8 @@ namespace GirafRest.Test.Controllers
             var res = dc.RemoveUser(DEPARTMENT_TWO, userToRemove).Result;
 
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
-            Assert.Equal(res.ErrorCode, ErrorCode.UserNotFound);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.UserNotFoundInDepartment, res.ErrorCode);
         }
         #endregion
 
@@ -254,7 +256,8 @@ namespace GirafRest.Test.Controllers
             var res = dc.AddResource(DEPARTMENT_ONE, new ResourceIdDTO()).Result;
 
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
-            Assert.Equal(res.ErrorCode, ErrorCode.MissingProperties);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
 
         [Fact]
@@ -265,7 +268,8 @@ namespace GirafRest.Test.Controllers
             var res = dc.AddResource(DEPARTMENT_TEN, new ResourceIdDTO() { Id = RESOURCE_THREE }).Result;
 
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
-            Assert.Equal(res.ErrorCode, ErrorCode.DepartmentNotFound);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.DepartmentNotFound, res.ErrorCode);
         }
 
         [Fact]
@@ -276,7 +280,8 @@ namespace GirafRest.Test.Controllers
             var res = dc.AddResource(DEPARTMENT_ONE, null).Result;
 
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
-            Assert.Equal(res.ErrorCode, ErrorCode.MissingProperties);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
 
         [Fact]
@@ -287,7 +292,8 @@ namespace GirafRest.Test.Controllers
             var res = dc.AddResource(DEPARTMENT_ONE, new ResourceIdDTO() { Id = NONEXISTING }).Result;
 
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
-            Assert.Equal(res.ErrorCode, ErrorCode.ResourceNotFound);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.ResourceNotFound, res.ErrorCode);
         }
 
         [Fact]
@@ -297,7 +303,8 @@ namespace GirafRest.Test.Controllers
             var res = dc.AddResource(DEPARTMENT_ONE, new ResourceIdDTO() { Id = RESOURCE_ONE }).Result;
 
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
-            Assert.Equal(res.ErrorCode, ErrorCode.NotAuthorized);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
         #endregion
 
@@ -323,7 +330,8 @@ namespace GirafRest.Test.Controllers
             var res = dc.RemoveResource(null).Result;
 
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
-            Assert.Equal(res.ErrorCode, ErrorCode.MissingProperties);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
 
         [Fact]
@@ -334,7 +342,7 @@ namespace GirafRest.Test.Controllers
             var res = dc.RemoveResource(new ResourceIdDTO() { Id = RESOURCE_FIVE }).Result;
 
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
-            Assert.Equal(res.ErrorCode, ErrorCode.NotAuthorized);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
         [Fact]
@@ -359,7 +367,7 @@ namespace GirafRest.Test.Controllers
             var res = dc.GetCitizenNamesAsync(departmentTwoId).Result;
 
             Assert.IsType<Response<List<UserNameDTO>>>(res);
-            Assert.Equal(res.ErrorCode, ErrorCode.NoError);
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.True(res.Success);
             // Check that we found all citizens in department
             var countCitizens = 1;

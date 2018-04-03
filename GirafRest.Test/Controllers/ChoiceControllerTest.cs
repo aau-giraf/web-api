@@ -2,11 +2,9 @@ using GirafRest.Controllers;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Test.Mocks;
-using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
-using Xunit.Abstractions;
 using static GirafRest.Test.UnitTestExtensions;
 using GirafRest.Models.Responses;
 
@@ -57,9 +55,9 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
 
             //Check data
-            Assert.Equal(res.Data.Title, _testContext.MockChoices[PUBLIC_CHOICE].Title);
-            Assert.Equal(res.Data.LastEdit, _testContext.MockChoices[PUBLIC_CHOICE].LastEdit);
-            Assert.Equal(res.Data.Id, _testContext.MockChoices[PUBLIC_CHOICE].Id);
+            Assert.Equal(_testContext.MockChoices[PUBLIC_CHOICE].Title, res.Data.Title);
+            Assert.Equal(_testContext.MockChoices[PUBLIC_CHOICE].LastEdit, res.Data.LastEdit);
+            Assert.Equal(_testContext.MockChoices[PUBLIC_CHOICE].Id, res.Data.Id);
         }
 
         [Fact]
@@ -74,10 +72,10 @@ namespace GirafRest.Test
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
 
-            // Check data
-            Assert.Equal(res.Data.Title, _testContext.MockChoices[PUBLIC_CHOICE].Title);
-            Assert.Equal(res.Data.LastEdit, _testContext.MockChoices[PUBLIC_CHOICE].LastEdit);
-            Assert.Equal(res.Data.Id, _testContext.MockChoices[PUBLIC_CHOICE].Id);
+            //Check data
+            Assert.Equal(_testContext.MockChoices[PUBLIC_CHOICE].Title, res.Data.Title);
+            Assert.Equal(_testContext.MockChoices[PUBLIC_CHOICE].LastEdit, res.Data.LastEdit);
+            Assert.Equal(_testContext.MockChoices[PUBLIC_CHOICE].Id, res.Data.Id);
         }
 
         [Fact]
@@ -104,10 +102,10 @@ namespace GirafRest.Test
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
 
-            // Check data
-            Assert.Equal(res.Data.Title, _testContext.MockChoices[PRIVATE_CHOICE].Title);
-            Assert.Equal(res.Data.LastEdit, _testContext.MockChoices[PRIVATE_CHOICE].LastEdit);
-            Assert.Equal(res.Data.Id, _testContext.MockChoices[PRIVATE_CHOICE].Id);
+            //Check data
+            Assert.Equal(_testContext.MockChoices[PRIVATE_CHOICE].Title, res.Data.Title);
+            Assert.Equal(_testContext.MockChoices[PRIVATE_CHOICE].LastEdit, res.Data.LastEdit);
+            Assert.Equal(_testContext.MockChoices[PRIVATE_CHOICE].Id, res.Data.Id);
         }
 
         [Fact]
@@ -146,10 +144,10 @@ namespace GirafRest.Test
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
 
-            // Check data
-            Assert.Equal(res.Data.Title, _testContext.MockChoices[PROTECTED_CHOICE].Title);
-            Assert.Equal(res.Data.LastEdit, _testContext.MockChoices[PROTECTED_CHOICE].LastEdit);
-            Assert.Equal(res.Data.Id, _testContext.MockChoices[PROTECTED_CHOICE].Id);
+            //Check data
+            Assert.Equal(_testContext.MockChoices[PROTECTED_CHOICE].Title, res.Data.Title);
+            Assert.Equal(_testContext.MockChoices[PROTECTED_CHOICE].LastEdit, res.Data.LastEdit);
+            Assert.Equal(_testContext.MockChoices[PROTECTED_CHOICE].Id, res.Data.Id);
         }
 
         [Fact]
@@ -225,7 +223,6 @@ namespace GirafRest.Test
             var res = choiceController.CreateChoice(new ChoiceDTO(new Choice(options, title) { Id = CREATE_CHOICE_ID })).Result;
 
             Assert.IsType<Response<ChoiceDTO>>(res);
-
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
 
@@ -245,6 +242,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLogout();
             List<Pictogram> options = new List<Pictogram> { _testContext.MockPictograms[PRIVATE_PICTOGRAM] };
             var res = cc.CreateChoice(new ChoiceDTO(new Choice(options, "TestChoice") { Id = CREATE_CHOICE_ID })).Result;
+
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
@@ -511,94 +509,120 @@ namespace GirafRest.Test
         #region DeleteChoice | Work as intented with the exception of the authorize attribute
         // ASP.NET inforces this attribute and some tests should therefore be changed to Unauthorized
         // if a Mock version of this attribute is made
+        [Fact]
         public void DeleteChoice_NoLoginDeletePublic_Ok()
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
             var res = cc.DeleteChoice(_testContext.MockChoices[PUBLIC_CHOICE].Id).Result;
 
-            Assert.IsType<OkResult>(res);
+            Assert.IsType<Response>(res);
+            Assert.True(res.Success);
         }
-        
+
+        [Fact]
         public void DeleteChoice_LoginDeletePublic_Ok()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = choiceController.DeleteChoice(_testContext.MockChoices[PUBLIC_CHOICE].Id);
+            var res = choiceController.DeleteChoice(_testContext.MockChoices[PUBLIC_CHOICE].Id).Result;
 
-            Assert.IsType<OkResult>(res.Result);
+            Assert.IsType<Response>(res);
+            Assert.True(res.Success);
         }
-        
+
+        [Fact]
         public void DeleteChoice_NoLoginDeletePrivate_Unauthorized()
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
-            var res = cc.DeleteChoice(_testContext.MockChoices[PRIVATE_CHOICE].Id);
+            var res = cc.DeleteChoice(_testContext.MockChoices[PRIVATE_CHOICE].Id).Result;
 
-            Assert.IsType<UnauthorizedResult>(res.Result);
+            Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
-        
+
+        [Fact]
         public void DeleteChoice_LoginDeletePrivate_Ok()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = choiceController.DeleteChoice(_testContext.MockChoices[PRIVATE_CHOICE].Id);
+            var res = choiceController.DeleteChoice(_testContext.MockChoices[PRIVATE_CHOICE].Id).Result;
 
-            Assert.IsType<OkResult>(res.Result);
+            Assert.IsType<Response>(res);
+            Assert.True(res.Success);
         }
         
+        [Fact]
         public void DeleteChoice_OtherLoginDeletePrivate_Unauthorized()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-            var res = choiceController.DeleteChoice(_testContext.MockChoices[PRIVATE_CHOICE].Id);
+            var res = choiceController.DeleteChoice(_testContext.MockChoices[PRIVATE_CHOICE].Id).Result;
 
-            Assert.IsType<UnauthorizedResult>(res.Result);
+            Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
         
+        [Fact]
         public void DeleteChoice_NoLoginDeleteProtected_Unauthorized()
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
-            var res = cc.DeleteChoice(_testContext.MockChoices[PROTECTED_CHOICE].Id);
+            var res = cc.DeleteChoice(_testContext.MockChoices[PROTECTED_CHOICE].Id).Result;
 
-            Assert.IsType<UnauthorizedResult>(res.Result);
+            Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
         
+        [Fact]
         public void DeleteChoice_LoginDeleteProtected_Ok()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = choiceController.DeleteChoice(_testContext.MockChoices[PROTECTED_CHOICE].Id);
+            var res = choiceController.DeleteChoice(_testContext.MockChoices[PROTECTED_CHOICE].Id).Result;
 
-            Assert.IsType<OkResult>(res.Result);
+            Assert.IsType<Response>(res);
+            Assert.True(res.Success);
         }
-        
+
+        [Fact]
         public void DeleteChoice_OtherLoginDeleteProtected_Unauthorized()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-            var res = choiceController.DeleteChoice(_testContext.MockChoices[PROTECTED_CHOICE].Id);
+            var res = choiceController.DeleteChoice(_testContext.MockChoices[PROTECTED_CHOICE].Id).Result;
 
-            Assert.IsType<UnauthorizedResult>(res.Result);
+            Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
-        
+
+        [Fact]
         public void DeleteChoice_NoLoginDeleteNonExisting_NotFound()
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
-            var res = cc.DeleteChoice(NONEXISTING);
+            var res = cc.DeleteChoice(NONEXISTING).Result;
 
-            Assert.IsType<NotFoundResult>(res.Result);
+            Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
-        
+
+        [Fact]
         public void DeleteChoice_LoginDeleteNonExisting_NotFound()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = choiceController.DeleteChoice(NONEXISTING);
+            var res = choiceController.DeleteChoice(NONEXISTING).Result;
 
-            Assert.IsType<NotFoundResult>(res.Result);
+            Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
         #endregion
     }

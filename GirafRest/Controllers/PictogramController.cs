@@ -75,17 +75,32 @@ namespace GirafRest.Controllers
         }
 
         private int IbsenDistance(string a, string b) {
-            return IbsenDistance(a,b,a.Length,b.Length);
-        }
-        private int IbsenDistance(string a, string b, int aLen, int bLen) {
-            const int insertCost = 1;
-            const int deleteCost = 4;
-            const int substituteCost = 2;
-            if(aLen <= 0 || bLen <= 0) return Math.Max(aLen, bLen)*insertCost;
-            return Math.Min(IbsenDistance(a,b, aLen-1, bLen) +deleteCost,
-                   Math.Min(IbsenDistance(a,b, aLen,   bLen-1) +insertCost,
-                           IbsenDistance(a,b, aLen-1, bLen-1) +(a[aLen-1] == b[bLen-1] ? 0 : substituteCost))
-            );
+            const int insertionCost = 1;
+            const int deletionCost = 4;
+            const int substitutionCost = 2;
+            int[,] d = new int[a.Length,b.Length];
+            for(int i = 0; i < a.Length; i++)
+                for(int j = 0; j < b.Length; j++)
+                    d[i,j] = 0;
+            
+            for(int i = 1; i < a.Length; i++)
+                d[i,0] = i;
+            
+            for(int j = 1; j < b.Length; j++)
+                d[0,j] = j;
+            
+            for(int j = 1; j < b.Length; j++) {
+                for(int i = 1; i < a.Length; i++) {
+                    int _substitutionCost = 0;
+                    if(a[i] != b[j])
+                        _substitutionCost = substitutionCost;
+                    d[i,j] = Math.Min(d[i-1, j  ] + deletionCost,
+                             Math.Min(d[i  , j-1] + insertionCost,
+                                      d[i-1, j-1] + _substitutionCost));
+                }
+            }
+            return d[a.Length-1,b.Length-1];
+            // return IbsenDistance(a,b,a.Length,b.Length, new int[a.Length][b.Length]);
         }
 
         /// <summary>
@@ -243,7 +258,22 @@ namespace GirafRest.Controllers
             if (!CheckOwnership(pict, usr).Result)
                 return new ErrorResponse(ErrorCode.NotAuthorized);
 
-            //Remove it and save changes
+            // Before we can remove a pictogram we must delete all its relations
+            var userRessourceRelations = _giraf._context.UserResources
+                .Where(ur => ur.ResourceKey == pict.Id);
+            _giraf._context.UserResources.RemoveRange(userRessourceRelations);
+
+            var depRessourceRelations = _giraf._context.DepartmentResources
+                .Where(ur => ur.ResourceKey == pict.Id);
+            _giraf._context.DepartmentResources.RemoveRange(depRessourceRelations);
+
+            var weekDayRessourceRelations = _giraf._context.WeekdayResources
+                .Where(ur => ur.ResourceKey == pict.Id);
+            _giraf._context.WeekdayResources.RemoveRange(weekDayRessourceRelations);
+
+            await _giraf._context.SaveChangesAsync();
+
+            // Now we can safely delete the pictogram
             _giraf._context.Pictograms.Remove(pict);
             await _giraf._context.SaveChangesAsync();
             return new Response();
