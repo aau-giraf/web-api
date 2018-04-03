@@ -124,11 +124,8 @@ namespace GirafRest.Controllers
             {
                 Weekday wkDay = new Weekday(day);
                 wkDay.LastEdit = DateTime.Now;
-                if (day.ElementsSet)
-                {
-                    if (!(await CreateWeekDayHelper(wkDay, day.ElementIDs)))
-                            return new ErrorResponse<WeekDTO>(ErrorCode.ResourceNotFound);
-                }
+                if (!(await CreateWeekDayHelper(wkDay, day.ElementIDs)))
+                        return new ErrorResponse<WeekDTO>(ErrorCode.ResourceNotFound);
                 orderedDays[(int)day.Day].Elements = wkDay.Elements;
             }
             _giraf._context.Weeks.Update(week);
@@ -165,15 +162,12 @@ namespace GirafRest.Controllers
             {
                 foreach (var day in newWeek.Days)
                 {
-                    if (day.ElementsSet)
-                    {
-                        Weekday wkDay = week.Weekdays[(int)day.Day];
-                        wkDay.LastEdit = DateTime.Now;
-                        if(!(await CreateWeekDayHelper(wkDay, day.ElementIDs)))
-                            return new ErrorResponse<WeekDTO>(ErrorCode.ResourceNotFound);
+                    Weekday wkDay = week.Weekdays[(int)day.Day];
+                    wkDay.LastEdit = DateTime.Now;
+                    if(!(await CreateWeekDayHelper(wkDay, day.ElementIDs)))
+                        return new ErrorResponse<WeekDTO>(ErrorCode.ResourceNotFound);
 
-                        week.Weekdays[(int)day.Day].Elements = wkDay.Elements;
-                    }
+                    week.Weekdays[(int)day.Day].Elements = wkDay.Elements;
                 }
             }
             _giraf._context.Weeks.Add(week);
