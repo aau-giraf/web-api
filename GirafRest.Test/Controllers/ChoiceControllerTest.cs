@@ -79,7 +79,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void ReadChoice_NoLoginGetPrivate_Unauthorized()
+        public void ReadChoice_NoLoginGetPrivate_NotFound()
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
@@ -87,7 +87,7 @@ namespace GirafRest.Test
 
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
 
         [Fact]
@@ -117,7 +117,7 @@ namespace GirafRest.Test
 
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
 
         [Fact]
@@ -129,7 +129,7 @@ namespace GirafRest.Test
 
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
 
         [Fact]
@@ -159,7 +159,7 @@ namespace GirafRest.Test
 
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
 
         [Fact]
@@ -245,7 +245,7 @@ namespace GirafRest.Test
 
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
 
         [Fact]
@@ -280,7 +280,7 @@ namespace GirafRest.Test
 
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
         #endregion
 
@@ -356,7 +356,7 @@ namespace GirafRest.Test
 
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
 
         [Fact]
@@ -404,7 +404,7 @@ namespace GirafRest.Test
 
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
 
         [Fact]
@@ -423,7 +423,7 @@ namespace GirafRest.Test
 
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
 
         [Fact]
@@ -470,7 +470,7 @@ namespace GirafRest.Test
 
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
 
         [Fact]
@@ -540,7 +540,7 @@ namespace GirafRest.Test
 
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
 
         [Fact]
@@ -563,7 +563,7 @@ namespace GirafRest.Test
 
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
         
         [Fact]
@@ -575,7 +575,7 @@ namespace GirafRest.Test
 
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
         
         [Fact]
@@ -598,7 +598,7 @@ namespace GirafRest.Test
 
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
 
         [Fact]
