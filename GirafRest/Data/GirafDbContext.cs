@@ -20,7 +20,7 @@ namespace GirafRest.Data
         public virtual DbSet<Pictogram> Pictograms { get; set; }
         public virtual DbSet<Choice> Choices { get; set; }
         public virtual DbSet<Week> Weeks { get; set; }
-        public virtual DbSet<WeekTemplate> Templates { get; set; }
+        public virtual DbSet<WeekTemplate> WeekTemplates { get; set; }
         public virtual DbSet<Weekday> Weekdays { get; set; }
         public virtual DbSet<Resource> Frames { get; set; }
         public virtual DbSet<UserResource> UserResources { get; set; }
@@ -88,9 +88,18 @@ namespace GirafRest.Data
                 .HasOne<Department>(u => u.Department)
                 .WithMany(d => d.Members);
 
+            builder.Entity<Department>()
+                .HasMany<WeekTemplate>(u => u.WeekTemplates)
+                .WithOne(d => d.Department);
+
             //And a One-to-Many relationship between Week and Weekday
             builder.Entity<Weekday>()
                 .HasOne<Week>()
+                .WithMany(w => w.Weekdays);
+
+            //And a One-to-Many relationship between WeekTemplate and Weekday
+            builder.Entity<Weekday>()
+                .HasOne<WeekTemplate>()
                 .WithMany(w => w.Weekdays);
 
             //Configure a many-to-many relationship between Weekday and Resource(Pictogram)
@@ -118,6 +127,7 @@ namespace GirafRest.Data
             builder.Entity<WeekdayResource>().ToTable("WeekdayResources");
             //builder.Entity<Weekday>().ToTable("Weekdays").HasDiscriminator<string>("Discriminator").HasValue<Weekday>(nameof(Weekday));
             builder.Entity<Week>().ToTable("Weeks").HasDiscriminator<string>("Discriminator").HasValue<Week>(nameof(Week));
+            builder.Entity<WeekTemplate>().ToTable("Weeks").HasDiscriminator<string>("Discriminator").HasValue<WeekTemplate>(nameof(WeekTemplate));
 
             // Configure that a citizen can have many guardians and that a citizen can have many guardians
 

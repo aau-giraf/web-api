@@ -29,6 +29,7 @@ namespace GirafRest.Setup
             var Pictograms = AddSamplePictograms(context);
             var choices = AddSampleChoices(context, Pictograms);
             AddSampleWeekAndWeekdays(context, Pictograms, choices);
+            AddSampleWeekTemplate(context, Pictograms, choices, Departments);
             context.SaveChanges();
             //For simplicity we simply add all the private pictograms to all users.
             foreach (var usr in context.Users)
@@ -125,7 +126,7 @@ namespace GirafRest.Setup
 
             return users;
         }
-
+        #region base64
         private static IList<Pictogram> AddSamplePictograms(GirafDbContext context)
         {
             System.Console.WriteLine("Adding pictograms.");
@@ -246,7 +247,7 @@ namespace GirafRest.Setup
 
             return Pictograms;
         }
-
+        #endregion
         private static IList<Choice> AddSampleChoices(GirafDbContext context, IList<Pictogram> Pictograms)
         {
             var choices = new List<Choice>();
@@ -293,6 +294,35 @@ namespace GirafRest.Setup
             var usr = context.Users.Where(u => u.UserName == "Kurt").First();
             context.Weeks.Add(sampleWeek);
             usr.WeekSchedule.Add(sampleWeek);
+            context.SaveChanges();
+        }
+
+        private static void AddSampleWeekTemplate(GirafDbContext context, IList<Pictogram> Pictograms,
+            IList<Choice> Choices, IList<Department> depertments)
+        {
+            Console.WriteLine("Adding weekdays to users");
+            var Weekdays = new Weekday[]
+            {
+                new Weekday(Days.Monday, new List<Resource> { Pictograms[0], Pictograms[1], Pictograms[2], Pictograms[3], Pictograms[4] }),
+                new Weekday(Days.Tuesday, new List<Resource> { Pictograms[5], Pictograms[6], Pictograms[7], Pictograms[8] }),
+                new Weekday(Days.Wednesday, new List<Resource> { Pictograms[9], Pictograms[10], Pictograms[11], Pictograms[12], Pictograms[13] }),
+                new Weekday(Days.Thursday, new List<Resource> { Pictograms[8], Pictograms[6], Pictograms[7], Pictograms[5] }),
+                new Weekday(Days.Friday, new List<Resource> { Pictograms[0], Pictograms[7]}),
+                new Weekday(Days.Saturday, new List<Resource> { Pictograms[8], Pictograms[5], Choices[1] }),
+                new Weekday(Days.Sunday, new List<Resource> { Pictograms[3], Pictograms[5], Choices[0] })
+            };
+
+            var sampleWeek = new WeekTemplate(Pictograms[0]);
+            foreach (var day in Weekdays)
+            {
+                day.LastEdit = DateTime.Now;
+                context.Weekdays.Add(day);
+                sampleWeek.UpdateDay(day);
+            }
+
+            sampleWeek.DepartmentKey = depertments[0].Key;
+
+            context.WeekTemplates.Add(sampleWeek);
             context.SaveChanges();
         }
         #endregion
