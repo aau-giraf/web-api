@@ -84,13 +84,15 @@ namespace GirafRest.Controllers
         /// <returns>
         /// The Token as a string
         /// </returns>
-        private string GenerateJwtToken(GirafUser user, GirafRoles roles)
+        private async Task<string> GenerateJwtToken(GirafUser user, GirafRoles roles)
         {
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id)
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
             };
+
+            claims.AddRange(await GetRoleClaims(user));
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.Value.JwtKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -105,6 +107,18 @@ namespace GirafRest.Controllers
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        /// <summary>
+        /// Gets roles s.t we can get role from payload 
+        /// </summary>
+        /// <returns>The role claims.</returns>
+        /// <param name="user">User.</param>
+        private async Task<List<Claim>> GetRoleClaims(GirafUser user){
+            var Roleclaims = new List<Claim>();
+            var userRoles = await _giraf._userManager.GetRolesAsync(user);
+            Roleclaims.AddRange(userRoles.Select(userRole => new Claim(ClaimTypes.Role, userRole)));
+            return Roleclaims;
         }
 
         /// <summary>
@@ -142,7 +156,7 @@ namespace GirafRest.Controllers
                     return new ErrorResponse<string>(ErrorCode.MissingProperties, "password");
                 }
                 result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, lockoutOnFailure: false);
-                if(result.Succeeded) return new Response<string>(GenerateJwtToken(loginUser, userRoles));
+                if(result.Succeeded) return new Response<string>(await GenerateJwtToken(loginUser, userRoles));
                 else return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
             }
 
@@ -153,14 +167,14 @@ namespace GirafRest.Controllers
                 {
                     result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, lockoutOnFailure: false);
                     if (!result.Succeeded) return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
-                    return new Response<string>(GenerateJwtToken(loginUser, userRoles));
+                    return new Response<string>(await GenerateJwtToken(loginUser, userRoles));
                 }
 
                 if (string.IsNullOrEmpty(model.Password))
                 {
                     if (currentUser.UserName.ToLower() == model.Username.ToLower())
                     {
-                        return new Response<string>(GenerateJwtToken(loginUser, userRoles));
+                        return new Response<string>(await GenerateJwtToken(loginUser, userRoles));
                     }
 
                     if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian))
@@ -210,7 +224,7 @@ namespace GirafRest.Controllers
                 // Get the roles the user is associated with
                 GirafRoles userRoles = await _roleManager.findUserRole(_giraf._userManager, loginUser);
 
-                return new Response<string>(GenerateJwtToken(loginUser, userRoles));
+                return new Response<string>(await GenerateJwtToken(loginUser, userRoles));
             }
 
             //There was no user with the given username in the department - return invalidcredentials.

@@ -42,7 +42,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns> Returns Ok with the role of the user.</returns>
         [HttpGet("")]
-        [Authorize]
+        [Authorize(Roles =  GirafRole.SuperUser + "," + GirafRole.Department)]
         public async Task<Response<string>> GetGirafRole()
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
@@ -66,6 +66,7 @@ namespace GirafRest.Controllers
         ///  
         /// </returns>
         [HttpPost("guardian/{username}")]
+        [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department)]
         public async Task<Response> AddToGuardian(string username)
         {
             if (GetGirafRole().Result.Data != GirafRole.Department) return new ErrorResponse(ErrorCode.NotAuthorized);
@@ -79,6 +80,7 @@ namespace GirafRest.Controllers
         /// <param name="username">The username of the user in question</param>
         /// <returns> NotFound if no such user exists, Badrequest if the operation failed and Ok if successful</returns>
         [HttpDelete("guardian/{username}")]
+        [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department)]
         public async Task<Response> RemoveFromGuardian(string username)
         {
             if (GetGirafRole().Result.Data != GirafRole.Department) 
@@ -93,6 +95,7 @@ namespace GirafRest.Controllers
         /// <param name="username">The username of the user in question</param>
         /// <returns> NotFound if no such user exists, Badrequest if the operation failed and Ok if successful</returns>
         [HttpPost("admin/{username}")]
+        [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department)]
         public async Task<Response> AddToAdmin(string username)
         {
             if (GetGirafRole().Result.Data != GirafRole.SuperUser) 
@@ -102,47 +105,12 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Removes the user from the Admin role
-        /// </summary>
-        /// <param name="username">The username of the user in question</param>
-        /// <returns> NotFound if no such user exists, Badrequest if the operation failed and Ok if successful</returns>
-        //[HttpDelete("guardian/{username}")]
-        //[Authorize(Policy = GirafRole.RequireSuperUser)]
-        //public async Task<IActionResult> RemoveFromAdmin(string username)
-        //{
-        //    return await removeUserFromRoleAsync(username, GirafRole.SuperUser);
-        //}
-
-        /// <summary>
-        /// Adds the user to the Department role.
-        /// </summary>
-        /// <param name="username">The username of the user in question</param>
-        /// <returns> NotFound if no such user exists, Badrequest if the operation failed and Ok if successful</returns>
-        //[HttpPost("admin/{username}")]
-        //[Authorize(Policy = GirafRole.RequireSuperUser)]
-        //public async Task<IActionResult> AddToDepartment(string username)
-        //{
-        //    return await addUserToRoleAsync(username, GirafRole.Department);
-        //}
-
-        /// <summary>
-        /// Removes the user from the Admin role
-        /// </summary>
-        /// <param name="username">The username of the user in question
-        /// <returns> NotFound if no such user exists, Badrequest if the operation failed and Ok if successful</returns>
-        //[HttpDelete("guardian/{username}")]
-        //[Authorize(Policy = GirafRole.RequireSuperUser)]
-        //public async Task<IActionResult> RemoveFromDepartment(string username)
-        //{
-        //    return await removeUserFromRoleAsync(username, GirafRole.SuperUser);
-        //}½
-        
-        /// <summary>
         /// Removes a specified role
         /// </summary>
         /// <param name="id">The Id of the role in need of removal
         /// <returns> Badrequest if the role does not exist or if the id was null/emtpy and Ok if successful</returns>
         [HttpDelete("admin/{username}")]
+        [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department)]
         public async Task<Response> DeleteGirafRole(string username)
         {
             if (GetGirafRole().Result.Data != GirafRole.SuperUser) 
