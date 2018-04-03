@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GirafRest
 {
-    [Route("[controller]")]
+    [Route("v1/[controller]")]
     public class StatusController : Controller
     {
         private readonly IGirafService _giraf;
