@@ -121,10 +121,3 @@ Day Controller
 
 ##*BUG:* Checks if day is valid before authorization and returns 404 if day is not valid. Have not tested other values than 0, 1, and 2 though....
 
-
-Error Controller
-===============
-
-##*BUG?:* GET/POST Error returns errorcode NotFound, when no status is supplied. Wouldn't MissingProperties be better?
-
-
