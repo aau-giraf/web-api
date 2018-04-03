@@ -20,6 +20,7 @@ namespace GirafRest.Data
         public virtual DbSet<Pictogram> Pictograms { get; set; }
         public virtual DbSet<Choice> Choices { get; set; }
         public virtual DbSet<Week> Weeks { get; set; }
+        public virtual DbSet<WeekTemplate> Templates { get; set; }
         public virtual DbSet<Weekday> Weekdays { get; set; }
         public virtual DbSet<Resource> Frames { get; set; }
         public virtual DbSet<UserResource> UserResources { get; set; }
