@@ -75,17 +75,32 @@ namespace GirafRest.Controllers
         }
 
         private int IbsenDistance(string a, string b) {
-            return IbsenDistance(a,b,a.Length,b.Length);
-        }
-        private int IbsenDistance(string a, string b, int aLen, int bLen) {
-            const int insertCost = 1;
-            const int deleteCost = 4;
-            const int substituteCost = 2;
-            if(aLen <= 0 || bLen <= 0) return Math.Max(aLen, bLen)*insertCost;
-            return Math.Min(IbsenDistance(a,b, aLen-1, bLen) +deleteCost,
-                   Math.Min(IbsenDistance(a,b, aLen,   bLen-1) +insertCost,
-                           IbsenDistance(a,b, aLen-1, bLen-1) +(a[aLen-1] == b[bLen-1] ? 0 : substituteCost))
-            );
+            const int insertionCost = 1;
+            const int deletionCost = 4;
+            const int substitutionCost = 2;
+            int[,] d = new int[a.Length,b.Length];
+            for(int i = 0; i < a.Length; i++)
+                for(int j = 0; j < b.Length; j++)
+                    d[i,j] = 0;
+            
+            for(int i = 1; i < a.Length; i++)
+                d[i,0] = i;
+            
+            for(int j = 1; j < b.Length; j++)
+                d[0,j] = j;
+            
+            for(int j = 1; j < b.Length; j++) {
+                for(int i = 1; i < a.Length; i++) {
+                    int _substitutionCost = 0;
+                    if(a[i] != b[j])
+                        _substitutionCost = substitutionCost;
+                    d[i,j] = Math.Min(d[i-1, j  ] + deletionCost,
+                             Math.Min(d[i  , j-1] + insertionCost,
+                                      d[i-1, j-1] + _substitutionCost));
+                }
+            }
+            return d[a.Length-1,b.Length-1];
+            // return IbsenDistance(a,b,a.Length,b.Length, new int[a.Length][b.Length]);
         }
 
         /// <summary>
@@ -107,13 +122,16 @@ namespace GirafRest.Controllers
                 var _pictogram = await _giraf._context.Pictograms
                     .Where(p => p.Id == id)
                     .FirstOrDefaultAsync();
-                if (_pictogram == null) return new ErrorResponse<PictogramDTO>(ErrorCode.PictogramNotFound);
+                if (_pictogram == null) 
+                    return new ErrorResponse<PictogramDTO>(ErrorCode.PictogramNotFound);
 
                 //Check if the pictogram is public and return it if so
-                if (_pictogram.AccessLevel == AccessLevel.PUBLIC) return new Response<PictogramDTO>(new PictogramDTO(_pictogram, _pictogram.Image));
+                if (_pictogram.AccessLevel == AccessLevel.PUBLIC) 
+                    return new Response<PictogramDTO>(new PictogramDTO(_pictogram, _pictogram.Image));
 
                 var usr = await _giraf.LoadUserAsync(HttpContext.User);
-                if (usr == null) return new ErrorResponse<PictogramDTO>(ErrorCode.UserNotFound);
+                if (usr == null) 
+                    return new ErrorResponse<PictogramDTO>(ErrorCode.UserNotFound);
                 
                 bool ownsResource = false;
                 if (_pictogram.AccessLevel == AccessLevel.PRIVATE)
@@ -153,7 +171,8 @@ namespace GirafRest.Controllers
 
             //Create the actual pictogram instance
             // if access level is not specified, missing properties
-            if(pictogram.AccessLevel == null) return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties, "access level, pictogram");
+            if(pictogram.AccessLevel == null) 
+                return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties, "access level, pictogram");
 
             Pictogram pict = new Pictogram(pictogram.Title, (AccessLevel) pictogram.AccessLevel);
             pict.Image = pictogram.Image;
@@ -190,15 +209,12 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<Response<PictogramDTO>> UpdatePictogramInfo(long id, [FromBody] PictogramDTO pictogram)
         {
-            if (pictogram == null) return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties,  
-                "Could not read pictogram DTO. Please make sure not to include image data in this request. " +
-                "Use POST localhost/v1/pictogram/{id}/image instead.");
-            if (pictogram.AccessLevel == null) return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties, "missing access level");
-
+            if (pictogram == null) 
+                return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties, "Could not read pictogram DTO. Please make sure not to include image data in this request. " +  "Use POST localhost/v1/pictogram/{id}/image instead.");
+            if (pictogram.AccessLevel == null) 
+                return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties, "missing access level");
             if (!ModelState.IsValid)
-            {
                 return new ErrorResponse<PictogramDTO>(ErrorCode.InvalidModelState);
-            }
 
             var usr = await _giraf.LoadUserAsync(HttpContext.User);
             if (usr == null) return new ErrorResponse<PictogramDTO>(ErrorCode.NotAuthorized);
@@ -206,9 +222,11 @@ namespace GirafRest.Controllers
             var pict = await _giraf._context.Pictograms
                 .Where(pic => pic.Id == id)
                 .FirstOrDefaultAsync();
-            if (pict == null) return new ErrorResponse<PictogramDTO>(ErrorCode.PictogramNotFound);
+            if (pict == null) 
+                return new ErrorResponse<PictogramDTO>(ErrorCode.PictogramNotFound);
 
-            if (!CheckOwnership(pict, usr).Result) return new ErrorResponse<PictogramDTO>(ErrorCode.NotAuthorized);
+            if (!CheckOwnership(pict, usr).Result) 
+                return new ErrorResponse<PictogramDTO>(ErrorCode.NotAuthorized);
             //Ensure that Id is not changed.
             pictogram.Id = id;
             //Update the existing database entry and save the changes.
@@ -230,15 +248,32 @@ namespace GirafRest.Controllers
         public async Task<Response> DeletePictogram(int id)
         {
             var usr = await _giraf.LoadUserAsync(HttpContext.User);
-            if (usr == null) return new ErrorResponse(ErrorCode.UserNotFound);
+            if (usr == null) 
+                return new ErrorResponse(ErrorCode.UserNotFound);
             //Fetch the pictogram from the database and check that it exists
             var pict = await _giraf._context.Pictograms.Where(pic => pic.Id == id).FirstOrDefaultAsync();
-            if(pict == null) return new ErrorResponse(ErrorCode.PictogramNotFound);
+            if(pict == null) 
+                return new ErrorResponse(ErrorCode.PictogramNotFound);
 
             if (!CheckOwnership(pict, usr).Result)
                 return new ErrorResponse(ErrorCode.NotAuthorized);
 
-            //Remove it and save changes
+            // Before we can remove a pictogram we must delete all its relations
+            var userRessourceRelations = _giraf._context.UserResources
+                .Where(ur => ur.ResourceKey == pict.Id);
+            _giraf._context.UserResources.RemoveRange(userRessourceRelations);
+
+            var depRessourceRelations = _giraf._context.DepartmentResources
+                .Where(ur => ur.ResourceKey == pict.Id);
+            _giraf._context.DepartmentResources.RemoveRange(depRessourceRelations);
+
+            var weekDayRessourceRelations = _giraf._context.WeekdayResources
+                .Where(ur => ur.ResourceKey == pict.Id);
+            _giraf._context.WeekdayResources.RemoveRange(weekDayRessourceRelations);
+
+            await _giraf._context.SaveChangesAsync();
+
+            // Now we can safely delete the pictogram
             _giraf._context.Pictograms.Remove(pict);
             await _giraf._context.SaveChangesAsync();
             return new Response();
@@ -297,7 +332,8 @@ namespace GirafRest.Controllers
         [HttpGet("{id}/image")]
         public async Task<Response<byte[]>> ReadPictogramImage(long id) {
             var usr = await _giraf.LoadUserAsync(HttpContext.User);
-            if (usr == null) return new ErrorResponse<byte[]>(ErrorCode.NotAuthorized);
+            if (usr == null) 
+                return new ErrorResponse<byte[]>(ErrorCode.NotAuthorized);
             //Fetch the pictogram and check that it actually exists and has an image.
             var picto = await _giraf._context
                 .Pictograms
@@ -322,8 +358,7 @@ namespace GirafRest.Controllers
         /// <returns>The raw pictogram image.</returns>
         /// <param name="id">Identifier.</param>
         [HttpGet("{id}/image/raw")]
-        public async Task<IActionResult> ReadRawPictogramImage(long id)
-        {
+        public async Task<IActionResult> ReadRawPictogramImage(long id) {
             var picto = await _giraf._context
                 .Pictograms
                 .Where(p => p.Id == id)
@@ -332,7 +367,7 @@ namespace GirafRest.Controllers
             if (picto == null)
                 return NotFound();
             
-           if (picto.Image == null)
+            if (picto.Image == null)
                 return NotFound();
 
             // you can get all public pictograms
@@ -346,22 +381,13 @@ namespace GirafRest.Controllers
                 return NotFound();
 
             // you can only get a protected picogram if it is owned by your department
-            if (picto.AccessLevel == AccessLevel.PROTECTED)
-            {
-                if (!picto.Departments.Any(d => d.OtherKey == usr.DepartmentKey))
-                {
-                    return NotFound();
-                }
-            }
+            if (picto.AccessLevel == AccessLevel.PROTECTED && !picto.Departments.Any(d => d.OtherKey == usr.DepartmentKey))
+                return NotFound();
 
             // you can only get a private pictogram if you are among the owners of the pictogram
-            if (picto.AccessLevel == AccessLevel.PRIVATE)
-            {
-                if (!picto.Users.Any(d => d.OtherKey == usr.Id))
-                {
-                    return NotFound();
-                }
-            }
+            if (picto.AccessLevel == AccessLevel.PRIVATE && !picto.Users.Any(d => d.OtherKey == usr.Id))
+                return NotFound();
+                
             return File(Convert.FromBase64String(System.Text.Encoding.UTF8.GetString(picto.Image)), "image/png");
         }
 

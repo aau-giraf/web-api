@@ -118,6 +118,7 @@ namespace GirafRest.Controllers
         [AllowAnonymous]
         public async Task<Response<string>> Login([FromBody]LoginDTO model)
         {
+            
             if (model == null)
                 return new ErrorResponse<string>(ErrorCode.MissingProperties, "model");
             //Check that the caller has supplied username in the request
@@ -131,53 +132,55 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<string>(ErrorCode.InvalidCredentials, "username");
             GirafRoles userRoles = await _roleManager.findUserRole(_giraf._userManager, loginUser);
 
-            //Attempt to sign in with the given credentials.
-            var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password ?? "quickfix", true, lockoutOnFailure: false);
-            if (result.Succeeded) return new Response<string>(GenerateJwtToken(loginUser, userRoles));
-            if (!result.Succeeded && currentUser == null)
+            Microsoft.AspNetCore.Identity.SignInResult result = null;
+
+            // If no current authenticated user it is safe to see if we can login
+            if (currentUser == null)
             {
-                if (string.IsNullOrEmpty(model.Password)) return new ErrorResponse<string>(ErrorCode.MissingProperties, "password");
-                return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
+                if (string.IsNullOrEmpty(model.Password))
+                {
+                    return new ErrorResponse<string>(ErrorCode.MissingProperties, "password");
+                }
+                result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, lockoutOnFailure: false);
+                if(result.Succeeded) return new Response<string>(GenerateJwtToken(loginUser, userRoles));
+                else return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
             }
 
-            if (currentUser != null)
-            {
-                if (currentUser.UserName.ToLower() == model.Username.ToLower())
+            /* If there is no authenticated user and password is blank we must check if we are authenticatedto login as this user */
+            else
+            { 
+                if (!string.IsNullOrEmpty(model.Password))
                 {
+                    result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, lockoutOnFailure: false);
                     if (!result.Succeeded) return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
                     return new Response<string>(GenerateJwtToken(loginUser, userRoles));
+                }
 
-                }
-                if (!result.Succeeded && !string.IsNullOrEmpty(model.Password))
-                    return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
-
-                if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian))
-                {
-                    _giraf._logger.LogInformation("Guardian attempted to sign in as Citizen");
-                    return await AttemptRoleLoginTokenAsync(currentUser, model.Username, GirafRole.Citizen);
-                }
-                else if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Department))
-                {
-                    _giraf._logger.LogInformation("Department attempted to sign in as Guardian");
-                    return await AttemptRoleLoginTokenAsync(currentUser, model.Username, GirafRole.Guardian);
-                }
-                else if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Citizen))
-                {
-                    if (await _giraf._userManager.IsInRoleAsync(loginUser, GirafRole.Guardian))
-                        return new ErrorResponse<string>(ErrorCode.UserMustBeGuardian);
-                }
-            }
-            else
-            {
-                if (!result.Succeeded) return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
-                //There is no current user - check that a password is present.
                 if (string.IsNullOrEmpty(model.Password))
-                    return new ErrorResponse<string>(ErrorCode.MissingProperties, "password");
+                {
+                    if (currentUser.UserName.ToLower() == model.Username.ToLower())
+                    {
+                        return new Response<string>(GenerateJwtToken(loginUser, userRoles));
+                    }
 
-                _giraf._logger.LogInformation($"{model.Username} logged in.");
-                return new Response<string>(GenerateJwtToken(loginUser, userRoles));
+                    if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian))
+                    {
+                        _giraf._logger.LogInformation("Guardian attempted to sign in as Citizen");
+                        return await AttemptRoleLoginTokenAsync(currentUser, model.Username, GirafRole.Citizen);
+                    }
+                    else if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Department))
+                    {
+                        _giraf._logger.LogInformation("Department attempted to sign in as Guardian");
+                        return await AttemptRoleLoginTokenAsync(currentUser, model.Username, GirafRole.Guardian);
+                    }
+                    else if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Citizen))
+                    {
+                        if (await _giraf._userManager.IsInRoleAsync(loginUser, GirafRole.Guardian))
+                            return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
+                    }
+                }
             }
-            return null;
+            return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
         }
 
         /// <summary>
@@ -210,9 +213,9 @@ namespace GirafRest.Controllers
                 return new Response<string>(GenerateJwtToken(loginUser, userRoles));
             }
 
-            //There was no user with the given username in the department - return NotFound.
+            //There was no user with the given username in the department - return invalidcredentials.
             else
-                return new ErrorResponse<string>(ErrorCode.UserNotFound);
+                return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
         }
 
         /// <summary>

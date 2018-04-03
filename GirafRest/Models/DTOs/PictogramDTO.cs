@@ -1,4 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using System.Security.Cryptography;
+using Newtonsoft.Json;
+using System;
 
 namespace GirafRest.Models.DTOs
 {
@@ -17,7 +20,10 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// An array of bytes containing the pictogram's image.
         /// </summary>
+        [JsonIgnore]
         public byte[] Image { get; set; }
+        public string ImageUrl {get {return $"/v1/pictogram/{Id}/image/raw";}}
+        public string ImageHash {get  { return Image == null ? null : Convert.ToBase64String(MD5.Create().ComputeHash(Image)); }  }
 
         /// <summary>
         /// Creates a new pictogram data transfer object from a given pictogram.

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using GirafRest.Controllers;
+﻿using GirafRest.Controllers;
 using GirafRest.Models.DTOs.AccountDTOs;
 using GirafRest.Test.Mocks;
 using Microsoft.AspNetCore.Mvc;
@@ -11,10 +10,6 @@ using GirafRest.Services;
 using System.Threading.Tasks;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.DTOs.UserDTOs;
-using Microsoft.AspNetCore.Identity;
-using GirafRest.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using GirafRest.Models.Responses;
 using Microsoft.Extensions.Options;
 
@@ -104,6 +99,9 @@ namespace GirafRest.Test
             // Assert if type is reponse (verfies that it is the exact type and not a derived type (ErrorResponse)). No functionality enforces that we should not have type=ErrorResponse, ErrorCode=NoError OR type=Response, ErrorCode=some actual error
             Assert.IsType<Response<string>>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            // Check that jwt token is not null and atleast contains 40 characters
+            Assert.NotNull(res.Data);
+            Assert.True(res.Data.Length >= 40);
         }
 
         // Same user log in twice no problem
@@ -128,6 +126,10 @@ namespace GirafRest.Test
             // accountController.Login returns: new Response<GirafUserDTO>(new GirafUserDTO(loginUser, userRoles)) if login succeded
             Assert.IsType<Response<string>>(resB);
             Assert.Equal(ErrorCode.NoError, resB.ErrorCode);
+            Assert.True(resB.Success);
+            // Check that jwt token is not null and atleast contains 40 characters
+            Assert.NotNull(resB.Data);
+            Assert.True(resB.Data.Length >= 40);
         }
 
         [Fact]
@@ -144,6 +146,7 @@ namespace GirafRest.Test
 
             Assert.IsType<ErrorResponse<string>>(res);
             Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
+            Assert.False(res.Success);
         }
 
         [Fact]
@@ -156,6 +159,7 @@ namespace GirafRest.Test
 
             Assert.IsType<ErrorResponse<string>>(res);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
+            Assert.False(res.Success);
         }
 
         [Fact]
@@ -169,6 +173,10 @@ namespace GirafRest.Test
 
             Assert.IsType<Response<string>>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            Assert.True(res.Success);
+            // Check that jwt token is not null and atleast contains 40 characters
+            Assert.NotNull(res.Data);
+            Assert.True(res.Data.Length >= 40);
         }
 
         [Fact]
@@ -181,7 +189,8 @@ namespace GirafRest.Test
             var res = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[ADMIN_NO_DEP].UserName }).Result;
 
             Assert.IsType<ErrorResponse<string>>(res);
-            Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
+            Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
+            Assert.False(res.Success);
         }
 
         [Fact]
@@ -195,6 +204,7 @@ namespace GirafRest.Test
 
             Assert.IsType<ErrorResponse<string>>(res);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+            Assert.False(res.Success);
         }
 
         [Fact]
@@ -210,7 +220,8 @@ namespace GirafRest.Test
             }).Result;
 
             Assert.IsType<ErrorResponse<string>>(res);
-            Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
+            Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
+            Assert.False(res.Success);
         }
 
         [Fact]
@@ -224,7 +235,7 @@ namespace GirafRest.Test
 
             Assert.IsType<ErrorResponse<string>>(res);
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.UserMustBeGuardian, res.ErrorCode);
+            Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
         }
 
         [Fact]
@@ -237,6 +248,10 @@ namespace GirafRest.Test
 
             Assert.IsType<Response<string>>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            Assert.True(res.Success);
+            // Check that jwt token is not null and atleast contains 40 characters
+            Assert.NotNull(res.Data);
+            Assert.True(res.Data.Length >= 40);
         }
 
         [Fact]
@@ -249,6 +264,7 @@ namespace GirafRest.Test
 
             Assert.IsType<ErrorResponse<string>>(res);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+            Assert.False(res.Success);
         }
         #endregion
 
@@ -258,15 +274,22 @@ namespace GirafRest.Test
         {
             var accountController = InitializeTest();
 
+            var userName = "GenericName";
+
             var res = accountController.Register( new RegisterDTO()
             {
-                Username = "GenericName",
+                Username = userName,
                 Password = "GenericPassword",
                 DepartmentId = DEPARTMENT_ONE
             }).Result;
 
             Assert.IsType<Response<GirafUserDTO>>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            Assert.True(res.Success);
+            Assert.NotNull(res.Data);
+            // check data
+            Assert.Equal(res.Data.Username, userName);
+            Assert.Equal(res.Data.Department, DEPARTMENT_ONE);
         }
      
         [Fact]
@@ -283,6 +306,7 @@ namespace GirafRest.Test
 
             Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.Equal(ErrorCode.UserAlreadyExists, res.ErrorCode);
+            Assert.False(res.Success);
         }
 
         [Fact]
@@ -298,6 +322,7 @@ namespace GirafRest.Test
 
             Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
+            Assert.False(res.Success);
         }
 
         [Fact]
@@ -314,8 +339,10 @@ namespace GirafRest.Test
             }).Result;
 
             Assert.IsType<Response<GirafUserDTO>>(res);
-            Assert.Equal(null, res.Data.Department);
+            Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            // check data
+            Assert.Equal(null, res.Data.Department);
         }
         
         [Fact]
@@ -330,6 +357,7 @@ namespace GirafRest.Test
             }).Result;
 
             Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.False(res.Success);
             Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
         }
 
@@ -341,6 +369,7 @@ namespace GirafRest.Test
             var res = accountController.Register(null).Result;
 
             Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
         #endregion
@@ -358,6 +387,7 @@ namespace GirafRest.Test
             }).Result;
 
             Assert.IsType<Response>(res);
+            Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
         }
 
@@ -374,24 +404,9 @@ namespace GirafRest.Test
             }).Result;
 
             Assert.IsType<Response>(res);
+            Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
         }
-
-        /*[Fact]
-         * //THIS SHOULD BE CHANGED SO IT IS POSSIBLE TO FORGOTPASSWORD WITH ONLY MAIL
-        public void ForgotPassword_NoUsername_BadRequest()
-        {
-            var accountController = InitializeTest();
-
-            var res = accountController.ForgotPassword(new ForgotPasswordDTO()
-            {
-                Email = "unittest@giraf.cs.aau.dk"
-            }).Result;
-
-            Assert.IsType<ErrorResponse>(res);
-            Assert.Equal(ErrorCode.FormatError, );
-            Assert.IsType<BadRequestObjectResult>(res);
-        }*/
 
         [Fact]
         public void ForgotPassword_NoEmail_BadRequest()
@@ -404,6 +419,7 @@ namespace GirafRest.Test
             }).Result;
 
             Assert.IsType<ErrorResponse>(res);
+            Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
 
@@ -415,6 +431,7 @@ namespace GirafRest.Test
             var res = accountController.ForgotPassword(null).Result;
 
             Assert.IsType<ErrorResponse>(res);
+            Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
         #endregion
@@ -433,6 +450,7 @@ namespace GirafRest.Test
             var res = ac.SetPassword(spDTO).Result;
 
             Assert.IsType<Response>(res);
+            Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
         }
 
@@ -448,6 +466,7 @@ namespace GirafRest.Test
             var res = ac.SetPassword(spDTO).Result;
 
             Assert.IsType<ErrorResponse>(res);
+            Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
         #endregion
@@ -469,6 +488,7 @@ namespace GirafRest.Test
             var res = ac.ChangePassword(cpDTO).Result;
 
             Assert.IsType<Response>(res);
+            Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
         }
 
@@ -484,6 +504,7 @@ namespace GirafRest.Test
             var res = ac.ChangePassword(cpDTO).Result;
 
             Assert.IsType<ErrorResponse>(res);
+            Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
 
@@ -503,6 +524,7 @@ namespace GirafRest.Test
             var res = ac.ChangePassword(cpDTO).Result;
 
             Assert.IsType<ErrorResponse>(res);
+            Assert.False(res.Success);
             Assert.Equal(ErrorCode.PasswordNotUpdated, res.ErrorCode);
         }
         

@@ -62,7 +62,9 @@ namespace GirafRest.Controllers
         /// Adds a specified user to the Guardian role
         /// </summary>
         /// <param name="username">Username of the user who needs be to made guardian</param>
-        /// <returns> NotFound if no such user exists, Badrequest if the operation fails. And Ok if all is well</returns>
+        /// <returns>
+        ///  
+        /// </returns>
         [HttpPost("guardian/{username}")]
         public async Task<Response> AddToGuardian(string username)
         {
@@ -79,7 +81,8 @@ namespace GirafRest.Controllers
         [HttpDelete("guardian/{username}")]
         public async Task<Response> RemoveFromGuardian(string username)
         {
-            if (GetGirafRole().Result.Data != GirafRole.Department) return new ErrorResponse(ErrorCode.NotAuthorized);
+            if (GetGirafRole().Result.Data != GirafRole.Department) 
+                return new ErrorResponse(ErrorCode.NotAuthorized);
 
             return await removeUserFromRoleAsync(username, GirafRole.Guardian);
         }
@@ -92,7 +95,8 @@ namespace GirafRest.Controllers
         [HttpPost("admin/{username}")]
         public async Task<Response> AddToAdmin(string username)
         {
-            if (GetGirafRole().Result.Data != GirafRole.SuperUser) return new ErrorResponse(ErrorCode.NotAuthorized);
+            if (GetGirafRole().Result.Data != GirafRole.SuperUser) 
+                return new ErrorResponse(ErrorCode.NotAuthorized);
 
             return await addUserToRoleAsync(username, GirafRole.SuperUser);
         }
@@ -138,20 +142,13 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="id">The Id of the role in need of removal
         /// <returns> Badrequest if the role does not exist or if the id was null/emtpy and Ok if successful</returns>
-        [HttpDelete("{id}")]
-        public async Task<Response> DeleteGirafRole(string id)
+        [HttpDelete("admin/{username}")]
+        public async Task<Response> DeleteGirafRole(string username)
         {
-            if (!String.IsNullOrEmpty(id))
-            {
-                GirafRole girafRole = await _roleManager.FindByIdAsync(id);
-                if (girafRole != null)
-                {
-                    var res = await _roleManager.DeleteAsync(girafRole);
-                    if (res.Succeeded) 
-                        return new Response();
-                }
-            }
-            return new ErrorResponse(ErrorCode.RoleNotFound);
+            if (GetGirafRole().Result.Data != GirafRole.SuperUser) 
+                return new ErrorResponse(ErrorCode.NotAuthorized);
+            
+            return await removeUserFromRoleAsync(username, GirafRole.SuperUser);
         }
         #region Helpers
 
@@ -163,8 +160,6 @@ namespace GirafRest.Controllers
         /// <returns> NotFound if no such user exists, Badrequest if the operation fails. And Ok if all is well</returns>
         private async Task<Response> addUserToRoleAsync(string username, string rolename)
         {
-            if (GetGirafRole().Result.Data != GirafRole.SuperUser) return new ErrorResponse(ErrorCode.NotAuthorized);
-
             var user = await _giraf._userManager.FindByNameAsync(username);
             if (user == null)
                 return new ErrorResponse(ErrorCode.UserNotFound);
@@ -190,7 +185,7 @@ namespace GirafRest.Controllers
 
             var result = await _giraf._userManager.RemoveFromRoleAsync(user, rolename);
             if (result.Succeeded)
-                return new ErrorResponse(ErrorCode.UserNotFound);
+                return new Response();
             else
                 return new ErrorResponse(ErrorCode.RoleNotFound);
         }

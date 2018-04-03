@@ -1,39 +1,39 @@
 from testLib import *
+from accountControllerTest import *
+from departmentControllerTest import *
+from roleControllerTest import *
+from pictogramControllerTest import *
+from userControllerTest import *
+from weekControllerTest import *
+from authorizationTest import *
+from userstoriesTest import *
+import time
+import sys
+import json
 
-# Test that newTest works as expected
-response = request('POST', 'account/login', '{"username": "Graatand", "password": "password"}')
-newTest()
-assert(not isLoggedIn())
+# Nice error message if the server is down.
+# First time I encountered the exception it took me 20 minutes to figure out why.
+try:
+    result = controllerTest('').request('GET', '/user')
+    result['success']
+except:
+    print('Could not get response from server. \n'
+          'Exiting...\n')
+    sys.exit()
 
-newTest()
-# Login with valid credentials returns with "success"=True and "data"
-response = request('POST', 'account/login', '{"username": "Graatand", "password": "password"}')
-assert(response['success'] is True)
-assert('data' in response)
+# Run ALL the tests!
+testAccountController()
+testDepartmentController()
+testPictogramController()
+testRoleController()
+testUserController()
+testWeekController()
+testAuthorization()
+testExpiredAuthorization()
+testUserstories()
 
-response = request('GET', 'user/username') # Does not work because it needs authentication, which is not implemented yet
-assert(response['success'] is True)
-assert(response['data'] == "Graatand")
-
-newTest()
-# Login with invalid password returns with "success"=False and no "data"
-response = request('POST', 'account/login', '{"username": "Graatand", "password": "wrongPassword"}')
-assert(response['success'] is False)
-assert('data' not in response or response['data'] == None)
-assert(not isLoggedIn())
-
-newTest()
-# Login with invalid username returns with "success"=False and no "data"
-response = request('POST', 'account/login', '{"username": "WrongGraatand", "password": "password"}')
-assert(response['success'] is False)
-assert('data' not in response or response['data'] == None)
-assert(not isLoggedIn())
-
-newTest()
-# Register new user
-response = request('POST', 'account/register', '{"username": "Gunnar","password": "password","departmentId": 1}')
-assert(response['success'] is True)
-response = request('POST', 'account/login', '{"username": "Gunnar", "password": "password"}')
-assert(response['success'] is True)
-response = request('POST', 'user/username')
-assert(response['data'] == "Gunnar")
+if controllerTest.testsFailed == 0:
+    print '{0} tests were run. All tests passed.'.format(controllerTest.testsRun)
+else:
+    print ('{0} test(s) failed out of {1} test(s) run. Happy debugging.'
+           .format(controllerTest.testsFailed, controllerTest.testsRun))

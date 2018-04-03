@@ -2,11 +2,9 @@ using GirafRest.Controllers;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Test.Mocks;
-using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
-using Xunit.Abstractions;
 using static GirafRest.Test.UnitTestExtensions;
 using GirafRest.Models.Responses;
 
@@ -51,9 +49,15 @@ namespace GirafRest.Test
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
             var res = cc.ReadChoice(_testContext.MockChoices[PUBLIC_CHOICE].Id).Result;
+
             Assert.IsType<Response<ChoiceDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+
+            //Check data
+            Assert.Equal(_testContext.MockChoices[PUBLIC_CHOICE].Title, res.Data.Title);
+            Assert.Equal(_testContext.MockChoices[PUBLIC_CHOICE].LastEdit, res.Data.LastEdit);
+            Assert.Equal(_testContext.MockChoices[PUBLIC_CHOICE].Id, res.Data.Id);
         }
 
         [Fact]
@@ -63,9 +67,15 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
 
             var res = choiceController.ReadChoice(_testContext.MockChoices[PUBLIC_CHOICE].Id).Result;
+
             Assert.IsType<Response<ChoiceDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+
+            //Check data
+            Assert.Equal(_testContext.MockChoices[PUBLIC_CHOICE].Title, res.Data.Title);
+            Assert.Equal(_testContext.MockChoices[PUBLIC_CHOICE].LastEdit, res.Data.LastEdit);
+            Assert.Equal(_testContext.MockChoices[PUBLIC_CHOICE].Id, res.Data.Id);
         }
 
         [Fact]
@@ -74,6 +84,7 @@ namespace GirafRest.Test
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
             var res = cc.ReadChoice(_testContext.MockChoices[PRIVATE_CHOICE].Id).Result;
+
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
@@ -86,9 +97,15 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
 
             var res = choiceController.ReadChoice(_testContext.MockChoices[PRIVATE_CHOICE].Id).Result;
+
             Assert.IsType<Response<ChoiceDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+
+            //Check data
+            Assert.Equal(_testContext.MockChoices[PRIVATE_CHOICE].Title, res.Data.Title);
+            Assert.Equal(_testContext.MockChoices[PRIVATE_CHOICE].LastEdit, res.Data.LastEdit);
+            Assert.Equal(_testContext.MockChoices[PRIVATE_CHOICE].Id, res.Data.Id);
         }
 
         [Fact]
@@ -97,6 +114,7 @@ namespace GirafRest.Test
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             var res = choiceController.ReadChoice(_testContext.MockChoices[PRIVATE_CHOICE].Id).Result;
+
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
@@ -108,6 +126,7 @@ namespace GirafRest.Test
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
             var res = cc.ReadChoice(_testContext.MockChoices[PROTECTED_CHOICE].Id).Result;
+
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
@@ -120,9 +139,15 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
 
             var res = choiceController.ReadChoice(_testContext.MockChoices[PROTECTED_CHOICE].Id).Result;
+
             Assert.IsType<Response<ChoiceDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+
+            //Check data
+            Assert.Equal(_testContext.MockChoices[PROTECTED_CHOICE].Title, res.Data.Title);
+            Assert.Equal(_testContext.MockChoices[PROTECTED_CHOICE].LastEdit, res.Data.LastEdit);
+            Assert.Equal(_testContext.MockChoices[PROTECTED_CHOICE].Id, res.Data.Id);
         }
 
         [Fact]
@@ -131,6 +156,7 @@ namespace GirafRest.Test
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             var res = choiceController.ReadChoice(_testContext.MockChoices[PROTECTED_CHOICE].Id).Result;
+
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
@@ -142,6 +168,7 @@ namespace GirafRest.Test
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
             var res = cc.ReadChoice(NONEXISTING).Result;
+
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
@@ -152,6 +179,7 @@ namespace GirafRest.Test
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+
             var res = choiceController.ReadChoice(NONEXISTING).Result;
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
@@ -163,26 +191,48 @@ namespace GirafRest.Test
         [Fact]
         public void CreateChoice_NoLoginCreatePublic_Ok()
         {
+            var title = "TestChoice";
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
             List<Pictogram> options = _testContext.MockPictograms.Cast<Pictogram>().Where(p => p.AccessLevel == AccessLevel.PUBLIC).ToList();
-            var res = cc.CreateChoice(new ChoiceDTO(new Choice(options, "TestChoice") { Id = CREATE_CHOICE_ID })).Result;
+            var res = cc.CreateChoice(new ChoiceDTO(new Choice(options, title) { Id = CREATE_CHOICE_ID })).Result;
+
             Assert.IsType<Response<ChoiceDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+
+            // Check data
+            Assert.Equal(title, res.Data.Title);
+
+            foreach (var option in options)
+            {
+                Assert.True(res.Data.Options.Any(o => o.Id == option.Id));
+            }
         }
 
         [Fact]
         public void CreateChoice_LoginCreatePublic_Ok()
         {
+            var title = "TestChoice";
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             List<Pictogram> options = _testContext.MockPictograms
                 .Cast<Pictogram>()
                 .Where(p => p.AccessLevel == AccessLevel.PUBLIC)
                 .ToList();
-            var res = choiceController.CreateChoice(new ChoiceDTO(new Choice(options, "TestChoice") { Id = CREATE_CHOICE_ID }));
-            Assert.IsType<Response<ChoiceDTO>>(res.Result);
+            var res = choiceController.CreateChoice(new ChoiceDTO(new Choice(options, title) { Id = CREATE_CHOICE_ID })).Result;
+
+            Assert.IsType<Response<ChoiceDTO>>(res);
+            Assert.True(res.Success);
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+
+            // Check data
+            Assert.Equal(title, res.Data.Title);
+
+            foreach (var option in options)
+            {
+                Assert.True(res.Data.Options.Any(o => o.Id == option.Id));
+            }
         }
 
         [Fact]
@@ -192,6 +242,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLogout();
             List<Pictogram> options = new List<Pictogram> { _testContext.MockPictograms[PRIVATE_PICTOGRAM] };
             var res = cc.CreateChoice(new ChoiceDTO(new Choice(options, "TestChoice") { Id = CREATE_CHOICE_ID })).Result;
+
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
@@ -200,11 +251,23 @@ namespace GirafRest.Test
         [Fact]
         public void CreateChoice_LoginCreatePrivate_Ok()
         {
+            var title = "TestChoice";
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             List<Pictogram> options = new List<Pictogram> { _testContext.MockPictograms[PRIVATE_PICTOGRAM] };
-            var res = choiceController.CreateChoice(new ChoiceDTO(new Choice(options, "TestChoice") { Id = CREATE_CHOICE_ID }));
-            Assert.IsType<Response<ChoiceDTO>>(res.Result);
+            var res = choiceController.CreateChoice(new ChoiceDTO(new Choice(options, "TestChoice") { Id = CREATE_CHOICE_ID })).Result;
+
+            Assert.IsType<Response<ChoiceDTO>>(res);
+            Assert.True(res.Success);
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+
+            // Check data
+            Assert.Equal(title, res.Data.Title);
+            foreach (var option in options)
+            {
+                Assert.True(res.Data.Options.Any(o => o.Id == option.Id));
+            }
+
         }
 
         [Fact]
@@ -214,6 +277,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             List<Pictogram> options = new List<Pictogram> { _testContext.MockPictograms[PRIVATE_PICTOGRAM] };
             var res = choiceController.CreateChoice(new ChoiceDTO(new Choice(options, "TestChoice") { Id = CREATE_CHOICE_ID })).Result;
+
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
@@ -226,35 +290,54 @@ namespace GirafRest.Test
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
-            Choice c = new Choice(new List<Pictogram>(), "TestChoice") { Id = _testContext.MockChoices[PUBLIC_CHOICE].Id };
+            var title = "TestChoice";
+            Choice c = new Choice(new List<Pictogram>(), title) { Id = _testContext.MockChoices[PUBLIC_CHOICE].Id };
             foreach (var option in _testContext.MockChoices[PUBLIC_CHOICE])
             {
                 c.Add(option);
             }
             c.Clear();
             c.AddAll(_testContext.MockPictograms.Cast<Pictogram>().Where(p => p.AccessLevel == AccessLevel.PUBLIC).Take(TWO).ToList());
+
             var res = cc.UpdateChoice(c.Id, new ChoiceDTO(c)).Result;
+
             Assert.IsType<Response<ChoiceDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+
+            // Check data
+            Assert.Equal(title, res.Data.Title);
+            foreach (var option in _testContext.MockChoices[PUBLIC_CHOICE])
+            {
+                Assert.True(res.Data.Options.Any(o => o.Id == option.Id));
+            }
         }
 
         [Fact]
         public void UpdateChoice_LoginUpdatePublic_Ok()
         {
             var choiceController = initializeTest();
+            var title = "TestChoice";
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            Choice c = new Choice(new List<Pictogram>(), "TestChoice") { Id = _testContext.MockChoices[PUBLIC_CHOICE].Id };
+            Choice c = new Choice(new List<Pictogram>(), title) { Id = _testContext.MockChoices[PUBLIC_CHOICE].Id };
             foreach (var option in _testContext.MockChoices[PUBLIC_CHOICE])
             {
                 c.Add(option);
             }
             c.Clear();
             c.AddAll(_testContext.MockPictograms.Cast<Pictogram>().Where(p => p.AccessLevel == AccessLevel.PUBLIC).Take(TWO).ToList());
+
             var res = choiceController.UpdateChoice(c.Id, new ChoiceDTO(c)).Result;
             Assert.IsType<Response<ChoiceDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+
+            // Check data
+            Assert.Equal(title, res.Data.Title);
+            foreach (var option in _testContext.MockChoices[PUBLIC_CHOICE])
+            {
+                Assert.True(res.Data.Options.Any(o => o.Id == option.Id));
+            }
         }
 
         [Fact]
@@ -270,6 +353,7 @@ namespace GirafRest.Test
             c.Clear();
             c.AddAll(_testContext.MockPictograms.Cast<Pictogram>().Where(p => p.AccessLevel == AccessLevel.PUBLIC).Take(TWO).ToList());
             var res = cc.UpdateChoice(c.Id, new ChoiceDTO(c)).Result;
+
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
@@ -280,7 +364,9 @@ namespace GirafRest.Test
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            Choice c = new Choice(new List<Pictogram>(), "TestChoice") { Id = _testContext.MockChoices[PRIVATE_CHOICE].Id };
+            var title = "TestChoice";
+
+            Choice c = new Choice(new List<Pictogram>(), title) { Id = _testContext.MockChoices[PRIVATE_CHOICE].Id };
             foreach (var option in _testContext.MockChoices[PRIVATE_CHOICE])
             {
                 c.Add(option);
@@ -288,9 +374,17 @@ namespace GirafRest.Test
             c.Clear();
             c.AddAll(_testContext.MockPictograms.Cast<Pictogram>().Where(p => p.AccessLevel == AccessLevel.PUBLIC).Take(TWO).ToList());
             var res = choiceController.UpdateChoice(c.Id, new ChoiceDTO(c)).Result;
+
             Assert.IsType<Response<ChoiceDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+
+            // Check data
+            Assert.Equal(title, res.Data.Title);
+            foreach (var option in _testContext.MockChoices[PRIVATE_CHOICE])
+            {
+                Assert.True(res.Data.Options.Any(o => o.Id == option.Id));
+            }
         }
 
 
@@ -307,6 +401,7 @@ namespace GirafRest.Test
             c.Clear();
             c.AddAll(_testContext.MockPictograms.Cast<Pictogram>().Where(p => p.AccessLevel == AccessLevel.PUBLIC).Take(TWO).ToList());
             var res = choiceController.UpdateChoice(c.Id, new ChoiceDTO(c)).Result;
+
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
@@ -325,6 +420,7 @@ namespace GirafRest.Test
             c.Clear();
             c.AddAll(_testContext.MockPictograms.Cast<Pictogram>().Where(p => p.AccessLevel == AccessLevel.PUBLIC).Take(TWO).ToList());
             var res = cc.UpdateChoice(c.Id, new ChoiceDTO(c)).Result;
+
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
@@ -334,6 +430,8 @@ namespace GirafRest.Test
         public void UpdateChoice_LoginUpdateProtected_Ok()
         {
             var choiceController = initializeTest();
+            var title = "TestChoice";
+                
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             Choice c = new Choice(new List<Pictogram>(), "TestChoice") { Id = _testContext.MockChoices[PROTECTED_CHOICE].Id };
             foreach (var option in _testContext.MockChoices[PROTECTED_CHOICE])
@@ -343,9 +441,17 @@ namespace GirafRest.Test
             c.Clear();
             c.AddAll(_testContext.MockPictograms.Cast<Pictogram>().Where(p => p.AccessLevel == AccessLevel.PUBLIC).Take(TWO).ToList());
             var res = choiceController.UpdateChoice(c.Id, new ChoiceDTO(c)).Result;
+
             Assert.IsType<Response<ChoiceDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+
+            // Check data
+            Assert.Equal(title, res.Data.Title);
+            foreach (var option in _testContext.MockChoices[PROTECTED_CHOICE])
+            {
+                Assert.True(res.Data.Options.Any(o => o.Id == option.Id));
+            }
         }
 
         [Fact]
@@ -361,6 +467,7 @@ namespace GirafRest.Test
             c.Clear();
             c.AddAll(_testContext.MockPictograms.Cast<Pictogram>().Where(p => p.AccessLevel == AccessLevel.PUBLIC).Take(TWO).ToList());
             var res = choiceController.UpdateChoice(c.Id, new ChoiceDTO(c)).Result;
+
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
@@ -374,6 +481,7 @@ namespace GirafRest.Test
             Choice c = new Choice(new List<Pictogram>(), "TestChoice") { Id = NONEXISTING };
             c.AddAll(_testContext.MockPictograms.Cast<Pictogram>().Where(p => p.AccessLevel == AccessLevel.PUBLIC).Take(TWO).ToList());
             var res = cc.UpdateChoice(c.Id, new ChoiceDTO(c)).Result;
+
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
@@ -391,6 +499,7 @@ namespace GirafRest.Test
                 .Take(TWO)
                 .ToList());
             var res = choiceController.UpdateChoice(c.Id, new ChoiceDTO(c)).Result;
+
             Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
@@ -400,84 +509,120 @@ namespace GirafRest.Test
         #region DeleteChoice | Work as intented with the exception of the authorize attribute
         // ASP.NET inforces this attribute and some tests should therefore be changed to Unauthorized
         // if a Mock version of this attribute is made
+        [Fact]
         public void DeleteChoice_NoLoginDeletePublic_Ok()
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
-            var res = cc.DeleteChoice(_testContext.MockChoices[PUBLIC_CHOICE].Id);
-            Assert.IsType<OkResult>(res.Result);
+            var res = cc.DeleteChoice(_testContext.MockChoices[PUBLIC_CHOICE].Id).Result;
+
+            Assert.IsType<Response>(res);
+            Assert.True(res.Success);
         }
-        
+
+        [Fact]
         public void DeleteChoice_LoginDeletePublic_Ok()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = choiceController.DeleteChoice(_testContext.MockChoices[PUBLIC_CHOICE].Id);
-            Assert.IsType<OkResult>(res.Result);
+            var res = choiceController.DeleteChoice(_testContext.MockChoices[PUBLIC_CHOICE].Id).Result;
+
+            Assert.IsType<Response>(res);
+            Assert.True(res.Success);
         }
-        
+
+        [Fact]
         public void DeleteChoice_NoLoginDeletePrivate_Unauthorized()
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
-            var res = cc.DeleteChoice(_testContext.MockChoices[PRIVATE_CHOICE].Id);
-            Assert.IsType<UnauthorizedResult>(res.Result);
+            var res = cc.DeleteChoice(_testContext.MockChoices[PRIVATE_CHOICE].Id).Result;
+
+            Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
-        
+
+        [Fact]
         public void DeleteChoice_LoginDeletePrivate_Ok()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = choiceController.DeleteChoice(_testContext.MockChoices[PRIVATE_CHOICE].Id);
-            Assert.IsType<OkResult>(res.Result);
+            var res = choiceController.DeleteChoice(_testContext.MockChoices[PRIVATE_CHOICE].Id).Result;
+
+            Assert.IsType<Response>(res);
+            Assert.True(res.Success);
         }
         
+        [Fact]
         public void DeleteChoice_OtherLoginDeletePrivate_Unauthorized()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-            var res = choiceController.DeleteChoice(_testContext.MockChoices[PRIVATE_CHOICE].Id);
-            Assert.IsType<UnauthorizedResult>(res.Result);
+            var res = choiceController.DeleteChoice(_testContext.MockChoices[PRIVATE_CHOICE].Id).Result;
+
+            Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
         
+        [Fact]
         public void DeleteChoice_NoLoginDeleteProtected_Unauthorized()
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
-            var res = cc.DeleteChoice(_testContext.MockChoices[PROTECTED_CHOICE].Id);
-            Assert.IsType<UnauthorizedResult>(res.Result);
+            var res = cc.DeleteChoice(_testContext.MockChoices[PROTECTED_CHOICE].Id).Result;
+
+            Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
         
+        [Fact]
         public void DeleteChoice_LoginDeleteProtected_Ok()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = choiceController.DeleteChoice(_testContext.MockChoices[PROTECTED_CHOICE].Id);
-            Assert.IsType<OkResult>(res.Result);
+            var res = choiceController.DeleteChoice(_testContext.MockChoices[PROTECTED_CHOICE].Id).Result;
+
+            Assert.IsType<Response>(res);
+            Assert.True(res.Success);
         }
-        
+
+        [Fact]
         public void DeleteChoice_OtherLoginDeleteProtected_Unauthorized()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-            var res = choiceController.DeleteChoice(_testContext.MockChoices[PROTECTED_CHOICE].Id);
-            Assert.IsType<UnauthorizedResult>(res.Result);
+            var res = choiceController.DeleteChoice(_testContext.MockChoices[PROTECTED_CHOICE].Id).Result;
+
+            Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
-        
+
+        [Fact]
         public void DeleteChoice_NoLoginDeleteNonExisting_NotFound()
         {
             var cc = initializeTest();
             _testContext.MockUserManager.MockLogout();
-            var res = cc.DeleteChoice(NONEXISTING);
-            Assert.IsType<NotFoundResult>(res.Result);
+            var res = cc.DeleteChoice(NONEXISTING).Result;
+
+            Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
-        
+
+        [Fact]
         public void DeleteChoice_LoginDeleteNonExisting_NotFound()
         {
             var choiceController = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = choiceController.DeleteChoice(NONEXISTING);
-            Assert.IsType<NotFoundResult>(res.Result);
+            var res = choiceController.DeleteChoice(NONEXISTING).Result;
+
+            Assert.IsType<ErrorResponse<ChoiceDTO>>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
         #endregion
     }

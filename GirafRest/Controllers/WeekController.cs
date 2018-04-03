@@ -70,7 +70,7 @@ namespace GirafRest.Controllers
         /// Ok and a serialized version of the week if he does.</returns>
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<Response<WeekDTO>> ReadUsersWeekSchedule(int id)
+        public async Task<Response<WeekDTO>> ReadUsersWeekSchedule(long id)
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             var week = user.WeekSchedule.Where(w => w.Id == id).FirstOrDefault();
@@ -146,14 +146,20 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<Response<WeekDTO>> CreateWeek([FromBody]WeekDTO newWeek)
         {
-            if (newWeek == null) return new ErrorResponse<WeekDTO>(ErrorCode.InvalidProperties, "newWeek");
-            if (newWeek.Days == null || newWeek.Id == null || newWeek.Days.Count != 7) { return new ErrorResponse<WeekDTO>(ErrorCode.MissingProperties, "newWeek"); }
+            if (newWeek == null) 
+                return new ErrorResponse<WeekDTO>(ErrorCode.InvalidProperties, "Invalid or missing properties in request body.");
+            if (newWeek.Days == null || newWeek.Days.Count != 7) 
+                return new ErrorResponse<WeekDTO>(ErrorCode.MissingProperties, "Week should contain no more and no less than 7 days.");
+            
             var user = await _giraf.LoadUserAsync(HttpContext.User);
-            if (user == null) return new ErrorResponse<WeekDTO>(ErrorCode.UserNotFound);
+            if (user == null) 
+                return new ErrorResponse<WeekDTO>(ErrorCode.UserNotFound);
             var thumbnail = await _giraf._context.Pictograms.Where(p => p.Id == newWeek.Thumbnail.Id).FirstOrDefaultAsync();
+            
             if (thumbnail == null)
                 return new ErrorResponse<WeekDTO>(ErrorCode.ThumbnailDoesNotExist);
-            var week = new Week(thumbnail);
+            
+            Week week = new Week(thumbnail);
             week.Name = newWeek.Name;
             if (newWeek.Days != null)
             {
@@ -184,7 +190,7 @@ namespace GirafRest.Controllers
         /// Ok and a serialized version of the updated week if everything went well.</returns>
         [HttpDelete("{id}")]
         [Authorize]
-        public async Task<Response<IEnumerable<WeekDTO>>> DeleteWeek(int id)
+        public async Task<Response<IEnumerable<WeekDTO>>> DeleteWeek(long id)
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
 
