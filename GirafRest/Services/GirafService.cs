@@ -1,15 +1,14 @@
-﻿using GirafRest.Data;
-using GirafRest.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using GirafRest.Data;
+using GirafRest.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.IO;
-using GirafRest.Services;
+using Microsoft.Extensions.Logging;
 
-namespace GirafRest.Controllers
+namespace GirafRest.Services
 {
     /// <summary>
     /// The GirafService class implements the <see cref="IGirafService"/> interface and thus implements common
