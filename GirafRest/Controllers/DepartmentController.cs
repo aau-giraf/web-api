@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -105,7 +104,7 @@ namespace GirafRest.Controllers
         /// <returns>The citizen names.</returns>
         /// <param name="id">Identifier.</param>
         [HttpGet("{id}/citizens")]
-        [Authorize]
+        [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
         public async Task<Response<List<UserNameDTO>>> GetCitizenNamesAsync(long id)
         {
             var department = _giraf._context.Departments.FirstOrDefault(dep => dep.Key == id);
@@ -119,11 +118,6 @@ namespace GirafRest.Controllers
                                                .FirstOrDefault(d => d.UserName == currentUser.UserName);
                   
             var isSuperUser = await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser);
-
-            if (!(isSuperUser || await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Department) 
-                              || await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian))){
-                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.NotAuthorized); 
-            }
 
             if (currentUser?.Department.Key != department?.Key && !isSuperUser)
                 return new ErrorResponse<List<UserNameDTO>>(ErrorCode.NotAuthorized);
