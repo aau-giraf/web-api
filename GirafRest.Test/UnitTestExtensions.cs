@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using GirafRest.Models;
@@ -11,9 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using System.IO;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using GirafRest.Controllers;
-using GirafRest.Services;
 using System.Text;
 
 namespace GirafRest.Test

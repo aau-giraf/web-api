@@ -9,7 +9,6 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using GirafRest.Models.DTOs;
 using System.Collections.Generic;
-using System.Reflection;
 using System;
 using static GirafRest.Models.DTOs.GirafUserDTO;
 using GirafRest.Extensions;
@@ -195,9 +194,9 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.NotFound);
 
             if (!ModelState.IsValid)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, ModelState.Values.Where(E => E.Errors.Count > 0)
-                                  .SelectMany(E => E.Errors)
-                                  .Select(E => E.ErrorMessage)
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, ModelState.Values.Where(e => e.Errors.Count > 0)
+                                  .SelectMany(e => e.Errors)
+                                  .Select(e => e.ErrorMessage)
                                   .ToArray());
 
             //Update all simple fields
@@ -322,10 +321,11 @@ namespace GirafRest.Controllers
         }
         #endregion
         #region Not strictly necessary methods, but more efficient than a PUT to user, as they only update a single value
+
         /// <summary>
         /// Adds an application to the specified user's list of applications.
         /// </summary>
-        /// <param name="userId">The id of the user to add the application for.</param>
+        /// <param name="username"></param>
         /// <param name="application">Information on the new application to add, must be serialized
         /// and in the request body. Please specify ApplicationName and ApplicationPackage.</param>
         /// <returns>BadRequest in no application is specified,
@@ -350,7 +350,7 @@ namespace GirafRest.Controllers
             if (user == null)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound, "username");
 
-            if (user.Settings.appsUserCanAccess.Where(aa => aa.ApplicationName.Equals(application.ApplicationName)).Any())
+            if (user.Settings.appsUserCanAccess.Any(aa => aa.ApplicationName.Equals(application.ApplicationName)))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.UserAlreadyHasAccess);
 
             //Add the application for the user to see
@@ -358,7 +358,7 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
+            var userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
             return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));
         }
@@ -383,7 +383,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound, "username");
 
             //Check if the given application was previously available to the user
-            var app = user.Settings.appsUserCanAccess.Where(a => a.Id == application.Id).FirstOrDefault();
+            var app = user.Settings.appsUserCanAccess.FirstOrDefault(a => a.Id == application.Id);
             if (app == null)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.ApplicationNotFound, "application");
 
@@ -422,8 +422,8 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Adds a resource to the given user's list of resources.
         /// </summary>
-        /// <param name="userId">The id of the user to add it to.</param>
-        /// <param name="resourceId">The id of the resource to add.</param>
+        /// <param name="username"></param>
+        /// <param name="resourceIdDTO"></param>
         /// <returns>
         /// BadRequest if either of the two ids are missing or the resource is not PRIVATE, NotFound
         /// if either the user or the resource does not exist or Ok if everything went well.
@@ -462,7 +462,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
 
             //Check if the target user already owns the resource
-            if (user.Resources.Where(ur => ur.ResourceKey == resourceIdDTO.Id).Any())
+            if (user.Resources.Any(ur => ur.ResourceKey == resourceIdDTO.Id))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.UserAlreadyOwnsResource);
 
             //Create the relation and save changes.
@@ -479,7 +479,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Deletes a resource with the specified id from the given user's list of resources.
         /// </summary>
-        /// <param name="resourceId">The id of the resource to add.</param>
+        /// <param name="resourceIdDTO"></param>
         /// <returns>
         /// BadRequest if either of the two ids are missing or the resource is not PRIVATE, NotFound
         /// if either the user or the resource does not exist or Ok if everything went well.
@@ -514,7 +514,7 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, curUsr);
+            var userRole = await _roleManager.findUserRole(_giraf._userManager, curUsr);
 
             //Return Ok and the user - the resource is now visible in user.Resources
             return new Response<GirafUserDTO>(new GirafUserDTO(curUsr, userRole));

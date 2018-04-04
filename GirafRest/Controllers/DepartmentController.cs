@@ -11,7 +11,6 @@ using Microsoft.Extensions.Logging;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
 using GirafRest.Services;
-using Org.BouncyCastle.Math.EC;
 using Microsoft.AspNetCore.Identity;
 using GirafRest.Extensions;
 
@@ -29,9 +28,8 @@ namespace GirafRest.Controllers
         /// </summary>
         private readonly IGirafService _giraf;
 
-        /// </summary>
+
         private readonly RoleManager<GirafRole> _roleManager;
-        /// <summary>
 
         /// <summary>
         /// Constructor for the department-controller. This is called by the asp.net runtime.
@@ -110,8 +108,7 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<Response<List<UserNameDTO>>> GetCitizenNamesAsync(long id)
         {
-            var department = _giraf._context.Departments
-                                   .Where(dep => dep.Key == id).FirstOrDefault();
+            var department = _giraf._context.Departments.FirstOrDefault(dep => dep.Key == id);
 
             if (department == null) return new ErrorResponse<List<UserNameDTO>>(ErrorCode.DepartmentNotFound);
 
@@ -121,7 +118,6 @@ namespace GirafRest.Controllers
            currentUser =  _giraf._context.Users.Include(a => a.Department)
                                                .FirstOrDefault(d => d.UserName == currentUser.UserName);
                   
-            var userRole = await _roleManager.findUserRole(_giraf._userManager, currentUser);
             var isSuperUser = await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser);
 
             if (!(isSuperUser || await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Department) 
@@ -141,7 +137,7 @@ namespace GirafRest.Controllers
             var userIds = _giraf._context.UserRoles.Where(u => u.RoleId == roleCitizenId)
                                                    .Select(r => r.UserId).Distinct().ToList();
 
-            if (userIds == null) return new ErrorResponse<List<UserNameDTO>>(ErrorCode.DepartmentHasNoCitizens);
+            if (userIds.Count == 0) return new ErrorResponse<List<UserNameDTO>>(ErrorCode.DepartmentHasNoCitizens);
 
             var usersNamesInDepartment = _giraf._context.Users
                                                .Where(u => userIds.Any(ui => ui == u.Id)
@@ -162,7 +158,7 @@ namespace GirafRest.Controllers
         {
             try
             {
-                if (depDTO == null || depDTO.Name == null)
+                if (depDTO?.Name == null)
                     return new ErrorResponse<DepartmentDTO>(ErrorCode.MissingProperties,
                         "Deparment name has to be specified!");
 
@@ -214,10 +210,9 @@ namespace GirafRest.Controllers
                 await _giraf._context.Departments.AddAsync(department);
                 
                 //Create a new user with the supplied information
-                
-                var departmentUser = new GirafUser(depDTO.Name, department);
-                departmentUser.IsDepartment = true;
-                
+
+                var departmentUser = new GirafUser(depDTO.Name, department) {IsDepartment = true};
+
                 //department.Members.Add(user);
                 
                 var identityUser = await _giraf._userManager.CreateAsync(departmentUser, "0000");
@@ -233,7 +228,7 @@ namespace GirafRest.Controllers
             }
             catch (System.Exception e)
             {
-                string errorDescription = $"Exception in Post: {e.Message}, {e.InnerException}";
+                var errorDescription = $"Exception in Post: {e.Message}, {e.InnerException}";
                 _giraf._logger.LogError(errorDescription);
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.Error, errorDescription);
             }
@@ -242,7 +237,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Add a user to the given department.
         /// </summary>
-        /// <param name="ID">The Id of the department to add the user to.</param>
+        /// <param name="departmentId"></param>
         /// <param name="usr">An existing GirafUser instance to be added to the department.</param>
         /// <returns>MissingProperties if the DTO is empty.
         /// DepartmentNotFound if department of specified ID isn't found.
@@ -250,14 +245,14 @@ namespace GirafRest.Controllers
         /// UserNotFound if no user exists with the ID of usr. 
         /// A DepartmentDTO representing the new state of the department, if there were no problems.</returns>
         [HttpPost("user/{departmentID}")]
-        public async Task<Response<DepartmentDTO>> AddUser(long departmentID, [FromBody]GirafUserDTO usr)
+        public async Task<Response<DepartmentDTO>> AddUser(long departmentId, [FromBody]GirafUserDTO usr)
         {
             //Fetch user and department and check that they exist
             if (usr?.Username == null)
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.MissingProperties);
 
             Department dep = await _giraf._context.Departments
-                .Where(d => d.Key == departmentID)
+                .Where(d => d.Key == departmentId)
                 .Include(d => d.Members)
                 .FirstOrDefaultAsync();
 
@@ -283,7 +278,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Removes a user from a given department.
         /// </summary>
-        /// <param name="departmentID">Id of the department from which the user should be removed</param>
+        /// <param name="departmentId">Id of the department from which the user should be removed</param>
         /// <param name="usr">A serialized instance of a <see cref="GirafUser"/> user.</param>
         /// <returns>
         /// MissingProperties if no user is given.
@@ -292,7 +287,7 @@ namespace GirafRest.Controllers
         /// DepartmentDTO in its updated state if no problems occured.
         /// </returns>
         [HttpDelete("user/{departmentID}")]
-        public async Task<Response<DepartmentDTO>> RemoveUser(long departmentID, [FromBody]GirafUserDTO usr)
+        public async Task<Response<DepartmentDTO>> RemoveUser(long departmentId, [FromBody]GirafUserDTO usr)
         {
             //Check if a valid user was supplied and that the given department exists
             if (usr == null)
@@ -300,7 +295,7 @@ namespace GirafRest.Controllers
 
             var dep = await _giraf._context
                 .Departments
-                .Where(d => d.Key == departmentID)
+                .Where(d => d.Key == departmentId)
                 .Include(d => d.Members)
                 .FirstOrDefaultAsync();
 
@@ -321,8 +316,8 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Add a resource to the given department. After this call, the department owns the resource and it is available to all its members.
         /// </summary>
-        /// <param name="departmentID">Id of the department to add the resource to.</param>
-        /// <param name="resourceId">ResourceIdDTO containing relevant information about the resource.</param>
+        /// <param name="departmentId">Id of the department to add the resource to.</param>
+        /// <param name="resourceDTO"></param>
         /// <returns>
         /// DepartmentNotFound If department wasn't found.
         /// ResourceIDUnreadable If resourceDTO's id was null or not a number.
@@ -333,13 +328,13 @@ namespace GirafRest.Controllers
         /// </returns>
         [HttpPost("resource/{departmentID}")]
         [Authorize]
-        public async Task<Response<DepartmentDTO>> AddResource(long departmentID, [FromBody] ResourceIdDTO resourceDTO)
+        public async Task<Response<DepartmentDTO>> AddResource(long departmentId, [FromBody] ResourceIdDTO resourceDTO)
         {
             if (resourceDTO?.Id == null)
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.MissingProperties, "Missing resource ID.");
 
             //Fetch the department and check that it exists.
-            var department = await _giraf._context.Departments.Where(d => d.Key == departmentID).FirstOrDefaultAsync();
+            var department = await _giraf._context.Departments.Where(d => d.Key == departmentId).FirstOrDefaultAsync();
             var usr = await _giraf.LoadUserAsync(HttpContext.User);
 
             if (department == null)
@@ -365,7 +360,7 @@ namespace GirafRest.Controllers
 
             //Check if the department already owns the resource
             var alreadyOwned = await _giraf._context.DepartmentResources
-                .Where(depres => depres.OtherKey == departmentID && depres.ResourceKey == resId)
+                .Where(depres => depres.OtherKey == departmentId && depres.ResourceKey == resId)
                 .AnyAsync();
 
             if (alreadyOwned)
@@ -393,9 +388,12 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Removes a resource from the users department.
         /// </summary>
-        /// <param name="resourceId">ResourceIdDTO containing relevant information about the resource.</param>
+        /// <param name="resourceDTO"></param>
         /// <returns>
         /// DepartmentDTO of updated state if no problems occured.
+        /// RessourceNotFound if ressource could not be found
+        /// NotAuthorised if not authorised to delete ressource
+        /// ResourceNotOwnedByDepartment if ressource not owned by department
         /// </returns>
         [HttpDelete("resource")]
         [Authorize]

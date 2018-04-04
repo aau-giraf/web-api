@@ -9,9 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
 using GirafRest.Services;
-using GirafRest.Extensions;
 using GirafRest.Models.Responses;
-using System.IO;
 
 namespace GirafRest.Controllers
 {
@@ -36,8 +34,8 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Constructor for the Pictogram-controller. This is called by the asp.net runtime.
         /// </summary>
-        /// <param name="giraf">A reference to the GirafService.</param>
-        /// <param name="loggerFactory">A reference to an implementation of ILoggerFactory. Used to create a logger.</param>
+        /// <param name="girafController"></param>
+        /// <param name="lFactory"></param>
         public PictogramController(IGirafService girafController, ILoggerFactory lFactory) 
         {
             _giraf = girafController;
@@ -119,33 +117,33 @@ namespace GirafRest.Controllers
             try
             {
                 //Fetch the pictogram and check that it actually exists
-                var _pictogram = await _giraf._context.Pictograms
+                var pictogram = await _giraf._context.Pictograms
                     .Where(p => p.Id == id)
                     .FirstOrDefaultAsync();
-                if (_pictogram == null) 
+                if (pictogram == null) 
                     return new ErrorResponse<PictogramDTO>(ErrorCode.PictogramNotFound);
 
                 //Check if the pictogram is public and return it if so
-                if (_pictogram.AccessLevel == AccessLevel.PUBLIC) 
-                    return new Response<PictogramDTO>(new PictogramDTO(_pictogram, _pictogram.Image));
+                if (pictogram.AccessLevel == AccessLevel.PUBLIC) 
+                    return new Response<PictogramDTO>(new PictogramDTO(pictogram, pictogram.Image));
 
                 var usr = await _giraf.LoadUserAsync(HttpContext.User);
                 if (usr == null) 
                     return new ErrorResponse<PictogramDTO>(ErrorCode.UserNotFound);
                 
-                bool ownsResource = false;
-                if (_pictogram.AccessLevel == AccessLevel.PRIVATE)
-                    ownsResource = await _giraf.CheckPrivateOwnership(_pictogram, usr);
-                else if (_pictogram.AccessLevel == AccessLevel.PROTECTED)
-                    ownsResource = await _giraf.CheckProtectedOwnership(_pictogram, usr);
+                var ownsResource = false;
+                if (pictogram.AccessLevel == AccessLevel.PRIVATE)
+                    ownsResource = await _giraf.CheckPrivateOwnership(pictogram, usr);
+                else if (pictogram.AccessLevel == AccessLevel.PROTECTED)
+                    ownsResource = await _giraf.CheckProtectedOwnership(pictogram, usr);
 
                 if (ownsResource)
-                    return new Response<PictogramDTO>(new PictogramDTO(_pictogram, _pictogram.Image));
+                    return new Response<PictogramDTO>(new PictogramDTO(pictogram, pictogram.Image));
                 else
                     return new ErrorResponse<PictogramDTO>(ErrorCode.NotAuthorized);
             } catch (Exception e)
             {
-                string exceptionMessage = $"Exception occured in read:\n{e}";
+                var exceptionMessage = $"Exception occured in read:\n{e}";
                 _giraf._logger.LogError(exceptionMessage);
                 return new ErrorResponse<PictogramDTO>(ErrorCode.Error);
             }
@@ -174,9 +172,9 @@ namespace GirafRest.Controllers
             if(pictogram.AccessLevel == null) 
                 return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties, "access level, pictogram");
 
-            Pictogram pict = new Pictogram(pictogram.Title, (AccessLevel) pictogram.AccessLevel);
-            pict.Image = pictogram.Image;
-            
+            Pictogram pict =
+                new Pictogram(pictogram.Title, (AccessLevel) pictogram.AccessLevel) {Image = pictogram.Image};
+
             var user = await _giraf.LoadUserAsync(HttpContext.User);
 
             if(pictogram.AccessLevel == AccessLevel.PRIVATE) {
@@ -467,18 +465,7 @@ namespace GirafRest.Controllers
                 return null;
             }
         }
-        /// <summary>
-        /// Helper method for parsing queries involving integers
-        /// </summary>
-        /// <param name="queryStringName">The string to look for in the request</param>
-        /// <param name="fallbackValue">The value to return should the request not contain a query</param>
-        /// <returns>Either the fallback value, or the Integer found in the query</returns>
-        private int parseQueryInteger(string queryStringName, int fallbackValue)
-        {
-            if (string.IsNullOrEmpty(HttpContext.Request.Query[queryStringName]))
-                return fallbackValue;
-            return int.Parse(HttpContext.Request.Query[queryStringName]);
-        }
+
         #endregion
         #region query filters
         /// <summary>

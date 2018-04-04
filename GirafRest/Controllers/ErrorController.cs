@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using GirafRest.Models.Responses;
+﻿using GirafRest.Models.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GirafRest.Controllers

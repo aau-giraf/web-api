@@ -1,17 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GirafRest.Data;
-using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using GirafRest.Services;
-using System;
 using GirafRest.Models.Responses;
 
 namespace GirafRest.Controllers

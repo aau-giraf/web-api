@@ -1,9 +1,9 @@
-﻿using System.Net;
-using System.Linq;
+﻿using System.Linq;
+using System.Net;
 using GirafRest.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace GirafRest
+namespace GirafRest.Controllers
 {
     [Route("v1/[controller]")]
     public class StatusController : Controller

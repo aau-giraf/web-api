@@ -1,12 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GirafRest.Data;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -73,7 +70,7 @@ namespace GirafRest.Controllers
         public async Task<Response<WeekDTO>> ReadUsersWeekSchedule(long id)
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
-            var week = user.WeekSchedule.Where(w => w.Id == id).FirstOrDefault();
+            var week = user.WeekSchedule.FirstOrDefault(w => w.Id == id);
             if (week != null)
             {
                 return new Response<WeekDTO>(new WeekDTO(week));
@@ -98,7 +95,7 @@ namespace GirafRest.Controllers
             if (newWeek == null) return new ErrorResponse<WeekDTO>(ErrorCode.InvalidProperties, "newWeek");
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             if (user == null) return new ErrorResponse<WeekDTO>(ErrorCode.UserNotFound);
-            var week = user.WeekSchedule.Where(w => w.Id == id).FirstOrDefault();
+            var week = user.WeekSchedule.FirstOrDefault(w => w.Id == id);
             if (week == null)
                 return new ErrorResponse<WeekDTO>(ErrorCode.WeekScheduleNotFound);
             if (newWeek.Thumbnail != null)
@@ -122,8 +119,7 @@ namespace GirafRest.Controllers
 
             foreach (var day in newWeek.Days)
             {
-                Weekday wkDay = new Weekday(day);
-                wkDay.LastEdit = DateTime.Now;
+                var wkDay = new Weekday(day) {LastEdit = DateTime.Now};
                 if (!(await CreateWeekDayHelper(wkDay, day.ElementIDs)))
                         return new ErrorResponse<WeekDTO>(ErrorCode.ResourceNotFound);
                 orderedDays[(int)day.Day].Elements = wkDay.Elements;
@@ -155,9 +151,8 @@ namespace GirafRest.Controllers
             
             if (thumbnail == null)
                 return new ErrorResponse<WeekDTO>(ErrorCode.ThumbnailDoesNotExist);
-            
-            Week week = new Week(thumbnail);
-            week.Name = newWeek.Name;
+
+            var week = new Week(thumbnail) {Name = newWeek.Name};
             if (newWeek.Days != null)
             {
                 foreach (var day in newWeek.Days)
@@ -190,9 +185,9 @@ namespace GirafRest.Controllers
 
             if (user == null) return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.UserNotFound);
 
-            if (user.WeekSchedule.Where(w => w.Id == id).Any())
+            if (user.WeekSchedule.Any(w => w.Id == id))
             {
-                var week = user.WeekSchedule.Where(w => w.Id == id).FirstOrDefault();
+                var week = user.WeekSchedule.FirstOrDefault(w => w.Id == id);
                 if (week == null) return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.WeekScheduleNotFound);
                 user.WeekSchedule.Remove(week);
                 await _giraf._context.SaveChangesAsync();

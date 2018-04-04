@@ -9,7 +9,6 @@ using GirafRest.Extensions;
 using GirafRest.Models.DTOs.AccountDTOs;
 using GirafRest.Models.DTOs.UserDTOs;
 using GirafRest.Models.DTOs;
-using Microsoft.AspNetCore.Http;
 using System;
 using static GirafRest.Models.DTOs.GirafUserDTO;
 using System.Linq;
@@ -20,7 +19,6 @@ using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace GirafRest.Controllers
@@ -115,10 +113,10 @@ namespace GirafRest.Controllers
         /// <returns>The role claims.</returns>
         /// <param name="user">User.</param>
         private async Task<List<Claim>> GetRoleClaims(GirafUser user){
-            var Roleclaims = new List<Claim>();
+            var roleclaims = new List<Claim>();
             var userRoles = await _giraf._userManager.GetRolesAsync(user);
-            Roleclaims.AddRange(userRoles.Select(userRole => new Claim(ClaimTypes.Role, userRole)));
-            return Roleclaims;
+            roleclaims.AddRange(userRoles.Select(userRole => new Claim(ClaimTypes.Role, userRole)));
+            return roleclaims;
         }
 
         /// <summary>
@@ -144,7 +142,7 @@ namespace GirafRest.Controllers
             var loginUser = await _giraf.LoadByNameAsync(model.Username);
             if (loginUser == null) // If username is invalid
                 return new ErrorResponse<string>(ErrorCode.InvalidCredentials, "username");
-            GirafRoles userRoles = await _roleManager.findUserRole(_giraf._userManager, loginUser);
+            var userRoles = await _roleManager.findUserRole(_giraf._userManager, loginUser);
 
             Microsoft.AspNetCore.Identity.SignInResult result = null;
 

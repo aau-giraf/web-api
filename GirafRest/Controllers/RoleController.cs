@@ -107,8 +107,8 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Removes a specified role
         /// </summary>
-        /// <param name="id">The Id of the role in need of removal
         /// <returns> Badrequest if the role does not exist or if the id was null/emtpy and Ok if successful</returns>
+        /// <param name="username"></param>
         [HttpDelete("admin/{username}")]
         [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department)]
         public async Task<Response> DeleteGirafRole(string username)
