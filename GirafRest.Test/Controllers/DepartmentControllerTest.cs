@@ -109,7 +109,7 @@ namespace GirafRest.Test.Controllers
             Assert.True(res.Success);
             Assert.Equal(res.ErrorCode, ErrorCode.NoError);
             // check data
-            Assert.Equal(2, res.Data.Count());
+            Assert.Equal(_testContext.MockDepartments.Count(), res.Data.Count());
             for (int i = 0; i < res.Data.Count; i++)
             {
                 Assert.Equal(_testContext.MockDepartments[i].Name, res.Data[i].Name);
