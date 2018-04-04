@@ -76,6 +76,23 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
+        /// Gets the department names.
+        /// </summary>
+        /// <returns>The department names.</returns>
+        [HttpGet("names")]
+        public async Task<Response<List<DepartmentNameDTO>>> GetDepartmentNames()
+        {
+
+            var departmentNameDTOs = await _giraf._context.Departments
+                                                 .Select(d => new DepartmentNameDTO(d.Key, d.Name)).ToListAsync();
+
+            if (departmentNameDTOs.Count == 0)
+                return new ErrorResponse<List<DepartmentNameDTO>>(ErrorCode.NotFound);
+
+            return new Response<List<DepartmentNameDTO>>(departmentNameDTOs);
+        }
+
+        /// <summary>
         /// Get the department with the specified id.
         /// </summary>
         /// <param name="id">The id of the department to search for.</param>

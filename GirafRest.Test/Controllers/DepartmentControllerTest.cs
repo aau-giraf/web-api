@@ -98,6 +98,39 @@ namespace GirafRest.Test.Controllers
             Assert.False(res.Success);
             Assert.Equal(res.ErrorCode, ErrorCode.NotFound);
         }
+
+        [Fact]
+        public void Get_AllDepartmentNames_Ok()
+        {
+            var dc = initializeTest();
+            var res = dc.GetDepartmentNames().Result;
+
+            Assert.IsType<Response<List<DepartmentNameDTO>>>(res);
+            Assert.True(res.Success);
+            Assert.Equal(res.ErrorCode, ErrorCode.NoError);
+            // check data
+            Assert.Equal(2, res.Data.Count());
+            for (int i = 0; i < res.Data.Count; i++)
+            {
+                Assert.Equal(_testContext.MockDepartments[i].Name, res.Data[i].Name);
+                Assert.Equal(_testContext.MockDepartments[i].Key, res.Data[i].ID);
+            }
+        }
+
+        [Fact]
+        public void Get_AllDepartmentNames_NotFound()
+        {
+            var dc = initializeTest();
+            AddEmptyDepartmentList();
+            var res = dc.GetDepartmentNames().Result;
+
+            Assert.IsType<ErrorResponse<List<DepartmentNameDTO>>>(res);
+            Assert.False(res.Success);
+            Assert.Equal(res.ErrorCode, ErrorCode.NotFound);
+        }
+
+
+
         #endregion
 
         #region Post
