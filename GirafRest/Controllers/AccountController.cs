@@ -270,9 +270,29 @@ namespace GirafRest.Controllers
                 await _signInManager.SignInAsync(user, isPersistent: true);
                 _giraf._logger.LogInformation("User created a new account with password.");
 
+                // if department != null
                 // Get the roles the user is associated with
-                GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
+                if (department != null)
+                {
+                    // Add a relation to all the newly created citizens guardians
+                    var roleGuardianId = _giraf._context.Roles.Where(r => r.Name == GirafRole.Guardian)
+                                               .Select(c => c.Id).FirstOrDefault();
 
+                    var userIds = _giraf._context.UserRoles.Where(u => u.RoleId == roleGuardianId)
+                                        .Select(r => r.UserId).Distinct();
+
+                    var guardians = _giraf._context.Users.Where(u => userIds.Any(ui => ui == u.Id)
+                                                                && u.DepartmentKey == department.Key).ToList();
+
+                    foreach (var guardian in guardians)
+                    {
+                        user.AddGuardian(guardian);
+                    }
+                    await _giraf._context.SaveChangesAsync();
+                }
+                // fetch the roleenum
+                GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
+                // return the created user
                 return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));
             }
             AddErrors(result);

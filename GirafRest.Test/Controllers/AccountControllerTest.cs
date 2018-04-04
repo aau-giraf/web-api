@@ -12,6 +12,7 @@ using GirafRest.Models.DTOs;
 using GirafRest.Models.DTOs.UserDTOs;
 using GirafRest.Models.Responses;
 using Microsoft.Extensions.Options;
+using System.Linq;
 
 namespace GirafRest.Test
 {
@@ -359,6 +360,23 @@ namespace GirafRest.Test
             Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
+        }
+
+        [Fact]
+        public void Register_GuardianRelation_OkRequest(){
+            var accountController = InitializeTest();
+            var res = accountController.Register(new RegisterDTO() { Username = "JohnDoe", 
+                Password= "iSecretlyLoveMileyCyrus", DepartmentId = 2}).Result;
+
+            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.True(res.Success);
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            // fetch expected guardian from test data
+            var guardian = _testContext.MockUsers.FirstOrDefault(u => u.UserName == "Guardian in dep 2");
+            // check data
+            Assert.Equal(1, res.Data.Guardians.Count());
+            Assert.Equal(guardian.UserName, res.Data.Guardians[0].Username);
+            Assert.Equal(guardian.Id, res.Data.Guardians[0].Id);
         }
 
         [Fact]

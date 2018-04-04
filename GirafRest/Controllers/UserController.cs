@@ -740,9 +740,9 @@ namespace GirafRest.Controllers
                 // delete old citizens
                 user.Citizens = new List<GuardianRelation>(); 
                 var citizenUsers = new List<GuardianRelation>();
-                foreach (var guardian in citizens)
+                foreach (var citizen in citizens)
                 {
-                    var cUser = _giraf._context.Users.FirstOrDefaultAsync(u => u.Id == guardian.Id).Result;
+                    var cUser = _giraf._context.Users.FirstOrDefaultAsync(u => u.Id == citizen.Id).Result;
 
                     if (cUser != null)
                         user.AddCitizen(cUser);

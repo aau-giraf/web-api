@@ -129,9 +129,9 @@ namespace GirafRest.Controllers
             if (roleCitizenId == null) return new ErrorResponse<List<UserNameDTO>>(ErrorCode.DepartmentHasNoCitizens);
 
             var userIds = _giraf._context.UserRoles.Where(u => u.RoleId == roleCitizenId)
-                                                   .Select(r => r.UserId).Distinct().ToList();
+                                .Select(r => r.UserId).Distinct();
 
-            if (userIds.Count == 0) return new ErrorResponse<List<UserNameDTO>>(ErrorCode.DepartmentHasNoCitizens);
+            if (!userIds.Any()) return new ErrorResponse<List<UserNameDTO>>(ErrorCode.DepartmentHasNoCitizens);
 
             var usersNamesInDepartment = _giraf._context.Users
                                                .Where(u => userIds.Any(ui => ui == u.Id)

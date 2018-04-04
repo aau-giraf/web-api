@@ -403,7 +403,7 @@ namespace GirafRest.Test
                             {
                                 UserId = MockUsers[6].Id,
                                 RoleId = MockRoles[3].Id
-                            }
+                            },
                         };
 
                     return mockUserRoles;
