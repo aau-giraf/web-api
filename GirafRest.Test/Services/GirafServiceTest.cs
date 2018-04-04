@@ -1,19 +1,12 @@
-﻿using System.Collections.Generic;
-using GirafRest.Test.Mocks;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-using GirafRest.Data;
-using GirafRest.Models;
-using GirafRest.Controllers;
-using Moq;
+﻿using GirafRest.Models;
+using GirafRest.Services;
 using Xunit;
-using Microsoft.AspNetCore.Mvc;
 using static GirafRest.Test.UnitTestExtensions;
 using System.Linq;
 using System.IO;
 using System;
 
-namespace GirafRest.Test.Controllers
+namespace GirafRest.Test.Services
 {
     public class GirafServiceTest
     {
