@@ -63,6 +63,7 @@ namespace GirafRest.Services
                     .Include(u => u.WeekSchedule)
                     .ThenInclude(w => w.Weekdays)
                     .ThenInclude(wd => wd.Elements)
+                    .ThenInclude(e => e.Resource)
                     .Include(u => u.Settings)
                     .ThenInclude(lo => lo.appsUserCanAccess)
                     .Include(u => u.Guardians)
