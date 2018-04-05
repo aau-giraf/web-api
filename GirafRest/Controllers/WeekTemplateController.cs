@@ -36,21 +36,21 @@ namespace GirafRest.Controllers
         /// </summary>
         [HttpGet("")]
         [Authorize]
-        public async Task<Response<IEnumerable<WeekDTO>>> ReadWeekTemplates()
+        public async Task<Response<IEnumerable<WeekNameDTO>>> GetWeekTemplates()
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             if (user == null)
             {
-                return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.UserNotFound);
+                return new ErrorResponse<IEnumerable<WeekNameDTO>>(ErrorCode.UserNotFound);
             }
             if (!user.WeekSchedule.Any())
             {
-                return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.NoWeekTemplateFound);
+                return new ErrorResponse<IEnumerable<WeekNameDTO>>(ErrorCode.NoWeekTemplateFound);
             }
             else
             {
-                return new Response<IEnumerable<WeekDTO>>(_giraf._context.WeekTemplates.Include(w => w.Thumbnail).Include(u => u.Weekdays)
-                    .ThenInclude(wd => wd.Elements).Where(t => t.DepartmentKey == user.DepartmentKey).Select(w => new WeekDTO(w)));
+                return new Response<IEnumerable<WeekNameDTO>>(_giraf._context.WeekTemplates.Include(w => w.Thumbnail).Include(u => u.Weekdays)
+                    .ThenInclude(wd => wd.Elements).Where(t => t.DepartmentKey == user.DepartmentKey).Select(w => new WeekNameDTO(w.Id, w.Name)));
             }
         }
 
@@ -60,7 +60,7 @@ namespace GirafRest.Controllers
         /// <param name="id">The id of the week template to fetch.</param>
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<Response<WeekDTO>> ReadUsersWeekSchedule(long id)
+        public async Task<Response<WeekDTO>> GetWeekTemplate(long id)
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             var week = await (_giraf._context.WeekTemplates.Include(w => w.Thumbnail).Include(u => u.Weekdays)

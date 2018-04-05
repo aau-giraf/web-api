@@ -290,7 +290,7 @@ namespace GirafRest.Setup
                 context.Weekdays.Add(day);
                 sampleWeek.UpdateDay(day);
             }
-
+            sampleWeek.Name = "Normal Uge";
             var usr = context.Users.Where(u => u.UserName == "Kurt").First();
             context.Weeks.Add(sampleWeek);
             usr.WeekSchedule.Add(sampleWeek);
@@ -320,6 +320,7 @@ namespace GirafRest.Setup
                 sampleWeek.UpdateDay(day);
             }
 
+            sampleWeek.Name = "Skabelonuge";
             sampleWeek.DepartmentKey = depertments[0].Key;
 
             context.WeekTemplates.Add(sampleWeek);
