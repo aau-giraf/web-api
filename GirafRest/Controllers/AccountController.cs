@@ -28,7 +28,7 @@ namespace GirafRest.Controllers
     public class AccountController : Controller
     {
         /// <summary>
-        /// A reference to ASP.NET's sign-in manager, that is used to validate UserNames and passwords.
+        /// A reference to ASP.NET's sign-in manager, that is used to validate usernames and passwords.
         /// </summary>
         private readonly SignInManager<GirafUser> _signInManager;
         /// <summary>
@@ -120,9 +120,9 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// This endpoint allows the user to sign in to his account by providing valid UserName and password.
+        /// This endpoint allows the user to sign in to his account by providing valid username and password.
         /// </summary>
-        /// <param name="model">A LoginDTO(LoginViewModelDTO), i.e. a json-string with a UserName and a password field.</param>
+        /// <param name="model">A LoginDTO(LoginViewModelDTO), i.e. a json-string with a username and a password field.</param>
         /// <returns>
         /// JwtToken if credentials are valid
         /// </returns>
@@ -133,15 +133,15 @@ namespace GirafRest.Controllers
             
             if (model == null)
                 return new ErrorResponse<string>(ErrorCode.MissingProperties, "model");
-            //Check that the caller has supplied UserName in the request
-            if (string.IsNullOrEmpty(model.UserName))
-                return new ErrorResponse<string>(ErrorCode.MissingProperties, "UserName");
+            //Check that the caller has supplied username in the request
+            if (string.IsNullOrEmpty(model.Username))
+                return new ErrorResponse<string>(ErrorCode.MissingProperties, "username");
 
-            //Check if a user is already logged in and attempt to login with the UserName given in the DTO
+            //Check if a user is already logged in and attempt to login with the username given in the DTO
             var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
-            var loginUser = await _giraf.LoadByNameAsync(model.UserName);
-            if (loginUser == null) // If UserName is invalid
-                return new ErrorResponse<string>(ErrorCode.InvalidCredentials, "UserName");
+            var loginUser = await _giraf.LoadByNameAsync(model.Username);
+            if (loginUser == null) // If username is invalid
+                return new ErrorResponse<string>(ErrorCode.InvalidCredentials, "username");
             var userRoles = await _roleManager.findUserRole(_giraf._userManager, loginUser);
 
             Microsoft.AspNetCore.Identity.SignInResult result = null;
@@ -153,7 +153,7 @@ namespace GirafRest.Controllers
                 {
                     return new ErrorResponse<string>(ErrorCode.MissingProperties, "password");
                 }
-                result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, true, lockoutOnFailure: false);
+                result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, lockoutOnFailure: false);
                 if(result.Succeeded) return new Response<string>(await GenerateJwtToken(loginUser, userRoles));
                 else return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
             }
@@ -163,14 +163,14 @@ namespace GirafRest.Controllers
             { 
                 if (!string.IsNullOrEmpty(model.Password))
                 {
-                    result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, true, lockoutOnFailure: false);
+                    result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, lockoutOnFailure: false);
                     if (!result.Succeeded) return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
                     return new Response<string>(await GenerateJwtToken(loginUser, userRoles));
                 }
 
                 if (string.IsNullOrEmpty(model.Password))
                 {
-                    if (currentUser.UserName.ToLower() == model.UserName.ToLower())
+                    if (currentUser.UserName.ToLower() == model.Username.ToLower())
                     {
                         return new Response<string>(await GenerateJwtToken(loginUser, userRoles));
                     }
@@ -178,12 +178,12 @@ namespace GirafRest.Controllers
                     if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian))
                     {
                         _giraf._logger.LogInformation("Guardian attempted to sign in as Citizen");
-                        return await AttemptRoleLoginTokenAsync(currentUser, model.UserName, GirafRole.Citizen);
+                        return await AttemptRoleLoginTokenAsync(currentUser, model.Username, GirafRole.Citizen);
                     }
                     else if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Department))
                     {
                         _giraf._logger.LogInformation("Department attempted to sign in as Guardian");
-                        return await AttemptRoleLoginTokenAsync(currentUser, model.UserName, GirafRole.Guardian);
+                        return await AttemptRoleLoginTokenAsync(currentUser, model.Username, GirafRole.Guardian);
                     }
                     else if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Citizen))
                     {
@@ -201,15 +201,15 @@ namespace GirafRest.Controllers
         /// password in order to login, but they must be in the same department. 
         /// </summary>
         /// <param name="superior">The Guardian user who is currently authenticated.</param>
-        /// <param name="UserName">The UserName of the citizen to login as.</param>
+        /// <param name="username">The username of the citizen to login as.</param>
         /// <param name="role">A string describing which role the target user is in.</param>
         /// <returns>
         /// A response containing a JwtToken or an ErrorReponse
         /// </returns>
-        private async Task<Response<string>> AttemptRoleLoginTokenAsync(GirafUser superior, string UserName, string role)
+        private async Task<Response<string>> AttemptRoleLoginTokenAsync(GirafUser superior, string username, string role)
         {
-            //Attempt to find a user with the given UserName in the guardian's department
-            var loginUser = await _giraf.LoadByNameAsync(UserName);
+            //Attempt to find a user with the given username in the guardian's department
+            var loginUser = await _giraf.LoadByNameAsync(username);
 
             if (loginUser != null && loginUser.DepartmentKey == superior.DepartmentKey)
             {
@@ -225,7 +225,7 @@ namespace GirafRest.Controllers
                 return new Response<string>(await GenerateJwtToken(loginUser, userRoles));
             }
 
-            //There was no user with the given UserName in the department - return invalidcredentials.
+            //There was no user with the given username in the department - return invalidcredentials.
             else
                 return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
         }
@@ -234,7 +234,7 @@ namespace GirafRest.Controllers
         /// Register a new user in the REST-API
         /// </summary>
         /// <param name="model">A reference to a RegisterDTO(RegisterViewModelDTO), i.e. a json string containing three strings;
-        /// UserName and Password.</param>
+        /// Username and Password.</param>
         /// <returns>
         /// Response with a GirafUserDTO with either the new user or an error
         /// </returns>
@@ -248,9 +248,9 @@ namespace GirafRest.Controllers
             if (!ModelState.IsValid)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties);
 
-            if (String.IsNullOrEmpty(model.UserName) || String.IsNullOrEmpty(model.Password))
+            if (String.IsNullOrEmpty(model.Username) || String.IsNullOrEmpty(model.Password))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidCredentials);
-            var doesUserAlreadyExist = (await _giraf.LoadByNameAsync(model.UserName) != null);
+            var doesUserAlreadyExist = (await _giraf.LoadByNameAsync(model.Username) != null);
 
             if (doesUserAlreadyExist)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.UserAlreadyExists);
@@ -262,7 +262,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.DepartmentNotFound);
 
             //Create a new user with the supplied information
-            var user = new GirafUser (model.UserName, department);
+            var user = new GirafUser (model.Username, department);
             var result = await _giraf._userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
@@ -318,7 +318,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Use this endpoint to request a password reset link, which is send to the user's email address.
         /// </summary>
-        /// <param name="model">A ForgotPasswordDTO, which contains a UserName and an email address.</param>
+        /// <param name="model">A ForgotPasswordDTO, which contains a username and an email address.</param>
         /// <returns>
         /// An empty response if succesfull or an ErrorResponse if not succesfull
         /// </returns>
@@ -328,14 +328,14 @@ namespace GirafRest.Controllers
         {
             if (model == null)
                 return new ErrorResponse(ErrorCode.MissingProperties, "model");
-            if (string.IsNullOrEmpty(model.UserName))
-                return new ErrorResponse(ErrorCode.MissingProperties, "UserName");
+            if (string.IsNullOrEmpty(model.Username))
+                return new ErrorResponse(ErrorCode.MissingProperties, "username");
             if (string.IsNullOrEmpty(model.Email))
                 return new ErrorResponse(ErrorCode.MissingProperties, "email");
 
-            string reply = $"An email has been sent to {model.Email} with a password reset link if the given UserName exists in the database.";
+            string reply = $"An email has been sent to {model.Email} with a password reset link if the given username exists in the database.";
 
-            var user = await _giraf._userManager.FindByNameAsync(model.UserName);
+            var user = await _giraf._userManager.FindByNameAsync(model.Username);
             if (user == null)
             {
                 // Don't reveal that the user does not exist or is not confirmed
@@ -443,7 +443,7 @@ namespace GirafRest.Controllers
         /// Attempts to change the given user's password. If the DTO did not contain valid information simply returns the view with
         /// the current information that the user has specified.
         /// </summary>
-        /// <param name="model">A DTO containing the user's UserName and Password.</param>
+        /// <param name="model">A DTO containing the user's Username and Password.</param>
         /// <returns>
         /// The view if password was wrong or redirects to ResetPasswordConfirmation.
         /// </returns>
@@ -458,9 +458,9 @@ namespace GirafRest.Controllers
                 //It was not, return the user to the view, where he may try again.
                 return View(model);
             }
-            //Try to fetch the user from the given UserName. If the UserName does not exist simply return the
-            //confirmation page to avoid revealing that the UserName does not exist.
-            var user = await _giraf._userManager.FindByNameAsync(model.UserName);
+            //Try to fetch the user from the given username. If the username does not exist simply return the
+            //confirmation page to avoid revealing that the username does not exist.
+            var user = await _giraf._userManager.FindByNameAsync(model.Username);
             if (user == null)
             {
                 // Don't reveal that the user does not exist

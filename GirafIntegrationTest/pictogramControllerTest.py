@@ -5,7 +5,7 @@ import json
 from rawSampleImage import *
 
 
-def pictogramControllerTest():
+def testPictogramController():
     test = controllerTest('Pictogram Controller')
 
     kurt = test.login('Kurt')

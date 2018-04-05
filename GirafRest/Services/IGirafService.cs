@@ -44,11 +44,11 @@ namespace GirafRest.Services
         Task<GirafUser> LoadUserAsync(ClaimsPrincipal principal);
 
         /// <summary>
-        /// Loads the user with the given UserName and also includes all related data.
+        /// Loads the user with the given username and also includes all related data.
         /// </summary>
-        /// <param name="UserName">The UserName of the user to fetch.</param>
+        /// <param name="username">The username of the user to fetch.</param>
         /// <returns>A loaded user, i.e. a user with all related data.</returns>
-        Task<GirafUser> LoadByNameAsync(string UserName);
+        Task<GirafUser> LoadByNameAsync(string username);
 
         /// <summary>
         /// Loads the image of the request body.

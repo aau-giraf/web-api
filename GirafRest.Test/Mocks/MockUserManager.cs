@@ -56,7 +56,7 @@ namespace GirafRest.Test.Mocks
             var result = CreateAsync(user);
             if (result.Result.Succeeded)
             {
-                _signInManager.UserNamePasswordList.Add(new Tuple<string, string>(user.UserName, password));
+                _signInManager.usernamePasswordList.Add(new Tuple<string, string>(user.UserName, password));
             }
             return result;
         }
@@ -74,9 +74,9 @@ namespace GirafRest.Test.Mocks
             return Task.FromResult(_testContext.MockUserRoles.Where(ur => ur.RoleId == role && ur.UserId == user.Id).Any());
         }
 
-        public override Task<GirafUser> FindByNameAsync(string UserName)
+        public override Task<GirafUser> FindByNameAsync(string userName)
         {
-            return Task.FromResult(_testContext.MockUsers.Where(u => u.UserName == UserName).FirstOrDefault());
+            return Task.FromResult(_testContext.MockUsers.Where(u => u.UserName == userName).FirstOrDefault());
         }
 
         public override Task<GirafUser> FindByIdAsync(string userId)
@@ -91,18 +91,18 @@ namespace GirafRest.Test.Mocks
 
         public override Task<IdentityResult> AddPasswordAsync(GirafUser user, string password)
         {
-            _signInManager.UserNamePasswordList.Add(new Tuple<string, string>(user.UserName, password));
+            _signInManager.usernamePasswordList.Add(new Tuple<string, string>(user.UserName, password));
             return Task.FromResult(IdentityResult.Success);
         }
 
         public override Task<IdentityResult> ChangePasswordAsync(GirafUser user, string currentPassword, string newPassword)
         {
-            var upIndex = _signInManager.UserNamePasswordList
+            var upIndex = _signInManager.usernamePasswordList
                 .Where(up => up.Item1 == user.UserName && up.Item2 == currentPassword);
             if (upIndex.Any())
             {
-                _signInManager.UserNamePasswordList.Remove(upIndex.FirstOrDefault());
-                _signInManager.UserNamePasswordList.Add(new Tuple<string, string>(user.UserName, newPassword));
+                _signInManager.usernamePasswordList.Remove(upIndex.FirstOrDefault());
+                _signInManager.usernamePasswordList.Add(new Tuple<string, string>(user.UserName, newPassword));
                 return Task.FromResult(IdentityResult.Success);
             }
             else

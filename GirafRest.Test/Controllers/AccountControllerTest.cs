@@ -93,7 +93,7 @@ namespace GirafRest.Test
 
             var res = accountController.Login(new LoginDTO()
             {
-                UserName = _testContext.MockUsers[ADMIN_DEP_ONE].UserName,
+                Username = _testContext.MockUsers[ADMIN_DEP_ONE].UserName,
                 Password = "password"
             }).Result;
 
@@ -110,17 +110,17 @@ namespace GirafRest.Test
         public void Login_SameUserLoginTwice_OK()
         {
             var accountController = InitializeTest();
-            var UserName = _testContext.MockUsers[ADMIN_DEP_ONE].UserName;
+            var username = _testContext.MockUsers[ADMIN_DEP_ONE].UserName;
 
             var resA = accountController.Login(new LoginDTO()
             {
-                UserName = UserName,
+                Username = username,
                 Password = "password"
             }).Result;
 
             var resB = accountController.Login(new LoginDTO()
             {
-                UserName = UserName,
+                Username = username,
                 Password = "password"
             }).Result;
 
@@ -135,13 +135,13 @@ namespace GirafRest.Test
 
         [Fact]
         // If no user is found with given user name, return ErrorResponse with relevant ErrorCode (invalid credentials ensures we do not give the bad guys any information)
-        public void Login_UserNameInvalidPasswordOk_Unauthorized()
+        public void Login_UsernameInvalidPasswordOk_Unauthorized()
         {
             var accountController = InitializeTest();
 
             var res = accountController.Login(new LoginDTO()
             {
-                UserName = "INVALID",
+                Username = "INVALID",
                 Password = "password"
             }).Result;
 
@@ -170,7 +170,7 @@ namespace GirafRest.Test
             var ac = InitializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             
-            var res = ac.Login(new LoginDTO() { UserName = _testContext.MockUsers[CITIZEN_DEP_TWO].UserName }).Result;
+            var res = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[CITIZEN_DEP_TWO].UserName }).Result;
 
             Assert.IsType<Response<string>>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
@@ -187,7 +187,7 @@ namespace GirafRest.Test
             var ac = InitializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var res = ac.Login(new LoginDTO() { UserName = _testContext.MockUsers[ADMIN_NO_DEP].UserName }).Result;
+            var res = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[ADMIN_NO_DEP].UserName }).Result;
 
             Assert.IsType<ErrorResponse<string>>(res);
             Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
@@ -201,7 +201,7 @@ namespace GirafRest.Test
             var ac = InitializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var res = ac.Login(new LoginDTO() { UserName = _testContext.MockUsers[ANOTHER_GUARDIAN_DEP_TWO].UserName }).Result;
+            var res = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[ANOTHER_GUARDIAN_DEP_TWO].UserName }).Result;
 
             Assert.IsType<ErrorResponse<string>>(res);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
@@ -217,7 +217,7 @@ namespace GirafRest.Test
 
             var res = ac.Login(new LoginDTO()
             {
-                UserName = _testContext.MockUsers[CITIZEN_DEP_THREE].UserName
+                Username = _testContext.MockUsers[CITIZEN_DEP_THREE].UserName
             }).Result;
 
             Assert.IsType<ErrorResponse<string>>(res);
@@ -232,7 +232,7 @@ namespace GirafRest.Test
             var ac = InitializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_TWO]);
 
-            var res = ac.Login(new LoginDTO() { UserName = _testContext.MockUsers[GUARDIAN_DEP_TWO].UserName}).Result;
+            var res = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[GUARDIAN_DEP_TWO].UserName}).Result;
 
             Assert.IsType<ErrorResponse<string>>(res);
             Assert.False(res.Success);
@@ -245,7 +245,7 @@ namespace GirafRest.Test
             var ac = InitializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[DEPARTMENT_DEP_TWO]);
 
-            var res = ac.Login(new LoginDTO() { UserName = _testContext.MockUsers[GUARDIAN_DEP_TWO].UserName }).Result;
+            var res = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[GUARDIAN_DEP_TWO].UserName }).Result;
 
             Assert.IsType<Response<string>>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
@@ -261,7 +261,7 @@ namespace GirafRest.Test
             var ac = InitializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
 
-            var res = ac.Login(new LoginDTO() { UserName = _testContext.MockUsers[DEPARTMENT_DEP_TWO].UserName }).Result;
+            var res = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[DEPARTMENT_DEP_TWO].UserName }).Result;
 
             Assert.IsType<ErrorResponse<string>>(res);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
@@ -275,11 +275,11 @@ namespace GirafRest.Test
         {
             var accountController = InitializeTest();
 
-            var UserName = "GenericName";
+            var userName = "GenericName";
 
             var res = accountController.Register( new RegisterDTO()
             {
-                UserName = UserName,
+                Username = userName,
                 Password = "GenericPassword",
                 DepartmentId = DEPARTMENT_ONE
             }).Result;
@@ -289,18 +289,18 @@ namespace GirafRest.Test
             Assert.True(res.Success);
             Assert.NotNull(res.Data);
             // check data
-            Assert.Equal(res.Data.UserName, UserName);
+            Assert.Equal(res.Data.Username, userName);
             Assert.Equal(res.Data.Department, DEPARTMENT_ONE);
         }
      
         [Fact]
-        public void Register_ExistingUserName_BadRequest()
+        public void Register_ExistingUsername_BadRequest()
         {
             var accountController = InitializeTest();
 
             var res = accountController.Register(new RegisterDTO()
             {
-                UserName = _testContext.MockUsers[ADMIN_DEP_ONE].UserName,
+                Username = _testContext.MockUsers[ADMIN_DEP_ONE].UserName,
                 Password = "password",
                 DepartmentId = DEPARTMENT_ONE
             }).Result;
@@ -311,7 +311,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void Register_NoUserName_BadRequest()
+        public void Register_NoUsername_BadRequest()
         {
             var accountController = InitializeTest();
             
@@ -335,7 +335,7 @@ namespace GirafRest.Test
             
             var res = accountController.Register(new RegisterDTO()
             {
-                UserName = "NewUser",
+                Username = "NewUser",
                 Password = "password"
             }).Result;
 
@@ -353,7 +353,7 @@ namespace GirafRest.Test
 
             var res = accountController.Register(new RegisterDTO()
             {
-                UserName = "",
+                Username = "",
                 Password = ""
             }).Result;
 
@@ -365,7 +365,7 @@ namespace GirafRest.Test
         [Fact]
         public void Register_GuardianRelation_OkRequest(){
             var accountController = InitializeTest();
-            var res = accountController.Register(new RegisterDTO() { UserName = "JohnDoe", 
+            var res = accountController.Register(new RegisterDTO() { Username = "JohnDoe", 
                 Password= "iSecretlyLoveMileyCyrus", DepartmentId = 2}).Result;
 
             Assert.IsType<Response<GirafUserDTO>>(res);
@@ -375,7 +375,7 @@ namespace GirafRest.Test
             var guardian = _testContext.MockUsers.FirstOrDefault(u => u.UserName == "Guardian in dep 2");
             // check data
             Assert.Equal(1, res.Data.Guardians.Count());
-            Assert.Equal(guardian.UserName, res.Data.Guardians[0].UserName);
+            Assert.Equal(guardian.UserName, res.Data.Guardians[0].Username);
             Assert.Equal(guardian.Id, res.Data.Guardians[0].Id);
         }
 
@@ -400,7 +400,7 @@ namespace GirafRest.Test
 
             var res = accountController.ForgotPassword(new ForgotPasswordDTO()
             {
-                UserName = _testContext.MockUsers[ADMIN_DEP_ONE].UserName,
+                Username = _testContext.MockUsers[ADMIN_DEP_ONE].UserName,
                 Email = "unittest@giraf.cs.aau.dk"
             }).Result;
 
@@ -417,7 +417,7 @@ namespace GirafRest.Test
 
             var res = accountController.ForgotPassword(new ForgotPasswordDTO()
             {
-                UserName = "UserDoNotExist",
+                Username = "UserDoNotExist",
                 Email = "UserDoNotExist@UserDoNotExist.com"
             }).Result;
 
@@ -433,7 +433,7 @@ namespace GirafRest.Test
 
             var res = accountController.ForgotPassword(new ForgotPasswordDTO()
             {
-                UserName = _testContext.MockUsers[ADMIN_DEP_ONE].UserName
+                Username = _testContext.MockUsers[ADMIN_DEP_ONE].UserName
             }).Result;
 
             Assert.IsType<ErrorResponse>(res);

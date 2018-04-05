@@ -28,12 +28,12 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// List of users the user is guardian of. Is simply null if the user isn't a guardian. Contains guardians if the user is a Department
         /// </summary>
-        public List<UserNameDTO> Citizens { get; set; }
+        public List<GirafUserDTO> Citizens { get; set; }
         /// <summary>
         /// Gets or sets guardians of a user.
         /// </summary>
         /// <value>My guardians.</value>
-        public List<UserNameDTO> Guardians { get; set; }
+        public List<GirafUserDTO> Guardians { get; set; }
         [Required]
         /// <summary>
         /// The Id of the user.
@@ -41,9 +41,9 @@ namespace GirafRest.Models.DTOs
         public string Id { get; set; }
         [Required]
         /// <summary>
-        /// The UserName of the user.
+        /// The username of the user.
         /// </summary>
-        public string UserName { get; set; }
+        public string Username { get; set; }
         /// <summary>
         /// The display name of the user.
         /// </summary>
@@ -93,7 +93,7 @@ namespace GirafRest.Models.DTOs
         {
             //Add all trivial values
             Id = user.Id;
-            UserName = user.UserName;
+            Username = user.UserName;
             ScreenName = user.DisplayName;
             UserIcon = user.UserIcon;
             Role = userRole;
@@ -104,11 +104,11 @@ namespace GirafRest.Models.DTOs
                 //Check if the user is guardian of any users and add DTOs for those if that is the case
                 if (user.Citizens != null && user.Citizens.Any())
                 {
-                    Citizens = new List<UserNameDTO>();
+                    Citizens = new List<GirafUserDTO>();
                     foreach (var usr in user.Citizens)
                     {
                         if(usr.Citizen != null){
-                            Citizens.Add((UserNameDTO)new GirafUserDTO(usr.Citizen, GirafRoles.Citizen, false));
+                            Citizens.Add(new GirafUserDTO(usr.Citizen, GirafRoles.Citizen, false));
                         }
                     }
                 }
@@ -116,11 +116,11 @@ namespace GirafRest.Models.DTOs
                 //Check if the user has guardians and add DTO's for those if that is the case
                 if (user.Guardians != null && user.Guardians.Any())
                 {
-                    Guardians = new List<UserNameDTO>();
+                    Guardians = new List<GirafUserDTO>();
                     foreach (var usr in user.Guardians){
                         if (usr.Guardian != null)
                         {
-                            Guardians.Add((UserNameDTO)new GirafUserDTO(usr.Guardian, GirafRoles.Guardian, false));
+                            Guardians.Add(new GirafUserDTO(usr.Guardian, GirafRoles.Guardian, false));
                         }
                     }
 

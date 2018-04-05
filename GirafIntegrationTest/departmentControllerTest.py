@@ -4,8 +4,8 @@ import time
 import json
 
 
-def departmentControllerTest():
-    test = test('Department Controller')
+def testDepartmentController():
+    test = controllerTest('Department Controller')
     lee = test.login('Lee')
     graatand = test.login('Graatand')
     kurt = test.login('Kurt')

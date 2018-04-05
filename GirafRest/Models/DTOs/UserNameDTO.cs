@@ -1,18 +1,15 @@
-﻿namespace GirafRest.Models.DTOs
+﻿namespace GirafRest
 {
     public class UserNameDTO
     {
         public string UserName { get; set; }
-        public string Id { get; set; }
+        public string UserId { get; set; }
 
-        public static explicit operator UserNameDTO(GirafUserDTO guser) {
-            return new UserNameDTO(guser.UserName, guser.Id);
-        }
 
-        public UserNameDTO(string UserName, string Id)
+        public UserNameDTO(string username, string userId)
         {
-            UserName = UserName;
-            Id = Id;
+            UserName = username;
+            UserId = userId;
         }
 
         public UserNameDTO()

@@ -3,7 +3,7 @@ import time
 import json
 
 
-def roleControllerTest():
+def testRoleController():
     test = controllerTest('Role Controller')
     tobias = test.login('Tobias')
     lee = test.login('Lee')

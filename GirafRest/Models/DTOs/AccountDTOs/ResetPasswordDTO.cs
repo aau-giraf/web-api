@@ -8,11 +8,11 @@ namespace GirafRest.Models.DTOs.AccountDTOs
     public class ResetPasswordDTO
     {
         /// <summary>
-        /// The users UserName.
+        /// The users username.
         /// </summary>
         [Required(ErrorMessage = "Indtast venligst dit brugernavn her.")]
         [Display(Name = "Brugernavn")]
-        public string UserName { get; set; }
+        public string Username { get; set; }
 
         /// <summary>
         /// The users password.

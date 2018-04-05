@@ -3,8 +3,8 @@ from testLib import *
 import time
 
 
-def authorizationTest():
-    test = test("Authorization Test")
+def testAuthorization():
+    test = controllerTest("Authorization Test")
     
     #### Does not require authorization
     # test.newTest('Testing authorization of POST /v1/Account/login');
@@ -15,6 +15,7 @@ def authorizationTest():
     # test.newTest('Testing authorization of POST /v1/Account/register');
     # response = test.request('POST',  'Account/register');
     # test.ensureNotAuthorized(response)
+    
 
     #### Does not require authorization
     # test.newTest('Testing authorization of POST /v1/Account/logout');
