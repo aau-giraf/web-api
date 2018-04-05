@@ -164,6 +164,8 @@ namespace GirafRest.Test
                         {
                             new Week()
                             {
+                                Id = 0,
+                                Name = "My awesome week",
                                 Weekdays = new List<Weekday>(){
                                     new Weekday(){
                                         Day = Days.Monday
@@ -189,6 +191,7 @@ namespace GirafRest.Test
                                 }
                             },
                             new Week(){
+                                Id = 1,
                                 Weekdays = new List<Weekday>(){
                                     new Weekday(){
                                         Day = Days.Monday

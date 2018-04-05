@@ -67,6 +67,24 @@ namespace GirafRest.Test
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NoWeekScheduleFound, res.ErrorCode);
         }
+
+        [Fact]
+        public void ReadWeekScheduleNames_Authenticated_Ok(){
+            var wc = initializeTest();
+            var user = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(user);
+            var weekschedule = _testContext.MockWeeks[0];
+
+            var res = wc.ReadWeekScheduleNames().Result;
+
+            Assert.IsType<Response<IEnumerable<WeekNameDTO>>>(res);
+            Assert.True(res.Success);
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            // check we got the right amount back
+            Assert.True(user.WeekSchedule.Count() == res.Data.Count());
+            Assert.Equal(weekschedule.Name, res.Data.FirstOrDefault().Name);
+        }
+
         #endregion
         #region ReadWeekSchedule(id)
         [Fact]
@@ -109,7 +127,6 @@ namespace GirafRest.Test
             Assert.IsType<Response<WeekDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(week.Name, res.Data.Name);
-            Assert.Equal(week.Id, res.Data.Id);
 
             _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule = tempWeek;
         }

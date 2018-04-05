@@ -39,7 +39,11 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Gets all week schedule for the currently authenticated user.
         /// </summary>
-        /// <returns>Ok along with the week schedules, or NotFound if there is no such user or if there are no weeks.</returns>
+        /// <returns>
+        /// All the weekDTO found if no error occured
+        /// ErrorCode.UserNotFound if we cannot find any user in the DB
+        /// ErrorCode.NoWeekScheduleFound if we can not find any weekschedule on the user
+        /// </returns>
         [HttpGet("")]
         [Authorize]
         public async Task<Response<IEnumerable<WeekDTO>>> ReadWeekSchedules()
@@ -53,11 +57,34 @@ namespace GirafRest.Controllers
             {
                 return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.NoWeekScheduleFound);
             }
-            else
-            {
-                return new Response<IEnumerable<WeekDTO>>(user.WeekSchedule.Select(w => new WeekDTO(w)));
-            }
+            return new Response<IEnumerable<WeekDTO>>(user.WeekSchedule.Select(w => new WeekDTO(w)));
         }
+
+
+        /// <summary>
+        /// Gets all week schedule name and ids for the currently authenticated citizen.
+        /// </summary>
+        /// All WeekScheduleNameDTOs if succesfull request
+        /// ErrorCode.UserNotFound if we cannot find any user in the DB
+        /// ErrorCode.NoWeekScheduleFound if we can not find any weekschedule on the user
+        /// <returns>
+        /// </returns>
+        [HttpGet("names")]
+        [Authorize]
+        public async Task<Response<IEnumerable<WeekNameDTO>>> ReadWeekScheduleNames()
+        {
+            var user = await _giraf.LoadUserAsync(HttpContext.User);
+            if (user == null)
+            {
+                return new ErrorResponse<IEnumerable<WeekNameDTO>>(ErrorCode.UserNotFound);
+            }
+            if (!user.WeekSchedule.Any())
+            {
+                return new ErrorResponse<IEnumerable<WeekNameDTO>>(ErrorCode.NoWeekScheduleFound);
+            }
+            return new Response<IEnumerable<WeekNameDTO>>(user.WeekSchedule.Select(w => new WeekNameDTO(w.Id, w.Name)));
+        }
+
 
         /// <summary>
         /// Gets the schedule with the specified id.
@@ -105,8 +132,7 @@ namespace GirafRest.Controllers
                     return new ErrorResponse<WeekDTO>(ErrorCode.ThumbnailDoesNotExist);
                 week.Thumbnail = thumbnail;
             }
-            if (newWeek.Name != null)
-                week.Name = newWeek.Name;
+            week.Name = newWeek.Name;
             // If newWeek.Days should support number of days other than 7, change this check to if(newWeek.Days.Count < 1)
             if (newWeek.Days == null || newWeek.Days.Count != 7)
                 return new ErrorResponse<WeekDTO>(ErrorCode.MissingProperties, "days");
