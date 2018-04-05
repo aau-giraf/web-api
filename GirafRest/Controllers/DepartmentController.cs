@@ -43,44 +43,11 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Get all departments registered in the database or search for a department name as a query string.
-        /// </summary>
-        /// <returns>A list of all departments.</returns>
-        [HttpGet("")]
-        public async Task<Response<List<DepartmentDTO>>> Get()
-        {
-            try
-            {
-                //Filter all departments away that does not satisfy the name query.
-                var nameQuery = HttpContext.Request.Query["name"];
-                var depart = NameQueryFilter(nameQuery);
-                //Include relevant information and cast to list.
-                var result = await depart
-                    .Include(dep => dep.Members)
-                    .Include(dep => dep.Resources)
-                    .ThenInclude(dr => dr.Resource)
-                    .ToListAsync();
-
-                if (result.Count == 0)
-                    return new ErrorResponse<List<DepartmentDTO>>(ErrorCode.NotFound);
-
-                //Return the list.
-                return new Response<List<DepartmentDTO>>(result.Select(d => new DepartmentDTO(d)).ToList());
-            }
-            catch (Exception e)
-            {
-                string errorMessage = $"Exception in Get: {e.Message}, {e.InnerException}";
-                _giraf._logger.LogError(errorMessage);
-                return new ErrorResponse<List<DepartmentDTO>>(ErrorCode.Error, errorMessage);
-            }
-        }
-
-        /// <summary>
         /// Gets the department names.
         /// </summary>
         /// <returns>The department names.</returns>
         [HttpGet("names")]
-        public async Task<Response<List<DepartmentNameDTO>>> GetDepartmentNames()
+        public async Task<Response<List<DepartmentNameDTO>>> Get()
         {
 
             var departmentNameDTOs = await _giraf._context.Departments

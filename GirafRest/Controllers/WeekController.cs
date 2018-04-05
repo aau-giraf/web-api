@@ -37,31 +37,6 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Gets all week schedule for the currently authenticated user.
-        /// </summary>
-        /// <returns>
-        /// All the weekDTO found if no error occured
-        /// ErrorCode.UserNotFound if we cannot find any user in the DB
-        /// ErrorCode.NoWeekScheduleFound if we can not find any weekschedule on the user
-        /// </returns>
-        [HttpGet("")]
-        [Authorize]
-        public async Task<Response<IEnumerable<WeekDTO>>> ReadWeekSchedules()
-        {
-            var user = await _giraf.LoadUserAsync(HttpContext.User);
-            if (user == null)
-            {
-                return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.UserNotFound);
-            }
-            if (!user.WeekSchedule.Any())
-            {
-                return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.NoWeekScheduleFound);
-            }
-            return new Response<IEnumerable<WeekDTO>>(user.WeekSchedule.Select(w => new WeekDTO(w)));
-        }
-
-
-        /// <summary>
         /// Gets all week schedule name and ids for the currently authenticated citizen.
         /// </summary>
         /// All WeekScheduleNameDTOs if succesfull request
@@ -69,9 +44,9 @@ namespace GirafRest.Controllers
         /// ErrorCode.NoWeekScheduleFound if we can not find any weekschedule on the user
         /// <returns>
         /// </returns>
-        [HttpGet("names")]
+        [HttpGet("")]
         [Authorize]
-        public async Task<Response<IEnumerable<WeekNameDTO>>> ReadWeekScheduleNames()
+        public async Task<Response<IEnumerable<WeekNameDTO>>> ReadWeekSchedules()
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             if (user == null)

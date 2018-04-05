@@ -41,32 +41,6 @@ namespace GirafRest.Test
         }
 
         #region ReadWeekSchedules
-        [Fact]
-        public void ReadWeekSchedules_AccessUsersWeeks_Ok()
-        {
-            var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = wc.ReadWeekSchedules().Result;
-
-            Assert.IsType<Response<IEnumerable<WeekDTO>>>(res);
-            Assert.True(res.Success);
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            // check we got the right amount back
-            Assert.True(_testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Count == res.Data.Count());
-        }
-
-        [Fact]
-        public void ReadWeekSchedules_AccessUsersWeeksNoWeeksExist_NotFound()
-        {
-            var wc = initializeTest();
-            _testContext.MockUsers[CITEZEN_DEP_THREE].WeekSchedule.Clear();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITEZEN_DEP_THREE]);
-            var res = wc.ReadWeekSchedules().Result;
-
-            Assert.IsType<ErrorResponse<IEnumerable<WeekDTO>>>(res);
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NoWeekScheduleFound, res.ErrorCode);
-        }
 
         [Fact]
         public void ReadWeekScheduleNames_Authenticated_Ok(){
@@ -75,7 +49,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(user);
             var weekschedule = _testContext.MockWeeks[0];
 
-            var res = wc.ReadWeekScheduleNames().Result;
+            var res = wc.ReadWeekSchedules().Result;
 
             Assert.IsType<Response<IEnumerable<WeekNameDTO>>>(res);
             Assert.True(res.Success);
