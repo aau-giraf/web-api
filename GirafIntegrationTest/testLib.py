@@ -6,11 +6,41 @@ import datetime
 import getpass
 from termcolor import colored
 
+class response:
+    def __init__(self, rawResponse):
+        self.raw = rawResponse.split("\n")
+        self._json = None
 
-class controllerTest:
-    testsRun = 0  # Accross all controllertests
+    def _parseJSON(self):
+        self._json = json.loads(self.getBody())
+
+    def __getitem__(self, key):
+        if self._json is None:
+            self._parseJSON()
+        return self._json[key]
+
+    def __contains__(self, item):
+        if self._json is None:
+            self._parseJSON()
+        return item in self._json
+
+    def getBody(self):
+        for idx, line in enumerate(self.raw):
+            if line.startswith("* Connection #0 to host localhost left intact"):
+                # print self.raw[idx+1:][0]
+                return self.raw[idx+1:][0]
+
+    def getResponseCode(self):
+        for line in self.raw:
+            if line.startswith("< HTTP/1.1 "):
+                return line[11:14]
+        raise Exception("Response code not found!")
+
+
+class Test:
+    testsRun = 0  # Accross all tests
     thisTestHasFailed = False
-    testsFailed = 0  # Accross all controllertests
+    testsFailed = 0  # Accross all tests
 
     name = "unkonwn controller"
     currentTest = "unknown test"
@@ -19,12 +49,9 @@ class controllerTest:
         self.name = name
 
     def call(self, *comm):
-        process = subprocess.Popen(comm, stdout=subprocess.PIPE)
+        process = subprocess.Popen(comm, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         output, error = process.communicate()
-        try:
-            return json.loads(output)
-        except ValueError:
-            return error
+        return response(output)
 
     def login(self, username, password='password'):
         loginresult = self.request('POST', 'account/login',
@@ -33,7 +60,7 @@ class controllerTest:
         return loginresult['data']
 
     def request(self, requestType, url, data='', auth='nokey'):
-        return self.call('curl', '-sX',
+        return self.call('curl', '-svX',
                          requestType,
                          'http://localhost:5000/v1/{0}'.format(url),
                          '-H',
@@ -43,13 +70,13 @@ class controllerTest:
                          '-H',
                          'Content-Type: application/json-patch+json',
                          '-d',
-                         data
+                         data,
                          )
 
     def newTest(self, title):
         if self.thisTestHasFailed:
-            controllerTest.testsFailed += 1
-        controllerTest.testsRun += 1
+            Test.testsFailed += 1
+        Test.testsRun += 1
 
         self.currentTest = title
         self.thisTestHasFailed = False
@@ -86,9 +113,11 @@ class controllerTest:
                           attrs=['dark'])
 
     def ensureSuccess(self, response):
+        print response[0:]
         errormessages = ''
-        for message in response['errorProperties']:
-            errormessages += '\nMessage:  ' + message
+        if 'errorProperties' in response:
+            for message in response['errorProperties']:
+                errormessages += '\nMessage:  ' + message
         self.ensure(response['success'] is True,
                     errormessage='Error: {0}'.format(response['errorKey'] + errormessages),
                     calldepth=2)

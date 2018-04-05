@@ -176,10 +176,10 @@ namespace GirafRest.Test.Controllers
         public void AddUser_ExistingDepartment_OK()
         {
             var dc = initializeTest();
-            var userName = "Admin";
+            var UserName = "Admin";
             var user = new GirafUserDTO()
             {
-                Username = userName,
+                UserName = UserName,
                 Id = "admin"
             };
 
@@ -188,7 +188,7 @@ namespace GirafRest.Test.Controllers
             Assert.IsType<Response<DepartmentDTO>>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             // Check data
-            Assert.True(res.Data.Members.Any(m => m == userName));
+            Assert.True(res.Data.Members.Any(m => m == UserName));
         }
 
         [Fact]
@@ -197,7 +197,7 @@ namespace GirafRest.Test.Controllers
             var dc = initializeTest();
             var user = new GirafUserDTO()
             {
-                Username = "AddUserTest"
+                UserName = "AddUserTest"
             };
 
             var res = dc.AddUser(DEPARTMENT_TEN, user).Result;

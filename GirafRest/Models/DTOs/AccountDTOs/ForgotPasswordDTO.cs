@@ -9,10 +9,10 @@ namespace GirafRest.Models.DTOs.AccountDTOs
     public class ForgotPasswordDTO
     {
         /// <summary>
-        /// The users username.
+        /// The users UserName.
         /// </summary>
         [Required]
-        public string Username { get; set; }
+        public string UserName { get; set; }
 
         /// <summary>
         /// His email address.

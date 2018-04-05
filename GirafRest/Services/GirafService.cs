@@ -74,15 +74,15 @@ namespace GirafRest.Services
         }
 
         /// <summary>
-        /// Loads the user with the given username and also includes all related data.
+        /// Loads the user with the given UserName and also includes all related data.
         /// </summary>
-        /// <param name="username">The username of the user to fetch.</param>
+        /// <param name="UserName">The UserName of the user to fetch.</param>
         /// <returns>A loaded user, i.e. a user with all related data.</returns>
-        public async Task<GirafUser> LoadByNameAsync(string username)
+        public async Task<GirafUser> LoadByNameAsync(string UserName)
         {
             var user = await  _context.Users
                     //First load the user from the database
-                    .Where(u => u.UserName.ToLower() == username.ToLower())
+                    .Where(u => u.UserName.ToLower() == UserName.ToLower())
                     //Then load his pictograms - both the relationship and the actual pictogram
                     .Include(u => u.Resources)
                     .ThenInclude(ur => ur.Resource)

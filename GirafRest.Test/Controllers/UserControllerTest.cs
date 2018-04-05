@@ -19,7 +19,7 @@ namespace GirafRest.Test
         private UnitTestExtensions.TestContext _testContext;
         private readonly ITestOutputHelper _testLogger;
         private readonly string _pngFilepath;
-        private const string CitizenUsername = "Citizen of dep 2";
+        private const string CitizenUserName = "Citizen of dep 2";
 
         private const int NewApplicationId = 1;
         private const int AdminDepOne = UserAdmin;
@@ -51,7 +51,7 @@ namespace GirafRest.Test
                 _testContext.MockRoleManager.Object);
             
             _testContext.MockHttpContext = usercontroller.MockHttpContext();
-            _testContext.MockHttpContext.MockQuery("username", null);
+            _testContext.MockHttpContext.MockQuery("UserName", null);
 
             return usercontroller;
         }
@@ -70,7 +70,7 @@ namespace GirafRest.Test
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             // Check that we logged in as the user we wanted
-            Assert.Equal(res.Data.Username, mockUser.UserName);
+            Assert.Equal(res.Data.UserName, mockUser.UserName);
         }
 
         [Fact]
@@ -128,7 +128,7 @@ namespace GirafRest.Test
             Assert.IsType<Response<GirafUserDTO>>(res);
             Assert.True(res.Success);
             // check that we are logged in as the correct user
-            Assert.Equal(res.Data.Username, mockUser.UserName);
+            Assert.Equal(res.Data.UserName, mockUser.UserName);
             Assert.Equal(res.Data.Department, mockUser.DepartmentKey);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
         }
@@ -143,13 +143,13 @@ namespace GirafRest.Test
 
             Assert.IsType<Response<GirafUserDTO>>(res);
             Assert.True(res.Success);
-            Assert.Equal(res.Data.Username, mockUser.UserName);
+            Assert.Equal(res.Data.UserName, mockUser.UserName);
             Assert.Equal(res.Data.Department, mockUser.DepartmentKey);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
         }
 
         [Fact]
-        public void GetUser_GuardianLoginUsernameInDepartment_Success()
+        public void GetUser_GuardianLoginUserNameInDepartment_Success()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GuardianDepTwo]);
@@ -158,12 +158,12 @@ namespace GirafRest.Test
 
             Assert.IsType<Response<GirafUserDTO>>(res);
             Assert.True(res.Success);
-            Assert.Equal(_testContext.MockUsers[GuardianDepTwo].UserName, res.Data.Username);
+            Assert.Equal(_testContext.MockUsers[GuardianDepTwo].UserName, res.Data.UserName);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
         }
 
         [Fact]
-        public void GetUser_GuardianLoginUsernameNotInDepartment_Error()
+        public void GetUser_GuardianLoginUserNameNotInDepartment_Error()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GuardianDepTwo]);
@@ -182,7 +182,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void GetUser_AdminLoginUsernameQuery_Success()
+        public void GetUser_AdminLoginUserNameQuery_Success()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[AdminDepOne]);
@@ -191,12 +191,12 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.IsType<Response<GirafUserDTO>>(res);
             Assert.True(res.Success);
-            Assert.Equal(_testContext.MockUsers[AdminDepOne].UserName, res.Data.Username);
+            Assert.Equal(_testContext.MockUsers[AdminDepOne].UserName, res.Data.UserName);
             Assert.Equal(_testContext.MockUsers[AdminDepOne].DepartmentKey, res.Data.Department);
         }
 
         [Fact]
-        public void GetUser_AdminLoginInvalidUsername_Error()
+        public void GetUser_AdminLoginInvalidUserName_Error()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[AdminDepOne]);
@@ -215,14 +215,14 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void GetUser_CitizenLoginUsernameQuery_Error()
+        public void GetUser_CitizenLoginUserNameQuery_Error()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
-            var res = usercontroller.GetUser(CitizenUsername).Result;
+            var res = usercontroller.GetUser(CitizenUserName).Result;
 
 // <<<<<<< HEAD
-//             var response = usercontroller.GetUser(CitizenUsername).Result;
+//             var response = usercontroller.GetUser(CitizenUserName).Result;
 
 //             Assert.False(response.Success);
 //             Assert.Equal(ErrorCode.UserNotFound, response.ErrorCode);
@@ -249,7 +249,7 @@ namespace GirafRest.Test
             Assert.IsType<Response<GirafUserDTO>>(res);
             Assert.True(res.Success);
             // check that the updated data is correct
-            Assert.Equal(_testContext.MockUsers[AdminDepOne].UserName, res.Data.Username);
+            Assert.Equal(_testContext.MockUsers[AdminDepOne].UserName, res.Data.UserName);
             Assert.Equal(_testContext.MockUsers[AdminDepOne].DepartmentKey, res.Data.Department);
         }
 
@@ -346,7 +346,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void AddApplication_NullAsUsername_ErrorUserNotFound()
+        public void AddApplication_NullAsUserName_ErrorUserNotFound()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GuardianDepTwo]);
@@ -359,7 +359,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void AddApplication_InvalidUsername_ErrorUserNotFound()
+        public void AddApplication_InvalidUserName_ErrorUserNotFound()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GuardianDepTwo]);
@@ -398,10 +398,10 @@ namespace GirafRest.Test
             {
                 Id = NewApplicationId
             };
-            var username = _testContext.MockUsers[CitizenDepTwo].UserName;
-            usercontroller.AddApplication(username, applicationOption).Wait();
+            var UserName = _testContext.MockUsers[CitizenDepTwo].UserName;
+            usercontroller.AddApplication(UserName, applicationOption).Wait();
 
-            var res = usercontroller.DeleteApplication(username, applicationOption).Result;
+            var res = usercontroller.DeleteApplication(UserName, applicationOption).Result;
 
             Assert.IsType<Response<GirafUserDTO>>(res);
             Assert.True(res.Success);
@@ -419,8 +419,8 @@ namespace GirafRest.Test
             {
                 Id = NewApplicationId
             };
-            var username = _testContext.MockUsers[CitizenDepTwo].UserName;
-            var res = usercontroller.DeleteApplication(username, applicationOption).Result;
+            var UserName = _testContext.MockUsers[CitizenDepTwo].UserName;
+            var res = usercontroller.DeleteApplication(UserName, applicationOption).Result;
 
             Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);
@@ -436,14 +436,14 @@ namespace GirafRest.Test
             {
                 Id = NewApplicationId
             };
-            var username = _testContext.MockUsers[CitizenDepTwo].UserName;
-            usercontroller.AddApplication(username, applicationOption).Wait();
+            var UserName = _testContext.MockUsers[CitizenDepTwo].UserName;
+            usercontroller.AddApplication(UserName, applicationOption).Wait();
             applicationOption = new ApplicationOption("Test Application", "test.app")
             {
                 Id = -NewApplicationId
             };
 
-            var res = usercontroller.DeleteApplication(username, applicationOption).Result;
+            var res = usercontroller.DeleteApplication(UserName, applicationOption).Result;
 
             Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);
@@ -462,9 +462,9 @@ namespace GirafRest.Test
             {
                 Id = NewApplicationId
             };
-            var username = _testContext.MockUsers[CitizenDepTwo].UserName;
-            usercontroller.AddApplication(username, applicationOption).Wait();
-            var res = usercontroller.DeleteApplication(username, null).Result;
+            var UserName = _testContext.MockUsers[CitizenDepTwo].UserName;
+            usercontroller.AddApplication(UserName, applicationOption).Wait();
+            var res = usercontroller.DeleteApplication(UserName, null).Result;
 
             Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);
@@ -475,7 +475,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void DeleteApplication_InvalidUsername_ErrorUserNotFound()
+        public void DeleteApplication_InvalidUserName_ErrorUserNotFound()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GuardianDepTwo]);
@@ -484,8 +484,8 @@ namespace GirafRest.Test
                 Id = NewApplicationId
             };
             
-            usercontroller.AddApplication("VALID USERNAME", applicationOption).Wait();
-            var res = usercontroller.DeleteApplication("INVALID USERNAME", applicationOption).Result;
+            usercontroller.AddApplication("VALID UserName", applicationOption).Wait();
+            var res = usercontroller.DeleteApplication("INVALID UserName", applicationOption).Result;
 
             Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);
@@ -493,7 +493,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void DeleteApplication_NullUsername_ErrorUserNotFound()
+        public void DeleteApplication_NullUserName_ErrorUserNotFound()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GuardianDepTwo]);
@@ -501,9 +501,9 @@ namespace GirafRest.Test
             {
                 Id = NewApplicationId
             };
-            var username = _testContext.MockUsers[CitizenDepTwo].UserName;
+            var UserName = _testContext.MockUsers[CitizenDepTwo].UserName;
             usercontroller.AddApplication(null, applicationOption).Wait();
-            var res = usercontroller.DeleteApplication(username, null).Result;
+            var res = usercontroller.DeleteApplication(UserName, null).Result;
 
             Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);

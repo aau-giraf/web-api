@@ -4,7 +4,7 @@ import time
 from rawSampleImage import *
 
 
-def testUserController():
+def userControllerTest():
     test = controllerTest('User Controller')
 
     graatand = test.login('Graatand')

@@ -9,11 +9,11 @@ namespace GirafRest.Models.DTOs.AccountDTOs
     public class RegisterDTO
     {
         /// <summary>
-        /// The users username.
+        /// The users UserName.
         /// </summary>
         [Required]
         [Display(Name = "Brugernavn")]
-        public string Username { get; set; }
+        public string UserName { get; set; }
 
         /// <summary>
         /// The users password.

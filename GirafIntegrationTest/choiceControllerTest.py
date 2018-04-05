@@ -3,8 +3,8 @@ from testLib import *
 import time
 
 
-def testChoiceController():
-    test = controllerTest("Choice Controller")
+def choiceControllerTest():
+    test = test("Choice Controller")
 
     ####
     test.newTest('Register Gunnar')

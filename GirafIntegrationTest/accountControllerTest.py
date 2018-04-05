@@ -3,8 +3,8 @@ import time
 import json
 
 
-def testAccountController():
-    test = controllerTest("Account Controller")
+def accountControllerTest():
+    test = Test("Account Controller")
 
     ####
     test.newTest('GETting role without authorization yields error')

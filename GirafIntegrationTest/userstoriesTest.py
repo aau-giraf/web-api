@@ -2,8 +2,8 @@
 from testLib import *
 import time
 
-def testUserstories():
-    test = controllerTest("User stories")
+def userstoriesTest():
+    test = Test("User stories")
 
     test.newTest('T914')
     # Login as guardian

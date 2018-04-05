@@ -4,7 +4,7 @@ import time
 from rawSampleImage import *
 
 
-def testWeekController():
+def weekControllerTest():
     test = controllerTest('Week Controller')
 
     ####

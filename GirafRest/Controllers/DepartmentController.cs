@@ -186,7 +186,7 @@ namespace GirafRest.Controllers
                 //Add the department to the database.
                 Department department = new Department(depDTO);
                 
-                //Add all members specified by either id or username in the DTO
+                //Add all members specified by either id or UserName in the DTO
                 if (depDTO.Members != null)
                 {
                     foreach (var mem in depDTO.Members)
@@ -252,14 +252,14 @@ namespace GirafRest.Controllers
         /// <param name="usr">An existing GirafUser instance to be added to the department.</param>
         /// <returns>MissingProperties if the DTO is empty.
         /// DepartmentNotFound if department of specified ID isn't found.
-        /// UserNameAlreadyTakenWithinDepartment if a user with usr's username already exists in the specified department.
+        /// UserNameAlreadyTakenWithinDepartment if a user with usr's UserName already exists in the specified department.
         /// UserNotFound if no user exists with the ID of usr. 
         /// A DepartmentDTO representing the new state of the department, if there were no problems.</returns>
         [HttpPost("user/{departmentID}")]
         public async Task<Response<DepartmentDTO>> AddUser(long departmentId, [FromBody]GirafUserDTO usr)
         {
             //Fetch user and department and check that they exist
-            if (usr?.Username == null)
+            if (usr?.UserName == null)
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.MissingProperties);
 
             Department dep = await _giraf._context.Departments
@@ -271,7 +271,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.DepartmentNotFound);
 
             //Check if the user is already in the department
-            if (dep.Members.Any(u => u.UserName == usr.Username))
+            if (dep.Members.Any(u => u.UserName == usr.UserName))
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.UserNameAlreadyTakenWithinDepartment);
 
             //Add the user and save these changes
@@ -314,12 +314,12 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.DepartmentNotFound);
 
             //Check if the user actually is in the department
-            if (!dep.Members.Any(u => u.UserName == usr.Username))
+            if (!dep.Members.Any(u => u.UserName == usr.UserName))
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.UserNotFoundInDepartment,
                     "User does not exist in the given department.");
 
             //Remove the user from the department
-            dep.Members.Remove(dep.Members.First(u => u.UserName == usr.Username));
+            dep.Members.Remove(dep.Members.First(u => u.UserName == usr.UserName));
             _giraf._context.SaveChanges();
             return new Response<DepartmentDTO>(new DepartmentDTO(dep));
         }
