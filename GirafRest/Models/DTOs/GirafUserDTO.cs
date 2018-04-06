@@ -123,7 +123,6 @@ namespace GirafRest.Models.DTOs
                             Guardians.Add(new GirafUserDTO(usr.Guardian, GirafRoles.Guardian, false));
                         }
                     }
-
                 }
             }
             //Check if a user is in a department, add null as key if not.

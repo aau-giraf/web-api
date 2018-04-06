@@ -66,7 +66,7 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
             var res = userController.SetUserIcon().Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.IsType<Response<GirafUserSimplifiedDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             // Check that we logged in as the user we wanted
@@ -83,10 +83,16 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
             var res = usercontroller.SetUserIcon().Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.IsType<Response<GirafUserSimplifiedDTO>>(res);
             Assert.True(res.Success);
-            Assert.True(res.Data.UserIcon != null);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+
+            // Get icon to be sure it is set
+            var res2 = usercontroller.GetUserIcon(res.Data.Id).Result;
+
+            Assert.IsType<Response<GirafUserSimplifiedDTO>>(res);
+            Assert.True(res2.Success);
+            Assert.True(res2.Data.Image != null);
         }
 
         [Fact]
@@ -98,10 +104,15 @@ namespace GirafRest.Test
             usercontroller.SetUserIcon().Wait();
             var res = usercontroller.DeleteUserIcon().Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.IsType<Response<GirafUserSimplifiedDTO>>(res);
             Assert.True(res.Success);
-            Assert.True(res.Data.UserIcon == null);
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+
+            // Get icon to be sure it is deleted
+            var res2 = usercontroller.GetUserIcon(res.Data.Id).Result;
+
+            Assert.IsType<ErrorResponse<ImageDTO>>(res2);
+            Assert.False(res2.Success);
+            Assert.Equal(ErrorCode.UserHasNoIcon, res2.ErrorCode);
         }
 
         [Fact]
@@ -111,7 +122,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
             var res = usercontroller.DeleteUserIcon().Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserHasNoIcon, res.ErrorCode);
         }
@@ -125,7 +136,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             var res = usercontroller.GetUser().Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.IsType<Response<GirafUserSimplifiedDTO>>(res);
             Assert.True(res.Success);
             // check that we are logged in as the correct user
             Assert.Equal(res.Data.Username, mockUser.UserName);
@@ -141,7 +152,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             var res = usercontroller.GetUser().Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.IsType<Response<GirafUserSimplifiedDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(res.Data.Username, mockUser.UserName);
             Assert.Equal(res.Data.Department, mockUser.DepartmentKey);
@@ -156,7 +167,7 @@ namespace GirafRest.Test
 
             var res = usercontroller.GetUser().Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.IsType<Response<GirafUserSimplifiedDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(_testContext.MockUsers[GuardianDepTwo].UserName, res.Data.Username);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
@@ -175,7 +186,7 @@ namespace GirafRest.Test
 //             Assert.False(response.Success);
 //             Assert.Equal(ErrorCode.UserNotFound, response.ErrorCode);
 // =======
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
 // >>>>>>> release-v1.002.01
@@ -189,7 +200,7 @@ namespace GirafRest.Test
             var res = usercontroller.GetUser().Result;
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.IsType<Response<GirafUserSimplifiedDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(_testContext.MockUsers[AdminDepOne].UserName, res.Data.Username);
             Assert.Equal(_testContext.MockUsers[AdminDepOne].DepartmentKey, res.Data.Department);
@@ -208,7 +219,7 @@ namespace GirafRest.Test
 //             Assert.False(response.Success);
 //             Assert.Equal(ErrorCode.UserNotFound, response.ErrorCode);
 // =======
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
 // >>>>>>> release-v1.002.01
@@ -227,7 +238,7 @@ namespace GirafRest.Test
 //             Assert.False(response.Success);
 //             Assert.Equal(ErrorCode.UserNotFound, response.ErrorCode);
 // =======
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
 // >>>>>>> release-v1.002.01
@@ -246,7 +257,7 @@ namespace GirafRest.Test
                 .Result;
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.IsType<Response<GirafUserSimplifiedDTO>>(res);
             Assert.True(res.Success);
             // check that the updated data is correct
             Assert.Equal(_testContext.MockUsers[AdminDepOne].UserName, res.Data.Username);
@@ -260,7 +271,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[AdminDepOne]);
             var res = usercontroller.UpdateUser(null).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
@@ -279,7 +290,7 @@ namespace GirafRest.Test
                 })
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.Error, res.ErrorCode);
         }
@@ -293,12 +304,14 @@ namespace GirafRest.Test
             var applicationOption = new ApplicationOption("Test application", "test.app");
 
             var res = usercontroller.AddApplication(_testContext.MockUsers[CitizenDepTwo].UserName, applicationOption).Result;
-            var user = res.Data as GirafUserDTO;
+            var user = res.Data as GirafUserSimplifiedDTO;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.IsType<Response<GirafUserSimplifiedDTO>>(res);
             Assert.True(res.Success);
-            // check that the applicationName exists on the user
-            Assert.Contains(user.Settings.appsUserCanAccess, (a => a.ApplicationName == applicationOption.ApplicationName));
+
+            var res2 = usercontroller.GetSettings(res.Data.Username).Result;
+            // check that the ApplicationName exists on the user
+            Assert.Contains(res2.Data.appsUserCanAccess, (a => a.ApplicationName == applicationOption.ApplicationName));
         }
 
         [Fact]
@@ -310,7 +323,7 @@ namespace GirafRest.Test
 
             var res = usercontroller.AddApplication(_testContext.MockUsers[CitizenDepTwo].UserName, applicationOption).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode); 
         }
@@ -325,7 +338,7 @@ namespace GirafRest.Test
                 .AddApplication(_testContext.MockUsers[CitizenDepTwo].UserName, applicationOption)
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode); 
         }
@@ -340,7 +353,7 @@ namespace GirafRest.Test
                 .AddApplication(_testContext.MockUsers[CitizenDepTwo].UserName, applicationOption)
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode); 
         }
@@ -353,7 +366,7 @@ namespace GirafRest.Test
             var applicationOption = new ApplicationOption("Test application", "test.app");
             var res = usercontroller.AddApplication(null, applicationOption).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
@@ -366,7 +379,7 @@ namespace GirafRest.Test
             var applicationOption = new ApplicationOption("Test application", "test.app");
             var res = usercontroller.AddApplication("invalid", applicationOption).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
@@ -383,7 +396,7 @@ namespace GirafRest.Test
                 .AddApplication(_testContext.MockUsers[CitizenDepTwo].UserName, applicationOption)
                 .Result;
             
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserAlreadyHasAccess, res.ErrorCode);
         }
@@ -403,10 +416,12 @@ namespace GirafRest.Test
 
             var res = usercontroller.DeleteApplication(username, applicationOption).Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.IsType<Response<GirafUserSimplifiedDTO>>(res);
             Assert.True(res.Success);
+
+            var res2 = usercontroller.GetSettings(res.Data.Username).Result;
             // check that the image is actually deleted
-            Assert.True(res.Data.Settings.appsUserCanAccess
+            Assert.True(res2.Data.appsUserCanAccess
                         .FirstOrDefault(a => a.ApplicationName == "Test Application") == null);
         }
 
@@ -422,7 +437,7 @@ namespace GirafRest.Test
             var username = _testContext.MockUsers[CitizenDepTwo].UserName;
             var res = usercontroller.DeleteApplication(username, applicationOption).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.ApplicationNotFound, res.ErrorCode);
         }
@@ -445,7 +460,7 @@ namespace GirafRest.Test
 
             var res = usercontroller.DeleteApplication(username, applicationOption).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.ApplicationNotFound, res.ErrorCode);
             // check that the image is not deleted
@@ -466,7 +481,7 @@ namespace GirafRest.Test
             usercontroller.AddApplication(username, applicationOption).Wait();
             var res = usercontroller.DeleteApplication(username, null).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
             // check that the image is not deleted
@@ -487,7 +502,7 @@ namespace GirafRest.Test
             usercontroller.AddApplication("VALID USERNAME", applicationOption).Wait();
             var res = usercontroller.DeleteApplication("INVALID USERNAME", applicationOption).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
@@ -505,7 +520,7 @@ namespace GirafRest.Test
             usercontroller.AddApplication(null, applicationOption).Wait();
             var res = usercontroller.DeleteApplication(username, null).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
@@ -519,7 +534,7 @@ namespace GirafRest.Test
             const string newDisplayName = "Display Name";
             var res = usercontroller.UpdateDisplayName(newDisplayName).Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.IsType<Response<GirafUserSimplifiedDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.Equal(newDisplayName, res.Data.ScreenName);
@@ -535,7 +550,7 @@ namespace GirafRest.Test
 
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
         }
 
 
@@ -547,7 +562,7 @@ namespace GirafRest.Test
             string newDisplayName = null;
             var res = usercontroller.UpdateDisplayName(newDisplayName).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
@@ -563,7 +578,7 @@ namespace GirafRest.Test
                 .AddUserResource(targetUser, new ResourceIdDTO() {Id = GuardianPrivatePictogram})
                 .Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.IsType<Response<GirafUserSimplifiedDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             // check ressource is added correctly
@@ -581,7 +596,7 @@ namespace GirafRest.Test
                 .AddUserResource(targetUser, new ResourceIdDTO() { Id = GuardianPrivatePictogram })
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
@@ -597,7 +612,7 @@ namespace GirafRest.Test
                 .AddUserResource(targetUser, new ResourceIdDTO() { Id = GuardianProtectedPictogram })
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.ResourceMustBePrivate, res.ErrorCode);
         }
@@ -613,7 +628,7 @@ namespace GirafRest.Test
                 .AddUserResource(targetUser, new ResourceIdDTO() { Id = PublicPictogram })
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
@@ -628,7 +643,7 @@ namespace GirafRest.Test
                 .AddUserResource(targetUser, new ResourceIdDTO() { Id = CitizenPrivatePictogram })
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
@@ -643,7 +658,7 @@ namespace GirafRest.Test
                 .AddUserResource(targetUser, new ResourceIdDTO() { Id = PublicPictogram })
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
@@ -658,7 +673,7 @@ namespace GirafRest.Test
                 .AddUserResource(targetUser, new ResourceIdDTO() { Id = CitizenPrivatePictogram })
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
@@ -673,7 +688,7 @@ namespace GirafRest.Test
                 .AddUserResource(targetUser, new ResourceIdDTO() { Id = PublicPictogram })
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
@@ -688,7 +703,7 @@ namespace GirafRest.Test
                 .AddUserResource(targetUser, new ResourceIdDTO() { Id = GuardianPrivatePictogram })
                 .Result;
             
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
        }
@@ -704,7 +719,7 @@ namespace GirafRest.Test
                 .AddUserResource(targetUser, new ResourceIdDTO() { Id = PublicPictogram })
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
@@ -719,7 +734,7 @@ namespace GirafRest.Test
                 .DeleteResource(new ResourceIdDTO() { Id = GuardianPrivatePictogram })
                 .Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.IsType<Response<GirafUserSimplifiedDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             // check that ressource no longer exist
@@ -734,7 +749,7 @@ namespace GirafRest.Test
                 .DeleteResource(new ResourceIdDTO() { Id = GuardianPrivatePictogram })
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
@@ -748,7 +763,7 @@ namespace GirafRest.Test
                 .DeleteResource(new ResourceIdDTO() { Id = GuardianProtectedPictogram })
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserDoesNotOwnResource, res.ErrorCode);
         }
@@ -762,7 +777,7 @@ namespace GirafRest.Test
                 .DeleteResource(new ResourceIdDTO() { Id = GuardianProtectedPictogram })
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserDoesNotOwnResource, res.ErrorCode);
         }
@@ -777,7 +792,7 @@ namespace GirafRest.Test
                 .DeleteResource(new ResourceIdDTO() { Id = PublicPictogram })
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserDoesNotOwnResource, res.ErrorCode);
         }
@@ -791,7 +806,7 @@ namespace GirafRest.Test
                 .DeleteResource(new ResourceIdDTO() { Id = PublicPictogram })
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
