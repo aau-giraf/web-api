@@ -1,13 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
-and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 [//]: # ( ## [x.y.z] - yyyy-mm-dd)
 [//]: # (Describe each version with the following sections: Added, Changed, Removed, Deprecated, Fixed, Security)
 
 ## [Unreleased]
+### Added
+- WeekSchedule templates
+
+### Changed
+- All pictograms in the sample database are now public
 
 ## [1.002.01] - Unreleased
 ### Added
@@ -44,7 +48,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 Changes will be tracked from this point onwards.
 
 
-# Version List
+[//]: # ( List of link specifications, wont be rendered )
 [Unreleased]: http://git.giraf.cs.aau.dk/Giraf-Rest/web-api/compare/v1.001.01...develop
 [1.001.01]: http://git.giraf.cs.aau.dk/Giraf-Rest/web-api/compare/v0.001.01...v1.001.01
 [0.001.01]: http://git.giraf.cs.aau.dk/Giraf-Rest/web-api/compare/v0...v0.001.01
