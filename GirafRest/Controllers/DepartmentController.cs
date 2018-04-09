@@ -46,7 +46,7 @@ namespace GirafRest.Controllers
         /// Gets the department names.
         /// </summary>
         /// <returns>The department names.</returns>
-        [HttpGet("names")]
+        [HttpGet("")]
         public async Task<Response<List<DepartmentNameDTO>>> Get()
         {
 
