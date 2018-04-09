@@ -198,10 +198,11 @@ def DepartmentControllerTest():
 
     ####
     test.new('Kurt tries to remove Cyclopian from Dalgaardsholmstuen')
-    response = requests.delete(Test.url() + 'Department/resource/{0}'.format(dalgardsholmstuenId), json=body, headers = {"Authorization":"Bearer {0}".format(kurt)}).json()
+    response = requests.delete(Test.url() + 'Department/resource/{0}'.format(dalgardsholmstuenId), json=body, headers = {"Authorization":"Bearer {0}".format(kurt)})
+    print('Department/resource/{0}'.format(dalgardsholmstuenId))
     test.ensureError(response)
 
     ####
     test.new('Remove Cyclopian from Dalgaardsholmstuen')
-    response = requests.delete(Test.url() + 'Department/resource/{0}'.format(dalgardsholmstuenId), json=cyclopianBody, headers = {"Authorization":"Bearer {0}".format(gunnar)}).json()
+    response = requests.delete(Test.url() + 'Department/resource', json={**cyclopianBody, **{"id":dalgardsholmstuenId}}, headers = {"Authorization":"Bearer {0}".format(gunnar)}).json()
     test.ensureSuccess(response)

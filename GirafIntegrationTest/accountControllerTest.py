@@ -7,14 +7,8 @@ def AccountControllerTest():
     test = Test("Account Controller")
     url = Test.url()
     ####
-    test.new('GETting role without authorization yields error')
-    response = requests.get(url + 'role').json()
-    test.ensureError(response)
-    test.ensure('data' not in response or response['data'] is None)
-
-    ####
     test.new('GETting username without authorization yields error')
-    response = requests.get(url + 'username').json()
+    response = requests.get(url + 'user/username')
     test.ensureError(response)
     test.ensure('data' not in response or response['data'] is None)
 
@@ -24,12 +18,6 @@ def AccountControllerTest():
     test.ensureSuccess(response)
     test.ensure('data' in response)
     graatandToken = response['data']
-
-    ####
-    test.new('GETting role with authorization')
-    response = requests.get(url + 'role', headers = {"Authorization":"Bearer {0}".format(graatandToken)}).json()
-    if test.ensureSuccess(response):
-        test.ensure(response['data'] == "Guardian")
 
     ####
     test.new('GETting username with authorization')

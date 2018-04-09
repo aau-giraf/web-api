@@ -14,8 +14,12 @@ def UserControllerTest():
     ####
     test.new('Register Gunnar')
     gunnarUsername = 'Gunnar{0}'.format(str(time.time()))
-    response = test.request('POST', 'account/register',
-                            '{"username": "' + gunnarUsername + '","password": "password","departmentId": 1}')
+
+    response = requests.post(Test.url() + 'account/register', json={
+        "username": gunnarUsername,
+        "password": "password",
+        "departmentId": 1
+        }).json()
     test.ensureSuccess(response)
 
     gunnar = test.login(gunnarUsername)
@@ -23,34 +27,37 @@ def UserControllerTest():
     ####
     test.new('Register Charlie')
     charlieUsername = 'Charlie{0}'.format(str(time.time()))
-    response = test.request('POST', 'account/register',
-                            '{"username": "' + charlieUsername + '","password": "password","departmentId": 1}')
+    response = requests.post(Test.url() + 'account/register', json={
+        "username": charlieUsername,
+        "password": "password",
+        "departmentId": 1
+        }).json()
     test.ensureSuccess(response)
 
     charlie = test.login(charlieUsername)
-    response = test.request('GET', 'User', auth=charlie)
+    response = requests.get(Test.url() + 'User', headers = {"Authorization":"Bearer {0}".format(charlie)}).json()
 
     ####
     test.new('Get Username')
-    response = test.request('GET', 'User/username', auth=gunnar)
+    response = requests.get(Test.url() + 'User/username', headers = {"Authorization":"Bearer {0}".format(gunnar)}).json()
     test.ensureSuccess(response)
     test.ensure(response['data'] == gunnarUsername)
 
     ####
     test.new('Get User info')
-    response = test.request('GET', 'User', auth=gunnar)
+    response = requests.get(Test.url() + 'User', headers = {"Authorization":"Bearer {0}".format(gunnar)}).json()
     test.ensureSuccess(response)
     test.ensure(response['data']['username'] == gunnarUsername)
 
     ####
     test.new('Gunnar tries to get Kurt\'s user info')
-    response = test.request('GET', 'User/?username=Kurt', auth=gunnar)
+    response = requests.get(Test.url() + 'User/username', json={"username":"Kurt"}, headers = {"Authorization":"Bearer {0}".format(gunnar)}).json()
     test.ensureError(response)
     test.ensureNoData(response)
 
     ####
     test.new('Graatand gets Kurt\'s user info')
-    response = test.request('GET', 'User/Kurt', auth=graatand)
+    response = requests.get(Test.url() + 'User/Kurt', headers = {"Authorization":"Bearer {0}".format(graatand)}).json()
     test.ensureSuccess(response)
     test.ensure(response['data']['username'] == 'Kurt',
                 errormessage='Expected name: Kurt.\nActual name: {0}'.format(response['data']['username']))
@@ -59,24 +66,24 @@ def UserControllerTest():
 
     ####
     test.new('Set display name')
-    response = test.request('PUT', 'User/display-name', data='"{0}"'.format(veryLongString), auth=gunnar)
-    test.ensureSuccess(response)
+    # PUTs a username, not ID
+
+    # response = requests.put(Test.url() + 'User/Kurt', data=veryLongString, headers = {"Authorization":"Bearer {0}".format(gunnar)}).json()
+    # test.ensureSuccess(response)
     # Check that display name was updated
-    response = test.request('GET', 'User', auth=gunnar)
-    test.ensure(unicode(response['data']['screenName']) == unicode(veryLongString))
+    # response = test.request('GET', 'User', auth=gunnar)
+    # test.ensure(unicode(response['data']['screenName']) == unicode(veryLongString))
 
     ####
     test.new('Post Wendesday pictogram')
     wednesday = 'Wednesday{0}'.format(str(time.time()))
-    wednesdayBody = '''
-        {{
+    wednesdayBody = {
           "accessLevel": 2,
-          "title": "{0}",
+          "title": "wednesday",
           "id": 5,
           "lastEdit": "2018-03-19T10:40:26.587Z"
-        }}
-    '''.format(wednesday)
-    response = test.request('POST', 'Pictogram', data=wednesdayBody, auth=gunnar)
+        }
+    response = requests.post(Test.url() + 'Pictogram', json=wednesdayBody, headers = {"Authorization":"Bearer {0}".format(gunnar)}).json()
     test.ensureSuccess(response)
     wednesdayID = response['data']['id']
 
@@ -87,61 +94,61 @@ def UserControllerTest():
           "id": {0}
         }}
     '''.format(wednesdayID)
-    response = test.request('POST', 'User/resource/{0}'.format(charlieUsername), data=wednesdayIDBody, auth=gunnar)
+    response = requests.post(Test.url() + 'User/resource/{0}'.format(charlieUsername), json=wednesdayIDBody, headers = {"Authorization":"Bearer {0}".format(gunnar)}).json()
     test.ensureSuccess(response)
 
     ####
     test.new('Remove pictogram from gunnar')
-    response = test.request('DELETE', 'User/resource/?username={0}'.format(gunnarUsername), data=wednesdayIDBody,
-                            auth=gunnar)
+    response = requests.delete(Test.url() + 'User/resource', json= {
+            "gunnarUsername": gunnarUsername
+        }, headers = {"Authorization":"Bearer {0}".format(gunnar)}).json()
     test.ensureSuccess(response)
 
     ####
     test.new('Get settings')
-    response = test.request('GET', 'User/settings', auth=gunnar)
+    response = requests.get(Test.url() + 'User/settings', headers = {"Authorization":"Bearer {0}".format(gunnar)}).json()
     test.ensureSuccess(response)
 
     ####
     test.new('Disable grayscale')
-    response = test.request('POST', 'User/grayscale/false', auth=gunnar)
+    response = requests.post(Test.url() + 'User/grayscale/false', headers = {"Authorization":"Bearer {0}".format(gunnar)}).json()
     test.ensureSuccess(response)
-    response = test.request('GET', 'User/settings', auth=gunnar)
+    response = requests.get(Test.url() + 'User/settings', headers = {"Authorization":"Bearer {0}".format(gunnar)}).json()
     test.ensureEqual(False, response['data']['useGrayscale'])
 
     ####
     test.new('Enable grayscale')
-    response = test.request('POST', 'User/grayscale/true', auth=gunnar)
+    response = requests.post(Test.url() + 'User/grayscale/true', headers = {"Authorization":"Bearer {0}".format(gunnar)}).json()
     test.ensureSuccess(response)
-    response = test.request('GET', 'User/settings', auth=gunnar)
+    response = requests.get(Test.url() + 'User/settings', headers = {"Authorization":"Bearer {0}".format(gunnar)}).json()
     test.ensureEqual(True, response['data']['useGrayscale'])
 
     ####
     test.new('Disable launcher animations')
-    response = test.request('POST', 'User/launcher_animations/false', auth=gunnar)
+    response = requests.post(Test.url() + 'User/launcher_animations/false', headers = {"Authorization":"Bearer {0}".format(gunnar)}).json()
     test.ensureSuccess(response)
-    response = test.request('GET', 'User/settings', auth=gunnar)
+    response = requests.get(Test.url() + 'User/settings', headers = {"Authorization":"Bearer {0}".format(gunnar)}).json()
     test.ensureEqual(False, response['data']['displayLauncherAnimations'])
 
     ####
     test.new('Enable launcher animations')
-    response = test.request('POST', 'User/launcher_animations/true', auth=gunnar)
+    response = requests.post(Test.url() + 'User/launcher_animations/true', headers = {"Authorization":"Bearer {0}".format(gunnar)}).json()
     test.ensureSuccess(response)
-    response = test.request('GET', 'User/settings', auth=gunnar)
+    response = requests.get(Test.url() + 'User/settings', headers = {"Authorization":"Bearer {0}".format(gunnar)}).json()
     test.ensureEqual(True, response['data']['displayLauncherAnimations'])
 
     ####
     test.new('Set all settings')
-    body = '''
-            {
-                "useGrayscale": true,
-                "displayLauncherAnimations": false,
+    body =  {
+                "useGrayscale": True,
+                "displayLauncherAnimations": False,
                 "appsUserCanAccess": [],
                 "appGridSizeRows": 33,
                 "appGridSizeColumns": 44
-            }'''
-    response = test.request('PUT', 'User/Settings', data=body, auth=gunnar)
+            }
+    response = requests.put(Test.url() + 'User/settings', json=body, headers = {"Authorization":"Bearer {0}".format(gunnar)}).json()
     test.ensureSuccess(response)
-    response = test.request('GET', 'User/settings', auth=gunnar)
+    response = requests.get(Test.url() + 'User/settings', headers = {"Authorization":"Bearer {0}".format(gunnar)}).json()
     test.ensureSuccess(response)
     test.ensureEqual(True,  response['data']['useGrayscale'])
     test.ensureEqual(False, response['data']['displayLauncherAnimations'])
@@ -150,14 +157,18 @@ def UserControllerTest():
 
     ####
     test.new('Set Settings(without data)')
-    response = test.request('PUT', 'User/Settings',  auth=gunnar)
-    test.ensureError(response)
+    response = requests.put(Test.url() + 'User/settings', headers = {"Authorization":"Bearer {0}".format(gunnar)})
+    print(response.status_code)
+    test.ensure(False, "Returns 404")
+    # test.ensureError(response)
 
     ####
     test.new('Set Settings(empty body)')
-    response = test.request('PUT', 'User/Settings', '{}', auth=gunnar)
-    test.ensureSuccess(response)
-    response = test.request('GET', 'User/settings', auth=gunnar)
+    response = requests.put(Test.url() + 'User/settings', headers = {"Authorization":"Bearer {0}".format(gunnar)})
+    print(response.status_code)
+    test.ensure(False, "Returns 404")
+    # test.ensureSuccess(response)
+    response = requests.get(Test.url() + 'User/settings', headers = {"Authorization":"Bearer {0}".format(gunnar)}).json()
     test.ensureSuccess(response)
     test.ensureEqual(False,     response['data']['useGrayscale'])
     test.ensureEqual(False,     response['data']['displayLauncherAnimations'])
@@ -166,33 +177,33 @@ def UserControllerTest():
 
     ####
     test.new('Get Kurt\'s citizens(none)')
-    response = test.request('GET', 'User/getcitizens/Kurt', kurt)
+    response = requests.get(Test.url() + 'User/getcitizens/Kurt', headers = {"Authorization":"Bearer {0}".format(kurt)}).json()
     test.ensureError(response)
 
     ####
     test.new('Get Graatand\'s citizens(some)')
-    response = test.request('GET', 'User/getCitizens/Graatand', graatand)
+    response = requests.get(Test.url() + 'User/getcitizens/Graatand', headers = {"Authorization":"Bearer {0}".format(graatand)}).json()
     if test.ensureSuccess(response):
         test.ensure(response['data'][0]['username'] == 'Kurt')
 
     ####
     test.new('Get Kurt\'s guardians(some)')
-    response = test.request('GET', 'User/getGuardians/Kurt', kurt)
+    response = requests.get(Test.url() + 'User/getGuardians/Kurt', headers = {"Authorization":"Bearer {0}".format(kurt)}).json()
     if test.ensureSuccess(response):
         test.ensure(response['data'][0]['username'] == 'Graatand')
 
     ####
     test.new('Get Graatand\'s guardians(none)')
-    response = test.request('GET', 'User/getguardians/Graatand', graatand)
+    response = requests.get(Test.url() + 'User/getGuardians/Graatand', headers = {"Authorization":"Bearer {0}".format(graatand)}).json()
     test.ensureError(response)
 
     ####
     test.new('Try to get Graatand\'s citizens(some) as Gunnar')
-    response = test.request('GET', 'User/getcitizens/Graatand', graatand)
+    response = requests.get(Test.url() + 'User/getcitizens/Graatand', headers = {"Authorization":"Bearer {0}".format(graatand)}).json()
     test.ensureError(response)
 
     ####
     test.new('Try to get Kurt\'s guardians(some) as Gunnar')
-    response = test.request('GET', 'User/getguardians/Kurt', kurt)
+    response = requests.get(Test.url() + 'User/getcitizens/Kurt', headers = {"Authorization":"Bearer {0}".format(kurt)}).json()
     test.ensureError(response)
 
