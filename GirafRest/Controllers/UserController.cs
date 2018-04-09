@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using GirafRest.Models.DTOs;
 using System.Collections.Generic;
 using System;
-using static GirafRest.Models.DTOs.GirafUserDTO;
 using GirafRest.Extensions;
 using GirafRest.Models.Responses;
 
@@ -204,7 +203,7 @@ namespace GirafRest.Controllers
         /// OK if the user was updated succesfully.
         /// </returns>
         [HttpPut("")]
-        public async Task<Response<GirafUserSimplifiedDTO>> UpdateUser([FromBody]GirafUserDTO userDTO)
+        public async Task<Response<GirafUserSimplifiedDTO>> UpdateUser([FromBody]GirafUserSimplifiedDTO userDTO)
         {
             if(userDTO == null)
                 return new ErrorResponse<GirafUserSimplifiedDTO>(ErrorCode.MissingProperties);
@@ -228,7 +227,7 @@ namespace GirafRest.Controllers
         /// OK if the user was updated succesfully.
         /// </returns>
         [HttpPut("{id}")]
-        public async Task<Response<GirafUserSimplifiedDTO>> UpdateUser(string id, [FromBody]GirafUserDTO userDTO)
+        public async Task<Response<GirafUserSimplifiedDTO>> UpdateUser(string id, [FromBody]GirafUserSimplifiedDTO userDTO)
         {
             var userInfoBrief = await _giraf._userManager.FindByIdAsync(id);
 
@@ -247,28 +246,8 @@ namespace GirafRest.Controllers
                                   .ToArray());
 
             //Update all simple fields
-            user.Settings.UpdateFrom(userDTO.Settings);
             user.UserName = userDTO.Username;
             user.DisplayName = userDTO.ScreenName;
-            user.UserIcon = userDTO.UserIcon;
-
-            //Attempt to update all fields that require database access.
-            try
-            {
-                await updateDepartmentAsync(user, userDTO.Department);
-                updateResource(user, userDTO.Resources.Select(i => i.Id).ToList());
-                await updateWeekAsync(user, userDTO.WeekScheduleIds);
-                updateCitizens(user, userDTO.Citizens);
-                updateGuardians(user, userDTO.Guardians);
-            }
-            catch (KeyNotFoundException)
-            {
-                return new ErrorResponse<GirafUserSimplifiedDTO>(ErrorCode.Error);
-            }
-            catch (InvalidOperationException)
-            {
-                return new ErrorResponse<GirafUserSimplifiedDTO>(ErrorCode.Error);
-            }
 
             //Save changes and return the user with updated information.
             _giraf._context.Users.Update(user);
@@ -764,7 +743,7 @@ namespace GirafRest.Controllers
             user.Department = dep ?? throw new KeyNotFoundException("There is no department with the given id: " + departmentId);
         }
 
-        private void updateGuardians(GirafUser user, List<GirafUserDTO> guardians)
+        private void updateGuardians(GirafUser user, List<GirafUserSimplifiedDTO> guardians)
         {
             if(guardians != null && guardians.Any()){
                 // delete old guardians
@@ -780,7 +759,7 @@ namespace GirafRest.Controllers
             }
         }
 
-        private void updateCitizens(GirafUser user, List<GirafUserDTO> citizens)
+        private void updateCitizens(GirafUser user, List<GirafUserSimplifiedDTO> citizens)
         {
             if (citizens != null && citizens.Any())
             {

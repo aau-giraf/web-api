@@ -223,7 +223,7 @@ namespace GirafRest.Controllers
         /// UserNotFound if no user exists with the ID of usr. 
         /// A DepartmentDTO representing the new state of the department, if there were no problems.</returns>
         [HttpPost("user/{departmentID}")]
-        public async Task<Response<DepartmentDTO>> AddUser(long departmentId, [FromBody]GirafUserDTO usr)
+        public async Task<Response<DepartmentDTO>> AddUser(long departmentId, [FromBody]GirafUserSimplifiedDTO usr)
         {
             //Fetch user and department and check that they exist
             if (usr?.Username == null)
@@ -265,7 +265,7 @@ namespace GirafRest.Controllers
         /// DepartmentDTO in its updated state if no problems occured.
         /// </returns>
         [HttpDelete("user/{departmentID}")]
-        public async Task<Response<DepartmentDTO>> RemoveUser(long departmentId, [FromBody]GirafUserDTO usr)
+        public async Task<Response<DepartmentDTO>> RemoveUser(long departmentId, [FromBody]GirafUserSimplifiedDTO usr)
         {
             //Check if a valid user was supplied and that the given department exists
             if (usr == null)

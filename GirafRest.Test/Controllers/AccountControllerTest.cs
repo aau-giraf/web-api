@@ -124,7 +124,7 @@ namespace GirafRest.Test
                 Password = "password"
             }).Result;
 
-            // accountController.Login returns: new Response<GirafUserDTO>(new GirafUserDTO(loginUser, userRoles)) if login succeded
+            // accountController.Login returns: new Response<GirafUserSimplifiedDTO>(new GirafUserDTO(loginUser, userRoles)) if login succeded
             Assert.IsType<Response<string>>(resB);
             Assert.Equal(ErrorCode.NoError, resB.ErrorCode);
             Assert.True(resB.Success);
@@ -284,7 +284,7 @@ namespace GirafRest.Test
                 DepartmentId = DEPARTMENT_ONE
             }).Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.IsType<Response<GirafUserSimplifiedDTO>>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.True(res.Success);
             Assert.NotNull(res.Data);
@@ -305,7 +305,7 @@ namespace GirafRest.Test
                 DepartmentId = DEPARTMENT_ONE
             }).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.Equal(ErrorCode.UserAlreadyExists, res.ErrorCode);
             Assert.False(res.Success);
         }
@@ -321,7 +321,7 @@ namespace GirafRest.Test
                 DepartmentId = DEPARTMENT_ONE
             }).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
             Assert.False(res.Success);
         }
@@ -339,7 +339,7 @@ namespace GirafRest.Test
                 Password = "password"
             }).Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.IsType<Response<GirafUserSimplifiedDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             // check data
@@ -357,7 +357,7 @@ namespace GirafRest.Test
                 Password = ""
             }).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
         }
@@ -368,15 +368,15 @@ namespace GirafRest.Test
             var res = accountController.Register(new RegisterDTO() { Username = "JohnDoe", 
                 Password= "iSecretlyLoveMileyCyrus", DepartmentId = 2}).Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.IsType<Response<GirafUserSimplifiedDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             // fetch expected guardian from test data
             var guardian = _testContext.MockUsers.FirstOrDefault(u => u.UserName == "Guardian in dep 2");
+            var newUser = _testContext.MockUsers.FirstOrDefault(u => u.UserName == "JohnDoe");
             // check data
-            Assert.Equal(1, res.Data.Guardians.Count());
-            Assert.Equal(guardian.UserName, res.Data.Guardians[0].Username);
-            Assert.Equal(guardian.Id, res.Data.Guardians[0].Id);
+            Assert.Equal(1, newUser.Guardians.Count());
+            Assert.Equal(guardian, newUser.Guardians.First().Guardian);
         }
 
         [Fact]
@@ -386,7 +386,7 @@ namespace GirafRest.Test
 
             var res = accountController.Register(null).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }

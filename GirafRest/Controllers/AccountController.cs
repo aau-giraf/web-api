@@ -10,7 +10,6 @@ using GirafRest.Models.DTOs.AccountDTOs;
 using GirafRest.Models.DTOs.UserDTOs;
 using GirafRest.Models.DTOs;
 using System;
-using static GirafRest.Models.DTOs.GirafUserDTO;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using GirafRest.Models.Responses;
@@ -236,30 +235,30 @@ namespace GirafRest.Controllers
         /// <param name="model">A reference to a RegisterDTO(RegisterViewModelDTO), i.e. a json string containing three strings;
         /// Username and Password.</param>
         /// <returns>
-        /// Response with a GirafUserDTO with either the new user or an error
+        /// Response with a GirafUserSimplifiedDTO with either the new user or an error
         /// </returns>
         [HttpPost("register")]
         [AllowAnonymous]
-        public async Task<Response<GirafUserDTO>> Register([FromBody] RegisterDTO model)
+        public async Task<Response<GirafUserSimplifiedDTO>> Register([FromBody] RegisterDTO model)
         {
             if(model == null)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties);
+                return new ErrorResponse<GirafUserSimplifiedDTO>(ErrorCode.MissingProperties);
             //Check that all the necesarry data has been supplied
             if (!ModelState.IsValid)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties);
+                return new ErrorResponse<GirafUserSimplifiedDTO>(ErrorCode.MissingProperties);
 
             if (String.IsNullOrEmpty(model.Username) || String.IsNullOrEmpty(model.Password))
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidCredentials);
+                return new ErrorResponse<GirafUserSimplifiedDTO>(ErrorCode.InvalidCredentials);
             var doesUserAlreadyExist = (await _giraf.LoadByNameAsync(model.Username) != null);
 
             if (doesUserAlreadyExist)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserAlreadyExists);
+                return new ErrorResponse<GirafUserSimplifiedDTO>(ErrorCode.UserAlreadyExists);
 
             Department department = await _giraf._context.Departments.Where(dep => dep.Key == model.DepartmentId).FirstOrDefaultAsync();
 
             // Check that the department with the specified id exists
             if (department == null && model.DepartmentId != null)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.DepartmentNotFound);
+                return new ErrorResponse<GirafUserSimplifiedDTO>(ErrorCode.DepartmentNotFound);
 
             //Create a new user with the supplied information
             var user = new GirafUser (model.Username, department);
@@ -293,10 +292,10 @@ namespace GirafRest.Controllers
                 // fetch the roleenum
                 GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
                 // return the created user
-                return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));
+                return new Response<GirafUserSimplifiedDTO>(new GirafUserSimplifiedDTO(user, userRole));
             }
             AddErrors(result);
-            return new ErrorResponse<GirafUserDTO>(ErrorCode.Error);
+            return new ErrorResponse<GirafUserSimplifiedDTO>(ErrorCode.Error);
         }
 
         /// <summary>

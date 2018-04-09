@@ -21,6 +21,7 @@ def testAccountController():
     ####
     test.newTest('Login with valid credentials returns with "success"=True and "data"')
     response = test.request('POST', 'account/login', '{"username": "Graatand", "password": "password"}')
+    print(response)
     test.ensureSuccess(response)
     test.ensure('data' in response)
     graatandToken = response['data']

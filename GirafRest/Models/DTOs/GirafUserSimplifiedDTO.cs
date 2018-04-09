@@ -4,10 +4,14 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using static GirafRest.Models.DTOs.GirafUserDTO;
 
 namespace GirafRest.Models.DTOs
 {
+    /// <summary>
+    /// Giraf roles
+    /// </summary>
+    public enum GirafRoles { Citizen, Department, Guardian, SuperUser }
+
     /// <summary>
     /// Defines the structure of GirafUsers when serializing and deserializing data. Data transfer objects (DTOs) 
     /// were introduced in the project due to problems with circular references in the model classes.

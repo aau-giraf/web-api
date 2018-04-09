@@ -87,6 +87,8 @@ class controllerTest:
 
     def ensureSuccess(self, response):
         errormessages = ''
+        if response is None:
+            raise Exception("Response was not defined")
         for message in response['errorProperties']:
             errormessages += '\nMessage:  ' + message
         self.ensure(response['success'] is True,

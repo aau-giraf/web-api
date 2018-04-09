@@ -253,7 +253,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[AdminDepOne]);
 
             var res = usercontroller.UpdateUser(
-                new GirafUserDTO(_testContext.MockUsers[AdminDepOne], GirafUserDTO.GirafRoles.Citizen))
+                new GirafUserSimplifiedDTO(_testContext.MockUsers[AdminDepOne], GirafRoles.Citizen))
                 .Result;
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
@@ -274,25 +274,6 @@ namespace GirafRest.Test
             Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
-        }
-
-        [Fact]
-        public void UpdateUser_ValidUserInvalidDTOContent_Error()
-        {
-            var usercontroller = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[AdminDepOne]);
-
-            //Create a DTO with an invalid pictogram id
-            var res = usercontroller.UpdateUser(new GirafUserDTO(
-                _testContext.MockUsers[AdminDepOne], GirafUserDTO.GirafRoles.Citizen)
-                {
-                    Resources = new List<ResourceDTO> () { new ResourceDTO() }
-                })
-                .Result;
-
-            Assert.IsType<ErrorResponse<GirafUserSimplifiedDTO>>(res);
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.Error, res.ErrorCode);
         }
         #endregion
         #region AddApplication
