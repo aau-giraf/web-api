@@ -153,11 +153,13 @@ namespace GirafRest.Test.Controllers
         public void AddUser_ExistingDepartment_OK()
         {
             var dc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var userName = "Admin";
             var user = new GirafUserDTO()
             {
                 Username = userName,
-                Id = "admin"
+                Id = "admin",
+                Department = 1
             };
 
             var res = dc.AddUser(DEPARTMENT_TWO, user).Result;
@@ -172,6 +174,7 @@ namespace GirafRest.Test.Controllers
         public void AddUser_NonExistingDepartment_NotFound()
         {
             var dc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var user = new GirafUserDTO()
             {
                 Username = "AddUserTest"
@@ -199,7 +202,7 @@ namespace GirafRest.Test.Controllers
         public void RemoveUser_RemoveExistingUser_OK()
         {
             var dc = initializeTest();
-            var userToRemove = new GirafUserDTO(_testContext.MockUsers[ADMIN_DEP_ONE], GirafUserDTO.GirafRoles.Citizen);
+            var userToRemove = new GirafUserDTO(_testContext.MockUsers[ADMIN_DEP_ONE], GirafRoles.Citizen);
             var res = dc.RemoveUser(DEPARTMENT_ONE, userToRemove).Result;
 
             Assert.IsType<Response<DepartmentDTO>>(res);
@@ -223,7 +226,7 @@ namespace GirafRest.Test.Controllers
         public void RemoveUser_RemoveUserNonExistingDepartment_NotFound()
         {
             var dc = initializeTest();
-            var userToRemove = new GirafUserDTO(_testContext.MockUsers[ADMIN_DEP_ONE], GirafUserDTO.GirafRoles.Citizen);
+            var userToRemove = new GirafUserDTO(_testContext.MockUsers[ADMIN_DEP_ONE], GirafRoles.Citizen);
             var res = dc.RemoveUser(DEPARTMENT_TEN, userToRemove).Result;
 
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
@@ -235,7 +238,7 @@ namespace GirafRest.Test.Controllers
         public void RemoveUser_RemoveUserWrongDepartment_BadRequest()
         {
             var dc = initializeTest();
-            var userToRemove = new GirafUserDTO(_testContext.MockUsers[ADMIN_DEP_ONE], GirafUserDTO.GirafRoles.Citizen);
+            var userToRemove = new GirafUserDTO(_testContext.MockUsers[ADMIN_DEP_ONE], GirafRoles.Citizen);
             var res = dc.RemoveUser(DEPARTMENT_TWO, userToRemove).Result;
 
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);

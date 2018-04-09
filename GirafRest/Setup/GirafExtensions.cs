@@ -12,8 +12,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.FileProviders;
 using GirafRest.Models;
+using GirafRest.Models.DTOs;
 using Microsoft.AspNetCore.Identity;
-using static GirafRest.Models.DTOs.GirafUserDTO;
 
 namespace GirafRest.Extensions
 {

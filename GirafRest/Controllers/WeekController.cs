@@ -94,7 +94,7 @@ namespace GirafRest.Controllers
         public async Task<Response<WeekDTO>> UpdateWeek(long id, [FromBody]WeekDTO newWeek)
         {
             //return Ok(newWeek);
-            if (newWeek == null) return new ErrorResponse<WeekDTO>(ErrorCode.InvalidProperties, "newWeek");
+            if (newWeek == null) return new ErrorResponse<WeekDTO>(ErrorCode.MissingProperties);
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             if (user == null) return new ErrorResponse<WeekDTO>(ErrorCode.UserNotFound);
             var week = user.WeekSchedule.FirstOrDefault(w => w.Id == id);

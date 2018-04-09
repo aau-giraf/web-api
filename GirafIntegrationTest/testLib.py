@@ -87,13 +87,15 @@ class Test:
                           attrs=['dark']))
             return True
 
-    def ensureValidResponse(self, response):
-        return self.ensure(response is not None, 'Invalid response. Likely a 404 or a stacktrace.', calldepth=3)
+    def ensureValidResponse(self, response, calldepth=1):
+        return self.ensure(response is not None, 'Invalid response. Likely a 404 or a stacktrace.', calldepth=calldepth)
 
     def ensureSuccess(self, response):
-        if self.ensureValidResponse(response):
+        if not self.ensureValidResponse(response):
             return False
+
         errormessages = ''
+
         if response is not None:
             for message in response['errorProperties']:
                 errormessages += '\nMessage:  ' + message
@@ -103,42 +105,40 @@ class Test:
                     calldepth=2)
         return response['success'] is True
 
-
     def ensureError(self, response):
-        if self.ensureValidResponse(response):
+        if not self.ensureValidResponse(response, calldepth=3):
             return False
-        print(type(response))
-        self.ensure(response['success'] is False,
-                    errormessage='Server responds success on illegal action.',
-                    calldepth=2)
+        return self.ensure(response['success'] is False,
+                           errormessage='Server responds success on illegal action.',
+                           calldepth=2)
 
     def ensureErrorWithKey(self, response, errorKey):
-        if self.ensureValidResponse(response):
+        if not self.ensureValidResponse(response, calldepth=3):
             return False
-        self.ensure(response['success'] is False and response['errorKey'] == errorKey,
-                    errormessage='Server did not respond correct errorKey or success-flag',
-                    calldepth=2)
+        return self.ensure(response['success'] is False and response['errorKey'] == errorKey,
+                           errormessage='Server did not respond correct errorKey or success-flag',
+                           calldepth=2)
 
     def ensureNotAuthorized(self, response):
-        if self.ensureValidResponse(response):
+        if not self.ensureValidResponse(response, calldepth=3):
             return False
-        self.ensure(response['success'] is False and response['errorKey'] == 'NotFound',
-                    errormessage='Server did not respond with NotFound. Got "' + response['errorKey'] + '"',
-                    calldepth=2)
+        return self.ensure(response['success'] is False and response['errorKey'] == 'NotFound',
+                           errormessage='Server did not respond with NotFound. Got "' + response['errorKey'] + '"',
+                           calldepth=2)
 
     def ensureNoData(self, response):
-        if self.ensureValidResponse(response):
+        if not self.ensureValidResponse(response, calldepth=3):
             return False
-        self.ensure('data' not in response or response['data'] is None,
-                    errormessage='Data was returned when it should not have been.',
-                    calldepth=2)
+        return self.ensure('data' not in response or response['data'] is None,
+                           errormessage='Data was returned when it should not have been.',
+                           calldepth=2)
 
     def ensureSomeData(self, response):
-        if self.ensureValidResponse(response):
+        if not self.ensureValidResponse(response, calldepth=3):
             return False
-        self.ensure('data' in response and response['data'] is not None,
-                    errormessage='Data expected but none returned',
-                    calldepth=2)
+        return self.ensure('data' in response and response['data'] is not None,
+                           errormessage='Data expected but none returned',
+                           calldepth=2)
 
     def ensureEqual(self, expected, actual):
         self.ensure(expected == actual,
@@ -149,5 +149,6 @@ class Test:
         self.ensure(expected != actual,
                     errormessage='Expected: {0}\nActual:   {1}'.format(expected, actual),
                     calldepth=2)
+
     def fails(self, errormessage, calldepth=2):
-        self.ensure(False, errormessage=errormessage, calldepth=calldepth+1)
+        self.ensure(False, errormessage=errormessage, calldepth=calldepth + 1)

@@ -104,7 +104,7 @@ def DepartmentControllerTest():
         "role": -1,
         "guardians": None,
         "id": gunnarID,
-        "username": "JUNK",
+        "username": gunnarUsername,
         "screenName": None,
         "userIcon": None,
         "department": -1,
@@ -139,11 +139,13 @@ def DepartmentControllerTest():
     test.ensureSuccess(response)
     test.ensure(response['data']['department'] == dalgardsholmstuenId, 'Gunnar was not moved to new department!')
 
+    # TODO : Recomment when endpoint is fixed
     ####
     test.new('Kurt tries to remove Gunnar from Dalgaardsholmstuen')
     response = requests.delete(Test.url() + 'Department/user/{0}'.format(dalgardsholmstuenId), json=body, headers = {"Authorization":"Bearer {0}".format(kurt)}).json()
     test.ensureError(response)
 
+    # TODO : Recomment when endpoint is fixed
     ####
     test.new('Graatand tries to remove Gunnar from Dalgaardsholmstuen')
     response = requests.delete(Test.url() + 'Department/user/{0}'.format(dalgardsholmstuenId), json=body, headers = {"Authorization":"Bearer {0}".format(graatand)}).json()
@@ -155,6 +157,7 @@ def DepartmentControllerTest():
     test.ensureSuccess(response)
     test.ensure(response['data']['department'] == dalgardsholmstuenId, 'Gunnar was moved to new department!')
 
+    # TODO : Recomment when endpoint is fixed
     ####
     test.new('Gunnar removes himself from Dalgaardsholmstuen')
     response = requests.delete(Test.url() + 'Department/user/{0}'.format(dalgardsholmstuenId), json=body, headers = {"Authorization":"Bearer {0}".format(gunnar)}).json()
