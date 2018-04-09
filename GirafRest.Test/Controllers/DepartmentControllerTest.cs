@@ -153,11 +153,13 @@ namespace GirafRest.Test.Controllers
         public void AddUser_ExistingDepartment_OK()
         {
             var dc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var userName = "Admin";
             var user = new GirafUserDTO()
             {
                 Username = userName,
-                Id = "admin"
+                Id = "admin",
+                Department = 1
             };
 
             var res = dc.AddUser(DEPARTMENT_TWO, user).Result;
@@ -172,6 +174,7 @@ namespace GirafRest.Test.Controllers
         public void AddUser_NonExistingDepartment_NotFound()
         {
             var dc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var user = new GirafUserDTO()
             {
                 Username = "AddUserTest"
