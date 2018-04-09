@@ -564,25 +564,27 @@ namespace GirafRest.Controllers
         /// <returns>The citizens.</returns>
         /// <param name="username">Username.</param>
         [HttpGet("getCitizens/{username}")]
-        public async Task<Response<List<GirafUserDTO>>> GetCitizens(string username)
+        [Authorize (Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
+        public async Task<Response<List<UserNameDTO>>> GetCitizens(string username)
         {
-            if (username == null)
-                return new ErrorResponse<List<GirafUserDTO>>(ErrorCode.MissingProperties, "username");
+            if (String.IsNullOrEmpty(username))
+                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.MissingProperties, "username");
             var user = await _giraf.LoadByNameAsync(username);
-            var citizens = new List<GirafUserDTO>();
+            var citizens = new List<UserNameDTO>();
 
             foreach (var citizen in user.Citizens)
             {
+                var templist = _giraf._context.Users.ToList();
                 var girafUser = _giraf._context.Users.FirstOrDefault(u => u.Id == citizen.CitizenId);
-                citizens.Add(new GirafUserDTO(girafUser, GirafRoles.Citizen));
+                citizens.Add(new UserNameDTO { UserId = girafUser.Id, UserName = girafUser.UserName });
             }
 
             if (!citizens.Any())
             {
-                return new ErrorResponse<List<GirafUserDTO>>(ErrorCode.UserHasNoCitizens);
-            }
+                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.UserHasNoCitizens);
+            }   
 
-            return new Response<List<GirafUserDTO>>(citizens);
+            return new Response<List<UserNameDTO>>(citizens.ToList<UserNameDTO>());
         }
 
         /// <summary>
@@ -592,24 +594,24 @@ namespace GirafRest.Controllers
         /// <param name="username">Username.</param>
         [HttpGet("getGuardians/{username}")]
         [Authorize]
-        public async Task<Response<List<GirafUserDTO>>> GetGuardians(string username)
+        public async Task<Response<List<UserNameDTO>>> GetGuardians(string username)
         {
-            if (username == null)
-                return new ErrorResponse<List<GirafUserDTO>>(ErrorCode.MissingProperties, "username");
+            if (String.IsNullOrEmpty(username))
+                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.MissingProperties, "username");
             var user = await _giraf.LoadByNameAsync(username);
-            var guardians = new List<GirafUserDTO>();
+            var guardians = new List<UserNameDTO>();
             foreach (var guardian in user.Guardians)
             {
                 var girafUser = _giraf._context.Users.FirstOrDefault(u => u.Id == guardian.GuardianId);
-                guardians.Add(new GirafUserDTO(girafUser, GirafRoles.Guardian));
+                guardians.Add(new UserNameDTO { UserId = girafUser.Id, UserName = girafUser.UserName });
             }
 
             if (!guardians.Any())
             {
-                return new ErrorResponse<List<GirafUserDTO>>(ErrorCode.UserHasNoGuardians);
+                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.UserHasNoGuardians);
             }
 
-            return new Response<List<GirafUserDTO>>(guardians);
+            return new Response<List<UserNameDTO>>(guardians);
         }
 
         /// <summary>
