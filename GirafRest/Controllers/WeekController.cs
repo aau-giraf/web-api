@@ -131,19 +131,23 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Creates an entirely new week for the current user.
+        /// Creates the week.
         /// </summary>
-        /// <param name="newWeek">A serialized version of the new week.</param>
-        /// <returns>Ok, along with a list of all the current users week schedules or BadRequest if no valid Week was
-        /// found in the request body.</returns>
+        /// <returns>
+        /// Invalidproperties if newWeek has incorrect format or if the days does not lie in the int range from 0-6
+        /// or if the day does not have exactly 7 days
+        /// UserNotFound if no authenticated user
+        /// RessourceNotFound if trying to add a ressource that does not exist
+        /// The DTO corresponding to the created week if succesfull</returns>
+        /// <param name="newWeek">New week.</param>
         [HttpPost("")]
         [Authorize]
         public async Task<Response<WeekDTO>> CreateWeek([FromBody]WeekDTO newWeek)
         {
             if (newWeek == null) 
-                return new ErrorResponse<WeekDTO>(ErrorCode.InvalidProperties, "Invalid or missing properties in request body.");
+                return new ErrorResponse<WeekDTO>(ErrorCode.InvalidProperties);
             if (newWeek.Days == null || newWeek.Days.Count != 7) 
-                return new ErrorResponse<WeekDTO>(ErrorCode.MissingProperties, "Week should contain no more and no less than 7 days.");
+                return new ErrorResponse<WeekDTO>(ErrorCode.InvalidProperties, "Week should contain no more and no less than 7 days.");
             
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             if (user == null) 
@@ -158,6 +162,7 @@ namespace GirafRest.Controllers
             {
                 foreach (var day in newWeek.Days)
                 {
+                    if (!(Enum.IsDefined(typeof(Days), day.Day))) return new ErrorResponse<WeekDTO>(ErrorCode.InvalidProperties);
                     Weekday wkDay = week.Weekdays[(int)day.Day];
                     wkDay.LastEdit = DateTime.Now;
                     if(!(await CreateWeekDayHelper(wkDay, day.ElementIDs)))
