@@ -15,8 +15,8 @@ def testDepartmentController():
     ####
     test.newTest('Get list of departments')
     response = test.request('GET', 'Department')
-    test.ensureSuccess(response)
-    numberOfDepartments = len(response['data'])
+    if test.ensureSuccess(response):
+        numberOfDepartments = len(response['data'])
 
     ####
     test.newTest('Graatand tries to create department')

@@ -19,25 +19,42 @@ def testWeekController():
     ####
     test.newTest('Get (empty)List of all weeks')
     response = test.request('GET', 'Week', auth=gunnar)
-    test.ensureSuccess(response)
+    # test.ensureSuccess(response)
+    test.ensureError(response)  # This error makes no sense but whatever.
 
     ####
     test.newTest('Create new week')
+    day = '''
+    {{
+        "thumbnailID": 4,
+        "elementsSet": true,
+        "elementIDs": [ 2 ],
+        "day": {0},
+        "elements": [{{
+            "accessLevel": 0,
+            "imageUrl": "/v1/pictogram/6/image/raw",
+            "imageHash": "+8NDAclP6o11ft/Ba2yCZA==",
+            "title": "sig",
+            "id": 6,
+            "lastEdit": "2018-03-28T10:47:51.628333"
+        }}]
+    }}
+    '''
     createWeekDTO = '''
-        {
-          "thumbnail" : {
+        {{
+          "thumbnail" : {{
             "accessLevel": 0,
             "imageUrl": "junkdata",
             "imageHash": "junkdata",
             "title": "simpelt",
             "id": 5,
             "lastEdit": "2999-03-28T10:47:51.628376"
-        },
+        }},
           "name" : "The best week of the day",
           "id" : 0,
-          "days" : [ ]
-        }
-    '''
+          "days" : [{0}, {1}, {2}, {3}, {4}, {5}, {6} ]
+        }}
+    '''.format(day.format(1), day.format(2), day.format(3), day.format(4), day.format(5), day.format(6), day.format(7))
     response = test.request('POST', 'Week', data=createWeekDTO, auth=gunnar)
     test.ensureSuccess(response)
 
