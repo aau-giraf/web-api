@@ -101,9 +101,13 @@ class controllerTest:
             return False
 
     def ensureError(self, response):
-        self.ensure(response['success'] is False,
-                    errormessage='Server responds success on illegal action.',
-                    calldepth=2)
+        try:
+            self.ensure(response['success'] is False,
+                        errormessage='Server responds success on illegal action.',
+                        calldepth=2)
+
+        except (ValueError, TypeError):
+            self.ensure(False, 'Invalid response. Likely a 404 or a stacktrace.')
 
     def ensureErrorWithKey(self, response, errorKey):
         try:
@@ -140,5 +144,6 @@ class controllerTest:
         self.ensure(expected != actual,
                     errormessage='Expected: {0}\nActual:   {1}'.format(expected, actual),
                     calldepth=2)
+
     def fails(self, errormessage, calldepth=2):
-        self.ensure(False, errormessage=errormessage, calldepth=calldepth+1)
+        self.ensure(False, errormessage=errormessage, calldepth=calldepth + 1)
