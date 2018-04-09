@@ -43,12 +43,6 @@ def testUserController():
     test.ensure(response['data']['username'] == gunnarUsername)
 
     ####
-    test.newTest('Gunnar tries to get Kurt\'s user info')
-    response = test.request('GET', 'User/?username=Kurt', auth=gunnar)
-    test.ensureError(response)
-    test.ensureNoData(response)
-
-    ####
     test.newTest('Graatand gets Kurt\'s user info')
     response = test.request('GET', 'User/Kurt', auth=graatand)
     test.ensureSuccess(response)

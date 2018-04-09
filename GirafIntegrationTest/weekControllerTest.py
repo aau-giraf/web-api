@@ -73,7 +73,7 @@ def testWeekController():
     '''.format(day.format(99), day.format(1), day.format(2), day.format(3), day.format(4), day.format(5), day.format(6))
 
     print badEnumValueWeekDTO
-    
+
     correctWeekDTO = '''
         {{
           "thumbnail" : {{

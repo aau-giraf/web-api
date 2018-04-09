@@ -10,7 +10,6 @@ using GirafRest.Models.DTOs.AccountDTOs;
 using GirafRest.Models.DTOs.UserDTOs;
 using GirafRest.Models.DTOs;
 using System;
-using static GirafRest.Models.DTOs.GirafUserDTO;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using GirafRest.Models.Responses;
