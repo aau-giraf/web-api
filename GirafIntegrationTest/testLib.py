@@ -93,6 +93,7 @@ class controllerTest:
         if self.ensureValidResponse(response):
             return False
         errormessages = ''
+        
         if response is not None:
             for message in response['errorProperties']:
                 errormessages += '\nMessage:  ' + message
