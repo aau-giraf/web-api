@@ -21,6 +21,7 @@ def testAccountController():
     ####
     test.newTest('Login with valid credentials returns with "success"=True and "data"')
     response = test.request('POST', 'account/login', '{"username": "Graatand", "password": "password"}')
+    print(response)
     test.ensureSuccess(response)
     test.ensure('data' in response)
     graatandToken = response['data']
@@ -28,8 +29,8 @@ def testAccountController():
     ####
     test.newTest('GETting role with authorization')
     response = test.request('GET', 'role', auth=graatandToken)
-    test.ensureSuccess(response)
-    test.ensure(response['data'] == "Guardian")
+    if test.ensureSuccess(response):
+        test.ensure(response['data'] == "Guardian")
 
     ####
     test.newTest('GETting username with authorization')
@@ -93,3 +94,5 @@ def testAccountController():
     response = test.request('GET', 'user', auth=gunnarToken)
     test.ensureSuccess(response)
     test.ensure(response['data']['roleName'] == 'Guardian')
+
+    # TODO: Change password

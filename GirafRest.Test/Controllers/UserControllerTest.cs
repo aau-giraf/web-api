@@ -86,8 +86,14 @@ namespace GirafRest.Test
 
             Assert.IsType<Response<GirafUserDTO>>(res);
             Assert.True(res.Success);
-            Assert.True(res.Data.UserIcon != null);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+
+            // Get icon to be sure it is set
+            var res2 = usercontroller.GetUserIcon(res.Data.Id).Result;
+
+            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.True(res2.Success);
+            Assert.True(res2.Data.Image != null);
         }
 
         [Fact]
@@ -101,8 +107,13 @@ namespace GirafRest.Test
 
             Assert.IsType<Response<GirafUserDTO>>(res);
             Assert.True(res.Success);
-            Assert.True(res.Data.UserIcon == null);
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+
+            // Get icon to be sure it is deleted
+            var res2 = usercontroller.GetUserIcon(res.Data.Id).Result;
+
+            Assert.IsType<ErrorResponse<ImageDTO>>(res2);
+            Assert.False(res2.Success);
+            Assert.Equal(ErrorCode.UserHasNoIcon, res2.ErrorCode);
         }
 
         [Fact]
@@ -306,7 +317,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[AdminDepOne]);
 
             var res = usercontroller.UpdateUser(
-                new GirafUserDTO(_testContext.MockUsers[AdminDepOne], GirafUserDTO.GirafRoles.Citizen))
+                new GirafUserDTO(_testContext.MockUsers[AdminDepOne], GirafRoles.Citizen))
                 .Result;
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
@@ -328,25 +339,6 @@ namespace GirafRest.Test
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
-
-        [Fact]
-        public void UpdateUser_ValidUserInvalidDTOContent_Error()
-        {
-            var usercontroller = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[AdminDepOne]);
-
-            //Create a DTO with an invalid pictogram id
-            var res = usercontroller.UpdateUser(new GirafUserDTO(
-                _testContext.MockUsers[AdminDepOne], GirafUserDTO.GirafRoles.Citizen)
-                {
-                    Resources = new List<ResourceDTO> () { new ResourceDTO() }
-                })
-                .Result;
-
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.Error, res.ErrorCode);
-        }
         #endregion
         #region AddApplication
         [Fact]
@@ -361,8 +353,10 @@ namespace GirafRest.Test
 
             Assert.IsType<Response<GirafUserDTO>>(res);
             Assert.True(res.Success);
-            // check that the applicationName exists on the user
-            Assert.Contains(user.Settings.appsUserCanAccess, (a => a.ApplicationName == applicationOption.ApplicationName));
+
+            var res2 = usercontroller.GetSettings(res.Data.Username).Result;
+            // check that the ApplicationName exists on the user
+            Assert.Contains(res2.Data.appsUserCanAccess, (a => a.ApplicationName == applicationOption.ApplicationName));
         }
 
         [Fact]
@@ -469,8 +463,10 @@ namespace GirafRest.Test
 
             Assert.IsType<Response<GirafUserDTO>>(res);
             Assert.True(res.Success);
+
+            var res2 = usercontroller.GetSettings(res.Data.Username).Result;
             // check that the image is actually deleted
-            Assert.True(res.Data.Settings.appsUserCanAccess
+            Assert.True(res2.Data.appsUserCanAccess
                         .FirstOrDefault(a => a.ApplicationName == "Test Application") == null);
         }
 

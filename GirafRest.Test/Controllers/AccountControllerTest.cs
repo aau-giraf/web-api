@@ -373,10 +373,10 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             // fetch expected guardian from test data
             var guardian = _testContext.MockUsers.FirstOrDefault(u => u.UserName == "Guardian in dep 2");
+            var newUser = _testContext.MockUsers.FirstOrDefault(u => u.UserName == "JohnDoe");
             // check data
-            Assert.Equal(1, res.Data.Guardians.Count());
-            Assert.Equal(guardian.UserName, res.Data.Guardians[0].Username);
-            Assert.Equal(guardian.Id, res.Data.Guardians[0].Id);
+            Assert.Equal(1, newUser.Guardians.Count());
+            Assert.Equal(guardian, newUser.Guardians.First().Guardian);
         }
 
         [Fact]

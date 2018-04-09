@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using GirafRest.Models.DTOs;
 using System.Collections.Generic;
 using System;
-using static GirafRest.Models.DTOs.GirafUserDTO;
 using GirafRest.Extensions;
 using GirafRest.Models.Responses;
 
@@ -128,6 +127,53 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
+        /// Find information on the user with the username supplied as a url query parameter or the current user.
+        /// </summary>
+        /// <returns>
+        /// Data about the user
+        /// MissingProperties if no username is provided
+        /// UserNotFound if user was not found, or logged in user is not authorized to see user.
+        ///</returns>
+        [HttpGet("{username}/settings")]
+        [Authorize]
+        public async Task<Response<LauncherOptionsDTO>> GetSettings(string username)
+        {
+            //Declare needed variables
+            GirafUser user;
+
+            //Check if the caller has supplied a query, find the user with the given name if so,
+            //else find the user with the given username.
+            if (string.IsNullOrEmpty(username))
+                return new ErrorResponse<LauncherOptionsDTO>(ErrorCode.MissingProperties, "username");
+
+            //First attempt to fetch the user and check that he exists
+            user = await _giraf.LoadByNameAsync(username);
+            if (user == null)
+                return new ErrorResponse<LauncherOptionsDTO>(ErrorCode.UserNotFound);
+
+            //Get the current user and check if he is a guardian in the same department as the user
+            //or an Admin, in which cases the user is allowed to see the user.
+            var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian) ||
+                await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Department))
+            {
+                //Check if the guardian is in the same department as the user
+                if (user.DepartmentKey != currentUser.DepartmentKey)
+                    //We do not reveal if a user with the given username exists
+                    return new ErrorResponse<LauncherOptionsDTO>(ErrorCode.UserNotFound);
+            }
+            else if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser))
+            {
+                //No additional checks required, simply skip to Ok.
+            }
+            else
+                //We do not reveal if a user with the given username exists
+                return new ErrorResponse<LauncherOptionsDTO>(ErrorCode.UserNotFound);
+
+            return new Response<LauncherOptionsDTO>(new LauncherOptionsDTO(user.Settings));
+        }
+
+        /// <summary>
         /// Get information about the logged in user.
         /// </summary>
         /// <returns>
@@ -200,28 +246,8 @@ namespace GirafRest.Controllers
                                   .ToArray());
 
             //Update all simple fields
-            user.Settings.UpdateFrom(userDTO.Settings);
             user.UserName = userDTO.Username;
             user.DisplayName = userDTO.ScreenName;
-            user.UserIcon = userDTO.UserIcon;
-
-            //Attempt to update all fields that require database access.
-            try
-            {
-                await updateDepartmentAsync(user, userDTO.Department);
-                updateResource(user, userDTO.Resources.Select(i => i.Id).ToList());
-                await updateWeekAsync(user, userDTO.WeekScheduleIds);
-                updateCitizens(user, userDTO.Citizens);
-                updateGuardians(user, userDTO.Guardians);
-            }
-            catch (KeyNotFoundException)
-            {
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.Error);
-            }
-            catch (InvalidOperationException)
-            {
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.Error);
-            }
 
             //Save changes and return the user with updated information.
             _giraf._context.Users.Update(user);

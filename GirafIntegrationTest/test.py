@@ -1,7 +1,6 @@
 from testLib import *
 from accountControllerTest import *
 from departmentControllerTest import *
-from roleControllerTest import *
 from pictogramControllerTest import *
 from userControllerTest import *
 from weekControllerTest import *
@@ -25,7 +24,6 @@ except:
 testAccountController()
 testDepartmentController()
 testPictogramController()
-testRoleController()
 testUserController()
 testWeekController()
 testAuthorization()
