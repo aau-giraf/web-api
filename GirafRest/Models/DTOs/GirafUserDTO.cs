@@ -16,7 +16,7 @@ namespace GirafRest.Models.DTOs
     /// Defines the structure of GirafUsers when serializing and deserializing data. Data transfer objects (DTOs) 
     /// were introduced in the project due to problems with circular references in the model classes.
     /// </summary>
-    public class GirafUserSimplifiedDTO
+    public class GirafUserDTO
     {
         /// <summary>
         /// List of the roles the current user is defined as in the system.
@@ -30,7 +30,7 @@ namespace GirafRest.Models.DTOs
 
         /// <summary>
         /// The Id of the user.
-        /// </summary>
+        /// </summary>c
         [Required]
         public string Id { get; set; }
 
@@ -53,18 +53,18 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// DO NOT DELETE THIS! NEWTONSOFT REQUIRES AN EMPTY CONSTRUCTOR!
         /// </summary>
-        public GirafUserSimplifiedDTO()
+        public GirafUserDTO()
         {
 
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:GirafRest.Models.DTOs.GirafUserSimplifiedDTO"/> class.
+        /// Initializes a new instance of the <see cref="T:GirafRest.Models.DTOs.GirafUserDTO"/> class.
         /// </summary>
         /// <param name="user">User.</param>
         /// <param name="userRole">User role.</param>
         /// <param name="addGuardianRelation">If set to <c>true</c> add guardian relation.</param>
-        public GirafUserSimplifiedDTO(GirafUser user, GirafRoles userRole)
+        public GirafUserDTO(GirafUser user, GirafRoles userRole)
         {
             //Add all trivial values
             Id = user.Id;
