@@ -90,4 +90,5 @@ def testRoleController():
     test.ensure(response['data']['roleName'] == 'Citizen', 'Role was {0}'.format(response['data']['roleName']))
 
     response = test.request('GET', 'role', auth=gunnar)
-    test.ensure(response['data'] == 'Citizen', 'Role was {0}'.format(response['data']))
+    if test.ensureSuccess(response):
+        test.ensure(response['data'] == 'Citizen', 'Role was {0}'.format(response['data']))
