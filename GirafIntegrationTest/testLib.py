@@ -61,7 +61,7 @@ class controllerTest:
 
     def ensure(self, fact, errormessage="", calldepth=1):
         if fact:
-            return
+            return True
         else:
             # Extra thick line dividing different tests.
             if not self.thisTestHasFailed:
@@ -84,49 +84,56 @@ class controllerTest:
             print colored('  Line:     {0}'.format(info.lineno), attrs=['dark'])
             print colored("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
                           attrs=['dark'])
+            return False
+
+    def ensureValidResponse(self, response):
+        return self.ensure(response is None, 'Invalid response. Likely a 404 or a stacktrace.')
 
     def ensureSuccess(self, response):
-        try:
-            errormessages = ''
+        if self.ensureValidResponse(response):
+            return False
+        errormessages = ''
+        if response is not None:
             for message in response['errorProperties']:
                 errormessages += '\nMessage:  ' + message
 
-            self.ensure(response['success'] is True,
-                        errormessage='Error: {0}'.format(response['errorKey'] + errormessages),
-                        calldepth=2)
-            return response['success'] is True
+        self.ensure(response['success'] is True,
+                    errormessage='Error: {0}'.format(response['errorKey'] + errormessages),
+                    calldepth=2)
+        return response['success'] is True
 
-        except (ValueError, TypeError):
-            self.ensure(False, 'Invalid response. Likely a 404 or a stacktrace.')
-            return False
 
     def ensureError(self, response):
+        if self.ensureValidResponse(response):
+            return False
         self.ensure(response['success'] is False,
                     errormessage='Server responds success on illegal action.',
                     calldepth=2)
 
     def ensureErrorWithKey(self, response, errorKey):
-        try:
-            self.ensure(response['success'] is False and response['errorKey'] == errorKey,
-                        errormessage='Server did not respond correct errorKey or success-flag',
-                        calldepth=2)
-        except Exception as e:
-            self.fails("Server did not return valid JSON")
+        if self.ensureValidResponse(response):
+            return False
+        self.ensure(response['success'] is False and response['errorKey'] == errorKey,
+                    errormessage='Server did not respond correct errorKey or success-flag',
+                    calldepth=2)
 
     def ensureNotAuthorized(self, response):
-        try:
-            self.ensure(response['success'] is False and response['errorKey'] == 'NotAuthorized',
-                        errormessage='Server did not respond with NotAuthorized. Got "' + response['errorKey'] + '"',
-                        calldepth=2)
-        except Exception as e:
-            self.fails("Server did not return valid JSON")
+        if self.ensureValidResponse(response):
+            return False
+        self.ensure(response['success'] is False and response['errorKey'] == 'NotFound',
+                    errormessage='Server did not respond with NotFound. Got "' + response['errorKey'] + '"',
+                    calldepth=2)
 
     def ensureNoData(self, response):
+        if self.ensureValidResponse(response):
+            return False
         self.ensure('data' not in response or response['data'] is None,
                     errormessage='Data was returned when it should not have been.',
                     calldepth=2)
 
     def ensureSomeData(self, response):
+        if self.ensureValidResponse(response):
+            return False
         self.ensure('data' in response and response['data'] is not None,
                     errormessage='Data expected but none returned',
                     calldepth=2)

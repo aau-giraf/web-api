@@ -34,7 +34,9 @@ def testRoleController():
     test.ensure(response['data']['roleName'] == 'Citizen', 'Role was {0}'.format(response['data']['roleName']))
 
     response = test.request('GET', 'role', auth=gunnar)
-    test.ensure(response['data'] == 'Citizen', 'Role was {0}'.format(response['data']))
+
+    if test.ensureSuccess(response):
+        test.ensure(response['data'] == 'Citizen', 'Role was {0}'.format(response['data']))
 
     ####
     test.newTest('Add Gunnar to guardians')
@@ -61,7 +63,9 @@ def testRoleController():
     test.ensure(response['data']['roleName'] == 'Citizen', 'Role was {0}'.format(response['data']['roleName']))
 
     response = test.request('GET', 'role', auth=gunnar)
-    test.ensure(response['data'] == 'Citizen', 'Role was {0}'.format(response['data']))
+
+    if test.ensureSuccess(response):
+        test.ensure(response['data'] == 'Citizen', 'Role was {0}'.format(response['data']))
 
     ####
     test.newTest('Add Gunnar to admin')
@@ -71,7 +75,9 @@ def testRoleController():
     test.ensureEqual('SuperUser', response['data']['roleName'])
 
     response = test.request('GET', 'role', auth=gunnar)
-    test.ensure(response['data'] == 'SuperUser', 'Role was {0}'.format(response['data']))
+
+    if test.ensureSuccess(response):
+        test.ensure(response['data'] == 'SuperUser', 'Role was {0}'.format(response['data']))
 
     ####
     test.newTest('Remove Gunnar from admin(as gunnar himself)')

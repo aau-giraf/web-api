@@ -28,8 +28,8 @@ def testAccountController():
     ####
     test.newTest('GETting role with authorization')
     response = test.request('GET', 'role', auth=graatandToken)
-    test.ensureSuccess(response)
-    test.ensure(response['data'] == "Guardian")
+    if test.ensureSuccess(response):
+        test.ensure(response['data'] == "Guardian")
 
     ####
     test.newTest('GETting username with authorization')

@@ -6,27 +6,6 @@ import time
 def testAuthorization():
     test = controllerTest("Authorization Test")
     
-    #### Does not require authorization
-    # test.newTest('Testing authorization of POST /v1/Account/login');
-    # response = test.request('POST',  'Account/login');
-    # test.ensureNotAuthorized(response)
-    
-    #### Does not require authorization
-    # test.newTest('Testing authorization of POST /v1/Account/register');
-    # response = test.request('POST',  'Account/register');
-    # test.ensureNotAuthorized(response)
-    
-
-    #### Does not require authorization
-    # test.newTest('Testing authorization of POST /v1/Account/logout');
-    # response = test.request('POST',  'Account/logout');
-    # test.ensureNotAuthorized(response)
-    
-    #### Does not require authorization
-    # test.newTest('Testing authorization of POST /v1/Account/forgot-password');
-    # response = test.request('POST',  'Account/forgot-password');
-    # test.ensureNotAuthorized(response)
-    
     ###
     test.newTest('Testing authorization of POST /v1/Account/set-password');
     response = test.request('POST',  'Account/set-password');
@@ -41,11 +20,6 @@ def testAuthorization():
     test.newTest('Testing authorization of GET /v1/Account/reset-password');
     response = test.request('GET',  'Account/reset-password');
     test.ensure(response is None) # Aka. responded with HTML
-    
-    #### Does not require authorization 
-    # test.newTest('Testing authorization of POST /v1/Account/reset-password');
-    # response = test.request('POST',  'Account/reset-password');
-    # test.ensure(response is None)
     
     ###
     test.newTest('Testing authorization of GET /v1/Account/reset-password-confirmation');
@@ -83,7 +57,6 @@ def testAuthorization():
     response = test.request('PUT',  'Day/0');
     test.ensureNotAuthorized(response)
     
-
     ###
     test.newTest('Testing authorization of GET /v1/Department');
     response = test.request('GET',  'Department');
@@ -93,11 +66,6 @@ def testAuthorization():
     test.newTest('Testing authorization of POST /v1/Department');
     response = test.request('POST',  'Department');
     test.ensureNotAuthorized(response)
-    
-    #### Does not *need* authorization, but returns a lot of info, even when not logged in
-    # test.newTest('Testing authorization of GET /v1/Department/{id}');
-    # response = test.request('GET',  'Department/0');
-    # test.ensureNotAuthorized(response)
     
     ###
     test.newTest('Testing authorization of GET /v1/Department/{id}/citizens');
