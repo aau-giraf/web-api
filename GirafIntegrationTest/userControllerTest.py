@@ -5,6 +5,7 @@ from rawSampleImage import *
 
 
 def testUserController():
+
     test = controllerTest('User Controller')
 
     graatand = test.login('Graatand')
@@ -54,74 +55,6 @@ def testUserController():
     test.ensure(response['data']['username'] == 'Kurt',
                 errormessage='Expected name: Kurt.\nActual name: {0}'.format(response['data']['username']))
 
-    # Example of how Gunnar's user info might look before being altered
-    # {
-    #    "role": 0,
-    #    "roleName": "Citizen",
-    #    "citizens": null,
-    #    "guardians": null,
-    #    "id": "40b2a546-a19a-4c5d-bc50-fb75e66ab484",
-    #    "username": "Gunnar1522570015.67",
-    #    "screenName": null,
-    #    "userIcon": null,
-    #    "department": 1,
-    #    "weekScheduleIds": [],
-    #    "resources": [],
-    #    "settings": {
-    #        "useGrayscale": false,
-    #        "displayLauncherAnimations": false,
-    #        "appsUserCanAccess": [],
-    #        "appGridSizeRows": 0,
-    #        "appGridSizeColumns": 0
-    #    }
-    # }
-
-    ####
-    test.newTest('Set Gunnars userinfo')
-    body = '''
-        {
-            "role": 25,
-            "roleName": "Guardian",
-            "citizens": null,
-            "guardians": [],
-            "id": "aaaaaaaa-aaaa-AAaa-aaaa-aaaaaaAAAAAA",
-            "username": "ROOT",
-            "screenName": "ROOT",
-            "department": 2,
-            "weekScheduleIds": [],
-            "resources": [],
-            "settings": {
-                "useGrayscale": true,
-                "displayLauncherAnimations": true,
-                "appsUserCanAccess": [],
-                "appGridSizeRows": 11,
-                "appGridSizeColumns": 22
-            }
-        }
-    '''
-    response = test.request('PUT', 'User', data=body, auth=gunnar)
-    test.ensureSuccess(response)
-
-    if response['success']:
-        # Now, basically, only things I'm allowed to actually change are screenName and settings.
-        response = test.request('GET', 'User', auth=gunnar)
-        test.ensureEqual(0,              response['data']['role'])
-        test.ensureEqual('Citizen',      response['data']['roleName'])
-        test.ensureEqual(gunnarUsername, response['data']['username'])
-        test.ensureEqual("Glade Gunnar", response['data']['screenName'])
-        test.ensureEqual(1,              response['data']['department'])
-        test.ensureNotEqual('aaaaaaaa-aaaa-AAaa-aaaa-aaaaaaAAAAAA', response['data']['id'])
-        # Settings
-        test.ensureEqual(True,  response['data']['settings']['useGrayscale'])
-        test.ensureEqual(True,  response['data']['settings']['displayLauncherAnimations'])
-        test.ensureEqual(11,    response['data']['settings']['appGridSizeRows'])
-        test.ensure(22,         response['data']['settings']['appGridSizeColumns'])
-
-    ####
-    test.newTest('Try to set Graatand\'s user info as Gunnar')
-    response = test.request('PUT', 'User/?id=8aa78445-c27b-41b8-b219-c31a50edd740', data=body, auth=gunnar)
-    test.ensureError(response)
-
     # TODO: Play with images(user avatar) when I figure out how
 
     ####
@@ -167,30 +100,40 @@ def testUserController():
     test.newTest('Get settings')
     response = test.request('GET', 'User/settings', auth=gunnar)
     test.ensureSuccess(response)
-    test.ensure(response['data']['useGrayscale'] is True)
-    test.ensure(response['data']['displayLauncherAnimations'] is True)
-    test.ensure(response['data']['appGridSizeRows'] == 11)
-    test.ensure(response['data']['appGridSizeColumns'] == 22)
 
     ####
     test.newTest('Disable grayscale')
     response = test.request('POST', 'User/grayscale/false', auth=gunnar)
     test.ensureSuccess(response)
     response = test.request('GET', 'User/settings', auth=gunnar)
-    test.ensure(response['data']['useGrayscale'] is False)
+    test.ensureEqual(False, response['data']['useGrayscale'])
+
+    ####
+    test.newTest('Enable grayscale')
+    response = test.request('POST', 'User/grayscale/true', auth=gunnar)
+    test.ensureSuccess(response)
+    response = test.request('GET', 'User/settings', auth=gunnar)
+    test.ensureEqual(True, response['data']['useGrayscale'])
 
     ####
     test.newTest('Disable launcher animations')
     response = test.request('POST', 'User/launcher_animations/false', auth=gunnar)
     test.ensureSuccess(response)
     response = test.request('GET', 'User/settings', auth=gunnar)
-    test.ensure(response['data']['displayLauncherAnimations'] is False)
+    test.ensureEqual(False, response['data']['displayLauncherAnimations'])
 
     ####
-    test.newTest('Set Settings')
+    test.newTest('Enable launcher animations')
+    response = test.request('POST', 'User/launcher_animations/true', auth=gunnar)
+    test.ensureSuccess(response)
+    response = test.request('GET', 'User/settings', auth=gunnar)
+    test.ensureEqual(True, response['data']['displayLauncherAnimations'])
+
+    ####
+    test.newTest('Set all settings')
     body = '''
             {
-                "useGrayscale": false,
+                "useGrayscale": true,
                 "displayLauncherAnimations": false,
                 "appsUserCanAccess": [],
                 "appGridSizeRows": 33,
@@ -200,10 +143,10 @@ def testUserController():
     test.ensureSuccess(response)
     response = test.request('GET', 'User/settings', auth=gunnar)
     test.ensureSuccess(response)
-    test.ensureEqual(False,     response['data']['useGrayscale'])
-    test.ensureEqual(False,     response['data']['displayLauncherAnimations'])
-    test.ensureEqual(33,        response['data']['appGridSizeRows'])
-    test.ensureEqual(44,        response['data']['appGridSizeColumns'])
+    test.ensureEqual(True,  response['data']['useGrayscale'])
+    test.ensureEqual(False, response['data']['displayLauncherAnimations'])
+    test.ensureEqual(33,    response['data']['appGridSizeRows'])
+    test.ensureEqual(44,    response['data']['appGridSizeColumns'])
 
     ####
     test.newTest('Set Settings(without data)')
@@ -213,13 +156,13 @@ def testUserController():
     ####
     test.newTest('Set Settings(empty body)')
     response = test.request('PUT', 'User/Settings', '{}', auth=gunnar)
-    test.ensureError(response)
+    test.ensureSuccess(response)
     response = test.request('GET', 'User/settings', auth=gunnar)
     test.ensureSuccess(response)
     test.ensureEqual(False,     response['data']['useGrayscale'])
     test.ensureEqual(False,     response['data']['displayLauncherAnimations'])
-    test.ensureEqual(33,        response['data']['appGridSizeRows'])
-    test.ensureEqual(44,        response['data']['appGridSizeColumns'])
+    test.ensureEqual(0,        response['data']['appGridSizeRows'])
+    test.ensureEqual(0,        response['data']['appGridSizeColumns'])
 
     ####
     test.newTest('Get Kurt\'s citizens(none)')
@@ -228,16 +171,14 @@ def testUserController():
 
     ####
     test.newTest('Get Graatand\'s citizens(some)')
-    response = test.request('GET', 'User/getcitizens/Graatand', graatand)
-    test.ensureSuccess(response)
-    if response['success']:
+    response = test.request('GET', 'User/getCitizens/Graatand', graatand)
+    if test.ensureSuccess(response):
         test.ensure(response['data'][0]['username'] == 'Kurt')
 
     ####
     test.newTest('Get Kurt\'s guardians(some)')
-    response = test.request('GET', 'User/getguardians/Kurt', kurt)
-    test.ensureSuccess(response)
-    if response['success']:
+    response = test.request('GET', 'User/getGuardians/Kurt', kurt)
+    if test.ensureSuccess(response):
         test.ensure(response['data'][0]['username'] == 'Graatand')
 
     ####
@@ -249,6 +190,7 @@ def testUserController():
     test.newTest('Try to get Graatand\'s citizens(some) as Gunnar')
     response = test.request('GET', 'User/getcitizens/Graatand', graatand)
     test.ensureError(response)
+
     ####
     test.newTest('Try to get Kurt\'s guardians(some) as Gunnar')
     response = test.request('GET', 'User/getguardians/Kurt', kurt)

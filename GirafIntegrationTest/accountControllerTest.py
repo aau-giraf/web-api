@@ -93,3 +93,5 @@ def testAccountController():
     response = test.request('GET', 'user', auth=gunnarToken)
     test.ensureSuccess(response)
     test.ensure(response['data']['roleName'] == 'Guardian')
+
+    # TODO: Change password

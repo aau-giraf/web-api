@@ -63,7 +63,6 @@ namespace GirafRest.Controllers
             if (userPictograms == null)
                 return new ErrorResponse<List<PictogramDTO>>(ErrorCode.PictogramNotFound);
 
-            System.Console.WriteLine($"GET ALL THE PICTOGRAMS WITH QUERY {q}");
             //Filter out all that does not satisfy the query string, if such is present.
             if(!String.IsNullOrEmpty(q)) 
                 userPictograms = userPictograms.OrderBy((Pictogram _p) => IbsenDistance(q, _p.Title));
