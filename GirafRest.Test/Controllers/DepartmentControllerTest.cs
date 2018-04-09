@@ -50,29 +50,6 @@ namespace GirafRest.Test.Controllers
         }
 
         #region Get
-        [Fact]
-        public void Get_GetAllExistingDepartments_OK()
-        {
-            var dc = initializeTest();
-            var res = dc.Get().Result;
-
-            Assert.IsType<Response<List<DepartmentDTO>>>(res);
-            Assert.True(res.Success);
-            //Check data
-            Assert.Equal(_testContext.MockDepartments.Count, res.Data.Count);
-        }
-
-        [Fact]
-        public void Get_GetAllNoExistingDepartments_NotFound()
-        {
-            var dc = initializeTest();
-            AddEmptyDepartmentList();
-            var res = dc.Get().Result;
-
-            Assert.IsType<ErrorResponse<List<DepartmentDTO>>>(res);
-            Assert.False(res.Success);
-            Assert.Equal(res.ErrorCode, ErrorCode.NotFound);
-        }
 
         [Fact]
         public void Get_GetExistingDepartmentByID_OK()
@@ -98,6 +75,39 @@ namespace GirafRest.Test.Controllers
             Assert.False(res.Success);
             Assert.Equal(res.ErrorCode, ErrorCode.NotFound);
         }
+
+        [Fact]
+        public void Get_AllDepartmentNames_Ok()
+        {
+            var dc = initializeTest();
+            var res = dc.Get().Result;
+
+            Assert.IsType<Response<List<DepartmentNameDTO>>>(res);
+            Assert.True(res.Success);
+            Assert.Equal(res.ErrorCode, ErrorCode.NoError);
+            // check data
+            Assert.Equal(_testContext.MockDepartments.Count(), res.Data.Count());
+            for (int i = 0; i < res.Data.Count; i++)
+            {
+                Assert.Equal(_testContext.MockDepartments[i].Name, res.Data[i].Name);
+                Assert.Equal(_testContext.MockDepartments[i].Key, res.Data[i].ID);
+            }
+        }
+
+        [Fact]
+        public void Get_AllDepartmentNames_NotFound()
+        {
+            var dc = initializeTest();
+            AddEmptyDepartmentList();
+            var res = dc.Get().Result;
+
+            Assert.IsType<ErrorResponse<List<DepartmentNameDTO>>>(res);
+            Assert.False(res.Success);
+            Assert.Equal(res.ErrorCode, ErrorCode.NotFound);
+        }
+
+
+
         #endregion
 
         #region Post
@@ -230,7 +240,7 @@ namespace GirafRest.Test.Controllers
 
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
+            Assert.Equal(ErrorCode.UserNotFoundInDepartment, res.ErrorCode);
         }
         #endregion
 

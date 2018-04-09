@@ -1,12 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GirafRest.Data;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -40,27 +37,29 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Gets all week schedule for the currently authenticated user.
+        /// Gets all week schedule name and ids for the currently authenticated citizen.
         /// </summary>
-        /// <returns>Ok along with the week schedules, or NotFound if there is no such user or if there are no weeks.</returns>
+        /// All WeekScheduleNameDTOs if succesfull request
+        /// ErrorCode.UserNotFound if we cannot find any user in the DB
+        /// ErrorCode.NoWeekScheduleFound if we can not find any weekschedule on the user
+        /// <returns>
+        /// </returns>
         [HttpGet("")]
         [Authorize]
-        public async Task<Response<IEnumerable<WeekDTO>>> ReadWeekSchedules()
+        public async Task<Response<IEnumerable<WeekNameDTO>>> ReadWeekSchedules()
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             if (user == null)
             {
-                return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.UserNotFound);
+                return new ErrorResponse<IEnumerable<WeekNameDTO>>(ErrorCode.UserNotFound);
             }
             if (!user.WeekSchedule.Any())
             {
-                return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.NoWeekScheduleFound);
+                return new ErrorResponse<IEnumerable<WeekNameDTO>>(ErrorCode.NoWeekScheduleFound);
             }
-            else
-            {
-                return new Response<IEnumerable<WeekDTO>>(user.WeekSchedule.Select(w => new WeekDTO(w)));
-            }
+            return new Response<IEnumerable<WeekNameDTO>>(user.WeekSchedule.Select(w => new WeekNameDTO(w.Id, w.Name)));
         }
+
 
         /// <summary>
         /// Gets the schedule with the specified id.
@@ -73,7 +72,7 @@ namespace GirafRest.Controllers
         public async Task<Response<WeekDTO>> ReadUsersWeekSchedule(long id)
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
-            var week = user.WeekSchedule.Where(w => w.Id == id).FirstOrDefault();
+            var week = user.WeekSchedule.FirstOrDefault(w => w.Id == id);
             if (week != null)
             {
                 return new Response<WeekDTO>(new WeekDTO(week));
@@ -98,7 +97,7 @@ namespace GirafRest.Controllers
             if (newWeek == null) return new ErrorResponse<WeekDTO>(ErrorCode.InvalidProperties, "newWeek");
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             if (user == null) return new ErrorResponse<WeekDTO>(ErrorCode.UserNotFound);
-            var week = user.WeekSchedule.Where(w => w.Id == id).FirstOrDefault();
+            var week = user.WeekSchedule.FirstOrDefault(w => w.Id == id);
             if (week == null)
                 return new ErrorResponse<WeekDTO>(ErrorCode.WeekScheduleNotFound);
             if (newWeek.Thumbnail != null)
@@ -108,8 +107,7 @@ namespace GirafRest.Controllers
                     return new ErrorResponse<WeekDTO>(ErrorCode.ThumbnailDoesNotExist);
                 week.Thumbnail = thumbnail;
             }
-            if (newWeek.Name != null)
-                week.Name = newWeek.Name;
+            week.Name = newWeek.Name;
             // If newWeek.Days should support number of days other than 7, change this check to if(newWeek.Days.Count < 1)
             if (newWeek.Days == null || newWeek.Days.Count != 7)
                 return new ErrorResponse<WeekDTO>(ErrorCode.MissingProperties, "days");
@@ -122,13 +120,9 @@ namespace GirafRest.Controllers
 
             foreach (var day in newWeek.Days)
             {
-                Weekday wkDay = new Weekday(day);
-                wkDay.LastEdit = DateTime.Now;
-                if (day.ElementsSet)
-                {
-                    if (!(await CreateWeekDayHelper(wkDay, day.ElementIDs)))
-                            return new ErrorResponse<WeekDTO>(ErrorCode.ResourceNotFound);
-                }
+                var wkDay = new Weekday(day) {LastEdit = DateTime.Now};
+                if (!(await CreateWeekDayHelper(wkDay, day.ElementIDs)))
+                        return new ErrorResponse<WeekDTO>(ErrorCode.ResourceNotFound);
                 orderedDays[(int)day.Day].Elements = wkDay.Elements;
             }
             _giraf._context.Weeks.Update(week);
@@ -146,28 +140,30 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<Response<WeekDTO>> CreateWeek([FromBody]WeekDTO newWeek)
         {
-            if (newWeek == null) return new ErrorResponse<WeekDTO>(ErrorCode.InvalidProperties, "newWeek");
-            if (newWeek.Days == null || newWeek.Id == null || newWeek.Days.Count != 7) { return new ErrorResponse<WeekDTO>(ErrorCode.MissingProperties, "newWeek"); }
+            if (newWeek == null) 
+                return new ErrorResponse<WeekDTO>(ErrorCode.InvalidProperties, "Invalid or missing properties in request body.");
+            if (newWeek.Days == null || newWeek.Days.Count != 7) 
+                return new ErrorResponse<WeekDTO>(ErrorCode.MissingProperties, "Week should contain no more and no less than 7 days.");
+            
             var user = await _giraf.LoadUserAsync(HttpContext.User);
-            if (user == null) return new ErrorResponse<WeekDTO>(ErrorCode.UserNotFound);
+            if (user == null) 
+                return new ErrorResponse<WeekDTO>(ErrorCode.UserNotFound);
             var thumbnail = await _giraf._context.Pictograms.Where(p => p.Id == newWeek.Thumbnail.Id).FirstOrDefaultAsync();
+            
             if (thumbnail == null)
                 return new ErrorResponse<WeekDTO>(ErrorCode.ThumbnailDoesNotExist);
-            var week = new Week(thumbnail);
-            week.Name = newWeek.Name;
+
+            var week = new Week(thumbnail) {Name = newWeek.Name};
             if (newWeek.Days != null)
             {
                 foreach (var day in newWeek.Days)
                 {
-                    if (day.ElementsSet)
-                    {
-                        Weekday wkDay = week.Weekdays[(int)day.Day];
-                        wkDay.LastEdit = DateTime.Now;
-                        if(!(await CreateWeekDayHelper(wkDay, day.ElementIDs)))
-                            return new ErrorResponse<WeekDTO>(ErrorCode.ResourceNotFound);
+                    Weekday wkDay = week.Weekdays[(int)day.Day];
+                    wkDay.LastEdit = DateTime.Now;
+                    if(!(await CreateWeekDayHelper(wkDay, day.ElementIDs)))
+                        return new ErrorResponse<WeekDTO>(ErrorCode.ResourceNotFound);
 
-                        week.Weekdays[(int)day.Day].Elements = wkDay.Elements;
-                    }
+                    week.Weekdays[(int)day.Day].Elements = wkDay.Elements;
                 }
             }
             _giraf._context.Weeks.Add(week);
@@ -190,9 +186,9 @@ namespace GirafRest.Controllers
 
             if (user == null) return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.UserNotFound);
 
-            if (user.WeekSchedule.Where(w => w.Id == id).Any())
+            if (user.WeekSchedule.Any(w => w.Id == id))
             {
-                var week = user.WeekSchedule.Where(w => w.Id == id).FirstOrDefault();
+                var week = user.WeekSchedule.FirstOrDefault(w => w.Id == id);
                 if (week == null) return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.WeekScheduleNotFound);
                 user.WeekSchedule.Remove(week);
                 await _giraf._context.SaveChangesAsync();

@@ -11,11 +11,6 @@ namespace GirafRest.Models.DTOs
     public class WeekdayDTO
     {
         /// <summary>
-        /// Defines whether elements has been added to the weekday or not.
-        /// </summary>
-        public bool ElementsSet { get; set; }
-        
-        /// <summary>
         /// A list of all id's of the resources that make up the weekday.
         /// </summary>
         public List<long> ElementIDs { get; set; }
@@ -53,12 +48,10 @@ namespace GirafRest.Models.DTOs
                     }
                 }
             }
-            if(Elements.Count > 0)
-                ElementsSet = true;
         }
 
         /// <summary>
-        /// DO NOT DELETE THIS! NEWTONSOFT REQUIRES AN EMPTY CONSTRUCTOR!
+        /// Empty constructor required for test framework.
         /// </summary>
         public WeekdayDTO() {}
     }

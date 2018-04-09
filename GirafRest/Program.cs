@@ -49,8 +49,6 @@ namespace GirafRest
         /// <summary>
         /// Builds the host environment from a specified config class.
         /// <see cref="Startup"/> sets the general environment (authentication, logging i.e)
-        /// <see cref="StartupLocal"/> sets up the environment for local development.
-        /// <see cref="StartupDeployment"/> sets up the environment for deployment.
         /// </summary>
         /// <returns>A <see cref="IWebHost"/> host fit for running the server.</returns>
 
@@ -62,8 +60,7 @@ namespace GirafRest
                .UseStartup<Startup>()
                .ConfigureAppConfiguration((hostContext, config) =>
                {
-                   config.Sources.Clear();
-                   var env = hostContext.HostingEnvironment;                
+                   config.Sources.Clear();            
                })
                .UseDefaultServiceProvider(options =>options.ValidateScopes = false)
                .UseApplicationInsights()

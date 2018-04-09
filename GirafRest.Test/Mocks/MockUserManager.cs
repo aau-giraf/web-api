@@ -61,7 +61,15 @@ namespace GirafRest.Test.Mocks
             return result;
         }
 
-        public override Task<bool> IsInRoleAsync(GirafUser user, string role)
+		public override Task<IList<string>> GetRolesAsync(GirafUser user)
+		{
+            var userRoles = _testContext.MockUserRoles.Where(ur => ur.UserId == user.Id).Select(ur => ur.RoleId);
+            var userRolesName = (Task.FromResult(_testContext.MockRoles.Where(ur => userRoles.Any(urid => urid == ur.Id))
+                                                 .Select(r => r.Name).ToList() as IList<string>));
+            return userRolesName;
+		}
+
+		public override Task<bool> IsInRoleAsync(GirafUser user, string role)
         {
             return Task.FromResult(_testContext.MockUserRoles.Where(ur => ur.RoleId == role && ur.UserId == user.Id).Any());
         }

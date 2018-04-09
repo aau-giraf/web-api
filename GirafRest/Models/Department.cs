@@ -36,6 +36,11 @@ namespace GirafRest.Models
         public virtual ICollection<DepartmentResource> Resources { get; set; }
 
         /// <summary>
+        /// A collection of all week templates owned by the department.
+        /// </summary>
+        public virtual ICollection<WeekTemplate> WeekTemplates { get; set; }
+
+        /// <summary>
         /// DO NOT DELETE THIS.
         /// </summary>
         public Department () {

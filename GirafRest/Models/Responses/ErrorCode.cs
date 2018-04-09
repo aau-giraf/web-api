@@ -52,6 +52,8 @@
         UserHasNoGuardians,
         DepartmentHasNoCitizens,
         UnknownError,
-        CouldNotCreateDepartmentUser
+        CouldNotCreateDepartmentUser,
+        UserNotFoundInDepartment,
+        NoWeekTemplateFound
     }
 }

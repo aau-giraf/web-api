@@ -48,11 +48,11 @@ namespace GirafRest.Controllers
         {	
             if(newDay == null) return new ErrorResponse<WeekDTO>(ErrorCode.FormatError);
             var user = await _giraf.LoadUserAsync(HttpContext.User);
-            var week = user.WeekSchedule.Where(w => w.Id == id).FirstOrDefault();
+            var week = user?.WeekSchedule.FirstOrDefault(w => w.Id == id);
             if(week != null && week.Weekdays.Any())
             {
                 var ressList = new List<Resource>();
-                week.Weekdays.Remove(week.Weekdays.Where(d => d.Day == newDay.Day).First());
+                week.Weekdays.Remove(week.Weekdays.First(d => d.Day == newDay.Day));
                 foreach (var ress in newDay.Elements )
                 {
                     if (ress is ChoiceDTO)

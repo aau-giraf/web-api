@@ -9,7 +9,6 @@ using GirafRest.Extensions;
 using GirafRest.Models.DTOs.AccountDTOs;
 using GirafRest.Models.DTOs.UserDTOs;
 using GirafRest.Models.DTOs;
-using Microsoft.AspNetCore.Http;
 using System;
 using static GirafRest.Models.DTOs.GirafUserDTO;
 using System.Linq;
@@ -20,7 +19,6 @@ using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace GirafRest.Controllers
@@ -84,13 +82,15 @@ namespace GirafRest.Controllers
         /// <returns>
         /// The Token as a string
         /// </returns>
-        private string GenerateJwtToken(GirafUser user, GirafRoles roles)
+        private async Task<string> GenerateJwtToken(GirafUser user, GirafRoles roles)
         {
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id)
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
             };
+
+            claims.AddRange(await GetRoleClaims(user));
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.Value.JwtKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -105,6 +105,18 @@ namespace GirafRest.Controllers
             );
 
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        /// <summary>
+        /// Gets roles s.t we can get role from payload 
+        /// </summary>
+        /// <returns>The role claims.</returns>
+        /// <param name="user">User.</param>
+        private async Task<List<Claim>> GetRoleClaims(GirafUser user){
+            var roleclaims = new List<Claim>();
+            var userRoles = await _giraf._userManager.GetRolesAsync(user);
+            roleclaims.AddRange(userRoles.Select(userRole => new Claim(ClaimTypes.Role, userRole)));
+            return roleclaims;
         }
 
         /// <summary>
@@ -130,7 +142,7 @@ namespace GirafRest.Controllers
             var loginUser = await _giraf.LoadByNameAsync(model.Username);
             if (loginUser == null) // If username is invalid
                 return new ErrorResponse<string>(ErrorCode.InvalidCredentials, "username");
-            GirafRoles userRoles = await _roleManager.findUserRole(_giraf._userManager, loginUser);
+            var userRoles = await _roleManager.findUserRole(_giraf._userManager, loginUser);
 
             Microsoft.AspNetCore.Identity.SignInResult result = null;
 
@@ -142,7 +154,7 @@ namespace GirafRest.Controllers
                     return new ErrorResponse<string>(ErrorCode.MissingProperties, "password");
                 }
                 result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, lockoutOnFailure: false);
-                if(result.Succeeded) return new Response<string>(GenerateJwtToken(loginUser, userRoles));
+                if(result.Succeeded) return new Response<string>(await GenerateJwtToken(loginUser, userRoles));
                 else return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
             }
 
@@ -153,14 +165,14 @@ namespace GirafRest.Controllers
                 {
                     result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, lockoutOnFailure: false);
                     if (!result.Succeeded) return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
-                    return new Response<string>(GenerateJwtToken(loginUser, userRoles));
+                    return new Response<string>(await GenerateJwtToken(loginUser, userRoles));
                 }
 
                 if (string.IsNullOrEmpty(model.Password))
                 {
                     if (currentUser.UserName.ToLower() == model.Username.ToLower())
                     {
-                        return new Response<string>(GenerateJwtToken(loginUser, userRoles));
+                        return new Response<string>(await GenerateJwtToken(loginUser, userRoles));
                     }
 
                     if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian))
@@ -210,7 +222,7 @@ namespace GirafRest.Controllers
                 // Get the roles the user is associated with
                 GirafRoles userRoles = await _roleManager.findUserRole(_giraf._userManager, loginUser);
 
-                return new Response<string>(GenerateJwtToken(loginUser, userRoles));
+                return new Response<string>(await GenerateJwtToken(loginUser, userRoles));
             }
 
             //There was no user with the given username in the department - return invalidcredentials.
@@ -258,9 +270,29 @@ namespace GirafRest.Controllers
                 await _signInManager.SignInAsync(user, isPersistent: true);
                 _giraf._logger.LogInformation("User created a new account with password.");
 
+                // if department != null
                 // Get the roles the user is associated with
-                GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
+                if (department != null)
+                {
+                    // Add a relation to all the newly created citizens guardians
+                    var roleGuardianId = _giraf._context.Roles.Where(r => r.Name == GirafRole.Guardian)
+                                               .Select(c => c.Id).FirstOrDefault();
 
+                    var userIds = _giraf._context.UserRoles.Where(u => u.RoleId == roleGuardianId)
+                                        .Select(r => r.UserId).Distinct();
+
+                    var guardians = _giraf._context.Users.Where(u => userIds.Any(ui => ui == u.Id)
+                                                                && u.DepartmentKey == department.Key).ToList();
+
+                    foreach (var guardian in guardians)
+                    {
+                        user.AddGuardian(guardian);
+                    }
+                    await _giraf._context.SaveChangesAsync();
+                }
+                // fetch the roleenum
+                GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
+                // return the created user
                 return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));
             }
             AddErrors(result);

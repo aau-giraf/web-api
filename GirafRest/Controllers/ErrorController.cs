@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using GirafRest.Models.Responses;
+﻿using GirafRest.Models.Responses;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GirafRest.Controllers
@@ -15,12 +11,7 @@ namespace GirafRest.Controllers
         {
             Response.StatusCode = 200;
 
-            if (status == 401)
-            {
-                return new ErrorResponse(ErrorCode.NotAuthorized);
-            }
-
-            return new ErrorResponse(ErrorCode.UnknownError);
+            return new ErrorResponse(ErrorCode.NotFound);
         }
     }
 }

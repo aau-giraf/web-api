@@ -1,15 +1,14 @@
-﻿using GirafRest.Data;
-using GirafRest.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-using System;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using GirafRest.Data;
+using GirafRest.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.IO;
-using GirafRest.Services;
+using Microsoft.Extensions.Logging;
 
-namespace GirafRest.Controllers
+namespace GirafRest.Services
 {
     /// <summary>
     /// The GirafService class implements the <see cref="IGirafService"/> interface and thus implements common
@@ -42,11 +41,12 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Load the user from the <see cref="HttpContext"/> - both his information and all related data.
+        /// Method for loading user from context and eager loading fields
         /// </summary>
         /// <param name="principal">The security claim - i.e. the information about the currently authenticated user.</param>
         /// <returns>A <see cref="GirafUser"/> with related data.</returns>
         public async Task<GirafUser> LoadUserAsync(System.Security.Claims.ClaimsPrincipal principal)  {
+            if (principal == null) return null;
             var usr = (await _userManager.GetUserAsync(principal));
             if(usr == null) return null;
             return await _context.Users
@@ -63,6 +63,7 @@ namespace GirafRest.Controllers
                     .Include(u => u.WeekSchedule)
                     .ThenInclude(w => w.Weekdays)
                     .ThenInclude(wd => wd.Elements)
+                    .ThenInclude(e => e.Resource)
                     .Include(u => u.Settings)
                     .ThenInclude(lo => lo.appsUserCanAccess)
                     .Include(u => u.Guardians)
@@ -93,6 +94,7 @@ namespace GirafRest.Controllers
                     .Include(u => u.WeekSchedule)
                     .ThenInclude(w => w.Weekdays)
                     .ThenInclude(wd => wd.Elements)
+                    .ThenInclude(e => e.Resource)
                     .Include(u => u.Settings)
                     .ThenInclude(lo => lo.appsUserCanAccess).Include(t => t.Citizens)
                     .Include(u => u.Guardians)
@@ -135,7 +137,7 @@ namespace GirafRest.Controllers
         /// Checks if the user owns the given <paramref name="pictogram"/>.
         /// </summary>
         /// <param name="pictogram">The pictogram to check the ownership for.</param>
-        /// <param name="httpContext">A reference to the current HttpContext.</param>
+        /// <param name="user"></param>
         /// <returns>True if the user is authorized to see the resource and false if not.</returns>
         public async Task<bool> CheckPrivateOwnership(Pictogram pictogram, GirafUser user) {
             if (pictogram.AccessLevel != AccessLevel.PRIVATE)
@@ -154,7 +156,7 @@ namespace GirafRest.Controllers
         /// Checks if the current user's department owns the given resource.
         /// </summary>
         /// <param name="resource">The resource to check ownership for.</param>
-        /// <param name="httpContext">The http context of the current request.</param>
+        /// <param name="user"></param>
         /// <returns>True if the user's department owns the pictogram, false if not.</returns>
         public async Task<bool> CheckProtectedOwnership(Pictogram resource, GirafUser user)
         {
