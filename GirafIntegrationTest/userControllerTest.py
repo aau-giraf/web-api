@@ -4,15 +4,15 @@ import time
 from rawSampleImage import *
 
 
-def testUserController():
+def UserControllerTest():
 
-    test = controllerTest('User Controller')
+    test = Test('User Controller')
 
     graatand = test.login('Graatand')
     kurt =     test.login('Kurt')
 
     ####
-    test.newTest('Register Gunnar')
+    test.new('Register Gunnar')
     gunnarUsername = 'Gunnar{0}'.format(str(time.time()))
     response = test.request('POST', 'account/register',
                             '{"username": "' + gunnarUsername + '","password": "password","departmentId": 1}')
@@ -21,7 +21,7 @@ def testUserController():
     gunnar = test.login(gunnarUsername)
 
     ####
-    test.newTest('Register Charlie')
+    test.new('Register Charlie')
     charlieUsername = 'Charlie{0}'.format(str(time.time()))
     response = test.request('POST', 'account/register',
                             '{"username": "' + charlieUsername + '","password": "password","departmentId": 1}')
@@ -31,25 +31,25 @@ def testUserController():
     response = test.request('GET', 'User', auth=charlie)
 
     ####
-    test.newTest('Get Username')
+    test.new('Get Username')
     response = test.request('GET', 'User/username', auth=gunnar)
     test.ensureSuccess(response)
     test.ensure(response['data'] == gunnarUsername)
 
     ####
-    test.newTest('Get User info')
+    test.new('Get User info')
     response = test.request('GET', 'User', auth=gunnar)
     test.ensureSuccess(response)
     test.ensure(response['data']['username'] == gunnarUsername)
 
     ####
-    test.newTest('Gunnar tries to get Kurt\'s user info')
+    test.new('Gunnar tries to get Kurt\'s user info')
     response = test.request('GET', 'User/?username=Kurt', auth=gunnar)
     test.ensureError(response)
     test.ensureNoData(response)
 
     ####
-    test.newTest('Graatand gets Kurt\'s user info')
+    test.new('Graatand gets Kurt\'s user info')
     response = test.request('GET', 'User/Kurt', auth=graatand)
     test.ensureSuccess(response)
     test.ensure(response['data']['username'] == 'Kurt',
@@ -58,7 +58,7 @@ def testUserController():
     # TODO: Play with images(user avatar) when I figure out how
 
     ####
-    test.newTest('Set display name')
+    test.new('Set display name')
     response = test.request('PUT', 'User/display-name', data='"{0}"'.format(veryLongString), auth=gunnar)
     test.ensureSuccess(response)
     # Check that display name was updated
@@ -66,7 +66,7 @@ def testUserController():
     test.ensure(unicode(response['data']['screenName']) == unicode(veryLongString))
 
     ####
-    test.newTest('Post Wendesday pictogram')
+    test.new('Post Wendesday pictogram')
     wednesday = 'Wednesday{0}'.format(str(time.time()))
     wednesdayBody = '''
         {{
@@ -81,7 +81,7 @@ def testUserController():
     wednesdayID = response['data']['id']
 
     ####
-    test.newTest('Give Charlie pictogram')  # TODO: Is he allowed to do this?
+    test.new('Give Charlie pictogram')  # TODO: Is he allowed to do this?
     wednesdayIDBody = '''
         {{
           "id": {0}
@@ -91,46 +91,46 @@ def testUserController():
     test.ensureSuccess(response)
 
     ####
-    test.newTest('Remove pictogram from gunnar')
+    test.new('Remove pictogram from gunnar')
     response = test.request('DELETE', 'User/resource/?username={0}'.format(gunnarUsername), data=wednesdayIDBody,
                             auth=gunnar)
     test.ensureSuccess(response)
 
     ####
-    test.newTest('Get settings')
+    test.new('Get settings')
     response = test.request('GET', 'User/settings', auth=gunnar)
     test.ensureSuccess(response)
 
     ####
-    test.newTest('Disable grayscale')
+    test.new('Disable grayscale')
     response = test.request('POST', 'User/grayscale/false', auth=gunnar)
     test.ensureSuccess(response)
     response = test.request('GET', 'User/settings', auth=gunnar)
     test.ensureEqual(False, response['data']['useGrayscale'])
 
     ####
-    test.newTest('Enable grayscale')
+    test.new('Enable grayscale')
     response = test.request('POST', 'User/grayscale/true', auth=gunnar)
     test.ensureSuccess(response)
     response = test.request('GET', 'User/settings', auth=gunnar)
     test.ensureEqual(True, response['data']['useGrayscale'])
 
     ####
-    test.newTest('Disable launcher animations')
+    test.new('Disable launcher animations')
     response = test.request('POST', 'User/launcher_animations/false', auth=gunnar)
     test.ensureSuccess(response)
     response = test.request('GET', 'User/settings', auth=gunnar)
     test.ensureEqual(False, response['data']['displayLauncherAnimations'])
 
     ####
-    test.newTest('Enable launcher animations')
+    test.new('Enable launcher animations')
     response = test.request('POST', 'User/launcher_animations/true', auth=gunnar)
     test.ensureSuccess(response)
     response = test.request('GET', 'User/settings', auth=gunnar)
     test.ensureEqual(True, response['data']['displayLauncherAnimations'])
 
     ####
-    test.newTest('Set all settings')
+    test.new('Set all settings')
     body = '''
             {
                 "useGrayscale": true,
@@ -149,12 +149,12 @@ def testUserController():
     test.ensureEqual(44,    response['data']['appGridSizeColumns'])
 
     ####
-    test.newTest('Set Settings(without data)')
+    test.new('Set Settings(without data)')
     response = test.request('PUT', 'User/Settings',  auth=gunnar)
     test.ensureError(response)
 
     ####
-    test.newTest('Set Settings(empty body)')
+    test.new('Set Settings(empty body)')
     response = test.request('PUT', 'User/Settings', '{}', auth=gunnar)
     test.ensureSuccess(response)
     response = test.request('GET', 'User/settings', auth=gunnar)
@@ -165,34 +165,34 @@ def testUserController():
     test.ensureEqual(0,        response['data']['appGridSizeColumns'])
 
     ####
-    test.newTest('Get Kurt\'s citizens(none)')
+    test.new('Get Kurt\'s citizens(none)')
     response = test.request('GET', 'User/getcitizens/Kurt', kurt)
     test.ensureError(response)
 
     ####
-    test.newTest('Get Graatand\'s citizens(some)')
+    test.new('Get Graatand\'s citizens(some)')
     response = test.request('GET', 'User/getCitizens/Graatand', graatand)
     if test.ensureSuccess(response):
         test.ensure(response['data'][0]['username'] == 'Kurt')
 
     ####
-    test.newTest('Get Kurt\'s guardians(some)')
+    test.new('Get Kurt\'s guardians(some)')
     response = test.request('GET', 'User/getGuardians/Kurt', kurt)
     if test.ensureSuccess(response):
         test.ensure(response['data'][0]['username'] == 'Graatand')
 
     ####
-    test.newTest('Get Graatand\'s guardians(none)')
+    test.new('Get Graatand\'s guardians(none)')
     response = test.request('GET', 'User/getguardians/Graatand', graatand)
     test.ensureError(response)
 
     ####
-    test.newTest('Try to get Graatand\'s citizens(some) as Gunnar')
+    test.new('Try to get Graatand\'s citizens(some) as Gunnar')
     response = test.request('GET', 'User/getcitizens/Graatand', graatand)
     test.ensureError(response)
 
     ####
-    test.newTest('Try to get Kurt\'s guardians(some) as Gunnar')
+    test.new('Try to get Kurt\'s guardians(some) as Gunnar')
     response = test.request('GET', 'User/getguardians/Kurt', kurt)
     test.ensureError(response)
 

@@ -234,6 +234,12 @@ namespace GirafRest.Setup
             {
                 DBInitializer.Initialize(context, userManager);
             }
+
+            app.Run(context2 =>
+            {
+              context2.Response.StatusCode = 404;
+              return Task.FromResult(0);
+            });
         }
     }
 }

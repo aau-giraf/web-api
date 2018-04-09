@@ -4,11 +4,11 @@ import time
 from rawSampleImage import *
 
 
-def testWeekController():
-    test = controllerTest('Week Controller')
+def WeekControllerTest():
+    test = Test('Week Controller')
 
     ####
-    test.newTest('Register Gunnar')
+    test.new('Register Gunnar')
     gunnarUsername = 'Gunnar{0}'.format(str(time.time()))
     response = test.request('POST', 'account/register',
                             '{"username": "' + gunnarUsername + '","password": "password","departmentId": 1}')
@@ -17,13 +17,13 @@ def testWeekController():
     gunnar = test.login(gunnarUsername)
 
     ####
-    test.newTest('Get (empty)List of all weeks')
+    test.new('Get (empty)List of all weeks')
     response = test.request('GET', 'Week', auth=gunnar)
     # test.ensureSuccess(response)
     test.ensureError(response)  # This error makes no sense but whatever.
 
     ####
-    test.newTest('Create new week')
+    test.new('Create new week')
     day = '''
     {{
         "thumbnailID": 4,
@@ -59,7 +59,7 @@ def testWeekController():
     test.ensureSuccess(response)
 
     ####
-    test.newTest('Get List of all weeks again, find our week')
+    test.new('Get List of all weeks again, find our week')
     response = test.request('GET', 'Week', auth=gunnar)
     test.ensureSuccess(response)
     if response['success']:
@@ -70,7 +70,7 @@ def testWeekController():
         return
 
     ####
-    test.newTest('Update whole week at once')
+    test.new('Update whole week at once')
     someDay = '''
         {
           "elementsSet": true,
@@ -118,7 +118,7 @@ def testWeekController():
                 errormessage='Never trust the client you imbeciles!')
 
     ####
-    test.newTest('Update single day(Day Controller is not getting its own file.)')
+    test.new('Update single day(Day Controller is not getting its own file.)')
     someOtherDay = '''
         {
           "elementsSet": true,
@@ -136,7 +136,7 @@ def testWeekController():
     test.ensureEqual(3, response['data']['days'][wednesdayIndex]['day']['elements'][0]['id'])
 
     ####
-    test.newTest('Delete the week')
+    test.new('Delete the week')
     response = test.request('DELETE', 'Week/{0}'.format(weekID), data='', auth=gunnar)
     test.ensureSuccess(response)
     response = test.request('GET', 'Week', auth=gunnar)
