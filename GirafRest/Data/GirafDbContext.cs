@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using GirafRest.Models;
 using GirafRest.Models.Many_to_Many_Relationships;
 using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GirafRest.Data
 {
@@ -47,13 +48,19 @@ namespace GirafRest.Data
         /// <param name="builder">A database model builder, that defines methods for specifying the database design.</param>
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            // id, name : user
+            // id, title: pictogram
+            // id : deparment
             base.OnModelCreating(builder);
             //Creates tables for all entities.
             builder.Entity<Resource>().ToTable("Frames").HasDiscriminator<string>("Discriminator").HasValue<Resource>(nameof(Resource));
             builder.Entity<Department>().ToTable("Departments").HasDiscriminator<string>("Discriminator").HasValue<Department>(nameof(Department));
+            builder.Entity<Department>().HasIndex(dep => dep.Name).IsUnique().ForSqlServerIsClustered();
             builder.Entity<Pictogram>().ToTable("Pictograms").HasDiscriminator<string>("Discriminator").HasValue<Pictogram>(nameof(Pictogram));
+            builder.Entity<Pictogram>().HasIndex(pic => new {pic.Id, pic.Title}).IsUnique().ForSqlServerIsClustered();
             builder.Entity<Choice>().ToTable("Choices").HasDiscriminator<string>("Discriminator").HasValue<Choice>(nameof(Choice));
             builder.Entity<Weekday>().ToTable("Weekdays").HasDiscriminator<string>("Discriminator").HasValue<Weekday>(nameof(Weekday));
+            builder.Entity<Weekday>().HasIndex(day => new {day.Id}).IsUnique().ForSqlServerIsClustered();
 
             //asp.net does not support many-to-many in its' current release. Here is a workaround.
             //The workaround is similar to the one taught in the DBS course, where a relationship called
@@ -87,6 +94,8 @@ namespace GirafRest.Data
             builder.Entity<GirafUser>()
                 .HasOne<Department>(u => u.Department)
                 .WithMany(d => d.Members);
+            builder.Entity<GirafUser>().HasIndex(user => new {user.Id, user.UserName}).IsUnique().ForSqlServerIsClustered();
+                
 
             builder.Entity<Department>()
                 .HasMany<WeekTemplate>(u => u.WeekTemplates)
@@ -127,6 +136,8 @@ namespace GirafRest.Data
             builder.Entity<WeekdayResource>().ToTable("WeekdayResources");
             //builder.Entity<Weekday>().ToTable("Weekdays").HasDiscriminator<string>("Discriminator").HasValue<Weekday>(nameof(Weekday));
             builder.Entity<Week>().ToTable("Weeks").HasDiscriminator<string>("Discriminator").HasValue<Week>(nameof(Week));
+            builder.Entity<Week>().HasIndex(week => week.Id).IsUnique().ForSqlServerIsClustered();
+            
             builder.Entity<WeekTemplate>().ToTable("Weeks").HasDiscriminator<string>("Discriminator").HasValue<WeekTemplate>(nameof(WeekTemplate));
 
             // Configure that a citizen can have many guardians and that a citizen can have many guardians
