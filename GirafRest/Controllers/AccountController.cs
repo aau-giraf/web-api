@@ -366,8 +366,6 @@ namespace GirafRest.Controllers
         /// PasswordNotUpdated if the user wasn't logged in
         /// </returns>
         [HttpPost("set-password")]
-        [ValidateAntiForgeryToken]
-        [Authorize]
         public async Task<Response> SetPassword(SetPasswordDTO model)
         {
             if (model == null)
@@ -399,8 +397,6 @@ namespace GirafRest.Controllers
         /// PasswordNotUpdated if the user wasn't logged in
         /// </returns>
         [HttpPost("change-password")]
-        [ValidateAntiForgeryToken]
-        [Authorize]
         public async Task<Response> ChangePassword(ChangePasswordDTO model)
         {
             if (model == null)
