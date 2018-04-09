@@ -37,6 +37,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Public pictograms no longer require authorization to read
 - An exception is no longer raised when trying to add a weekday that is not valid instead an errorcode is returned
 - Anyone can no longer add a user to a department
+- Makes it possible to target changepassword endpoint and setpassword endpoint without setting Antivalidationtoken
 
 ## [1.001.01] - 2018-03-12
 ### Added
