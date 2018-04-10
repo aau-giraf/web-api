@@ -195,67 +195,77 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Updates all the information of the currently authenticated user with the information from the given DTO.
+        /// Updates username and screenname for the current authenticated user.
         /// </summary>
         /// <param name="userDTO">A DTO containing ALL the new information for the given user.</param>
         /// <returns>
-        /// NotFound if the DTO contains either an invalid pictogram ID or an invalid week ID and
-        /// OK if the user was updated succesfully.
+        /// MissingProperties if username or screenname is null
+        /// If succesfull returns the DTO corresponding to the newly updates user.
         /// </returns>
         [HttpPut("")]
-        public async Task<Response<GirafUserDTO>> UpdateUser([FromBody]GirafUserDTO userDTO)
+        public async Task<Response<GirafUserDTO>> UpdateUser([FromBody] string Username, [FromBody] string ScreenName)
         {
-            if (userDTO == null)
+            if (Username == null || ScreenName == null)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties);
 
             //Fetch the user
             var user = await _giraf.LoadUserAsync(HttpContext.User);
 
-            if (user == null)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
-
-            return await UpdateUser(user.Id, userDTO);
+            return await UpdateUser(user.Id, Username, ScreenName);
         }
 
         /// <summary>
-        /// Updates all the information of the currently authenticated user with the information from the given DTO.
+        /// Updates the user.
         /// </summary>
-        /// <param name="id">The id of the user to update.</param>
-        /// <param name="userDTO">A DTO containing ALL the new information for the given user.</param>
+        /// <param name="id">Identifier.</param>
+        /// <param name="Username">Username.</param>
+        /// <param name="ScreenName">Screen name.</param>
         /// <returns>
-        /// NotFound if the DTO contains either an invalid pictogram ID or an invalid week ID and
-        /// OK if the user was updated succesfully.
+        /// MissingProperties if username or screenname is null
+        /// UserNotFound if no user can be found for the specified id
+        /// Not authorised if trying to update a user you do not have priveligies to update
+        /// Succes response with the DTO for the updates user if all went smooth
         /// </returns>
         [HttpPut("{id}")]
-        public async Task<Response<GirafUserDTO>> UpdateUser(string id, [FromBody]GirafUserDTO userDTO)
+        public async Task<Response<GirafUserDTO>> UpdateUser(string id, [FromBody] string Username, [FromBody] string ScreenName)
         {
-            var userInfoBrief = await _giraf._userManager.FindByIdAsync(id);
+            if (Username == null || ScreenName == null)
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties);
 
-            if (userInfoBrief == null)
+            var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
+            if (user == null)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
 
-            //Fetch the user
-            var user = await _giraf.LoadByNameAsync(userInfoBrief.UserName);
-            if (user == null)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.NotFound);
-
-            if (!ModelState.IsValid)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, ModelState.Values.Where(e => e.Errors.Count > 0)
-                                  .SelectMany(e => e.Errors)
-                                  .Select(e => e.ErrorMessage)
-                                  .ToArray());
-
-            //Update all simple fields
-            user.UserName = userDTO.Username;
-            user.DisplayName = userDTO.ScreenName;
-
-            //Save changes and return the user with updated information.
-            _giraf._context.Users.Update(user);
-            await _giraf._context.SaveChangesAsync();
-
+            // current authenticated user
+            var authenticatedUser = await _giraf.LoadUserAsync(HttpContext.User);
+            var role = await _roleManager.findUserRole(_giraf._userManager, authenticatedUser);
+            // if role is citizen check that the current authenticated citizen is the same as the one we wanna update
+            user.UserName = Username;
+            user.DisplayName = ScreenName;
             // Get the roles the user is associated with
             GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
+            if (authenticatedUser.Id == user.Id){
+                //Save changes and return the user with updated information.
+                _giraf._context.Users.Update(user);
+                await _giraf._context.SaveChangesAsync();
+                return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));
+            }
+
+            // check that we have the rights to update the user
+            else if(userRole == GirafRoles.Citizen){
+                if (role == GirafRoles.Department)
+                    if (authenticatedUser.DepartmentKey != user.DepartmentKey)
+                        return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
+
+                if (role == GirafRoles.Guardian)
+                    authenticatedUser = _giraf._context.Users.Include(u => u.Citizens).FirstOrDefault(c => c.Id == authenticatedUser.Id);
+                if (authenticatedUser.DepartmentKey != user.DepartmentKey || !(authenticatedUser.Citizens.Any(c => c.CitizenId == user.Id)))
+                    return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
+            }
+            // save and return 
+            _giraf._context.Users.Update(user);
+            await _giraf._context.SaveChangesAsync();
             return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));
         }
 

@@ -251,9 +251,8 @@ namespace GirafRest.Test
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[AdminDepOne]);
-
-            var res = usercontroller.UpdateUser(
-                new GirafUserDTO(_testContext.MockUsers[AdminDepOne], GirafRoles.Citizen))
+            var testUser = new GirafUserDTO(_testContext.MockUsers[AdminDepOne], GirafRoles.Citizen);
+            var res = usercontroller.UpdateUser(testUser.Username, "test")
                 .Result;
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
@@ -261,7 +260,7 @@ namespace GirafRest.Test
             Assert.True(res.Success);
             // check that the updated data is correct
             Assert.Equal(_testContext.MockUsers[AdminDepOne].UserName, res.Data.Username);
-            Assert.Equal(_testContext.MockUsers[AdminDepOne].DepartmentKey, res.Data.Department);
+            Assert.Equal("test", res.Data.ScreenName);
         }
 
         [Fact]
@@ -269,7 +268,7 @@ namespace GirafRest.Test
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[AdminDepOne]);
-            var res = usercontroller.UpdateUser(null).Result;
+            var res = usercontroller.UpdateUser(null, null).Result;
 
             Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);
