@@ -236,6 +236,12 @@ namespace GirafRest.Controllers
             if (user == null)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
 
+            // check whether user with that username already exist that does dot have the same id
+            if (_giraf._context.Users.Any(u => u.UserName == Username && u.Id != user.Id))
+            {
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserAlreadyExists);
+            }
+
             // current authenticated user
             var authenticatedUser = await _giraf.LoadUserAsync(HttpContext.User);
             var role = await _roleManager.findUserRole(_giraf._userManager, authenticatedUser);
@@ -254,14 +260,17 @@ namespace GirafRest.Controllers
 
             // check that we have the rights to update the user
             else if(userRole == GirafRoles.Citizen){
-                if (role == GirafRoles.Department)
+                if (role == GirafRoles.Department){
                     if (authenticatedUser.DepartmentKey != user.DepartmentKey)
                         return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
+                }
 
-                if (role == GirafRoles.Guardian)
+                if (role == GirafRoles.Guardian){
                     authenticatedUser = _giraf._context.Users.Include(u => u.Citizens).FirstOrDefault(c => c.Id == authenticatedUser.Id);
-                if (authenticatedUser.DepartmentKey != user.DepartmentKey || !(authenticatedUser.Citizens.Any(c => c.CitizenId == user.Id)))
-                    return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
+                    if (authenticatedUser.DepartmentKey != user.DepartmentKey || !(authenticatedUser.Citizens.Any(c => c.CitizenId == user.Id)))
+                        return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
+                }
+
             }
             // save and return 
             _giraf._context.Users.Update(user);

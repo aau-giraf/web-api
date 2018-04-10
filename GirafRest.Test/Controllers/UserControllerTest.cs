@@ -264,7 +264,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void UpdateUser_ValidUserNullDTO_Error()
+        public void UpdateUser_ParametersNull_Error()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[AdminDepOne]);
@@ -274,6 +274,63 @@ namespace GirafRest.Test
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
+
+        [Fact]
+        public void UpdateUser_ScreenNmaeNull(){
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserDepartment2]);
+            var res = usercontroller.UpdateUser(_testContext.MockUsers[UserCitizenDepartment1].UserName, null).Result;
+
+            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
+        }
+
+        [Fact]
+        public void UpdateUser_NotAuthorised()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserDepartment2]);
+            var user = _testContext.MockUsers[UserCitizenDepartment1];
+            var res = usercontroller.UpdateUser(user.Id, "Charles", "Junior").Result;
+
+            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+        }
+
+        [Fact]
+        public void UpdateUser_SameDepartmentWithDepLogin_Ok()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserDepartment2]);
+            var user = _testContext.MockUsers[UserCitizenDepartment2];
+            var res = usercontroller.UpdateUser(user.Id, "Charles", "Junior").Result;
+
+            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.True(res.Success);
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            // check data
+            Assert.Equal("Charles", res.Data.Username);
+            Assert.Equal("Junior", res.Data.ScreenName);
+        }
+
+        [Fact]
+        public void UpdateUser_SameDepartmenSameUsername_Ok()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserDepartment2]);
+            var user = _testContext.MockUsers[UserCitizenDepartment2];
+            var res = usercontroller.UpdateUser(user.Id, user.UserName, "Gunnar").Result;
+
+            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.True(res.Success);
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            // check data
+            Assert.Equal(user.UserName, res.Data.Username);
+            Assert.Equal("Gunnar", res.Data.ScreenName);
+        }
+
         #endregion
         #region AddApplication
         [Fact]

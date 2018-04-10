@@ -87,6 +87,7 @@ namespace GirafRest.Test
             public const int UserAdminNoDepartment = 4;
             public const int UserGuardian2Department2 = 5;
             public const int UserDepartment2 = 6;
+            public const int UserCitizenDepartment1 = 8;
             
             private List<GirafUser> mockUsers = null;
             public List<GirafUser> MockUsers
