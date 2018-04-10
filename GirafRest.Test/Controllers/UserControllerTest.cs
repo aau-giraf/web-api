@@ -66,11 +66,9 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
             var res = userController.SetUserIcon().Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.IsType<Response>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            // Check that we logged in as the user we wanted
-            Assert.Equal(res.Data.Username, mockUser.UserName);
         }
 
         [Fact]
@@ -83,16 +81,9 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
             var res = usercontroller.SetUserIcon().Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.IsType<Response>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-
-            // Get icon to be sure it is set
-            var res2 = usercontroller.GetUserIcon(res.Data.Id).Result;
-
-            Assert.IsType<Response<GirafUserDTO>>(res);
-            Assert.True(res2.Success);
-            Assert.True(res2.Data.Image != null);
         }
 
         [Fact]
@@ -104,15 +95,8 @@ namespace GirafRest.Test
             usercontroller.SetUserIcon().Wait();
             var res = usercontroller.DeleteUserIcon().Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.IsType<Response>(res);
             Assert.True(res.Success);
-
-            // Get icon to be sure it is deleted
-            var res2 = usercontroller.GetUserIcon(res.Data.Id).Result;
-
-            Assert.IsType<ErrorResponse<ImageDTO>>(res2);
-            Assert.False(res2.Success);
-            Assert.Equal(ErrorCode.UserHasNoIcon, res2.ErrorCode);
         }
 
         [Fact]
@@ -122,7 +106,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
             var res = usercontroller.DeleteUserIcon().Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserHasNoIcon, res.ErrorCode);
         }
@@ -276,14 +260,14 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void UpdateUser_ScreenNmaeNull(){
+        public void UpdateUser_ScreenNameNull_Success(){
             var usercontroller = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserDepartment2]);
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserCitizenDepartment1]);
             var res = usercontroller.UpdateUser(_testContext.MockUsers[UserCitizenDepartment1].UserName, null).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
+            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.True(res.Success);
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
         }
 
         [Fact]
