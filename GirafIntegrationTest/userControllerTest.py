@@ -177,33 +177,32 @@ def UserControllerTest():
 
     ####
     test.new('Get Kurt\'s citizens(none)')
-    response = requests.get(Test.url() + 'User/getcitizens/Kurt', headers = {"Authorization":"Bearer {0}".format(kurt)}).json()
+    response = requests.get(Test.url() + 'User/Kurt/citizens', headers = {"Authorization":"Bearer {0}".format(kurt)}).json()
     test.ensureError(response)
 
     ####
     test.new('Get Graatand\'s citizens(some)')
-    response = requests.get(Test.url() + 'User/getcitizens/Graatand', headers = {"Authorization":"Bearer {0}".format(graatand)}).json()
+    response = requests.get(Test.url() + 'User/Graatand/citizens', headers = {"Authorization":"Bearer {0}".format(graatand)}).json()
     if test.ensureSuccess(response):
         test.ensure(response['data'][0]['username'] == 'Kurt')
 
     ####
     test.new('Get Kurt\'s guardians(some)')
-    response = requests.get(Test.url() + 'User/getGuardians/Kurt', headers = {"Authorization":"Bearer {0}".format(kurt)}).json()
+    response = requests.get(Test.url() + 'User/Kurt/guardians', headers = {"Authorization":"Bearer {0}".format(kurt)}).json()
     if test.ensureSuccess(response):
         test.ensure(response['data'][0]['username'] == 'Graatand')
 
     ####
     test.new('Get Graatand\'s guardians(none)')
-    response = requests.get(Test.url() + 'User/getGuardians/Graatand', headers = {"Authorization":"Bearer {0}".format(graatand)}).json()
+    response = requests.get(Test.url() + 'User/Graatand/guardians', headers = {"Authorization":"Bearer {0}".format(graatand)}).json()
     test.ensureError(response)
 
     ####
     test.new('Try to get Graatand\'s citizens(some) as Gunnar')
-    response = requests.get(Test.url() + 'User/getcitizens/Graatand', headers = {"Authorization":"Bearer {0}".format(graatand)}).json()
+    response = requests.get(Test.url() + 'User/Graatand/citizens', headers = {"Authorization":"Bearer {0}".format(graatand)}).json()
     test.ensureError(response)
 
     ####
     test.new('Try to get Kurt\'s guardians(some) as Gunnar')
-    response = requests.get(Test.url() + 'User/getcitizens/Kurt', headers = {"Authorization":"Bearer {0}".format(kurt)}).json()
+    response = requests.get(Test.url() + 'User/Kurt/guardians', headers = {"Authorization":"Bearer {0}".format(kurt)}).json()
     test.ensureError(response)
-

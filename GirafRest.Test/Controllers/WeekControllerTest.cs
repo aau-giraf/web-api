@@ -145,7 +145,7 @@ namespace GirafRest.Test
 
             Assert.False(res.Success);
             Assert.IsType<ErrorResponse<WeekDTO>>(res);
-            Assert.Equal(ErrorCode.InvalidProperties, res.ErrorCode);
+            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
         #endregion
         #region CreateWeek
