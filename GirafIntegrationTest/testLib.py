@@ -5,7 +5,6 @@ import subprocess
 import json
 import datetime
 import getpass
-from termcolor import colored
 import requests
 import logging
 
@@ -62,33 +61,6 @@ class Test:
 
         self.current = title
         self.failed = False
-
-    def ensure(self, fact, errormessage="", calldepth=1):
-        if fact:
-            return False
-        else:
-            # Extra thick line dividing different tests.
-            if not self.failed:
-                print(colored("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-                              attrs=['dark']))
-
-            self.failed = True
-            print(colored('ENSURE', 'red') +
-                  ' failed in ' + colored(self.name, attrs=['underline']) +
-                  ' for test ' + colored(self.current, attrs=['underline']))
-            print(colored(errormessage, attrs=['bold']))
-
-            # code for geting debug-info gratefully borrowed from
-            # https://stackoverflow.com/questions/6810999/how-to-determine-file-function-and-line-number
-            callerframerecord = inspect.stack()[calldepth]
-            frame = callerframerecord[0]
-            info = inspect.getframeinfo(frame)
-            print(colored('\n  File:     {0}'.format(info.filename), attrs=['dark']))
-            print(colored('  Function: {0}'.format(info.function), attrs=['dark']))
-            print(colored('  Line:     {0}'.format(info.lineno), attrs=['dark']))
-            print(colored("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━",
-                          attrs=['dark']))
-            return True
 
     def ensureValidResponse(self, response, calldepth=1):
         return self.ensure(response is not None, 'Invalid response. Likely a 404 or a stacktrace.', calldepth=calldepth)
