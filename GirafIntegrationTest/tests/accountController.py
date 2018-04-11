@@ -1,6 +1,7 @@
 from integrate import TestCase, test
 from testLib import *
 import requests
+import time
 
 class AccountController(TestCase):
     "Account Controller"
@@ -8,8 +9,6 @@ class AccountController(TestCase):
     gunnarToken = None
     tobiasToken = None
     gunnarUsername = None
-
-
 
     @test()
     def getUsernameNoAuth(self, check):
@@ -29,7 +28,7 @@ class AccountController(TestCase):
     @test(depends=["loginAsGraatand"])
     def getUsernameWithAuth(self, check):
         "GETting username with authorization"
-        response = requests.get(Test.url + 'user/username', headers = {"Authorization":"Bearer {0}".format(graatandToken)}).json()
+        response = requests.get(Test.url + 'user/username', headers = {"Authorization":"Bearer {0}".format(AccountController.graatandToken)}).json()
         check.is_true(response['success'])
         check.is_not_none(response['data'])
         check.equal(response['data'], "Graatand")
@@ -39,7 +38,7 @@ class AccountController(TestCase):
         "Login with invalid password"
         response = requests.post(Test.url + 'account/login', json = {"username": "Graatand", "password": "wrongPassword"}).json()
         check.is_false(response['success'])
-        check.equal(response['errorKey'], "NotFound")
+        check.equal(response['errorKey'], "InvalidCredentials")
 
 
     @test()
@@ -47,7 +46,7 @@ class AccountController(TestCase):
         "Login with invalid username"
         response = requests.post(Test.url + 'account/login', json = {"username": "WrongGraatand", "password": "password"}).json()
         check.is_false(response['success'])
-        check.equal(response['errorKey'], "NotFound")
+        check.equal(response['errorKey'], "InvalidCredentials")
 
     # User story `Guardian would like to log in`
     @test()
@@ -83,8 +82,7 @@ class AccountController(TestCase):
     @test()
     def loginAsTobias(self, check):
         "Login as department"
-        response = requests.post(Test.url + 'account/login', json = '{"username": "Tobias", "password": "password"}').json()
-        print(response)
+        response = requests.post(Test.url + 'account/login', json = {"username": "Tobias", "password": "password"}).json()
         check.is_true(response['success'])
         check.is_not_none(response['data'])
         AccountController.tobiasToken = response['data']
