@@ -65,7 +65,6 @@ namespace GirafRest.Controllers
         /// UnAuthorized if user is not logged in.
         /// </returns>
         [HttpGet("username")]
-        [Authorize]
         public async Task<Response<string>> Username()
         {
             //First attempt to fetch the user and check that he exists
@@ -85,7 +84,6 @@ namespace GirafRest.Controllers
         /// UserNotFound if user was not found, or logged in user is not authorized to see user.
         ///</returns>
         [HttpGet("{username}")]
-        [Authorize]
         public async Task<Response<GirafUserDTO>> GetUser(string username)
         {
             //Declare needed variables
@@ -135,7 +133,6 @@ namespace GirafRest.Controllers
         /// UserNotFound if user was not found, or logged in user is not authorized to see user.
         ///</returns>
         [HttpGet("{username}/settings")]
-        [Authorize]
         public async Task<Response<LauncherOptionsDTO>> GetSettings(string username)
         {
             //Declare needed variables
@@ -179,7 +176,6 @@ namespace GirafRest.Controllers
         /// <returns>
         /// Information about the logged in user
         /// </returns>
-        [Authorize]
         [HttpGet("")]
         public async Task<Response<GirafUserDTO>> GetUser()
         {
@@ -357,7 +353,7 @@ namespace GirafRest.Controllers
         /// <returns>BadRequest in no application is specified,
         /// NotFound if no user with the given id exists or
         /// Ok and a serialized version of the user to whom the application was added.</returns>
-        [HttpPost("applications/{username}")]
+        [HttpPost("{username}/applications")]
         public async Task<Response<GirafUserDTO>> AddApplication(string username, [FromBody] ApplicationOption application)
         {
             //Check that an application has been specified
@@ -396,7 +392,7 @@ namespace GirafRest.Controllers
         /// <returns>BadRequest if no application is specified,
         /// NotFound if no user or applications with the given ids exist
         /// or Ok and the user if everything went well.</returns>
-        [HttpDelete("applications/{username}")]
+        [HttpDelete("{username}/applications")]
         public async Task<Response<GirafUserDTO>> DeleteApplication(string username, [FromBody] ApplicationOption application)
         {
             //Check if the caller has specified an application to remove
@@ -454,7 +450,7 @@ namespace GirafRest.Controllers
         /// BadRequest if either of the two ids are missing or the resource is not PRIVATE, NotFound
         /// if either the user or the resource does not exist or Ok if everything went well.
         /// </returns>
-        [HttpPost("resource/{username}")]
+        [HttpPost("{username}/resource")]
         public async Task<Response<GirafUserDTO>> AddUserResource(string username, [FromBody] ResourceIdDTO resourceIdDTO)
         {
             //Check if valid parameters have been specified in the call
@@ -589,7 +585,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns>The citizens.</returns>
         /// <param name="username">Username.</param>
-        [HttpGet("getCitizens/{username}")]
+        [HttpGet("{username}/citizens")]
         public async Task<Response<List<GirafUserDTO>>> GetCitizens(string username)
         {
             if (username == null)
@@ -616,8 +612,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns>The guardians.</returns>
         /// <param name="username">Username.</param>
-        [HttpGet("getGuardians/{username}")]
-        [Authorize]
+        [HttpGet("{username}/guardians")]
         public async Task<Response<List<GirafUserDTO>>> GetGuardians(string username)
         {
             if (username == null)
@@ -638,13 +633,54 @@ namespace GirafRest.Controllers
             return new Response<List<GirafUserDTO>>(guardians);
         }
 
+
+        /// <summary>
+        /// Removes a user from its department.
+        /// </summary>
+        /// <param name="username">Username.</param>
+        /// <returns>
+        /// UserNotFound if a user with the given username does not exsist.
+        /// DepartmentNotFound if the user does not belong to any department.
+        /// DepartmentDTO in its updated state if no problems occured.
+        /// </returns>
+        [HttpDelete("{username}/department")]
+        public async Task<Response<DepartmentDTO>> RemoveDepartment(string username)
+        {
+            // TODO: Check that authorized user is a guardian of the department, is the department user or a superuser
+            if(string.IsNullOrEmpty(username))
+                return new ErrorResponse<DepartmentDTO>(ErrorCode.MissingProperties, "username");
+
+            var usr = await _giraf._context
+                .Users
+                .Include(u => u.Department)
+                .Where(u => u.UserName == username)
+                .FirstOrDefaultAsync();
+            
+            if(usr == null)
+                return new ErrorResponse<DepartmentDTO>(ErrorCode.UserNotFound);
+            
+            var dep = await _giraf._context
+                .Departments
+                .Where(d => d.Key == usr.DepartmentKey)
+                .Include(d => d.Members)
+                .Include(d => d.Resources)
+                .FirstOrDefaultAsync();
+            
+            if (dep == null)
+                return new ErrorResponse<DepartmentDTO>(ErrorCode.DepartmentNotFound);
+
+            usr.DepartmentKey = null;
+            _giraf._context.SaveChanges();
+            
+            return new Response<DepartmentDTO>(new DepartmentDTO(dep));
+        }
+
         /// <summary>
         /// Read the currently authorized user's settings object.
         /// </summary>
         /// <returns>The current user's settings.</returns>
         [HttpGet("settings")]
-        [Authorize]
-        public async Task<Response<LauncherOptionsDTO>> ReadUserSettins () {
+        public async Task<Response<LauncherOptionsDTO>> ReadUserSettings () {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
 
             if (user == null)
@@ -654,7 +690,6 @@ namespace GirafRest.Controllers
         }
 
         [HttpPut("settings")]
-        [Authorize]
         public async Task<Response<LauncherOptions>> UpdateUserSettings ([FromBody] LauncherOptionsDTO options) {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
 

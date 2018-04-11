@@ -20,7 +20,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// A list of the usernames of all members of the department.
         /// </summary>
-        public ICollection<string> Members { get; set; }
+        public ICollection<UserNameDTO> Members { get; set; }
         /// <summary>
         /// A list of ids of all resources owned by the department.
         /// </summary>
@@ -34,7 +34,7 @@ namespace GirafRest.Models.DTOs
         {
             this.ID = department.Key;
             this.Name = department.Name;
-            this.Members = new List<string> (department.Members.Select(m => m.UserName));
+            this.Members = new List<UserNameDTO> (department.Members.Select(m => new UserNameDTO(m.UserName, m.Id)));
             this.Resources = new List<long> (department.Resources.Select(dr => dr.ResourceKey));
         }
 
@@ -43,7 +43,7 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         public DepartmentDTO ()
         {
-            Members = new List<string>();
+            Members = new List<UserNameDTO>();
             Resources = new List<long>();
         }
     }

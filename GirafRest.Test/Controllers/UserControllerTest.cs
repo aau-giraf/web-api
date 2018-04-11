@@ -841,5 +841,34 @@ namespace GirafRest.Test
             Assert.True(!_testContext.MockUsers[CitizenDepTwo].Settings.DisplayLauncherAnimations);
         }
         #endregion
+        
+        #region RemoveDepartment
+        [Fact]
+        public void RemoveDepartment_RemoveExistingUser_OK()
+        {
+            var userController = initializeTest();
+            var user = _testContext.MockUsers.Where(u => u.UserName == CitizenUsername).FirstOrDefault();
+            _testContext.MockUserManager.MockLoginAsUser(user);            
+            Assert.True(_testContext.MockDepartments.Where(d => d.Key == user.DepartmentKey).First().Members.Any(u => u.Id == user.Id));
+            
+            var res = userController.RemoveDepartment(CitizenUsername).Result;
+
+            Assert.IsType<Response<DepartmentDTO>>(res);
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            // TODO: Check that department no longer has this user
+            
+        }
+        
+        [Fact]
+        public void RemoveUser_RemoveNullUser_BadRequest()
+        {
+            var userController = initializeTest();
+            var res = userController.RemoveDepartment(null).Result;
+            Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
+        }
+        #endregion
+
     }
 }
