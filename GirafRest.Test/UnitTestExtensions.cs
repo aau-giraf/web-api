@@ -87,6 +87,7 @@ namespace GirafRest.Test
             public const int UserAdminNoDepartment = 4;
             public const int UserGuardian2Department2 = 5;
             public const int UserDepartment2 = 6;
+            public const int UserCitizenDepartment1 = 8;
             
             private List<GirafUser> mockUsers = null;
             public List<GirafUser> MockUsers
@@ -105,7 +106,7 @@ namespace GirafRest.Test
                         {
                             UserName = "Guardian in dep 2",
                             Id = "guardian2",
-                            DepartmentKey = 2
+                            DepartmentKey = 2,
                         },
                         new GirafUser()
                         {
@@ -147,10 +148,35 @@ namespace GirafRest.Test
                             UserName = "Citizen of dep 1",
                             Id = "citizen4",
                             DepartmentKey = 1
-                        },
+                        }
                     };
 
                     return mockUsers;
+                }
+            }
+
+            private List<GuardianRelation> mockGuardianRelations;
+            public List<GuardianRelation> MockGuardianRelations
+            {
+                get
+                {
+                    if(mockGuardianRelations == null)
+                    {
+                        mockGuardianRelations = new List<GuardianRelation>()
+                        {
+                            new GuardianRelation()
+                            {
+                                Guardian = MockUsers[1],
+                                Citizen = MockUsers[2],
+                                GuardianId = MockUsers[1].Id,
+                                CitizenId = MockUsers[2].Id
+                            }
+                        };
+
+                        MockUsers[1].Citizens.Add(mockGuardianRelations[0]);
+                        MockUsers[2].Guardians.Add(mockGuardianRelations[0]);
+                    }
+                    return mockGuardianRelations;
                 }
             }
 
@@ -450,6 +476,7 @@ namespace GirafRest.Test
                 var mockRoles = CreateMockDbSet(MockRoles);
                 var mockUserRoles = CreateMockDbSet(MockUserRoles);
                 var mockWeeks = CreateMockDbSet(MockWeeks);
+                var mockGuardianRelations = CreateMockDbSet(MockGuardianRelations);
                 var dbMock = new Mock<MockDbContext>();
                 dbMock.Setup(c => c.Pictograms).Returns(mockSet.Object);
                 dbMock.Setup(c => c.UserResources).Returns(mockRelationSet.Object);

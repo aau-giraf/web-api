@@ -3,11 +3,11 @@ from testLib import *
 import time
 
 
-def testChoiceController():
-    test = controllerTest("Choice Controller")
+def ChoiceControllerTest():
+    test = Test("Choice Controller")
 
     ####
-    test.newTest('Register Gunnar')
+    test.new('Register Gunnar')
     # Will generate a unique enough number, so the user isn't already created
     gunnarUsername = 'Gunnar{0}'.format(str(time.time()))
     response = test.request('POST', 'account/register',
@@ -17,7 +17,7 @@ def testChoiceController():
     gunnar = test.login(gunnarUsername)
 
     ####
-    test.newTest("Post choice(OK)")
+    test.new("Post choice(OK)")
     body = '''{
       "options": [
         {
@@ -47,20 +47,20 @@ def testChoiceController():
     postedChoiceId = response.get('id')
 
     ####
-    test.newTest('Check that choice is in database')
+    test.new('Check that choice is in database')
     response = test.request('GET', 'Choice/{0}'.format(postedChoiceId), auth=gunnar)
     test.ensureSuccess(response)
     test.ensure(response.get('title') == 'Tegn OR Sølv')
     test.ensure(response.get('options').get(2).get('title') == 'sølv')
 
     ####
-    test.newTest('Check that choice is in database')
+    test.new('Check that choice is in database')
     response = test.request('GET', 'Choice/-1', auth=gunnar)
     test.ensureError(response)
 
 
     ####
-    test.newTest("Update choice(OK)")
+    test.new("Update choice(OK)")
     body = '''{
       "options": [
         {
@@ -89,23 +89,23 @@ def testChoiceController():
     test.ensureSuccess(response)
 
     ####
-    test.newTest('Check that it changed')
+    test.new('Check that it changed')
     response = test.request('GET', 'Choice/{0}'.format(postedChoiceId), auth=gunnar)
     test.ensureSuccess(response)
     test.ensure(response.get('title') == 'Tegn OR Sætte')
     test.ensure(response.get('options').get(2).get('title') == 'sætte')
 
     ####
-    test.newTest('Delete the choice')
+    test.new('Delete the choice')
     response = test.request('DELETE', 'Choice/{0}'.format(postedChoiceId), auth=gunnar)
     test.ensure(response['success'] is True, errormessage='Error: {0}'.format(response['errorKey']))
 
     ####
-    test.newTest('Check that it is no longer there')
+    test.new('Check that it is no longer there')
     response = test.request('GET', 'Choice/{0}'.format(postedChoiceId), auth=gunnar)
     test.ensureError(response)
 
     ####
-    test.newTest('Delete the nonexistent choice')
+    test.new('Delete the nonexistent choice')
     response = test.request('DELETE', 'Choice/-1', auth=gunnar)
     test.ensureError(response)
