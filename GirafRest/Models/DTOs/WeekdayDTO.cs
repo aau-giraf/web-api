@@ -41,8 +41,9 @@ namespace GirafRest.Models.DTOs
                         if(element.Resource is Pictogram pictogram)
                             Elements.Add(new PictogramDTO(pictogram));
                         
-                        else if(element.Resource is Choice choice)
-                            Elements.Add(new ChoiceDTO(choice));
+                        //TODO: Fix Loading Choice.Options
+                        //else if(element.Resource is Choice choice)
+                        //    Elements.Add(new ChoiceDTO(choice));
                         
                         ElementIDs.Add(element.Resource.Id);
                     }
