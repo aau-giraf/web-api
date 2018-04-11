@@ -10,8 +10,7 @@ def WeekControllerTest():
     ####
     test.new('Register Gunnar')
     gunnarUsername = 'Gunnar{0}'.format(str(time.time()))
-    response = test.request('POST', 'account/register',
-                            '{"username": "' + gunnarUsername + '","password": "password","departmentId": 1}')
+    response = requests.post('account/register', json = {"username": gunnarUsername,"password": "password", "departmentId": 1}).json()
     test.ensureSuccess(response)
 
     gunnar = test.login(gunnarUsername)
