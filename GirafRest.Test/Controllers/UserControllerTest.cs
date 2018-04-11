@@ -57,6 +57,7 @@ namespace GirafRest.Test
             return usercontroller;
         }
 
+
         #region User icon
         [Fact]
         public void CreateUserIcon_NoIcon_Success()
@@ -339,6 +340,31 @@ namespace GirafRest.Test
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
+        
+        [Fact]
+        public void AddGuardianCitizenRelationship_AddGuardianToCitizen_OK()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[AdminDepOne]);
+            var res = usercontroller.AddGuardianCitizenRelationship(_testContext.MockUsers[1].Id, _testContext.MockUsers[2].Id);
+
+            Assert.IsType<Response<GirafUserDTO>>(res.Result);
+            Assert.True(res.Result.Success);
+        }
+
+        [Fact]
+        public void AddGuardianCitizenRelationship_InvalidGuardianUser_Error()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[AdminDepOne]);
+            var res = usercontroller.AddGuardianCitizenRelationship("", _testContext.MockUsers[2].Id);
+
+            Assert.IsType<ErrorResponse<GirafUserDTO>>(res.Result);
+            Assert.False(res.Result.Success);
+            Assert.Equal(res.Result.ErrorCode, ErrorCode.UserNotFound);
+        }
+
+
         #endregion
         #region AddApplication
         [Fact]

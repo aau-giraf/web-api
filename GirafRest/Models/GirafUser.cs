@@ -19,14 +19,13 @@ namespace GirafRest.Models
         public bool IsDepartment { get; set; }
 
         /// <summary>
-        /// List of users the user is guardian of. Is simply null if the user isn't a guardian
+        /// List of guardians in a relationship with the user. Is empty if the user is a guardian.
         /// </summary>
         public virtual ICollection<GuardianRelation> Guardians { get; set; }
 
         /// <summary>
-        /// Gets or sets my guardians.
+        /// List of citizens in a relationship with the user. Is empty if the user is a citizen.
         /// </summary>
-        /// <value>My guardians.</value>
         public virtual ICollection<GuardianRelation> Citizens { get; set; }
 
         /// <summary>
