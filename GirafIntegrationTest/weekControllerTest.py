@@ -4,11 +4,11 @@ import time
 from rawSampleImage import *
 
 
-def testWeekController():
-    test = controllerTest('Week Controller')
+def WeekControllerTest():
+    test = Test('Week Controller')
 
     ####
-    test.newTest('Register Gunnar')
+    test.new('Register Gunnar')
     gunnarUsername = 'Gunnar{0}'.format(str(time.time()))
     response = test.request('POST', 'account/register',
                             '{"username": "' + gunnarUsername + '","password": "password","departmentId": 1}')
@@ -17,11 +17,13 @@ def testWeekController():
     gunnar = test.login(gunnarUsername)
 
     ####
-    test.newTest('Get (empty)List of all weeks')
+    test.new('Get (empty)List of all weeks')
     response = test.request('GET', 'Week', auth=gunnar)
     # test.ensureSuccess(response)
     test.ensureError(response)  # This error makes no sense but whatever.
 
+    ####
+    test.new('Create new week')
     day = '''
     {{
         "thumbnailID": 4,
@@ -72,8 +74,6 @@ def testWeekController():
         }}
     '''.format(day.format(99), day.format(1), day.format(2), day.format(3), day.format(4), day.format(5), day.format(6))
 
-    print badEnumValueWeekDTO
-
     correctWeekDTO = '''
         {{
           "thumbnail" : {{
@@ -106,7 +106,7 @@ def testWeekController():
     test.ensureSuccess(response)
 
     ####
-    test.newTest('Get List of all weeks again, find our week')
+    test.new('Get List of all weeks again, find our week')
     response = test.request('GET', 'Week', auth=gunnar)
     if test.ensureSuccess(response):
         test.ensureEqual('The best week of the day', response['data'][0]['name'])
@@ -115,6 +115,8 @@ def testWeekController():
         print('Critical error in Week Controller Test: Not all tests could be run.')
         return
 
+    ####
+    test.new('Update whole week at once')
     otherDay = '''
     {{
         "thumbnailID": 4,
@@ -129,8 +131,7 @@ def testWeekController():
             "id": 2,
             "lastEdit": "2018-03-28T10:47:51.628333"
         }}]
-    }}
-    '''
+    }} '''
 
     otherCorrectWeekDTO = '''
         {{
@@ -160,7 +161,7 @@ def testWeekController():
         test.ensureEqual(2, response['data']['days'][i]['elements'][0]['id'])
 
     ####
-    test.newTest('Update single day(Day Controller is not getting its own file.)')
+    test.new('Update single day(Day Controller is not getting its own file.)')
     someOtherDay = '''
         {
           "elementsSet": true,
@@ -180,7 +181,7 @@ def testWeekController():
             test.ensureEqual(3, response['data']['days'][i]['elements'][0]['id'])
 
     ####
-    test.newTest('Delete the week')
+    test.new('Delete the week')
     response = test.request('DELETE', 'Week/{0}'.format(weekID), data='', auth=gunnar)
     test.ensureSuccess(response)
     response = test.request('GET', 'Week', auth=gunnar)

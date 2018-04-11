@@ -68,11 +68,9 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
             var res = userController.SetUserIcon().Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.IsType<Response>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            // Check that we logged in as the user we wanted
-            Assert.Equal(res.Data.Username, mockUser.UserName);
         }
 
         [Fact]
@@ -85,14 +83,14 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
             var res = usercontroller.SetUserIcon().Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.IsType<Response>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
 
             // Get icon to be sure it is set
-            var res2 = usercontroller.GetUserIcon(res.Data.Id).Result;
+            var res2 = usercontroller.GetUserIcon(_testContext.MockUsers[0].Id).Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.IsType<Response<ImageDTO>>(res2);
             Assert.True(res2.Success);
             Assert.True(res2.Data.Image != null);
         }
@@ -106,11 +104,11 @@ namespace GirafRest.Test
             usercontroller.SetUserIcon().Wait();
             var res = usercontroller.DeleteUserIcon().Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.IsType<Response>(res);
             Assert.True(res.Success);
 
             // Get icon to be sure it is deleted
-            var res2 = usercontroller.GetUserIcon(res.Data.Id).Result;
+            var res2 = usercontroller.GetUserIcon(_testContext.MockUsers[0].Id).Result;
 
             Assert.IsType<ErrorResponse<ImageDTO>>(res2);
             Assert.False(res2.Success);
@@ -124,7 +122,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
             var res = usercontroller.DeleteUserIcon().Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.IsType<ErrorResponse>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserHasNoIcon, res.ErrorCode);
         }
@@ -312,13 +310,13 @@ namespace GirafRest.Test
         #region UpdateUser
 
         [Fact] 
-        public void UpdateUser_ValidUserValidDTO_Success()
+        public void UpdateUser_ValidUserValidRequest_Success()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[AdminDepOne]);
 
-            var res = usercontroller.UpdateUser(
-                new GirafUserDTO(_testContext.MockUsers[AdminDepOne], GirafRoles.Citizen))
+            // TODO: Tjek at jeg er korrekt!
+            var res = usercontroller.UpdateUser(_testContext.MockUsers[AdminDepOne].UserName, _testContext.MockUsers[AdminDepOne].DisplayName)
                 .Result;
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
@@ -334,7 +332,7 @@ namespace GirafRest.Test
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[AdminDepOne]);
-            var res = usercontroller.UpdateUser(null).Result;
+            var res = usercontroller.UpdateUser(null, null).Result;
 
             Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);
@@ -364,7 +362,63 @@ namespace GirafRest.Test
             Assert.Equal(res.Result.ErrorCode, ErrorCode.UserNotFound);
         }
 
+// REMEMBER ME
+        [Fact]
+        public void UpdateUser_ScreenNameNull_Success(){
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserCitizenDepartment1]);
+            var res = usercontroller.UpdateUser(_testContext.MockUsers[UserCitizenDepartment1].UserName, null).Result;
 
+            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.True(res.Success);
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+        }
+
+        [Fact]
+        public void UpdateUser_NotAuthorised()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserDepartment2]);
+            var user = _testContext.MockUsers[UserCitizenDepartment1];
+            var res = usercontroller.UpdateUser(user.Id, "Charles", "Junior").Result;
+
+            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+        }
+
+        [Fact]
+        public void UpdateUser_SameDepartmentWithDepLogin_Ok()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserDepartment2]);
+            var user = _testContext.MockUsers[UserCitizenDepartment2];
+            var res = usercontroller.UpdateUser(user.Id, "Charles", "Junior").Result;
+
+            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.True(res.Success);
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            // check data
+            Assert.Equal("Charles", res.Data.Username);
+            Assert.Equal("Junior", res.Data.ScreenName);
+        }
+
+        [Fact]
+        public void UpdateUser_SameDepartmenSameUsername_Ok()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserDepartment2]);
+            var user = _testContext.MockUsers[UserCitizenDepartment2];
+            var res = usercontroller.UpdateUser(user.Id, user.UserName, "Gunnar").Result;
+
+            Assert.IsType<Response<GirafUserDTO>>(res);
+            Assert.True(res.Success);
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            // check data
+            Assert.Equal(user.UserName, res.Data.Username);
+            Assert.Equal("Gunnar", res.Data.ScreenName);
+        }
+//end remember
         #endregion
         #region AddApplication
         [Fact]

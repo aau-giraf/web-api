@@ -34,3 +34,5 @@ appsettings.Development.json
 Dockerfile
 
 *.pyc
+
+GirafIntegrationTest/venv/

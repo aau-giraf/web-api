@@ -2,10 +2,10 @@
 from testLib import *
 import time
 
-def testUserstories():
-    test = controllerTest("User stories")
+def UserstoriesTest():
+    test = Test("User stories")
 
-    test.newTest('T914')
+    test.new('T914')
     # Login as guardian
     response = test.request('POST', 'account/login', '{"username": "Graatand", "password": "password"}')
     test.ensureSuccess(response)
