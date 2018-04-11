@@ -271,44 +271,6 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Removes a user from a given department.
-        /// </summary>
-        /// <param name="departmentId">Id of the department from which the user should be removed</param>
-        /// <param name="usr">A serialized instance of a <see cref="GirafUser"/> user.</param>
-        /// <returns>
-        /// MissingProperties if no user is given.
-        /// UserNotFound if user does not appear within given department.
-        /// DepartmentNotFound if there is no department with the given Id.
-        /// DepartmentDTO in its updated state if no problems occured.
-        /// </returns>
-        [HttpDelete("user/{departmentID}")]
-        public async Task<Response<DepartmentDTO>> RemoveUser(long departmentID, [FromBody]GirafUserDTO usr)
-        {
-            //Check if a valid user was supplied and that the given department exists
-            if (usr == null)
-                return new ErrorResponse<DepartmentDTO>(ErrorCode.MissingProperties);
-
-            var dep = await _giraf._context
-                .Departments
-                                  .Where(d => d.Key == departmentID)
-                .Include(d => d.Members)
-                .FirstOrDefaultAsync();
-
-            if (dep == null)
-                return new ErrorResponse<DepartmentDTO>(ErrorCode.DepartmentNotFound);
-
-            //Check if the user actually is in the department
-            if (!dep.Members.Any(u => u.UserName == usr.Username))
-                return new ErrorResponse<DepartmentDTO>(ErrorCode.UserNotFoundInDepartment,
-                    "User does not exist in the given department.");
-
-            //Remove the user from the department
-            dep.Members.Remove(dep.Members.First(u => u.UserName == usr.Username));
-            _giraf._context.SaveChanges();
-            return new Response<DepartmentDTO>(new DepartmentDTO(dep));
-        }
-
-        /// <summary>
         /// Add a resource to the given department. After this call, the department owns the resource and it is available to all its members.
         /// </summary>
         /// <param name="departmentId">Id of the department to add the resource to.</param>
