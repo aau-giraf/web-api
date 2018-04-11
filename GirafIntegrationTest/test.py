@@ -25,13 +25,13 @@ AccountControllerTest()
 DepartmentControllerTest()
 PictogramControllerTest()
 UserControllerTest()
-WeekControllerTest()
-AuthorizationTest()
-ExpiredAuthorizationTest()
-UserstoriesTest()
+# WeekControllerTest()
+# AuthorizationTest()
+# ExpiredAuthorizationTest()
+# UserstoriesTest()
 
-if Test.testsFailed == 0:
-    print ('{0} tests were run. All tests passed.'.format(Test.testsRun))
+if Test.failedCount == 0:
+    print ('{0} tests were run. All tests passed.'.format(Test.runCount))
 else:
     print ('{0} test(s) failed out of {1} test(s) run. Happy debugging.'
-           .format(Test.testsFailed, Test.testsRun))
+           .format(Test.failedCount, Test.runCount))
