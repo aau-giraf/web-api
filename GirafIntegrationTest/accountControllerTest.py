@@ -74,15 +74,4 @@ def AccountControllerTest():
     test.ensureSuccess(response)
     tobiasToken = response['data']
 
-    ####
-    test.new('Add Gunnar to guardians')
-    response = requests.post(url + 'role/guardian/' + gunnarUsername, headers = {"Authorization":"Bearer {0}".format(tobiasToken)}).json()
-    test.ensureSuccess(response)
-
-    ####
-    test.new('Check that Gunnar is a guardian')
-    response = requests.get(url + 'user', headers = {"Authorization":"Bearer {0}".format(gunnarToken)}).json()
-    test.ensureSuccess(response)
-    test.ensure(response['data']['roleName'] == 'Guardian')
-
     # TODO: Change password
