@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import http
 import inspect
 import subprocess
 import json
@@ -8,10 +9,12 @@ from termcolor import colored
 import requests
 import logging
 
+
 class Request:
     connection = None
     response = None
     headers = {'Content-type': 'json-patch+json', 'Accept-Encoding': 'text/plain'}
+
     def __init__(self, requestType, url, data='', auth='nokey', debuglevel=1):
         if Request.connection is None:
             Request.connection = http.client.HTTPConnection('127.0.0.1', 5000)
@@ -19,12 +22,12 @@ class Request:
 
     def login(self, username, password='password'):
         self.request('POST', 'account/login',
-                                   '{{"username": "{0}", "password": "{1}"}}'.format(username, password))
-        self.ensure(self.JSON()['success'], 'Failed to log in as {0} using password {1}'.format(username, password))
-        return loginresult['data']
+                     '{{"username": "{0}", "password": "{1}"}}'.format(username, password))
+        return self.JSON()['data']
 
     def request(self, requestType, url, data='', auth='nokey'):
-        Request.connection.request(requestType, "/v1/" + url, data, { **Request.headers, **{ 'Authorization': 'bearer {0}'.format(auth) } } )
+        Request.connection.request(requestType, "/v1/" + url, data,
+                                   {**Request.headers, **{'Authorization': 'bearer {0}'.format(auth)}})
         self.response = Request.connection.getresponse()
 
     def JSON(self):
@@ -35,8 +38,8 @@ class Request:
 
 
 class Test:
-    def url():
-        return "http://0:5000/v1/"
+    url = "http://0:5000/v1/"
+
     runCount = 0  # Accross all Tests
     failed = False
     failedCount = 0  # Accross all Tests
@@ -48,7 +51,7 @@ class Test:
         self.name = name
 
     def login(self, username, password='password'):
-        response = requests.post(Test.url() + 'account/login', json= {"username": username, "password": password})
+        response = requests.post(Test.url + 'account/login', json={"username": username, "password": password})
         self.ensure(response.json()['success'], 'Failed to log in as {0} using password {1}'.format(username, password))
         return response.json()['data']
 
