@@ -1,0 +1,230 @@
+# -*- coding: utf-8 -*-
+from testLib import *
+from integrate import TestCase, test
+import time
+import json
+
+
+class DepartmentControllerTest(TestCase):
+    "Department Controller"
+    url = Test.url
+    dalgaardsholmstuen = 'Dalgaardsholmstuen{0}'.format(str(time.time()))
+
+    lee = None
+    graatand = None
+    kurt = None
+
+    @test()
+    def logins(self, check):
+        "Login as Lee, Graatand and Kurt"
+        response = requests.post(Test.url + 'account/login', json={"username": "Lee", "password": "password"}).json()
+        ensureSuccess(response, check)
+        self.lee = response['data']
+
+        response = requests.post(Test.url + 'account/login',
+                                 json={"username": "Graatand", "password": "password"}).json()
+        ensureSuccess(response, check)
+        self.graatand = response['data']
+
+        response = requests.post(Test.url + 'account/login', json={"username": "Kurt", "password": "password"}).json()
+        ensureSuccess(response, check)
+        self.kurt = response['data']
+
+    numberOfDepartments = None
+
+    @test()
+    def departmentList(self, check):
+        'Get list of departments'
+        response = requests.get(Test.url + 'Department').json()
+        if ensureSuccess(response, check):
+            self.numberOfDepartments = len(response['data'])
+        else:
+            self.numberOfDepartments = 0
+
+    @test(skip_if_failed=['logins', 'departmentList'])
+    def unauthorizedDepartmentCreation0(self, check):
+        'Graatand tries to create department'
+
+        response = requests.post(Test.url + 'Department', json={
+            "id": 0,
+            "name": self.dalgaardsholmstuen,
+            "members": [],
+            "resources": []
+        }, headers={"Authorization": "Bearer {0}".format(DepartmentControllerTest.graatand)}).json()
+
+        ensureError(response, check)
+
+    @test(skip_if_failed=['logins', 'departmentList'])
+    def unauthorizedDepartmentCreation1(self, check):
+        'Kurt tries to create department'
+        response = requests.post(Test.url + 'Department', json={
+            "id": 0,
+            "name": self.dalgaardsholmstuen,
+            "members": [],
+            "resources": []
+        }, headers={"Authorization": "Bearer {0}".format(self.kurt)}).json()
+
+        ensureError(response, check)
+
+    @test(skip_if_failed=['unauthorizedDepartmentCreation0', 'unauthorizedDepartmentCreation1'])
+    def checkDepartmentCount(self, check):
+        'Make sure number of departments has remained the same'
+        response = requests.get(Test.url + 'Department').json()
+
+        ensureSuccess(response, check)
+        check.equal(self.numberOfDepartments, len(response['data']), 'Number of departments.\n')
+
+    dalgardsholmstuenId = None
+    dalgaardsholmstuenToken = None
+
+    @test(skip_if_failed=['checkDepartmentCount'])
+    def newDepartment(self, check):
+        'Lee creates department'
+        response = requests.post(Test.url + 'Department', json={
+            "id": 0,
+            "name": self.dalgaardsholmstuen,
+            "members": [],
+            "resources": []
+        }, headers={"Authorization": "Bearer {0}".format(self.lee)}).json()
+
+        ensureSuccess(response, check)
+
+        self.dalgardsholmstuenId = response.get('data').get('id')
+
+        check.is_not_none(self.dalgardsholmstuenId, message='Could not get ID of Dalgaardsholmstuen')
+
+        response = requests.post(Test.url + 'account/login',
+                                 json={"username": "Dalgaardsholmstuen", "password": "0000"}).json()
+        ensureSuccess(response, check)
+        self.dalgaardsholmstuenToken = response['data']
+
+    @test(skip_if_failed=['newDepartment'])
+    def getDepartment(self, check):
+        'Get the newly created Dalgaardsholmstuen'
+        response = requests.get(Test.url + 'Department/{0}'.format(self.dalgardsholmstuenId)).json()
+        ensureSuccess(response, check)
+        check.equal(response.get('data').get('name'), self.dalgaardsholmstuen,
+                    message='Name should\'ve been {0} but was {1}'.format(self.dalgaardsholmstuen,
+                                                                          response.get('name')))
+
+    @test()
+    def nullDepartment(self, check):
+        'Get nonexistent department'
+        response = requests.get(Test.url + 'Department/-1').json()
+        ensureError(response, check)
+
+    gunnarUsername = None
+    gunnarID = None
+    gunnarBody = None
+    gunnar = None
+
+    @test(skip_if_failed=['newDepartment'])
+    def newGunnar(self, check):
+        'Register Gunnar to that department'
+        self.gunnarUsername = 'Gunnar{0}'.format(str(time.time()))
+
+        response = requests.post(Test.url + 'account/register', json={
+            "username": self.gunnarUsername,
+            "password": "password",
+            "departmentId": self.dalgardsholmstuenId
+        }).json()
+
+        ensureSuccess(response, check)
+
+        response = requests.post(Test.url + 'account/login',
+                                 json={"username": self.gunnarUsername, "password": "password"}).json()
+        ensureSuccess(response, check)
+        self.gunnar = response['data']
+
+        response = requests.get(Test.url + 'User', headers={"Authorization": "Bearer {0}".format(self.gunnar)}).json()
+
+        self.gunnarID = response.get('data').get('id')
+
+        check.is_not_none(self.gunnarID, 'Gunnar\'s ID.\n')
+
+        # Data that has Gunnars ID in it.
+        self.gunnarBody = {
+            "role": -1,
+            "guardians": None,
+            "id": self.gunnarID,
+            "username": self.gunnarUsername,
+            "screenName": None,
+            "userIcon": None,
+            "department": -1,
+            "weekScheduleIds": []
+        }
+
+        # Find Gunnar among users
+        response = requests.get(Test.url + 'Department/{0}'.format(self.dalgardsholmstuenId)).json()
+        ensureSuccess(response, check)
+
+        gunnarFound = False
+        for member in response['data']['members']:
+            if member == self.gunnarUsername:
+                gunnarFound = True
+
+        check.is_true(gunnarFound, message='Gunnar was not included in list of department members.')
+
+
+    cyclopianBody = None
+
+    @test(skip_if_failed=['newDepartment'])
+    def newPictogram(self, check):
+        'Post Cyclopian pictogram'
+        body = {
+            "accessLevel": 2,
+            "title": "Cyclopian",
+            "id": -1,
+            "lastEdit": "2018-03-19T10:40:26.587Z"
+        }
+        response = requests.post(Test.url + 'pictogram', json=body, headers={"Authorization": "Bearer {0}".format(
+            self.dalgaardsholmstuenToken)}).json()
+        ensureSuccess(response, check)
+        self.cyclopianBody = {
+            "accessLevel": 0,
+            "title": "Cyclopian",
+            "id": response['data']['id'],
+            "lastEdit": "2018-03-19T10:40:26.587Z"
+        }
+
+    @test(skip_if_failed=['logins', 'newDepartment', 'newPictogram'])
+    def unauthorizedPictogramAdd(self, check):
+        'Kurt tries to add Cyclopian to Dalgaardsholmstuen'
+        response = requests.post(Test.url + 'Department/resource/{0}'.format(self.dalgardsholmstuenId),
+                                 json=self.cyclopianBody,
+                                 headers={"Authorization": "Bearer {0}".format(self.kurt)}).json()
+        ensureError(response, check)
+        # TODO: Check that nothing's changed in database
+
+    @test(skip_if_failed=['unauthorizedPictogramAdd'])
+    def unauthorizedPictogramAdd1(self, check):
+        'Gunnar tries to add Cyclopian to Dalgaardsholmstuen'
+        response = requests.post(Test.url + 'Department/resource/{0}'.format(self.dalgardsholmstuenId),
+                                 json=self.cyclopianBody, headers={"Authorization": "Bearer {0}".format(self.gunnar)}).json()
+        ensureError(response, check)
+        # TODO: Check that nothing's changed in database
+
+    @test(skip_if_failed=['unauthorizedPictogramAdd1'])
+    def pictogramAdd(self, check):
+        'Add Cyclopian to Dalgaardsholmstuen'
+        response = requests.post(Test.url + 'Department/resource/{0}'.format(self.dalgardsholmstuenId),
+                                 json=self.cyclopianBody, headers={"Authorization": "Bearer {0}".format(self.dalgaardsholmstuenToken)}).json()
+        ensureSuccess(response, check)
+        # TODO: Check that nothing's changed in database
+
+    @test(skip_if_failed=['pictogramAdd'])
+    def unauthorizedPictogramRemove(self, check):
+        'Kurt tries to remove Cyclopian from Dalgaardsholmstuen'
+        response = requests.delete(Test.url + 'Department/resource/{0}'.format(self.dalgardsholmstuenId),
+                                   json=self.cyclopianBody,
+                                   headers={"Authorization": "Bearer {0}".format(self.kurt)})
+        ensureError(response, check)
+
+    @test(skip_if_failed=['unauthorizedPictogramRemove'])
+    def pictogramRemove(self, check):
+        'Remove Cyclopian from Dalgaardsholmstuen'
+        response = requests.delete(Test.url + 'Department/resource',
+                                   json={**self.cyclopianBody, **{"id": self.dalgardsholmstuenId}},
+                                   headers={"Authorization": "Bearer {0}".format(
+                                       self.dalgaardsholmstuenToken)}).json()
+        ensureSuccess(response, check)

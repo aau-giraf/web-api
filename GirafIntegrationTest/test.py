@@ -1,30 +1,17 @@
 #!/usr/bin/env python
-
-from integrate import TestRunner
-TestRunner(dirs=["tests"], pattern="*.py").run()
+import sys
+import requests
+import integrate
+from testLib import *
 
 # Nice error message if the server is down.
-# First time I encountered the exception it took me 20 minutes to figure out why.
-# try:
-#     result = Test('').request('GET', '/user')
-#     result['success']
-# except:
-#     print('Could not get response from server. \n'
-#           'Exiting...\n')
-#     sys.exit()
+try:
+    result = requests.post(Test.url + 'User').json()
+    result['success']
+except:
+    print('Could not get response from server. \n'
+          'Exiting...\n')
+    sys.exit()
 
-# Run ALL the tests!
-# AccountControllerTest()
-# DepartmentControllerTest()
-# PictogramControllerTest()
-# UserControllerTest()
-# WeekControllerTest()
-# AuthorizationTest()
-# ExpiredAuthorizationTest()
-# UserstoriesTest()
+integrate.TestRunner(dirs=["tests"], pattern="*.py").run()
 
-# if Test.failedCount == 0:
-#     print ('{0} tests were run. All tests passed.'.format(Test.runCount))
-# else:
-#     print ('{0} test(s) failed out of {1} test(s) run. Happy debugging.'
-#            .format(Test.failedCount, Test.runCount))

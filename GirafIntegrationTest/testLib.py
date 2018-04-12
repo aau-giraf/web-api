@@ -50,7 +50,7 @@ def ensureSuccess(response, check):
         errormessages += '\nMessage:  ' + message
 
     return check.is_true(response['success'],
-                         message='Error: {0}'.format(response['errorKey'] + errormessages))
+                         message='Request failed: {0}'.format(response['errorKey'] + errormessages))
 
 
 def ensureError(response, check):
