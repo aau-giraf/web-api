@@ -5,7 +5,6 @@ import subprocess
 import json
 import datetime
 import getpass
-from termcolor import colored
 import requests
 import logging
 
@@ -59,6 +58,8 @@ def ensureError(response, check):
     return check.is_false(response['success'],
                           message='Server responds success on illegal action.')
 
+    def ensureValidResponse(self, response, calldepth=1):
+        return self.ensure(response is not None, 'Invalid response. Likely a 404 or a stacktrace.', calldepth=calldepth)
 
 def ensureErrorWithKey(response, check, errorKey):
     if not ensureValidResponse(response, check):

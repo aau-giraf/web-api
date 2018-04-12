@@ -18,6 +18,7 @@ namespace GirafRest.Controllers
     /// and uploading images to pictograms. Supported image-types are .png and .jpg.
     /// </summary>
     [Route("v1/[controller]")]
+    [Authorize]
     public class PictogramController : Controller
     {
         /// <summary>
@@ -155,7 +156,6 @@ namespace GirafRest.Controllers
         /// <returns>The new pictogram with all database-generated information.
         /// BadRequest if some data was missing from either the PictogramDTO or the user</returns>
         [HttpPost("")]
-        [Authorize]
         public async Task<Response<PictogramDTO>> CreatePictogram([FromBody]PictogramDTO pictogram)
         {
             if (pictogram == null) 
@@ -203,7 +203,6 @@ namespace GirafRest.Controllers
         /// NotFound if there is no pictogram with the specified id or 
         /// the updated pictogram to maintain statelessness.</returns>
         [HttpPut("{id}")]
-        [Authorize]
         public async Task<Response<PictogramDTO>> UpdatePictogramInfo(long id, [FromBody] PictogramDTO pictogram)
         {
             if (pictogram == null) 
@@ -246,7 +245,7 @@ namespace GirafRest.Controllers
         {
             var usr = await _giraf.LoadUserAsync(HttpContext.User);
             if (usr == null) 
-                return new ErrorResponse(ErrorCode.UserNotFound);
+                return new ErrorResponse(ErrorCode.NotFound);
             //Fetch the pictogram from the database and check that it exists
             var pict = await _giraf._context.Pictograms.Where(pic => pic.Id == id).FirstOrDefaultAsync();
             if(pict == null) 
@@ -288,7 +287,6 @@ namespace GirafRest.Controllers
         /// NotFound if it does not exist</returns>
         [Consumes(IMAGE_TYPE_PNG, IMAGE_TYPE_JPEG)]
         [HttpPut("{id}/image")]
-        [Authorize]
         public async Task<Response<PictogramDTO>> SetPictogramImage(long id) {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             
@@ -358,34 +356,30 @@ namespace GirafRest.Controllers
         /// <param name="id">Identifier.</param>
         [HttpGet("{id}/image/raw")]
         public async Task<IActionResult> ReadRawPictogramImage(long id) {
+            // fetch current authenticated user
+            var usr = await _giraf.LoadUserAsync(HttpContext.User);
+            if (usr == null)
+                return new ErrorResponse<byte[]>(ErrorCode.NotFound) as IActionResult;
+            
             var picto = await _giraf._context
                 .Pictograms
                 .Where(p => p.Id == id)
                 .FirstOrDefaultAsync();
 
-            if (picto == null)
-                return NotFound();
-            
-            if (picto.Image == null)
-                return NotFound();
+            if (picto == null || picto.Image == null)
+                return new ErrorResponse<byte[]>(ErrorCode.PictogramNotFound) as IActionResult;
 
             // you can get all public pictograms
             if (picto.AccessLevel == AccessLevel.PUBLIC)
                 return File(Convert.FromBase64String(System.Text.Encoding.UTF8.GetString(picto.Image)), "image/png");
 
-            // fetch current authenticated user
-            var usr = await _giraf.LoadUserAsync(HttpContext.User);
-
-            if (usr == null)
-                return NotFound();
-
             // you can only get a protected picogram if it is owned by your department
             if (picto.AccessLevel == AccessLevel.PROTECTED && !picto.Departments.Any(d => d.OtherKey == usr.DepartmentKey))
-                return NotFound();
+                return new ErrorResponse<byte[]>(ErrorCode.PictogramNotFound) as IActionResult;
 
             // you can only get a private pictogram if you are among the owners of the pictogram
             if (picto.AccessLevel == AccessLevel.PRIVATE && !picto.Users.Any(d => d.OtherKey == usr.Id))
-                return NotFound();
+                return new ErrorResponse<byte[]>(ErrorCode.PictogramNotFound) as IActionResult;
                 
             return File(Convert.FromBase64String(System.Text.Encoding.UTF8.GetString(picto.Image)), "image/png");
         }
