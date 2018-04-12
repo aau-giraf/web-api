@@ -7,6 +7,7 @@ class ChoiceController(TestCase):
   "Choice Controller"
 
   gunnarToken = None
+  gunnarUsername = None
   choiceID = None
   url = Test.url
 
@@ -14,13 +15,20 @@ class ChoiceController(TestCase):
   def registerGunnar(self, check):
     "Register Gunnar"
     # Will generate a unique enough number, so the user isn't already created
-    gunnarUsername = 'Gunnar{0}'.format(str(time.time()))
-    response = requests.post(ChoiceController.url + 'account/register', json={"username": gunnarUsername,"password": "password","departmentId": 1}).json()
+    ChoiceController.gunnarUsername = 'Gunnar{0}'.format(str(time.time()))
+    response = requests.post(ChoiceController.url + 'account/register', json={"username": ChoiceController.gunnarUsername,"password": "password","departmentId": 1}).json()
     check.is_true(response['success'])
     check.is_not_none(response['data'])
-    ChoiceController.gunnarToken = response["data"]
 
   @test(skip_if_failed=["registerGunnar"])
+  def loginAsGunnar(self, check):
+    "Login as Gunnar"
+    response = requests.post(Test.url + 'account/login', json = {"username": ChoiceController.gunnarUsername, "password": "password"}).json()
+    check.is_true(response['success'])
+    check.is_not_none(response['data'])
+    ChoiceController.gunnarToken = response['data']
+
+  @test(expect_fail=True, skip_if_failed=["loginAsGunnar"])
   def postChoice(self, check):
     "Post choice"
     body = {
@@ -47,16 +55,18 @@ class ChoiceController(TestCase):
       "lastEdit": "2018-03-16T08:24:58.902Z"
     }
     response = requests.post(ChoiceController.url + 'Choice', json=body, headers = {"Authorization":"Bearer {0}".format(ChoiceController.gunnarToken)})
-    print(response.text)
     response = response.json()
     check.is_true(response['success'])
     check.is_not_none(response['data']['id'])
-    ChoiceController.choiceId = response['data']['id']
+    check.equal(response['data']['options'][0]['title'], "tegn")
+    check.equal(response['data']['options'][1]['title'], "sølv")
+    ChoiceController.choiceID = response['data']['id']
 
   @test(skip_if_failed=["postChoice", "registerGunnar"])
   def getChoice(self, check):
     "Get choice"
-    response = requests.get(ChoiceController.url + 'Choice/{0}'.format(ChoiceController.choiceID), headers = {"Authorization":"Bearer {0}".format(ChoiceController.gunnarToken)}).json()
+    response = requests.get(ChoiceController.url + 'Choice/{0}'.format(ChoiceController.choiceID), headers = {"Authorization":"Bearer {0}".format(ChoiceController.gunnarToken)})
+    response = response.json()
     check.is_true(response['success'])
     check.equal(response['title'], 'Tegn OR Sølv')
     check.equal(response['options'][1]['title'], 'tegn')
