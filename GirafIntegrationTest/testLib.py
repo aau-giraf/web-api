@@ -8,29 +8,6 @@ import getpass
 import requests
 import logging
 
-
-class Request:
-    connection = None
-    response = None
-    headers = {'Content-type': 'json-patch+json', 'Accept-Encoding': 'text/plain'}
-
-    def __init__(self, requestType, url, data='', auth='nokey', debuglevel=1):
-        if Request.connection is None:
-            Request.connection = http.client.HTTPConnection('127.0.0.1', 5000)
-        self.request(requestType, url, data, auth)
-
-    def login(self, username, password='password'):
-        self.request('POST', 'account/login',
-                     '{{"username": "{0}", "password": "{1}"}}'.format(username, password))
-        return self.JSON()['data']
-
-    def JSON(self):
-        return json.loads(self.response.read())
-
-    def isValidAuth(self, auth):
-        return self.request('GET', 'user/username', auth=auth)['success']
-
-
 class Test:
     url = "http://0:5000/v1/"
 
@@ -58,8 +35,6 @@ def ensureError(response, check):
     return check.is_false(response['success'],
                           message='Server responds success on illegal action.')
 
-    def ensureValidResponse(self, response, calldepth=1):
-        return self.ensure(response is not None, 'Invalid response. Likely a 404 or a stacktrace.', calldepth=calldepth)
 
 def ensureErrorWithKey(response, check, errorKey):
     if not ensureValidResponse(response, check):
