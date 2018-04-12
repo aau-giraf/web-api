@@ -212,7 +212,7 @@ class DepartmentControllerTest(TestCase):
         ensureSuccess(response, check)
         # TODO: Check that nothing's changed in database
 
-    @test(skip_if_failed=['pictogramAdd'])
+    @test(skip_if_failed=['pictogramAdd'], expect_fail=True)
     def unauthorizedPictogramRemove(self, check):
         'Kurt tries to remove Cyclopian from Dalgaardsholmstuen'
         response = requests.delete(Test.url + 'Department/resource/{0}'.format(self.dalgardsholmstuenId),
@@ -220,7 +220,7 @@ class DepartmentControllerTest(TestCase):
                                    headers={"Authorization": "Bearer {0}".format(self.kurt)})
         ensureError(response, check)
 
-    @test(skip_if_failed=['unauthorizedPictogramRemove'])
+    @test(skip_if_failed=['unauthorizedPictogramRemove'], expect_fail=True)
     def pictogramRemove(self, check):
         'Remove Cyclopian from Dalgaardsholmstuen'
         response = requests.delete(Test.url + 'Department/resource',
