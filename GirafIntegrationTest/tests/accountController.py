@@ -19,7 +19,7 @@ class AccountController(TestCase):
 
     @test()
     def loginAsGraatand(self, check):
-        "Login as gunnar"
+        "Login as Graatand"
         response = requests.post(Test.url + 'account/login', json = {"username": "Graatand", "password": "password"}).json()
         check.is_true(response['success'])
         check.is_not_none(response['data'])
