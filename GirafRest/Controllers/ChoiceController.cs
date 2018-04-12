@@ -91,7 +91,7 @@ namespace GirafRest.Controllers
                         .FirstOrDefaultAsync();
                     //Check if the user has access to this option
                     if (pf == null || !(await CheckAccess(pf)))
-                        return new ErrorResponse<ChoiceDTO>(ErrorCode.UserNotFound, $"ID={option.Id} not found");
+                        return new ErrorResponse<ChoiceDTO>(ErrorCode.NotFound, $"Choice ID={option.Id} not found");
                     pictogramList.Add(pf);
                 } 
             }
