@@ -92,9 +92,9 @@ class DepartmentControllerTest(TestCase):
         self.dalgardsholmstuenId = response.get('data').get('id')
 
         check.is_not_none(self.dalgardsholmstuenId, message='Could not get ID of Dalgaardsholmstuen')
-
+        # TODO: New seperate test, not inside this thing
         response = requests.post(Test.url + 'account/login',
-                                 json={"username": "Dalgaardsholmstuen", "password": "0000"}).json()
+                                 json={"username": self.dalgaardsholmstuen, "password": "0000"}).json()
         ensureSuccess(response, check)
         self.dalgaardsholmstuenToken = response['data']
 
