@@ -49,7 +49,9 @@ Because the REST-API integrates swagger as middle-ware it is possible to generat
 
 To make a client download swagger-codegen and navigate to the folder:
 
-You can now generate a client side API in for example C# by running the following command:   `java -jar modules/swagger-codegen-cli/target/swagger-codegen-cli.jar generate  -i http://localhost:5000/swagger/v1/swagger.json -l csharp -o Client/Generated/` 
+You can now generate a client side API in for example C# by running either of the following commands:
+  - `java -jar modules/swagger-codegen-cli/target/swagger-codegen-cli.jar generate  -i http://localhost:5000/swagger/v1/swagger.json -l csharp -o Client/Generated/` 
+  - `swagger-codegen generate -i http://localhost:5000/swagger/v1/swagger.json -l csharp`
 
 ## API Reference
 
