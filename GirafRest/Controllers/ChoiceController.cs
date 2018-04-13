@@ -16,8 +16,8 @@ namespace GirafRest.Controllers
     /// The ChoiceController serves the purpose of presenting choices on request. It also allows the user to
     /// select either of the options in a choice.
     /// </summary>
-    [Authorize]
     [Route("v1/[controller]")]
+    [Authorize]
     public class ChoiceController : Controller
     {
         /// <summary>
@@ -91,7 +91,7 @@ namespace GirafRest.Controllers
                         .FirstOrDefaultAsync();
                     //Check if the user has access to this option
                     if (pf == null || !(await CheckAccess(pf)))
-                        return new ErrorResponse<ChoiceDTO>(ErrorCode.NotFound, $"ID={option.Id} not found");
+                        return new ErrorResponse<ChoiceDTO>(ErrorCode.NotFound, $"Choice ID={option.Id} not found");
                     pictogramList.Add(pf);
                 } 
             }

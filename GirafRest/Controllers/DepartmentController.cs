@@ -27,7 +27,6 @@ namespace GirafRest.Controllers
         /// </summary>
         private readonly IGirafService _giraf;
 
-
         private readonly RoleManager<GirafRole> _roleManager;
 
         /// <summary>
@@ -50,8 +49,7 @@ namespace GirafRest.Controllers
         public async Task<Response<List<DepartmentNameDTO>>> Get()
         {
 
-            var departmentNameDTOs = await _giraf._context.Departments
-                                                 .Select(d => new DepartmentNameDTO(d.Key, d.Name)).ToListAsync();
+            var departmentNameDTOs = await _giraf._context.Departments.Select(d => new DepartmentNameDTO(d.Key, d.Name)).ToListAsync();
 
             if (departmentNameDTOs.Count == 0)
                 return new ErrorResponse<List<DepartmentNameDTO>>(ErrorCode.NotFound);

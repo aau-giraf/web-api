@@ -430,7 +430,7 @@ namespace GirafRest.Controllers
         public IActionResult ResetPassword(string code = null)
         {
             if (code == null)
-                return BadRequest("Failed to find a valid reset code.");
+                return RedirectToAction("Error");
             return View();
         }
 
