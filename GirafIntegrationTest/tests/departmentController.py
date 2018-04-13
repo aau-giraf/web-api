@@ -5,6 +5,10 @@ import time
 import json
 
 
+def auth(token):
+    return {"Authorization": "Bearer {0}".format(token)}
+
+
 # Make sure the pictogram isn't in the list
 def pictogramIsInList(pictogramId, pictogramList):
     for pictogram in pictogramList:
@@ -58,7 +62,7 @@ class DepartmentControllerTest(TestCase):
             "name": self.dalgaardsholmstuen,
             "members": [],
             "resources": []
-        }, headers={"Authorization": "Bearer {0}".format(DepartmentControllerTest.graatand)}).json()
+        }, headers=auth(DepartmentControllerTest.graatand)).json()
 
         ensureError(response, check)
 
@@ -70,7 +74,7 @@ class DepartmentControllerTest(TestCase):
             "name": self.dalgaardsholmstuen,
             "members": [],
             "resources": []
-        }, headers={"Authorization": "Bearer {0}".format(self.kurt)}).json()
+        }, headers=auth(self.kurt)).json()
 
         ensureError(response, check)
 
@@ -93,7 +97,7 @@ class DepartmentControllerTest(TestCase):
             "name": self.dalgaardsholmstuen,
             "members": [],
             "resources": []
-        }, headers={"Authorization": "Bearer {0}".format(self.lee)}).json()
+        }, headers=auth(self.lee)).json()
 
         ensureSuccess(response, check)
 
@@ -146,7 +150,7 @@ class DepartmentControllerTest(TestCase):
         ensureSuccess(response, check)
         self.gunnar = response['data']
 
-        response = requests.get(Test.url + 'User', headers={"Authorization": "Bearer {0}".format(self.gunnar)}).json()
+        response = requests.get(Test.url + 'User', headers=auth(self.gunnar)).json()
 
         self.gunnarID = response.get('data').get('id')
 
@@ -196,7 +200,7 @@ class DepartmentControllerTest(TestCase):
         'Kurt tries to add Cyclopian to Dalgaardsholmstuen'
         response = requests.post(Test.url + 'Department/resource/{0}'.format(self.dalgardsholmstuenId),
                                  json=self.cyclopianBody,
-                                 headers={"Authorization": "Bearer {0}".format(self.kurt)}).json()
+                                 headers=auth(self.kurt)).json()
         ensureError(response, check)
 
         # Check that nothing's changed in database
@@ -208,7 +212,7 @@ class DepartmentControllerTest(TestCase):
     def unauthorizedPictogramAdd1(self, check):
         'Gunnar tries to add Cyclopian to Dalgaardsholmstuen'
         response = requests.post(Test.url + 'Department/resource/{0}'.format(self.dalgardsholmstuenId),
-                                 json=self.cyclopianBody, headers={"Authorization": "Bearer {0}".format(self.gunnar)}).json()
+                                 json=self.cyclopianBody, headers=auth(self.gunnar)).json()
         ensureError(response, check)
 
         # Check that nothing's changed in database
@@ -231,7 +235,7 @@ class DepartmentControllerTest(TestCase):
         pictogram = response['data']
 
         response = requests.post(Test.url + 'Department/resource/{0}'.format(self.dalgardsholmstuenId),
-                                 json=pictogram, headers={"Authorization": "Bearer {0}".format(self.gunnar)}).json()
+                                 json=pictogram, headers=auth(self.gunnar)).json()
         ensureError(response, check)
 
         # Check that nothing's changed in database
@@ -254,7 +258,7 @@ class DepartmentControllerTest(TestCase):
         pictogram = response['data']
 
         response = requests.post(Test.url + 'Department/resource/{0}'.format(self.dalgardsholmstuenId),
-                                 json=pictogram, headers={"Authorization": "Bearer {0}".format(self.gunnar)}).json()
+                                 json=pictogram, headers=auth(self.gunnar)).json()
         ensureError(response, check)
 
         # Check that nothing's changed in database
@@ -267,7 +271,7 @@ class DepartmentControllerTest(TestCase):
         'Add Cyclopian to Dalgaardsholmstuen'
         response = requests.post(Test.url + 'Department/resource/{0}'.format(self.dalgardsholmstuenId),
                                  json=self.cyclopianBody,
-                                 headers={"Authorization": "Bearer {0}".format(self.dalgaardsholmstuenToken)}).json()
+                                 headers=auth(self.dalgaardsholmstuenToken)).json()
         ensureSuccess(response, check)
 
         # Check that something's changed in database
@@ -280,7 +284,7 @@ class DepartmentControllerTest(TestCase):
         'Gunnar tries to remove Cyclopian from Dalgaardsholmstuen'
         response = requests.delete(Test.url + 'Department/resource'.format(self.dalgardsholmstuenId),
                                    json=self.cyclopianBody,
-                                   headers={"Authorization": "Bearer {0}".format(self.gunnar)}).json()
+                                   headers=auth(self.gunnar)).json()
         ensureError(response, check)
 
         # Check that nothing's changed in database
@@ -293,5 +297,5 @@ class DepartmentControllerTest(TestCase):
         'Remove Cyclopian from Dalgaardsholmstuen'
         response = requests.delete(Test.url + 'Department/resource',
                                    json=self.cyclopianBody,
-                                   headers={"Authorization": "Bearer {0}".format(self.dalgaardsholmstuenToken)}).json()
+                                   headers=auth(self.dalgaardsholmstuenToken)).json()
         ensureSuccess(response, check)

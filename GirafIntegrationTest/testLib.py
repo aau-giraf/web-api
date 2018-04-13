@@ -33,7 +33,7 @@ def ensureError(response, check):
     if not ensureValidResponse(response, check):
         return False
     return check.is_false(response['success'],
-                          message='Server responds success on illegal action.')
+                          message='Server responds success on illegal action')
 
 
 def ensureErrorWithKey(response, check, errorKey):
@@ -64,3 +64,9 @@ def ensureSomeData(response, check):
         return False
     return check.is_true('data' in response and response['data'] is not None,
                          message='Data expected, but none returned\n')
+
+
+def login(username, check, password='password'):
+    response = requests.post(Test.url + 'account/login', json={"username": username, "password": password}).json()
+    ensureSuccess(response, check)
+    return response['data']
