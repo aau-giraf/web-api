@@ -7,17 +7,21 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 [//]: # (Describe each version with the following sections: Added, Changed, Removed, Deprecated, Fixed, Security)
 
 ## [Unreleased]
+
 ### Added
-- WeekSchedule templates
+- 
 
 ### Changed
 - All pictograms in the sample database are now public
+
+### Removed
 
 ## [1.002.01] - Unreleased
 ### Added
 - Pictogram search and pagination, improving efficiency of pictogram retrieval
 - Endpoint to retrieve user icons seperately from the main user request
 - Add version number prefix to API endpoints
+- Add templates for weeks and corresponding controller
 
 ### Changed
 - Citizens can now have more than one guardian
@@ -25,9 +29,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Change development database provider from SQLite to MySQL
 - Logout requests now won't throw an error if you are not logged in
 - Authentication tokens are now the developers responsibility instead of the browser/cookie-manager
+- `/v1/Departmnt` now returns list of name and ids on all departments
+- `/v1/Week` now returns list of name and ids on all weeks
+- `GirafUserDTO` has been changed s.t. it only contains meta data on the user and the usericon
 
 ### Fixed
 - Public pictograms no longer require authorization to read
+- An exception is no longer raised when trying to add a weekday that is not valid instead an errorcode is returned
+- Anyone can no longer add a user to a department
+- Makes it possible to target changepassword endpoint and setpassword endpoint without setting Antivalidationtoken
 
 ## [1.001.01] - 2018-03-12
 ### Added

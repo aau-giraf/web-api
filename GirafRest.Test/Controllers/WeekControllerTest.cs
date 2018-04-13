@@ -176,7 +176,7 @@ namespace GirafRest.Test
 
             Assert.IsType<ErrorResponse<WeekDTO>>(res);
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
+            Assert.Equal(ErrorCode.InvalidProperties, res.ErrorCode);
 
             _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Remove(_testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Last());
         }

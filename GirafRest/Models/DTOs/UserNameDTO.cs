@@ -1,4 +1,4 @@
-﻿namespace GirafRest
+﻿namespace GirafRest.Models.DTOs
 {
     public class UserNameDTO
     {
@@ -15,6 +15,5 @@
         public UserNameDTO()
         {
         }
-
     }
 }
