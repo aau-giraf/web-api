@@ -5,6 +5,14 @@ import time
 import json
 
 
+# Make sure the pictogram isn't in the list
+def pictogramIsInList(pictogramId, pictogramList):
+    for pictogram in pictogramList:
+        if pictogram == pictogramId:
+            return True
+    return False
+
+
 class DepartmentControllerTest(TestCase):
     "Department Controller"
     url = Test.url
@@ -92,7 +100,9 @@ class DepartmentControllerTest(TestCase):
         self.dalgardsholmstuenId = response.get('data').get('id')
 
         check.is_not_none(self.dalgardsholmstuenId, message='Could not get ID of Dalgaardsholmstuen')
-        # TODO: New seperate test, not inside this thing
+
+    @test(skip_if_failed=['newDepartment'])
+    def departmentLogin(self, check):
         response = requests.post(Test.url + 'account/login',
                                  json={"username": self.dalgaardsholmstuen, "password": "0000"}).json()
         ensureSuccess(response, check)
@@ -165,12 +175,11 @@ class DepartmentControllerTest(TestCase):
 
         check.is_true(gunnarFound, message='Gunnar was not included in list of department members.')
 
-
     cyclopianBody = None
 
     @test(skip_if_failed=['newDepartment'])
     def newPictogram(self, check):
-        'Post Cyclopian pictogram'
+        'Department posts private Cyclopian pictogram'
         body = {
             "accessLevel": 2,
             "title": "Cyclopian",
@@ -180,21 +189,20 @@ class DepartmentControllerTest(TestCase):
         response = requests.post(Test.url + 'pictogram', json=body, headers={"Authorization": "Bearer {0}".format(
             self.dalgaardsholmstuenToken)}).json()
         ensureSuccess(response, check)
-        self.cyclopianBody = {
-            "accessLevel": 0,
-            "title": "Cyclopian",
-            "id": response['data']['id'],
-            "lastEdit": "2018-03-19T10:40:26.587Z"
-        }
+        self.cyclopianBody = response['data']
 
-    @test(skip_if_failed=['logins', 'newDepartment', 'newPictogram'])
+    @test(skip_if_failed=['logins', 'newPictogram'])
     def unauthorizedPictogramAdd(self, check):
         'Kurt tries to add Cyclopian to Dalgaardsholmstuen'
         response = requests.post(Test.url + 'Department/resource/{0}'.format(self.dalgardsholmstuenId),
                                  json=self.cyclopianBody,
                                  headers={"Authorization": "Bearer {0}".format(self.kurt)}).json()
         ensureError(response, check)
-        # TODO: Check that nothing's changed in database
+
+        # Check that nothing's changed in database
+        response = requests.get(Test.url + 'Department/{0}'.format(self.dalgardsholmstuenId)).json()
+        check.is_false(pictogramIsInList(self.cyclopianBody['id'], response['data']['resources']),
+                       message='Pictogram was found in department resources, but should not have been added')
 
     @test(skip_if_failed=['unauthorizedPictogramAdd'])
     def unauthorizedPictogramAdd1(self, check):
@@ -202,29 +210,88 @@ class DepartmentControllerTest(TestCase):
         response = requests.post(Test.url + 'Department/resource/{0}'.format(self.dalgardsholmstuenId),
                                  json=self.cyclopianBody, headers={"Authorization": "Bearer {0}".format(self.gunnar)}).json()
         ensureError(response, check)
-        # TODO: Check that nothing's changed in database
 
-    @test(skip_if_failed=['unauthorizedPictogramAdd1'])
+        # Check that nothing's changed in database
+        response = requests.get(Test.url + 'Department/{0}'.format(self.dalgardsholmstuenId)).json()
+        check.is_false(pictogramIsInList(self.cyclopianBody['id'], response['data']['resources']),
+                       message='Pictogram was found in department resources, but should not have been added')
+
+    @test(skip_if_failed=['logins', 'newDepartment'])
+    def unauthorizedPictogramAdd2(self, check):
+        'Kurt tries to add his own pictogram to Dalgaardsholmstuen'
+        body = {
+            "accessLevel": 2,
+            "title": "Squirmy and Rugose",
+            "id": -1,
+            "lastEdit": "2018-03-19T10:40:26.587Z"
+        }
+        response = requests.post(Test.url + 'pictogram', json=body, headers={"Authorization": "Bearer {0}".format(
+            self.dalgaardsholmstuenToken)}).json()
+        ensureSuccess(response, check)
+        pictogram = response['data']
+
+        response = requests.post(Test.url + 'Department/resource/{0}'.format(self.dalgardsholmstuenId),
+                                 json=pictogram, headers={"Authorization": "Bearer {0}".format(self.gunnar)}).json()
+        ensureError(response, check)
+
+        # Check that nothing's changed in database
+        response = requests.get(Test.url + 'Department/{0}'.format(self.dalgardsholmstuenId)).json()
+        check.is_false(pictogramIsInList(self.cyclopianBody['id'], response['data']['resources']),
+                       message='Pictogram was found in department resources, but should not have been added')
+
+    @test(skip_if_failed=['logins', 'newDepartment'])
+    def unauthorizedPictogramAdd3(self, check):
+        'Gunnar tries to add his own pictogram to Dalgaardsholmstuen'
+        body = {
+            "accessLevel": 2,
+            "title": "The End of the World as We Know It",
+            "id": -1,
+            "lastEdit": "2018-03-19T10:40:26.587Z"
+        }
+        response = requests.post(Test.url + 'pictogram', json=body, headers={"Authorization": "Bearer {0}".format(
+            self.dalgaardsholmstuenToken)}).json()
+        ensureSuccess(response, check)
+        pictogram = response['data']
+
+        response = requests.post(Test.url + 'Department/resource/{0}'.format(self.dalgardsholmstuenId),
+                                 json=pictogram, headers={"Authorization": "Bearer {0}".format(self.gunnar)}).json()
+        ensureError(response, check)
+
+        # Check that nothing's changed in database
+        response = requests.get(Test.url + 'Department/{0}'.format(self.dalgardsholmstuenId)).json()
+        check.is_false(pictogramIsInList(self.cyclopianBody['id'], response['data']['resources']),
+                       message='Pictogram was found in department resources, but should not have been added')
+
+    @test(skip_if_failed=['unauthorizedPictogramAdd', 'unauthorizedPictogramAdd1'])
     def pictogramAdd(self, check):
         'Add Cyclopian to Dalgaardsholmstuen'
         response = requests.post(Test.url + 'Department/resource/{0}'.format(self.dalgardsholmstuenId),
-                                 json=self.cyclopianBody, headers={"Authorization": "Bearer {0}".format(self.dalgaardsholmstuenToken)}).json()
+                                 json=self.cyclopianBody,
+                                 headers={"Authorization": "Bearer {0}".format(self.dalgaardsholmstuenToken)}).json()
         ensureSuccess(response, check)
-        # TODO: Check that nothing's changed in database
+
+        # Check that something's changed in database
+        response = requests.get(Test.url + 'Department/{0}'.format(self.dalgardsholmstuenId)).json()
+        check.is_true(pictogramIsInList(self.cyclopianBody['id'], response['data']['resources']),
+                      message='Pictogram was not found in department resources')
 
     @test(skip_if_failed=['pictogramAdd'], expect_fail=True)
     def unauthorizedPictogramRemove(self, check):
-        'Kurt tries to remove Cyclopian from Dalgaardsholmstuen'
-        response = requests.delete(Test.url + 'Department/resource/{0}'.format(self.dalgardsholmstuenId),
+        'Gunnar tries to remove Cyclopian from Dalgaardsholmstuen'
+        response = requests.delete(Test.url + 'Department/resource'.format(self.dalgardsholmstuenId),
                                    json=self.cyclopianBody,
-                                   headers={"Authorization": "Bearer {0}".format(self.kurt)})
+                                   headers={"Authorization": "Bearer {0}".format(self.gunnar)}).json()
         ensureError(response, check)
 
-    @test(skip_if_failed=['unauthorizedPictogramRemove'], expect_fail=True)
+        # Check that nothing's changed in database
+        response = requests.get(Test.url + 'Department/{0}'.format(self.dalgardsholmstuenId)).json()
+        check.is_true(pictogramIsInList(self.cyclopianBody['id'], response['data']['resources']),
+                      message='Pictogram was not found in department resources')
+
+    @test(skip_if_failed=['unauthorizedPictogramRemove'])
     def pictogramRemove(self, check):
         'Remove Cyclopian from Dalgaardsholmstuen'
         response = requests.delete(Test.url + 'Department/resource',
-                                   json={**self.cyclopianBody, **{"id": self.dalgardsholmstuenId}},
-                                   headers={"Authorization": "Bearer {0}".format(
-                                       self.dalgaardsholmstuenToken)}).json()
+                                   json=self.cyclopianBody,
+                                   headers={"Authorization": "Bearer {0}".format(self.dalgaardsholmstuenToken)}).json()
         ensureSuccess(response, check)
