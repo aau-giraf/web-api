@@ -131,23 +131,23 @@ class WeekControllerTest(TestCase):
         check.equal('The best week of the day', response['data'][0]['name'])
         self.weekID = response['data'][0]['id']
 
-    @test(depends=['getNoWeeks', 'newWeek'], expect_fail=True)
+    @test(depends=['getNoWeeks', 'newWeek'])
     def newWeekTooManyDays(self, check):
         'Try to create week with too many weekdays'
         response = requests.post(Test.url + 'Week', headers=auth(self.gunnar), json=self.tooManyDaysWeekDTO).json()
         ensureError(response, check)
 
         response = requests.get(Test.url + 'Week', headers=auth(self.gunnar)).json()
-        ensureError(response, check)
+        check.equal(1, len(response['data']))
 
-    @test(depends=['getNoWeeks', 'newWeek'], expect_fail=True)
+    @test(depends=['getNoWeeks', 'newWeek'])
     def newWeekInvalidEnums(self, check):
         'Try to create week with invalid weekday enum values'
         response = requests.post(Test.url + 'Week', headers=auth(self.gunnar), json=self.badEnumValueWeekDTO).json()
         ensureError(response, check)
 
         response = requests.get(Test.url + 'Week', headers=auth(self.gunnar)).json()
-        ensureError(response, check)
+        check.equal(1, len(response['data']))
 
     @test(skip_if_failed=['getWeek'])
     def changeWeek(self, check):

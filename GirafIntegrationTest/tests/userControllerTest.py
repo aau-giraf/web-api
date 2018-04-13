@@ -79,10 +79,10 @@ class UserControllerTest(TestCase):
         ensureSuccess(response, check)
         check.is_true(response['data']['username'] == self.gunnarUsername)
 
-    @test(skip_if_failed=['newGunnar'], expect_fail=True)
+    @test(skip_if_failed=['newGunnar'])
     def unauthorizedUserInfo(self, check):
         'Gunnar tries to get Kurt\'s user info'
-        response = requests.get(Test.url + 'User/username', json={"username": "Kurt"},
+        response = requests.get(Test.url + 'User/Kurt', json={"username": "Kurt"},
                                 headers=auth(self.gunnar)).json()
         ensureError(response, check)
         ensureNoData(response, check)
@@ -97,10 +97,10 @@ class UserControllerTest(TestCase):
 
     # TODO: Play with images(user avatar) when I figure out how
 
-    @test(skip_if_failed=['newGunnar'], expect_fail=True)
+    @test(skip_if_failed=['newGunnar'], expect_fail=True)   # TODO: This call is somehow incorrect.
     def setDisplayName(self, check):
         'Set display name'
-        response = requests.put(Test.url + 'User/display-name',
+        response = requests.put(Test.url + 'User/display-name/',
                                 data='HE WHO WAITS BEHIND THE WALL',
                                 headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
@@ -245,19 +245,3 @@ class UserControllerTest(TestCase):
         response = requests.get(Test.url + 'User/Graatand/guardians',
                                 headers=auth(self.graatand)).json()
         ensureError(response, check)
-
-    @test(skip_if_failed=['newGunnar'], expect_fail=True)
-    def unauthorizedGraatandGuardians(self, check):
-        'Try to get Graatand\'s citizens(some) as Gunnar'
-        response = requests.get(Test.url + 'User/Graatand/citizens',
-                                headers=auth(self.graatand)).json()
-        ensureError(response, check)
-        ensureNoData(response, check)
-
-    @test(skip_if_failed=['newGunnar'], expect_fail=True)
-    def unauthorizedKurtGuardians(self, check):
-        'Try to get Kurt\'s guardians(some) as Gunnar'
-        response = requests.get(Test.url + 'User/Kurt/guardians',
-                                headers=auth(self.kurt)).json()
-        ensureError(response, check)
-        ensureNoData(response, check)
