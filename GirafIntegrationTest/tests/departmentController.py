@@ -2,7 +2,6 @@
 from testLib import *
 from integrate import TestCase, test
 import time
-import json
 
 
 def auth(token):
@@ -174,7 +173,7 @@ class DepartmentControllerTest(TestCase):
 
         gunnarFound = False
         for member in response['data']['members']:
-            if member == self.gunnarUsername:
+            if member['userName'] == self.gunnarUsername and member['userId'] == self.gunnarID:
                 gunnarFound = True
 
         check.is_true(gunnarFound, message='Gunnar was not included in list of department members.')
@@ -198,8 +197,8 @@ class DepartmentControllerTest(TestCase):
     @test(skip_if_failed=['logins', 'newPictogram'])
     def unauthorizedPictogramAdd(self, check):
         'Kurt tries to add Cyclopian to Dalgaardsholmstuen'
-        response = requests.post(Test.url + 'Department/resource/{0}'.format(self.dalgardsholmstuenId),
-                                 json=self.cyclopianBody,
+        response = requests.post(Test.url + 'Department/{0}/resource/{1}'
+                                 .format(self.dalgardsholmstuenId, self.cyclopianBody['id']),
                                  headers=auth(self.kurt)).json()
         ensureError(response, check)
 
@@ -211,7 +210,8 @@ class DepartmentControllerTest(TestCase):
     @test(skip_if_failed=['unauthorizedPictogramAdd'])
     def unauthorizedPictogramAdd1(self, check):
         'Gunnar tries to add Cyclopian to Dalgaardsholmstuen'
-        response = requests.post(Test.url + 'Department/resource/{0}'.format(self.dalgardsholmstuenId),
+        response = requests.post(Test.url + 'Department/{0}/resource/{1}'
+                                 .format(self.dalgardsholmstuenId, self.cyclopianBody['id']),
                                  json=self.cyclopianBody, headers=auth(self.gunnar)).json()
         ensureError(response, check)
 
@@ -234,7 +234,8 @@ class DepartmentControllerTest(TestCase):
         ensureSuccess(response, check)
         pictogram = response['data']
 
-        response = requests.post(Test.url + 'Department/resource/{0}'.format(self.dalgardsholmstuenId),
+        response = requests.post(Test.url + 'Department/{0}/resource/{1}'
+                                 .format(self.dalgardsholmstuenId, pictogram['id']),
                                  json=pictogram, headers=auth(self.gunnar)).json()
         ensureError(response, check)
 
@@ -257,7 +258,8 @@ class DepartmentControllerTest(TestCase):
         ensureSuccess(response, check)
         pictogram = response['data']
 
-        response = requests.post(Test.url + 'Department/resource/{0}'.format(self.dalgardsholmstuenId),
+        response = requests.post(Test.url + 'Department/{0}/resource/{1}'
+                                 .format(self.dalgardsholmstuenId, pictogram['id']),
                                  json=pictogram, headers=auth(self.gunnar)).json()
         ensureError(response, check)
 
@@ -269,8 +271,8 @@ class DepartmentControllerTest(TestCase):
     @test(skip_if_failed=['unauthorizedPictogramAdd', 'unauthorizedPictogramAdd1'])
     def pictogramAdd(self, check):
         'Add Cyclopian to Dalgaardsholmstuen'
-        response = requests.post(Test.url + 'Department/resource/{0}'.format(self.dalgardsholmstuenId),
-                                 json=self.cyclopianBody,
+        response = requests.post(Test.url + 'Department/{0}/resource/{1}'
+                                 .format(self.dalgardsholmstuenId, self.cyclopianBody['id']),
                                  headers=auth(self.dalgaardsholmstuenToken)).json()
         ensureSuccess(response, check)
 
@@ -279,7 +281,7 @@ class DepartmentControllerTest(TestCase):
         check.is_true(pictogramIsInList(self.cyclopianBody['id'], response['data']['resources']),
                       message='Pictogram was not found in department resources')
 
-    @test(skip_if_failed=['pictogramAdd'], expect_fail=True)
+    @test(skip_if_failed=['pictogramAdd'])
     def unauthorizedPictogramRemove(self, check):
         'Gunnar tries to remove Cyclopian from Dalgaardsholmstuen'
         response = requests.delete(Test.url + 'Department/resource'.format(self.dalgardsholmstuenId),
@@ -295,7 +297,6 @@ class DepartmentControllerTest(TestCase):
     @test(skip_if_failed=['unauthorizedPictogramRemove'])
     def pictogramRemove(self, check):
         'Remove Cyclopian from Dalgaardsholmstuen'
-        response = requests.delete(Test.url + 'Department/resource',
-                                   json=self.cyclopianBody,
+        response = requests.delete(Test.url + 'Department/resource/{0}'.format(self.cyclopianBody['id']),
                                    headers=auth(self.dalgaardsholmstuenToken)).json()
         ensureSuccess(response, check)

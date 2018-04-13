@@ -229,7 +229,7 @@ class UserControllerTest(TestCase):
         response = requests.get(Test.url + 'User/Graatand/citizens',
                                 headers=auth(self.graatand)).json()
         if ensureSuccess(response, check):
-            check.equal('Kurt', response['data'][0]['username'])
+            check.equal('Kurt', response['data'][0]['userName'])
 
     @test(skip_if_failed=['logins'])
     def kurtGuardians(self, check):
@@ -237,7 +237,7 @@ class UserControllerTest(TestCase):
         response = requests.get(Test.url + 'User/Kurt/guardians',
                                 headers=auth(self.kurt)).json()
         if ensureSuccess(response, check):
-            check.is_true('Graatand', response['data'][0]['username'])
+            check.is_true('Graatand', response['data'][0]['userName'])
 
     @test(skip_if_failed=['logins'])
     def graatandGuardians(self, check):
