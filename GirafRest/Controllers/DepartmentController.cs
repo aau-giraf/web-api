@@ -261,6 +261,9 @@ namespace GirafRest.Controllers
 
             if (user == null)
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.UserNotFound);
+            
+            if (user.Department != null)
+                return new ErrorResponse<DepartmentDTO>(ErrorCode.UserAlreadyHasDepartment);
 
             user.DepartmentKey = dep.Key;
             dep.Members.Add(user);
