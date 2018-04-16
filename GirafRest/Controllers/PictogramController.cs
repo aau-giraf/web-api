@@ -364,15 +364,15 @@ namespace GirafRest.Controllers
             // fetch current authenticated user
             var usr = await _giraf.LoadUserAsync(HttpContext.User);
             if (usr == null)
-                return new ErrorResponse<byte[]>(ErrorCode.NotFound) as IActionResult;
-            
+                return NotFound();
+
             var picto = await _giraf._context
                 .Pictograms
                 .Where(pictogram => pictogram.Id == id)
                 .FirstOrDefaultAsync();
 
             if (picto == null || picto.Image == null)
-                return new ErrorResponse<byte[]>(ErrorCode.PictogramNotFound) as IActionResult;
+                return NotFound();
 
             // you can get all public pictograms
             if (picto.AccessLevel == AccessLevel.PUBLIC)
@@ -380,12 +380,12 @@ namespace GirafRest.Controllers
 
             // you can only get a protected picogram if it is owned by your department
             if (picto.AccessLevel == AccessLevel.PROTECTED && !picto.Departments.Any(d => d.OtherKey == usr.DepartmentKey))
-                return new ErrorResponse<byte[]>(ErrorCode.PictogramNotFound) as IActionResult;
+                return NotFound();
 
             // you can only get a private pictogram if you are among the owners of the pictogram
             if (picto.AccessLevel == AccessLevel.PRIVATE && !picto.Users.Any(d => d.OtherKey == usr.Id))
-                return new ErrorResponse<byte[]>(ErrorCode.PictogramNotFound) as IActionResult;
-                
+                return NotFound();
+
             return File(Convert.FromBase64String(System.Text.Encoding.UTF8.GetString(picto.Image)), "image/png");
         }
 
