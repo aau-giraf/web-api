@@ -6,7 +6,7 @@ namespace GirafRest.Models.DTOs
     public enum orientation_enum { portrait=1, landscape=2 }
     public enum resourceAppearence_enum { checkmark=1, removed=2, movedToRight=3, greyedOut=4 }
     public enum defaultTimer_enum { hourglass=1, analogClock=2 }
-    public enum theme_enum { girafGreen=1, girafYellow=2, greyscale=3 }
+    public enum theme_enum { girafYellow=1, girafGreen=2, greyscale=3 }
 
     /// <summary>
     /// A Data Transfer Object for the user settings used by the launcher
@@ -52,12 +52,12 @@ namespace GirafRest.Models.DTOs
         /// Number of seconds for timer
         /// </summary>
         [Required]
-        public int timerSeconds { get; set; }
+        public int? timerSeconds { get; set; }
         /// <summary>
         /// Number of activities
         /// </summary>
         [Required]
-        public int activitiesCount { get; set; }
+        public int? activitiesCount { get; set; }
         /// <summary>
         /// The preferred theme
         /// </summary>
@@ -86,6 +86,10 @@ namespace GirafRest.Models.DTOs
         public LauncherOptionsDTO()
         {
             appsUserCanAccess = new List<ApplicationOption>();
+            theme = theme_enum.girafYellow;
+            defaultTimer = defaultTimer_enum.hourglass;
+            checkResourceAppearence = resourceAppearence_enum.checkmark;
+            orientation = orientation_enum.portrait;
         }
     }
 }

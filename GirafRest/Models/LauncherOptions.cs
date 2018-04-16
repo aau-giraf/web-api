@@ -56,12 +56,12 @@ namespace GirafRest.Models
         /// Number of seconds for timer
         /// </summary>
         [Required]
-        public int timerSeconds { get; set; }
+        public int? timerSeconds { get; set; }
         /// <summary>
         /// Number of activities
         /// </summary>
         [Required]
-        public int activitiesCount { get; set; }
+        public int? activitiesCount { get; set; }
         /// <summary>
         /// The preferred theme
         /// </summary>
