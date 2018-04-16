@@ -363,7 +363,7 @@ namespace GirafRest.Controllers
         public async Task<IActionResult> ReadRawPictogramImage(long id) {
             // fetch current authenticated user
             var usr = await _giraf.LoadUserAsync(HttpContext.User);
-            if (usr == null) // error jj=null, cannot cast this way
+            if (usr == null)
                 return NotFound();
 
             var picto = await _giraf._context
