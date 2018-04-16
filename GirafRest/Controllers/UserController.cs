@@ -579,24 +579,25 @@ namespace GirafRest.Controllers
             return new Response<GirafUserDTO>(new GirafUserDTO(curUsr, userRole));
         }
 
-        /// <summary>
-        /// Enables or disables grayscale mode for the currently authenticated user.
-        /// </summary>
-        /// <param name="enabled">A bool indicating whether grayscale should be enabled or not.</param>
-        /// <returns>Ok and a userDTO of the current user.</returns>
-        [HttpPost("grayscale/{enabled}")]
-        public async Task<Response<GirafUserDTO>> ToggleGrayscale(bool enabled)
-        {
-            var user = await _giraf.LoadUserAsync(HttpContext.User);
+        // DEPRECATED
+        // /// <summary>
+        // /// Enables or disables grayscale mode for the currently authenticated user.
+        // /// </summary>
+        // /// <param name="enabled">A bool indicating whether grayscale should be enabled or not.</param>
+        // /// <returns>Ok and a userDTO of the current user.</returns>
+        // [HttpPost("grayscale/{enabled}")]
+        // public async Task<Response<GirafUserDTO>> ToggleGrayscale(bool enabled)
+        // {
+        //     var user = await _giraf.LoadUserAsync(HttpContext.User);
 
-            user.Settings.UseGrayscale = enabled;
-            await _giraf._context.SaveChangesAsync();
+        //     user.Settings.UseGrayscale = enabled;
+        //     await _giraf._context.SaveChangesAsync();
 
-            // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
+        //     // Get the roles the user is associated with
+        //     GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
-            return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));
-        }
+        //     return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));
+        // }
 
         /// <summary>
         /// Enables or disables launcher animations for the currently authenticated user.

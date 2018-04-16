@@ -3,16 +3,16 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GirafRest.Models.DTOs
 {
+    public enum orientation_enum { portrait=1, landscape=2 }
+    public enum resourceAppearence_enum { checkmark=1, removed=2, movedToRight=3, greyedOut=4 }
+    public enum defaultTimer_enum { hourglass=1, analogClock=2 }
+    public enum theme_enum { girafGreen=1, girafYellow=2, greyscale=3 }
+
     /// <summary>
     /// A Data Transfer Object for the user settings used by the launcher
     /// </summary>
     public class LauncherOptionsDTO
     {
-        /// <summary>
-        /// A flag indicating whether to run applications in grayscale or not.
-        /// </summary>
-        [Required]
-        public bool UseGrayscale { get; set; }
         /// <summary>
         /// A flag indicating whether to display animations in the launcher or not.
         /// </summary>
@@ -23,7 +23,6 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         [Required]
         public virtual ICollection<ApplicationOption> appsUserCanAccess { get; set; }
-
         /// <summary>
         /// A field for storing how many rows to display in the GirafLauncher application.
         /// </summary>
@@ -35,6 +34,36 @@ namespace GirafRest.Models.DTOs
         [Required]
         public int appGridSizeColumns { get; set; }
         /// <summary>
+        /// Preferred orientation of device/screen
+        /// </summary>
+        [Required]
+        public orientation_enum orientation { get; set; }
+        /// <summary>
+        /// Preferred appearence of checked resources
+        /// </summary>
+        [Required]
+        public resourceAppearence_enum checkResourceAppearence { get; set; }
+        /// <summary>
+        /// Preferred appearence of timer
+        /// </summary>
+        [Required]
+        public defaultTimer_enum defaultTimer { get; set; }
+        /// <summary>
+        /// Number of seconds for timer
+        /// </summary>
+        [Required]
+        public int timerSeconds { get; set; }
+        /// <summary>
+        /// Number of activities
+        /// </summary>
+        [Required]
+        public int activitiesCount { get; set; }
+        /// <summary>
+        /// The preferred theme
+        /// </summary>
+        [Required]
+        public theme_enum theme { get; set; }
+        /// <summary>
         /// Constructor to create a DTO based on the actual object
         /// </summary>
         /// <param name="options">The launcher options in need of transfer</param>
@@ -44,7 +73,12 @@ namespace GirafRest.Models.DTOs
             this.appGridSizeRows = options.appGridSizeRows;
             this.appsUserCanAccess = options.appsUserCanAccess;
             this.DisplayLauncherAnimations = options.DisplayLauncherAnimations;
-            this.UseGrayscale = options.UseGrayscale;
+            this.orientation = options.orientation;
+            this.checkResourceAppearence = options.checkResourceAppearence;
+            this.defaultTimer = options.defaultTimer;
+            this.timerSeconds = options.timerSeconds;
+            this.activitiesCount = options.activitiesCount;
+            this.theme = options.theme;
         }
         /// <summary>
         /// Simple constructor ensuring that appsUserCanAccess isn't null

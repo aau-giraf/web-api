@@ -23,10 +23,6 @@ namespace GirafRest.Models
         /// <summary>
         /// A flag indicating whether to run applications in grayscale or not.
         /// </summary>
-        public bool UseGrayscale { get; set; }
-        /// <summary>
-        /// A flag indicating whether to display animations in the launcher or not.
-        /// </summary>
         public bool DisplayLauncherAnimations { get; set; }
         /// <summary>
         /// A collection of all the user's applications.
@@ -41,6 +37,37 @@ namespace GirafRest.Models
         /// A field for storing how many columns to display in the GirafLauncher application.
         /// </summary>
         public int appGridSizeColumns { get; set; }
+        /// <summary>
+        /// Preferred orientation of device/screen
+        /// </summary>
+        [Required]
+        public orientation_enum orientation { get; set; }
+        /// <summary>
+        /// Preferred appearence of checked resources
+        /// </summary>
+        [Required]
+        public resourceAppearence_enum checkResourceAppearence { get; set; }
+        /// <summary>
+        /// Preferred appearence of timer
+        /// </summary>
+        [Required]
+        public defaultTimer_enum defaultTimer { get; set; }
+        /// <summary>
+        /// Number of seconds for timer
+        /// </summary>
+        [Required]
+        public int timerSeconds { get; set; }
+        /// <summary>
+        /// Number of activities
+        /// </summary>
+        [Required]
+        public int activitiesCount { get; set; }
+        /// <summary>
+        /// The preferred theme
+        /// </summary>
+        [Required]
+        public theme_enum theme { get; set; }
+        
         /// <summary>
         /// Required empty constructor
         /// </summary>
@@ -57,7 +84,12 @@ namespace GirafRest.Models
             this.appGridSizeRows = newOptions.appGridSizeRows;
             this.appsUserCanAccess = newOptions.appsUserCanAccess;
             this.DisplayLauncherAnimations = newOptions.DisplayLauncherAnimations;
-            this.UseGrayscale = newOptions.UseGrayscale;
+            this.orientation = newOptions.orientation;
+            this.checkResourceAppearence = newOptions.checkResourceAppearence;
+            this.defaultTimer = newOptions.defaultTimer;
+            this.timerSeconds = newOptions.timerSeconds;
+            this.activitiesCount = newOptions.activitiesCount;
+            this.theme = newOptions.theme;
         }
     }
 

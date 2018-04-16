@@ -14,9 +14,10 @@ using System;
 namespace GirafRest.Migrations.MySQL
 {
     [DbContext(typeof(GirafDbContext))]
-    partial class GirafMySqlDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180416115413_update-launcher-settings")]
+    partial class updatelaunchersettings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

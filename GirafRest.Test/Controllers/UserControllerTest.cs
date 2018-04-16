@@ -937,29 +937,114 @@ namespace GirafRest.Test
         }
 
         #endregion
-        #region ToggleGrayscale
+        #region Settings
         [Fact]
-        public void ToggleGrayscale_True_GrayscaleIsTrue()
+        public void UpdateUserSettings_10_appGridSizeColumns()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+            
+            var dto = new LauncherOptionsDTO();
+            dto.appGridSizeColumns = 10;
+            usercontroller.UpdateUserSettings(dto).Wait();
 
-            usercontroller.ToggleGrayscale(true).Wait();
-
-            // Check that we currectly toggled GreyScale
-            Assert.True(_testContext.MockUsers[CitizenDepTwo].Settings.UseGrayscale);
+            Assert.Equal(_testContext.MockUsers[CitizenDepTwo].Settings.appGridSizeColumns, 10);
         }
-
         [Fact]
-        public void ToggleGrayscale_False_GrayscaleIsFalse()
+        public void UpdateUserSettings_10_appGridSizeRows()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+            
+            var dto = new LauncherOptionsDTO();
+            dto.appGridSizeRows = 10;
+            usercontroller.UpdateUserSettings(dto).Wait();
 
-            usercontroller.ToggleGrayscale(false).Wait();
+            Assert.Equal(_testContext.MockUsers[CitizenDepTwo].Settings.appGridSizeRows, 10);
+        }
+        [Fact]
+        public void UpdateUserSettings_True_DisplayLauncherAnimations()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+            
+            var dto = new LauncherOptionsDTO();
+            dto.DisplayLauncherAnimations = true;
+            usercontroller.UpdateUserSettings(dto).Wait();
 
-            // Check that we currectly disabled GreyScale
-            Assert.True(!_testContext.MockUsers[CitizenDepTwo].Settings.UseGrayscale);
+            Assert.True(_testContext.MockUsers[CitizenDepTwo].Settings.DisplayLauncherAnimations);
+        }
+        [Fact]
+        public void UpdateUserSettings_portrait_Orientation()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+            
+            var dto = new LauncherOptionsDTO();
+            dto.orientation = orientation_enum.portrait;
+            usercontroller.UpdateUserSettings(dto).Wait();
+
+            Assert.Equal(_testContext.MockUsers[CitizenDepTwo].Settings.orientation, orientation_enum.portrait);
+        }        
+        [Fact]
+        public void UpdateUserSettings_movedToRight_checkResourceAppearence()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+            
+            var dto = new LauncherOptionsDTO();
+            dto.checkResourceAppearence = resourceAppearence_enum.movedToRight;
+            usercontroller.UpdateUserSettings(dto).Wait();
+
+            Assert.Equal(_testContext.MockUsers[CitizenDepTwo].Settings.checkResourceAppearence, resourceAppearence_enum.movedToRight);
+        }        
+        [Fact]
+        public void UpdateUserSettings_analogClock_defaultTimer()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+            
+            var dto = new LauncherOptionsDTO();
+            dto.defaultTimer = defaultTimer_enum.analogClock;
+            usercontroller.UpdateUserSettings(dto).Wait();
+
+            Assert.Equal(_testContext.MockUsers[CitizenDepTwo].Settings.defaultTimer, defaultTimer_enum.analogClock);
+        }        
+        [Fact]
+        public void UpdateUserSettings_25_timerSeconds()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+            
+            var dto = new LauncherOptionsDTO();
+            dto.timerSeconds = 25;
+            usercontroller.UpdateUserSettings(dto).Wait();
+
+            Assert.Equal(_testContext.MockUsers[CitizenDepTwo].Settings.timerSeconds, 25);
+        }
+        [Fact]
+        public void UpdateUserSettings_10_activitiesCount()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+            
+            var dto = new LauncherOptionsDTO();
+            dto.activitiesCount = 10;
+            usercontroller.UpdateUserSettings(dto).Wait();
+
+            Assert.Equal(_testContext.MockUsers[CitizenDepTwo].Settings.activitiesCount, 10);
+        }
+        [Fact]
+        public void UpdateUserSettings_girafYellow_theme()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+            
+            var dto = new LauncherOptionsDTO();
+            dto.theme = theme_enum.girafYellow;
+            usercontroller.UpdateUserSettings(dto).Wait();
+
+            Assert.Equal(_testContext.MockUsers[CitizenDepTwo].Settings.theme, theme_enum.girafYellow);
         }
         #endregion
         #region ToggleAnimations
