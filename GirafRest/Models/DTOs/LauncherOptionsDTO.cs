@@ -5,7 +5,7 @@ namespace GirafRest.Models.DTOs
 {
     public enum orientation_enum { portrait = 1, landscape = 2 }
     public enum resourceAppearence_enum { normal = 1, checkmark = 2, removed = 3, movedToRight = 4, greyedOut = 5 }
-    public enum defaultTimer_enum { hourglass = 1, analogClock = 2 }
+    public enum defaultTimer_enum { hourglass = 1,analogClock = 2 }
     public enum theme_enum { girafYellow = 1, girafGreen = 2, greyscale = 3 }
 
     /// <summary>

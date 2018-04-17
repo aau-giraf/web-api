@@ -49,7 +49,8 @@ namespace GirafRest.Test
                 _testContext.MockUserManager),
                 new Mock<IEmailService>().Object,
                 _testContext.MockLoggerFactory.Object,
-                _testContext.MockRoleManager.Object);
+                _testContext.MockRoleManager.Object,
+                new GirafAuthenticationService(_testContext.MockDbContext.Object));
             
             _testContext.MockHttpContext = usercontroller.MockHttpContext();
             _testContext.MockHttpContext.MockQuery("username", null);
@@ -719,7 +720,7 @@ namespace GirafRest.Test
             dto.appGridSizeColumns = 10;
             usercontroller.UpdateUserSettings(dto).Wait();
 
-            Assert.Equal(_testContext.MockUsers[CitizenDepTwo].Settings.appGridSizeColumns, 10);
+            Assert.Equal(10, _testContext.MockUsers[CitizenDepTwo].Settings.appGridSizeColumns);
         }
         [Fact]
         public void UpdateUserSettings_10_appGridSizeRows()
@@ -731,7 +732,7 @@ namespace GirafRest.Test
             dto.appGridSizeRows = 10;
             usercontroller.UpdateUserSettings(dto).Wait();
 
-            Assert.Equal(_testContext.MockUsers[CitizenDepTwo].Settings.appGridSizeRows, 10);
+            Assert.Equal(10, _testContext.MockUsers[CitizenDepTwo].Settings.appGridSizeRows);
         }
         [Fact]
         public void UpdateUserSettings_True_DisplayLauncherAnimations()
@@ -746,19 +747,19 @@ namespace GirafRest.Test
             Assert.True(_testContext.MockUsers[CitizenDepTwo].Settings.DisplayLauncherAnimations);
         }
         [Fact]
-        public void UpdateUserSettings_portrait_Orientation()
+        public void UpdateUserSettings_landscape_OrientationOk()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
             
             var dto = new LauncherOptionsDTO();
-            dto.orientation = orientation_enum.portrait;
+            dto.orientation = orientation_enum.landscape;
             usercontroller.UpdateUserSettings(dto).Wait();
 
-            Assert.Equal(_testContext.MockUsers[CitizenDepTwo].Settings.orientation, orientation_enum.portrait);
+            Assert.Equal(orientation_enum.landscape, _testContext.MockUsers[CitizenDepTwo].Settings.orientation);
         }        
         [Fact]
-        public void UpdateUserSettings_movedToRight_checkResourceAppearence()
+        public void UpdateUserSettings_movedToRight_checkResourceAppearenceOk()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
@@ -767,10 +768,10 @@ namespace GirafRest.Test
             dto.checkResourceAppearence = resourceAppearence_enum.movedToRight;
             usercontroller.UpdateUserSettings(dto).Wait();
 
-            Assert.Equal(_testContext.MockUsers[CitizenDepTwo].Settings.checkResourceAppearence, resourceAppearence_enum.movedToRight);
+            Assert.Equal(resourceAppearence_enum.movedToRight, _testContext.MockUsers[CitizenDepTwo].Settings.checkResourceAppearence);
         }        
         [Fact]
-        public void UpdateUserSettings_analogClock_defaultTimer()
+        public void UpdateUserSettings_analogClock_defaultTimerOk()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
@@ -779,10 +780,10 @@ namespace GirafRest.Test
             dto.defaultTimer = defaultTimer_enum.analogClock;
             usercontroller.UpdateUserSettings(dto).Wait();
 
-            Assert.Equal(_testContext.MockUsers[CitizenDepTwo].Settings.defaultTimer, defaultTimer_enum.analogClock);
+            Assert.Equal(defaultTimer_enum.analogClock, _testContext.MockUsers[CitizenDepTwo].Settings.defaultTimer);
         }        
         [Fact]
-        public void UpdateUserSettings_25_timerSeconds()
+        public void UpdateUserSettings_25_timerSecondsOk()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
@@ -791,32 +792,75 @@ namespace GirafRest.Test
             dto.timerSeconds = 25;
             usercontroller.UpdateUserSettings(dto).Wait();
 
-            Assert.Equal(_testContext.MockUsers[CitizenDepTwo].Settings.timerSeconds, 25);
+            Assert.Equal(25, _testContext.MockUsers[CitizenDepTwo].Settings.timerSeconds);
         }
         [Fact]
-        public void UpdateUserSettings_10_activitiesCount()
+        public void UpdateUserSettings_10_activitiesCountOk()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
             
             var dto = new LauncherOptionsDTO();
-            dto.activitiesCount = 10;
+            dto.activitiesCount = 30;
             usercontroller.UpdateUserSettings(dto).Wait();
 
-            Assert.Equal(_testContext.MockUsers[CitizenDepTwo].Settings.activitiesCount, 10);
+            Assert.Equal(30, _testContext.MockUsers[CitizenDepTwo].Settings.activitiesCount);
         }
         [Fact]
-        public void UpdateUserSettings_girafYellow_theme()
+        public void UpdateUserSettings_girafGreen_themeOk()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
             
             var dto = new LauncherOptionsDTO();
-            dto.theme = theme_enum.girafYellow;
+            dto.theme = theme_enum.girafGreen;
             usercontroller.UpdateUserSettings(dto).Wait();
 
-            Assert.Equal(_testContext.MockUsers[CitizenDepTwo].Settings.theme, theme_enum.girafYellow);
+            Assert.Equal(theme_enum.girafGreen, _testContext.MockUsers[CitizenDepTwo].Settings.theme);
         }
+
+        [Fact]
+        public void UpdateSameUserSettings_Ok(){
+            var usercontroller = initializeTest();
+            var user = _testContext.MockUsers[CitizenDepTwo];
+            _testContext.MockUserManager.MockLoginAsUser(user);
+
+            var dto = new LauncherOptionsDTO() { 
+                theme = theme_enum.girafGreen,
+                timerSeconds = 120,
+                defaultTimer = defaultTimer_enum.analogClock,
+                activitiesCount = 5
+            };
+            usercontroller.UpdateUserSettings(user.Id, dto).Wait();
+
+            Assert.Equal(theme_enum.girafGreen, _testContext.MockUsers[CitizenDepTwo].Settings.theme);
+            Assert.Equal(120, _testContext.MockUsers[CitizenDepTwo].Settings.timerSeconds);
+            Assert.Equal(defaultTimer_enum.analogClock, _testContext.MockUsers[CitizenDepTwo].Settings.defaultTimer);
+            Assert.Equal(5, _testContext.MockUsers[CitizenDepTwo].Settings.activitiesCount);
+        }
+
+        [Fact]
+        public void UpdateOtherUserSettings_Error()
+        {
+            var usercontroller = initializeTest();
+            var user = _testContext.MockUsers[UserCitizenDepartment1];
+            _testContext.MockUserManager.MockLoginAsUser(user);
+
+            var idOfUserToUpdate = _testContext.MockUsers[CitizenDepTwo].Id;
+
+            var dto = new LauncherOptionsDTO()
+            {
+                theme = theme_enum.girafGreen,
+                timerSeconds = 120,
+                defaultTimer = defaultTimer_enum.analogClock,
+                activitiesCount = 5
+            };
+            var res = usercontroller.UpdateUserSettings(idOfUserToUpdate, dto).Result;
+
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+        }
+
         #endregion
         #region ToggleAnimations
         [Fact]

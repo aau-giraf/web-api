@@ -90,6 +90,8 @@ namespace GirafRest.Setup
             services.Configure<EmailConfig>(Configuration.GetSection("Email"));
             services.AddTransient<IEmailService, MessageServices>();
 
+            services.AddTransient<IAuthenticationService, GirafAuthenticationService>();
+
             // Add the implementation of IGirafService to the context, i.e. all common functionality for
             // the controllers.
             services.AddTransient<IGirafService, GirafService>();

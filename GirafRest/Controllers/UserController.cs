@@ -39,6 +39,8 @@ namespace GirafRest.Controllers
         /// </summary>
         private readonly RoleManager<GirafRole> _roleManager;
 
+        private readonly IAuthenticationService _authentication;
+
         /// <summary>
         /// Constructor for the User-controller. This is called by the asp.net runtime.
         /// </summary>
@@ -49,12 +51,14 @@ namespace GirafRest.Controllers
             IGirafService giraf,
           IEmailService emailSender,
           ILoggerFactory loggerFactory,
-          RoleManager<GirafRole> roleManager)
+          RoleManager<GirafRole> roleManager, 
+            IAuthenticationService authentication)
         {
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("User");
             _emailSender = emailSender;
             _roleManager = roleManager;
+            _authentication = authentication;
         }
 
         /// <summary>
@@ -153,31 +157,16 @@ namespace GirafRest.Controllers
 
             //Get the current user and check if he is a guardian in the same department as the user
             //or an Admin, in which cases the user is allowed to edit the settings.
-            var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            var authUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
 
-            var launcherOptionsDTO = new LauncherOptionsDTO(user.Settings);
+            GirafRoles authRole = await _roleManager.findUserRole(_giraf._userManager, authUser);
+            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user); 
 
-            // if we are trying to login as the same user simply return the launchersettigns
-            if (currentUser.Id == user.Id)
-                return new Response<LauncherOptionsDTO>(launcherOptionsDTO);
-            
-            if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian) ||
-                await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Department))
-            {
-                //Check if the guardian is in the same department as the user
-                if (user.DepartmentKey != currentUser.DepartmentKey)
-                    //We do not reveal if a user with the given username exists
-                    return new ErrorResponse<LauncherOptionsDTO>(ErrorCode.UserNotFound);
-            }
-            else if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser))
-            {
-                //No additional checks required, simply skip to Ok.
-            }
-            else
-                //We do not reveal if a user with the given username exists
-                return new ErrorResponse<LauncherOptionsDTO>(ErrorCode.UserNotFound);
+            var errorCode = _authentication.CheckUserAccess(authUser, authRole, user, userRole);
+            if (errorCode.HasValue)
+                new ErrorResponse<LauncherOptionsDTO>(ErrorCode.NotAuthorized);
 
-            return new Response<LauncherOptionsDTO>(launcherOptionsDTO);
+            return new Response<LauncherOptionsDTO>(new LauncherOptionsDTO(user.Settings));
         }
 
         /// <summary>
@@ -247,7 +236,7 @@ namespace GirafRest.Controllers
 
             // current authenticated user
             var authenticatedUser = await _giraf.LoadUserAsync(HttpContext.User);
-            var role = await _roleManager.findUserRole(_giraf._userManager, authenticatedUser);
+            var authRole = await _roleManager.findUserRole(_giraf._userManager, authenticatedUser);
 
             // update fields if they are not null
             if (!String.IsNullOrEmpty(Username))
@@ -256,7 +245,7 @@ namespace GirafRest.Controllers
             if (!String.IsNullOrEmpty(ScreenName))
                 user.DisplayName = ScreenName;
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
+            var userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
             if (authenticatedUser.Id == user.Id){
                 //Save changes and return the user with updated information.
@@ -265,21 +254,11 @@ namespace GirafRest.Controllers
                 return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));
             }
 
-            // if role is citizen check that the current authenticated citizen is the same as the one we wanna update
-            // check that we have the rights to update the user
-            else if(userRole == GirafRoles.Citizen){
-                if (role == GirafRoles.Department){
-                    if (authenticatedUser.DepartmentKey != user.DepartmentKey)
-                        return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
-                }
+            var errorCode = _authentication.CheckUserAccess(authenticatedUser, authRole, user, userRole);
+            if (errorCode.HasValue)
+                return new ErrorResponse<GirafUserDTO>(errorCode.Value);
+                
 
-                if (role == GirafRoles.Guardian){
-                    authenticatedUser = _giraf._context.Users.Include(u => u.Citizens).FirstOrDefault(c => c.Id == authenticatedUser.Id);
-                    if (authenticatedUser.DepartmentKey != user.DepartmentKey || !(authenticatedUser.Citizens.Any(c => c.CitizenId == user.Id)))
-                        return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
-                }
-
-            }
             // save and return 
             _giraf._context.Users.Update(user);
             await _giraf._context.SaveChangesAsync();
@@ -682,7 +661,6 @@ namespace GirafRest.Controllers
         /// </returns>
         /// <param name="options">Options.</param>
         [HttpPut("settings")]
-        [Authorize]
         public async Task<Response<LauncherOptions>> UpdateUserSettings([FromBody] LauncherOptionsDTO options)
         {
             if (options == null)
@@ -701,6 +679,48 @@ namespace GirafRest.Controllers
                                   .ToArray());
 
 
+            user.Settings.UpdateFrom(options);
+            await _giraf._context.SaveChangesAsync();
+            return new Response<LauncherOptions>(user.Settings);
+        }
+
+
+        /// <summary>
+        /// Updates the user settings.
+        /// </summary>
+        /// <returns>
+        /// MissingProperties if options is null or some required fields is not set
+        /// </returns>
+        /// <param name="options">Options.</param>
+        [HttpPut("{id}/settings")]
+        [Authorize]
+        public async Task<Response<LauncherOptions>> UpdateUserSettings(string id, [FromBody] LauncherOptionsDTO options)
+        {
+            if (!ModelState.IsValid)
+                return new ErrorResponse<LauncherOptions>(ErrorCode.MissingProperties, ModelState.Values.Where(E => E.Errors.Count > 0)
+                                  .SelectMany(E => E.Errors)
+                                  .Select(E => E.ErrorMessage)
+                                  .ToArray());
+            
+            if (options == null)
+                return new ErrorResponse<LauncherOptions>(ErrorCode.MissingProperties, "options");
+
+            var user =  _giraf._context.Users.Include(u => u.Settings).FirstOrDefault(u => u.Id == id);
+
+            if (user == null)
+                return new ErrorResponse<LauncherOptions>(ErrorCode.UserNotFound);
+
+            if (user.Settings == null)
+                return new ErrorResponse<LauncherOptions>(ErrorCode.MissingSettings);
+
+            var authUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            var authUserRole = await _roleManager.findUserRole(_giraf._userManager, authUser);
+            var userRole = await _roleManager.findUserRole(_giraf._userManager, user);
+
+            var errorCode = _authentication.CheckUserAccess(authUser, authUserRole, user, userRole);
+            if (errorCode != null)
+                return new ErrorResponse<LauncherOptions>(errorCode.Value); 
+            
             user.Settings.UpdateFrom(options);
             await _giraf._context.SaveChangesAsync();
             return new Response<LauncherOptions>(user.Settings);
