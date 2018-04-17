@@ -9,7 +9,7 @@ namespace GirafRest.Models
     /// <summary>
     /// An enum defining all days of the week.
     /// </summary>
-    public enum Days { Monday = 1, Tuesday = 2, Wednesday = 3, Thursday = 4, Friday = 5, Saturday = 6, Sunday = 7};
+    public enum Days { Monday = 0, Tuesday = 1, Wednesday = 2, Thursday = 3, Friday = 4, Saturday = 5, Sunday = 6};
     /// <summary>
     /// A weekday displays what a citizen should do in the course of the day. A weekday may be populated with
     /// a series of Pictograms and choices. They make up the building blocks of Weeks.

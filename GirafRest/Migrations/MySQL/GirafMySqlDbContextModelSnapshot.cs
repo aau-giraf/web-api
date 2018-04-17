@@ -205,12 +205,11 @@ namespace GirafRest.Migrations.MySQL
 
                     b.Property<bool>("DisplayLauncherAnimations");
 
-                    b.Property<int?>("activitiesCount")
-                        .IsRequired();
+                    b.Property<int?>("activitiesCount");
 
-                    b.Property<int>("appGridSizeColumns");
+                    b.Property<int?>("appGridSizeColumns");
 
-                    b.Property<int>("appGridSizeRows");
+                    b.Property<int?>("appGridSizeRows");
 
                     b.Property<int>("checkResourceAppearence");
 
@@ -220,8 +219,7 @@ namespace GirafRest.Migrations.MySQL
 
                     b.Property<int>("theme");
 
-                    b.Property<int?>("timerSeconds")
-                        .IsRequired();
+                    b.Property<int?>("timerSeconds");
 
                     b.HasKey("Key");
 

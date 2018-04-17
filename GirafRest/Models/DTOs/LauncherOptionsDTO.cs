@@ -3,10 +3,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace GirafRest.Models.DTOs
 {
-    public enum orientation_enum { portrait=1, landscape=2 }
-    public enum resourceAppearence_enum { checkmark=1, removed=2, movedToRight=3, greyedOut=4 }
-    public enum defaultTimer_enum { hourglass=1, analogClock=2 }
-    public enum theme_enum { girafYellow=1, girafGreen=2, greyscale=3 }
+    public enum orientation_enum { portrait = 1, landscape = 2 }
+    public enum resourceAppearence_enum { normal = 1, checkmark = 2, removed = 3, movedToRight = 4, greyedOut = 5 }
+    public enum defaultTimer_enum { hourglass = 1, analogClock = 2 }
+    public enum theme_enum { girafYellow = 1, girafGreen = 2, greyscale = 3 }
 
     /// <summary>
     /// A Data Transfer Object for the user settings used by the launcher
@@ -26,13 +26,11 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// A field for storing how many rows to display in the GirafLauncher application.
         /// </summary>
-        [Required]
-        public int appGridSizeRows { get; set; }
+        public int? appGridSizeRows { get; set; }
         /// <summary>
         /// A field for storing how many columns to display in the GirafLauncher application.
         /// </summary>
-        [Required]
-        public int appGridSizeColumns { get; set; }
+        public int? appGridSizeColumns { get; set; }
         /// <summary>
         /// Preferred orientation of device/screen
         /// </summary>
@@ -51,12 +49,10 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// Number of seconds for timer
         /// </summary>
-        [Required]
         public int? timerSeconds { get; set; }
         /// <summary>
         /// Number of activities
         /// </summary>
-        [Required]
         public int? activitiesCount { get; set; }
         /// <summary>
         /// The preferred theme

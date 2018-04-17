@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 using GirafRest.Models.DTOs;
 
 namespace GirafRest.Models
@@ -32,11 +29,11 @@ namespace GirafRest.Models
         /// <summary>
         /// A field for storing how many rows to display in the GirafLauncher application.
         /// </summary>
-        public int appGridSizeRows { get; set; }
+        public int? appGridSizeRows { get; set; }
         /// <summary>
         /// A field for storing how many columns to display in the GirafLauncher application.
         /// </summary>
-        public int appGridSizeColumns { get; set; }
+        public int? appGridSizeColumns { get; set; }
         /// <summary>
         /// Preferred orientation of device/screen
         /// </summary>
@@ -55,19 +52,17 @@ namespace GirafRest.Models
         /// <summary>
         /// Number of seconds for timer
         /// </summary>
-        [Required]
         public int? timerSeconds { get; set; }
         /// <summary>
         /// Number of activities
         /// </summary>
-        [Required]
         public int? activitiesCount { get; set; }
         /// <summary>
         /// The preferred theme
         /// </summary>
         [Required]
         public theme_enum theme { get; set; }
-        
+
         /// <summary>
         /// Required empty constructor
         /// </summary>
@@ -79,10 +74,10 @@ namespace GirafRest.Models
         /// Updates all settings based on a DTO
         /// </summary>
         /// <param name="newOptions">The DTO containing new settings</param>
-        public void UpdateFrom (LauncherOptionsDTO newOptions) {
+        public void UpdateFrom(LauncherOptionsDTO newOptions)
+        {
             this.appGridSizeColumns = newOptions.appGridSizeColumns;
             this.appGridSizeRows = newOptions.appGridSizeRows;
-            this.appsUserCanAccess = newOptions.appsUserCanAccess;
             this.DisplayLauncherAnimations = newOptions.DisplayLauncherAnimations;
             this.orientation = newOptions.orientation;
             this.checkResourceAppearence = newOptions.checkResourceAppearence;

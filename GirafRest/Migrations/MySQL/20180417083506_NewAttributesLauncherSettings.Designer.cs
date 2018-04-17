@@ -14,8 +14,8 @@ using System;
 namespace GirafRest.Migrations.MySQL
 {
     [DbContext(typeof(GirafDbContext))]
-    [Migration("20180416115413_update-launcher-settings")]
-    partial class updatelaunchersettings
+    [Migration("20180417083506_NewAttributesLauncherSettings")]
+    partial class NewAttributesLauncherSettings
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -206,11 +206,11 @@ namespace GirafRest.Migrations.MySQL
 
                     b.Property<bool>("DisplayLauncherAnimations");
 
-                    b.Property<int>("activitiesCount");
+                    b.Property<int?>("activitiesCount");
 
-                    b.Property<int>("appGridSizeColumns");
+                    b.Property<int?>("appGridSizeColumns");
 
-                    b.Property<int>("appGridSizeRows");
+                    b.Property<int?>("appGridSizeRows");
 
                     b.Property<int>("checkResourceAppearence");
 
@@ -220,7 +220,7 @@ namespace GirafRest.Migrations.MySQL
 
                     b.Property<int>("theme");
 
-                    b.Property<int>("timerSeconds");
+                    b.Property<int?>("timerSeconds");
 
                     b.HasKey("Key");
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace GirafRest.Migrations.MySQL
 {
-    public partial class updatelaunchersettings : Migration
+    public partial class NewAttributesLauncherSettings : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,11 +12,22 @@ namespace GirafRest.Migrations.MySQL
                 name: "UseGrayscale",
                 table: "LauncherOptions");
 
+            migrationBuilder.AlterColumn<int>(
+                name: "appGridSizeRows",
+                table: "LauncherOptions",
+                nullable: true,
+                oldClrType: typeof(int));
+
+            migrationBuilder.AlterColumn<int>(
+                name: "appGridSizeColumns",
+                table: "LauncherOptions",
+                nullable: true,
+                oldClrType: typeof(int));
+
             migrationBuilder.AddColumn<int>(
                 name: "activitiesCount",
                 table: "LauncherOptions",
-                nullable: false,
-                defaultValue: 0);
+                nullable: true);
 
             migrationBuilder.AddColumn<int>(
                 name: "checkResourceAppearence",
@@ -45,8 +56,7 @@ namespace GirafRest.Migrations.MySQL
             migrationBuilder.AddColumn<int>(
                 name: "timerSeconds",
                 table: "LauncherOptions",
-                nullable: false,
-                defaultValue: 0);
+                nullable: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -74,6 +84,20 @@ namespace GirafRest.Migrations.MySQL
             migrationBuilder.DropColumn(
                 name: "timerSeconds",
                 table: "LauncherOptions");
+
+            migrationBuilder.AlterColumn<int>(
+                name: "appGridSizeRows",
+                table: "LauncherOptions",
+                nullable: false,
+                oldClrType: typeof(int),
+                oldNullable: true);
+
+            migrationBuilder.AlterColumn<int>(
+                name: "appGridSizeColumns",
+                table: "LauncherOptions",
+                nullable: false,
+                oldClrType: typeof(int),
+                oldNullable: true);
 
             migrationBuilder.AddColumn<bool>(
                 name: "UseGrayscale",

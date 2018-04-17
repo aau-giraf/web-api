@@ -102,6 +102,10 @@ namespace GirafRest.Controllers
             //Get the current user and check if he is a guardian in the same department as the user
             //or an Admin, in which cases the user is allowed to see the user.
             var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
+            // if we are trying to login as the same user simply return the launchersettigns
+            if (currentUser.Id == user.Id)
+                return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));
             if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian) ||
                 await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Department))
             {
@@ -119,7 +123,6 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
             return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));
         }
@@ -132,25 +135,32 @@ namespace GirafRest.Controllers
         /// MissingProperties if no username is provided
         /// UserNotFound if user was not found, or logged in user is not authorized to see user.
         ///</returns>
-        [HttpGet("{username}/settings")]
-        public async Task<Response<LauncherOptionsDTO>> GetSettings(string username)
+        [HttpGet("{id}/settings")]
+        public async Task<Response<LauncherOptionsDTO>> GetSettings(string id)
         {
             //Declare needed variables
             GirafUser user;
 
             //Check if the caller has supplied a query, find the user with the given name if so,
             //else find the user with the given username.
-            if (string.IsNullOrEmpty(username))
-                return new ErrorResponse<LauncherOptionsDTO>(ErrorCode.MissingProperties, "username");
+            if (string.IsNullOrEmpty(id))
+                return new ErrorResponse<LauncherOptionsDTO>(ErrorCode.MissingProperties, "id");
 
             //First attempt to fetch the user and check that he exists
-            user = await _giraf.LoadByNameAsync(username);
+            user = _giraf._context.Users.Include(u => u.Settings).FirstOrDefault(u => u.Id == id);
             if (user == null)
                 return new ErrorResponse<LauncherOptionsDTO>(ErrorCode.UserNotFound);
 
             //Get the current user and check if he is a guardian in the same department as the user
-            //or an Admin, in which cases the user is allowed to see the user.
+            //or an Admin, in which cases the user is allowed to edit the settings.
             var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
+
+            var launcherOptionsDTO = new LauncherOptionsDTO(user.Settings);
+
+            // if we are trying to login as the same user simply return the launchersettigns
+            if (currentUser.Id == user.Id)
+                return new Response<LauncherOptionsDTO>(launcherOptionsDTO);
+            
             if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian) ||
                 await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Department))
             {
@@ -167,7 +177,7 @@ namespace GirafRest.Controllers
                 //We do not reveal if a user with the given username exists
                 return new ErrorResponse<LauncherOptionsDTO>(ErrorCode.UserNotFound);
 
-            return new Response<LauncherOptionsDTO>(new LauncherOptionsDTO(user.Settings));
+            return new Response<LauncherOptionsDTO>(launcherOptionsDTO);
         }
 
         /// <summary>
@@ -579,26 +589,6 @@ namespace GirafRest.Controllers
             return new Response<GirafUserDTO>(new GirafUserDTO(curUsr, userRole));
         }
 
-        // DEPRECATED
-        // /// <summary>
-        // /// Enables or disables grayscale mode for the currently authenticated user.
-        // /// </summary>
-        // /// <param name="enabled">A bool indicating whether grayscale should be enabled or not.</param>
-        // /// <returns>Ok and a userDTO of the current user.</returns>
-        // [HttpPost("grayscale/{enabled}")]
-        // public async Task<Response<GirafUserDTO>> ToggleGrayscale(bool enabled)
-        // {
-        //     var user = await _giraf.LoadUserAsync(HttpContext.User);
-
-        //     user.Settings.UseGrayscale = enabled;
-        //     await _giraf._context.SaveChangesAsync();
-
-        //     // Get the roles the user is associated with
-        //     GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
-
-        //     return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));
-        // }
-
         /// <summary>
         /// Enables or disables launcher animations for the currently authenticated user.
         /// </summary>
@@ -774,17 +764,21 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<Response<LauncherOptions>> UpdateUserSettings([FromBody] LauncherOptionsDTO options)
         {
-            var user = await _giraf.LoadUserAsync(HttpContext.User);
+            if (options == null)
+                return new ErrorResponse<LauncherOptions>(ErrorCode.MissingProperties, "options");
+            
+            var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
+
+            user.Settings = _giraf._context.Users.Where(u => u.Id == user.Id).Select(s => s.Settings).FirstOrDefault();
 
             if (user == null)
                 return new ErrorResponse<LauncherOptions>(ErrorCode.NotAuthorized);
-            if (options == null)
-                return new ErrorResponse<LauncherOptions>(ErrorCode.MissingProperties, "options");
             if (!ModelState.IsValid)
                 return new ErrorResponse<LauncherOptions>(ErrorCode.MissingProperties, ModelState.Values.Where(E => E.Errors.Count > 0)
                                   .SelectMany(E => E.Errors)
                                   .Select(E => E.ErrorMessage)
                                   .ToArray());
+
 
             user.Settings.UpdateFrom(options);
             await _giraf._context.SaveChangesAsync();
