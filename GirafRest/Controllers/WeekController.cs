@@ -121,7 +121,7 @@ namespace GirafRest.Controllers
             foreach (var day in newWeek.Days)
             {
                 var wkDay = new Weekday(day) {LastEdit = DateTime.Now};
-                if (!(await CreateWeekDayHelper(wkDay, day.ElementIDs)))
+                if (!(await CreateWeekDayHelper(wkDay, day)))
                         return new ErrorResponse<WeekDTO>(ErrorCode.ResourceNotFound);
                 orderedDays[(int)day.Day].Elements = wkDay.Elements;
             }
@@ -165,7 +165,7 @@ namespace GirafRest.Controllers
                     if (!(Enum.IsDefined(typeof(Days), day.Day))) return new ErrorResponse<WeekDTO>(ErrorCode.InvalidProperties);
                     Weekday wkDay = week.Weekdays[(int)day.Day];
                     wkDay.LastEdit = DateTime.Now;
-                    if(!(await CreateWeekDayHelper(wkDay, day.ElementIDs)))
+                    if(!(await CreateWeekDayHelper(wkDay, day)))
                         return new ErrorResponse<WeekDTO>(ErrorCode.ResourceNotFound);
 
                     week.Weekdays[(int)day.Day].Elements = wkDay.Elements;
@@ -206,22 +206,22 @@ namespace GirafRest.Controllers
         #region helpers
 
         /// <summary>
-        /// Helper for adding pictograms to a weekday
+        /// Take pictograms and choices from DTO and add them to weekday object.
         /// </summary>
-        /// <returns>The week day helper.</returns>
-        /// <param name="wkDay">Wk day.</param>
-        /// <param name="Ids">Identifiers.</param>
-        private async Task<bool> CreateWeekDayHelper(Weekday wkDay, List<long> Ids){
-            foreach (var elemId in Ids)
+        /// <returns>True if all pictograms and choices were found and added, and false otherwise.</returns>
+        /// <param name="to">Pictograms and choices will be added to this object.</param>
+        /// <param name="from">Pictograms and choices will be read from this object.</param>
+        private async Task<bool> CreateWeekDayHelper(Weekday to, WeekdayDTO from){
+            foreach (var element in from.Elements)
             {
-                var picto = await _giraf._context.Frames.Where(p => p.Id == elemId).FirstOrDefaultAsync();
+                var picto = await _giraf._context.Frames.Where(p => p.Id == element.Id).FirstOrDefaultAsync();
                 if (picto != null)
-                    wkDay.Elements.Add(new WeekdayResource(wkDay, picto));
+                    to.Elements.Add(new WeekdayResource(to, picto));
                 else
                 {
-                    var choice = await _giraf._context.Choices.Where(c => c.Id == elemId).FirstOrDefaultAsync();
+                    var choice = await _giraf._context.Choices.Where(c => c.Id == element.Id).FirstOrDefaultAsync();
                     if (choice != null)
-                        wkDay.Elements.Add(new WeekdayResource(wkDay, choice));
+                        to.Elements.Add(new WeekdayResource(to, choice));
                     else
                         return false;
                 }

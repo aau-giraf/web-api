@@ -41,7 +41,7 @@ namespace GirafRest.Models
         public virtual Pictogram Thumbnail { get; set; }
 
         /// <summary>
-        /// DO NOT DELETE THIS.
+        /// Empty constructor required by Newtonsoft testing framework.
         /// </summary>
         public Week()
         {
@@ -55,6 +55,7 @@ namespace GirafRest.Models
             this.Thumbnail = thumbnail;
             initWeek();
         }
+        
         /// <summary>
         /// Creates a new Week from the given WeekDTO.
         /// </summary>
