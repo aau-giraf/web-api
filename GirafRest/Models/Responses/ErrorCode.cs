@@ -54,6 +54,7 @@
         UnknownError,
         CouldNotCreateDepartmentUser,
         UserNotFoundInDepartment,
-        NoWeekTemplateFound
+        NoWeekTemplateFound,
+        UserAlreadyHasDepartment
     }
 }
