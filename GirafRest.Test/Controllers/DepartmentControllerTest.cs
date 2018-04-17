@@ -164,10 +164,8 @@ namespace GirafRest.Test.Controllers
 
             var res = dc.AddUser(DEPARTMENT_TWO, user.Id).Result;
 
-            Assert.IsType<Response<DepartmentDTO>>(res);
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            // Check data
-            Assert.True(res.Data.Members.Any(m => m.UserName == userName));
+            Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
+            Assert.Equal(ErrorCode.UserAlreadyHasDepartment, res.ErrorCode);
         }
 
         [Fact]

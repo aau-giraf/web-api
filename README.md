@@ -33,15 +33,15 @@ Once the API is running locally you can navigate to `http://localhost:5000/swagg
 
 ## Migrations (Only for developers of the API)
 If changes has been made to the model classes then a new migration should be added to be able to update the database without losing data:
-  - Goto: /web-api/GirafRest
-  - `dotnet ef migrations add <Name-of-migration-describing-the-change>`
+  - In a shell, navigate to: `.../web-api/GirafRest`
+  - `dotnet ef migrations add NameOfMigrationDescribingTheChange`
   - `dotnet ef database update`
-  - If an exception is thrown then adjust the migration Up method in the file Migrations/...<Name-of-migration-describing-the-change>.cs to include the change of the model without triggering any MySQL exceptions
-  - When the database is updated confirm that the migration <Name-of-migration-describing-the-change> is added to the table __efmigrationshistory in the giraf database
-  - Now check that the Down method in the migration is also working properly by running `dotnet ef database <Name-of-the-previous-migration>`
-  - If an exception is thrown then adjust the migration Down method in the file Migrations/...<Name-of-migration-describing-the-change>.cs to include the change of the model without triggering any MySQL exceptions
-  - When the database is updated to the previous migration confirm that <Name-of-migration-describing-the-change> is no longer in the table __efmigrationshistory in the giraf database
-  - Finally update the database to the newly added migration again `dotnet ef database update`. 
+  - If an exception is thrown then adjust the migration Up method in the file `Migrations/...NameOfMigrationDescribingTheChange.cs` to include the change of the model without triggering any MySQL exceptions. It may be good to inspect the file in any case, to see that it will function as expected.
+  - When the database is updated confirm that the migration `NameOfMigrationDescribingTheChange` is added to the table `__efmigrationshistory` in the giraf database.
+  - Now check that the Down method in the migration is also working properly. Determine the name of the last migration before yours, looking at the date and time prefixes in `ls Migrations/MySQL`. If it is `20180409123114_PreviousMigration.cs`, then you must run `dotnet ef database update PreviousMigration`.
+  - If an exception is thrown then adjust the migration Down method in the file `Migrations/...NameOfMigrationDescribingTheChange.cs` to include the change of the model without triggering any MySQL exceptions.
+  - When the database is updated to the previous migration confirm that `NameOfMigrationDescribingTheChange` is no longer in the table `__efmigrationshistory` in the giraf database.
+  - Finally update the database to the newly added migration again using `dotnet ef database update`. 
   - If an exception is thrown adjust the Up method of the migration again to fix the issue. 
 
 ## Generate Client

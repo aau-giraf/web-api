@@ -11,11 +11,6 @@ namespace GirafRest.Models.DTOs
     public class WeekdayDTO
     {
         /// <summary>
-        /// A list of all id's of the resources that make up the weekday.
-        /// </summary>
-        public List<long> ElementIDs { get; set; }
-        
-        /// <summary>
         /// An enum defining which day of the week this Weekday represents.
         /// </summary>
         public Days Day { get; set; }
@@ -32,7 +27,7 @@ namespace GirafRest.Models.DTOs
         public WeekdayDTO(Weekday weekday) {
             this.Day = weekday.Day;
             Elements = new List<ResourceDTO>();
-            ElementIDs = new List<long>();
+            
             if(weekday.Elements != null){
                 foreach (var element in weekday.Elements)
                 {
@@ -44,8 +39,6 @@ namespace GirafRest.Models.DTOs
                         //TODO: Fix Loading Choice.Options
                         //else if(element.Resource is Choice choice)
                         //    Elements.Add(new ChoiceDTO(choice));
-                        
-                        ElementIDs.Add(element.Resource.Id);
                     }
                 }
             }
