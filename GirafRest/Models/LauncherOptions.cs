@@ -21,10 +21,6 @@ namespace GirafRest.Models
         /// A flag indicating whether to run applications in grayscale or not.
         /// </summary>
         public bool DisplayLauncherAnimations { get; set; }
-        /// <summary>
-        /// A collection of all the user's applications.
-        /// </summary>
-        public virtual ICollection<ApplicationOption> appsUserCanAccess { get; set; }
 
         /// <summary>
         /// A field for storing how many rows to display in the GirafLauncher application.
@@ -68,7 +64,6 @@ namespace GirafRest.Models
         /// </summary>
         public LauncherOptions()
         {
-            appsUserCanAccess = new List<ApplicationOption>();
         }
         /// <summary>
         /// Updates all settings based on a DTO
@@ -85,49 +80,6 @@ namespace GirafRest.Models
             this.timerSeconds = newOptions.timerSeconds;
             this.activitiesCount = newOptions.activitiesCount;
             this.theme = newOptions.theme;
-        }
-    }
-
-    /// <summary>
-    /// Used to indicate that the user is allowed to use a given application.
-    /// </summary>
-    [ComplexType]
-    public class ApplicationOption
-    {
-        /// <summary>
-        /// The id of the ApplicationOption entity.
-        /// </summary>
-        [Key]
-        public long Id { get; set; }
-
-        /// <summary>
-        /// The name of the application that the user is allowed to use.
-        /// </summary>
-        [Required]
-        public string ApplicationName { get; set; }
-        /// <summary>
-        /// The package in which the given application is located.
-        /// </summary>
-        [Required]
-        public string ApplicationPackage { get; set; }
-
-        /// <summary>
-        /// Creates a new application option, that may be added to a given user.
-        /// </summary>
-        /// <param name="applicationName">The name of the application.</param>
-        /// <param name="applicationPackage">The package of the application.</param>
-        public ApplicationOption(string applicationName, string applicationPackage)
-        {
-            ApplicationName = applicationName;
-            ApplicationPackage = applicationPackage;
-        }
-
-        /// <summary>
-        /// DO NOT DELETE THIS.
-        /// </summary>
-        public ApplicationOption()
-        {
-
         }
     }
 }
