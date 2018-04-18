@@ -735,16 +735,16 @@ namespace GirafRest.Test
             Assert.Equal(10, _testContext.MockUsers[CitizenDepTwo].Settings.appGridSizeRows);
         }
         [Fact]
-        public void UpdateUserSettings_True_DisplayLauncherAnimations()
+        public void UpdateUserSettings_True_displayLauncherAnimations()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
             
             var dto = new LauncherOptionsDTO();
-            dto.DisplayLauncherAnimations = true;
+            dto.displayLauncherAnimations = true;
             usercontroller.UpdateUserSettings(dto).Wait();
 
-            Assert.True(_testContext.MockUsers[CitizenDepTwo].Settings.DisplayLauncherAnimations);
+            Assert.True(_testContext.MockUsers[CitizenDepTwo].Settings.displayLauncherAnimations);
         }
         [Fact]
         public void UpdateUserSettings_landscape_OrientationOk()
@@ -871,7 +871,7 @@ namespace GirafRest.Test
 
             usercontroller.ToggleAnimations(true).Wait();
 
-            Assert.True(_testContext.MockUsers[CitizenDepTwo].Settings.DisplayLauncherAnimations);
+            Assert.True(_testContext.MockUsers[CitizenDepTwo].Settings.displayLauncherAnimations);
         }
 
         [Fact]
@@ -882,7 +882,7 @@ namespace GirafRest.Test
 
             usercontroller.ToggleAnimations(false).Wait();
 
-            Assert.True(!_testContext.MockUsers[CitizenDepTwo].Settings.DisplayLauncherAnimations);
+            Assert.True(!_testContext.MockUsers[CitizenDepTwo].Settings.displayLauncherAnimations);
         }
         #endregion
         
