@@ -165,7 +165,7 @@ class UserControllerTest(TestCase):
     @test(skip_if_failed=['registerGunnar'])
     def settingsSetTheme(self, check):
         'Enable grayscale'
-        response = requests.put(Test.url + 'User/settings', json={"theme": 3}, headers=auth(self.gunnar)).json()
+        response = requests.patch(Test.url + 'User/settings', json={"theme": 3}, headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
         response = requests.get(Test.url + 'User/settings', headers=auth(self.gunnar)).json()
         check.equal(3, response['data']['theme'])
@@ -173,7 +173,7 @@ class UserControllerTest(TestCase):
     @test(skip_if_failed=['registerGunnar'])
     def settingsSetLauncherAnimationsOff(self, check):
         'Disable launcher animations'
-        response = requests.put(Test.url + 'User/settings', json={"displayLauncherAnimations": False}, headers=auth(self.gunnar)).json()
+        response = requests.patch(Test.url + 'User/settings', json={"displayLauncherAnimations": False}, headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
         response = requests.get(Test.url + 'User/settings', headers=auth(self.gunnar)).json()
         check.equal(False, response['data']['displayLauncherAnimations'])
@@ -181,7 +181,7 @@ class UserControllerTest(TestCase):
     @test(skip_if_failed=['registerGunnar', 'settingsSetLauncherAnimationsOff'])
     def settingsSetLauncherAnimationsOn(self, check):
         'Enable launcher animations'
-        response = requests.put(Test.url + 'User/settings', json={"displayLauncherAnimations": True}, headers=auth(self.gunnar)).json()
+        response = requests.patch(Test.url + 'User/settings', json={"displayLauncherAnimations": True}, headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
         response = requests.get(Test.url + 'User/settings', headers=auth(self.gunnar)).json()
         check.equal(True, response['data']['displayLauncherAnimations'])
@@ -200,7 +200,7 @@ class UserControllerTest(TestCase):
             "timerSeconds":             3,
             "activitiesCount":          4
         }
-        response = requests.put(Test.url + 'User/settings', json=body, headers=auth(self.gunnar)).json()
+        response = requests.patch(Test.url + 'User/settings', json=body, headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
 
         response = requests.get(Test.url + 'User/settings', headers=auth(self.gunnar)).json()
