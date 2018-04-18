@@ -17,7 +17,7 @@ namespace GirafRest.Models.DTOs
         /// A flag indicating whether to display animations in the launcher or not.
         /// </summary>
        [Required]
-        public bool DisplayLauncherAnimations { get; set; }
+        public bool displayLauncherAnimations { get; set; }
         /// <summary>
         /// A field for storing how many rows to display in the GirafLauncher application.
         /// </summary>
@@ -62,7 +62,7 @@ namespace GirafRest.Models.DTOs
         {
             this.appGridSizeColumns = options.appGridSizeColumns;
             this.appGridSizeRows = options.appGridSizeRows;
-            this.DisplayLauncherAnimations = options.DisplayLauncherAnimations;
+            this.displayLauncherAnimations = options.displayLauncherAnimations;
             this.orientation = options.orientation;
             this.checkResourceAppearence = options.checkResourceAppearence;
             this.defaultTimer = options.defaultTimer;

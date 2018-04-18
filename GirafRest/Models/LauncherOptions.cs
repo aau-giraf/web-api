@@ -20,7 +20,7 @@ namespace GirafRest.Models
         /// <summary>
         /// A flag indicating whether to run applications in grayscale or not.
         /// </summary>
-        public bool DisplayLauncherAnimations { get; set; }
+        public bool displayLauncherAnimations { get; set; }
 
         /// <summary>
         /// A field for storing how many rows to display in the GirafLauncher application.
@@ -73,7 +73,7 @@ namespace GirafRest.Models
         {
             this.appGridSizeColumns = newOptions.appGridSizeColumns;
             this.appGridSizeRows = newOptions.appGridSizeRows;
-            this.DisplayLauncherAnimations = newOptions.DisplayLauncherAnimations;
+            this.displayLauncherAnimations = newOptions.displayLauncherAnimations;
             this.orientation = newOptions.orientation;
             this.checkResourceAppearence = newOptions.checkResourceAppearence;
             this.defaultTimer = newOptions.defaultTimer;

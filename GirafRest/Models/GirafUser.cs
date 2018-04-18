@@ -96,7 +96,7 @@ namespace GirafRest.Models
         {
             this.Settings = new LauncherOptions()
             {
-                DisplayLauncherAnimations = false,
+                displayLauncherAnimations = false,
                 orientation = orientation_enum.portrait,
                 checkResourceAppearence = resourceAppearence_enum.normal,
                 defaultTimer = defaultTimer_enum.analogClock,
