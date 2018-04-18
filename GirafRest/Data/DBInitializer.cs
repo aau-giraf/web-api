@@ -110,6 +110,7 @@ namespace GirafRest.Setup
                 new GirafUser("Tobias", Departments[0]),
                 new GirafUser("Decker", Departments[0])
             };
+
             users[0].UserIcon = Encoding.ASCII.GetBytes(HugeBase64Images.Image1);
             //Note that the call to .Result is a dangerous way to run async methods synchonously and thus should not be used elsewhere!
             foreach (var user in users)

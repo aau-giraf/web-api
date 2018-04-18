@@ -1,5 +1,7 @@
 ﻿using GirafRest.Data;
 using GirafRest.Models;
+using GirafRest.Models.DTOs;
+using GirafRest.Models.Responses;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System.IO;
@@ -72,6 +74,5 @@ namespace GirafRest.Services
         /// <param name="user">A reference to the user in question.</param>
         /// <returns>True if the user's department owns the resource, false if not.</returns>
         Task<bool> CheckProtectedOwnership(Pictogram resource, GirafUser user);
-        
     }
 }

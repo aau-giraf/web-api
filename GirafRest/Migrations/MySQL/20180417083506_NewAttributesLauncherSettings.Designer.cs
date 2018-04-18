@@ -14,9 +14,10 @@ using System;
 namespace GirafRest.Migrations.MySQL
 {
     [DbContext(typeof(GirafDbContext))]
-    partial class GirafMySqlDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180417083506_NewAttributesLauncherSettings")]
+    partial class NewAttributesLauncherSettings
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,6 +43,26 @@ namespace GirafRest.Migrations.MySQL
                     b.HasIndex("GuardianId");
 
                     b.ToTable("GuardianRelations");
+                });
+
+            modelBuilder.Entity("GirafRest.Models.ApplicationOption", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("ApplicationName")
+                        .IsRequired();
+
+                    b.Property<string>("ApplicationPackage")
+                        .IsRequired();
+
+                    b.Property<long?>("LauncherOptionsKey");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LauncherOptionsKey");
+
+                    b.ToTable("ApplicationOption");
                 });
 
             modelBuilder.Entity("GirafRest.Models.Department", b =>
@@ -484,6 +505,13 @@ namespace GirafRest.Migrations.MySQL
                         .WithMany("Citizens")
                         .HasForeignKey("GuardianId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("GirafRest.Models.ApplicationOption", b =>
+                {
+                    b.HasOne("GirafRest.Models.LauncherOptions")
+                        .WithMany("appsUserCanAccess")
+                        .HasForeignKey("LauncherOptionsKey");
                 });
 
             modelBuilder.Entity("GirafRest.Models.DepartmentResource", b =>

@@ -29,7 +29,7 @@ class UserControllerTest(TestCase):
     gunnar = None
 
     @test()
-    def newGunnar(self, check):
+    def registerGunnar(self, check):
         'Register Gunnar'
         self.gunnarUsername = 'Gunnar{0}'.format(str(time.time()))
 
@@ -64,22 +64,22 @@ class UserControllerTest(TestCase):
         response = requests.get(Test.url + 'User', headers=auth(self.charlie)).json()
         ensureSuccess(response, check)
 
-    @test(skip_if_failed=['newGunnar'])
+    @test(skip_if_failed=['registerGunnar'])
     def userName(self, check):
         'Get Username'
         response = requests.get(Test.url + 'User/username',
                                 headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
-        check.is_true(response['data'] == self.gunnarUsername)
+        check.equal(response['data'], self.gunnarUsername)
 
-    @test(skip_if_failed=['newGunnar'])
+    @test(skip_if_failed=['registerGunnar'])
     def userInfo(self, check):
         'Get User info'
         response = requests.get(Test.url + 'User', headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
-        check.is_true(response['data']['username'] == self.gunnarUsername)
+        check.equal(response['data']['username'], self.gunnarUsername)
 
-    @test(skip_if_failed=['newGunnar'])
+    @test(skip_if_failed=['registerGunnar'])
     def unauthorizedUserInfo(self, check):
         'Gunnar tries to get Kurt\'s user info'
         response = requests.get(Test.url + 'User/Kurt', json={"username": "Kurt"},
@@ -87,32 +87,31 @@ class UserControllerTest(TestCase):
         ensureError(response, check)
         ensureNoData(response, check)
 
-    @test(skip_if_failed=['newGunnar'])
+    @test(skip_if_failed=['registerGunnar'])
     def guardianUserInfo(self, check):
         'Graatand gets Kurt\'s user info'
         response = requests.get(Test.url + 'User/Kurt', headers=auth(self.graatand)).json()
         ensureSuccess(response, check)
-        check.is_true(response['data']['username'] == 'Kurt',
-                      message='Expected name: Kurt.\nActual name: {0}'.format(response['data']['username']))
+        check.equal(response['data']['username'], 'Kurt');
 
     # TODO: Play with images(user avatar) when I figure out how
 
-    @test(skip_if_failed=['newGunnar'], expect_fail=True)   # TODO: This call is somehow incorrect.
+    @test(skip_if_failed=['registerGunnar'])   # TODO: This call is somehow incorrect.
     def setDisplayName(self, check):
         'Set display name'
-        response = requests.put(Test.url + 'User/display-name/',
-                                data='HE WHO WAITS BEHIND THE WALL',
+        response = requests.put(Test.url + 'User/display-name',
+                                json='HE WHO WAITS BEHIND THE WALL',
                                 headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
         # Check that display name was updated
         response = requests.get(Test.url + 'User', headers=auth(self.gunnar)).json()
-        check.is_true(response['data']['screenName'] == 'HE WHO WAITS BEHIND THE WALL')
+        check.equal(response['data']['screenName'], 'HE WHO WAITS BEHIND THE WALL')
 
     wednesday = None
     wendesdayID = None
     wednesdayIDBody = None
 
-    @test(skip_if_failed=['newGunnar'])
+    @test(skip_if_failed=['registerGunnar'])
     def newPictogram(self, check):
         'Post Wendesday pictogram'
         self.wednesday = 'Wednesday{0}'.format(str(time.time()))
@@ -156,65 +155,65 @@ class UserControllerTest(TestCase):
         check.is_true(hasPictogram(self.charlie, self.wednesdayID),
                       message='Charlie lost Wednesday pictogam as well')
 
-    @test(skip_if_failed=['newGunnar'])
+    @test(skip_if_failed=['registerGunnar'])
     def settings(self, check):
         'Get settings'
         response = requests.get(Test.url + 'User/settings',
                                 headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
 
-    @test(skip_if_failed=['settings'])
-    def grayscaleOff(self, check):
-        'Disable grayscale'
-        response = requests.post(Test.url + 'User/grayscale/false',
-                                 headers=auth(self.gunnar)).json()
-        ensureSuccess(response, check)
-        response = requests.get(Test.url + 'User/settings', headers=auth(self.gunnar)).json()
-        check.equal(False, response['data']['useGrayscale'])
-
-    @test(skip_if_failed=['grayscaleOff'])
-    def grayscaleOn(self, check):
+    @test(skip_if_failed=['registerGunnar'])
+    def settingsSetTheme(self, check):
         'Enable grayscale'
-        response = requests.post(Test.url + 'User/grayscale/true', headers=auth(self.gunnar)).json()
+        response = requests.put(Test.url + 'User/settings', json={"theme": 3}, headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
         response = requests.get(Test.url + 'User/settings', headers=auth(self.gunnar)).json()
-        check.equal(True, response['data']['useGrayscale'])
+        check.equal(3, response['data']['theme'])
 
-    @test(skip_if_failed=['settings'])
-    def animationsOff(self, check):
+    @test(skip_if_failed=['registerGunnar'])
+    def settingsSetLauncherAnimationsOff(self, check):
         'Disable launcher animations'
-        response = requests.post(Test.url + 'User/launcher_animations/false', headers=auth(self.gunnar)).json()
+        response = requests.put(Test.url + 'User/settings', json={"displayLauncherAnimations": False}, headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
         response = requests.get(Test.url + 'User/settings', headers=auth(self.gunnar)).json()
         check.equal(False, response['data']['displayLauncherAnimations'])
 
-    @test(skip_if_failed=['animationsOff'])
-    def animationsOn(self, check):
+    @test(skip_if_failed=['registerGunnar', 'settingsSetLauncherAnimationsOff'])
+    def settingsSetLauncherAnimationsOn(self, check):
         'Enable launcher animations'
-        response = requests.post(Test.url + 'User/launcher_animations/true', headers=auth(self.gunnar)).json()
+        response = requests.put(Test.url + 'User/settings', json={"displayLauncherAnimations": True}, headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
         response = requests.get(Test.url + 'User/settings', headers=auth(self.gunnar)).json()
         check.equal(True, response['data']['displayLauncherAnimations'])
 
-    @test(skip_if_failed=['settings'])
-    def setEverything(self, check):
+    @test(skip_if_failed=['registerGunnar'], depends=['settingsSetTheme', 'settingsSetLauncherAnimationsOn', 'settingsSetLauncherAnimationsOff']) # Run depends first, but if they fail, this can still run
+    def settingsMultiple(self, check):
         'Set all settings'
         body = {
-            "useGrayscale": True,
-            "displayLauncherAnimations": False,
-            "appsUserCanAccess": [],
-            "appGridSizeRows": 33,
-            "appGridSizeColumns": 44
+            "theme":                    3,
+            "appGridSizeColumns":       1,
+            "appGridSizeRows":          2,
+            "displayLauncherAnimations":False,
+            "orientation":              2,
+            "checkResourceAppearence":  2,
+            "defaultTimer":             2,
+            "timerSeconds":             3,
+            "activitiesCount":          4
         }
         response = requests.put(Test.url + 'User/settings', json=body, headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
 
         response = requests.get(Test.url + 'User/settings', headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
-        check.equal(True, response['data']['useGrayscale'])
-        check.equal(False, response['data']['displayLauncherAnimations'])
-        check.equal(33, response['data']['appGridSizeRows'])
-        check.equal(44, response['data']['appGridSizeColumns'])
+        check.equal(3,      response['data']["theme"]);
+        check.equal(1,      response['data']["appGridSizeColumns"]);
+        check.equal(2,      response['data']["appGridSizeRows"]);
+        check.equal(False,  response['data']["displayLauncherAnimations"]);
+        check.equal(2,      response['data']["orientation"]);
+        check.equal(2,      response['data']["checkResourceAppearence"]);
+        check.equal(2,      response['data']["defaultTimer"]);
+        check.equal(3,      response['data']["timerSeconds"]);
+        check.equal(4,      response['data']["activitiesCount"]);
 
     @test(skip_if_failed=['logins'])
     def kurtCitizens(self, check):

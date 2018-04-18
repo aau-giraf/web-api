@@ -49,7 +49,8 @@ namespace GirafRest.Test
                 _testContext.MockUserManager),
                 new Mock<IEmailService>().Object,
                 _testContext.MockLoggerFactory.Object,
-                _testContext.MockRoleManager.Object);
+                _testContext.MockRoleManager.Object,
+                new GirafAuthenticationService(_testContext.MockDbContext.Object));
             
             _testContext.MockHttpContext = usercontroller.MockHttpContext();
             _testContext.MockHttpContext.MockQuery("username", null);
@@ -215,7 +216,7 @@ namespace GirafRest.Test
         public void GetUser_CitizenLoginUsernameQuery_Error()
         {
             var usercontroller = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepThree]);
             var res = usercontroller.GetUser(CitizenUsername).Result;
 
             Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
@@ -420,236 +421,7 @@ namespace GirafRest.Test
         }
 //end remember
         #endregion
-        #region AddApplication
-        [Fact]
-        public void AddApplication_ValidApplication_Success_AppInList()
-        {
-            var usercontroller = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GuardianDepTwo]);
-            var applicationOption = new ApplicationOption("Test application", "test.app");
 
-            var res = usercontroller.AddApplication(_testContext.MockUsers[CitizenDepTwo].UserName, applicationOption).Result;
-            var user = res.Data as GirafUserDTO;
-
-            Assert.IsType<Response<GirafUserDTO>>(res);
-            Assert.True(res.Success);
-
-            var res2 = usercontroller.GetSettings(res.Data.Username).Result;
-            // check that the ApplicationName exists on the user
-            Assert.Contains(res2.Data.appsUserCanAccess, (a => a.ApplicationName == applicationOption.ApplicationName));
-        }
-
-        [Fact]
-        public void AddApplication_NoApplicationName_ErrorMissingProperties()
-        {
-            var usercontroller = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GuardianDepTwo]);
-            var applicationOption = new ApplicationOption(null, "test.app");
-
-            var res = usercontroller.AddApplication(_testContext.MockUsers[CitizenDepTwo].UserName, applicationOption).Result;
-
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode); 
-        }
-
-        [Fact]
-        public void AddApplication_NoApplicationPackage_ErrorMissingProperties()
-        {
-            var usercontroller = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GuardianDepTwo]);
-            var applicationOption = new ApplicationOption("Test application", null);
-            var res = usercontroller
-                .AddApplication(_testContext.MockUsers[CitizenDepTwo].UserName, applicationOption)
-                .Result;
-
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode); 
-        }
-
-        [Fact]
-        public void AddApplication_NullAsApplicationOption_ErrorMissingProperties()
-        {
-            var usercontroller = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GuardianDepTwo]);
-            ApplicationOption applicationOption = null;
-            var res = usercontroller
-                .AddApplication(_testContext.MockUsers[CitizenDepTwo].UserName, applicationOption)
-                .Result;
-
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode); 
-        }
-
-        [Fact]
-        public void AddApplication_NullAsUsername_ErrorUserNotFound()
-        {
-            var usercontroller = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GuardianDepTwo]);
-            var applicationOption = new ApplicationOption("Test application", "test.app");
-            var res = usercontroller.AddApplication(null, applicationOption).Result;
-
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
-        }
-
-        [Fact]
-        public void AddApplication_InvalidUsername_ErrorUserNotFound()
-        {
-            var usercontroller = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GuardianDepTwo]);
-            var applicationOption = new ApplicationOption("Test application", "test.app");
-            var res = usercontroller.AddApplication("invalid", applicationOption).Result;
-
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
-        }
-
-        [Fact]
-        public void AddApplication_ApplicationAlreadyInList_ErrorUserAlreadyHasAccess()
-        {
-            var usercontroller = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GuardianDepTwo]);
-            var applicationOption = new ApplicationOption("Test application", "test.app");
-            usercontroller.AddApplication(_testContext.MockUsers[CitizenDepTwo].UserName, applicationOption).Wait();
-
-            var res = usercontroller
-                .AddApplication(_testContext.MockUsers[CitizenDepTwo].UserName, applicationOption)
-                .Result;
-            
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.UserAlreadyHasAccess, res.ErrorCode);
-        }
-        #endregion
-        #region DeleteApplication
-        [Fact]
-        public void DeleteApplication_ValidApplicationInList_Success()
-        {
-            var usercontroller = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GuardianDepTwo]);
-            var applicationOption = new ApplicationOption("Test Application", "test.app")
-            {
-                Id = NewApplicationId
-            };
-            var username = _testContext.MockUsers[CitizenDepTwo].UserName;
-            usercontroller.AddApplication(username, applicationOption).Wait();
-
-            var res = usercontroller.DeleteApplication(username, applicationOption).Result;
-
-            Assert.IsType<Response<GirafUserDTO>>(res);
-            Assert.True(res.Success);
-
-            var res2 = usercontroller.GetSettings(res.Data.Username).Result;
-            // check that the image is actually deleted
-            Assert.True(res2.Data.appsUserCanAccess
-                        .FirstOrDefault(a => a.ApplicationName == "Test Application") == null);
-        }
-
-        [Fact]
-        public void DeleteApplication_ValidApplicationNotInList_ErrorMissingProperties()
-        {
-            var usercontroller = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GuardianDepTwo]);
-            var applicationOption = new ApplicationOption("Test Application", "test.app")
-            {
-                Id = NewApplicationId
-            };
-            var username = _testContext.MockUsers[CitizenDepTwo].UserName;
-            var res = usercontroller.DeleteApplication(username, applicationOption).Result;
-
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.ApplicationNotFound, res.ErrorCode);
-        }
-
-        [Fact]
-        public void DeleteApplication_NoIdOnDTO_NotFound()
-        {
-            var usercontroller = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GuardianDepTwo]);
-            var applicationOption = new ApplicationOption("Test Application", "test.app")
-            {
-                Id = NewApplicationId
-            };
-            var username = _testContext.MockUsers[CitizenDepTwo].UserName;
-            usercontroller.AddApplication(username, applicationOption).Wait();
-            applicationOption = new ApplicationOption("Test Application", "test.app")
-            {
-                Id = -NewApplicationId
-            };
-
-            var res = usercontroller.DeleteApplication(username, applicationOption).Result;
-
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.ApplicationNotFound, res.ErrorCode);
-            // check that the image is not deleted
-            Assert.True(_testContext.MockUsers[CitizenDepTwo].Settings.appsUserCanAccess
-                        .FirstOrDefault(a => a.ApplicationName == "Test Application") != null);
-        }
-
-        [Fact]
-        public void DeleteApplication_NullAsApplication_ErrorMissingProperties()
-        {
-            var usercontroller = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GuardianDepTwo]);
-            var applicationOption = new ApplicationOption("Test Application", "test.app")
-            {
-                Id = NewApplicationId
-            };
-            var username = _testContext.MockUsers[CitizenDepTwo].UserName;
-            usercontroller.AddApplication(username, applicationOption).Wait();
-            var res = usercontroller.DeleteApplication(username, null).Result;
-
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
-            // check that the image is not deleted
-            Assert.True(_testContext.MockUsers[CitizenDepTwo].Settings.appsUserCanAccess
-                        .FirstOrDefault(a => a.ApplicationName == "Test Application") != null);
-        }
-
-        [Fact]
-        public void DeleteApplication_InvalidUsername_ErrorUserNotFound()
-        {
-            var usercontroller = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GuardianDepTwo]);
-            var applicationOption = new ApplicationOption("Test Application", "test.app")
-            {
-                Id = NewApplicationId
-            };
-            
-            usercontroller.AddApplication("VALID USERNAME", applicationOption).Wait();
-            var res = usercontroller.DeleteApplication("INVALID USERNAME", applicationOption).Result;
-
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
-        }
-
-        [Fact]
-        public void DeleteApplication_NullUsername_ErrorUserNotFound()
-        {
-            var usercontroller = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GuardianDepTwo]);
-            var applicationOption = new ApplicationOption("Test Application", "test.app")
-            {
-                Id = NewApplicationId
-            };
-            var username = _testContext.MockUsers[CitizenDepTwo].UserName;
-            usercontroller.AddApplication(null, applicationOption).Wait();
-            var res = usercontroller.DeleteApplication(username, null).Result;
-
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
-        }
-        #endregion
         #region UpdateDisplayName
         [Fact]
         public void UpdateDisplayName_ValidStringInput_Success()
@@ -937,30 +709,158 @@ namespace GirafRest.Test
         }
 
         #endregion
-        #region ToggleGrayscale
+        #region Settings
         [Fact]
-        public void ToggleGrayscale_True_GrayscaleIsTrue()
+        public void UpdateUserSettings_10_appGridSizeColumns()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+            
+            var dto = new LauncherOptionsDTO();
+            dto.appGridSizeColumns = 10;
+            usercontroller.UpdateUserSettings(dto).Wait();
 
-            usercontroller.ToggleGrayscale(true).Wait();
-
-            // Check that we currectly toggled GreyScale
-            Assert.True(_testContext.MockUsers[CitizenDepTwo].Settings.UseGrayscale);
+            Assert.Equal(10, _testContext.MockUsers[CitizenDepTwo].Settings.appGridSizeColumns);
         }
-
         [Fact]
-        public void ToggleGrayscale_False_GrayscaleIsFalse()
+        public void UpdateUserSettings_10_appGridSizeRows()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+            
+            var dto = new LauncherOptionsDTO();
+            dto.appGridSizeRows = 10;
+            usercontroller.UpdateUserSettings(dto).Wait();
 
-            usercontroller.ToggleGrayscale(false).Wait();
-
-            // Check that we currectly disabled GreyScale
-            Assert.True(!_testContext.MockUsers[CitizenDepTwo].Settings.UseGrayscale);
+            Assert.Equal(10, _testContext.MockUsers[CitizenDepTwo].Settings.appGridSizeRows);
         }
+        [Fact]
+        public void UpdateUserSettings_True_displayLauncherAnimations()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+            
+            var dto = new LauncherOptionsDTO();
+            dto.displayLauncherAnimations = true;
+            usercontroller.UpdateUserSettings(dto).Wait();
+
+            Assert.True(_testContext.MockUsers[CitizenDepTwo].Settings.displayLauncherAnimations);
+        }
+        [Fact]
+        public void UpdateUserSettings_landscape_OrientationOk()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+            
+            var dto = new LauncherOptionsDTO();
+            dto.orientation = orientation_enum.landscape;
+            usercontroller.UpdateUserSettings(dto).Wait();
+
+            Assert.Equal(orientation_enum.landscape, _testContext.MockUsers[CitizenDepTwo].Settings.orientation);
+        }        
+        [Fact]
+        public void UpdateUserSettings_movedToRight_checkResourceAppearenceOk()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+            
+            var dto = new LauncherOptionsDTO();
+            dto.checkResourceAppearence = resourceAppearence_enum.movedToRight;
+            usercontroller.UpdateUserSettings(dto).Wait();
+
+            Assert.Equal(resourceAppearence_enum.movedToRight, _testContext.MockUsers[CitizenDepTwo].Settings.checkResourceAppearence);
+        }        
+        [Fact]
+        public void UpdateUserSettings_analogClock_defaultTimerOk()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+            
+            var dto = new LauncherOptionsDTO();
+            dto.defaultTimer = defaultTimer_enum.analogClock;
+            usercontroller.UpdateUserSettings(dto).Wait();
+
+            Assert.Equal(defaultTimer_enum.analogClock, _testContext.MockUsers[CitizenDepTwo].Settings.defaultTimer);
+        }        
+        [Fact]
+        public void UpdateUserSettings_25_timerSecondsOk()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+            
+            var dto = new LauncherOptionsDTO();
+            dto.timerSeconds = 25;
+            usercontroller.UpdateUserSettings(dto).Wait();
+
+            Assert.Equal(25, _testContext.MockUsers[CitizenDepTwo].Settings.timerSeconds);
+        }
+        [Fact]
+        public void UpdateUserSettings_10_activitiesCountOk()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+            
+            var dto = new LauncherOptionsDTO();
+            dto.activitiesCount = 30;
+            usercontroller.UpdateUserSettings(dto).Wait();
+
+            Assert.Equal(30, _testContext.MockUsers[CitizenDepTwo].Settings.activitiesCount);
+        }
+        [Fact]
+        public void UpdateUserSettings_girafGreen_themeOk()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+            
+            var dto = new LauncherOptionsDTO();
+            dto.theme = theme_enum.girafGreen;
+            usercontroller.UpdateUserSettings(dto).Wait();
+
+            Assert.Equal(theme_enum.girafGreen, _testContext.MockUsers[CitizenDepTwo].Settings.theme);
+        }
+
+        [Fact]
+        public void UpdateSameUserSettings_Ok(){
+            var usercontroller = initializeTest();
+            var user = _testContext.MockUsers[CitizenDepTwo];
+            _testContext.MockUserManager.MockLoginAsUser(user);
+
+            var dto = new LauncherOptionsDTO() { 
+                theme = theme_enum.girafGreen,
+                timerSeconds = 120,
+                defaultTimer = defaultTimer_enum.analogClock,
+                activitiesCount = 5
+            };
+            usercontroller.UpdateUserSettings(user.Id, dto).Wait();
+
+            Assert.Equal(theme_enum.girafGreen, _testContext.MockUsers[CitizenDepTwo].Settings.theme);
+            Assert.Equal(120, _testContext.MockUsers[CitizenDepTwo].Settings.timerSeconds);
+            Assert.Equal(defaultTimer_enum.analogClock, _testContext.MockUsers[CitizenDepTwo].Settings.defaultTimer);
+            Assert.Equal(5, _testContext.MockUsers[CitizenDepTwo].Settings.activitiesCount);
+        }
+
+        [Fact]
+        public void UpdateOtherUserSettings_Error()
+        {
+            var usercontroller = initializeTest();
+            var user = _testContext.MockUsers[UserCitizenDepartment1];
+            _testContext.MockUserManager.MockLoginAsUser(user);
+
+            var idOfUserToUpdate = _testContext.MockUsers[CitizenDepTwo].Id;
+
+            var dto = new LauncherOptionsDTO()
+            {
+                theme = theme_enum.girafGreen,
+                timerSeconds = 120,
+                defaultTimer = defaultTimer_enum.analogClock,
+                activitiesCount = 5
+            };
+            var res = usercontroller.UpdateUserSettings(idOfUserToUpdate, dto).Result;
+
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+        }
+
         #endregion
         #region ToggleAnimations
         [Fact]
@@ -971,7 +871,7 @@ namespace GirafRest.Test
 
             usercontroller.ToggleAnimations(true).Wait();
 
-            Assert.True(_testContext.MockUsers[CitizenDepTwo].Settings.DisplayLauncherAnimations);
+            Assert.True(_testContext.MockUsers[CitizenDepTwo].Settings.displayLauncherAnimations);
         }
 
         [Fact]
@@ -982,7 +882,7 @@ namespace GirafRest.Test
 
             usercontroller.ToggleAnimations(false).Wait();
 
-            Assert.True(!_testContext.MockUsers[CitizenDepTwo].Settings.DisplayLauncherAnimations);
+            Assert.True(!_testContext.MockUsers[CitizenDepTwo].Settings.displayLauncherAnimations);
         }
         #endregion
         

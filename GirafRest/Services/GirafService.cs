@@ -4,6 +4,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using GirafRest.Data;
 using GirafRest.Models;
+using GirafRest.Models.DTOs;
+using GirafRest.Models.Responses;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -65,7 +67,6 @@ namespace GirafRest.Services
                     .ThenInclude(wd => wd.Elements)
                     .ThenInclude(e => e.Resource)
                     .Include(u => u.Settings)
-                    .ThenInclude(lo => lo.appsUserCanAccess)
                     .Include(u => u.Guardians)
                     .ThenInclude(g => g.Guardian)
                     .Include(u => u.Citizens)
@@ -96,7 +97,6 @@ namespace GirafRest.Services
                     .ThenInclude(wd => wd.Elements)
                     .ThenInclude(e => e.Resource)
                     .Include(u => u.Settings)
-                    .ThenInclude(lo => lo.appsUserCanAccess).Include(t => t.Citizens)
                     .Include(u => u.Guardians)
                     .ThenInclude(g => g.Guardian)
                     .Include(u => u.Citizens)

@@ -55,6 +55,7 @@
         CouldNotCreateDepartmentUser,
         UserNotFoundInDepartment,
         NoWeekTemplateFound,
-        UserAlreadyHasDepartment
+        UserAlreadyHasDepartment,
+        MissingSettings
     }
 }
