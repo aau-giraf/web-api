@@ -44,11 +44,12 @@ namespace GirafRest.Models
         /// </summary>
         /// <param name="weekday">The involved weekday.</param>
         /// <param name="resource">The involved resource.</param>
-        public WeekdayResource(Weekday weekday, Pictogram pictogram, int Order)
+        public WeekdayResource(Weekday weekday, Pictogram pictogram, int order)
         {
             this.Other = weekday;
             this.PictogramKey = pictogram.Id;
             this.Pictogram = pictogram;
+            this.Order = order;
         }
 
         /// <summary>
