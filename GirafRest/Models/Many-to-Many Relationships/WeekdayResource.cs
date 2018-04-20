@@ -6,7 +6,7 @@ namespace GirafRest.Models
     /// <summary>
     /// Defines a many-to-many relationship between weekday and resource.
     /// </summary>
-    public class WeekdayResource : IManyToMany<long, Weekday>
+    public class WeekdayResource
     {
         /// <summary>
         /// The key of the relationship entity.
@@ -30,23 +30,25 @@ namespace GirafRest.Models
         /// The key of the involved resource.
         /// </summary>
         [Required]
-        public long ResourceKey { get; set; }
+        public long PictogramKey { get; set; }
         /// <summary>
         /// A reference to the actual resource.
         /// </summary>
         [ForeignKey("ResourceKey")]
-        public virtual Resource Resource { get; set; }
+        public virtual Pictogram Pictogram { get; set; }
+
+        public int Order { get; set; }
 
         /// <summary>
         /// Creates a new many-to-many relationship between a weekday and a resource.
         /// </summary>
         /// <param name="weekday">The involved weekday.</param>
         /// <param name="resource">The involved resource.</param>
-        public WeekdayResource(Weekday weekday, Resource resource)
+        public WeekdayResource(Weekday weekday, Pictogram pictogram, int Order)
         {
             this.Other = weekday;
-            this.ResourceKey = resource.Id;
-            this.Resource = resource;
+            this.PictogramKey = pictogram.Id;
+            this.Pictogram = pictogram;
         }
 
         /// <summary>

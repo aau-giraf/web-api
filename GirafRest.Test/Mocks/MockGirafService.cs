@@ -36,13 +36,13 @@ namespace GirafRest.Test.Mocks
             _userManager = userManager;
         }
 
-        public Task<bool> CheckPrivateOwnership(Pictogram resource, GirafUser user)
+        public Task<bool> CheckPrivateOwnership(Pictogram pictogram, GirafUser user)
         {
             if (user == null)
                 return Task.FromResult(false);
 
             var ownsResource = _context.UserResources
-                .Where(ur => ur.Resource == resource && ur.Other == user)
+                                       .Where(ur => ur.Pictogram == pictogram && ur.Other == user)
                 .Any();
 
             if (ownsResource)
@@ -51,13 +51,14 @@ namespace GirafRest.Test.Mocks
             return Task.FromResult(false);
         }
 
-        public Task<bool> CheckProtectedOwnership(Pictogram resource, GirafUser user)
+        public Task<bool> CheckProtectedOwnership(Pictogram pictogram, GirafUser user)
         {
             if (user == null)
                 return Task.FromResult(false);
 
             var ownsResource = _context.DepartmentResources
-                .Where(dr => dr.ResourceKey == resource.Id && dr.OtherKey == user.DepartmentKey)
+                                       .Where(dr => dr.PictogramKey == pictogram.Id 
+                                              && dr.OtherKey == user.DepartmentKey)
                 .Any();
             if (ownsResource)
                 return Task.FromResult(true);

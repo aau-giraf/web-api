@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -308,7 +307,7 @@ namespace GirafRest.Controllers
             //Check if the department already owns the resource
             var alreadyOwned = await _giraf._context.DepartmentResources
                                            .Where(depres => depres.OtherKey == departmentId 
-                                                  && depres.ResourceKey == resourceId)
+                                                  && depres.PictogramKey == resourceId)
                 .AnyAsync();
 
             if (alreadyOwned)
@@ -316,7 +315,7 @@ namespace GirafRest.Controllers
 
             //Remove resource from user
             var usrResource = await _giraf._context.UserResources
-                .Where(ur => ur.ResourceKey == resource.Id && ur.OtherKey == usr.Id)
+                                          .Where(ur => ur.PictogramKey == resource.Id && ur.OtherKey == usr.Id)
                 .FirstOrDefaultAsync();
             usr.Resources.Remove(usrResource);
             await _giraf._context.SaveChangesAsync();
@@ -365,7 +364,7 @@ namespace GirafRest.Controllers
 
             //Check if the department already owns the resource and remove if so.
             var drrelation = await _giraf._context.DepartmentResources
-                .Where(dr => dr.ResourceKey == resource.Id && dr.OtherKey == usr.Department.Key)
+                                         .Where(dr => dr.PictogramKey == resource.Id && dr.OtherKey == usr.Department.Key)
                 .FirstOrDefaultAsync();
 
             if (drrelation == null)

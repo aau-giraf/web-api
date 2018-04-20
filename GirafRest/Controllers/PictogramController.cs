@@ -260,16 +260,15 @@ namespace GirafRest.Controllers
                 return new ErrorResponse(ErrorCode.NotAuthorized);
 
             // Before we can remove a pictogram we must delete all its relations
-            var userRessourceRelations = _giraf._context.UserResources
-                .Where(ur => ur.ResourceKey == pict.Id);
+            var userRessourceRelations = _giraf._context.UserResources.Where(ur => ur.PictogramKey == pict.Id);
             _giraf._context.UserResources.RemoveRange(userRessourceRelations);
 
             var depRessourceRelations = _giraf._context.DepartmentResources
-                .Where(ur => ur.ResourceKey == pict.Id);
+                                              .Where(ur => ur.PictogramKey == pict.Id);
             _giraf._context.DepartmentResources.RemoveRange(depRessourceRelations);
 
             var weekDayRessourceRelations = _giraf._context.WeekdayResources
-                .Where(ur => ur.ResourceKey == pict.Id);
+                                                  .Where(ur => ur.PictogramKey == pict.Id);
             _giraf._context.WeekdayResources.RemoveRange(weekDayRessourceRelations);
 
             await _giraf._context.SaveChangesAsync();

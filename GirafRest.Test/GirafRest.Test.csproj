@@ -17,23 +17,20 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.0.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies">
-      <Version>2.0.1</Version>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.0.1">
     </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="2.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc" Version="2.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="2.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite">
-      <Version>2.0.1</Version>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="2.0.1">
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.Design" Version="1.1.5" />
     <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="2.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
-      <Version>2.0.1</Version>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.0.1">
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
@@ -42,10 +39,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="../GirafRest/GirafRest.csproj" />
-    <ProjectReference Include="..\GirafRest\GirafRest.csproj">
-      <Project>{712d4a2e-e468-4575-8310-a2a2f1f7fdc3}</Project>
-      <Name>GirafRest</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />

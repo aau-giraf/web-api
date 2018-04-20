@@ -7,7 +7,7 @@ namespace GirafRest.Models
     /// <summary>
     /// Defines a many-to-many relationship between users and resources.
     /// </summary>
-    public class UserResource : IManyToMany<string, GirafUser>
+    public class UserResource
     {
         /// <summary>
         /// The key of the relationship entity.
@@ -31,26 +31,26 @@ namespace GirafRest.Models
         /// The key of the involved resource.
         /// </summary>
         [Required]
-        public long ResourceKey { get; set; }
+        public long PictogramKey { get; set; }
         //A reference to the actual resource.
         [ForeignKey("ResourceKey")]
-        public virtual Resource Resource { get; set; }
+        public virtual Pictogram Pictogram { get; set; }
 
         /// <summary>
         /// Creates a new many-to-many relationship between a user and a resource.
         /// </summary>
         /// <param name="user">The involved user.</param>
         /// <param name="resource">The involved resource.</param>
-        public UserResource(GirafUser user, Resource resource)
+        public UserResource(GirafUser user, Pictogram pictogram)
         {
             this.OtherKey = user.Id;
             this.Other = user;
-            this.ResourceKey = resource.Id;
-            this.Resource = resource;
+            this.PictogramKey = pictogram.Id;
+            this.Pictogram = pictogram;
 
-            Resource.LastEdit = DateTime.Now;
+            pictogram.LastEdit = DateTime.Now;
             Other.Resources.Add(this);
-            Resource.Users.Add(this);
+            pictogram.Users.Add(this);
         }
 
         /// <summary>

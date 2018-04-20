@@ -480,7 +480,7 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             // check ressource is added correctly
             Assert.True(_testContext.MockUsers[CitizenDepTwo].Resources
-                        .FirstOrDefault(r => r.ResourceKey == GuardianPrivatePictogram) != null);
+                        .FirstOrDefault(r => r.PictogramKey == GuardianPrivatePictogram) != null);
         }
 
         [Fact]
@@ -635,7 +635,7 @@ namespace GirafRest.Test
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             // check that ressource no longer exist
-            Assert.True(_testContext.MockUsers[GuardianDepTwo].Resources.FirstOrDefault(r => r.ResourceKey == GuardianPrivatePictogram) == null);
+            Assert.True(_testContext.MockUsers[GuardianDepTwo].Resources.FirstOrDefault(r => r.PictogramKey == GuardianPrivatePictogram) == null);
         }
 
         [Fact]

@@ -44,15 +44,15 @@ namespace GirafRest.Test.Controllers
             var wc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER_0]);
             var day = _testContext.MockWeeks[USER_0_DAY].Weekdays[(int)DayOfWeek.Monday];
-            day.Elements.Add(new WeekdayResource(day, _testContext.MockPictograms[PUBLIC_PICTOGRAM]));
+            day.Activities.Add(new WeekdayResource(day, _testContext.MockPictograms[PUBLIC_PICTOGRAM], 0));
             var res = wc.UpdateDay(day.Id, new WeekdayDTO(day)).Result;
 
             Assert.IsType<Response<WeekDTO>>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.True(res.Success);
             Assert.True(res.Data?.Days?.FirstOrDefault(d => d.Day == day.Day)
-                ?.Elements
-                        .Any(el => el.Title == _testContext.MockPictograms[PUBLIC_PICTOGRAM].Title));
+                        ?.Activities
+                        .Any(el => el.Pictogram.Title == _testContext.MockPictograms[PUBLIC_PICTOGRAM].Title));
         }
 
         [Fact]
@@ -61,7 +61,7 @@ namespace GirafRest.Test.Controllers
             var wc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[USER_0]);
             var day = _testContext.MockWeeks[USER_0_DAY].Weekdays[(int)DayOfWeek.Monday];
-            day.Elements.Add(new WeekdayResource(day, _testContext.MockPictograms[PUBLIC_PICTOGRAM]));
+            day.Activities.Add(new WeekdayResource(day, _testContext.MockPictograms[PUBLIC_PICTOGRAM], 0));
             var res = wc.UpdateDay(999, new WeekdayDTO(day)).Result;
 
             Assert.IsType<ErrorResponse<WeekDTO>>(res);

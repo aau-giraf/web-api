@@ -429,7 +429,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
 
             //Check if the target user already owns the resource
-            if (user.Resources.Any(ur => ur.ResourceKey == resourceIdDTO.Id))
+            if (user.Resources.Any(ur => ur.PictogramKey == resourceIdDTO.Id))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.UserAlreadyOwnsResource);
 
             //Create the relation and save changes.
@@ -473,7 +473,7 @@ namespace GirafRest.Controllers
 
             //Fetch the relationship from the database and check that it exists
             var relationship = await _giraf._context.UserResources
-                .Where(ur => ur.ResourceKey == resource.Id && ur.OtherKey == curUsr.Id)
+                 .Where(ur => ur.PictogramKey == resource.Id && ur.OtherKey == curUsr.Id)
                 .FirstOrDefaultAsync();
             if (relationship == null) return new ErrorResponse<GirafUserDTO>(ErrorCode.UserDoesNotOwnResource);
 
@@ -739,7 +739,7 @@ namespace GirafRest.Controllers
             //Check if the user has attempted to add a resource in the PUT request - throw an exception if so.
             foreach (var resourceId in resourceIds)
             {
-                if (!user.Resources.Any(r => r.ResourceKey == resourceId))
+                if (!user.Resources.Any(r => r.PictogramKey == resourceId))
                 {
                     throw new InvalidOperationException("You may not add pictograms to a user by a PUT request. " +
                         "Please use a POST to user/resource instead");
@@ -749,7 +749,7 @@ namespace GirafRest.Controllers
             //Remove all the resources that are in the user's list, but not in the id-list
             foreach (var resource in user.Resources)
             {
-                if (!resourceIds.Contains(resource.ResourceKey))
+                if (!resourceIds.Contains(resource.PictogramKey))
                     _giraf._context.Remove(resource);
             }
         }

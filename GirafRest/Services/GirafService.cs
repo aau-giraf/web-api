@@ -56,16 +56,16 @@ namespace GirafRest.Services
                     .Where (u => u.Id == usr.Id)
                     //Then load his pictograms - both the relationship and the actual pictogram
                     .Include(u => u.Resources)
-                    .ThenInclude(ur => ur.Resource)
+                    .ThenInclude(ur => ur.Pictogram)
                     //Then load his department and their pictograms
                     .Include(u => u.Department)
                     .ThenInclude(d => d.Resources)
-                    .ThenInclude(dr => dr.Resource)
+                    .ThenInclude(dr => dr.Pictogram)
                     // then load his week schedule
                     .Include(u => u.WeekSchedule)
                     .ThenInclude(w => w.Weekdays)
-                    .ThenInclude(wd => wd.Elements)
-                    .ThenInclude(e => e.Resource)
+                    .ThenInclude(wd => wd.Activities)
+                    .ThenInclude(e => e.Pictogram)
                     .Include(u => u.Settings)
                     .Include(u => u.Guardians)
                     .ThenInclude(g => g.Guardian)
@@ -87,15 +87,15 @@ namespace GirafRest.Services
                     .Where(u => u.UserName.ToLower() == username.ToLower())
                     //Then load his pictograms - both the relationship and the actual pictogram
                     .Include(u => u.Resources)
-                    .ThenInclude(ur => ur.Resource)
+                    .ThenInclude(ur => ur.Pictogram)
                     //Then load his department and their pictograms
                     .Include(u => u.Department)
                     .ThenInclude(d => d.Resources)
                     // then load his week schedule
                     .Include(u => u.WeekSchedule)
                     .ThenInclude(w => w.Weekdays)
-                    .ThenInclude(wd => wd.Elements)
-                    .ThenInclude(e => e.Resource)
+                    .ThenInclude(wd => wd.Activities)
+                    .ThenInclude(e => e.Pictogram)
                     .Include(u => u.Settings)
                     .Include(u => u.Guardians)
                     .ThenInclude(g => g.Guardian)
@@ -146,7 +146,7 @@ namespace GirafRest.Services
             //The pictogram was not public, check if the user owns it.
             if(user == null) return false;
             var ownedByUser = await _context.UserResources
-                .Where(ur => ur.ResourceKey == pictogram.Id && ur.OtherKey == user.Id)
+                .Where(ur => ur.PictogramKey == pictogram.Id && ur.OtherKey == user.Id)
                 .AnyAsync();
 
             return ownedByUser;
@@ -167,7 +167,7 @@ namespace GirafRest.Services
 
             //The pictogram was not owned by user, check if his department owns it.
             var ownedByDepartment = await _context.DepartmentResources
-                .Where(dr => dr.ResourceKey == resource.Id && dr.OtherKey == user.Department.Key)
+                .Where(dr => dr.PictogramKey == resource.Id && dr.OtherKey == user.Department.Key)
                 .AnyAsync();
                 
             return ownedByDepartment;

@@ -37,27 +37,28 @@ namespace GirafRest.Models
         /// <summary>
         /// A collection of elements that make up the week.
         /// </summary>
-        public ICollection<WeekdayResource> Elements { get; set; }
+        public ICollection<WeekdayResource> Activities { get; set; }
 
         /// <summary>
         /// Empty contr required for testing framework.
         /// </summary>
         public Weekday()
         {
-            this.Elements = new List<WeekdayResource>();
+            this.Activities = new List<WeekdayResource>();
         }
 
         /// <summary>
         /// Creates a new weekday.
         /// </summary>
         /// <param name="day">The day of the week which the new weekday should represent.</param>
-        /// <param name="elements">A collection of elements that should be added to the weekday.</param>
-        public Weekday(Days day, ICollection<Resource> elements)
+        /// <param name="activities">A collection of activies that should be added to the weekday.</param>
+        public Weekday(Days day, List<Pictogram> activities)
         {
             this.Day = day;
-            this.Elements = new List<WeekdayResource>();
-            foreach(var elem in elements) {
-                this.Elements.Add(new WeekdayResource(this, (elem)));
+            this.Activities = new List<WeekdayResource>();
+            for (int i = 0; i < activities.Count; i++)
+            {
+                this.Activities.Add(new WeekdayResource(this, activities[i], i));
             }
         }
         
@@ -68,7 +69,7 @@ namespace GirafRest.Models
         public Weekday(WeekdayDTO day)
         {
             this.Day = day.Day;
-            this.Elements = new List<WeekdayResource>();
+            this.Activities = new List<WeekdayResource>();
         }
     }
 }

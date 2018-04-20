@@ -50,7 +50,7 @@ namespace GirafRest.Controllers
             else
             {
                 return new Response<IEnumerable<WeekNameDTO>>(_giraf._context.WeekTemplates.Include(w => w.Thumbnail).Include(u => u.Weekdays)
-                    .ThenInclude(wd => wd.Elements).Where(t => t.DepartmentKey == user.DepartmentKey).Select(w => new WeekNameDTO(w.Id, w.Name)));
+                     .ThenInclude(wd => wd.Activities).Where(t => t.DepartmentKey == user.DepartmentKey).Select(w => new WeekNameDTO(w.Id, w.Name)));
             }
         }
 
@@ -64,7 +64,7 @@ namespace GirafRest.Controllers
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             var week = await (_giraf._context.WeekTemplates.Include(w => w.Thumbnail).Include(u => u.Weekdays)
-                    .ThenInclude(wd => wd.Elements).Where(t => t.DepartmentKey == user.DepartmentKey).FirstOrDefaultAsync(w => w.Id == id));
+                    .ThenInclude(wd => wd.Activities).Where(t => t.DepartmentKey == user.DepartmentKey).FirstOrDefaultAsync(w => w.Id == id));
             if (week != null)
             {
                 return new Response<WeekDTO>(new WeekDTO(week));
