@@ -16,9 +16,9 @@ namespace GirafRest.Models.DTOs
         public Days Day { get; set; }
         
         /// <summary>
-        /// A list of all the elements of the week.
+        /// A list of all the activities of the week.
         /// </summary>
-        public ICollection<ResourceDTO> Elements { get; set; }
+        public ICollection<ActivityDTO> Activities { get; set; }
         
         /// <summary>
         /// Creates a new data transfer object for the given week.
@@ -26,20 +26,13 @@ namespace GirafRest.Models.DTOs
         /// <param name="weekday">The weekday to create a DTO for.</param>
         public WeekdayDTO(Weekday weekday) {
             this.Day = weekday.Day;
-            Elements = new List<ResourceDTO>();
+            Activities = new List<ActivityDTO>();
             
-            if(weekday.Elements != null){
-                foreach (var element in weekday.Elements)
+            if(weekday.Activities != null){
+                foreach (var elem in weekday.Activities)
                 {
-                    if(element.Resource != null){
-                        //Be sure to add as right type, not just superclass.
-                        if(element.Resource is Pictogram pictogram)
-                            Elements.Add(new PictogramDTO(pictogram));
-                        
-                        //TODO: Fix Loading Choice.Options
-                        //else if(element.Resource is Choice choice)
-                        //    Elements.Add(new ChoiceDTO(choice));
-                    }
+                    if(elem.Pictogram != null) Activities.Add(new ActivityDTO(elem));
+
                 }
             }
         }

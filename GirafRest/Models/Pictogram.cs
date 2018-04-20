@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using GirafRest.Models.DTOs;
@@ -7,7 +9,36 @@ namespace GirafRest.Models {
     /// A pictogram is an image with an associated title. They are used by Guardians and Citizens and so on to 
     /// communicate visually.
     /// </summary>
-    public class Pictogram : Resource{
+    public class Pictogram{
+
+        [Required]
+        /// <summary>
+        /// The title of the Pictogram.
+        /// </summary>
+        public string Title { get; set; }
+
+        /// <summary>
+        /// The id of the resource.
+        /// </summary>
+        [Column("id")]
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public long Id { get; set; }
+
+        /// <summary>
+        /// The last time the given resource was edited.
+        /// </summary>
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{yyyy-MM-dd HH:mm:ss}")]
+        public System.DateTime LastEdit { get; set; }
+
+        /// <summary>
+        /// A collection of all users who owns the resource.
+        /// </summary>
+        public ICollection<UserResource> Users { get; set; }
+        /// <summary>
+        /// A collection of all departments who owns the resource.
+        /// </summary>
+        public ICollection<DepartmentResource> Departments { get; set; }
         
         /// <summary>
         /// The accesslevel, PRIVATE means only the owner can see it, PROTECTED means everyone in the owning department and PUBLIC is everyone.
@@ -31,7 +62,7 @@ namespace GirafRest.Models {
         /// </summary>
         /// <param name="title"></param>
         /// <param name="accessLevel"></param>
-        public Pictogram(string title, AccessLevel accessLevel)
+        public Pictogram(string title, AccessLevel accessLevel) : this()
         {
             this.Title = title;
             this.AccessLevel = accessLevel;
@@ -43,7 +74,7 @@ namespace GirafRest.Models {
         /// <param name="title"></param>
         /// <param name="accessLevel"></param>
         /// <param name="image"></param>
-        public Pictogram(string title, AccessLevel accessLevel, byte[] image)
+        public Pictogram(string title, AccessLevel accessLevel, byte[] image) : this()
         {
             this.Title = title;
             this.AccessLevel = accessLevel;
@@ -53,7 +84,11 @@ namespace GirafRest.Models {
         /// <summary>
         /// Empty constructor is required by Newtonsoft.
         /// </summary>
-        public Pictogram(){}
+        public Pictogram(){
+            Users = new List<UserResource>();
+            Departments = new List<DepartmentResource>();
+            LastEdit = DateTime.Now;
+        }
 
         /// <summary>
         /// Overrides the information of this Pictogram with new information found in the given DTO.
@@ -61,7 +96,7 @@ namespace GirafRest.Models {
         /// <param name="other">The new information.</param>
         public virtual void Merge(PictogramDTO other)
         {
-            base.Merge(other);
+            this.LastEdit = DateTime.Now;
             this.AccessLevel = (AccessLevel)other.AccessLevel;
             this.Title = other.Title;
             if(other.Image != null)

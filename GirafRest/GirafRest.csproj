@@ -47,5 +47,6 @@
   <ItemGroup>
     <Compile Remove="Migrations\20180228140854_Initial.cs" />
     <Compile Remove="Services\SharedMethods.cs" />
+    <Compile Remove="Controllers\ChoiceController.cs" />
   </ItemGroup>
 </Project>

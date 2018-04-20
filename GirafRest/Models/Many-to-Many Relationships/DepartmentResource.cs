@@ -7,7 +7,7 @@ namespace GirafRest.Models
     /// <summary>
     /// Defines a many-to-many relationship between department and resource.
     /// </summary>
-    public class DepartmentResource : IManyToMany<long, Department>
+    public class DepartmentResource
     {
         /// <summary>
         /// The key of the relationship entity.
@@ -31,28 +31,28 @@ namespace GirafRest.Models
         /// The key of the involved resource.
         /// </summary>
         [Required]
-        public long ResourceKey { get; set; }
+        public long PictogramKey { get; set; }
         /// <summary>
         /// A reference to the actual resource.
         /// </summary>
         [ForeignKey("ResourceKey")]
-        public virtual Resource Resource { get; set; }
+        public virtual Pictogram Pictogram { get; set; }
 
         /// <summary>
         /// Creates a new many-to-many relationship between a department and a resource.
         /// </summary>
         /// <param name="dep">The involved department.</param>
         /// <param name="resource">The involved resource.</param>
-        public DepartmentResource(Department dep, Resource resource)
+        public DepartmentResource(Department dep, Pictogram pictogram)
         {
             this.OtherKey = dep.Key;
             this.Other = dep;
-            this.ResourceKey = resource.Id;
-            this.Resource = resource;
+            this.PictogramKey = pictogram.Id;
+            this.Pictogram = pictogram;
 
-            resource.LastEdit = DateTime.Now;
+            pictogram.LastEdit = DateTime.Now;
             Other.Resources.Add(this);
-            resource.Departments.Add(this);
+            pictogram.Departments.Add(this);
         }
 
         /// <summary>

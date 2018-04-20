@@ -9,8 +9,24 @@ namespace GirafRest.Models.DTOs
     /// Defines the structure of Pictogram when serializing and deserializing data. Data transfer objects (DTOs) 
     /// were introduced in the project due to problems with circular references in the model classes.
     /// </summary>
-    public class PictogramDTO : ResourceDTO
+    public class PictogramDTO
     {
+        [Required]
+        /// <summary>
+        /// The title of the pictogram.
+        /// </summary>
+        public string Title { get; set; }
+
+        /// <summary>
+        /// The id of the pictogram.
+        /// </summary>
+        /// 
+        public long Id { get; set; }
+        /// <summary>
+        /// The last time the pictogram was edited.
+        /// </summary>
+        public DateTime LastEdit { get; set; }
+
         [Required]
         /// <summary>
         /// The accesslevel of the pictogram.
@@ -29,11 +45,16 @@ namespace GirafRest.Models.DTOs
         /// Creates a new pictogram data transfer object from a given pictogram.
         /// </summary>
         /// <param name="Pictogram">The pictogram to create a DTO for.</param>
-        public PictogramDTO(Pictogram Pictogram) : base(Pictogram)
+        public PictogramDTO(Pictogram pictogram)
         {
-            this.Title = Pictogram.Title;
-            this.AccessLevel = Pictogram.AccessLevel;
-            this.Image = Pictogram.Image;
+            if (pictogram != null)
+            {
+                this.Id = pictogram.Id;
+                this.LastEdit = pictogram.LastEdit;
+                this.Title = pictogram.Title;
+                this.AccessLevel = pictogram.AccessLevel;
+                this.Image = pictogram.Image;
+            }
         }
 
         /// <summary>

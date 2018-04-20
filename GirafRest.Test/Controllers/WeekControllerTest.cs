@@ -168,6 +168,22 @@ namespace GirafRest.Test
         }
 
         [Fact]
+        public void CreateWeek_NewWeekValidDTO_CheckFrameNr_Ok(){
+            var wc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var week = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.First();
+            var orderNumber = 1;
+            var activities = new List<WeekdayResource>(){new WeekdayResource(week.Weekdays[0], _testContext.MockPictograms[0], orderNumber)};
+            week.Weekdays[0].Activities = activities;
+            var res = wc.CreateWeek(new WeekDTO(week)).Result;
+
+            Assert.IsType<Response<WeekDTO>>(res);
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            Assert.True(res.Success);
+            Assert.Equal(orderNumber, res.Data.Days.ToList()[0].Activities.ToList()[0].Order);
+        }
+
+        [Fact]
         public void CreateWeek_NewWeekInvalidDTO_BadRequest()
         {
             var wc = initializeTest();

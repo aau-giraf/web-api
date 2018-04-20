@@ -123,7 +123,7 @@ namespace GirafRest.Controllers
                 var wkDay = new Weekday(day) {LastEdit = DateTime.Now};
                 if (!(await CreateWeekDayHelper(wkDay, day)))
                         return new ErrorResponse<WeekDTO>(ErrorCode.ResourceNotFound);
-                orderedDays[(int)day.Day].Elements = wkDay.Elements;
+                orderedDays[(int)day.Day].Activities = wkDay.Activities;
             }
             _giraf._context.Weeks.Update(week);
             await _giraf._context.SaveChangesAsync();
@@ -168,7 +168,7 @@ namespace GirafRest.Controllers
                     if(!(await CreateWeekDayHelper(wkDay, day)))
                         return new ErrorResponse<WeekDTO>(ErrorCode.ResourceNotFound);
 
-                    week.Weekdays[(int)day.Day].Elements = wkDay.Elements;
+                    week.Weekdays[(int)day.Day].Activities = wkDay.Activities;
                 }
             }
             _giraf._context.Weeks.Add(week);
@@ -212,19 +212,11 @@ namespace GirafRest.Controllers
         /// <param name="to">Pictograms and choices will be added to this object.</param>
         /// <param name="from">Pictograms and choices will be read from this object.</param>
         private async Task<bool> CreateWeekDayHelper(Weekday to, WeekdayDTO from){
-            foreach (var element in from.Elements)
+            foreach (var elem in from.Activities)
             {
-                var picto = await _giraf._context.Frames.Where(p => p.Id == element.Id).FirstOrDefaultAsync();
+                var picto = await _giraf._context.Pictograms.Where(p => p.Id == elem.Pictogram.Id).FirstOrDefaultAsync();
                 if (picto != null)
-                    to.Elements.Add(new WeekdayResource(to, picto));
-                else
-                {
-                    var choice = await _giraf._context.Choices.Where(c => c.Id == element.Id).FirstOrDefaultAsync();
-                    if (choice != null)
-                        to.Elements.Add(new WeekdayResource(to, choice));
-                    else
-                        return false;
-                }
+                    to.Activities.Add(new WeekdayResource(to, picto, elem.Order));
             }
             return true;
         }

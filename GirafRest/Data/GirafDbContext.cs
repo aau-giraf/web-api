@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using GirafRest.Models;
-using GirafRest.Models.Many_to_Many_Relationships;
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -19,11 +18,9 @@ namespace GirafRest.Data
     {
         public virtual DbSet<Department> Departments { get; set; }
         public virtual DbSet<Pictogram> Pictograms { get; set; }
-        public virtual DbSet<Choice> Choices { get; set; }
         public virtual DbSet<Week> Weeks { get; set; }
         public virtual DbSet<WeekTemplate> WeekTemplates { get; set; }
         public virtual DbSet<Weekday> Weekdays { get; set; }
-        public virtual DbSet<Resource> Frames { get; set; }
         public virtual DbSet<UserResource> UserResources { get; set; }
         public virtual DbSet<DepartmentResource> DepartmentResources { get; set; }
         public virtual DbSet<WeekdayResource> WeekdayResources { get; set; }
@@ -53,12 +50,10 @@ namespace GirafRest.Data
             // id : deparment
             base.OnModelCreating(builder);
             //Creates tables for all entities.
-            builder.Entity<Resource>().ToTable("Frames").HasDiscriminator<string>("Discriminator").HasValue<Resource>(nameof(Resource));
             builder.Entity<Department>().ToTable("Departments").HasDiscriminator<string>("Discriminator").HasValue<Department>(nameof(Department));
             builder.Entity<Department>().HasIndex(dep => dep.Name).IsUnique().ForSqlServerIsClustered();
             builder.Entity<Pictogram>().ToTable("Pictograms").HasDiscriminator<string>("Discriminator").HasValue<Pictogram>(nameof(Pictogram));
             builder.Entity<Pictogram>().HasIndex(pic => new {pic.Id, pic.Title}).IsUnique().ForSqlServerIsClustered();
-            builder.Entity<Choice>().ToTable("Choices").HasDiscriminator<string>("Discriminator").HasValue<Choice>(nameof(Choice));
             builder.Entity<Weekday>().ToTable("Weekdays").HasDiscriminator<string>("Discriminator").HasValue<Weekday>(nameof(Weekday));
             builder.Entity<Weekday>().HasIndex(day => new {day.Id}).IsUnique().ForSqlServerIsClustered();
 
@@ -76,19 +71,19 @@ namespace GirafRest.Data
             //Configures the relation from Resource to DepartmentResource
             builder.Entity<DepartmentResource>()
                 //States that only one resource is involved in this relation
-                .HasOne(dr => dr.Resource)
+                .HasOne(dr => dr.Pictogram)
                 //And that each resource may take part in many DepartmentResource relations
                 .WithMany(r => r.Departments)
-                .HasForeignKey(dr => dr.ResourceKey);
+                .HasForeignKey(dr => dr.PictogramKey);
             //The same goes for user and resources
             builder.Entity<UserResource>()
                 .HasOne(ur => ur.Other)
                 .WithMany(u => u.Resources)
                 .HasForeignKey(u => u.OtherKey);
             builder.Entity<UserResource>()
-                .HasOne(ur => ur.Resource)
+                .HasOne(ur => ur.Pictogram)
                 .WithMany(r => r.Users)
-                .HasForeignKey(dr => dr.ResourceKey);
+                .HasForeignKey(dr => dr.PictogramKey);
 
             //Configure a One-to-Many relationship between user and department
             builder.Entity<GirafUser>()
@@ -114,21 +109,12 @@ namespace GirafRest.Data
             //Configure a many-to-many relationship between Weekday and Resource(Pictogram)
             builder.Entity<WeekdayResource>()
                 .HasOne<Weekday>(wr => wr.Other)
-                .WithMany(w => w.Elements)
+                   .WithMany(w => w.Activities)
                 .HasForeignKey(wr => wr.OtherKey);
             builder.Entity<WeekdayResource>()
-                .HasOne<Resource>(wr => wr.Resource)
+                .HasOne<Pictogram>(wr => wr.Pictogram)
                 .WithMany()
-                .HasForeignKey(wr => wr.ResourceKey);
-            //And between Choice and Resource(Pictogram)
-            builder.Entity<ChoiceResource>()
-                .HasOne<Choice>(cr => cr.Other)
-                .WithMany(c => c.Options)
-                .HasForeignKey(cr => cr.OtherKey);
-            builder.Entity<ChoiceResource>()
-                .HasOne<Resource>(cr => cr.Resource)
-                .WithMany()
-                .HasForeignKey(cr => cr.ResourceKey);
+                .HasForeignKey(wr => wr.PictogramKey);
 
             //Create tables for all many-to-many relationships.
             builder.Entity<UserResource>().ToTable("UserResources");

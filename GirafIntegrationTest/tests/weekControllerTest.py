@@ -10,33 +10,30 @@ def auth(token):
 
 def day(number):
     return {
-        "thumbnailID": 4,
-        "elementIDs": [2],
         "day": number,
-        "elements": [{
-            "accessLevel": 0,
-            "imageUrl": "/v1/pictogram/6/image/raw",
-            "imageHash": "+8NDAclP6o11ft/Ba2yCZA==",
-            "title": "sig",
-            "id": 6,
-            "lastEdit": "2018-03-28T10:47:51.628333"
+        "activities": [{
+            "pictogram": {
+                "title": "sig",
+                "id": 4,
+                "lastEdit": "2018-03-28T10:47:51.628333",
+                "accessLevel": 0
+            },
+            "order": 0
         }]
     }
 
 
 def differentDay(number):
     return {
-        "thumbnailID": 4,
-        "elementsSet": True,
-        "elementIDs": [2],
         "day": number,
-        "elements": [{
-            "accessLevel": 0,
-            "imageUrl": "/v1/pictogram/6/image/raw",
-            "imageHash": "+8NDAclP6o11ft/Ba2yCZA==",
-            "title": "JUNK",
-            "id": 2,
-            "lastEdit": "2018-03-28T10:47:51.628333"
+        "activities": [{
+            "pictogram": {
+                "title": "JUNK",
+                "id": 2,
+                "lastEdit": "2017-03-28T10:47:51.628333",
+                "accessLevel": 0
+            },
+            "order": 0
         }]
     }
 
@@ -44,12 +41,10 @@ def differentDay(number):
 def week(days):
     return {
         "thumbnail": {
-            "accessLevel": 0,
-            "imageUrl": "junkdata",
-            "imageHash": "junkdata",
             "title": "simpelt",
             "id": 5,
-            "lastEdit": "2999-03-28T10:47:51.628376"
+            "lastEdit": "2018-04-20T13:17:51.033Z",
+            "accessLevel": 0
         },
         "name": "The best week of the day",
         "id": 0,
@@ -154,33 +149,33 @@ class WeekControllerTest(TestCase):
         'Update whole week at once'
         response = requests.put(Test.url + 'Week/{0}'.format(self.weekID),
                                 headers=auth(self.gunnar),
-                                json=self.differentCorrectWeekDTO).json()
+                                json=self.differentCorrectWeekDTO)
+        response = response.json()
         ensureSuccess(response, check)
 
         response = requests.get(Test.url + 'Week/{0}'.format(self.weekID), headers=auth(self.gunnar)).json()
 
         for i in range(1, 6, 1):
-            check.equal(2, response['data']['days'][i]['elements'][0]['id'])
+            check.equal(2, response['data']['days'][i]['activities'][0]['pictogram']['id'])
 
     @test(skip_if_failed=['getWeek'])
     def changeDay(self, check):
         'Update single day(Day Controller is not getting its own file.)'
         someOtherDay = {
-            "elementsSet": True,
-            "elementIDs": [3],
             "day": "Wednesday",
-            "elements": []
+            "activities": []
         }
 
         response = requests.put(Test.url + 'Day/{0}'.format(self.weekID),
                                 headers=auth(self.gunnar),
-                                json=someOtherDay).json()
+                                json=someOtherDay)
+        response = response.json()
         ensureSuccess(response, check)
         response = requests.get(Test.url + 'Week/{0}'.format(self.weekID), headers=auth(self.gunnar)).json()
         wednesdayIndex = 2
         for i in range(1, 6, 1):
             if wednesdayIndex == response['data']['days'][i]['day']:
-                check.equal(3, response['data']['days'][i]['elements'][0]['id'])
+                check.equal(3, response['data']['days'][i]['activities'][0]['pictogram']['id'])
 
     @test(depends=['changeDay', 'changeWeek'], skip_if_failed=['newWeek'])
     def deleteWeek(self, check):
