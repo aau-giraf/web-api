@@ -1,11 +1,10 @@
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace GirafRest.Models.DTOs
 {
     public enum orientation_enum { portrait = 1, landscape = 2 }
     public enum resourceAppearence_enum { normal = 1, checkmark = 2, removed = 3, movedToRight = 4, greyedOut = 5 }
-    public enum defaultTimer_enum { hourglass = 1,analogClock = 2 }
+    public enum defaultTimer_enum { hourglass = 1, analogClock = 2 }
     public enum theme_enum { girafYellow = 1, girafGreen = 2, greyscale = 3 }
 
     /// <summary>
@@ -16,7 +15,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// A flag indicating whether to display animations in the launcher or not.
         /// </summary>
-       [Required]
+        [Required]
         public bool DisplayLauncherAnimations { get; set; }
         /// <summary>
         /// A field for storing how many rows to display in the GirafLauncher application.
@@ -77,9 +76,7 @@ namespace GirafRest.Models.DTOs
             this.Theme = options.Theme;
             this.NrOfDaysToDisplay = options.NrOfDaysToDisplay;
         }
-        /// <summary>
-        /// Simple constructor ensuring that appsUserCanAccess isn't null
-        /// </summary>
+
         public LauncherOptionsDTO()
         {
             Theme = theme_enum.girafYellow;

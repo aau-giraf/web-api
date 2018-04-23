@@ -665,7 +665,11 @@ namespace GirafRest.Controllers
         {
             if (options == null)
                 return new ErrorResponse<LauncherOptions>(ErrorCode.MissingProperties, "options");
-            
+
+            var error = ValidateOptions(options);
+            if (error.HasValue)
+                return new ErrorResponse<LauncherOptions>(ErrorCode.InvalidProperties, "options");
+
             var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
 
             user.Settings = _giraf._context.Users.Where(u => u.Id == user.Id).Select(s => s.Settings).FirstOrDefault();
@@ -677,7 +681,6 @@ namespace GirafRest.Controllers
                                   .SelectMany(E => E.Errors)
                                   .Select(E => E.ErrorMessage)
                                   .ToArray());
-
 
             user.Settings.UpdateFrom(options);
             await _giraf._context.SaveChangesAsync();
@@ -704,6 +707,10 @@ namespace GirafRest.Controllers
             
             if (options == null)
                 return new ErrorResponse<LauncherOptions>(ErrorCode.MissingProperties, "options");
+
+            var error = ValidateOptions(options);
+            if (error.HasValue)
+                return new ErrorResponse<LauncherOptions>(ErrorCode.InvalidProperties, "options");
 
             var user =  _giraf._context.Users.Include(u => u.Settings).FirstOrDefault(u => u.Id == id);
 
@@ -842,6 +849,25 @@ namespace GirafRest.Controllers
                 _giraf._logger.LogError(error.Description);
             }
         }
+
+        /// <summary>
+        /// Check that enum values for launcheroptions is defined
+        /// </summary>
+        /// <returns>The options.</returns>
+        /// <param name="options">Options.</param>
+        public ErrorCode? ValidateOptions(LauncherOptionsDTO options)
+        {
+            if (!(Enum.IsDefined(typeof(orientation_enum), options.Orientation)) ||
+                !(Enum.IsDefined(typeof(resourceAppearence_enum), options.CheckResourceAppearence)) ||
+                !(Enum.IsDefined(typeof(defaultTimer_enum), options.DefaultTimer)) ||
+                !(Enum.IsDefined(typeof(theme_enum), options.Theme)))
+
+            {
+                return ErrorCode.InvalidProperties;
+            }
+            return null;
+        }
+
         #endregion
     }
 }

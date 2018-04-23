@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using GirafRest.Models.DTOs;
+using GirafRest.Models.Responses;
 
 namespace GirafRest.Models
 {
