@@ -1,5 +1,7 @@
+using GirafRest.Models.Responses;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GirafRest.Models.DTOs
 {
@@ -29,6 +31,15 @@ namespace GirafRest.Models.DTOs
         public ICollection<WeekdayDTO> Days { get; set; }
 
         /// <summary>
+        /// The year of the week.
+        /// </summary>
+        public int WeekYear { get; set; }
+        /// <summary>
+        /// The number of the week, 0 - 52 (53).
+        /// </summary>
+        public int WeekNumber { get; set; }
+
+        /// <summary>
         /// Creates a new data transfer object for a given week.
         /// </summary>
         /// <param name="week">The week to create a DTO for.</param>
@@ -44,6 +55,8 @@ namespace GirafRest.Models.DTOs
                 this.Thumbnail = new PictogramDTO();
             }
             this.Id = week.Id;
+            this.WeekNumber = week.WeekNumber;
+            this.WeekYear = week.WeekYear;
             Days = new List<WeekdayDTO>();
             foreach (var day in week.Weekdays)
             {
@@ -55,5 +68,20 @@ namespace GirafRest.Models.DTOs
         /// DO NOT DELETE THIS! NEWTONSOFT REQUIRES AN EMPTY CONSTRUCTOR.
         /// </summary>
         public WeekDTO() {}
+
+        /// <summary>
+        ///  Validates the WeekDTO for e.g. amount of days
+        /// </summary>
+        /// <returns>InvalidAmountOfWeekdays if amount of days is not in the range 1 to 7.
+        /// TwoDaysCannotHaveSameDayProperty if we e.g. have two Thursdays in a single week.</returns>
+        public ErrorCode? ValidateModel()
+        {
+            if (this.Days == null || (this.Days.Count < 1 || this.Days.Count > 7))
+                return ErrorCode.InvalidAmountOfWeekdays;
+            //If two days have the same day index
+            if (this.Days.GroupBy(d => d.Day).Any(g => g.Count() != 1))
+                return ErrorCode.TwoDaysCannotHaveSameDayProperty;
+            return null;
+        }
     }
 }

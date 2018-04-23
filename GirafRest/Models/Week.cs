@@ -28,7 +28,16 @@ namespace GirafRest.Models
         /// A collection of weekdays for each day of the week.
         /// </summary>
         public IList<Weekday> Weekdays { get; set; }
-        
+
+        /// <summary>
+        /// The year of the week.
+        /// </summary>
+        public int WeekYear { get; set; }
+        /// <summary>
+        /// The number of the week, 0 - 52 (53).
+        /// </summary>
+        public int WeekNumber { get; set; }
+
         /// <summary>
         /// The key of the weeks Thumbnail.
         /// </summary>
@@ -53,18 +62,17 @@ namespace GirafRest.Models
         public Week(Pictogram thumbnail)
         {
             this.Thumbnail = thumbnail;
-            initWeek();
         }
-        
+
         /// <summary>
         /// Creates a new Week from the given WeekDTO.
         /// </summary>
         /// <param name="weekDTO">The data transfer object to create a new week from.</param>
         public Week(WeekDTO weekDTO)
         {
-            initWeek();
             this.Name = weekDTO.Name;
-            if(weekDTO.Days != null){
+            if (weekDTO.Days != null)
+            {
                 foreach (var day in weekDTO.Days)
                 {
                     UpdateDay(new Weekday(day));
@@ -80,23 +88,6 @@ namespace GirafRest.Models
         public void UpdateDay(Weekday day)
         {
             Weekdays[(int)day.Day] = day;
-        }
-        
-        /// <summary>
-        /// Initialises the week. Must be initialised like this, otherwise the Weekdays will not receive a key
-        /// </summary>
-        public void initWeek()
-        {
-            this.Weekdays = new Weekday[7] 
-            { 
-                // Each day must be set individually, otherwise all days will simply be monday
-                new Weekday() { Day = Days.Monday }, 
-                new Weekday() { Day = Days.Tuesday }, 
-                new Weekday() { Day = Days.Wednesday }, 
-                new Weekday() { Day = Days.Thursday }, 
-                new Weekday() { Day = Days.Friday }, 
-                new Weekday() { Day = Days.Saturday }, 
-                new Weekday() { Day = Days.Sunday }};
         }
     }
 }

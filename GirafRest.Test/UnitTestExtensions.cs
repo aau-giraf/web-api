@@ -191,6 +191,8 @@ namespace GirafRest.Test
                             new Week()
                             {
                                 Id = 0,
+                                WeekYear = 2018,
+                                WeekNumber = 1,
                                 Name = "My awesome week",
                                 Weekdays = new List<Weekday>(){
                                     new Weekday(){

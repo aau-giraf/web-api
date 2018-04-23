@@ -66,7 +66,7 @@ namespace GirafRest.Test
         {
             var wc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = wc.ReadUsersWeekSchedule(WEEK_ZERO).Result;
+            var res = wc.ReadUsersWeekSchedule(2018, 1).Result;
 
             Assert.IsType<Response<WeekDTO>>(res);
             Assert.True(res.Success);
@@ -81,7 +81,7 @@ namespace GirafRest.Test
         {
             var wc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITEZEN_DEP_THREE]);
-            var res = wc.ReadUsersWeekSchedule(NONEXISTING).Result;
+            var res = wc.ReadUsersWeekSchedule(999, 999).Result;
 
             Assert.IsType<ErrorResponse<WeekDTO>>(res);
             Assert.False(res.Success);
@@ -128,12 +128,9 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var tempWeek = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule;
             var res = wc.UpdateWeek(WEEK_ZERO, new WeekDTO()).Result;
-
             Assert.False(res.Success);
             Assert.IsType<ErrorResponse<WeekDTO>>(res);
-            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
-
-            _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule = tempWeek;
+            Assert.Equal(ErrorCode.InvalidAmountOfWeekdays, res.ErrorCode);
         }
 
         [Fact]
@@ -156,15 +153,17 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var week = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.First();
             // modify name
-            week.Name = "Test Week";
-            var res = wc.CreateWeek(new WeekDTO(week)).Result;
-
+            var newWeek = new WeekDTO(week)
+            {
+                Name = "Test Week",
+                WeekYear = 2100
+            };
+            var res = wc.CreateWeek(newWeek).Result;
             Assert.IsType<Response<WeekDTO>>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.True(res.Success);
             Assert.Equal("Test Week", res.Data.Name);
 
-            _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Remove(_testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Last());
         }
 
         [Fact]
@@ -189,12 +188,9 @@ namespace GirafRest.Test
             var wc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = wc.CreateWeek(new WeekDTO()).Result;
-
             Assert.IsType<ErrorResponse<WeekDTO>>(res);
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.InvalidProperties, res.ErrorCode);
-
-            _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Remove(_testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Last());
+            Assert.Equal(ErrorCode.InvalidAmountOfWeekdays, res.ErrorCode);
         }
 
         [Fact]

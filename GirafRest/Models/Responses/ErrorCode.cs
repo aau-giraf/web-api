@@ -56,6 +56,8 @@
         UserNotFoundInDepartment,
         NoWeekTemplateFound,
         UserAlreadyHasDepartment,
-        MissingSettings
+        MissingSettings,
+        InvalidAmountOfWeekdays,
+        WeekAlreadyExists
     }
 }
