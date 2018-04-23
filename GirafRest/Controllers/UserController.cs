@@ -499,7 +499,7 @@ namespace GirafRest.Controllers
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
 
-            user.Settings.displayLauncherAnimations = enabled;
+            user.Settings.DisplayLauncherAnimations = enabled;
             await _giraf._context.SaveChangesAsync();
 
             // Get the roles the user is associated with

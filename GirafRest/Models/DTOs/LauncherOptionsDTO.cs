@@ -17,68 +17,75 @@ namespace GirafRest.Models.DTOs
         /// A flag indicating whether to display animations in the launcher or not.
         /// </summary>
        [Required]
-        public bool displayLauncherAnimations { get; set; }
+        public bool DisplayLauncherAnimations { get; set; }
         /// <summary>
         /// A field for storing how many rows to display in the GirafLauncher application.
         /// </summary>
-        public int? appGridSizeRows { get; set; }
+        public int? AppGridSizeRows { get; set; }
         /// <summary>
         /// A field for storing how many columns to display in the GirafLauncher application.
         /// </summary>
-        public int? appGridSizeColumns { get; set; }
+        public int? AppGridSizeColumns { get; set; }
         /// <summary>
         /// Preferred orientation of device/screen
         /// </summary>
         [Required]
-        public orientation_enum orientation { get; set; }
+        public orientation_enum Orientation { get; set; }
         /// <summary>
         /// Preferred appearence of checked resources
         /// </summary>
         [Required]
-        public resourceAppearence_enum checkResourceAppearence { get; set; }
+        public resourceAppearence_enum CheckResourceAppearence { get; set; }
         /// <summary>
         /// Preferred appearence of timer
         /// </summary>
         [Required]
-        public defaultTimer_enum defaultTimer { get; set; }
+        public defaultTimer_enum DefaultTimer { get; set; }
         /// <summary>
         /// Number of seconds for timer
         /// </summary>
-        public int? timerSeconds { get; set; }
+        public int? TimerSeconds { get; set; }
         /// <summary>
         /// Number of activities
         /// </summary>
-        public int? activitiesCount { get; set; }
+        public int? ActivitiesCount { get; set; }
         /// <summary>
         /// The preferred theme
         /// </summary>
         [Required]
-        public theme_enum theme { get; set; }
+        public theme_enum Theme { get; set; }
+
+        /// <summary>
+        /// defines the number of days to display for a user in a weekschedule
+        /// </summary>
+        public int? NrOfDaysToDisplay { get; set; }
+
         /// <summary>
         /// Constructor to create a DTO based on the actual object
         /// </summary>
         /// <param name="options">The launcher options in need of transfer</param>
         public LauncherOptionsDTO(LauncherOptions options)
         {
-            this.appGridSizeColumns = options.appGridSizeColumns;
-            this.appGridSizeRows = options.appGridSizeRows;
-            this.displayLauncherAnimations = options.displayLauncherAnimations;
-            this.orientation = options.orientation;
-            this.checkResourceAppearence = options.checkResourceAppearence;
-            this.defaultTimer = options.defaultTimer;
-            this.timerSeconds = options.timerSeconds;
-            this.activitiesCount = options.activitiesCount;
-            this.theme = options.theme;
+            this.AppGridSizeColumns = options.AppGridSizeColumns;
+            this.AppGridSizeRows = options.AppGridSizeRows;
+            this.DisplayLauncherAnimations = options.DisplayLauncherAnimations;
+            this.Orientation = options.Orientation;
+            this.CheckResourceAppearence = options.CheckResourceAppearence;
+            this.DefaultTimer = options.DefaultTimer;
+            this.TimerSeconds = options.TimerSeconds;
+            this.ActivitiesCount = options.ActivitiesCount;
+            this.Theme = options.Theme;
+            this.NrOfDaysToDisplay = options.NrOfDaysToDisplay;
         }
         /// <summary>
         /// Simple constructor ensuring that appsUserCanAccess isn't null
         /// </summary>
         public LauncherOptionsDTO()
         {
-            theme = theme_enum.girafYellow;
-            defaultTimer = defaultTimer_enum.hourglass;
-            checkResourceAppearence = resourceAppearence_enum.checkmark;
-            orientation = orientation_enum.portrait;
+            Theme = theme_enum.girafYellow;
+            DefaultTimer = defaultTimer_enum.hourglass;
+            CheckResourceAppearence = resourceAppearence_enum.checkmark;
+            Orientation = orientation_enum.portrait;
         }
     }
 }

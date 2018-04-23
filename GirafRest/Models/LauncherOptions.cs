@@ -20,44 +20,49 @@ namespace GirafRest.Models
         /// <summary>
         /// A flag indicating whether to run applications in grayscale or not.
         /// </summary>
-        public bool displayLauncherAnimations { get; set; }
+        public bool DisplayLauncherAnimations { get; set; }
 
         /// <summary>
         /// A field for storing how many rows to display in the GirafLauncher application.
         /// </summary>
-        public int? appGridSizeRows { get; set; }
+        public int? AppGridSizeRows { get; set; }
         /// <summary>
         /// A field for storing how many columns to display in the GirafLauncher application.
         /// </summary>
-        public int? appGridSizeColumns { get; set; }
+        public int? AppGridSizeColumns { get; set; }
         /// <summary>
         /// Preferred orientation of device/screen
         /// </summary>
         [Required]
-        public orientation_enum orientation { get; set; }
+        public orientation_enum Orientation { get; set; }
         /// <summary>
         /// Preferred appearence of checked resources
         /// </summary>
         [Required]
-        public resourceAppearence_enum checkResourceAppearence { get; set; }
+        public resourceAppearence_enum CheckResourceAppearence { get; set; }
         /// <summary>
         /// Preferred appearence of timer
         /// </summary>
         [Required]
-        public defaultTimer_enum defaultTimer { get; set; }
+        public defaultTimer_enum DefaultTimer { get; set; }
         /// <summary>
         /// Number of seconds for timer
         /// </summary>
-        public int? timerSeconds { get; set; }
+        public int? TimerSeconds { get; set; }
         /// <summary>
         /// Number of activities
         /// </summary>
-        public int? activitiesCount { get; set; }
+        public int? ActivitiesCount { get; set; }
         /// <summary>
         /// The preferred theme
         /// </summary>
         [Required]
-        public theme_enum theme { get; set; }
+        public theme_enum Theme { get; set; }
+        /// <summary>
+        /// defines the number of days to display for a user in a weekschedule
+        /// </summary>
+        public int? NrOfDaysToDisplay { get; set; }
+
 
         /// <summary>
         /// Required empty constructor
@@ -71,15 +76,16 @@ namespace GirafRest.Models
         /// <param name="newOptions">The DTO containing new settings</param>
         public void UpdateFrom(LauncherOptionsDTO newOptions)
         {
-            this.appGridSizeColumns = newOptions.appGridSizeColumns;
-            this.appGridSizeRows = newOptions.appGridSizeRows;
-            this.displayLauncherAnimations = newOptions.displayLauncherAnimations;
-            this.orientation = newOptions.orientation;
-            this.checkResourceAppearence = newOptions.checkResourceAppearence;
-            this.defaultTimer = newOptions.defaultTimer;
-            this.timerSeconds = newOptions.timerSeconds;
-            this.activitiesCount = newOptions.activitiesCount;
-            this.theme = newOptions.theme;
+            this.AppGridSizeColumns = newOptions.AppGridSizeColumns;
+            this.AppGridSizeRows = newOptions.AppGridSizeRows;
+            this.DisplayLauncherAnimations = newOptions.DisplayLauncherAnimations;
+            this.Orientation = newOptions.Orientation;
+            this.CheckResourceAppearence = newOptions.CheckResourceAppearence;
+            this.DefaultTimer = newOptions.DefaultTimer;
+            this.TimerSeconds = newOptions.TimerSeconds;
+            this.ActivitiesCount = newOptions.ActivitiesCount;
+            this.Theme = newOptions.Theme;
+            this.NrOfDaysToDisplay = newOptions.NrOfDaysToDisplay;
         }
     }
 }
