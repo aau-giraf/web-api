@@ -706,11 +706,11 @@ namespace GirafRest.Controllers
                                   .ToArray());
             
             if (options == null)
-                return new ErrorResponse<LauncherOptions>(ErrorCode.MissingProperties, "options");
+                return new ErrorResponse<LauncherOptions>(ErrorCode.MissingProperties, "LauncherOptions");
 
             var error = ValidateOptions(options);
             if (error.HasValue)
-                return new ErrorResponse<LauncherOptions>(ErrorCode.InvalidProperties, "options");
+                return new ErrorResponse<LauncherOptions>(ErrorCode.InvalidProperties, "LauncherOptions");
 
             var user =  _giraf._context.Users.Include(u => u.Settings).FirstOrDefault(u => u.Id == id);
 
