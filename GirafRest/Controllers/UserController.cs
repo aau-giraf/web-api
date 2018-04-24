@@ -855,7 +855,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns>The options.</returns>
         /// <param name="options">Options.</param>
-        public ErrorCode? ValidateOptions(LauncherOptionsDTO options)
+        private ErrorCode? ValidateOptions(LauncherOptionsDTO options)
         {
             if (!(Enum.IsDefined(typeof(orientation_enum), options.Orientation)) ||
                 !(Enum.IsDefined(typeof(resourceAppearence_enum), options.CheckResourceAppearence)) ||
