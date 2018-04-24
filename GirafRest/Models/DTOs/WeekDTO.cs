@@ -9,27 +9,8 @@ namespace GirafRest.Models.DTOs
     /// Defines the structure of Week when serializing and deserializing data. Data transfer objects (DTOs) 
     /// were introduced in the project due to problems with circular references in the model classes.
     /// </summary>
-    public class WeekDTO
+    public class WeekDTO : WeekBaseDTO
     {
-        /// <summary>
-        /// The weeks thumbnail.
-        /// </summary>
-        public PictogramDTO Thumbnail { get; set; }
-
-        /// <summary>
-        /// A Name describing the week.
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// The id of the week.
-        /// </summary>
-        public long? Id { get; set; }
-        /// <summary>
-        /// A list of the days in the week schedule.
-        /// </summary>
-        public ICollection<WeekdayDTO> Days { get; set; }
-
         /// <summary>
         /// The year of the week.
         /// </summary>
@@ -39,49 +20,15 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         public int WeekNumber { get; set; }
 
-        /// <summary>
-        /// Creates a new data transfer object for a given week.
-        /// </summary>
-        /// <param name="week">The week to create a DTO for.</param>
-        public WeekDTO(Week week)
+        public WeekDTO()
         {
-            this.Name = week.Name;
-            try
-            {
-                this.Thumbnail = new PictogramDTO(week.Thumbnail);
-            }
-            catch (NullReferenceException)
-            {
-                this.Thumbnail = new PictogramDTO();
-            }
-            this.Id = week.Id;
-            this.WeekNumber = week.WeekNumber;
-            this.WeekYear = week.WeekYear;
-            Days = new List<WeekdayDTO>();
-            foreach (var day in week.Weekdays)
-            {
-                Days.Add(new WeekdayDTO(day));
-            }
+
         }
 
-        /// <summary>
-        /// DO NOT DELETE THIS! NEWTONSOFT REQUIRES AN EMPTY CONSTRUCTOR.
-        /// </summary>
-        public WeekDTO() {}
-
-        /// <summary>
-        ///  Validates the WeekDTO for e.g. amount of days
-        /// </summary>
-        /// <returns>InvalidAmountOfWeekdays if amount of days is not in the range 1 to 7.
-        /// TwoDaysCannotHaveSameDayProperty if we e.g. have two Thursdays in a single week.</returns>
-        public ErrorCode? ValidateModel()
+        public WeekDTO(Week week) : base(week)
         {
-            if (this.Days == null || (this.Days.Count < 1 || this.Days.Count > 7))
-                return ErrorCode.InvalidAmountOfWeekdays;
-            //If two days have the same day index
-            if (this.Days.GroupBy(d => d.Day).Any(g => g.Count() != 1))
-                return ErrorCode.TwoDaysCannotHaveSameDayProperty;
-            return null;
+            this.WeekYear = week.WeekYear;
+            this.WeekNumber = week.WeekNumber;
         }
     }
 }

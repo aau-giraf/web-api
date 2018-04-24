@@ -49,4 +49,7 @@
     <Compile Remove="Services\SharedMethods.cs" />
     <Compile Remove="Controllers\ChoiceController.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Migrations\" />
+  </ItemGroup>
 </Project>

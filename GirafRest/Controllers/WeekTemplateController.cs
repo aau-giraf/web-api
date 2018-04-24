@@ -36,21 +36,21 @@ namespace GirafRest.Controllers
         /// </summary>
         [HttpGet("")]
         [Authorize]
-        public async Task<Response<IEnumerable<WeekNameDTO>>> GetWeekTemplates()
+        public async Task<Response<IEnumerable<WeekTemplateNameDTO>>> GetWeekTemplates()
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             if (user == null)
             {
-                return new ErrorResponse<IEnumerable<WeekNameDTO>>(ErrorCode.UserNotFound);
+                return new ErrorResponse<IEnumerable<WeekTemplateNameDTO>>(ErrorCode.UserNotFound);
             }
             if (!user.WeekSchedule.Any())
             {
-                return new ErrorResponse<IEnumerable<WeekNameDTO>>(ErrorCode.NoWeekTemplateFound);
+                return new ErrorResponse<IEnumerable<WeekTemplateNameDTO>>(ErrorCode.NoWeekTemplateFound);
             }
             else
             {
-                return new Response<IEnumerable<WeekNameDTO>>(_giraf._context.WeekTemplates.Include(w => w.Thumbnail).Include(u => u.Weekdays)
-                     .ThenInclude(wd => wd.Activities).Where(t => t.DepartmentKey == user.DepartmentKey).Select(w => new WeekNameDTO(w.Id, w.Name)));
+                return new Response<IEnumerable<WeekTemplateNameDTO>>(_giraf._context.WeekTemplates.Include(w => w.Thumbnail).Include(u => u.Weekdays)
+                     .ThenInclude(wd => wd.Activities).Where(t => t.DepartmentKey == user.DepartmentKey).Select(w => new WeekTemplateNameDTO(w.Name)));
             }
         }
 
@@ -60,17 +60,17 @@ namespace GirafRest.Controllers
         /// <param name="id">The id of the week template to fetch.</param>
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<Response<WeekDTO>> GetWeekTemplate(long id)
+        public async Task<Response<WeekTemplateDTO>> GetWeekTemplate(long id)
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             var week = await (_giraf._context.WeekTemplates.Include(w => w.Thumbnail).Include(u => u.Weekdays)
                     .ThenInclude(wd => wd.Activities).Where(t => t.DepartmentKey == user.DepartmentKey).FirstOrDefaultAsync(w => w.Id == id));
             if (week != null)
             {
-                return new Response<WeekDTO>(new WeekDTO(week));
+                return new Response<WeekTemplateDTO>(new WeekTemplateDTO(week));
             }
             else
-                return new ErrorResponse<WeekDTO>(ErrorCode.WeekScheduleNotFound);
+                return new ErrorResponse<WeekTemplateDTO>(ErrorCode.WeekScheduleNotFound);
         }
     }
 }

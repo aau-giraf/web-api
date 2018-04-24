@@ -9,15 +9,25 @@ namespace GirafRest
         public string Name { get; set; }
 
         /// <summary>
-        /// The id of the week.
+        /// The year of the week.
         /// </summary>
+        public int WeekYear { get; set; }
 
-        public long Id { get; set; }
+        /// <summary>
+        /// The number of the week, 0 - 52 (53).
+        /// </summary>
+        public int WeekNumber { get; set; }
 
-        public WeekNameDTO(long id, string name)
+        public WeekNameDTO()
         {
-            this.Id = id;
+
+        }
+
+        public WeekNameDTO(int weekYear, int weekNumber, string name)
+        {
             this.Name = name;
+            this.WeekYear = weekNumber;
+            this.WeekNumber = weekNumber;
         }
     }
 }

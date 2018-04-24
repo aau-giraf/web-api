@@ -753,31 +753,7 @@ namespace GirafRest.Controllers
                     _giraf._context.Remove(resource);
             }
         }
-        /// <summary>
-        /// Attempts to update the user's list of week schedules.
-        /// </summary>
-        /// <param name="user">The user to update the week schedules of.</param>
-        /// <param name="weekschedule">A list of DTOs for the user's new week schedules.</param>
-        private async Task updateWeekAsync(GirafUser user, ICollection<WeekDTO> weekschedule)
-        {
-            //Run over the user's list of week schedules - delete those that are not in the list of DTOs
-            foreach (var week in user.WeekSchedule)
-            {
-                if (!weekschedule.Any(w => w.Id == week.Id))
-                    _giraf._context.Remove(week);
-            }
-
-            //Run over the list of DTOs - add those that are not in the user's list of weeks
-            foreach (var week in weekschedule)
-            {
-                if (!user.WeekSchedule.Any(w => w.Id == week.Id))
-                {
-                    var newWeek = new Week(week);
-                    await _giraf._context.Weeks.AddAsync(newWeek);
-                    user.WeekSchedule.Add(newWeek);
-                }
-            }
-        }
+     
         /// <summary>
         /// Attempts to update the user's department from the given id.
         /// </summary>

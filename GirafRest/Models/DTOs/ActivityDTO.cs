@@ -8,7 +8,7 @@
             this.Order = order;
         }
 
-        public ActivityDTO(WeekdayResource weekdayResource)
+        public ActivityDTO(Activity weekdayResource)
         {
             this.Pictogram = new PictogramDTO(weekdayResource.Pictogram);
             this.Order = weekdayResource.Order;

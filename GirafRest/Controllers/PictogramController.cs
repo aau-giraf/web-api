@@ -126,7 +126,7 @@ namespace GirafRest.Controllers
 
                 //Check if the pictogram is public and return it if so
                 if (pictogram.AccessLevel == AccessLevel.PUBLIC) 
-                    return new Response<PictogramDTO>(new PictogramDTO(pictogram, pictogram.Image));
+                    return new Response<PictogramDTO>(new PictogramDTO(pictogram));
 
                 var usr = await _giraf.LoadUserAsync(HttpContext.User);
                 if (usr == null) 
@@ -139,7 +139,7 @@ namespace GirafRest.Controllers
                     ownsResource = await _giraf.CheckProtectedOwnership(pictogram, usr);
 
                 if (ownsResource)
-                    return new Response<PictogramDTO>(new PictogramDTO(pictogram, pictogram.Image));
+                    return new Response<PictogramDTO>(new PictogramDTO(pictogram));
                 else
                     return new ErrorResponse<PictogramDTO>(ErrorCode.NotAuthorized);
             } catch (Exception e)
@@ -179,7 +179,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<PictogramDTO>(ErrorCode.MissingProperties, "access level, pictogram");
 
             Pictogram pict =
-                new Pictogram(pictogram.Title, (AccessLevel) pictogram.AccessLevel) {Image = pictogram.Image};
+                new Pictogram(pictogram.Title, (AccessLevel) pictogram.AccessLevel);
 
             if(pictogram.AccessLevel == AccessLevel.PRIVATE) {
                 //Add the pictogram to the current user
@@ -267,9 +267,9 @@ namespace GirafRest.Controllers
                                               .Where(ur => ur.PictogramKey == pict.Id);
             _giraf._context.DepartmentResources.RemoveRange(depRessourceRelations);
 
-            var weekDayRessourceRelations = _giraf._context.WeekdayResources
+            var weekDayRessourceRelations = _giraf._context.Activities
                                                   .Where(ur => ur.PictogramKey == pict.Id);
-            _giraf._context.WeekdayResources.RemoveRange(weekDayRessourceRelations);
+            _giraf._context.Activities.RemoveRange(weekDayRessourceRelations);
 
             await _giraf._context.SaveChangesAsync();
 
@@ -318,7 +318,7 @@ namespace GirafRest.Controllers
                 pictogram.Image = image;
 
             await _giraf._context.SaveChangesAsync();
-            return new Response<PictogramDTO>(new PictogramDTO(pictogram, image));
+            return new Response<PictogramDTO>(new PictogramDTO(pictogram));
         }
 
         /// <summary>

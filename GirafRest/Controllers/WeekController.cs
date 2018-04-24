@@ -57,7 +57,7 @@ namespace GirafRest.Controllers
             {
                 return new ErrorResponse<IEnumerable<WeekNameDTO>>(ErrorCode.NoWeekScheduleFound);
             }
-            return new Response<IEnumerable<WeekNameDTO>>(user.WeekSchedule.Select(w => new WeekNameDTO(w.Id, w.Name)));
+            return new Response<IEnumerable<WeekNameDTO>>(user.WeekSchedule.Select(w => new WeekNameDTO(w.WeekYear, w.WeekNumber, w.Name)));
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace GirafRest.Controllers
         /// <param name="weekNumber">The week number of the week schedule to fetch.</param>
         /// <returns>NotFound if the user does not have a week with the given id or
         /// Ok and a serialized version of the week if he does.</returns>
-        [HttpGet("{id}")]
+        [HttpGet("{weekYear}/{weekNumber}")]
         [Authorize]
         public async Task<Response<WeekDTO>> ReadUsersWeekSchedule(int weekYear, int weekNumber) // changing this from id to year+week
         {
@@ -78,7 +78,9 @@ namespace GirafRest.Controllers
                 return new Response<WeekDTO>(new WeekDTO(week));
             }
             else
-                return new ErrorResponse<WeekDTO>(ErrorCode.WeekScheduleNotFound);
+            {
+                return new Response<WeekDTO>(new WeekDTO() { WeekYear = weekYear, WeekNumber = weekNumber, Days = new int[] { 0, 1, 2, 3, 4, 5, 6 }.Select(d => new WeekdayDTO() { Activities = new List<ActivityDTO>(), Day = (Days)d }).ToArray() });
+            }
         }
 
         /// <summary>
@@ -89,17 +91,19 @@ namespace GirafRest.Controllers
         /// <returns>NotFound if the user does not have a week schedule or if there exists no week with the given id,
         /// Ok and a serialized version of the updated week if everything went well.
         /// BadRequest if the body of the request does not contain a Week</returns>
-        [HttpPut("{id}")]
+        [HttpPut("{weekYear}/{weekNumber}")]
         [Authorize]
-        public async Task<Response<WeekDTO>> UpdateWeek(long id, [FromBody]WeekDTO newWeek)
+        public async Task<Response<WeekDTO>> UpdateWeek(int weekYear, int weekNumber, [FromBody]WeekDTO newWeek)
         {
             //return Ok(newWeek);
             if (newWeek == null) return new ErrorResponse<WeekDTO>(ErrorCode.MissingProperties);
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             if (user == null) return new ErrorResponse<WeekDTO>(ErrorCode.UserNotFound);
-            var week = user.WeekSchedule.FirstOrDefault(w => w.Id == id);
+            var week = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber);
             if (week == null)
-                return new ErrorResponse<WeekDTO>(ErrorCode.WeekScheduleNotFound);
+            {
+                week = new Week();
+            }
             if (newWeek.Thumbnail != null)
             {
                 var thumbnail = await _giraf._context.Pictograms.Where(p => p.Id == newWeek.Thumbnail.Id).FirstOrDefaultAsync();
@@ -114,64 +118,16 @@ namespace GirafRest.Controllers
             var orderedDays = week.Weekdays.OrderBy(w => w.Day).ToArray();
             foreach (var day in newWeek.Days)
             {
-                var wkDay = new Weekday(day) { LastEdit = DateTime.Now };
+                var wkDay = new Weekday(day);
                 if (!(await CreateWeekDayHelper(wkDay, day)))
                     return new ErrorResponse<WeekDTO>(ErrorCode.ResourceNotFound);
-                orderedDays[(int)day.Day - 1].Activities = wkDay.Activities; // -1 as our Weekday.cs enum is forced to begin at Monday=1
+                week.UpdateDay(wkDay);
             }
             _giraf._context.Weeks.Update(week);
             await _giraf._context.SaveChangesAsync();
             return new Response<WeekDTO>(new WeekDTO(week));
         }
-        /// <summary>
-        /// Creates the week.
-        /// </summary>
-        /// <returns>
-        /// Invalidproperties if newWeek has incorrect format or if the days does not lie in the int range from 0-6
-        /// or if the day does not have exactly 7 days
-        /// UserNotFound if no authenticated user
-        /// RessourceNotFound if trying to add a ressource that does not exist
-        /// The DTO corresponding to the created week if succesfull</returns>
-        /// <param name="newWeek">New week.</param>
-        [HttpPost("")]
-        [Authorize]
-        public async Task<Response<WeekDTO>> CreateWeek([FromBody]WeekDTO newWeek)
-        {
-            if (newWeek == null)
-                return new ErrorResponse<WeekDTO>(ErrorCode.InvalidProperties);
-            var modelErrorCode = newWeek.ValidateModel();
-            if (modelErrorCode.HasValue)
-                return new ErrorResponse<WeekDTO>(modelErrorCode.Value, "Week should contain at least 1 day and no more than 7 days.");
-            //If two days have the same day index
-            if (newWeek.Days.GroupBy(d => d.Day).Any(g => g.Count() != 1))
-                return new ErrorResponse<WeekDTO>(ErrorCode.TwoDaysCannotHaveSameDayProperty);
-            var user = await _giraf.LoadUserAsync(HttpContext.User);
-            if (user == null)
-                return new ErrorResponse<WeekDTO>(ErrorCode.UserNotFound);
-            var thumbnail = await _giraf._context.Pictograms.Where(p => p.Id == newWeek.Thumbnail.Id).FirstOrDefaultAsync();
-
-            if (thumbnail == null)
-                return new ErrorResponse<WeekDTO>(ErrorCode.ThumbnailDoesNotExist);
-            if (user.WeekSchedule.Any(s => s.WeekNumber == newWeek.WeekNumber && s.WeekYear == newWeek.WeekYear))
-                return new ErrorResponse<WeekDTO>(ErrorCode.WeekAlreadyExists);
-            var week = new Week(thumbnail) { Name = newWeek.Name };
-            if (newWeek.Days != null)
-            {
-                foreach (var dayDTO in newWeek.Days)
-                {
-                    if (!(Enum.IsDefined(typeof(Days), dayDTO.Day))) return new ErrorResponse<WeekDTO>(ErrorCode.InvalidProperties);
-                    var wkDay = new Weekday(dayDTO) { LastEdit = DateTime.Now };
-                    week.UpdateDay(wkDay);
-                    if (!(await CreateWeekDayHelper(wkDay, dayDTO)))
-                        return new ErrorResponse<WeekDTO>(ErrorCode.ResourceNotFound);
-                    week.Weekdays[(int)dayDTO.Day].Activities = wkDay.Activities;
-                }
-            }
-            _giraf._context.Weeks.Add(week);
-            user.WeekSchedule.Add(week);
-            await _giraf._context.SaveChangesAsync();
-            return new Response<WeekDTO>(new WeekDTO(user.WeekSchedule.Last()));
-        }
+    
         /// <summary>
         /// Deletes the entire week with the given id.
         /// </summary>
@@ -209,7 +165,7 @@ namespace GirafRest.Controllers
             {
                 var picto = await _giraf._context.Pictograms.Where(p => p.Id == elem.Pictogram.Id).FirstOrDefaultAsync();
                 if (picto != null)
-                    to.Activities.Add(new WeekdayResource(to, picto, elem.Order));
+                    to.Activities.Add(new Activity(to, picto, elem.Order));
             }
             return true;
         }

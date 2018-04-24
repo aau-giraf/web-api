@@ -266,7 +266,6 @@ namespace GirafRest.Setup
             var sampleWeek = new Week(Pictograms[0]);
             foreach (var day in Weekdays)
             {
-                day.LastEdit = DateTime.Now;
                 context.Weekdays.Add(day);
                 sampleWeek.UpdateDay(day);
             }
@@ -294,7 +293,6 @@ namespace GirafRest.Setup
             var sampleWeek = new WeekTemplate(Pictograms[0]);
             foreach (var day in Weekdays)
             {
-                day.LastEdit = DateTime.Now;
                 context.Weekdays.Add(day);
                 sampleWeek.UpdateDay(day);
             }

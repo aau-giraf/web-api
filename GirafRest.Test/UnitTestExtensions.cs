@@ -319,16 +319,16 @@ namespace GirafRest.Test
                 }
             }
 
-            private List<WeekdayResource> mockWeekDayRessources;
-            public IReadOnlyList<WeekdayResource> MockWeekDayRessources
+            private List<Activity> mockWeekDayRessources;
+            public IReadOnlyList<Activity> MockWeekDayRessources
             {
                 get
                 {
                     if (mockWeekDayRessources == null)
-                        mockWeekDayRessources = new List<WeekdayResource>()
+                        mockWeekDayRessources = new List<Activity>()
                         {
-                            new WeekdayResource(MockWeeks[0].Weekdays[0], MockPictograms[5], 0),
-                            new WeekdayResource(MockWeeks[0].Weekdays[1], MockPictograms[6], 1)
+                            new Activity(MockWeeks[0].Weekdays[0], MockPictograms[5], 0),
+                            new Activity(MockWeeks[0].Weekdays[1], MockPictograms[6], 1)
                         };
 
                     return mockWeekDayRessources;
@@ -442,7 +442,7 @@ namespace GirafRest.Test
                 dbMock.Setup(c => c.Pictograms).Returns(mockSet.Object);
                 dbMock.Setup(c => c.UserResources).Returns(mockRelationSet.Object);
                 dbMock.Setup(c => c.DepartmentResources).Returns(mockDepRes.Object);
-                dbMock.Setup(c => c.WeekdayResources).Returns(mockWeekDayRes.Object);
+                dbMock.Setup(c => c.Activities).Returns(mockWeekDayRes.Object);
                 dbMock.Setup(c => c.Departments).Returns(mockDeps.Object);
                 dbMock.Setup(c => c.Weeks).Returns(mockWeeks.Object);
                 dbMock.Setup(c => c.Users).Returns(mockUsers.Object);

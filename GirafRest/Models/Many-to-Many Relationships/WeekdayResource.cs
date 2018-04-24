@@ -6,7 +6,7 @@ namespace GirafRest.Models
     /// <summary>
     /// Defines a many-to-many relationship between weekday and resource.
     /// </summary>
-    public class WeekdayResource
+    public class Activity
     {
         /// <summary>
         /// The key of the relationship entity.
@@ -44,7 +44,7 @@ namespace GirafRest.Models
         /// </summary>
         /// <param name="weekday">The involved weekday.</param>
         /// <param name="resource">The involved resource.</param>
-        public WeekdayResource(Weekday weekday, Pictogram pictogram, int order)
+        public Activity(Weekday weekday, Pictogram pictogram, int order)
         {
             this.Other = weekday;
             this.PictogramKey = pictogram.Id;
@@ -55,6 +55,6 @@ namespace GirafRest.Models
         /// <summary>
         /// DO NOT DELETE THIS.
         /// </summary>
-        public WeekdayResource(){}
+        public Activity(){}
     }
 }

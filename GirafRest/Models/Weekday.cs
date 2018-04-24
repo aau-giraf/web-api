@@ -23,11 +23,6 @@ namespace GirafRest.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
-
-        /// <summary>
-        /// The last time the weekday was edited.
-        /// </summary>
-        public DateTime LastEdit { get; set; }
         
         /// <summary>
         /// An enum defining which day of the week this instance represents.
@@ -37,14 +32,14 @@ namespace GirafRest.Models
         /// <summary>
         /// A collection of elements that make up the week.
         /// </summary>
-        public ICollection<WeekdayResource> Activities { get; set; }
+        public ICollection<Activity> Activities { get; set; }
 
         /// <summary>
         /// Empty contr required for testing framework.
         /// </summary>
         public Weekday()
         {
-            this.Activities = new List<WeekdayResource>();
+            this.Activities = new List<Activity>();
         }
 
         /// <summary>
@@ -52,13 +47,12 @@ namespace GirafRest.Models
         /// </summary>
         /// <param name="day">The day of the week which the new weekday should represent.</param>
         /// <param name="activities">A collection of activies that should be added to the weekday.</param>
-        public Weekday(Days day, List<Pictogram> activities)
+        public Weekday(Days day, List<Pictogram> activities) : this()
         {
             this.Day = day;
-            this.Activities = new List<WeekdayResource>();
             for (int i = 0; i < activities.Count; i++)
             {
-                this.Activities.Add(new WeekdayResource(this, activities[i], i));
+                this.Activities.Add(new Activity(this, activities[i], i));
             }
         }
         
@@ -66,10 +60,9 @@ namespace GirafRest.Models
         /// Creates a new weekday from the given WeekdayDTO.
         /// </summary>
         /// <param name="day">A weekday DTO that should be used to create a Weekday from.</param>
-        public Weekday(WeekdayDTO day)
+        public Weekday(WeekdayDTO day) : this()
         {
-            this.Day = day.Day;
-            this.Activities = new List<WeekdayResource>();
+            this.Activities = new List<Activity>();
         }
     }
 }
