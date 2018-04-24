@@ -70,6 +70,13 @@ namespace GirafRest.Models
         /// </summary>
         public LauncherOptions()
         {
+            DisplayLauncherAnimations = false;
+            Orientation = orientation_enum.portrait;
+            CheckResourceAppearence = resourceAppearence_enum.normal;
+            DefaultTimer = defaultTimer_enum.analogClock;
+            Theme = theme_enum.girafYellow;
+            NrOfDaysToDisplay = 7;
+            TimerSeconds = 900;
         }
         /// <summary>
         /// Updates all settings based on a DTO
