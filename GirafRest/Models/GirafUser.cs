@@ -96,11 +96,11 @@ namespace GirafRest.Models
         {
             this.Settings = new LauncherOptions()
             {
-                displayLauncherAnimations = false,
-                orientation = orientation_enum.portrait,
-                checkResourceAppearence = resourceAppearence_enum.normal,
-                defaultTimer = defaultTimer_enum.analogClock,
-                theme = theme_enum.girafYellow,
+                DisplayLauncherAnimations = false,
+                Orientation = orientation_enum.portrait,
+                CheckResourceAppearence = resourceAppearence_enum.normal,
+                DefaultTimer = defaultTimer_enum.analogClock,
+                Theme = theme_enum.girafYellow,
             };
         }
 
