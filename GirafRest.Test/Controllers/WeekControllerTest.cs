@@ -112,7 +112,7 @@ namespace GirafRest.Test
             var wc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var tempWeek = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule;
-            var res = wc.UpdateWeek(2018, 10, new WeekDTO()).Result;
+            var res = wc.UpdateWeek(2018, 10, new WeekDTO() { Thumbnail = new Models.DTOs.WeekPictogramDTO(_testContext.MockPictograms[0]) }).Result;
             Assert.False(res.Success);
             Assert.IsType<ErrorResponse<WeekDTO>>(res);
             Assert.Equal(ErrorCode.InvalidAmountOfWeekdays, res.ErrorCode);
@@ -170,7 +170,7 @@ namespace GirafRest.Test
         {
             var wc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = wc.UpdateWeek(2018, 20, new WeekDTO()).Result;
+            var res = wc.UpdateWeek(2018, 20, new WeekDTO() { Thumbnail = new Models.DTOs.WeekPictogramDTO(_testContext.MockPictograms[0]) }).Result;
             Assert.IsType<ErrorResponse<WeekDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.InvalidAmountOfWeekdays, res.ErrorCode);

@@ -9,12 +9,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
-- 
+- New class ActivityDTO which consists of an integer which indicates the order in relation to other activities and a pictogram
+
 
 ### Changed
 - All pictograms in the sample database are now public
+- ResourceDTO is renamed WeekdayDTO
 
 ### Removed
+- Migrations are started over (all migrations are removed and a single new one is created instead)
 
 ## [1.002.01] - Unreleased
 ### Added

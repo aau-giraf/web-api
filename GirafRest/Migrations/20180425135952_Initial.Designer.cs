@@ -13,7 +13,7 @@ using System;
 namespace GirafRest.Migrations
 {
     [DbContext(typeof(GirafDbContext))]
-    [Migration("20180424112532_Initial")]
+    [Migration("20180425135952_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -203,23 +203,25 @@ namespace GirafRest.Migrations
                     b.Property<long>("Key")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("activitiesCount");
+                    b.Property<int?>("ActivitiesCount");
 
-                    b.Property<int?>("appGridSizeColumns");
+                    b.Property<int?>("AppGridSizeColumns");
 
-                    b.Property<int?>("appGridSizeRows");
+                    b.Property<int?>("AppGridSizeRows");
 
-                    b.Property<int>("checkResourceAppearence");
+                    b.Property<int>("CheckResourceAppearence");
 
-                    b.Property<int>("defaultTimer");
+                    b.Property<int>("DefaultTimer");
 
-                    b.Property<bool>("displayLauncherAnimations");
+                    b.Property<bool>("DisplayLauncherAnimations");
 
-                    b.Property<int>("orientation");
+                    b.Property<int?>("NrOfDaysToDisplay");
 
-                    b.Property<int>("theme");
+                    b.Property<int>("Orientation");
 
-                    b.Property<int?>("timerSeconds");
+                    b.Property<int>("Theme");
+
+                    b.Property<int?>("TimerSeconds");
 
                     b.HasKey("Key");
 
