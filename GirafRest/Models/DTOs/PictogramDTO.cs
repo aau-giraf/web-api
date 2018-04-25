@@ -26,7 +26,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// The accesslevel of the pictogram.
         /// </summary>
-        public AccessLevel? AccessLevel { get; internal set; }
+        public AccessLevel? AccessLevel { get; set; }
 
         /// <summary>
         /// An array of bytes containing the pictogram's image.
