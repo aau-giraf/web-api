@@ -139,8 +139,7 @@ namespace GirafRest.Test
             // modify name
             var newWeek = new WeekDTO(week)
             {
-                Name = "Test Week",
-                WeekYear = 2100
+                Name = "Test Week"
             };
             var res = wc.UpdateWeek(2018, 20, newWeek).Result;
             Assert.IsType<Response<WeekDTO>>(res);

@@ -102,7 +102,8 @@ namespace GirafRest.Controllers
             var week = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber);
             if (week == null)
             {
-                week = new Week();
+                week = new Week() { WeekYear = weekYear, WeekNumber = weekNumber };
+                user.WeekSchedule.Add(week);
             }
             if (newWeek.Thumbnail != null)
             {

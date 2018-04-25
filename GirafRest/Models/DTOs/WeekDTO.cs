@@ -14,11 +14,11 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// The year of the week.
         /// </summary>
-        public int WeekYear { get; set; }
+        public int WeekYear { get; internal set; }
         /// <summary>
         /// The number of the week, 0 - 52 (53).
         /// </summary>
-        public int WeekNumber { get; set; }
+        public int WeekNumber { get; internal set; }
 
         public WeekDTO()
         {

@@ -299,8 +299,7 @@ namespace GirafRest.Test
             var dto = new PictogramDTO()
             {
                 AccessLevel = AccessLevel.PROTECTED,
-                Title = "Protected " + pictogramName,
-                Id = NEW_PICTOGRAM_ID
+                Title = "Protected " + pictogramName
             };
             var res = pc.CreatePictogram(dto).Result;
 
@@ -332,8 +331,7 @@ namespace GirafRest.Test
 
             var dto = new PictogramDTO()
             {
-                Title = "newpictogram",
-                Id = NEW_PICTOGRAM_ID
+                Title = "newpictogram"
             };
             var res = pc.CreatePictogram(dto).Result;
 
@@ -353,10 +351,9 @@ namespace GirafRest.Test
             var dto = new PictogramDTO()
             {
                 Title = "Updated Pictogram",
-                AccessLevel = AccessLevel.PRIVATE,
-                Id = ADMIN_PRIVATE_PICTOGRAM
+                AccessLevel = AccessLevel.PRIVATE
             };
-            var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
+            var res = pc.UpdatePictogramInfo(ADMIN_PRIVATE_PICTOGRAM, dto).Result;
 
             Assert.IsType<ErrorResponse<PictogramDTO>>(res);
             Assert.False(res.Success);
@@ -372,10 +369,9 @@ namespace GirafRest.Test
             var dto = new PictogramDTO()
             {
                 Title = "Updated Pictogram",
-                AccessLevel = AccessLevel.PROTECTED,
-                Id = DEP_ONE_PROTECTED_PICTOGRAM
+                AccessLevel = AccessLevel.PROTECTED
             };
-            var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
+            var res = pc.UpdatePictogramInfo(DEP_ONE_PROTECTED_PICTOGRAM, dto).Result;
 
             Assert.IsType<ErrorResponse<PictogramDTO>>(res);
             Assert.False(res.Success);
@@ -456,10 +452,9 @@ namespace GirafRest.Test
             var dto = new PictogramDTO()
             {
                 Title = "Updated Pictogram",
-                AccessLevel = AccessLevel.PRIVATE,
-                Id = ADMIN_PRIVATE_PICTOGRAM
+                AccessLevel = AccessLevel.PRIVATE
             };
-            var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
+            var res = pc.UpdatePictogramInfo(ADMIN_PRIVATE_PICTOGRAM, dto).Result;
 
             Assert.IsType<ErrorResponse<PictogramDTO>>(res);
             Assert.False(res.Success);
@@ -475,10 +470,9 @@ namespace GirafRest.Test
             var dto = new PictogramDTO()
             {
                 Title = "Updated Pictogram",
-                AccessLevel = AccessLevel.PRIVATE,
-                Id = DEP_ONE_PROTECTED_PICTOGRAM
+                AccessLevel = AccessLevel.PRIVATE
             };
-            var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
+            var res = pc.UpdatePictogramInfo(DEP_ONE_PROTECTED_PICTOGRAM, dto).Result;
 
             Assert.IsType<ErrorResponse<PictogramDTO>>(res);
             Assert.False(res.Success);
@@ -494,10 +488,9 @@ namespace GirafRest.Test
             var dto = new PictogramDTO()
             {
                 Title = "Updated Pictogram",
-                AccessLevel = AccessLevel.PRIVATE,
-                Id = NONEXISTING_PICTOGRAM
+                AccessLevel = AccessLevel.PRIVATE
             };
-            var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
+            var res = pc.UpdatePictogramInfo(NONEXISTING_PICTOGRAM, dto).Result;
 
             Assert.IsType<ErrorResponse<PictogramDTO>>(res);
             Assert.False(res.Success);
@@ -527,10 +520,9 @@ namespace GirafRest.Test
             var dto = new PictogramDTO()
             {
                 Title = "Updated Pictogram",
-                AccessLevel = AccessLevel.PUBLIC,
-                Id = ADMIN_PRIVATE_PICTOGRAM
+                AccessLevel = AccessLevel.PUBLIC
             };
-            var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
+            var res = pc.UpdatePictogramInfo(ADMIN_PRIVATE_PICTOGRAM, dto).Result;
 
             Assert.IsType<Response<PictogramDTO>>(res);
             Assert.True(res.Success);

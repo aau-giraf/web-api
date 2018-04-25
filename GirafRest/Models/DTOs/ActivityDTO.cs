@@ -2,7 +2,7 @@
 {
     public class ActivityDTO
     {
-        public ActivityDTO(PictogramDTO pictogram, int order)
+        public ActivityDTO(WeekPictogramDTO pictogram, int order)
         {
             this.Pictogram = pictogram;
             this.Order = order;
@@ -10,13 +10,13 @@
 
         public ActivityDTO(Activity weekdayResource)
         {
-            this.Pictogram = new PictogramDTO(weekdayResource.Pictogram);
+            this.Pictogram = new WeekPictogramDTO(weekdayResource.Pictogram);
             this.Order = weekdayResource.Order;
         }
 
         public ActivityDTO(){}
 
-        public PictogramDTO Pictogram { get; set; }
+        public WeekPictogramDTO Pictogram { get; set; }
 
         public int Order { get; set; }
     }

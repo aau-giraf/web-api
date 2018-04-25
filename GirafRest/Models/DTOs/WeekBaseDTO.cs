@@ -11,7 +11,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// The weeks thumbnail.
         /// </summary>
-        public PictogramDTO Thumbnail { get; set; }
+        public WeekPictogramDTO Thumbnail { get; set; }
 
         /// <summary>
         /// A Name describing the week.
@@ -32,11 +32,11 @@ namespace GirafRest.Models.DTOs
             this.Name = week.Name;
             try
             {
-                this.Thumbnail = new PictogramDTO(week.Thumbnail);
+                this.Thumbnail = new WeekPictogramDTO(week.Thumbnail);
             }
             catch (NullReferenceException)
             {
-                this.Thumbnail = new PictogramDTO();
+                this.Thumbnail = new WeekPictogramDTO();
             }
             Days = new List<WeekdayDTO>();
             foreach (var day in week.Weekdays)
