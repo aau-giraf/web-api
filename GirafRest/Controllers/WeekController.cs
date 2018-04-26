@@ -75,6 +75,7 @@ namespace GirafRest.Controllers
             var week = user.WeekSchedule.FirstOrDefault(w => w.Id == id);
             if (week != null)
             {
+                week.Thumbnail = _giraf._context.Pictograms.FirstOrDefault(p => p.Id == week.ThumbnailKey);
                 return new Response<WeekDTO>(new WeekDTO(week));
             }
             else
