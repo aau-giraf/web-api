@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</head>
+    <body>
+        <div id="weeks">
+            <button v-on:click="logout">Logout</button>
+            <button v-on:click="newWeek()">+</button>
+            <image v-for="week in citizin.weekScheduleIds" v-bind:src="'/v1/pictogram/'+week.thumbnail.id+'/image/raw'" v-text="week.name || week.id" v-on:click="chooseWeek(week.id)"></button>
+        </div>
+        <script>
+            var baseUrl = "http://localhost:5000/v1";
+            var token = localStorage.getItem("citizin_token") || null;
+            var app = new Vue({
+                el: '#weeks',
+                data: {
+                    citizin: {
+                        weekScheduleIds: [{days: []}]
+                    }
+                },
+                methods: {
+                    init: function() {
+                        var self = this;
+                        $.ajax({
+                            url: baseUrl + "/user",
+                            method: "GET",
+                            contentType: "application/json",
+                            headers: { Authorization: "Bearer " + token, ContentType: "application/json" },
+                            success: function (json) {
+                                if(json.success){
+                                    self.citizin = json.data;
+                                    console.log(json);
+                                }
+                            }
+                        });
+                    },
+                    chooseWeek: function (id) {
+                        window.location = "/weekplanner/week.html?id=" + id;
+                    },
+                    getPictogram: function(id) {
+                        var json = $.ajax({
+                            url: baseUrl + "/pictogram/"+id,
+                            method: "GET",
+                            async: false,
+                            contentType: "application/json",
+                        }).responseText;
+                        json = JSON.parse(json);
+                        console.log(json);
+                        if(json.success){
+                            var pictogram = json.data;
+                            return pictogram;
+                        }
+                        return null;
+                    },
+                    newWeek: function() {
+                        $.ajax({
+                            url: baseUrl + "/week",
+                            method: "POST",
+                            contentType: "application/json",
+                            data: JSON.stringify({
+                              "thumbnail": app.getPictogram(1),
+                              "days": [0,1,2,3,4,5,6].map(function(d) {
+                                return {
+                                  "elementsSet": false,
+                                  "elementIDs": [],
+                                  "day": d,
+                                  "elements": []
+                                };
+                              })
+                            }),
+                            success: function (json) {
+                                console.log(json);
+                                window.location = "/weekplanner/weeks.html";
+                            }
+                        });
+                    },
+                    logout: function() {
+                        var self = this;
+                        $.ajax({
+                            url: baseUrl + "/account/logout",
+                            method: "POST",
+                            contentType: "application/json",
+                            headers: { Authorization: "Bearer " + token, ContentType: "application/json" },
+                            success: function (json) {
+                                window.location = "/weekplanner/login.html";
+                            }
+                        });
+                    }
+                }
+            });
+            app.init();
+        </script>
+    </body>
+</html>

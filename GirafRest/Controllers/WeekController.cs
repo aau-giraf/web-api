@@ -153,15 +153,15 @@ namespace GirafRest.Controllers
         /// <param name="id">Id of the week to delete.</param>
         /// <returns>NotFound if the user does not have a week schedule or
         /// Ok and a serialized version of the updated week if everything went well.</returns>
-        [HttpDelete("{id}")]
+        [HttpDelete("{weekYear}/{weekNumber}")]
         [Authorize]
-        public async Task<Response<IEnumerable<WeekDTO>>> DeleteWeek(long id)
+        public async Task<Response<IEnumerable<WeekDTO>>> DeleteWeek(int weekYear, int weekNumber)
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             if (user == null) return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.UserNotFound);
-            if (user.WeekSchedule.Any(w => w.Id == id))
+            if (user.WeekSchedule.Any(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber))
             {
-                var week = user.WeekSchedule.FirstOrDefault(w => w.Id == id);
+                var week = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber);
                 if (week == null) return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.WeekScheduleNotFound);
                 user.WeekSchedule.Remove(week);
                 await _giraf._context.SaveChangesAsync();
