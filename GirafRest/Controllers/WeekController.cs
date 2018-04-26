@@ -137,6 +137,11 @@ namespace GirafRest.Controllers
                     return new ErrorResponse<WeekDTO>(ErrorCode.ResourceNotFound);
                 week.UpdateDay(wkDay);
             }
+            var toBeDeleted = week.Weekdays.Where(wd => !newWeek.Days.Any(d => d.Day == wd.Day)).ToList();
+            foreach (var deletedDay in toBeDeleted)
+            {
+                week.Weekdays.Remove(deletedDay);
+            }
             _giraf._context.Weeks.Update(week);
             await _giraf._context.SaveChangesAsync();
             return new Response<WeekDTO>(new WeekDTO(week));
