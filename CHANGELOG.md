@@ -10,11 +10,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - New class ActivityDTO which consists of an integer which indicates the order in relation to other activities and a pictogram
-- Added year and week properties for weeks
+- Added year and week properties for weeks.
+- All weeks implicitly exists and can be identified by year and week number.
 
 ### Changed
-- All weeks implicitly exists and can be identified by year and week number.
-- UpdateWeek and ReadUsersWeekSchedule now takes year and week number as parameters instead of an id.
+- UpdateWeek, DeleteWeek, and ReadUsersWeekSchedule now takes year and week number as parameters instead of an id.
 - Changed access modifiers in DTO classes to better represent which properties should be set by the frontend.
 
 ### Removed
