@@ -62,6 +62,7 @@ namespace GirafRest.Models
         /// <param name="day">A weekday DTO that should be used to create a Weekday from.</param>
         public Weekday(WeekdayDTO day) : this()
         {
+            Day = day.Day;
             this.Activities = new List<Activity>();
         }
     }

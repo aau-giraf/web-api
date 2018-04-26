@@ -39,7 +39,7 @@ namespace GirafRest.Models.DTOs
                 this.Thumbnail = new WeekPictogramDTO();
             }
             Days = new List<WeekdayDTO>();
-            foreach (var day in week.Weekdays)
+            foreach (var day in week.Weekdays.OrderBy(wd => wd.Day))
             {
                 Days.Add(new WeekdayDTO(day));
             }

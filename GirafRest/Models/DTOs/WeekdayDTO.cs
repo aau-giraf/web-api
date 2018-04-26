@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GirafRest.Models.DTOs
 {
@@ -29,7 +30,7 @@ namespace GirafRest.Models.DTOs
             Activities = new List<ActivityDTO>();
             
             if(weekday.Activities != null){
-                foreach (var elem in weekday.Activities)
+                foreach (var elem in weekday.Activities.OrderBy(a => a.Order))
                 {
                     if(elem.Pictogram != null) Activities.Add(new ActivityDTO(elem));
 

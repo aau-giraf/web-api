@@ -82,7 +82,7 @@ namespace GirafRest.Models
             if (wd == null)
                 Weekdays.Add(day);
             else
-                wd.Activities = wd.Activities;
+                wd.Activities = day.Activities;
         }
     }
 }

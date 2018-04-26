@@ -69,8 +69,7 @@ namespace GirafRest.Models
         /// <param name="department">The department to which the user should be added.</param>
         public GirafUser(string userName, Department department) : base(userName)
         {
-            IntialiseLists();
-            InitialiseSettings();
+            IntialiseData();
 
             DepartmentKey = department?.Key ?? -1;
         }
@@ -80,28 +79,16 @@ namespace GirafRest.Models
         /// </summary>
         public GirafUser()
         {
-            IntialiseLists();
-            InitialiseSettings();
+            IntialiseData();
         }
 
-        private void IntialiseLists()
+        private void IntialiseData()
         {
+            this.Settings = new LauncherOptions();
             this.Resources = new List<UserResource>();
             this.WeekSchedule = new List<Week>();
             this.Citizens = new List<GuardianRelation>();
             this.Guardians = new List<GuardianRelation>();
-        }
-
-        private void InitialiseSettings()
-        {
-            this.Settings = new LauncherOptions()
-            {
-                displayLauncherAnimations = false,
-                orientation = orientation_enum.portrait,
-                checkResourceAppearence = resourceAppearence_enum.normal,
-                defaultTimer = defaultTimer_enum.analogClock,
-                theme = theme_enum.girafYellow,
-            };
         }
 
         /// <summary>
