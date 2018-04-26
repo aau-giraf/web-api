@@ -155,7 +155,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var week = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.First();
             var orderNumber = 1;
-            var activities = new List<Activity>(){new Activity(week.Weekdays[0], _testContext.MockPictograms[0], orderNumber)};
+            var activities = new List<Activity>(){new Activity(week.Weekdays[0], _testContext.MockPictograms[0], orderNumber, ActivityState.Active)};    //TODO: Correct state here
             week.Weekdays[0].Activities = activities;
             var res = wc.UpdateWeek(2018, 20, new WeekDTO(week)).Result;
 

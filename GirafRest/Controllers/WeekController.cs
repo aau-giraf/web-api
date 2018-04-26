@@ -166,7 +166,7 @@ namespace GirafRest.Controllers
             {
                 var picto = await _giraf._context.Pictograms.Where(p => p.Id == elem.Pictogram.Id).FirstOrDefaultAsync();
                 if (picto != null)
-                    to.Activities.Add(new Activity(to, picto, elem.Order));
+                    to.Activities.Add(new Activity(to, picto, elem.Order, ActivityState.Active)); //TODO: Correct state here
             }
             return true;
         }

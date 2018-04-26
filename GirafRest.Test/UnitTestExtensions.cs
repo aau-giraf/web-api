@@ -327,8 +327,8 @@ namespace GirafRest.Test
                     if (mockWeekDayRessources == null)
                         mockWeekDayRessources = new List<Activity>()
                         {
-                            new Activity(MockWeeks[0].Weekdays[0], MockPictograms[5], 0),
-                            new Activity(MockWeeks[0].Weekdays[1], MockPictograms[6], 1)
+                            new Activity(MockWeeks[0].Weekdays[0], MockPictograms[5], 0, ActivityState.Active),
+                            new Activity(MockWeeks[0].Weekdays[1], MockPictograms[6], 1, ActivityState.Canceled)
                         };
 
                     return mockWeekDayRessources;
