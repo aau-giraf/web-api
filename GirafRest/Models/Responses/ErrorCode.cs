@@ -58,6 +58,7 @@
         UserAlreadyHasDepartment,
         MissingSettings,
         InvalidAmountOfWeekdays,
-        WeekAlreadyExists
+        WeekAlreadyExists,
+        InvalidDay
     }
 }
