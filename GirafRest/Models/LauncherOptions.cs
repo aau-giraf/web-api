@@ -35,17 +35,22 @@ namespace GirafRest.Models
         /// Preferred orientation of device/screen
         /// </summary>
         [Required]
-        public orientation_enum Orientation { get; set; }
+        public Orientation Orientation { get; set; }
         /// <summary>
         /// Preferred appearence of checked resources
         /// </summary>
         [Required]
-        public resourceAppearence_enum CheckResourceAppearence { get; set; }
+        public CompleteMark CompleteMark { get; set; }
+        /// <summary>
+        /// Preferred appearence of cancelled appearance    
+        /// </summary>
+        [Required]
+        public CancelMark CancelMark { get; set; }
         /// <summary>
         /// Preferred appearence of timer
         /// </summary>
         [Required]
-        public defaultTimer_enum DefaultTimer { get; set; }
+        public DefaultTimer DefaultTimer { get; set; }
         /// <summary>
         /// Number of seconds for timer
         /// </summary>
@@ -58,7 +63,7 @@ namespace GirafRest.Models
         /// The preferred theme
         /// </summary>
         [Required]
-        public theme_enum Theme { get; set; }
+        public Theme Theme { get; set; }
         /// <summary>
         /// defines the number of days to display for a user in a weekschedule
         /// </summary>
@@ -71,10 +76,11 @@ namespace GirafRest.Models
         public LauncherOptions()
         {
             DisplayLauncherAnimations = false;
-            Orientation = orientation_enum.portrait;
-            CheckResourceAppearence = resourceAppearence_enum.normal;
-            DefaultTimer = defaultTimer_enum.analogClock;
-            Theme = theme_enum.girafYellow;
+            Orientation = Orientation.portrait;
+            CompleteMark = CompleteMark.Checkmark;
+            CancelMark = CancelMark.Cross;
+            DefaultTimer = DefaultTimer.analogClock;
+            Theme = Theme.girafYellow;
             NrOfDaysToDisplay = 7;
             TimerSeconds = 900;
         }
@@ -88,7 +94,8 @@ namespace GirafRest.Models
             this.AppGridSizeRows = newOptions.AppGridSizeRows;
             this.DisplayLauncherAnimations = newOptions.DisplayLauncherAnimations;
             this.Orientation = newOptions.Orientation;
-            this.CheckResourceAppearence = newOptions.CheckResourceAppearence;
+            this.CompleteMark = newOptions.CompleteMark;
+            this.CancelMark = newOptions.CancelMark;
             this.DefaultTimer = newOptions.DefaultTimer;
             this.TimerSeconds = newOptions.TimerSeconds;
             this.ActivitiesCount = newOptions.ActivitiesCount;

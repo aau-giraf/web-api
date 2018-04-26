@@ -195,7 +195,7 @@ class UserControllerTest(TestCase):
             "appGridSizeRows":          2,
             "displayLauncherAnimations":False,
             "orientation":              2,
-            "checkResourceAppearence":  2,
+            "completeMark":  2,
             "defaultTimer":             2,
             "timerSeconds":             3,
             "activitiesCount":          4
@@ -210,7 +210,7 @@ class UserControllerTest(TestCase):
         check.equal(2,      response['data']["appGridSizeRows"]);
         check.equal(False,  response['data']["displayLauncherAnimations"]);
         check.equal(2,      response['data']["orientation"]);
-        check.equal(2,      response['data']["checkResourceAppearence"]);
+        check.equal(2,      response['data']["completeMark"]);
         check.equal(2,      response['data']["defaultTimer"]);
         check.equal(3,      response['data']["timerSeconds"]);
         check.equal(4,      response['data']["activitiesCount"]);

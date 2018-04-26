@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace GirafRest.Migrations
 {
-    public partial class InitialMigration : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -43,15 +43,17 @@ namespace GirafRest.Migrations
                 {
                     Key = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    activitiesCount = table.Column<int>(nullable: true),
-                    appGridSizeColumns = table.Column<int>(nullable: true),
-                    appGridSizeRows = table.Column<int>(nullable: true),
-                    checkResourceAppearence = table.Column<int>(nullable: false),
-                    defaultTimer = table.Column<int>(nullable: false),
-                    displayLauncherAnimations = table.Column<bool>(nullable: false),
-                    orientation = table.Column<int>(nullable: false),
-                    theme = table.Column<int>(nullable: false),
-                    timerSeconds = table.Column<int>(nullable: true)
+                    ActivitiesCount = table.Column<int>(nullable: true),
+                    AppGridSizeColumns = table.Column<int>(nullable: true),
+                    AppGridSizeRows = table.Column<int>(nullable: true),
+                    CancelMark = table.Column<int>(nullable: false),
+                    CompleteMark = table.Column<int>(nullable: false),
+                    DefaultTimer = table.Column<int>(nullable: false),
+                    DisplayLauncherAnimations = table.Column<bool>(nullable: false),
+                    NrOfDaysToDisplay = table.Column<int>(nullable: true),
+                    Orientation = table.Column<int>(nullable: false),
+                    Theme = table.Column<int>(nullable: false),
+                    TimerSeconds = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {

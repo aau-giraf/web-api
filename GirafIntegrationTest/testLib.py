@@ -9,7 +9,7 @@ import requests
 import logging
 
 class Test:
-    url = "http://0:5000/v1/"
+    url = "http://127.0.0.1:5000/v1/"
 
 
 def ensureValidResponse(response, check):

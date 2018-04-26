@@ -191,7 +191,9 @@ namespace GirafRest.Migrations
 
                     b.Property<int?>("AppGridSizeRows");
 
-                    b.Property<int>("CheckResourceAppearence");
+                    b.Property<int>("CancelMark");
+
+                    b.Property<int>("CompleteMark");
 
                     b.Property<int>("DefaultTimer");
 

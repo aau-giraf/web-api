@@ -14,8 +14,8 @@ using System;
 namespace GirafRest.Migrations
 {
     [DbContext(typeof(GirafDbContext))]
-    [Migration("20180423182809_NrOfDaysToDisplay")]
-    partial class NrOfDaysToDisplay
+    [Migration("20180426125022_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -192,7 +192,9 @@ namespace GirafRest.Migrations
 
                     b.Property<int?>("AppGridSizeRows");
 
-                    b.Property<int>("CheckResourceAppearence");
+                    b.Property<int>("CancelMark");
+
+                    b.Property<int>("CompleteMark");
 
                     b.Property<int>("DefaultTimer");
 

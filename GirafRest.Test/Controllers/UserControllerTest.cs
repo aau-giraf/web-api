@@ -753,10 +753,10 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
             
             var dto = new LauncherOptionsDTO();
-            dto.Orientation = orientation_enum.landscape;
+            dto.Orientation = Orientation.landscape;
             usercontroller.UpdateUserSettings(dto).Wait();
 
-            Assert.Equal(orientation_enum.landscape, _testContext.MockUsers[CitizenDepTwo].Settings.Orientation);
+            Assert.Equal(Orientation.landscape, _testContext.MockUsers[CitizenDepTwo].Settings.Orientation);
         }        
         [Fact]
         public void UpdateUserSettings_movedToRight_checkResourceAppearenceOk()
@@ -765,10 +765,10 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
             
             var dto = new LauncherOptionsDTO();
-            dto.CheckResourceAppearence = resourceAppearence_enum.movedToRight;
+            dto.CompleteMark = CompleteMark.MovedRight;
             usercontroller.UpdateUserSettings(dto).Wait();
 
-            Assert.Equal(resourceAppearence_enum.movedToRight, _testContext.MockUsers[CitizenDepTwo].Settings.CheckResourceAppearence);
+            Assert.Equal(CompleteMark.MovedRight, _testContext.MockUsers[CitizenDepTwo].Settings.CompleteMark);
         }        
         [Fact]
         public void UpdateUserSettings_analogClock_defaultTimerOk()
@@ -777,10 +777,10 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
             
             var dto = new LauncherOptionsDTO();
-            dto.DefaultTimer = defaultTimer_enum.analogClock;
+            dto.DefaultTimer = DefaultTimer.analogClock;
             usercontroller.UpdateUserSettings(dto).Wait();
 
-            Assert.Equal(defaultTimer_enum.analogClock, _testContext.MockUsers[CitizenDepTwo].Settings.DefaultTimer);
+            Assert.Equal(DefaultTimer.analogClock, _testContext.MockUsers[CitizenDepTwo].Settings.DefaultTimer);
         }        
         [Fact]
         public void UpdateUserSettings_25_timerSecondsOk()
@@ -813,10 +813,10 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
             
             var dto = new LauncherOptionsDTO();
-            dto.Theme = theme_enum.girafGreen;
+            dto.Theme = Theme.girafGreen;
             usercontroller.UpdateUserSettings(dto).Wait();
 
-            Assert.Equal(theme_enum.girafGreen, _testContext.MockUsers[CitizenDepTwo].Settings.Theme);
+            Assert.Equal(Theme.girafGreen, _testContext.MockUsers[CitizenDepTwo].Settings.Theme);
         }
 
         [Fact]
@@ -826,17 +826,17 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(user);
 
             var dto = new LauncherOptionsDTO() { 
-                Theme = theme_enum.girafGreen,
+                Theme = Theme.girafGreen,
                 TimerSeconds = 120,
-                DefaultTimer = defaultTimer_enum.analogClock,
+                DefaultTimer = DefaultTimer.analogClock,
                 ActivitiesCount = 5,
                 NrOfDaysToDisplay = 12
             };
             usercontroller.UpdateUserSettings(user.Id, dto).Wait();
 
-            Assert.Equal(theme_enum.girafGreen, _testContext.MockUsers[CitizenDepTwo].Settings.Theme);
+            Assert.Equal(Theme.girafGreen, _testContext.MockUsers[CitizenDepTwo].Settings.Theme);
             Assert.Equal(120, _testContext.MockUsers[CitizenDepTwo].Settings.TimerSeconds);
-            Assert.Equal(defaultTimer_enum.analogClock, _testContext.MockUsers[CitizenDepTwo].Settings.DefaultTimer);
+            Assert.Equal(DefaultTimer.analogClock, _testContext.MockUsers[CitizenDepTwo].Settings.DefaultTimer);
             Assert.Equal(5, _testContext.MockUsers[CitizenDepTwo].Settings.ActivitiesCount);
             Assert.Equal(12, _testContext.MockUsers[CitizenDepTwo].Settings.NrOfDaysToDisplay);
         }
@@ -852,9 +852,9 @@ namespace GirafRest.Test
 
             var dto = new LauncherOptionsDTO()
             {
-                Theme = theme_enum.girafGreen,
+                Theme = Theme.girafGreen,
                 TimerSeconds = 120,
-                DefaultTimer = defaultTimer_enum.analogClock,
+                DefaultTimer = DefaultTimer.analogClock,
                 ActivitiesCount = 5
             };
             var res = usercontroller.UpdateUserSettings(idOfUserToUpdate, dto).Result;

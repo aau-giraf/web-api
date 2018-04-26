@@ -857,10 +857,11 @@ namespace GirafRest.Controllers
         /// <param name="options">Options.</param>
         private ErrorCode? ValidateOptions(LauncherOptionsDTO options)
         {
-            if (!(Enum.IsDefined(typeof(orientation_enum), options.Orientation)) ||
-                !(Enum.IsDefined(typeof(resourceAppearence_enum), options.CheckResourceAppearence)) ||
-                !(Enum.IsDefined(typeof(defaultTimer_enum), options.DefaultTimer)) ||
-                !(Enum.IsDefined(typeof(theme_enum), options.Theme)))
+            if (!(Enum.IsDefined(typeof(Orientation), options.Orientation)) ||
+                !(Enum.IsDefined(typeof(CompleteMark), options.CompleteMark)) ||
+                !(Enum.IsDefined(typeof(CancelMark), options.CancelMark)) ||
+                !(Enum.IsDefined(typeof(DefaultTimer), options.DefaultTimer)) ||
+                !(Enum.IsDefined(typeof(Theme), options.Theme)))
 
             {
                 return ErrorCode.InvalidProperties;
