@@ -68,17 +68,17 @@ class WeekControllerTest(TestCase):
         eightDays = []
         demonDays = []
 
-        for i in range(0, 7, 1):
+        for i in range(1, 8, 1):
             sevenDays.append(day(i))
 
-        for i in range(0, 7, 1):
+        for i in range(1, 8, 1):
             differentSevenDays.append(differentDay(i))
 
-        for i in range(0, 7, 1):
+        for i in range(1, 8, 1):
             eightDays.append(day(i))
         eightDays.append(day(3))     # To torsdage i en uge
 
-        for i in range(0, 7, 1):
+        for i in range(1, 8, 1):
             demonDays.append(day(i * 10))
 
         self.differentCorrectWeekDTO = week(differentSevenDays)
@@ -114,8 +114,8 @@ class WeekControllerTest(TestCase):
 
     @test(skip_if_failed=['newGunnar'])
     def newWeek(self, check):
-        'Create new week'
-        response = requests.post(Test.url + 'Week', headers=auth(self.gunnar), json=self.correctWeekDTO).json()
+        'Update week'
+        response = requests.put(Test.url + 'Week/2018/11', headers=auth(self.gunnar), json=self.correctWeekDTO).json()
         ensureSuccess(response, check)
 
     weekID = None
@@ -126,7 +126,8 @@ class WeekControllerTest(TestCase):
         response = requests.get(Test.url + 'Week', headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
         check.equal('The best week of the day', response['data'][0]['name'])
-        self.weekID = response['data'][0]['id']
+        self.weekYear = response['data'][0]['weekYear']
+        self.weekNumber = response['data'][0]['weekNumber']
 
         # Check that information is correct in each day.
         for i in range(0, 7, 1):
@@ -136,7 +137,7 @@ class WeekControllerTest(TestCase):
     @test(depends=['getNoWeeks', 'newWeek'])
     def newWeekTooManyDays(self, check):
         'Try to create week with too many weekdays'
-        response = requests.post(Test.url + 'Week', headers=auth(self.gunnar), json=self.tooManyDaysWeekDTO).json()
+        response = requests.put(Test.url + 'Week/2018/11', headers=auth(self.gunnar), json=self.tooManyDaysWeekDTO).json()
         ensureError(response, check)
 
         response = requests.get(Test.url + 'Week', headers=auth(self.gunnar)).json()
@@ -145,7 +146,7 @@ class WeekControllerTest(TestCase):
     @test(depends=['getNoWeeks', 'newWeek'])
     def newWeekInvalidEnums(self, check):
         'Try to create week with invalid weekday enum values'
-        response = requests.post(Test.url + 'Week', headers=auth(self.gunnar), json=self.badEnumValueWeekDTO).json()
+        response = requests.put(Test.url + 'Week/2018/11', headers=auth(self.gunnar), json=self.badEnumValueWeekDTO).json()
         ensureError(response, check)
 
         response = requests.get(Test.url + 'Week', headers=auth(self.gunnar)).json()
@@ -154,44 +155,21 @@ class WeekControllerTest(TestCase):
     @test(skip_if_failed=['getWeek'])
     def changeWeek(self, check):
         'Update whole week at once'
-        response = requests.put(Test.url + 'Week/{0}'.format(self.weekID),
+        response = requests.put(Test.url + 'Week/{0}/{1}'.format(self.weekYear, self.weekNumber),
                                 headers=auth(self.gunnar),
                                 json=self.differentCorrectWeekDTO)
         response = response.json()
         ensureSuccess(response, check)
 
-        response = requests.get(Test.url + 'Week/{0}'.format(self.weekID), headers=auth(self.gunnar)).json()
+        response = requests.get(Test.url + 'Week/{0}/{1}'.format(self.weekYear, self.weekNumber), headers=auth(self.gunnar)).json()
 
         for i in range(1, 6, 1):
             check.equal(2, response['data']['days'][i]['activities'][0]['pictogram']['id'])
 
-    @test(skip_if_failed=['getWeek'])
-    def changeDay(self, check):
-        'Update single day(Day Controller is not getting its own file.)'
-        wednesdayIndex = 2
-
-        someOtherDay = differentDay(wednesdayIndex, state=3, pictogram=4)
-
-        response = requests.put(Test.url + 'Day/{0}'.format(self.weekID),
-                                headers=auth(self.gunnar),
-                                json=someOtherDay)
-        response = response.json()
-        ensureSuccess(response, check)
-        response = requests.get(Test.url + 'Week/{0}'.format(self.weekID), headers=auth(self.gunnar)).json()
-
-        wednesdayFound = False
-        for i in range(0, 7, 1):
-            if wednesdayIndex == response['data']['days'][i]['day']:
-                wednesdayFound = True
-                check.equal(4, response['data']['days'][i]['elements'][0]['id'])
-                check.equal(3, response['data']['days'][i]['elements'][0]['state'])
-        
-        check.is_true(wednesdayFound, message='Did not even find wednesday.')
-
-    @test(depends=['changeDay', 'changeWeek'], skip_if_failed=['newWeek'])
+    @test(depends=['changeWeek'], skip_if_failed=['newWeek'])
     def deleteWeek(self, check):
         'Delete the week'
-        response = requests.delete(Test.url + 'Week/{0}'.format(self.weekID), headers=auth(self.gunnar)).json()
+        response = requests.delete(Test.url + 'Week/{0}/{1}'.format(self.weekYear, self.weekNumber), headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
 
         response = requests.get(Test.url + 'Week', headers=auth(self.gunnar)).json()
