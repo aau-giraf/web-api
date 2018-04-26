@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <!-- CDNJS :: Sortable (https://cdnjs.com/) -->
+    <script src="//cdn.jsdelivr.net/npm/sortablejs@1.7.0/Sortable.min.js"></script>
+
+    <!-- CDNJS :: Vue.Draggable (https://cdnjs.com/) -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/Vue.Draggable/2.16.0/vuedraggable.min.js"></script>
+</head>
+<body>
+    <style>
+        .dable {
+            display:block;
+            min-height: 20px;
+        }
+        .pictogram {
+            width: 50px;
+            height: 50px;
+            padding: 0 !important;
+            border: 1px solid black;
+        }
+        .pictogram img {
+            width:100%;
+            height:100%;
+        }
+    </style>
+    <div id="citizins" class="container row">
+        <button v-on:click="logout">Logout</button>
+        <div v-for="day in week.days" class="col-md-1">
+            <div class="row"><div class="col-md-12" v-text="dayString(day.day)"></div></div>
+            <draggable class="dable" v-model="day.elements" :options="{group:'people'}" @end="updateWeek()">
+                <div class="row" v-for="element in day.elements" :key="element.id">
+                    <div class="col-md-10 pictogram">
+                        <img width="100"  height="100" v-bind:src="'/v1/pictogram/'+element.id+'/image/raw'">
+                    </div>
+                    <div class="col-md-2"><span v-on:click="deleteElement(day, element)" class="glyphicon glyphicon-remove"></span></div>
+                </div>
+            </draggable>
+            <div class="row center-block"><span class="glyphicon glyphicon-plus" @click="addElement(day)"></span></div>
+        </div>
+    </div>
+    <script>
+        var baseUrl = "http://localhost:5000/v1";
+        var token = localStorage.getItem("citizin_token") || null;
+        var app = new Vue({
+            el: '#citizins',
+            data: {
+                weekId: null,
+                week: {
+                    days: []
+                }
+            },
+            methods: {
+                init: function () {
+                    this.weekId = new URL(document.location.href).searchParams.get("id");
+                    var self = this;
+                    $.ajax({
+                        url: baseUrl + "/week/" + self.weekId,
+                        method: "GET",
+                        contentType: "application/json",
+                        headers: { Authorization: "Bearer " + token, ContentType: "application/json" },
+                        success: function (json) {
+                            if (json.success) {
+                                self.week = json.data;
+                                self.week.days.sort(function (a, b) { return a.day - b.day; });
+                                console.log(json);
+                            }
+                        }
+                    });
+                },
+                dayString: function (index) {
+                    var days = ["Mandag", "Tirsdag", "Onsdag", "Torsdag", "Fredag", "Lordag", "Sondag"];
+                    return days[index];
+                },
+                deleteElement: function (day, elm) {
+                    day.elements.splice(day.elements.indexOf(elm), 1);
+                    day.elementIDs.splice(day.elementIDs.indexOf(elm.id), 1);
+                    this.updateWeek();
+                },
+                addElement: function (day) {
+                    var id = prompt("Enter pictogram id");
+                    day.elementsSet = true;
+                    day.elements.push({ id });
+                    day.elementIDs.push(id);
+                    this.updateWeek();
+                },
+                updateWeek: function () {
+                    for (var i = 0; i < this.week.days.length; i++) {
+                        this.week.days[i].elementIDs = this.week.days[i].elements.map(function (e) { return e.id });
+                        this.week.days[i].elementsSet = this.week.days[i].elementIDs.length > 0;
+                    }
+                    var self = this;
+                    this.week.days.sort(function (a, b) { return a.day - b.day; });
+                    $.ajax({
+                        url: baseUrl + "/week/" + self.weekId,
+                        method: "PUT",
+                        contentType: "application/json",
+                        data: JSON.stringify(self.week),
+                        headers: { Authorization: "Bearer " + token, ContentType: "application/json" },
+                        success: function (json) {
+                            console.log(json);
+                            //if (json.success) {
+                            //    json.data.days.sort(function (a, b) { return a.day - b.day; });
+                            //    console.log(self.week)
+                            //    console.log(json.data);
+                            //    self.week = json.data;
+                            //}
+                        }
+                    });
+                },
+                logout: function () {
+                    localStorage.setItem("token", null);
+                }
+            }
+        });
+        app.init();
+    </script>
+</body>
+</html>
