@@ -180,11 +180,11 @@ namespace GirafRest.Controllers
         /// <param name="to">Pictograms and choices will be added to this object.</param>
         /// <param name="from">Pictograms and choices will be read from this object.</param>
         private async Task<bool> CreateWeekDayHelper(Weekday to, WeekdayDTO from){
-            foreach (var elem in from.Activities)
+            foreach (var activityDTO in from.Activities)
             {
-                var picto = await _giraf._context.Pictograms.Where(p => p.Id == elem.Pictogram.Id).FirstOrDefaultAsync();
+                var picto = await _giraf._context.Pictograms.Where(p => p.Id == activityDTO.Pictogram.Id).FirstOrDefaultAsync();
                 if (picto != null)
-                    to.Activities.Add(new Activity(to, picto, elem.Order));
+                    to.Activities.Add(new Activity(to, picto, activityDTO.Order, activityDTO.State));
             }
             return true;
         }

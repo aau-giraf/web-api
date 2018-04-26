@@ -46,13 +46,21 @@ namespace GirafRest.Models
         /// Creates a new weekday.
         /// </summary>
         /// <param name="day">The day of the week which the new weekday should represent.</param>
-        /// <param name="activities">A collection of activies that should be added to the weekday.</param>
-        public Weekday(Days day, List<Pictogram> activities) : this()
+        /// <param name="activityIcons">The icons of the activities that should be added to the weekday.</param>
+        /// <param name="activityStates">The states of the activities that should be added to the weekday.</param>
+        public Weekday(Days day, List<Pictogram> activityIcons, List<ActivityState> activityStates) : this()
         {
-            this.Day = day;
-            for (int i = 0; i < activities.Count; i++)
+            if (activityIcons.Count != activityStates.Count)
             {
-                this.Activities.Add(new Activity(this, activities[i], i));
+                throw new ArgumentException($"{activityIcons.Count} elements are in activityicons, " +
+                                            $"but {activityStates.Count} elements are in activityStates. " +
+                                            $"The numbers must match.");
+            }
+            
+            this.Day = day;
+            for (int i = 0; i < activityIcons.Count; i++)
+            {
+                this.Activities.Add(new Activity(this, activityIcons[i], i, activityStates[i]));
             }
         }
         

@@ -37,6 +37,9 @@ namespace GirafRest.Models
         [ForeignKey("ResourceKey")]
         public virtual Pictogram Pictogram { get; set; }
 
+        [Required]
+        public ActivityState State { get; set; }
+
         public int Order { get; set; }
 
         /// <summary>
@@ -44,12 +47,13 @@ namespace GirafRest.Models
         /// </summary>
         /// <param name="weekday">The involved weekday.</param>
         /// <param name="resource">The involved resource.</param>
-        public Activity(Weekday weekday, Pictogram pictogram, int order)
+        public Activity(Weekday weekday, Pictogram pictogram, int order, ActivityState state)
         {
             this.Other = weekday;
             this.PictogramKey = pictogram.Id;
             this.Pictogram = pictogram;
             this.Order = order;
+            this.State = state;
         }
 
         /// <summary>

@@ -8,13 +8,14 @@ def auth(token):
     return {"Authorization": "Bearer {0}".format(token)}
 
 
-def day(number):
+def day(number, state=1):
     return {
         "day": number,
         "activities": [{
             "pictogram": {
                 "title": "sig",
                 "id": 4,
+                "state": state,
                 "lastEdit": "2018-03-28T10:47:51.628333",
                 "accessLevel": 0
             },
@@ -23,13 +24,14 @@ def day(number):
     }
 
 
-def differentDay(number):
+def differentDay(number, state=3, pictogram=2):
     return {
         "day": number,
         "activities": [{
             "pictogram": {
                 "title": "JUNK",
-                "id": 2,
+                "id": pictogram,
+                "state": state,
                 "lastEdit": "2017-03-28T10:47:51.628333",
                 "accessLevel": 0
             },
@@ -126,6 +128,11 @@ class WeekControllerTest(TestCase):
         check.equal('The best week of the day', response['data'][0]['name'])
         self.weekID = response['data'][0]['id']
 
+        # Check that information is correct in each day.
+        for i in range(0, 7, 1):
+            check.equal(4, response['data']['days'][i]['elements'][0]['id'])
+            check.equal(1, response['data']['days'][i]['elements'][0]['state'])
+
     @test(depends=['getNoWeeks', 'newWeek'])
     def newWeekTooManyDays(self, check):
         'Try to create week with too many weekdays'
@@ -161,10 +168,9 @@ class WeekControllerTest(TestCase):
     @test(skip_if_failed=['getWeek'])
     def changeDay(self, check):
         'Update single day(Day Controller is not getting its own file.)'
-        someOtherDay = {
-            "day": "Wednesday",
-            "activities": []
-        }
+        wednesdayIndex = 2
+
+        someOtherDay = differentDay(wednesdayIndex, state=3, pictogram=4)
 
         response = requests.put(Test.url + 'Day/{0}'.format(self.weekID),
                                 headers=auth(self.gunnar),
@@ -172,10 +178,15 @@ class WeekControllerTest(TestCase):
         response = response.json()
         ensureSuccess(response, check)
         response = requests.get(Test.url + 'Week/{0}'.format(self.weekID), headers=auth(self.gunnar)).json()
-        wednesdayIndex = 2
-        for i in range(1, 6, 1):
+
+        wednesdayFound = False
+        for i in range(0, 7, 1):
             if wednesdayIndex == response['data']['days'][i]['day']:
-                check.equal(3, response['data']['days'][i]['activities'][0]['pictogram']['id'])
+                wednesdayFound = True
+                check.equal(4, response['data']['days'][i]['elements'][0]['id'])
+                check.equal(3, response['data']['days'][i]['elements'][0]['state'])
+        
+        check.is_true(wednesdayFound, message='Did not even find wednesday.')
 
     @test(depends=['changeDay', 'changeWeek'], skip_if_failed=['newWeek'])
     def deleteWeek(self, check):
