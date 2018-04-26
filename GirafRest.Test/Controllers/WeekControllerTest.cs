@@ -155,7 +155,13 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var week = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.First();
             var orderNumber = 1;
-            var activities = new List<Activity>(){new Activity(week.Weekdays[0], _testContext.MockPictograms[0], orderNumber, ActivityState.Active)};    //TODO: Correct state here
+            var state = ActivityState.Active;
+            
+            var activities = new List<Activity>()
+            {
+                new Activity(week.Weekdays[0], _testContext.MockPictograms[0], orderNumber, state)
+            };
+            
             week.Weekdays[0].Activities = activities;
             var res = wc.UpdateWeek(2018, 20, new WeekDTO(week)).Result;
 
@@ -163,6 +169,14 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.True(res.Success);
             Assert.Equal(orderNumber, res.Data.Days.ToList()[0].Activities.ToList()[0].Order);
+            Assert.Equal(state, res.Data.Days.ToList()[0].Activities.ToList()[0].State);
+
+            var getResult = wc.ReadUsersWeekSchedule(2018, 20).Result;
+            
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            Assert.True(getResult.Success);
+            Assert.Equal(orderNumber, getResult.Data.Days.ToList()[0].Activities.ToList()[0].Order);
+            Assert.Equal(state, getResult.Data.Days.ToList()[0].Activities.ToList()[0].State);
         }
 
         [Fact]
