@@ -1,0 +1,112 @@
+body {
+    background-color: #ffd268;
+    margin: 0px;
+    padding: 0px;
+}
+
+*{margin: 0; padding: 0; border: 0; outline: 0;}
+
+#header{
+    width: 100%;
+    text-align: center;
+    height: 7vh;
+    color: black;
+    background-color: 	#2F4F4F;;
+}
+
+#header h1{
+    padding: 1vh;
+    font-size: 0.5vh;
+}
+
+#container{
+    width: 100%;
+    height: 90vh;
+    margin-right: auto;
+    margin-left: auto;
+    background-color: #ffd268;
+}
+
+#container h1{
+    color: 	black;
+}
+
+#title {
+    text-align: center;
+    margin-top: 10vh;
+    font-size: 2vh;
+}
+
+#content{
+    position: absolute;
+    width: 40%;
+    height: 40%;
+    top:30%;
+    left: 30%;
+}
+
+#footer{
+    position: absolute;
+     bottom: 0px;
+     text-align: center;
+     width: 100%;
+     height: 7vh;
+     background-color: 	#2F4F4F;
+}
+
+#footer p{
+    padding-top: 2.5vh; 
+}
+
+@import url(https://fonts.googleapis.com/css?family=Roboto:300);
+
+.login-page {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+.form {
+  position: relative;
+  background: 	#2F4F4F;
+  max-width: 60vh;
+  padding: 3vh;
+  text-align: center;
+}
+.form input {
+  background: white;
+  width: 100%;
+  border: 0;
+  margin: 0 0 2vh;
+  padding: 2vh 0px;
+  text-indent: 10px;
+  font-size: 1.5vh;
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif
+}
+
+.form .message {
+  margin: 15px 0 0;
+  color: lightgrey;
+  font-size: 12px;
+}
+.form .message a {
+  color: #ffd268;
+  text-decoration: none;
+}
+.form .register-form {
+  display: none;
+}
+
+#loginErrorMsg{
+    visibility: hidden;
+    color: #ff6c00;
+    font-size: 1.5vh;
+    text-decoration: underline;
+}
+
+#sidebar{
+    width: 25vh;
+    background-color: rgb(47, 109, 109);
+    height: 100%;
+    float:left;
+}
+
