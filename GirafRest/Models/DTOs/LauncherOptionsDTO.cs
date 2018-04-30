@@ -6,26 +6,13 @@ namespace GirafRest.Models.DTOs
     public enum CompleteMark { Removed = 0, Checkmark = 1, Circle = 2, GrayedOut = 3, MovedRight = 4, MovedLeft = 5 }
     public enum CancelMark { Removed = 0, Cross = 1 }
     public enum DefaultTimer { hourglass = 1, analogClock = 2 }
-    public enum Theme { girafYellow = 1, girafGreen = 2, greyscale = 3 }
-
+    public enum Theme { girafYellow = 1, girafGreen = 2, girafGrey = 3 }
+    public enum ColorThemeWeekSchedules {standard = 1, yellowAndWhite = 2}
     /// <summary>
     /// A Data Transfer Object for the user settings used by the launcher
     /// </summary>
     public class LauncherOptionsDTO
     {
-        /// <summary>
-        /// A flag indicating whether to display animations in the launcher or not.
-        /// </summary>
-        [Required]
-        public bool DisplayLauncherAnimations { get; set; }
-        /// <summary>
-        /// A field for storing how many rows to display in the GirafLauncher application.
-        /// </summary>
-        public int? AppGridSizeRows { get; set; }
-        /// <summary>
-        /// A field for storing how many columns to display in the GirafLauncher application.
-        /// </summary>
-        public int? AppGridSizeColumns { get; set; }
         /// <summary>
         /// Preferred orientation of device/screen
         /// </summary>
@@ -59,11 +46,19 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         [Required]
         public Theme Theme { get; set; }
-
+        /// <summary>
+        /// Property for setting the color theme of weekschedules
+        /// </summary>
+        [Required]
+        public ColorThemeWeekSchedules ColorThemeWeekSchedules { get; set; }
         /// <summary>
         /// defines the number of days to display for a user in a weekschedule
         /// </summary>
         public int? NrOfDaysToDisplay { get; set; }
+        /// <summary>
+        /// Flag for indicating whether or not greyscale is enabled
+        /// </summary>
+        public bool GreyScale { get; set; }
 
         /// <summary>
         /// Constructor to create a DTO based on the actual object
@@ -71,9 +66,6 @@ namespace GirafRest.Models.DTOs
         /// <param name="options">The launcher options in need of transfer</param>
         public LauncherOptionsDTO(LauncherOptions options)
         {
-            this.AppGridSizeColumns = options.AppGridSizeColumns;
-            this.AppGridSizeRows = options.AppGridSizeRows;
-            this.DisplayLauncherAnimations = options.DisplayLauncherAnimations;
             this.Orientation = options.Orientation;
             this.CompleteMark = options.CompleteMark;
             this.CancelMark = options.CancelMark;
@@ -82,15 +74,13 @@ namespace GirafRest.Models.DTOs
             this.ActivitiesCount = options.ActivitiesCount;
             this.Theme = options.Theme;
             this.NrOfDaysToDisplay = options.NrOfDaysToDisplay;
+            this.ColorThemeWeekSchedules = options.ColorThemeWeekSchedules;
+            this.GreyScale = this.GreyScale;
         }
 
         public LauncherOptionsDTO()
         {
-            Theme = Theme.girafYellow;
-            DefaultTimer = DefaultTimer.hourglass;
-            CompleteMark = CompleteMark.Checkmark;
-            CancelMark = CancelMark.Cross;
-            Orientation = Orientation.portrait;
+
         }
     }
 }

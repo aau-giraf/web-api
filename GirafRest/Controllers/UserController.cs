@@ -490,25 +490,6 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Enables or disables launcher animations for the currently authenticated user.
-        /// </summary>
-        /// <param name="enabled">A bool indicating whether launcher animations should be enabled or not.</param>
-        /// <returns>Ok and a userDTO of the current user.</returns>
-        [HttpPost("launcher_animations/{enabled}")]
-        public async Task<Response<GirafUserDTO>> ToggleAnimations(bool enabled)
-        {
-            var user = await _giraf.LoadUserAsync(HttpContext.User);
-
-            user.Settings.DisplayLauncherAnimations = enabled;
-            await _giraf._context.SaveChangesAsync();
-
-            // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
-
-            return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));
-        }
-
-        /// <summary>
         /// Gets the citizens for the specific user corresponding to the provided username.
         /// </summary>
         /// <returns>
@@ -861,7 +842,8 @@ namespace GirafRest.Controllers
                 !(Enum.IsDefined(typeof(CompleteMark), options.CompleteMark)) ||
                 !(Enum.IsDefined(typeof(CancelMark), options.CancelMark)) ||
                 !(Enum.IsDefined(typeof(DefaultTimer), options.DefaultTimer)) ||
-                !(Enum.IsDefined(typeof(Theme), options.Theme)))
+                !(Enum.IsDefined(typeof(Theme), options.Theme)) || 
+                !(Enum.IsDefined(typeof(ColorThemeWeekSchedules), options.ColorThemeWeekSchedules))) 
 
             {
                 return ErrorCode.InvalidProperties;

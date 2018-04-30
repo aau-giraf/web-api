@@ -710,42 +710,7 @@ namespace GirafRest.Test
 
         #endregion
         #region Settings
-        [Fact]
-        public void UpdateUserSettings_10_appGridSizeColumns()
-        {
-            var usercontroller = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
-            
-            var dto = new LauncherOptionsDTO();
-            dto.AppGridSizeColumns = 10;
-            usercontroller.UpdateUserSettings(dto).Wait();
 
-            Assert.Equal(10, _testContext.MockUsers[CitizenDepTwo].Settings.AppGridSizeColumns);
-        }
-        [Fact]
-        public void UpdateUserSettings_10_appGridSizeRows()
-        {
-            var usercontroller = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
-            
-            var dto = new LauncherOptionsDTO();
-            dto.AppGridSizeRows = 10;
-            usercontroller.UpdateUserSettings(dto).Wait();
-
-            Assert.Equal(10, _testContext.MockUsers[CitizenDepTwo].Settings.AppGridSizeRows);
-        }
-        [Fact]
-        public void UpdateUserSettings_True_displayLauncherAnimations()
-        {
-            var usercontroller = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
-            
-            var dto = new LauncherOptionsDTO();
-            dto.DisplayLauncherAnimations = true;
-            usercontroller.UpdateUserSettings(dto).Wait();
-
-            Assert.True(_testContext.MockUsers[CitizenDepTwo].Settings.DisplayLauncherAnimations);
-        }
         [Fact]
         public void UpdateUserSettings_landscape_OrientationOk()
         {
@@ -755,9 +720,9 @@ namespace GirafRest.Test
             var dto = new LauncherOptionsDTO();
             dto.Orientation = Orientation.landscape;
             usercontroller.UpdateUserSettings(dto).Wait();
-
             Assert.Equal(Orientation.landscape, _testContext.MockUsers[CitizenDepTwo].Settings.Orientation);
-        }        
+        }  
+
         [Fact]
         public void UpdateUserSettings_movedToRight_checkResourceAppearenceOk()
         {
@@ -769,7 +734,8 @@ namespace GirafRest.Test
             usercontroller.UpdateUserSettings(dto).Wait();
 
             Assert.Equal(CompleteMark.MovedRight, _testContext.MockUsers[CitizenDepTwo].Settings.CompleteMark);
-        }        
+        }
+
         [Fact]
         public void UpdateUserSettings_analogClock_defaultTimerOk()
         {
@@ -781,7 +747,8 @@ namespace GirafRest.Test
             usercontroller.UpdateUserSettings(dto).Wait();
 
             Assert.Equal(DefaultTimer.analogClock, _testContext.MockUsers[CitizenDepTwo].Settings.DefaultTimer);
-        }        
+        }    
+
         [Fact]
         public void UpdateUserSettings_25_timerSecondsOk()
         {
@@ -794,6 +761,7 @@ namespace GirafRest.Test
 
             Assert.Equal(25, _testContext.MockUsers[CitizenDepTwo].Settings.TimerSeconds);
         }
+
         [Fact]
         public void UpdateUserSettings_10_activitiesCountOk()
         {
@@ -806,6 +774,7 @@ namespace GirafRest.Test
 
             Assert.Equal(30, _testContext.MockUsers[CitizenDepTwo].Settings.ActivitiesCount);
         }
+
         [Fact]
         public void UpdateUserSettings_girafGreen_themeOk()
         {
@@ -825,12 +794,14 @@ namespace GirafRest.Test
             var user = _testContext.MockUsers[CitizenDepTwo];
             _testContext.MockUserManager.MockLoginAsUser(user);
 
-            var dto = new LauncherOptionsDTO() { 
+            var dto = new LauncherOptionsDTO()
+            {
                 Theme = Theme.girafGreen,
                 TimerSeconds = 120,
                 DefaultTimer = DefaultTimer.analogClock,
                 ActivitiesCount = 5,
-                NrOfDaysToDisplay = 12
+                NrOfDaysToDisplay = 12,
+                ColorThemeWeekSchedules = ColorThemeWeekSchedules.yellowAndWhite,
             };
             usercontroller.UpdateUserSettings(user.Id, dto).Wait();
 
@@ -839,6 +810,8 @@ namespace GirafRest.Test
             Assert.Equal(DefaultTimer.analogClock, _testContext.MockUsers[CitizenDepTwo].Settings.DefaultTimer);
             Assert.Equal(5, _testContext.MockUsers[CitizenDepTwo].Settings.ActivitiesCount);
             Assert.Equal(12, _testContext.MockUsers[CitizenDepTwo].Settings.NrOfDaysToDisplay);
+            Assert.Equal(ColorThemeWeekSchedules.yellowAndWhite, 
+                         _testContext.MockUsers[CitizenDepTwo].Settings.ColorThemeWeekSchedules);
         }
 
         [Fact]
@@ -864,29 +837,7 @@ namespace GirafRest.Test
         }
 
         #endregion
-        #region ToggleAnimations
-        [Fact]
-        public void ToggleAnimations_True_AnimationsIsTrue()
-        {
-            var usercontroller = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
 
-            usercontroller.ToggleAnimations(true).Wait();
-
-            Assert.True(_testContext.MockUsers[CitizenDepTwo].Settings.DisplayLauncherAnimations);
-        }
-
-        [Fact]
-        public void ToggleAnimations_False_AnimationsIsFalse()
-        {
-            var usercontroller = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
-
-            usercontroller.ToggleAnimations(false).Wait();
-
-            Assert.True(!_testContext.MockUsers[CitizenDepTwo].Settings.DisplayLauncherAnimations);
-        }
-        #endregion
         
         #region RemoveDepartment
         [Fact]
