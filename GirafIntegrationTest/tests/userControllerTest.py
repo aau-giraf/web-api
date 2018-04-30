@@ -182,14 +182,14 @@ class UserControllerTest(TestCase):
     def settingsMultiple(self, check):
         'Set all settings'
         body = {
-                "orientation": "portrait",
-                "completeMark": "Removed",
-                "cancelMark": "Removed",
-                "defaultTimer": "hourglass",
+                "orientation": "landscape",
+                "completeMark": "Circle",
+                "cancelMark": "Cross",
+                "defaultTimer": "analogClock",
                 "timerSeconds": 60,
                 "activitiesCount": 3,
-                "theme": "girafYellow",
-                "colorThemeWeekSchedules": "standard",
+                "theme": "girafRed",
+                "colorThemeWeekSchedules": "yellowAndWhite",
                 "nrOfDaysToDisplay": 2,
                 "greyScale": True
         }
@@ -198,15 +198,15 @@ class UserControllerTest(TestCase):
 
         response = requests.get(Test.url + 'User/settings', headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
-        check.equal("portrait",      response['data']["orientation"])
-        check.equal("Removed",      response['data']["completeMark"])
-        check.equal("Removed",      response['data']["cancelMark"])
-        check.equal("hourglass",      response['data']["defaultTimer"])
+        check.equal(2,      response['data']["orientation"])
+        check.equal(2,      response['data']["completeMark"])
+        check.equal(1,      response['data']["cancelMark"])
+        check.equal(2,      response['data']["defaultTimer"])
         check.equal(60,      response['data']["timerSeconds"])
         check.equal(3,      response['data']["activitiesCount"])
-        check.equal("girafYellow",      response['data']["theme"])
-        check.equal("standard",      response['data']["colorThemeWeekSchedules"])
-        check.equal(2,      response['data']["nrOfDaysToDisplay"])
+        check.equal(3,      response['data']["theme"])
+        check.equal(2,      response['data']["colorThemeWeekSchedules"])
+        check.equal(2,         response['data']["nrOfDaysToDisplay"])
         check.equal(True,      response['data']["greyScale"])
 
     @test(skip_if_failed=['logins'])
