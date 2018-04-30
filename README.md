@@ -63,9 +63,9 @@ Finally run the following shell-commands in the `scripts` directory and substitu
   - If you already have a giraf-database that you want to preserve: 
     `mysqldump -uroot -p --databases giraf > giraf.sql.bak`
   - Drop the old database
-    `echo "DROP DATABASE giraf;" | mysql -uroot -p`
+    `echo "DROP DATABASE giraf;" | mysql -u<user> -p`
   - Create the structure for the new database
-    `dotnet ef database update`
+    `cd ../GirafRest && dotnet ef database update && cd ../scripts`
   - Migrate data from the old database (in `girafdump.sql`)
     `mysql -u<user> -p < migrate.sql`
 
