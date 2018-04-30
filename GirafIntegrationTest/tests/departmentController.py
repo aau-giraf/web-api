@@ -184,7 +184,7 @@ class DepartmentControllerTest(TestCase):
     def newPictogram(self, check):
         'Department posts private Cyclopian pictogram'
         body = {
-            "accessLevel": 2,
+            "accessLevel": 3,
             "title": "Cyclopian",
             "id": -1,
             "lastEdit": "2018-03-19T10:40:26.587Z"
@@ -224,7 +224,7 @@ class DepartmentControllerTest(TestCase):
     def unauthorizedPictogramAdd2(self, check):
         'Kurt tries to add his own pictogram to Dalgaardsholmstuen'
         body = {
-            "accessLevel": 2,
+            "accessLevel": 1,
             "title": "Squirmy and Rugose",
             "id": -1,
             "lastEdit": "2018-03-19T10:40:26.587Z"
@@ -236,17 +236,38 @@ class DepartmentControllerTest(TestCase):
 
         response = requests.post(Test.url + 'Department/{0}/resource/{1}'
                                  .format(self.dalgardsholmstuenId, pictogram['id']),
-                                 json=pictogram, headers=auth(self.gunnar)).json()
+                                 json=pictogram,
+                                 headers=auth(self.gunnar)).json()
         ensureError(response, check)
 
         # Check that nothing's changed in database
         response = requests.get(Test.url + 'Department/{0}'.format(self.dalgardsholmstuenId)).json()
-        check.is_false(pictogramIsInList(self.cyclopianBody['id'], response['data']['resources']),
+        check.is_false(pictogramIsInList(pictogram['id'], response['data']['resources']),
                        message='Pictogram was found in department resources, but should not have been added')
 
     @test(skip_if_failed=['logins', 'newDepartment'])
     def unauthorizedPictogramAdd3(self, check):
         'Gunnar tries to add his own pictogram to Dalgaardsholmstuen'
+        body = {
+            "accessLevel": 1,
+            "title": "The End of the World as We Know It",
+            "id": -1,
+            "lastEdit": "2018-03-19T10:40:26.587Z"
+        }
+        response = requests.post(Test.url + 'pictogram', json=body, headers={"Authorization": "Bearer {0}".format(
+            self.gunnar)}).json()
+        ensureSuccess(response, check)
+        pictogram = response['data']
+
+        response = requests.post(Test.url + 'Department/{0}/resource/{1}'
+                                 .format(self.dalgardsholmstuenId, pictogram['id']),
+                                 json=pictogram,
+                                 headers=auth(self.gunnar)).json()
+        ensureError(response, check)
+
+    @test(skip_if_failed=['logins', 'newDepartment'], expect_fail=True)
+    def unauthorizedPictogramAdd4(self, check):
+        'Gunnar tries to add a pictogram directly through pictogram controller to Dalgaardsholmstuen'
         body = {
             "accessLevel": 2,
             "title": "The End of the World as We Know It",
@@ -254,18 +275,13 @@ class DepartmentControllerTest(TestCase):
             "lastEdit": "2018-03-19T10:40:26.587Z"
         }
         response = requests.post(Test.url + 'pictogram', json=body, headers={"Authorization": "Bearer {0}".format(
-            self.dalgaardsholmstuenToken)}).json()
+            self.gunnar)}).json()
         ensureSuccess(response, check)
         pictogram = response['data']
 
-        response = requests.post(Test.url + 'Department/{0}/resource/{1}'
-                                 .format(self.dalgardsholmstuenId, pictogram['id']),
-                                 json=pictogram, headers=auth(self.gunnar)).json()
-        ensureError(response, check)
-
         # Check that nothing's changed in database
         response = requests.get(Test.url + 'Department/{0}'.format(self.dalgardsholmstuenId)).json()
-        check.is_false(pictogramIsInList(self.cyclopianBody['id'], response['data']['resources']),
+        check.is_false(pictogramIsInList(pictogram['id'], response['data']['resources']),
                        message='Pictogram was found in department resources, but should not have been added')
 
     @test(skip_if_failed=['unauthorizedPictogramAdd', 'unauthorizedPictogramAdd1'])

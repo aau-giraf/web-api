@@ -116,7 +116,7 @@ class UserControllerTest(TestCase):
         'Post Wendesday pictogram'
         self.wednesday = 'Wednesday{0}'.format(str(time.time()))
         wednesdayBody = {
-            "accessLevel": 2,
+            "accessLevel": 3,
             "title": "wednesday",
             "id": 5,
             "lastEdit": "2018-03-19T10:40:26.587Z"
