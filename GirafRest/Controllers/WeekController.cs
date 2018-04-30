@@ -125,6 +125,7 @@ namespace GirafRest.Controllers
             {
                 return new ErrorResponse<WeekDTO>(ErrorCode.MissingProperties, "thumbnail");
             }
+
             week.Name = newWeek.Name;
             var modelErrorCode = newWeek.ValidateModel();
             if (modelErrorCode.HasValue)

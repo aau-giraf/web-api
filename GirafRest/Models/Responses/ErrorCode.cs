@@ -59,6 +59,7 @@
         MissingSettings,
         InvalidAmountOfWeekdays,
         WeekAlreadyExists,
-        InvalidDay
+        InvalidDay,
+        DuplicateWeekScheduleName
     }
 }

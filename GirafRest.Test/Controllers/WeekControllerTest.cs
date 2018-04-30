@@ -130,6 +130,8 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
 
+        #endregion
+        #region CreateWeek
         [Fact]
         public void UpdateWeek_NewWeekValidDTO_Ok()
         {
@@ -201,6 +203,8 @@ namespace GirafRest.Test
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
+
+
         #endregion
     }
 }
