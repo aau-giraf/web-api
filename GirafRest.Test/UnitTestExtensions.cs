@@ -218,6 +218,7 @@ namespace GirafRest.Test
                             },
                             new Week(){
                                 Id = 1,
+                                Name = "My not so awesome week",
                                 Weekdays = new List<Weekday>(){
                                     new Weekday(){
                                         Day = Days.Monday
@@ -244,6 +245,7 @@ namespace GirafRest.Test
                             },
                         };
                         MockUsers[0].WeekSchedule.Add(mockWeeks[0]);
+                        MockUsers[0].WeekSchedule.Add(mockWeeks[1]);
                         MockUsers[1].WeekSchedule.Add(mockWeeks[1]);
                         MockUsers[2].WeekSchedule.Clear();
                         MockUsers[3].WeekSchedule.Clear();
