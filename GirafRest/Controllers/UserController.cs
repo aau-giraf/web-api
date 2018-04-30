@@ -635,7 +635,7 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Updates the user settings.
+        /// Updates the user settings entirely from the LauncherOptionsDTO
         /// </summary>
         /// <returns>
         /// MissingProperties if options is null or some required fields is not set
