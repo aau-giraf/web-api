@@ -107,6 +107,10 @@ namespace GirafRest.Controllers
                     return new ErrorResponse<WeekDTO>(ErrorCode.ThumbnailDoesNotExist);
                 week.Thumbnail = thumbnail;
             }
+            // check that we cannot update a weekschedule with the same name on the same user
+            if (user.WeekSchedule.Any(w => w.Name == newWeek.Name && w.Id != id))
+                return new ErrorResponse<WeekDTO>(ErrorCode.DuplicateWeekScheduleName);
+
             week.Name = newWeek.Name;
             // If newWeek.Days should support number of days other than 7, change this check to if(newWeek.Days.Count < 1)
             if (newWeek.Days == null || newWeek.Days.Count != 7)
@@ -156,6 +160,10 @@ namespace GirafRest.Controllers
             
             if (thumbnail == null)
                 return new ErrorResponse<WeekDTO>(ErrorCode.ThumbnailDoesNotExist);
+
+            // check that we cannot create a weekschedule with the same name on the same user
+            if (user.WeekSchedule.Any(w => w.Name == newWeek.Name))
+                return new ErrorResponse<WeekDTO>(ErrorCode.DuplicateWeekScheduleName);
 
             var week = new Week(thumbnail) {Name = newWeek.Name};
             if (newWeek.Days != null)
