@@ -37,28 +37,6 @@ namespace GirafRest.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "LauncherOptions",
-                columns: table => new
-                {
-                    Key = table.Column<long>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ActivitiesCount = table.Column<int>(nullable: true),
-                    AppGridSizeColumns = table.Column<int>(nullable: true),
-                    AppGridSizeRows = table.Column<int>(nullable: true),
-                    CheckResourceAppearence = table.Column<int>(nullable: false),
-                    DefaultTimer = table.Column<int>(nullable: false),
-                    DisplayLauncherAnimations = table.Column<bool>(nullable: false),
-                    NrOfDaysToDisplay = table.Column<int>(nullable: true),
-                    Orientation = table.Column<int>(nullable: false),
-                    Theme = table.Column<int>(nullable: false),
-                    TimerSeconds = table.Column<int>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LauncherOptions", x => x.Key);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Pictograms",
                 columns: table => new
                 {
@@ -73,6 +51,28 @@ namespace GirafRest.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Pictograms", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Setting",
+                columns: table => new
+                {
+                    Key = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    ActivitiesCount = table.Column<int>(nullable: true),
+                    CancelMark = table.Column<int>(nullable: false),
+                    ColorThemeWeekSchedules = table.Column<int>(nullable: false),
+                    CompleteMark = table.Column<int>(nullable: false),
+                    DefaultTimer = table.Column<int>(nullable: false),
+                    GreyScale = table.Column<bool>(nullable: false),
+                    NrOfDaysToDisplay = table.Column<int>(nullable: true),
+                    Orientation = table.Column<int>(nullable: false),
+                    Theme = table.Column<int>(nullable: false),
+                    TimerSeconds = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Setting", x => x.Key);
                 });
 
             migrationBuilder.CreateTable(
@@ -94,48 +94,6 @@ namespace GirafRest.Migrations
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUsers",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    AccessFailedCount = table.Column<int>(nullable: false),
-                    ConcurrencyStamp = table.Column<string>(nullable: true),
-                    DepartmentKey = table.Column<long>(nullable: true),
-                    DisplayName = table.Column<string>(nullable: true),
-                    Email = table.Column<string>(maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(nullable: false),
-                    IsDepartment = table.Column<bool>(nullable: false),
-                    LockoutEnabled = table.Column<bool>(nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
-                    NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
-                    PasswordHash = table.Column<string>(nullable: true),
-                    PhoneNumber = table.Column<string>(nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(nullable: false),
-                    SecurityStamp = table.Column<string>(nullable: true),
-                    SettingsKey = table.Column<long>(nullable: true),
-                    TwoFactorEnabled = table.Column<bool>(nullable: false),
-                    UserIcon = table.Column<byte[]>(nullable: true),
-                    UserName = table.Column<string>(maxLength: 256, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AspNetUsers_Departments_DepartmentKey",
-                        column: x => x.DepartmentKey,
-                        principalTable: "Departments",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_AspNetUsers_LauncherOptions_SettingsKey",
-                        column: x => x.SettingsKey,
-                        principalTable: "LauncherOptions",
-                        principalColumn: "Key",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -190,6 +148,48 @@ namespace GirafRest.Migrations
                         principalTable: "Pictograms",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUsers",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    AccessFailedCount = table.Column<int>(nullable: false),
+                    ConcurrencyStamp = table.Column<string>(nullable: true),
+                    DepartmentKey = table.Column<long>(nullable: true),
+                    DisplayName = table.Column<string>(nullable: true),
+                    Email = table.Column<string>(maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(nullable: false),
+                    IsDepartment = table.Column<bool>(nullable: false),
+                    LockoutEnabled = table.Column<bool>(nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
+                    NormalizedEmail = table.Column<string>(maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
+                    PasswordHash = table.Column<string>(nullable: true),
+                    PhoneNumber = table.Column<string>(nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(nullable: false),
+                    SecurityStamp = table.Column<string>(nullable: true),
+                    SettingsKey = table.Column<long>(nullable: true),
+                    TwoFactorEnabled = table.Column<bool>(nullable: false),
+                    UserIcon = table.Column<byte[]>(nullable: true),
+                    UserName = table.Column<string>(maxLength: 256, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_Departments_DepartmentKey",
+                        column: x => x.DepartmentKey,
+                        principalTable: "Departments",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_Setting_SettingsKey",
+                        column: x => x.SettingsKey,
+                        principalTable: "Setting",
+                        principalColumn: "Key",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -395,7 +395,8 @@ namespace GirafRest.Migrations
                     Order = table.Column<int>(nullable: false),
                     OtherKey = table.Column<long>(nullable: false),
                     PictogramKey = table.Column<long>(nullable: false),
-                    ResourceKey = table.Column<long>(nullable: true)
+                    ResourceKey = table.Column<long>(nullable: true),
+                    State = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -613,7 +614,7 @@ namespace GirafRest.Migrations
                 name: "Departments");
 
             migrationBuilder.DropTable(
-                name: "LauncherOptions");
+                name: "Setting");
         }
     }
 }

@@ -140,7 +140,7 @@ namespace GirafRest.Controllers
         /// UserNotFound if user was not found, or logged in user is not authorized to see user.
         ///</returns>
         [HttpGet("{id}/settings")]
-        public async Task<Response<LauncherOptionsDTO>> GetSettings(string id)
+        public async Task<Response<SettingDTO>> GetSettings(string id)
         {
             //Declare needed variables
             GirafUser user;
@@ -148,12 +148,12 @@ namespace GirafRest.Controllers
             //Check if the caller has supplied a query, find the user with the given name if so,
             //else find the user with the given username.
             if (string.IsNullOrEmpty(id))
-                return new ErrorResponse<LauncherOptionsDTO>(ErrorCode.MissingProperties, "id");
+                return new ErrorResponse<SettingDTO>(ErrorCode.MissingProperties, "id");
 
             //First attempt to fetch the user and check that he exists
             user = _giraf._context.Users.Include(u => u.Settings).FirstOrDefault(u => u.Id == id);
             if (user == null)
-                return new ErrorResponse<LauncherOptionsDTO>(ErrorCode.UserNotFound);
+                return new ErrorResponse<SettingDTO>(ErrorCode.UserNotFound);
 
             //Get the current user and check if he is a guardian in the same department as the user
             //or an Admin, in which cases the user is allowed to edit the settings.
@@ -164,9 +164,9 @@ namespace GirafRest.Controllers
 
             var errorCode = _authentication.CheckUserAccess(authUser, authRole, user, userRole);
             if (errorCode.HasValue)
-                new ErrorResponse<LauncherOptionsDTO>(ErrorCode.NotAuthorized);
+                new ErrorResponse<SettingDTO>(ErrorCode.NotAuthorized);
 
-            return new Response<LauncherOptionsDTO>(new LauncherOptionsDTO(user.Settings));
+            return new Response<SettingDTO>(new SettingDTO(user.Settings));
         }
 
         /// <summary>
@@ -490,25 +490,6 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Enables or disables launcher animations for the currently authenticated user.
-        /// </summary>
-        /// <param name="enabled">A bool indicating whether launcher animations should be enabled or not.</param>
-        /// <returns>Ok and a userDTO of the current user.</returns>
-        [HttpPost("launcher_animations/{enabled}")]
-        public async Task<Response<GirafUserDTO>> ToggleAnimations(bool enabled)
-        {
-            var user = await _giraf.LoadUserAsync(HttpContext.User);
-
-            user.Settings.DisplayLauncherAnimations = enabled;
-            await _giraf._context.SaveChangesAsync();
-
-            // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
-
-            return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));
-        }
-
-        /// <summary>
         /// Gets the citizens for the specific user corresponding to the provided username.
         /// </summary>
         /// <returns>
@@ -643,53 +624,33 @@ namespace GirafRest.Controllers
         /// <returns>The current user's settings if Ok </returns>
         [HttpGet("settings")]
         [Authorize]
-        public async Task<Response<LauncherOptionsDTO>> ReadUserSettins()
+        public async Task<Response<SettingDTO>> ReadUserSettins()
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
 
             if (user == null)
-                return new ErrorResponse<LauncherOptionsDTO>(ErrorCode.NotAuthorized);
+                return new ErrorResponse<SettingDTO>(ErrorCode.NotAuthorized);
 
-            return new Response<LauncherOptionsDTO>(new LauncherOptionsDTO(user.Settings));
+            return new Response<SettingDTO>(new SettingDTO(user.Settings));
         }
 
         /// <summary>
-        /// Updates the user settings.
+        /// Updates the currently authenticated user settings.
         /// </summary>
         /// <returns>
         /// MissingProperties if options is null or some required fields is not set
         /// </returns>
         /// <param name="options">Options.</param>
         [HttpPatch("settings")]
-        public async Task<Response<LauncherOptions>> UpdateUserSettings([FromBody] LauncherOptionsDTO options)
+        public async Task<Response<SettingDTO>> UpdateUserSettings([FromBody] SettingDTO options)
         {
-            if (options == null)
-                return new ErrorResponse<LauncherOptions>(ErrorCode.MissingProperties, "options");
-
-            var error = ValidateOptions(options);
-            if (error.HasValue)
-                return new ErrorResponse<LauncherOptions>(ErrorCode.InvalidProperties, "options");
-
             var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
 
-            user.Settings = _giraf._context.Users.Where(u => u.Id == user.Id).Select(s => s.Settings).FirstOrDefault();
-
-            if (user == null)
-                return new ErrorResponse<LauncherOptions>(ErrorCode.NotAuthorized);
-            if (!ModelState.IsValid)
-                return new ErrorResponse<LauncherOptions>(ErrorCode.MissingProperties, ModelState.Values.Where(E => E.Errors.Count > 0)
-                                  .SelectMany(E => E.Errors)
-                                  .Select(E => E.ErrorMessage)
-                                  .ToArray());
-
-            user.Settings.UpdateFrom(options);
-            await _giraf._context.SaveChangesAsync();
-            return new Response<LauncherOptions>(user.Settings);
+            return await UpdateUserSettings(user.Id, options);
         }
 
-
         /// <summary>
-        /// Updates the user settings.
+        /// Updates the user settings for a user with the given id
         /// </summary>
         /// <returns>
         /// MissingProperties if options is null or some required fields is not set
@@ -697,28 +658,28 @@ namespace GirafRest.Controllers
         /// <param name="options">Options.</param>
         [HttpPatch("{id}/settings")]
         [Authorize]
-        public async Task<Response<LauncherOptions>> UpdateUserSettings(string id, [FromBody] LauncherOptionsDTO options)
+        public async Task<Response<SettingDTO>> UpdateUserSettings(string id, [FromBody] SettingDTO options)
         {
             if (!ModelState.IsValid)
-                return new ErrorResponse<LauncherOptions>(ErrorCode.MissingProperties, ModelState.Values.Where(E => E.Errors.Count > 0)
+                return new ErrorResponse<SettingDTO>(ErrorCode.MissingProperties, ModelState.Values.Where(E => E.Errors.Count > 0)
                                   .SelectMany(E => E.Errors)
                                   .Select(E => E.ErrorMessage)
                                   .ToArray());
             
             if (options == null)
-                return new ErrorResponse<LauncherOptions>(ErrorCode.MissingProperties, "LauncherOptions");
+                return new ErrorResponse<SettingDTO>(ErrorCode.MissingProperties, "LauncherOptions");
 
             var error = ValidateOptions(options);
             if (error.HasValue)
-                return new ErrorResponse<LauncherOptions>(ErrorCode.InvalidProperties, "LauncherOptions");
+                return new ErrorResponse<SettingDTO>(ErrorCode.InvalidProperties, "LauncherOptions");
 
             var user =  _giraf._context.Users.Include(u => u.Settings).FirstOrDefault(u => u.Id == id);
 
             if (user == null)
-                return new ErrorResponse<LauncherOptions>(ErrorCode.UserNotFound);
+                return new ErrorResponse<SettingDTO>(ErrorCode.UserNotFound);
 
             if (user.Settings == null)
-                return new ErrorResponse<LauncherOptions>(ErrorCode.MissingSettings);
+                return new ErrorResponse<SettingDTO>(ErrorCode.MissingSettings);
 
             var authUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
             var authUserRole = await _roleManager.findUserRole(_giraf._userManager, authUser);
@@ -726,11 +687,11 @@ namespace GirafRest.Controllers
 
             var errorCode = _authentication.CheckUserAccess(authUser, authUserRole, user, userRole);
             if (errorCode != null)
-                return new ErrorResponse<LauncherOptions>(errorCode.Value); 
+                return new ErrorResponse<SettingDTO>(errorCode.Value); 
             
             user.Settings.UpdateFrom(options);
             await _giraf._context.SaveChangesAsync();
-            return new Response<LauncherOptions>(user.Settings);
+            return new Response<SettingDTO>(new SettingDTO(user.Settings));
         }
 
         #endregion
@@ -831,16 +792,31 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns>The options.</returns>
         /// <param name="options">Options.</param>
-        private ErrorCode? ValidateOptions(LauncherOptionsDTO options)
+        private ErrorCode? ValidateOptions(SettingDTO options)
         {
             if (!(Enum.IsDefined(typeof(Orientation), options.Orientation)) ||
-                !(Enum.IsDefined(typeof(ResourceAppearence), options.CheckResourceAppearence)) ||
+                !(Enum.IsDefined(typeof(CompleteMark), options.CompleteMark)) ||
+                !(Enum.IsDefined(typeof(CancelMark), options.CancelMark)) ||
                 !(Enum.IsDefined(typeof(DefaultTimer), options.DefaultTimer)) ||
-                !(Enum.IsDefined(typeof(Theme), options.Theme)))
-
+                !(Enum.IsDefined(typeof(Theme), options.Theme)) || 
+                !(Enum.IsDefined(typeof(ColorThemeWeekSchedules), options.ColorThemeWeekSchedules))) 
             {
                 return ErrorCode.InvalidProperties;
             }
+            if (options.NrOfDaysToDisplay < 1 || options.NrOfDaysToDisplay > 7)
+            {
+                return ErrorCode.InvalidProperties;
+            }
+            if (options.ActivitiesCount.HasValue && options.ActivitiesCount.Value < 1) 
+            {
+                return ErrorCode.InvalidProperties;
+            }
+
+            if (options.TimerSeconds.HasValue && options.TimerSeconds.Value < 1)
+            {
+                return ErrorCode.InvalidProperties;
+            }
+
             return null;
         }
 

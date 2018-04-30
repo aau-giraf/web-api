@@ -104,21 +104,22 @@ class WeekControllerTest(TestCase):
         response = requests.get(Test.url + 'User', headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
 
-    @test()
+    @test(skip_if_failed=['newGunnar'])
     def getNoWeeks(self, check):
         'Get (empty)List of all weeks'
         response = requests.get(Test.url + 'Week', headers=auth(self.gunnar)).json()
         ensureError(response, check)
 
     weekBody = None
+    weekId = None
 
     @test(skip_if_failed=['newGunnar'])
     def newWeek(self, check):
         'Update week'
         response = requests.put(Test.url + 'Week/2018/11', headers=auth(self.gunnar), json=self.correctWeekDTO).json()
         ensureSuccess(response, check)
-
-    weekID = None
+        self.weekYear = response['data']['weekYear']
+        self.weekNumber = response['data']['weekNumber']
 
     @test(skip_if_failed=['newWeek'])
     def getWeek(self, check):
@@ -128,11 +129,6 @@ class WeekControllerTest(TestCase):
         check.equal('The best week of the day', response['data'][0]['name'])
         self.weekYear = response['data'][0]['weekYear']
         self.weekNumber = response['data'][0]['weekNumber']
-
-        # Check that information is correct in each day.
-        for i in range(0, 7, 1):
-            check.equal(4, response['data']['days'][i]['elements'][0]['id'])
-            check.equal(1, response['data']['days'][i]['elements'][0]['state'])
 
     @test(depends=['getNoWeeks', 'newWeek'])
     def newWeekTooManyDays(self, check):
@@ -157,8 +153,7 @@ class WeekControllerTest(TestCase):
         'Update whole week at once'
         response = requests.put(Test.url + 'Week/{0}/{1}'.format(self.weekYear, self.weekNumber),
                                 headers=auth(self.gunnar),
-                                json=self.differentCorrectWeekDTO)
-        response = response.json()
+                                json=self.differentCorrectWeekDTO).json()
         ensureSuccess(response, check)
 
         response = requests.get(Test.url + 'Week/{0}/{1}'.format(self.weekYear, self.weekNumber), headers=auth(self.gunnar)).json()
