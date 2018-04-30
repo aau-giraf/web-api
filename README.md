@@ -53,6 +53,22 @@ You can now generate a client side API in for example C# by running either of th
   - `java -jar modules/swagger-codegen-cli/target/swagger-codegen-cli.jar generate  -i http://localhost:5000/swagger/v1/swagger.json -l csharp -o Client/Generated/` 
   - `swagger-codegen generate -i http://localhost:5000/swagger/v1/swagger.json -l csharp`
 
+## Migrate Old Database To New Database
+To migrate an old database for use with newer versions, a migrate.sql-script will be maintained in `scripts/migrate.sql`.
+A database dump of the old production-database is also present in this directory.
+
+To migrate the old database to the new, ensure that dotnet is configured to use the `giraf` database or alter the script to target yours.
+Finally run the following shell-commands in the `scripts` directory and substitute `<user>` with your mysql-username and enter your mysql-password when prompted:
+
+  - If you already have a giraf-database that you want to preserve: 
+    `mysqldump -uroot -p --databases giraf > giraf.sql.bak`
+  - Drop the old database
+    `echo "DROP DATABASE giraf;" | mysql -uroot -p`
+  - Create the structure for the new database
+    `dotnet ef database update`
+  - Migrate data from the old database (in `girafdump.sql`)
+    `mysql -u<user> -p < migrate.sql`
+
 ## API Reference
 
 For API reference start the API and navigate to localhost:5000/swagger
