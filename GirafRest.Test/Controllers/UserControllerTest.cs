@@ -923,7 +923,34 @@ namespace GirafRest.Test
             var res = usercontroller.UpdateUserSettings(dto).Result;
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.InvalidProperties, res.ErrorCode);
-        }  
+        } 
+
+        [Fact]
+        public void UpdateUserSettings_InvalidProperty()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+            
+            var dto = new SettingDTO();
+            dto.CancelMark = (CancelMark)666;
+            var res = usercontroller.UpdateUserSettings(dto).Result;
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.InvalidProperties, res.ErrorCode);
+        }
+
+        [Fact]
+        public void UpdateUserSettings_defaultTimerSettings_InvalidProperty()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+
+            var dto = new SettingDTO();
+            dto.TimerSeconds = -1;
+            var res = usercontroller.UpdateUserSettings(dto).Result;
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.InvalidProperties, res.ErrorCode);
+        }
+
 
         #endregion
 

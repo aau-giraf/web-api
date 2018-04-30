@@ -836,6 +836,12 @@ namespace GirafRest.Controllers
             {
                 return ErrorCode.InvalidProperties;
             }
+
+            if (options.TimerSeconds.HasValue && options.TimerSeconds.Value < 1)
+            {
+                return ErrorCode.InvalidProperties;
+            }
+
             return null;
         }
 
