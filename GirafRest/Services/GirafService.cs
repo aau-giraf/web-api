@@ -63,6 +63,8 @@ namespace GirafRest.Services
                     .ThenInclude(dr => dr.Pictogram)
                     // then load his week schedule
                     .Include(u => u.WeekSchedule)
+                    .ThenInclude(w => w.Thumbnail)
+                    .Include(u => u.WeekSchedule)
                     .ThenInclude(w => w.Weekdays)
                     .ThenInclude(wd => wd.Activities)
                     .ThenInclude(e => e.Pictogram)
@@ -92,6 +94,8 @@ namespace GirafRest.Services
                     .Include(u => u.Department)
                     .ThenInclude(d => d.Resources)
                     // then load his week schedule
+                    .Include(u => u.WeekSchedule)
+                    .ThenInclude(w => w.Thumbnail)
                     .Include(u => u.WeekSchedule)
                     .ThenInclude(w => w.Weekdays)
                     .ThenInclude(wd => wd.Activities)
