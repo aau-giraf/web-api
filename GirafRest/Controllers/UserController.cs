@@ -635,7 +635,22 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Updates the user settings entirely from the LauncherOptionsDTO
+        /// Updates the currently authenticated user settings.
+        /// </summary>
+        /// <returns>
+        /// MissingProperties if options is null or some required fields is not set
+        /// </returns>
+        /// <param name="options">Options.</param>
+        [HttpPatch("settings")]
+        public async Task<Response<LauncherOptions>> UpdateUserSettings([FromBody] LauncherOptionsDTO options)
+        {
+            var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
+
+            return await UpdateUserSettings(user.Id, options);
+        }
+
+        /// <summary>
+        /// Updates the user settings for a user with the given id
         /// </summary>
         /// <returns>
         /// MissingProperties if options is null or some required fields is not set

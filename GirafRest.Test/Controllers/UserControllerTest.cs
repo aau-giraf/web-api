@@ -736,6 +736,39 @@ namespace GirafRest.Test
             Assert.Equal(CompleteMark.MovedRight, _testContext.MockUsers[CitizenDepTwo].Settings.CompleteMark);
         }
 
+        /// <summary>
+        ///  Check that we cannot update user settings for any other user if our role is that of a citizen
+        /// </summary>
+        [Fact]
+        public void UpdateUserSettings_AsAnotherUnrelatedUser_NotAuthorised()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+
+            var dto = new LauncherOptionsDTO();
+            dto.CompleteMark = CompleteMark.MovedRight;
+            var res = usercontroller.UpdateUserSettings(_testContext.MockUsers[CitizenDepThree].Id, dto).Result;
+
+            Assert.False(res.Success);
+        }
+
+        /// <summary>
+        /// Check that we can in fact can update a citizens usersettings as their guardian
+        /// </summary>
+        [Fact]
+        public void UpdateUserSettings_AsTheirGuardian_Ok()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GuardianDepTwo]);
+
+            var dto = new LauncherOptionsDTO();
+            dto.CompleteMark = CompleteMark.MovedRight;
+            var res = usercontroller.UpdateUserSettings(_testContext.MockUsers[CitizenDepTwo].Id, dto).Result;
+
+            Assert.True(res.Success);
+            Assert.Equal(CompleteMark.MovedRight, _testContext.MockUsers[CitizenDepTwo].Settings.CompleteMark);
+        }
+
         [Fact]
         public void UpdateUserSettings_analogClock_defaultTimerOk()
         {
@@ -828,7 +861,8 @@ namespace GirafRest.Test
                 Theme = Theme.girafGreen,
                 TimerSeconds = 120,
                 DefaultTimer = DefaultTimer.analogClock,
-                ActivitiesCount = 5
+                ActivitiesCount = 5,
+
             };
             var res = usercontroller.UpdateUserSettings(idOfUserToUpdate, dto).Result;
 

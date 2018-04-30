@@ -30,15 +30,19 @@ namespace GirafRest.Services
         public ErrorCode? CheckUserAccess(GirafUser authUser, GirafRoles authUserRole, GirafUser userToEdit, GirafRoles userRole)
         {
             if (authUserRole == GirafRoles.Citizen && authUser.Id != userToEdit.Id)
+            {
                 return ErrorCode.NotAuthorized;
+            }
 
             if (authUserRole == GirafRoles.Guardian)
             {
-                if ((authUser.DepartmentKey != userToEdit.DepartmentKey))
+                if ((authUser.DepartmentKey != userToEdit.DepartmentKey)){
                     return ErrorCode.NotAuthorized;
+                }
 
-                if (userRole != GirafRoles.Citizen || userRole != GirafRoles.Guardian)
+                if (userRole != GirafRoles.Citizen && userRole != GirafRoles.Guardian){
                     return ErrorCode.NotAuthorized;
+                }
             }
 
             if (authUserRole == GirafRoles.Department)

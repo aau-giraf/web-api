@@ -80,7 +80,12 @@ namespace GirafRest.Models.DTOs
 
         public LauncherOptionsDTO()
         {
-
+            Orientation = Orientation.portrait;
+            CompleteMark = CompleteMark.Checkmark;
+            CancelMark = CancelMark.Cross;
+            DefaultTimer = DefaultTimer.analogClock;
+            Theme = Theme.girafYellow;
+            ColorThemeWeekSchedules = ColorThemeWeekSchedules.yellowAndWhite;
         }
     }
 }
