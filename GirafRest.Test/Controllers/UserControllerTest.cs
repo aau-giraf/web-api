@@ -717,7 +717,7 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
             
-            var dto = new LauncherOptionsDTO();
+            var dto = new SettingDTO();
             dto.Orientation = Orientation.landscape;
             usercontroller.UpdateUserSettings(dto).Wait();
             Assert.Equal(Orientation.landscape, _testContext.MockUsers[CitizenDepTwo].Settings.Orientation);
@@ -729,7 +729,7 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
             
-            var dto = new LauncherOptionsDTO();
+            var dto = new SettingDTO();
             dto.CompleteMark = CompleteMark.MovedRight;
             usercontroller.UpdateUserSettings(dto).Wait();
 
@@ -745,7 +745,7 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
 
-            var dto = new LauncherOptionsDTO();
+            var dto = new SettingDTO();
             dto.CompleteMark = CompleteMark.MovedRight;
             var res = usercontroller.UpdateUserSettings(_testContext.MockUsers[CitizenDepThree].Id, dto).Result;
 
@@ -761,7 +761,7 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GuardianDepTwo]);
 
-            var dto = new LauncherOptionsDTO();
+            var dto = new SettingDTO();
             dto.CompleteMark = CompleteMark.MovedRight;
             var res = usercontroller.UpdateUserSettings(_testContext.MockUsers[CitizenDepTwo].Id, dto).Result;
 
@@ -775,7 +775,7 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
             
-            var dto = new LauncherOptionsDTO();
+            var dto = new SettingDTO();
             dto.DefaultTimer = DefaultTimer.analogClock;
             usercontroller.UpdateUserSettings(dto).Wait();
 
@@ -788,7 +788,7 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
             
-            var dto = new LauncherOptionsDTO();
+            var dto = new SettingDTO();
             dto.TimerSeconds = 25;
             usercontroller.UpdateUserSettings(dto).Wait();
 
@@ -801,7 +801,7 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
             
-            var dto = new LauncherOptionsDTO();
+            var dto = new SettingDTO();
             dto.ActivitiesCount = 30;
             usercontroller.UpdateUserSettings(dto).Wait();
 
@@ -814,7 +814,7 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
             
-            var dto = new LauncherOptionsDTO();
+            var dto = new SettingDTO();
             dto.Theme = Theme.girafGreen;
             usercontroller.UpdateUserSettings(dto).Wait();
 
@@ -827,7 +827,7 @@ namespace GirafRest.Test
             var user = _testContext.MockUsers[CitizenDepTwo];
             _testContext.MockUserManager.MockLoginAsUser(user);
 
-            var dto = new LauncherOptionsDTO()
+            var dto = new SettingDTO()
             {
                 Theme = Theme.girafGreen,
                 TimerSeconds = 120,
@@ -835,6 +835,7 @@ namespace GirafRest.Test
                 ActivitiesCount = 5,
                 NrOfDaysToDisplay = 12,
                 ColorThemeWeekSchedules = ColorThemeWeekSchedules.yellowAndWhite,
+                GreyScale = true
             };
             usercontroller.UpdateUserSettings(user.Id, dto).Wait();
 
@@ -845,6 +846,7 @@ namespace GirafRest.Test
             Assert.Equal(12, _testContext.MockUsers[CitizenDepTwo].Settings.NrOfDaysToDisplay);
             Assert.Equal(ColorThemeWeekSchedules.yellowAndWhite, 
                          _testContext.MockUsers[CitizenDepTwo].Settings.ColorThemeWeekSchedules);
+            Assert.True(_testContext.MockUsers[CitizenDepTwo].Settings.GreyScale);
         }
 
         [Fact]
@@ -856,7 +858,7 @@ namespace GirafRest.Test
 
             var idOfUserToUpdate = _testContext.MockUsers[CitizenDepTwo].Id;
 
-            var dto = new LauncherOptionsDTO()
+            var dto = new SettingDTO()
             {
                 Theme = Theme.girafGreen,
                 TimerSeconds = 120,

@@ -10,7 +10,7 @@ namespace GirafRest.Models
     /// The LauncherOptions, which is the various settings the users can add to customize the Launcher App.
     /// </summary>
     [ComplexType]
-    public class LauncherOptions
+    public class Setting
     {
         /// <summary>
         /// Key for LauncherOptions
@@ -70,7 +70,7 @@ namespace GirafRest.Models
         /// <summary>
         /// Required empty constructor
         /// </summary>
-        public LauncherOptions()
+        public Setting()
         {
             Orientation = Orientation.portrait;
             CompleteMark = CompleteMark.Checkmark;
@@ -86,7 +86,7 @@ namespace GirafRest.Models
         /// Updates all settings based on a DTO
         /// </summary>
         /// <param name="newOptions">The DTO containing new settings</param>
-        public void UpdateFrom(LauncherOptionsDTO newOptions)
+        public void UpdateFrom(SettingDTO newOptions)
         {
             this.Orientation = newOptions.Orientation;
             this.CompleteMark = newOptions.CompleteMark;
