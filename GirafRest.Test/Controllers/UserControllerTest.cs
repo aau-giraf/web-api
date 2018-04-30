@@ -833,7 +833,7 @@ namespace GirafRest.Test
                 TimerSeconds = 120,
                 DefaultTimer = DefaultTimer.analogClock,
                 ActivitiesCount = 5,
-                NrOfDaysToDisplay = 12,
+                NrOfDaysToDisplay = 4,
                 ColorThemeWeekSchedules = ColorThemeWeekSchedules.yellowAndWhite,
                 GreyScale = true
             };
@@ -843,7 +843,7 @@ namespace GirafRest.Test
             Assert.Equal(120, _testContext.MockUsers[CitizenDepTwo].Settings.TimerSeconds);
             Assert.Equal(DefaultTimer.analogClock, _testContext.MockUsers[CitizenDepTwo].Settings.DefaultTimer);
             Assert.Equal(5, _testContext.MockUsers[CitizenDepTwo].Settings.ActivitiesCount);
-            Assert.Equal(12, _testContext.MockUsers[CitizenDepTwo].Settings.NrOfDaysToDisplay);
+            Assert.Equal(4, _testContext.MockUsers[CitizenDepTwo].Settings.NrOfDaysToDisplay);
             Assert.Equal(ColorThemeWeekSchedules.yellowAndWhite, 
                          _testContext.MockUsers[CitizenDepTwo].Settings.ColorThemeWeekSchedules);
             Assert.True(_testContext.MockUsers[CitizenDepTwo].Settings.GreyScale);
@@ -871,6 +871,86 @@ namespace GirafRest.Test
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
+
+        [Fact]
+        public void UpdateUserSettings_NrActivities_Ok()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+            
+            var dto = new SettingDTO();
+            dto.ActivitiesCount = 1;
+            var res = usercontroller.UpdateUserSettings(dto).Result;
+            Assert.True(res.Success);
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+        } 
+
+        [Fact]
+        public void UpdateUserSettings_NrActivities_InvalidProperty()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+            
+            var dto = new SettingDTO();
+            dto.ActivitiesCount = -10;
+            var res = usercontroller.UpdateUserSettings(dto).Result;
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.InvalidProperties, res.ErrorCode);
+        }  
+
+        [Fact]
+        public void UpdateUserSettings_NrOfDays_Ok()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+            
+            var dto = new SettingDTO();
+            dto.NrOfDaysToDisplay = 5;
+            var res = usercontroller.UpdateUserSettings(dto).Result;
+            Assert.True(res.Success);
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+        }  
+
+
+        [Fact]
+        public void UpdateUserSettings_NrOfDays_InvalidProperty()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+            
+            var dto = new SettingDTO();
+            dto.NrOfDaysToDisplay = 8;
+            var res = usercontroller.UpdateUserSettings(dto).Result;
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.InvalidProperties, res.ErrorCode);
+        } 
+
+        [Fact]
+        public void UpdateUserSettings_InvalidProperty()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+            
+            var dto = new SettingDTO();
+            dto.CancelMark = (CancelMark)666;
+            var res = usercontroller.UpdateUserSettings(dto).Result;
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.InvalidProperties, res.ErrorCode);
+        }
+
+        [Fact]
+        public void UpdateUserSettings_defaultTimerSettings_InvalidProperty()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CitizenDepTwo]);
+
+            var dto = new SettingDTO();
+            dto.TimerSeconds = -1;
+            var res = usercontroller.UpdateUserSettings(dto).Result;
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.InvalidProperties, res.ErrorCode);
+        }
+
 
         #endregion
 
