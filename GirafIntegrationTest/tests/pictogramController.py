@@ -33,7 +33,7 @@ class PictogramController(TestCase):
         "Get public pictogram"
         response = requests.get(Test.url + 'Pictogram/2',
                                 headers={"Authorization": "Bearer {0}".format(PictogramController.kurtToken)}).json()
-        check.is_true(response['success'])
+        ensureSuccess(response, check)
 
     @test(skip_if_failed=["loginAsKurt"])
     def post(self, check):
