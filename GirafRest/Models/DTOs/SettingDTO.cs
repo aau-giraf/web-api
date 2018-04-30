@@ -75,7 +75,7 @@ namespace GirafRest.Models.DTOs
             this.Theme = options.Theme;
             this.NrOfDaysToDisplay = options.NrOfDaysToDisplay;
             this.ColorThemeWeekSchedules = options.ColorThemeWeekSchedules;
-            this.GreyScale = this.GreyScale;
+            this.GreyScale = options.GreyScale;
         }
 
         public SettingDTO()
