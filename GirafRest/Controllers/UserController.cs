@@ -641,41 +641,6 @@ namespace GirafRest.Controllers
         /// MissingProperties if options is null or some required fields is not set
         /// </returns>
         /// <param name="options">Options.</param>
-        [HttpPatch("settings")]
-        public async Task<Response<LauncherOptions>> UpdateUserSettings([FromBody] LauncherOptionsDTO options)
-        {
-            if (options == null)
-                return new ErrorResponse<LauncherOptions>(ErrorCode.MissingProperties, "options");
-
-            var error = ValidateOptions(options);
-            if (error.HasValue)
-                return new ErrorResponse<LauncherOptions>(ErrorCode.InvalidProperties, "options");
-
-            var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
-
-            user.Settings = _giraf._context.Users.Where(u => u.Id == user.Id).Select(s => s.Settings).FirstOrDefault();
-
-            if (user == null)
-                return new ErrorResponse<LauncherOptions>(ErrorCode.NotAuthorized);
-            if (!ModelState.IsValid)
-                return new ErrorResponse<LauncherOptions>(ErrorCode.MissingProperties, ModelState.Values.Where(E => E.Errors.Count > 0)
-                                  .SelectMany(E => E.Errors)
-                                  .Select(E => E.ErrorMessage)
-                                  .ToArray());
-
-            user.Settings.UpdateFrom(options);
-            await _giraf._context.SaveChangesAsync();
-            return new Response<LauncherOptions>(user.Settings);
-        }
-
-
-        /// <summary>
-        /// Updates the user settings.
-        /// </summary>
-        /// <returns>
-        /// MissingProperties if options is null or some required fields is not set
-        /// </returns>
-        /// <param name="options">Options.</param>
         [HttpPatch("{id}/settings")]
         [Authorize]
         public async Task<Response<LauncherOptions>> UpdateUserSettings(string id, [FromBody] LauncherOptionsDTO options)
