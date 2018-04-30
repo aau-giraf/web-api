@@ -96,7 +96,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var week = _testContext.MockUsers[GUARDIAN_DEP_TWO].WeekSchedule.First();
             var tempWeek = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule;
-            var res = wc.UpdateWeek(WEEK_ZERO, new WeekDTO(week)).Result;
+            var res = wc.UpdateWeek(week.Id, new WeekDTO(week)).Result;
 
             Assert.IsType<Response<WeekDTO>>(res);
             Assert.True(res.Success);
@@ -147,6 +147,25 @@ namespace GirafRest.Test
             Assert.IsType<ErrorResponse<WeekDTO>>(res);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
+
+        [Fact]
+        public void UpdateWeek_WeekAlreadyExists_DuplicateWeekScheduleName()
+        {
+            var wc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var week = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.First();
+
+            // fetch the name to update from the second weekschedule belong to the ADMIN_DEP_ONE user
+            var nameToUpdate = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Last().Name;
+            var weekDTO = new WeekDTO(week) { Name = nameToUpdate };
+            var res = wc.UpdateWeek(week.Id, weekDTO ).Result;
+
+            Assert.IsType<ErrorResponse<WeekDTO>>(res);
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.DuplicateWeekScheduleName, res.ErrorCode);
+
+        }
+
         #endregion
         #region CreateWeek
         [Fact]
@@ -156,13 +175,14 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var week = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.First();
             // modify name
-            week.Name = "Test Week";
-            var res = wc.CreateWeek(new WeekDTO(week)).Result;
+            var weekDTO = new WeekDTO(week) { Name = "new name" };
+
+            var res = wc.CreateWeek(weekDTO).Result;
 
             Assert.IsType<Response<WeekDTO>>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.True(res.Success);
-            Assert.Equal("Test Week", res.Data.Name);
+            Assert.Equal("new name", res.Data.Name);
 
             _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Remove(_testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Last());
         }
@@ -175,7 +195,9 @@ namespace GirafRest.Test
             var orderNumber = 1;
             var activities = new List<WeekdayResource>(){new WeekdayResource(week.Weekdays[0], _testContext.MockPictograms[0], orderNumber)};
             week.Weekdays[0].Activities = activities;
-            var res = wc.CreateWeek(new WeekDTO(week)).Result;
+            // modify name
+            var weekDTO = new WeekDTO(week) { Name = "new name" };
+            var res = wc.CreateWeek(weekDTO).Result;
 
             Assert.IsType<Response<WeekDTO>>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
@@ -208,6 +230,22 @@ namespace GirafRest.Test
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.InvalidProperties, res.ErrorCode);
         }
+
+        [Fact]
+        public void CreateWeek_SameName_BadRequest()
+        {
+            var wc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var week = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.First();
+            // try to create week with same name
+            var weekDTO = new WeekDTO(week);
+            var res = wc.CreateWeek(weekDTO).Result;
+
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.DuplicateWeekScheduleName, res.ErrorCode);
+        }
+
+
         #endregion
     }
 }
