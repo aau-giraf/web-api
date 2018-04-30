@@ -828,6 +828,14 @@ namespace GirafRest.Controllers
             {
                 return ErrorCode.InvalidProperties;
             }
+            if (options.NrOfDaysToDisplay < 1 || options.NrOfDaysToDisplay > 7)
+            {
+                return ErrorCode.InvalidProperties;
+            }
+            if (options.ActivitiesCount.HasValue && options.ActivitiesCount.Value < 1) 
+            {
+                return ErrorCode.InvalidProperties;
+            }
             return null;
         }
 
