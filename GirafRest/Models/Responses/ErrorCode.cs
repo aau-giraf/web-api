@@ -56,6 +56,7 @@
         UserNotFoundInDepartment,
         NoWeekTemplateFound,
         UserAlreadyHasDepartment,
-        MissingSettings
+        MissingSettings,
+        DuplicateWeekScheduleName
     }
 }
