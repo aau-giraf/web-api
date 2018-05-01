@@ -37,7 +37,7 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Gets all week schedule name and ids for the currently authenticated citizen.
+        /// Gets all week schedule name and ids containing activities for the currently authenticated citizen.
         /// </summary>
         /// All WeekScheduleNameDTOs if succesfull request
         /// ErrorCode.UserNotFound if we cannot find any user in the DB
@@ -88,12 +88,12 @@ namespace GirafRest.Controllers
                 }
                 emptyThumbnail = _giraf._context.Pictograms.FirstOrDefault(r => r.Title == "default");
 
-                return new Response<WeekDTO>(new WeekDTO() { WeekYear = weekYear, Name = $"{weekYear} - {weekNumber}", WeekNumber = weekNumber, Thumbnail = new Models.DTOs.WeekPictogramDTO(emptyThumbnail), Days = new int[] { 0, 1, 2, 3, 4, 5, 6 }.Select(d => new WeekdayDTO() { Activities = new List<ActivityDTO>(), Day = (Days)d }).ToArray() });
+                return new Response<WeekDTO>(new WeekDTO() { WeekYear = weekYear, Name = $"{weekYear} - {weekNumber}", WeekNumber = weekNumber, Thumbnail = new Models.DTOs.WeekPictogramDTO(emptyThumbnail), Days = new int[] { 1, 2, 3, 4, 5, 6, 7 }.Select(d => new WeekdayDTO() { Activities = new List<ActivityDTO>(), Day = (Days)d }).ToArray() });
             }
         }
 
         /// <summary>
-        /// Updates the entire information of the week with the given id.
+        /// Updates the entire information of the week with the given year and week number.
         /// </summary>
         /// <param name="id">If of the week to update information for.</param>
         /// <param name="newWeek">A serialized Week with new information.</param>
@@ -146,11 +146,12 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
             return new Response<WeekDTO>(new WeekDTO(week));
         }
-    
+
         /// <summary>
-        /// Deletes the entire week with the given id.
+        /// Deletes all information for the entire week with the given year and week number.
         /// </summary>
-        /// <param name="id">Id of the week to delete.</param>
+        /// <param name="id">If of the week to update information for.</param>
+        /// <param name="newWeek">A serialized Week with new information.</param>
         /// <returns>NotFound if the user does not have a week schedule or
         /// Ok and a serialized version of the updated week if everything went well.</returns>
         [HttpDelete("{weekYear}/{weekNumber}")]
@@ -162,7 +163,7 @@ namespace GirafRest.Controllers
             if (user.WeekSchedule.Any(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber))
             {
                 var week = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber);
-                if (week == null) return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.WeekScheduleNotFound);
+                if (week == null) return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.NoError);
                 user.WeekSchedule.Remove(week);
                 await _giraf._context.SaveChangesAsync();
                 return new Response<IEnumerable<WeekDTO>>(user.WeekSchedule.Select(w => new WeekDTO(w)));
