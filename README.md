@@ -61,7 +61,7 @@ To migrate the old database to the new, ensure that dotnet is configured to use 
 Finally run the following shell-commands in the `scripts` directory and substitute `<user>` with your mysql-username and enter your mysql-password when prompted:
 
   - If you already have a giraf-database that you want to preserve: 
-    `mysqldump -uroot -p --databases giraf > giraf.sql.bak`
+    `mysqldump -u<user> -p --databases giraf > girafdb.sql.bak`
   - Drop the old database
     `echo "DROP DATABASE giraf;" | mysql -u<user> -p`
   - Create the structure for the new database
