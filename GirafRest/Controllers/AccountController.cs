@@ -81,12 +81,13 @@ namespace GirafRest.Controllers
         /// <returns>
         /// The Token as a string
         /// </returns>
-        private async Task<string> GenerateJwtToken(GirafUser user, GirafRoles roles)
+        private async Task<string> GenerateJwtToken(GirafUser user, string impersonatedBy, GirafRoles roles)
         {
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim("impersonatedBy", impersonatedBy),
             };
 
             claims.AddRange(await GetRoleClaims(user));
@@ -153,25 +154,26 @@ namespace GirafRest.Controllers
                     return new ErrorResponse<string>(ErrorCode.MissingProperties, "password");
                 }
                 result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, lockoutOnFailure: false);
-                if(result.Succeeded) return new Response<string>(await GenerateJwtToken(loginUser, userRoles));
+                if(result.Succeeded) return new Response<string>(await GenerateJwtToken(loginUser, loginUser.Id, userRoles));
                 else return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
             }
 
-            /* If there is no authenticated user and password is blank we must check if we are authenticatedto login as this user */
+            /* If user is already logged in */
             else
             { 
+                // If password is provided we change the current user
                 if (!string.IsNullOrEmpty(model.Password))
                 {
                     result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, lockoutOnFailure: false);
                     if (!result.Succeeded) return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
-                    return new Response<string>(await GenerateJwtToken(loginUser, userRoles));
+                    return new Response<string>(await GenerateJwtToken(loginUser, loginUser.Id, userRoles));
                 }
 
                 if (string.IsNullOrEmpty(model.Password))
                 {
                     if (currentUser.UserName.ToLower() == model.Username.ToLower())
                     {
-                        return new Response<string>(await GenerateJwtToken(loginUser, userRoles));
+                        return new Response<string>(await GenerateJwtToken(loginUser, User.Claims.FirstOrDefault(c => c.Type == "impersonatedBy")?.Value, userRoles));
                     }
 
                     if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian))
@@ -221,7 +223,7 @@ namespace GirafRest.Controllers
                 // Get the roles the user is associated with
                 GirafRoles userRoles = await _roleManager.findUserRole(_giraf._userManager, loginUser);
 
-                return new Response<string>(await GenerateJwtToken(loginUser, userRoles));
+                return new Response<string>(await GenerateJwtToken(loginUser, User.Claims.FirstOrDefault(c => c.Type == "impersonatedBy")?.Value, userRoles));
             }
 
             //There was no user with the given username in the department - return invalidcredentials.

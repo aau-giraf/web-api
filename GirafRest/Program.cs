@@ -6,6 +6,7 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
+using Microsoft.Extensions.Logging;
 
 namespace GirafRest
 {
@@ -62,6 +63,12 @@ namespace GirafRest
                {
                    config.Sources.Clear();            
                })
+                .ConfigureLogging((hostingContext, logging) =>
+                {
+                    logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                    logging.AddConsole();
+                    logging.AddDebug();
+                })
                .UseDefaultServiceProvider(options =>options.ValidateScopes = false)
                .UseApplicationInsights()
                .Build();
