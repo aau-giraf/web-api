@@ -667,11 +667,11 @@ namespace GirafRest.Controllers
                                   .ToArray());
             
             if (options == null)
-                return new ErrorResponse<SettingDTO>(ErrorCode.MissingProperties, "LauncherOptions");
+                return new ErrorResponse<SettingDTO>(ErrorCode.MissingProperties, "Settings");
 
             var error = ValidateOptions(options);
             if (error.HasValue)
-                return new ErrorResponse<SettingDTO>(ErrorCode.InvalidProperties, "LauncherOptions");
+                return new ErrorResponse<SettingDTO>(ErrorCode.InvalidProperties, "Settings");
 
             var user =  _giraf._context.Users.Include(u => u.Settings).FirstOrDefault(u => u.Id == id);
 
@@ -788,7 +788,7 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Check that enum values for launcheroptions is defined
+        /// Check that enum values for settings is defined
         /// </summary>
         /// <returns>The options.</returns>
         /// <param name="options">Options.</param>
