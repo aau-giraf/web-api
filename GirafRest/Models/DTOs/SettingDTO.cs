@@ -3,9 +3,9 @@ using GirafRest.Models;
 
 namespace GirafRest.Models.DTOs
 {
-    public enum Orientation { portrait = 1, landscape = 2 }
-    public enum CompleteMark { Removed = 0, Checkmark = 1, Circle = 2, GrayedOut = 3, MovedRight = 4, MovedLeft = 5 }
-    public enum CancelMark { Removed = 0, Cross = 1 }
+    public enum Orientation { portrait = 1, landscape = 2}
+    public enum CompleteMark { Removed = 1, Checkmark = 2, MovedRight = 3}
+    public enum CancelMark { Removed = 1, Cross = 2}
     public enum DefaultTimer { hourglass = 1, analogClock = 2 }
     public enum Theme { girafYellow = 1, girafGreen = 2, girafRed = 3, androidBlue = 4}
     public enum ColorThemeWeekSchedules {standard = 1, yellowAndWhite = 2}
