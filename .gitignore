@@ -36,3 +36,5 @@ Dockerfile
 *.pyc
 
 GirafIntegrationTest/venv/
+
+GirafRest/Logs/
