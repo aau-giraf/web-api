@@ -60,6 +60,9 @@
         InvalidAmountOfWeekdays,
         WeekAlreadyExists,
         InvalidDay,
-        DuplicateWeekScheduleName
+        DuplicateWeekScheduleName,
+        WeekTemplateNotFound,
+        NotImplemented,
+        UserMustBeInDepartment
     }
 }
