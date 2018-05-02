@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GirafRest.Extensions;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using GirafRest.Services;
 using GirafRest.Models.Responses;
+using Microsoft.AspNetCore.Identity;
 using static GirafRest.Controllers.SharedMethods;
 
 namespace GirafRest.Controllers
@@ -20,6 +22,11 @@ namespace GirafRest.Controllers
         /// A reference to GirafService, that contains common functionality for all controllers.
         /// </summary>
         private readonly IGirafService _giraf;
+        
+        /// <summary>
+        /// A reference to the role manager for the project.
+        /// </summary>
+        private readonly RoleManager<GirafRole> _roleManager;
 
 
         /// <summary>
@@ -27,14 +34,15 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="giraf">A reference to the GirafService.</param>
         /// <param name="loggerFactory">A reference to an implementation of ILoggerFactory. Used to create a logger.</param>
-        public WeekTemplateController(IGirafService giraf, ILoggerFactory loggerFactory)
+        public WeekTemplateController(IGirafService giraf, RoleManager<GirafRole> roleManager, ILoggerFactory loggerFactory)
         {
             _giraf = giraf;
+            _roleManager = roleManager;
             _giraf._logger = loggerFactory.CreateLogger("WeekTemplate");
         }
 
         /// <summary>
-        /// Gets all week schedule for the currently authenticated user.
+        /// Gets all schedule templates for the currently authenticated user.
         /// </summary>
         [HttpGet("")]
         [Authorize]
@@ -84,12 +92,11 @@ namespace GirafRest.Controllers
         }
 
         [HttpPost("")]
-        [Authorize]
+        [Authorize (Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
         public async Task<Response<WeekTemplateDTO>> CreateWeekTemplate([FromBody] WeekTemplateDTO templateDTO)
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             if (user == null) return new ErrorResponse<WeekTemplateDTO>(ErrorCode.UserNotFound);
-            //TODO: Who is allowed to use this endponit?
 
             if(templateDTO == null) return new ErrorResponse<WeekTemplateDTO>(ErrorCode.MissingProperties);
 
@@ -107,15 +114,13 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
             return new Response<WeekTemplateDTO>(new WeekTemplateDTO(newTemplate));
         }
-
-
+        
         [HttpPut("{id}")]
-        [Authorize]
+        [Authorize (Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
         public async Task<Response<WeekTemplateDTO>> UpdateWeekTemplate(long id, [FromBody] WeekTemplateDTO newValuesDTO)
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             if (user == null) return new ErrorResponse<WeekTemplateDTO>(ErrorCode.UserNotFound);
-            //TODO: Who is allowed to use this endponit?
 
             if(newValuesDTO == null) return new ErrorResponse<WeekTemplateDTO>(ErrorCode.MissingProperties);
 
@@ -128,6 +133,9 @@ namespace GirafRest.Controllers
             if(template == null)
                 return new ErrorResponse<WeekTemplateDTO>(ErrorCode.WeekTemplateNotFound);
             
+            if(await HasEditRights(user, template.DepartmentKey))
+                return new ErrorResponse<WeekTemplateDTO>(ErrorCode.NotAuthorized);
+            
             var errorCode = await SetWeekFromDTO(newValuesDTO, template, _giraf);
             if (errorCode != null)
                 return new ErrorResponse<WeekTemplateDTO>(errorCode.ErrorCode, errorCode.ErrorProperties);
@@ -138,12 +146,11 @@ namespace GirafRest.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize]
+        [Authorize (Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
         public async Task<Response> DeleteTemplate(long id)
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
             if (user == null) return new ErrorResponse<WeekTemplateDTO>(ErrorCode.UserNotFound);
-            //TODO: Who is allowed to use this endponit?
 
             var template = _giraf._context.WeekTemplates
                 .Include(w => w.Weekdays)
@@ -152,10 +159,24 @@ namespace GirafRest.Controllers
             
             if(template == null)
                 return new ErrorResponse<WeekTemplateDTO>(ErrorCode.WeekTemplateNotFound);
+            
+            if(await HasEditRights(user, template.DepartmentKey))
+                return new ErrorResponse(ErrorCode.NotAuthorized);
 
             _giraf._context.WeekTemplates.Remove(template);
             await _giraf._context.SaveChangesAsync();
             return new Response();
+        }
+        
+        private async Task<bool> HasEditRights(GirafUser user, long templateDepartmentKey)
+        {
+            
+            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
+
+            if (user.DepartmentKey != templateDepartmentKey || userRole == GirafRoles.SuperUser)
+                return false;
+            else
+                return true;
         }
     }
 }
