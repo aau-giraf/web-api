@@ -132,6 +132,7 @@ namespace GirafRest.Controllers
             }
             
             week.Name = newWeek.Name;
+            
             var errorCode = await UpdateWeekActivities(newWeek, week, _giraf);
             if (errorCode != ErrorCode.NoError)
                 return new ErrorResponse<WeekDTO>(errorCode);

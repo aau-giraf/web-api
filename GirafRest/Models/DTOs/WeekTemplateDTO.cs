@@ -17,6 +17,6 @@ namespace GirafRest.Models.DTOs
             this.DepartmentKey = weekTemplate.DepartmentKey;
         }
 
-        public long DepartmentKey { get; set; }
+        public long DepartmentKey { get; internal set; }
     }
 }

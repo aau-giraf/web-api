@@ -81,6 +81,37 @@ namespace GirafRest.Controllers
             else
                 return new ErrorResponse<WeekTemplateDTO>(ErrorCode.WeekTemplateNotFound);
         }
+
+        [HttpPost("")]
+        [Authorize]
+        public async Task<Response<WeekTemplateDTO>> CreateWeekTemplate([FromBody] WeekTemplateDTO templateDTO)
+        {
+            if(templateDTO == null) return new ErrorResponse<WeekTemplateDTO>(ErrorCode.MissingProperties);
+            
+            var user = await _giraf.LoadUserAsync(HttpContext.User);
+            if (user == null) return new ErrorResponse<WeekTemplateDTO>(ErrorCode.UserNotFound);
+            //TODO: Who is allowed to use this endponit?
+
+            Pictogram thumbnail = _giraf._context.Pictograms
+                .FirstOrDefault(p => p.Id == templateDTO.Thumbnail.Id);
+            if(thumbnail == null)
+                return new ErrorResponse<WeekTemplateDTO>(ErrorCode.MissingProperties, "thumbnail");
+
+            Department department = _giraf._context.Departments.FirstOrDefault(d => d.Key == user.DepartmentKey);
+            if(department == null)
+                return new ErrorResponse<WeekTemplateDTO>(ErrorCode.UserMustBeInDepartment);
+            
+            var newTemplate = new WeekTemplate(templateDTO.Name, thumbnail, department);
+
+            var errorCode = await SharedMethods.UpdateWeekActivities(templateDTO, newTemplate, _giraf);
+            if (errorCode != ErrorCode.NoError)
+                return new ErrorResponse<WeekTemplateDTO>(errorCode);
+
+            
+            _giraf._context.WeekTemplates.Add(newTemplate);
+            await _giraf._context.SaveChangesAsync();
+            return new Response<WeekTemplateDTO>(new WeekTemplateDTO(newTemplate));
         }
+        
     }
 }
