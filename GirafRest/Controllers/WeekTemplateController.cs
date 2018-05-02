@@ -30,9 +30,10 @@ namespace GirafRest.Controllers
 
 
         /// <summary>
-        /// Constructor for the Week-controller. This is called by the asp.net runtime.
+        /// Constructor is called by the asp.net runtime.
         /// </summary>
         /// <param name="giraf">A reference to the GirafService.</param>
+        /// <param name="roleManager">A reference to the... no, wait, just take a guess, eh?</param>
         /// <param name="loggerFactory">A reference to an implementation of ILoggerFactory. Used to create a logger.</param>
         public WeekTemplateController(IGirafService giraf, RoleManager<GirafRole> roleManager, ILoggerFactory loggerFactory)
         {
@@ -43,7 +44,10 @@ namespace GirafRest.Controllers
 
         /// <summary>
         /// Gets all schedule templates for the currently authenticated user.
+        /// Available to all users.
         /// </summary>
+        /// <returns>NoWeekTemplateFound if there are no templates in the user's department.
+        /// OK otherwise.</returns>
         [HttpGet("")]
         [Authorize]
         public async Task<Response<IEnumerable<WeekTemplateNameDTO>>> GetWeekTemplates()
@@ -70,8 +74,10 @@ namespace GirafRest.Controllers
 
         /// <summary>
         /// Gets the week template with the specified id.
+        /// Available to all users.
         /// </summary>
         /// <param name="id">The id of the week template to fetch.</param>
+        /// <returns>WeekTemplateNotFound if there is no template in the authenticated user's department by that ID.</returns>
         [HttpGet("{id}")]
         [Authorize]
         public async Task<Response<WeekTemplateDTO>> GetWeekTemplate(long id)
@@ -91,6 +97,15 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<WeekTemplateDTO>(ErrorCode.WeekTemplateNotFound);
         }
 
+        /// <summary>
+        /// Creates new week template in the department of the given user. 
+        /// Available to Supers, Departments and Guardians.
+        /// </summary>
+        /// <param name="templateDTO">After successful execution, a new week template will be created with the same values as this DTO.</param>
+        /// <returns>UserMustBeInDepartment if user has no associated department.
+        /// MissingProperties if properties are missing.
+        /// ResourceNotFound if any pictogram id is invalid.
+        /// A DTO containing the full information on the created template otherwise.</returns>
         [HttpPost("")]
         [Authorize (Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
         public async Task<Response<WeekTemplateDTO>> CreateWeekTemplate([FromBody] WeekTemplateDTO templateDTO)
@@ -115,6 +130,17 @@ namespace GirafRest.Controllers
             return new Response<WeekTemplateDTO>(new WeekTemplateDTO(newTemplate));
         }
         
+        /// <summary>
+        /// Overwrite the information of a week template.
+        /// Available to all Supers, and to Departments and Guardians of the same department as the template.
+        /// </summary>
+        /// <param name="id">Id of the template to overwrite.</param>
+        /// <param name="templateDTO">After successful execution, specified template will have the same values as this DTO.</param>
+        /// <returns> WeekTemplateNotFound if no template exists with the given id.
+        /// NotAuthorized if not available to authenticated user(see summary).
+        /// MissingProperties if properties are missing.
+        /// ResourceNotFound if any pictogram id is invalid.
+        /// A DTO containing the full information on the created template otherwise.</returns>
         [HttpPut("{id}")]
         [Authorize (Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
         public async Task<Response<WeekTemplateDTO>> UpdateWeekTemplate(long id, [FromBody] WeekTemplateDTO newValuesDTO)
@@ -145,6 +171,14 @@ namespace GirafRest.Controllers
             return new Response<WeekTemplateDTO>(new WeekTemplateDTO(template));
         }
 
+        /// <summary>
+        /// Deletes the template of the given ID.
+        /// Available to all Supers, and to Departments and Guardians of the same department as the template.
+        /// </summary>
+        /// <param name="id">Id of the template that will be deleted.</param>
+        /// <returns> WeekTemplateNotFound if no template exists with the given id.
+        /// NotAuthorized if not available to authenticated user(see summary).
+        /// OK otherwise. </returns>
         [HttpDelete("{id}")]
         [Authorize (Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
         public async Task<Response> DeleteTemplate(long id)

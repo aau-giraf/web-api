@@ -10,26 +10,34 @@ namespace GirafRest.Controllers
 {
     public static class SharedMethods
     {
-        
-        public static async Task<ErrorResponse> SetWeekFromDTO(WeekBaseDTO newWeek, WeekBase week, IGirafService _giraf)
+        /// <summary>
+        /// From the given DTO, set the name, thumbnail and days of the given week object.
+        /// </summary>
+        /// <param name="weekDTO">The DTO from which values are read.</param>
+        /// <param name="week">The week object to which values are written.</param>
+        /// <param name="_giraf">An instance of the GirafService from which the database will be accessed when reading the DTO.</param>
+        /// <returns>MissingProperties if thumbnail is missing.
+        /// ResourceNotFound if any pictogram id is invalid.
+        /// null otherwise.</returns>
+        public static async Task<ErrorResponse> SetWeekFromDTO(WeekBaseDTO weekDTO, WeekBase week, IGirafService _giraf)
         {
-            var modelErrorCode = newWeek.ValidateModel();
+            var modelErrorCode = weekDTO.ValidateModel();
             if (modelErrorCode.HasValue)
             {
                 return new ErrorResponse(modelErrorCode.Value);
             }
             
-            week.Name = newWeek.Name;
+            week.Name = weekDTO.Name;
             
             Pictogram thumbnail = _giraf._context.Pictograms
-                .FirstOrDefault(p => p.Id == newWeek.Thumbnail.Id);
+                .FirstOrDefault(p => p.Id == weekDTO.Thumbnail.Id);
             if(thumbnail == null)
                 return new ErrorResponse(ErrorCode.MissingProperties, "thumbnail");
 
             week.Thumbnail = thumbnail;
 
             var orderedDays = week.Weekdays.OrderBy(w => w.Day).ToArray();
-            foreach (var day in newWeek.Days)
+            foreach (var day in weekDTO.Days)
             {
                 var wkDay = new Weekday(day);
                 if (!(await AddPictogramsToWeekday(wkDay, day, _giraf)))
@@ -41,7 +49,7 @@ namespace GirafRest.Controllers
             }
 
             //All week days that were not specified in the new schedule, but existed before
-            var toBeDeleted = week.Weekdays.Where(wd => !newWeek.Days.Any(d => d.Day == wd.Day)).ToList();
+            var toBeDeleted = week.Weekdays.Where(wd => !weekDTO.Days.Any(d => d.Day == wd.Day)).ToList();
             foreach (var deletedDay in toBeDeleted)
             {
                 week.Weekdays.Remove(deletedDay);
