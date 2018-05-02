@@ -20,9 +20,8 @@ namespace GirafRest.Models
         /// <summary>
         /// A constructor for week setting only the thumbnail.
         /// </summary>
-        public WeekTemplate(string name, Pictogram thumbnail, Department department) : base(thumbnail)
+        public WeekTemplate(Department department)
         {
-            Name = name;
             DepartmentKey = department?.Key ?? -1;
         }
 

@@ -331,7 +331,9 @@ namespace GirafRest.Setup
                     new List<ActivityState>{Active, Active, })
             };
 
-            var sampleWeek = new WeekTemplate("SkabelonUge", pictograms[0], departments[0]);
+            var sampleWeek = new WeekTemplate(departments[0]);
+            sampleWeek.Name = "SkabelonUge";
+            sampleWeek.Thumbnail = pictograms[0];
             foreach (var day in weekdays)
             {
                 context.Weekdays.Add(day);

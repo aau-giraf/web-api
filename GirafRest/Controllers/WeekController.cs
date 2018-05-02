@@ -119,23 +119,10 @@ namespace GirafRest.Controllers
                 week = new Week() { WeekYear = weekYear, WeekNumber = weekNumber };
                 user.WeekSchedule.Add(week);
             }
-            if (newWeek.Thumbnail != null)
-            {
-                var thumbnail = await _giraf._context.Pictograms.Where(p => p.Id == newWeek.Thumbnail.Id).FirstOrDefaultAsync();
-                if (thumbnail == null)
-                    return new ErrorResponse<WeekDTO>(ErrorCode.ThumbnailDoesNotExist);
-                week.Thumbnail = thumbnail;
-            }
-            else
-            {
-                return new ErrorResponse<WeekDTO>(ErrorCode.MissingProperties, "thumbnail");
-            }
             
-            week.Name = newWeek.Name;
-            
-            var errorCode = await UpdateWeekActivities(newWeek, week, _giraf);
-            if (errorCode != ErrorCode.NoError)
-                return new ErrorResponse<WeekDTO>(errorCode);
+            var errorCode = await SetWeekFromDTO(newWeek, week, _giraf);
+            if (errorCode != null)
+                return new ErrorResponse<WeekDTO>(errorCode.ErrorCode, errorCode.ErrorProperties);
 
             _giraf._context.Weeks.Update(week);
             await _giraf._context.SaveChangesAsync();

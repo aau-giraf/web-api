@@ -11,13 +11,20 @@ namespace GirafRest.Controllers
     public static class SharedMethods
     {
         
-        public static async Task<ErrorCode> UpdateWeekActivities(WeekBaseDTO newWeek, WeekBase week, IGirafService _giraf)
+        public static async Task<ErrorResponse> SetWeekFromDTO(WeekBaseDTO newWeek, WeekBase week, IGirafService _giraf)
         {
             var modelErrorCode = newWeek.ValidateModel();
             if (modelErrorCode.HasValue)
             {
-                return modelErrorCode.Value;
+                return new ErrorResponse(modelErrorCode.Value);
             }
+            
+            week.Name = newWeek.Name;
+            
+            Pictogram thumbnail = _giraf._context.Pictograms
+                .FirstOrDefault(p => p.Id == newWeek.Thumbnail.Id);
+            if(thumbnail == null)
+                return new ErrorResponse(ErrorCode.MissingProperties, "thumbnail");
 
             var orderedDays = week.Weekdays.OrderBy(w => w.Day).ToArray();
             foreach (var day in newWeek.Days)
@@ -25,7 +32,7 @@ namespace GirafRest.Controllers
                 var wkDay = new Weekday(day);
                 if (!(await AddPictogramsToWeekday(wkDay, day, _giraf)))
                 {
-                    return ErrorCode.ResourceNotFound;
+                    return new ErrorResponse(ErrorCode.ResourceNotFound, "pictogram");
                 }
 
                 week.UpdateDay(wkDay);
@@ -38,7 +45,7 @@ namespace GirafRest.Controllers
                 week.Weekdays.Remove(deletedDay);
             }
 
-            return ErrorCode.NoError;
+            return null;
         }
         
         /// <summary>
