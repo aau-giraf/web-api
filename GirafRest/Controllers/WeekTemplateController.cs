@@ -107,6 +107,55 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
             return new Response<WeekTemplateDTO>(new WeekTemplateDTO(newTemplate));
         }
-        
+
+
+        [HttpPut("{id}")]
+        [Authorize]
+        public async Task<Response<WeekTemplateDTO>> UpdateWeekTemplate(long id, [FromBody] WeekTemplateDTO newValuesDTO)
+        {
+            var user = await _giraf.LoadUserAsync(HttpContext.User);
+            if (user == null) return new ErrorResponse<WeekTemplateDTO>(ErrorCode.UserNotFound);
+            //TODO: Who is allowed to use this endponit?
+
+            if(newValuesDTO == null) return new ErrorResponse<WeekTemplateDTO>(ErrorCode.MissingProperties);
+
+            var template = _giraf._context.WeekTemplates
+                .Include(w => w.Thumbnail)
+                .Include(u => u.Weekdays)
+                    .ThenInclude(wd => wd.Activities)
+                .FirstOrDefault(t => id == t.Id);
+            
+            if(template == null)
+                return new ErrorResponse<WeekTemplateDTO>(ErrorCode.WeekTemplateNotFound);
+            
+            var errorCode = await SetWeekFromDTO(newValuesDTO, template, _giraf);
+            if (errorCode != null)
+                return new ErrorResponse<WeekTemplateDTO>(errorCode.ErrorCode, errorCode.ErrorProperties);
+
+            _giraf._context.WeekTemplates.Update(template);
+            await _giraf._context.SaveChangesAsync();
+            return new Response<WeekTemplateDTO>(new WeekTemplateDTO(template));
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize]
+        public async Task<Response> DeleteTemplate(long id)
+        {
+            var user = await _giraf.LoadUserAsync(HttpContext.User);
+            if (user == null) return new ErrorResponse<WeekTemplateDTO>(ErrorCode.UserNotFound);
+            //TODO: Who is allowed to use this endponit?
+
+            var template = _giraf._context.WeekTemplates
+                .Include(w => w.Weekdays)
+                    .ThenInclude(w => w.Activities)
+                .FirstOrDefault(t => id == t.Id);
+            
+            if(template == null)
+                return new ErrorResponse<WeekTemplateDTO>(ErrorCode.WeekTemplateNotFound);
+
+            _giraf._context.WeekTemplates.Remove(template);
+            await _giraf._context.SaveChangesAsync();
+            return new Response();
+        }
     }
 }
