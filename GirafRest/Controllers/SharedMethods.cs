@@ -26,6 +26,8 @@ namespace GirafRest.Controllers
             if(thumbnail == null)
                 return new ErrorResponse(ErrorCode.MissingProperties, "thumbnail");
 
+            week.Thumbnail = thumbnail;
+
             var orderedDays = week.Weekdays.OrderBy(w => w.Day).ToArray();
             foreach (var day in newWeek.Days)
             {
@@ -39,7 +41,7 @@ namespace GirafRest.Controllers
             }
 
             //All week days that were not specified in the new schedule, but existed before
-            var toBeDeleted = week.Weekdays.Where(wd => newWeek.Days.All(d => d.Day != wd.Day)).ToList();
+            var toBeDeleted = week.Weekdays.Where(wd => !newWeek.Days.Any(d => d.Day == wd.Day)).ToList();
             foreach (var deletedDay in toBeDeleted)
             {
                 week.Weekdays.Remove(deletedDay);
