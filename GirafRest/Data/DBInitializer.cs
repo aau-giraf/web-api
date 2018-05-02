@@ -5,6 +5,7 @@ using GirafRest.Data;
 using GirafRest.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Text;
+using static GirafRest.Models.ActivityState;
 
 namespace GirafRest.Setup
 {
@@ -24,11 +25,11 @@ namespace GirafRest.Setup
             if (context.Users.Any())
 				return;
 
-            var Departments = AddSampleDepartments(context);
-            var Users = AddSampleUsers(context, userManager, Departments);
-            var Pictograms = AddSamplePictograms(context);
-            AddSampleWeekAndWeekdays(context, Pictograms);
-            AddSampleWeekTemplate(context, Pictograms, Departments);
+            var departments = AddSampleDepartments(context);
+            var users = AddSampleUsers(context, userManager, departments);
+            var pictograms = AddSamplePictograms(context);
+            AddSampleWeekAndWeekdays(context, pictograms);
+            AddSampleWeekTemplate(context, pictograms, departments);
             context.SaveChanges();
             // //For simplicity we simply add all the private pictograms to all users.
             // foreach (var usr in context.Users)
@@ -55,7 +56,7 @@ namespace GirafRest.Setup
         }
 
         #region Ownership sample methods
-        private static void addPictogramsToUser(GirafUser user, params Pictogram[] pictograms)
+        private static void AddPictogramsToUser(GirafUser user, params Pictogram[] pictograms)
         {
             System.Console.WriteLine("Adding pictograms to " + user.UserName);
             foreach (var pict in pictograms)
@@ -67,7 +68,7 @@ namespace GirafRest.Setup
             }
         }
 
-        private static void addPictogramToDepartment(Department department, params Pictogram[] pictograms)
+        private static void AddPictogramToDepartment(Department department, params Pictogram[] pictograms)
         {
             Console.WriteLine("Adding pictograms to " + department.Name);
             foreach (var pict in pictograms)
@@ -84,30 +85,30 @@ namespace GirafRest.Setup
         {
             System.Console.WriteLine("Adding some sample data to the database.");
             System.Console.WriteLine("Adding departments.");
-            var Departments = new Department[]
+            var departments = new Department[]
             {
                 new Department { Name = "Tobias' stue for godt humør"},
                 new Department { Name = "Bajer plejen"}
             };
-            foreach (var department in Departments)
+            foreach (var department in departments)
             {
                 context.Departments.Add(department);
             }
             context.SaveChanges();
 
-            return Departments;
+            return departments;
         } 
 
-        private static IList<GirafUser> AddSampleUsers(GirafDbContext context, UserManager<GirafUser> userManager, IList<Department> Departments)
+        private static IList<GirafUser> AddSampleUsers(GirafDbContext context, UserManager<GirafUser> userManager, IList<Department> departments)
         {
-            System.Console.WriteLine("Adding users.");
-            var users = new GirafUser[]
+            Console.WriteLine("Adding users.");
+            GirafUser[] users = new[]
             {
-                new GirafUser("Kurt", Departments[0]),
-                new GirafUser("Graatand", Departments[0]),
-                new GirafUser("Lee", Departments[1]),
-                new GirafUser("Tobias", Departments[0]),
-                new GirafUser("Decker", Departments[0])
+                new GirafUser("Kurt", departments[0]),
+                new GirafUser("Graatand", departments[0]),
+                new GirafUser("Lee", departments[1]),
+                new GirafUser("Tobias", departments[0]),
+                new GirafUser("Decker", departments[0])
             };
 
             //users[0].UserIcon = Encoding.ASCII.GetBytes(HugeBase64Images.Image1);
@@ -130,7 +131,7 @@ namespace GirafRest.Setup
         private static IList<Pictogram> AddSamplePictograms(GirafDbContext context)
         {
             System.Console.WriteLine("Adding pictograms.");
-            var Pictograms = new Pictogram[]
+            var pictograms = new Pictogram[]
             {
                 new Pictogram("Epik",           AccessLevel.PUBLIC, Encoding.ASCII.GetBytes(HugeBase64Images.Image2)),
                 new Pictogram("alfabet",        AccessLevel.PUBLIC, Encoding.ASCII.GetBytes(HugeBase64Images.Image3)),
@@ -238,95 +239,104 @@ namespace GirafRest.Setup
                 new Pictogram("cat16", AccessLevel.PUBLIC,Encoding.ASCII.GetBytes(HugeBase64Images.Image107)),
                 new Pictogram("cat17", AccessLevel.PUBLIC,Encoding.ASCII.GetBytes(HugeBase64Images.Image108)),
             };
-            foreach (var pictogram in Pictograms)
+            foreach (var pictogram in pictograms)
             {
                 pictogram.LastEdit = DateTime.Now;
                 context.Add(pictogram);
             }
             context.SaveChanges();
 
-            return Pictograms;
+            return pictograms;
         }
         #endregion
 
-        private static void AddSampleWeekAndWeekdays(GirafDbContext context, IList<Pictogram> Pictograms)
+        private static void AddSampleWeekAndWeekdays(GirafDbContext context, IList<Pictogram> pictograms)
         {
             Console.WriteLine("Adding weekdays to users");
-            var Weekdays = new Weekday[]
+            var weekdays = new Weekday[]
             {
                 new Weekday(Days.Monday, 
-                    new List<Pictogram> { Pictograms[0], Pictograms[1], Pictograms[2], Pictograms[3], Pictograms[4] },
-                    new List<ActivityState>{ActivityState.Completed, ActivityState.Completed, ActivityState.Completed, ActivityState.Completed, ActivityState.Completed}),
+                    new List<Pictogram> { pictograms[0], pictograms[1], pictograms[2], pictograms[3], pictograms[4] },
+                    new List<ActivityState>{Completed, Completed, Completed, Completed, Completed}),
+                
                 new Weekday(Days.Tuesday, 
-                    new List<Pictogram> { Pictograms[5], Pictograms[6], Pictograms[7], Pictograms[8] },
-                    new List<ActivityState>{ActivityState.Completed, ActivityState.Active, ActivityState.Canceled, ActivityState.Completed}),
+                    new List<Pictogram> { pictograms[5], pictograms[6], pictograms[7], pictograms[8] },
+                    new List<ActivityState>{Completed, Active, Canceled, Completed}),
+                
                 new Weekday(Days.Wednesday, 
-                    new List<Pictogram> { Pictograms[9], Pictograms[10], Pictograms[11], Pictograms[12], Pictograms[13] },
-                    new List<ActivityState>{ActivityState.Completed, ActivityState.Active, ActivityState.Active, ActivityState.Active, ActivityState.Active}),
+                    new List<Pictogram> { pictograms[9], pictograms[10], pictograms[11], pictograms[12], pictograms[13] },
+                    new List<ActivityState>{Completed, Active, Active, Active, Active}),
+                
                 new Weekday(Days.Thursday, 
-                    new List<Pictogram> { Pictograms[8], Pictograms[6], Pictograms[7], Pictograms[5] },
-                    new List<ActivityState>{ActivityState.Active, ActivityState.Canceled, ActivityState.Active, ActivityState.Active}),
+                    new List<Pictogram> { pictograms[8], pictograms[6], pictograms[7], pictograms[5] },
+                    new List<ActivityState>{Active, Canceled, Active, Active}),
+                
                 new Weekday(Days.Friday, 
-                    new List<Pictogram> { Pictograms[0], Pictograms[7]},
-                    new List<ActivityState>{ActivityState.Active, ActivityState.Active}),
+                    new List<Pictogram> { pictograms[0], pictograms[7]},
+                    new List<ActivityState>{Active, Active}),
+                
                 new Weekday(Days.Saturday, 
-                    new List<Pictogram> { Pictograms[8], Pictograms[5]},
-                    new List<ActivityState>{ActivityState.Canceled, ActivityState.Canceled}),
+                    new List<Pictogram> { pictograms[8], pictograms[5]},
+                    new List<ActivityState>{Canceled, Canceled}),
+                
                 new Weekday(Days.Sunday, 
-                    new List<Pictogram> { Pictograms[3], Pictograms[5]},
-                    new List<ActivityState>{ActivityState.Active, ActivityState.Active})
+                    new List<Pictogram> { pictograms[3], pictograms[5]},
+                    new List<ActivityState>{Active, Active})
             };
 
-            var sampleWeek = new Week(Pictograms[0]);
-            foreach (var day in Weekdays)
+            var sampleWeek = new Week(pictograms[0]);
+            foreach (var day in weekdays)
             {
                 context.Weekdays.Add(day);
                 sampleWeek.UpdateDay(day);
             }
             sampleWeek.Name = "Normal Uge";
-            var usr = context.Users.Where(u => u.UserName == "Kurt").First();
+            var usr = context.Users.First(u => u.UserName == "Kurt");
             context.Weeks.Add(sampleWeek);
             usr.WeekSchedule.Add(sampleWeek);
             context.SaveChanges();
         }
 
-        private static void AddSampleWeekTemplate(GirafDbContext context, IList<Pictogram> Pictograms, IList<Department> depertments)
+        private static void AddSampleWeekTemplate(GirafDbContext context, IList<Pictogram> pictograms, IList<Department> departments)
         {
             Console.WriteLine("Adding weekdays to users");
-            var Weekdays = new Weekday[]
+            var weekdays = new Weekday[]
             {
                 new Weekday(Days.Monday, 
-                    new List<Pictogram> { Pictograms[0], Pictograms[1], Pictograms[2], Pictograms[3], Pictograms[4] },
-                    new List<ActivityState>{ActivityState.Active, ActivityState.Active, ActivityState.Active, ActivityState.Active, ActivityState.Active, }),
+                    new List<Pictogram> { pictograms[0], pictograms[1], pictograms[2], pictograms[3], pictograms[4] },
+                    new List<ActivityState>{Active, Active, Active, Active, Active, }),
+                
                 new Weekday(Days.Tuesday, 
-                    new List<Pictogram> { Pictograms[5], Pictograms[6], Pictograms[7], Pictograms[8] },
-                    new List<ActivityState>{ActivityState.Active, ActivityState.Active, ActivityState.Active, ActivityState.Active, }),
+                    new List<Pictogram> { pictograms[5], pictograms[6], pictograms[7], pictograms[8] },
+                    new List<ActivityState>{Active, Active, Active, Active, }),
+                
                 new Weekday(Days.Wednesday, 
-                    new List<Pictogram> { Pictograms[9], Pictograms[10], Pictograms[11], Pictograms[12], Pictograms[13] },
-                    new List<ActivityState>{ActivityState.Active, ActivityState.Active, ActivityState.Active, ActivityState.Active, ActivityState.Active, }),
+                    new List<Pictogram> { pictograms[9], pictograms[10], pictograms[11], pictograms[12], pictograms[13] },
+                    new List<ActivityState>{Active, Active, Active, Active, Active, }),
+                
                 new Weekday(Days.Thursday, 
-                    new List<Pictogram> { Pictograms[8], Pictograms[6], Pictograms[7], Pictograms[5] },
-                    new List<ActivityState>{ActivityState.Active, ActivityState.Active, ActivityState.Active, ActivityState.Active, }),
+                    new List<Pictogram> { pictograms[8], pictograms[6], pictograms[7], pictograms[5] },
+                    new List<ActivityState>{Active, Active, Active, Active, }),
+                
                 new Weekday(Days.Friday, 
-                    new List<Pictogram> { Pictograms[0], Pictograms[7]},
-                    new List<ActivityState>{ActivityState.Active, ActivityState.Active, }),
+                    new List<Pictogram> { pictograms[0], pictograms[7]},
+                    new List<ActivityState>{Active, Active, }),
+                
                 new Weekday(Days.Saturday, 
-                    new List<Pictogram> { Pictograms[8], Pictograms[5] },
-                    new List<ActivityState>{ActivityState.Active, ActivityState.Active, }),
+                    new List<Pictogram> { pictograms[8], pictograms[5] },
+                    new List<ActivityState>{Active, Active, }),
+                
                 new Weekday(Days.Sunday, 
-                    new List<Pictogram> { Pictograms[3], Pictograms[5] },
-                    new List<ActivityState>{ActivityState.Active, ActivityState.Active, })
+                    new List<Pictogram> { pictograms[3], pictograms[5] },
+                    new List<ActivityState>{Active, Active, })
             };
 
-            var sampleWeek = new WeekTemplate(Pictograms[0]);
-            foreach (var day in Weekdays)
+            var sampleWeek = new WeekTemplate("SkabelonUge", pictograms[0], departments[0]);
+            foreach (var day in weekdays)
             {
                 context.Weekdays.Add(day);
                 sampleWeek.UpdateDay(day);
             }
-
-            sampleWeek.Name = "Skabelonuge";
-            sampleWeek.DepartmentKey = depertments[0].Key;
 
             context.WeekTemplates.Add(sampleWeek);
             context.SaveChanges();

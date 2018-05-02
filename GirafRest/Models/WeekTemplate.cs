@@ -10,6 +10,9 @@ namespace GirafRest.Models
 {
     public class WeekTemplate : WeekBase
     {
+        /// <summary>
+        /// Empty constructor required for unit testing.
+        /// </summary>
         public WeekTemplate()
         {
         }
@@ -17,19 +20,15 @@ namespace GirafRest.Models
         /// <summary>
         /// A constructor for week setting only the thumbnail.
         /// </summary>
-        public WeekTemplate(Pictogram thumbnail) : base(thumbnail)
+        public WeekTemplate(string name, Pictogram thumbnail, Department department) : base(thumbnail)
         {
-        }
-        /// <summary>
-        /// Creates a new WeekTemplate from the given WeekDTO.
-        /// </summary>
-        /// <param name="weekDTO">The data transfer object to create a new week template from.</param>
-        public WeekTemplate(WeekDTO weekDTO, long departmentKet) : base(weekDTO)
-        {
+            Name = name;
+            DepartmentKey = department?.Key ?? -1;
         }
 
         [ForeignKey("Department")]
         public long DepartmentKey { get; set; }
+        
         /// <summary>
         /// A reference to the department using this template.
         /// </summary>
