@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using GirafRest.Models;
 
@@ -61,6 +62,7 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         public bool GreyScale { get; set; }
 
+        public List<WeekDayColorDTO>  WeekDayColors {get; set;}
         /// <summary>
         /// Constructor to create a DTO based on the actual object
         /// </summary>
@@ -77,6 +79,7 @@ namespace GirafRest.Models.DTOs
             this.NrOfDaysToDisplay = options.NrOfDaysToDisplay;
             this.ColorThemeWeekSchedules = options.ColorThemeWeekSchedules;
             this.GreyScale = options.GreyScale;
+            this.WeekDayColors = SetWeekDayColorsFromModel(options.WeekDayColors);
         }
 
         public SettingDTO()
@@ -87,6 +90,24 @@ namespace GirafRest.Models.DTOs
             DefaultTimer = DefaultTimer.analogClock;
             Theme = Theme.girafYellow;
             ColorThemeWeekSchedules = ColorThemeWeekSchedules.yellowAndWhite;
+        }
+
+        private List<WeekDayColorDTO> SetWeekDayColorsFromModel(List<WeekDayColor> weekDayColors){
+            if (weekDayColors != null)
+            {
+                var WeekDayColorDTOs = new List<WeekDayColorDTO>();
+                foreach (var weekDayColor in weekDayColors)
+                {
+                    WeekDayColorDTOs.Add(new WeekDayColorDTO()
+                    {
+                        Day = weekDayColor.Day,
+                        HexColor = weekDayColor.HexColor
+                    });
+                }
+
+                return WeekDayColorDTOs;
+            }
+            return null;
         }
     }
 }

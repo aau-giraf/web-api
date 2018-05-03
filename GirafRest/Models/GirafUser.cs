@@ -70,12 +70,13 @@ namespace GirafRest.Models
         public GirafUser(string userName, Department department) : base(userName)
         {
             IntialiseData();
-
+            Settings.InitialiseWeekDayColors();
             DepartmentKey = department?.Key ?? -1;
         }
 
         /// <summary>
-        /// DO NOT DELETE THIS.
+        /// DO NOT DELETE
+        /// THIS CONSTRUCTOR IS USED BY NEWTONSOFT AND SHOULD ONLY BE USED BY NEWTONSOFT
         /// </summary>
         public GirafUser()
         {
@@ -123,5 +124,6 @@ namespace GirafRest.Models
         {
             this.Guardians.Add(new GuardianRelation(guardian, this));
         }
+       
     }
 }
