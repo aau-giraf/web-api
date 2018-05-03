@@ -130,6 +130,8 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
 
+        #endregion
+        #region CreateWeek
         [Fact]
         public void UpdateWeek_NewWeekValidDTO_Ok()
         {
@@ -145,7 +147,7 @@ namespace GirafRest.Test
             Assert.IsType<Response<WeekDTO>>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.True(res.Success);
-            Assert.Equal("Test Week", res.Data.Name);
+            Assert.Equal("new name", res.Data.Name);
 
         }
 
@@ -201,6 +203,22 @@ namespace GirafRest.Test
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
+
+        [Fact]
+        public void CreateWeek_SameName_BadRequest()
+        {
+            var wc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var week = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.First();
+            // try to create week with same name
+            var weekDTO = new WeekDTO(week);
+            var res = wc.CreateWeek(weekDTO).Result;
+
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.DuplicateWeekScheduleName, res.ErrorCode);
+        }
+
+
         #endregion
     }
 }
