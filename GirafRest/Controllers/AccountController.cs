@@ -87,7 +87,7 @@ namespace GirafRest.Controllers
             {
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim("impersonatedBy", impersonatedBy),
+                new Claim("impersonatedBy", impersonatedBy ?? ""),
             };
 
             claims.AddRange(await GetRoleClaims(user));
