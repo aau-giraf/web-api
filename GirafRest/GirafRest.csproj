@@ -11,6 +11,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\netcoreapp2.0\GirafRest.xml</DocumentationFile>
     <NoWarn>1701;1702;1705;1591;1572;1571;1573;1587;1570;1574;1587</NoWarn>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.0.1" />
@@ -48,5 +50,9 @@
     <Compile Remove="Migrations\20180228140854_Initial.cs" />
     <Compile Remove="Services\SharedMethods.cs" />
     <Compile Remove="Controllers\ChoiceController.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="wwwroot\admin\NewFolder\" />
+    <Folder Include="wwwroot\admin\view\" />
   </ItemGroup>
 </Project>

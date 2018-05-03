@@ -1,7 +1,18 @@
-body {
-    background-color: #ffd268;
+body, html {
+    height: 100%;
     margin: 0px;
     padding: 0px;
+}
+
+#app {
+    /* The image used */
+    background-image: url("/admin/img/giraf.jpg");
+    /* Full height */
+    height: 100%;
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
 }
 
 *{margin: 0; padding: 0; border: 0; outline: 0;}
@@ -9,22 +20,27 @@ body {
 #header{
     width: 100%;
     text-align: center;
-    height: 7vh;
+    padding: 10px;
     color: black;
-    background-color: 	#2F4F4F;;
+    color: white;
+    font-size: 30px;
+    background-color:#2F4F4F ;
 }
 
-#header h1{
+h1{
     padding: 1vh;
     font-size: 0.5vh;
 }
 
-#container{
+.center {
+    text-align: center;
+}
+
+#container {
     width: 100%;
     height: 90vh;
     margin-right: auto;
     margin-left: auto;
-    background-color: #ffd268;
 }
 
 #container h1{
@@ -32,16 +48,42 @@ body {
 }
 
 #title {
-    text-align: center;
-    margin-top: 10vh;
     font-size: 2vh;
 }
 
-#content{
+#title > h2{
+    margin: 0px;
+    margin-top: 10px;
+}
+
+#main {
+    margin-left: 25vh;
+    padding: 10px;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.95);
+}
+
+.list {
+    margin-top: 5px;
+    width: 100%;
+    border-bottom: 1px solid lightgray;
+}
+
+.list > .item {
+    width: 100%;
+    font-size: 20px;
+    border-top: 1px solid lightgray;
+}
+
+.bg-overlay {
+    
+}
+
+#content {
     position: absolute;
     width: 40%;
     height: 40%;
-    top:30%;
+    top: 30%;
     left: 30%;
 }
 
@@ -61,16 +103,21 @@ body {
 @import url(https://fonts.googleapis.com/css?family=Roboto:300);
 
 .login-page {
+    position:absolute;
   width: 100%;
+  top: 0;
+  right: 0;
+  bottom 0px;
+  left: 0;
   margin-left: auto;
   margin-right: auto;
 }
 .form {
-  position: relative;
-  background: 	#2F4F4F;
-  max-width: 60vh;
-  padding: 3vh;
-  text-align: center;
+    box-shadow: grey 0px 0px 2px 2px;
+    border-radius: 2px;
+    position: relative;
+    background: #2F4F4F;
+    padding: 3vh;
 }
 .form input {
   background: white;
@@ -110,3 +157,16 @@ body {
     float:left;
 }
 
+#sidebar > .item {
+    font-size: 20px;
+    cursor: pointer;
+    color: white;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#sidebar > .item:hover {
+    background-color: rgb(60, 120, 140);
+}
+    
