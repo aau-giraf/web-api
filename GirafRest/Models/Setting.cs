@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
 
@@ -9,7 +11,6 @@ namespace GirafRest.Models
     /// <summary>
     /// The LauncherOptions, which is the various settings the users can add to customize the Launcher App.
     /// </summary>
-    [ComplexType]
     public class Setting
     {
         /// <summary>
@@ -67,6 +68,9 @@ namespace GirafRest.Models
         /// </summary>
         public bool GreyScale { get; set; }
 
+
+        public List<WeekDayColor> WeekDayColors { get; set; }
+
         /// <summary>
         /// Required empty constructor
         /// </summary>
@@ -81,6 +85,7 @@ namespace GirafRest.Models
             TimerSeconds = 900;
             ColorThemeWeekSchedules = ColorThemeWeekSchedules.standard;
             GreyScale = false;
+
         }
         /// <summary>
         /// Updates all settings based on a DTO
@@ -98,6 +103,34 @@ namespace GirafRest.Models
             this.NrOfDaysToDisplay = newOptions.NrOfDaysToDisplay;
             this.ColorThemeWeekSchedules = newOptions.ColorThemeWeekSchedules;
             this.GreyScale = newOptions.GreyScale;
+            updateWeekDayColors(newOptions.WeekDayColors);
+        }
+
+        private void updateWeekDayColors(List<WeekDayColorDTO> weekDayColors){
+            if (this.WeekDayColors != null)
+            {
+                foreach (var weekDayColor in weekDayColors)
+                {
+                    var weekDayColorToUpdate = this.WeekDayColors.FirstOrDefault(wdc => wdc.Day == weekDayColor.Day);
+                    if (weekDayColorToUpdate != null)
+                    {
+                        weekDayColorToUpdate.HexColor = weekDayColor.HexColor;
+                    }
+                }
+            }
+        }
+
+        public void InitialiseWeekDayColors(){
+            this.WeekDayColors = new List<WeekDayColor>(){
+                new WeekDayColor(){Day = Days.Monday, HexColor = "#067700", SettingId = Key},
+                new WeekDayColor(){Day = Days.Tuesday, HexColor = "#8c1086", SettingId = Key},
+                new WeekDayColor(){Day = Days.Wednesday, HexColor = "#ff7f00", SettingId = Key},
+                new WeekDayColor(){Day = Days.Thursday, HexColor = "#0017ff", SettingId = Key},
+                new WeekDayColor(){Day = Days.Friday, HexColor = "#ffdd00", SettingId = Key},
+                new WeekDayColor(){Day = Days.Saturday, HexColor = "#ff0102", SettingId = Key},
+                new WeekDayColor(){Day = Days.Sunday, HexColor = "#ffffff", SettingId = Key},
+
+            };
         }
     }
 }
