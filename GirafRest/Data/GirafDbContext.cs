@@ -25,10 +25,10 @@ namespace GirafRest.Data
         public virtual DbSet<DepartmentResource> DepartmentResources { get; set; }
         public virtual DbSet<Activity> Activities { get; set; }
         public virtual DbSet<GuardianRelation> GuardianRelations { get; set; }
+        public virtual DbSet<WeekDayColor> WeekDayColors { get; set; }
         public new virtual DbSet<GirafUser> Users { get { return base.Users; } set { base.Users = value; } }
         public new virtual DbSet<GirafRole> Roles { get { return base.Roles; } set { base.Roles = value; } }
         public new virtual DbSet<IdentityUserRole<string>> UserRoles { get { return base.UserRoles; } set { base.UserRoles = value; } }
-
         protected GirafDbContext() { }
         /// <summary>
         /// Constructor for use when deployed and using the MySql database
@@ -117,6 +117,13 @@ namespace GirafRest.Data
                    .HasOne(gr => gr.Citizen)
                    .WithMany(c => c.Guardians)
                    .HasForeignKey(mg => mg.CitizenId);
+
+
+            builder.Entity<Setting>()
+                   .HasMany(gr => gr.WeekDayColors)
+                   .WithOne(c => c.Setting)
+                   .HasForeignKey(s => s.SettingId);
         }
+
     }
 }
