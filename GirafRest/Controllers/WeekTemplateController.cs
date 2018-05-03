@@ -91,7 +91,7 @@ namespace GirafRest.Controllers
                 .Where(t => t.DepartmentKey == user.DepartmentKey)
                 .FirstOrDefaultAsync(w => w.Id == id));
             
-            if (week != null)
+            if (week != null && user.DepartmentKey == week.DepartmentKey)
                 return new Response<WeekTemplateDTO>(new WeekTemplateDTO(week));
             else
                 return new ErrorResponse<WeekTemplateDTO>(ErrorCode.WeekTemplateNotFound);
