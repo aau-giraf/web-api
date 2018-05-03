@@ -676,7 +676,11 @@ namespace GirafRest.Controllers
 
             // Validate Correct format of WeekDayColorDTOs. A color must be set for each day
             if (options.WeekDayColors.GroupBy(d => d.Day).Any(g => g.Count() != 1))
-                return new ErrorResponse<SettingDTO>(ErrorCode.MustBeAWeekDayColorForEachDay);
+                return new ErrorResponse<SettingDTO>(ErrorCode.ColorMustHaveUniqueDay);
+
+            // check if all days in weekdaycolours is valid
+            if (options.WeekDayColors.Any(w => !Enum.IsDefined(typeof(Days), w.Day)))
+                return new ErrorResponse<SettingDTO>(ErrorCode.InvalidDay);
 
             // check that Colors are in correct format
             var IsCorrectHexValues = IsWeekDayColorsCorrectHexFormat(options);
@@ -695,7 +699,7 @@ namespace GirafRest.Controllers
 
             var errorCode = _authentication.CheckUserAccess(authUser, authUserRole, user, userRole);
             if (errorCode != null)
-                return new ErrorResponse<SettingDTO>(errorCode.Value); 
+                return new ErrorResponse<SettingDTO>(errorCode.Value);
 
             user.Settings.UpdateFrom(options);
             // lets update the weekday colours

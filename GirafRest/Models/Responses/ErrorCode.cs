@@ -61,7 +61,7 @@
         WeekAlreadyExists,
         InvalidDay,
         DuplicateWeekScheduleName,
-        MustBeAWeekDayColorForEachDay,
+        ColorMustHaveUniqueDay,
         InvalidHexValues
     }
 }
