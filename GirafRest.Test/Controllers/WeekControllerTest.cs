@@ -132,7 +132,10 @@ namespace GirafRest.Test
 
         #endregion
         #region CreateWeek
+<<<<<<< HEAD
 
+=======
+>>>>>>> ebb8775359c1c14a6e007492a69f1826248d64d3
         [Fact]
         public void UpdateWeek_NewWeekValidDTO_Ok()
         {
@@ -219,7 +222,6 @@ namespace GirafRest.Test
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.DuplicateWeekScheduleName, res.ErrorCode);
         }
-
 
         #endregion
     }
