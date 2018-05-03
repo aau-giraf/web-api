@@ -60,6 +60,8 @@
         InvalidAmountOfWeekdays,
         WeekAlreadyExists,
         InvalidDay,
-        DuplicateWeekScheduleName
+        DuplicateWeekScheduleName,
+        MustBeAWeekDayColorForEachDay,
+        InvalidHexValues
     }
 }
