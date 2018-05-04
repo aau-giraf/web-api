@@ -212,7 +212,7 @@ namespace GirafRest.Controllers
         /// MissingProperties if username or screenname is null
         /// If succesfull returns the DTO corresponding to the newly updates user.
         /// </returns>
-        [HttpPatch("")]
+        [HttpPut("")]
         public async Task<Response<GirafUserDTO>> UpdateUser([FromBody] string Username, [FromBody] string ScreenName)
         {
             //Fetch the user
@@ -233,7 +233,7 @@ namespace GirafRest.Controllers
         /// Not authorised if trying to update a user you do not have priveligies to update
         /// Succes response with the DTO for the updates user if all went smooth
         /// </returns>
-        [HttpPatch("{id}")]
+        [HttpPut("{id}")]
         public async Task<Response<GirafUserDTO>> UpdateUser(string id, [FromBody] string Username, [FromBody] string ScreenName)
         {
             if (Username == null && ScreenName == null)
@@ -640,7 +640,7 @@ namespace GirafRest.Controllers
         /// MissingProperties if options is null or some required fields is not set
         /// </returns>
         /// <param name="options">Options.</param>
-        [HttpPatch("settings")]
+        [HttpPut("settings")]
         public async Task<Response<SettingDTO>> UpdateUserSettings([FromBody] SettingDTO options)
         {
             var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
@@ -655,7 +655,7 @@ namespace GirafRest.Controllers
         /// MissingProperties if options is null or some required fields is not set
         /// </returns>
         /// <param name="options">Options.</param>
-        [HttpPatch("{id}/settings")]
+        [HttpPut("{id}/settings")]
         [Authorize]
         public async Task<Response<SettingDTO>> UpdateUserSettings(string id, [FromBody] SettingDTO options)
         {
