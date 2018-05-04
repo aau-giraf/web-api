@@ -66,26 +66,27 @@ namespace GirafRest.Test
         {
             var wc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = wc.ReadUsersWeekSchedule(WEEK_ZERO).Result;
+            var res = wc.ReadUsersWeekSchedule(2018, 1).Result;
 
             Assert.IsType<Response<WeekDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             var adminDepOneWeekZeroSchedule = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.FirstOrDefault(w => w.Id == WEEK_ZERO);
             Assert.Equal(adminDepOneWeekZeroSchedule?.Name, res.Data.Name);
-            Assert.Equal(adminDepOneWeekZeroSchedule?.Id, res.Data.Id);
+            Assert.Equal(adminDepOneWeekZeroSchedule?.WeekYear, res.Data.WeekYear);
+            Assert.Equal(adminDepOneWeekZeroSchedule?.WeekNumber, res.Data.WeekNumber);
         }
 
         [Fact]
-        public void ReadWeekSchedules_AccessValidUsersSpecificWeekNoWeekExist_NotFound()
+        public void ReadWeekSchedules_AccessAnyWeek_Ok()
         {
             var wc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITEZEN_DEP_THREE]);
-            var res = wc.ReadUsersWeekSchedule(NONEXISTING).Result;
+            var res = wc.ReadUsersWeekSchedule(999, 999).Result;
 
-            Assert.IsType<ErrorResponse<WeekDTO>>(res);
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.WeekScheduleNotFound, res.ErrorCode);
+            Assert.IsType<Response<WeekDTO>>(res);
+            Assert.True(res.Success);
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
         }
         #endregion
         #region UpdateWeek
@@ -96,27 +97,11 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var week = _testContext.MockUsers[GUARDIAN_DEP_TWO].WeekSchedule.First();
             var tempWeek = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule;
-            var res = wc.UpdateWeek(WEEK_ZERO, new WeekDTO(week)).Result;
+            var res = wc.UpdateWeek(2018, WEEK_ZERO, new WeekDTO(week)).Result;
 
             Assert.IsType<Response<WeekDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(week.Name, res.Data.Name);
-
-            _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule = tempWeek;
-        }
-
-        [Fact]
-        public void UpdateWeek_InvalidWeekValidDTO_NotFound()
-        {
-            var wc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var week = _testContext.MockUsers[GUARDIAN_DEP_TWO].WeekSchedule.First();
-            var tempWeek = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule;
-            var res = wc.UpdateWeek(NONEXISTING, new WeekDTO(week)).Result;
-
-            Assert.IsType<ErrorResponse<WeekDTO>>(res);
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.WeekScheduleNotFound, res.ErrorCode);
 
             _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule = tempWeek;
         }
@@ -127,13 +112,10 @@ namespace GirafRest.Test
             var wc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var tempWeek = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule;
-            var res = wc.UpdateWeek(WEEK_ZERO, new WeekDTO()).Result;
-
+            var res = wc.UpdateWeek(2018, 10, new WeekDTO() { Thumbnail = new Models.DTOs.WeekPictogramDTO(_testContext.MockPictograms[0]) }).Result;
             Assert.False(res.Success);
             Assert.IsType<ErrorResponse<WeekDTO>>(res);
-            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
-
-            _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule = tempWeek;
+            Assert.Equal(ErrorCode.InvalidAmountOfWeekdays, res.ErrorCode);
         }
 
         [Fact]
@@ -141,73 +123,88 @@ namespace GirafRest.Test
         {
             var wc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = wc.UpdateWeek(WEEK_ZERO, null).Result;
+            var res = wc.UpdateWeek(2018, 10, null).Result;
 
             Assert.False(res.Success);
             Assert.IsType<ErrorResponse<WeekDTO>>(res);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
+
         #endregion
         #region CreateWeek
         [Fact]
-        public void CreateWeek_NewWeekValidDTO_Ok()
+        public void UpdateWeek_NewWeekValidDTO_Ok()
         {
             var wc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var week = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.First();
             // modify name
-            week.Name = "Test Week";
-            var res = wc.CreateWeek(new WeekDTO(week)).Result;
-
+            var newWeek = new WeekDTO(week)
+            {
+                Name = "Test Week"
+            };
+            var res = wc.UpdateWeek(2018, 20, newWeek).Result;
             Assert.IsType<Response<WeekDTO>>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.True(res.Success);
             Assert.Equal("Test Week", res.Data.Name);
 
-            _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Remove(_testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Last());
         }
 
         [Fact]
-        public void CreateWeek_NewWeekValidDTO_CheckFrameNr_Ok(){
+        public void UpdateWeek_NewWeekValidDTO_CheckFrameNr_Ok(){
             var wc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var week = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.First();
             var orderNumber = 1;
-            var activities = new List<WeekdayResource>(){new WeekdayResource(week.Weekdays[0], _testContext.MockPictograms[0], orderNumber)};
+            var state = ActivityState.Active;
+            
+            var activities = new List<Activity>()
+            {
+                new Activity(week.Weekdays[0], _testContext.MockPictograms[0], orderNumber, state)
+            };
+            
             week.Weekdays[0].Activities = activities;
-            var res = wc.CreateWeek(new WeekDTO(week)).Result;
+            var res = wc.UpdateWeek(2018, 20, new WeekDTO(week)).Result;
 
-            Assert.IsType<Response<WeekDTO>>(res);
+            //Assert.IsType<Response<WeekDTO>>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.True(res.Success);
             Assert.Equal(orderNumber, res.Data.Days.ToList()[0].Activities.ToList()[0].Order);
+            Assert.Equal(state, res.Data.Days.ToList()[0].Activities.ToList()[0].State);
+
+            var getResult = wc.ReadUsersWeekSchedule(2018, 20).Result;
+            
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            Assert.True(getResult.Success);
+            Assert.Equal(orderNumber, getResult.Data.Days.ToList()[0].Activities.ToList()[0].Order);
+            Assert.Equal(state, getResult.Data.Days.ToList()[0].Activities.ToList()[0].State);
         }
 
         [Fact]
-        public void CreateWeek_NewWeekInvalidDTO_BadRequest()
+        public void UpdateWeek_NewWeekInvalidDTO_BadRequest()
         {
             var wc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = wc.CreateWeek(new WeekDTO()).Result;
-
+            var res = wc.UpdateWeek(2018, 20, new WeekDTO() { Thumbnail = new Models.DTOs.WeekPictogramDTO(_testContext.MockPictograms[0]) }).Result;
             Assert.IsType<ErrorResponse<WeekDTO>>(res);
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.InvalidProperties, res.ErrorCode);
-
-            _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Remove(_testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.Last());
+            Assert.Equal(ErrorCode.InvalidAmountOfWeekdays, res.ErrorCode);
         }
 
         [Fact]
-        public void CreateWeek_NewWeekNullDTO_BadRequest()
+        public void UpdateWeek_NewWeekNullDTO_BadRequest()
         {
             var wc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = wc.CreateWeek(null).Result;
+            var res = wc.UpdateWeek(2018, 10, null).Result;
 
             Assert.IsType<ErrorResponse<WeekDTO>>(res);
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.InvalidProperties, res.ErrorCode);
+            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
+
+
         #endregion
     }
 }

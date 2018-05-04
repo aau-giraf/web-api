@@ -60,7 +60,7 @@ namespace GirafRest.Models
         /// <summary>
         /// A field for storing all relevant options that the user has specified in the GirafLauncher.
         /// </summary>
-        public virtual LauncherOptions Settings { get; set; }
+        public virtual Setting Settings { get; set; }
         
         /// <summary>
         /// Creates a new user with the specified user name, associated with the given department.
@@ -84,7 +84,7 @@ namespace GirafRest.Models
 
         private void IntialiseData()
         {
-            this.Settings = new LauncherOptions();
+            this.Settings = new Setting();
             this.Resources = new List<UserResource>();
             this.WeekSchedule = new List<Week>();
             this.Citizens = new List<GuardianRelation>();

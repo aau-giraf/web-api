@@ -23,7 +23,7 @@ namespace GirafRest.Data
         public virtual DbSet<Weekday> Weekdays { get; set; }
         public virtual DbSet<UserResource> UserResources { get; set; }
         public virtual DbSet<DepartmentResource> DepartmentResources { get; set; }
-        public virtual DbSet<WeekdayResource> WeekdayResources { get; set; }
+        public virtual DbSet<Activity> Activities { get; set; }
         public virtual DbSet<GuardianRelation> GuardianRelations { get; set; }
         public new virtual DbSet<GirafUser> Users { get { return base.Users; } set { base.Users = value; } }
         public new virtual DbSet<GirafRole> Roles { get { return base.Roles; } set { base.Roles = value; } }
@@ -45,22 +45,15 @@ namespace GirafRest.Data
         /// <param name="builder">A database model builder, that defines methods for specifying the database design.</param>
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            // id, name : user
-            // id, title: pictogram
-            // id : deparment
             base.OnModelCreating(builder);
-            //Creates tables for all entities.
-            builder.Entity<Department>().ToTable("Departments").HasDiscriminator<string>("Discriminator").HasValue<Department>(nameof(Department));
-            builder.Entity<Department>().HasIndex(dep => dep.Name).IsUnique().ForSqlServerIsClustered();
-            builder.Entity<Pictogram>().ToTable("Pictograms").HasDiscriminator<string>("Discriminator").HasValue<Pictogram>(nameof(Pictogram));
-            builder.Entity<Pictogram>().HasIndex(pic => new {pic.Id, pic.Title}).IsUnique().ForSqlServerIsClustered();
-            builder.Entity<Weekday>().ToTable("Weekdays").HasDiscriminator<string>("Discriminator").HasValue<Weekday>(nameof(Weekday));
-            builder.Entity<Weekday>().HasIndex(day => new {day.Id}).IsUnique().ForSqlServerIsClustered();
 
-            //asp.net does not support many-to-many in its' current release. Here is a workaround.
-            //The workaround is similar to the one taught in the DBS course, where a relationship called
-            //DeparmentResource is used to map between departments and resources.
-            //This lines configures the relation from Department to DepartmentResource
+            //Indexes
+            builder.Entity<Department>().HasIndex(dep => dep.Name).IsUnique().ForSqlServerIsClustered();
+            builder.Entity<Pictogram>().HasIndex(pic => new {pic.Id, pic.Title}).IsUnique().ForSqlServerIsClustered();
+            builder.Entity<Weekday>().HasIndex(day => new {day.Id}).IsUnique().ForSqlServerIsClustered();
+            builder.Entity<Week>().HasIndex(week => week.Id).IsUnique().ForSqlServerIsClustered();
+            builder.Entity<GirafUser>().HasIndex(user => new { user.Id, user.UserName }).IsUnique().ForSqlServerIsClustered();
+
             builder.Entity<DepartmentResource>()
                 //States that one department is involved in each DepartmentResourceRelation
                 .HasOne(dr => dr.Other)
@@ -89,8 +82,6 @@ namespace GirafRest.Data
             builder.Entity<GirafUser>()
                 .HasOne<Department>(u => u.Department)
                 .WithMany(d => d.Members);
-            builder.Entity<GirafUser>().HasIndex(user => new {user.Id, user.UserName}).IsUnique().ForSqlServerIsClustered();
-                
 
             builder.Entity<Department>()
                 .HasMany<WeekTemplate>(u => u.WeekTemplates)
@@ -107,27 +98,16 @@ namespace GirafRest.Data
                 .WithMany(w => w.Weekdays);
 
             //Configure a many-to-many relationship between Weekday and Resource(Pictogram)
-            builder.Entity<WeekdayResource>()
+            builder.Entity<Activity>()
                 .HasOne<Weekday>(wr => wr.Other)
                    .WithMany(w => w.Activities)
                 .HasForeignKey(wr => wr.OtherKey);
-            builder.Entity<WeekdayResource>()
+            builder.Entity<Activity>()
                 .HasOne<Pictogram>(wr => wr.Pictogram)
                 .WithMany()
                 .HasForeignKey(wr => wr.PictogramKey);
-
-            //Create tables for all many-to-many relationships.
-            builder.Entity<UserResource>().ToTable("UserResources");
-            builder.Entity<DepartmentResource>().ToTable("DeparmentResources");
-            builder.Entity<WeekdayResource>().ToTable("WeekdayResources");
-            //builder.Entity<Weekday>().ToTable("Weekdays").HasDiscriminator<string>("Discriminator").HasValue<Weekday>(nameof(Weekday));
-            builder.Entity<Week>().ToTable("Weeks").HasDiscriminator<string>("Discriminator").HasValue<Week>(nameof(Week));
-            builder.Entity<Week>().HasIndex(week => week.Id).IsUnique().ForSqlServerIsClustered();
             
-            builder.Entity<WeekTemplate>().ToTable("Weeks").HasDiscriminator<string>("Discriminator").HasValue<WeekTemplate>(nameof(WeekTemplate));
-
             // Configure that a citizen can have many guardians and that a citizen can have many guardians
-
             builder.Entity<GuardianRelation>()
                    .HasOne(gr => gr.Guardian)
                    .WithMany(g => g.Citizens)
@@ -137,8 +117,6 @@ namespace GirafRest.Data
                    .HasOne(gr => gr.Citizen)
                    .WithMany(c => c.Guardians)
                    .HasForeignKey(mg => mg.CitizenId);
-
-            builder.Entity<GuardianRelation>().ToTable("GuardianRelations");
         }
     }
 }

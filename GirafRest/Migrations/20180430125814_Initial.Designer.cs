@@ -8,13 +8,12 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Storage.Internal;
-using Microsoft.EntityFrameworkCore.ValueGeneration;
 using System;
 
 namespace GirafRest.Migrations
 {
     [DbContext(typeof(GirafDbContext))]
-    [Migration("20180426125022_Initial")]
+    [Migration("20180430125814_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -45,15 +44,37 @@ namespace GirafRest.Migrations
                     b.ToTable("GuardianRelations");
                 });
 
+            modelBuilder.Entity("GirafRest.Models.Activity", b =>
+                {
+                    b.Property<long>("Key")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Order");
+
+                    b.Property<long>("OtherKey");
+
+                    b.Property<long>("PictogramKey");
+
+                    b.Property<long?>("ResourceKey");
+
+                    b.Property<int>("State");
+
+                    b.HasKey("Key");
+
+                    b.HasIndex("OtherKey");
+
+                    b.HasIndex("PictogramKey");
+
+                    b.ToTable("Activities");
+                });
+
             modelBuilder.Entity("GirafRest.Models.Department", b =>
                 {
                     b.Property<long>("Key")
                         .ValueGeneratedOnAdd()
                         .HasColumnName("id")
                         .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired();
 
                     b.Property<string>("Name")
                         .IsRequired();
@@ -65,8 +86,6 @@ namespace GirafRest.Migrations
                         .HasAnnotation("SqlServer:Clustered", true);
 
                     b.ToTable("Departments");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("Department");
                 });
 
             modelBuilder.Entity("GirafRest.Models.DepartmentResource", b =>
@@ -87,7 +106,7 @@ namespace GirafRest.Migrations
 
                     b.HasIndex("PictogramKey");
 
-                    b.ToTable("DeparmentResources");
+                    b.ToTable("DepartmentResources");
                 });
 
             modelBuilder.Entity("GirafRest.Models.GirafRole", b =>
@@ -181,38 +200,6 @@ namespace GirafRest.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("GirafRest.Models.LauncherOptions", b =>
-                {
-                    b.Property<long>("Key")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<int?>("ActivitiesCount");
-
-                    b.Property<int?>("AppGridSizeColumns");
-
-                    b.Property<int?>("AppGridSizeRows");
-
-                    b.Property<int>("CancelMark");
-
-                    b.Property<int>("CompleteMark");
-
-                    b.Property<int>("DefaultTimer");
-
-                    b.Property<bool>("DisplayLauncherAnimations");
-
-                    b.Property<int?>("NrOfDaysToDisplay");
-
-                    b.Property<int>("Orientation");
-
-                    b.Property<int>("Theme");
-
-                    b.Property<int?>("TimerSeconds");
-
-                    b.HasKey("Key");
-
-                    b.ToTable("LauncherOptions");
-                });
-
             modelBuilder.Entity("GirafRest.Models.Pictogram", b =>
                 {
                     b.Property<long>("Id")
@@ -221,9 +208,6 @@ namespace GirafRest.Migrations
                         .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("AccessLevel");
-
-                    b.Property<string>("Discriminator")
-                        .IsRequired();
 
                     b.Property<byte[]>("Image")
                         .HasColumnName("Image");
@@ -242,8 +226,36 @@ namespace GirafRest.Migrations
                         .HasAnnotation("SqlServer:Clustered", true);
 
                     b.ToTable("Pictograms");
+                });
 
-                    b.HasDiscriminator<string>("Discriminator").HasValue("Pictogram");
+            modelBuilder.Entity("GirafRest.Models.Setting", b =>
+                {
+                    b.Property<long>("Key")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int?>("ActivitiesCount");
+
+                    b.Property<int>("CancelMark");
+
+                    b.Property<int>("ColorThemeWeekSchedules");
+
+                    b.Property<int>("CompleteMark");
+
+                    b.Property<int>("DefaultTimer");
+
+                    b.Property<bool>("GreyScale");
+
+                    b.Property<int?>("NrOfDaysToDisplay");
+
+                    b.Property<int>("Orientation");
+
+                    b.Property<int>("Theme");
+
+                    b.Property<int?>("TimerSeconds");
+
+                    b.HasKey("Key");
+
+                    b.ToTable("Setting");
                 });
 
             modelBuilder.Entity("GirafRest.Models.UserResource", b =>
@@ -275,14 +287,15 @@ namespace GirafRest.Migrations
                         .HasColumnName("id")
                         .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired();
-
                     b.Property<string>("GirafUserId");
 
                     b.Property<string>("Name");
 
                     b.Property<long>("ThumbnailKey");
+
+                    b.Property<int>("WeekNumber");
+
+                    b.Property<int>("WeekYear");
 
                     b.HasKey("Id");
 
@@ -295,8 +308,6 @@ namespace GirafRest.Migrations
                     b.HasIndex("ThumbnailKey");
 
                     b.ToTable("Weeks");
-
-                    b.HasDiscriminator<string>("Discriminator").HasValue("Week");
                 });
 
             modelBuilder.Entity("GirafRest.Models.Weekday", b =>
@@ -308,12 +319,9 @@ namespace GirafRest.Migrations
 
                     b.Property<int>("Day");
 
-                    b.Property<string>("Discriminator")
-                        .IsRequired();
-
-                    b.Property<DateTime>("LastEdit");
-
                     b.Property<long?>("WeekId");
+
+                    b.Property<long?>("WeekTemplateId");
 
                     b.HasKey("Id");
 
@@ -323,32 +331,31 @@ namespace GirafRest.Migrations
 
                     b.HasIndex("WeekId");
 
-                    b.ToTable("Weekdays");
+                    b.HasIndex("WeekTemplateId");
 
-                    b.HasDiscriminator<string>("Discriminator").HasValue("Weekday");
+                    b.ToTable("Weekdays");
                 });
 
-            modelBuilder.Entity("GirafRest.Models.WeekdayResource", b =>
+            modelBuilder.Entity("GirafRest.Models.WeekTemplate", b =>
                 {
-                    b.Property<long>("Key")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnName("id")
                         .HasAnnotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("Order");
+                    b.Property<long>("DepartmentKey");
 
-                    b.Property<long>("OtherKey");
+                    b.Property<string>("Name");
 
-                    b.Property<long>("PictogramKey");
+                    b.Property<long>("ThumbnailKey");
 
-                    b.Property<long?>("ResourceKey");
+                    b.HasKey("Id");
 
-                    b.HasKey("Key");
+                    b.HasIndex("DepartmentKey");
 
-                    b.HasIndex("OtherKey");
+                    b.HasIndex("ThumbnailKey");
 
-                    b.HasIndex("PictogramKey");
-
-                    b.ToTable("WeekdayResources");
+                    b.ToTable("WeekTemplates");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -435,19 +442,6 @@ namespace GirafRest.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("GirafRest.Models.WeekTemplate", b =>
-                {
-                    b.HasBaseType("GirafRest.Models.Week");
-
-                    b.Property<long>("DepartmentKey");
-
-                    b.HasIndex("DepartmentKey");
-
-                    b.ToTable("Weeks");
-
-                    b.HasDiscriminator().HasValue("WeekTemplate");
-                });
-
             modelBuilder.Entity("GirafRest.GuardianRelation", b =>
                 {
                     b.HasOne("GirafRest.Models.GirafUser", "Citizen")
@@ -458,6 +452,19 @@ namespace GirafRest.Migrations
                     b.HasOne("GirafRest.Models.GirafUser", "Guardian")
                         .WithMany("Citizens")
                         .HasForeignKey("GuardianId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("GirafRest.Models.Activity", b =>
+                {
+                    b.HasOne("GirafRest.Models.Weekday", "Other")
+                        .WithMany("Activities")
+                        .HasForeignKey("OtherKey")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("GirafRest.Models.Pictogram", "Pictogram")
+                        .WithMany()
+                        .HasForeignKey("PictogramKey")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -480,7 +487,7 @@ namespace GirafRest.Migrations
                         .WithMany("Members")
                         .HasForeignKey("DepartmentKey");
 
-                    b.HasOne("GirafRest.Models.LauncherOptions", "Settings")
+                    b.HasOne("GirafRest.Models.Setting", "Settings")
                         .WithMany()
                         .HasForeignKey("SettingsKey");
                 });
@@ -515,18 +522,22 @@ namespace GirafRest.Migrations
                     b.HasOne("GirafRest.Models.Week")
                         .WithMany("Weekdays")
                         .HasForeignKey("WeekId");
+
+                    b.HasOne("GirafRest.Models.WeekTemplate")
+                        .WithMany("Weekdays")
+                        .HasForeignKey("WeekTemplateId");
                 });
 
-            modelBuilder.Entity("GirafRest.Models.WeekdayResource", b =>
+            modelBuilder.Entity("GirafRest.Models.WeekTemplate", b =>
                 {
-                    b.HasOne("GirafRest.Models.Weekday", "Other")
-                        .WithMany("Activities")
-                        .HasForeignKey("OtherKey")
+                    b.HasOne("GirafRest.Models.Department", "Department")
+                        .WithMany("WeekTemplates")
+                        .HasForeignKey("DepartmentKey")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("GirafRest.Models.Pictogram", "Pictogram")
+                    b.HasOne("GirafRest.Models.Pictogram", "Thumbnail")
                         .WithMany()
-                        .HasForeignKey("PictogramKey")
+                        .HasForeignKey("ThumbnailKey")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
@@ -572,14 +583,6 @@ namespace GirafRest.Migrations
                     b.HasOne("GirafRest.Models.GirafUser")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("GirafRest.Models.WeekTemplate", b =>
-                {
-                    b.HasOne("GirafRest.Models.Department", "Department")
-                        .WithMany("WeekTemplates")
-                        .HasForeignKey("DepartmentKey")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618

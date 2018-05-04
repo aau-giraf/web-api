@@ -10,7 +10,7 @@ namespace GirafRest.Models
     /// The LauncherOptions, which is the various settings the users can add to customize the Launcher App.
     /// </summary>
     [ComplexType]
-    public class LauncherOptions
+    public class Setting
     {
         /// <summary>
         /// Key for LauncherOptions
@@ -18,19 +18,6 @@ namespace GirafRest.Models
         [Key]
         public long Key { get; private set; }
 
-        /// <summary>
-        /// A flag indicating whether to run applications in grayscale or not.
-        /// </summary>
-        public bool DisplayLauncherAnimations { get; set; }
-
-        /// <summary>
-        /// A field for storing how many rows to display in the GirafLauncher application.
-        /// </summary>
-        public int? AppGridSizeRows { get; set; }
-        /// <summary>
-        /// A field for storing how many columns to display in the GirafLauncher application.
-        /// </summary>
-        public int? AppGridSizeColumns { get; set; }
         /// <summary>
         /// Preferred orientation of device/screen
         /// </summary>
@@ -69,13 +56,22 @@ namespace GirafRest.Models
         /// </summary>
         public int? NrOfDaysToDisplay { get; set; }
 
+        /// <summary>
+        /// Property for setting the color theme of weekschedules
+        /// </summary>
+        [Required]
+        public ColorThemeWeekSchedules ColorThemeWeekSchedules { get; set; }
+
+        /// <summary>
+        /// Flag for indicating whether or not greyscale is enabled
+        /// </summary>
+        public bool GreyScale { get; set; }
 
         /// <summary>
         /// Required empty constructor
         /// </summary>
-        public LauncherOptions()
+        public Setting()
         {
-            DisplayLauncherAnimations = false;
             Orientation = Orientation.portrait;
             CompleteMark = CompleteMark.Checkmark;
             CancelMark = CancelMark.Cross;
@@ -83,16 +79,15 @@ namespace GirafRest.Models
             Theme = Theme.girafYellow;
             NrOfDaysToDisplay = 7;
             TimerSeconds = 900;
+            ColorThemeWeekSchedules = ColorThemeWeekSchedules.standard;
+            GreyScale = false;
         }
         /// <summary>
         /// Updates all settings based on a DTO
         /// </summary>
         /// <param name="newOptions">The DTO containing new settings</param>
-        public void UpdateFrom(LauncherOptionsDTO newOptions)
+        public void UpdateFrom(SettingDTO newOptions)
         {
-            this.AppGridSizeColumns = newOptions.AppGridSizeColumns;
-            this.AppGridSizeRows = newOptions.AppGridSizeRows;
-            this.DisplayLauncherAnimations = newOptions.DisplayLauncherAnimations;
             this.Orientation = newOptions.Orientation;
             this.CompleteMark = newOptions.CompleteMark;
             this.CancelMark = newOptions.CancelMark;
@@ -101,6 +96,8 @@ namespace GirafRest.Models
             this.ActivitiesCount = newOptions.ActivitiesCount;
             this.Theme = newOptions.Theme;
             this.NrOfDaysToDisplay = newOptions.NrOfDaysToDisplay;
+            this.ColorThemeWeekSchedules = newOptions.ColorThemeWeekSchedules;
+            this.GreyScale = newOptions.GreyScale;
         }
     }
 }

@@ -26,6 +26,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
+using GirafRest.Filters;
 
 namespace GirafRest.Setup
 {
@@ -95,7 +96,10 @@ namespace GirafRest.Setup
             // Add the implementation of IGirafService to the context, i.e. all common functionality for
             // the controllers.
             services.AddTransient<IGirafService, GirafService>();
-            services.AddMvc();
+            services.AddMvc(options =>
+            {
+                options.Filters.Add<LogFilter>();
+            });
 
             // Set up Cross-Origin Requests
             services.AddCors(o => o.AddPolicy("AllowAll", builder =>

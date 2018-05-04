@@ -29,35 +29,11 @@ namespace GirafRest.Migrations
                 {
                     id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Discriminator = table.Column<string>(nullable: false),
                     Name = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Departments", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "LauncherOptions",
-                columns: table => new
-                {
-                    Key = table.Column<long>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    ActivitiesCount = table.Column<int>(nullable: true),
-                    AppGridSizeColumns = table.Column<int>(nullable: true),
-                    AppGridSizeRows = table.Column<int>(nullable: true),
-                    CancelMark = table.Column<int>(nullable: false),
-                    CompleteMark = table.Column<int>(nullable: false),
-                    DefaultTimer = table.Column<int>(nullable: false),
-                    DisplayLauncherAnimations = table.Column<bool>(nullable: false),
-                    NrOfDaysToDisplay = table.Column<int>(nullable: true),
-                    Orientation = table.Column<int>(nullable: false),
-                    Theme = table.Column<int>(nullable: false),
-                    TimerSeconds = table.Column<int>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LauncherOptions", x => x.Key);
                 });
 
             migrationBuilder.CreateTable(
@@ -67,7 +43,6 @@ namespace GirafRest.Migrations
                     id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     AccessLevel = table.Column<int>(nullable: false),
-                    Discriminator = table.Column<string>(nullable: false),
                     Image = table.Column<byte[]>(nullable: true),
                     LastEdit = table.Column<DateTime>(nullable: false),
                     Sound = table.Column<byte[]>(nullable: true),
@@ -76,6 +51,28 @@ namespace GirafRest.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Pictograms", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Setting",
+                columns: table => new
+                {
+                    Key = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    ActivitiesCount = table.Column<int>(nullable: true),
+                    CancelMark = table.Column<int>(nullable: false),
+                    ColorThemeWeekSchedules = table.Column<int>(nullable: false),
+                    CompleteMark = table.Column<int>(nullable: false),
+                    DefaultTimer = table.Column<int>(nullable: false),
+                    GreyScale = table.Column<bool>(nullable: false),
+                    NrOfDaysToDisplay = table.Column<int>(nullable: true),
+                    Orientation = table.Column<int>(nullable: false),
+                    Theme = table.Column<int>(nullable: false),
+                    TimerSeconds = table.Column<int>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Setting", x => x.Key);
                 });
 
             migrationBuilder.CreateTable(
@@ -96,6 +93,60 @@ namespace GirafRest.Migrations
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "DepartmentResources",
+                columns: table => new
+                {
+                    Key = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    OtherKey = table.Column<long>(nullable: false),
+                    PictogramKey = table.Column<long>(nullable: false),
+                    ResourceKey = table.Column<long>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_DepartmentResources", x => x.Key);
+                    table.ForeignKey(
+                        name: "FK_DepartmentResources_Departments_OtherKey",
+                        column: x => x.OtherKey,
+                        principalTable: "Departments",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_DepartmentResources_Pictograms_PictogramKey",
+                        column: x => x.PictogramKey,
+                        principalTable: "Pictograms",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WeekTemplates",
+                columns: table => new
+                {
+                    id = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    DepartmentKey = table.Column<long>(nullable: false),
+                    Name = table.Column<string>(nullable: true),
+                    ThumbnailKey = table.Column<long>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WeekTemplates", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_WeekTemplates_Departments_DepartmentKey",
+                        column: x => x.DepartmentKey,
+                        principalTable: "Departments",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_WeekTemplates_Pictograms_ThumbnailKey",
+                        column: x => x.ThumbnailKey,
+                        principalTable: "Pictograms",
+                        principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -134,38 +185,11 @@ namespace GirafRest.Migrations
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "FK_AspNetUsers_LauncherOptions_SettingsKey",
+                        name: "FK_AspNetUsers_Setting_SettingsKey",
                         column: x => x.SettingsKey,
-                        principalTable: "LauncherOptions",
+                        principalTable: "Setting",
                         principalColumn: "Key",
                         onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "DeparmentResources",
-                columns: table => new
-                {
-                    Key = table.Column<long>(nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    OtherKey = table.Column<long>(nullable: false),
-                    PictogramKey = table.Column<long>(nullable: false),
-                    ResourceKey = table.Column<long>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_DeparmentResources", x => x.Key);
-                    table.ForeignKey(
-                        name: "FK_DeparmentResources_Departments_OtherKey",
-                        column: x => x.OtherKey,
-                        principalTable: "Departments",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_DeparmentResources_Pictograms_PictogramKey",
-                        column: x => x.PictogramKey,
-                        principalTable: "Pictograms",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -312,11 +336,11 @@ namespace GirafRest.Migrations
                 {
                     id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Discriminator = table.Column<string>(nullable: false),
                     GirafUserId = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     ThumbnailKey = table.Column<long>(nullable: false),
-                    DepartmentKey = table.Column<long>(nullable: true)
+                    WeekNumber = table.Column<int>(nullable: false),
+                    WeekYear = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -333,12 +357,6 @@ namespace GirafRest.Migrations
                         principalTable: "Pictograms",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Weeks_Departments_DepartmentKey",
-                        column: x => x.DepartmentKey,
-                        principalTable: "Departments",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -348,9 +366,8 @@ namespace GirafRest.Migrations
                     id = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     Day = table.Column<int>(nullable: false),
-                    Discriminator = table.Column<string>(nullable: false),
-                    LastEdit = table.Column<DateTime>(nullable: false),
-                    WeekId = table.Column<long>(nullable: true)
+                    WeekId = table.Column<long>(nullable: true),
+                    WeekTemplateId = table.Column<long>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -361,10 +378,16 @@ namespace GirafRest.Migrations
                         principalTable: "Weeks",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Weekdays_WeekTemplates_WeekTemplateId",
+                        column: x => x.WeekTemplateId,
+                        principalTable: "WeekTemplates",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "WeekdayResources",
+                name: "Activities",
                 columns: table => new
                 {
                     Key = table.Column<long>(nullable: false)
@@ -372,24 +395,35 @@ namespace GirafRest.Migrations
                     Order = table.Column<int>(nullable: false),
                     OtherKey = table.Column<long>(nullable: false),
                     PictogramKey = table.Column<long>(nullable: false),
-                    ResourceKey = table.Column<long>(nullable: true)
+                    ResourceKey = table.Column<long>(nullable: true),
+                    State = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WeekdayResources", x => x.Key);
+                    table.PrimaryKey("PK_Activities", x => x.Key);
                     table.ForeignKey(
-                        name: "FK_WeekdayResources_Weekdays_OtherKey",
+                        name: "FK_Activities_Weekdays_OtherKey",
                         column: x => x.OtherKey,
                         principalTable: "Weekdays",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_WeekdayResources_Pictograms_PictogramKey",
+                        name: "FK_Activities_Pictograms_PictogramKey",
                         column: x => x.PictogramKey,
                         principalTable: "Pictograms",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Activities_OtherKey",
+                table: "Activities",
+                column: "OtherKey");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Activities_PictogramKey",
+                table: "Activities",
+                column: "PictogramKey");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -445,13 +479,13 @@ namespace GirafRest.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_DeparmentResources_OtherKey",
-                table: "DeparmentResources",
+                name: "IX_DepartmentResources_OtherKey",
+                table: "DepartmentResources",
                 column: "OtherKey");
 
             migrationBuilder.CreateIndex(
-                name: "IX_DeparmentResources_PictogramKey",
-                table: "DeparmentResources",
+                name: "IX_DepartmentResources_PictogramKey",
+                table: "DepartmentResources",
                 column: "PictogramKey");
 
             migrationBuilder.CreateIndex(
@@ -487,16 +521,6 @@ namespace GirafRest.Migrations
                 column: "PictogramKey");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WeekdayResources_OtherKey",
-                table: "WeekdayResources",
-                column: "OtherKey");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_WeekdayResources_PictogramKey",
-                table: "WeekdayResources",
-                column: "PictogramKey");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Weekdays_id",
                 table: "Weekdays",
                 column: "id",
@@ -506,6 +530,11 @@ namespace GirafRest.Migrations
                 name: "IX_Weekdays_WeekId",
                 table: "Weekdays",
                 column: "WeekId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Weekdays_WeekTemplateId",
+                table: "Weekdays",
+                column: "WeekTemplateId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Weeks_GirafUserId",
@@ -524,13 +553,21 @@ namespace GirafRest.Migrations
                 column: "ThumbnailKey");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Weeks_DepartmentKey",
-                table: "Weeks",
+                name: "IX_WeekTemplates_DepartmentKey",
+                table: "WeekTemplates",
                 column: "DepartmentKey");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_WeekTemplates_ThumbnailKey",
+                table: "WeekTemplates",
+                column: "ThumbnailKey");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Activities");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -547,7 +584,7 @@ namespace GirafRest.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "DeparmentResources");
+                name: "DepartmentResources");
 
             migrationBuilder.DropTable(
                 name: "GuardianRelations");
@@ -556,16 +593,16 @@ namespace GirafRest.Migrations
                 name: "UserResources");
 
             migrationBuilder.DropTable(
-                name: "WeekdayResources");
+                name: "Weekdays");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Weekdays");
+                name: "Weeks");
 
             migrationBuilder.DropTable(
-                name: "Weeks");
+                name: "WeekTemplates");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
@@ -577,7 +614,7 @@ namespace GirafRest.Migrations
                 name: "Departments");
 
             migrationBuilder.DropTable(
-                name: "LauncherOptions");
+                name: "Setting");
         }
     }
 }

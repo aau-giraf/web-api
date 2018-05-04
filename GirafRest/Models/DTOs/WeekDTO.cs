@@ -1,5 +1,7 @@
+using GirafRest.Models.Responses;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GirafRest.Models.DTOs
 {
@@ -7,53 +9,26 @@ namespace GirafRest.Models.DTOs
     /// Defines the structure of Week when serializing and deserializing data. Data transfer objects (DTOs) 
     /// were introduced in the project due to problems with circular references in the model classes.
     /// </summary>
-    public class WeekDTO
+    public class WeekDTO : WeekBaseDTO
     {
         /// <summary>
-        /// The weeks thumbnail.
+        /// The year of the week.
         /// </summary>
-        public PictogramDTO Thumbnail { get; set; }
+        public int WeekYear { get; internal set; }
+        /// <summary>
+        /// The number of the week, 0 - 52 (53).
+        /// </summary>
+        public int WeekNumber { get; internal set; }
 
-        /// <summary>
-        /// A Name describing the week.
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// The id of the week.
-        /// </summary>
-        public long? Id { get; set; }
-        /// <summary>
-        /// A list of the days in the week schedule.
-        /// </summary>
-        public ICollection<WeekdayDTO> Days { get; set; }
-
-        /// <summary>
-        /// Creates a new data transfer object for a given week.
-        /// </summary>
-        /// <param name="week">The week to create a DTO for.</param>
-        public WeekDTO(Week week)
+        public WeekDTO()
         {
-            this.Name = week.Name;
-            try
-            {
-                this.Thumbnail = new PictogramDTO(week.Thumbnail);
-            }
-            catch (NullReferenceException)
-            {
-                this.Thumbnail = new PictogramDTO();
-            }
-            this.Id = week.Id;
-            Days = new List<WeekdayDTO>();
-            foreach (var day in week.Weekdays)
-            {
-                Days.Add(new WeekdayDTO(day));
-            }
+
         }
 
-        /// <summary>
-        /// DO NOT DELETE THIS! NEWTONSOFT REQUIRES AN EMPTY CONSTRUCTOR.
-        /// </summary>
-        public WeekDTO() {}
+        public WeekDTO(Week week) : base(week)
+        {
+            this.WeekYear = week.WeekYear;
+            this.WeekNumber = week.WeekNumber;
+        }
     }
 }

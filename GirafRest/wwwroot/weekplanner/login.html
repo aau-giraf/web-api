@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</head>
+    <body>
+        <div id="login">
+            <input type="text" v-model="loginDTO.username">
+            <input type="password" v-model="loginDTO.password">
+            <button v-on:click="login">Login</button>
+        </div>
+        <script>
+            var baseUrl = "http://localhost:5000/v1";
+            var token = localStorage.getItem("token") || null;
+            var app = new Vue({
+                el: '#login',
+                data: {
+                    loginDTO: {
+                        username: null,
+                        password: null
+                    }
+                },
+                methods: {
+                    init: function() {
+                        var self = this;
+                        $.ajax({
+                            url: baseUrl + "/user",
+                            method: "GET",
+                            contentType: "application/json",
+                            headers: { Authorization: "Bearer " + token, ContentType: "application/json" },
+                            success: function (json) {
+                                if (json.success) {
+                                    window.location = "/weekplanner/citizins.html";
+                                }
+                            }
+                        });
+                    },
+                    login: function() {
+                        var self = this;
+                        $.ajax({
+                            url: baseUrl + "/account/login",
+                            method: "POST",
+                            contentType: "application/json",
+                            headers: { Authorization: "Bearer " + token, ContentType: "application/json" },
+                            data: JSON.stringify(self.loginDTO),
+                            success: function (json) {
+                                if (json.success) {
+                                    token = json.data;
+                                    localStorage.setItem("token", token);
+                                    window.location = "/weekplanner/citizins.html";
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+            app.init();
+        </script>
+    </body>
+</html>

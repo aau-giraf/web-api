@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace GirafRest.Models
 {
-    public class WeekTemplate : Week
+    public class WeekTemplate : WeekBase
     {
         public WeekTemplate()
         {

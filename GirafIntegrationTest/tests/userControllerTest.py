@@ -116,7 +116,7 @@ class UserControllerTest(TestCase):
         'Post Wendesday pictogram'
         self.wednesday = 'Wednesday{0}'.format(str(time.time()))
         wednesdayBody = {
-            "accessLevel": 2,
+            "accessLevel": 3,
             "title": "wednesday",
             "id": 5,
             "lastEdit": "2018-03-19T10:40:26.587Z"
@@ -171,49 +171,43 @@ class UserControllerTest(TestCase):
         check.equal(3, response['data']['theme'])
 
     @test(skip_if_failed=['registerGunnar'])
-    def settingsSetLauncherAnimationsOff(self, check):
-        'Disable launcher animations'
-        response = requests.patch(Test.url + 'User/settings', json={"displayLauncherAnimations": False}, headers=auth(self.gunnar)).json()
+    def settingsSetTimerSeconds(self, check):
+        'Set default countdown time'
+        response = requests.patch(Test.url + 'User/settings', json={"timerSeconds": 3600}, headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
         response = requests.get(Test.url + 'User/settings', headers=auth(self.gunnar)).json()
-        check.equal(False, response['data']['displayLauncherAnimations'])
-
-    @test(skip_if_failed=['registerGunnar', 'settingsSetLauncherAnimationsOff'])
-    def settingsSetLauncherAnimationsOn(self, check):
-        'Enable launcher animations'
-        response = requests.patch(Test.url + 'User/settings', json={"displayLauncherAnimations": True}, headers=auth(self.gunnar)).json()
-        ensureSuccess(response, check)
-        response = requests.get(Test.url + 'User/settings', headers=auth(self.gunnar)).json()
-        check.equal(True, response['data']['displayLauncherAnimations'])
+        check.equal(3600, response['data']['timerSeconds'])
 
     @test(skip_if_failed=['registerGunnar'], depends=['settingsSetTheme', 'settingsSetLauncherAnimationsOn', 'settingsSetLauncherAnimationsOff']) # Run depends first, but if they fail, this can still run
     def settingsMultiple(self, check):
         'Set all settings'
         body = {
-            "theme":                    3,
-            "appGridSizeColumns":       1,
-            "appGridSizeRows":          2,
-            "displayLauncherAnimations":False,
-            "orientation":              2,
-            "completeMark":  2,
-            "defaultTimer":             2,
-            "timerSeconds":             3,
-            "activitiesCount":          4
+                "orientation": "landscape",
+                "completeMark": "Circle",
+                "cancelMark": "Cross",
+                "defaultTimer": "analogClock",
+                "timerSeconds": 60,
+                "activitiesCount": 3,
+                "theme": "girafRed",
+                "colorThemeWeekSchedules": "yellowAndWhite",
+                "nrOfDaysToDisplay": 2,
+                "greyScale": True
         }
         response = requests.patch(Test.url + 'User/settings', json=body, headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
 
         response = requests.get(Test.url + 'User/settings', headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
-        check.equal(3,      response['data']["theme"]);
-        check.equal(1,      response['data']["appGridSizeColumns"]);
-        check.equal(2,      response['data']["appGridSizeRows"]);
-        check.equal(False,  response['data']["displayLauncherAnimations"]);
-        check.equal(2,      response['data']["orientation"]);
-        check.equal(2,      response['data']["completeMark"]);
-        check.equal(2,      response['data']["defaultTimer"]);
-        check.equal(3,      response['data']["timerSeconds"]);
-        check.equal(4,      response['data']["activitiesCount"]);
+        check.equal(2,      response['data']["orientation"])
+        check.equal(2,      response['data']["completeMark"])
+        check.equal(1,      response['data']["cancelMark"])
+        check.equal(2,      response['data']["defaultTimer"])
+        check.equal(60,      response['data']["timerSeconds"])
+        check.equal(3,      response['data']["activitiesCount"])
+        check.equal(3,      response['data']["theme"])
+        check.equal(2,      response['data']["colorThemeWeekSchedules"])
+        check.equal(2,         response['data']["nrOfDaysToDisplay"])
+        check.equal(True,      response['data']["greyScale"])
 
     @test(skip_if_failed=['logins'])
     def kurtCitizens(self, check):

@@ -191,6 +191,8 @@ namespace GirafRest.Test
                             new Week()
                             {
                                 Id = 0,
+                                WeekYear = 2018,
+                                WeekNumber = 1,
                                 Name = "My awesome week",
                                 Weekdays = new List<Weekday>(){
                                     new Weekday(){
@@ -218,6 +220,7 @@ namespace GirafRest.Test
                             },
                             new Week(){
                                 Id = 1,
+                                Name = "My not so awesome week",
                                 Weekdays = new List<Weekday>(){
                                     new Weekday(){
                                         Day = Days.Monday
@@ -244,6 +247,7 @@ namespace GirafRest.Test
                             },
                         };
                         MockUsers[0].WeekSchedule.Add(mockWeeks[0]);
+                        MockUsers[0].WeekSchedule.Add(mockWeeks[1]);
                         MockUsers[1].WeekSchedule.Add(mockWeeks[1]);
                         MockUsers[2].WeekSchedule.Clear();
                         MockUsers[3].WeekSchedule.Clear();
@@ -317,16 +321,16 @@ namespace GirafRest.Test
                 }
             }
 
-            private List<WeekdayResource> mockWeekDayRessources;
-            public IReadOnlyList<WeekdayResource> MockWeekDayRessources
+            private List<Activity> mockWeekDayRessources;
+            public IReadOnlyList<Activity> MockWeekDayRessources
             {
                 get
                 {
                     if (mockWeekDayRessources == null)
-                        mockWeekDayRessources = new List<WeekdayResource>()
+                        mockWeekDayRessources = new List<Activity>()
                         {
-                            new WeekdayResource(MockWeeks[0].Weekdays[0], MockPictograms[5], 0),
-                            new WeekdayResource(MockWeeks[0].Weekdays[1], MockPictograms[6], 1)
+                            new Activity(MockWeeks[0].Weekdays[0], MockPictograms[5], 0, ActivityState.Active),
+                            new Activity(MockWeeks[0].Weekdays[1], MockPictograms[6], 1, ActivityState.Canceled)
                         };
 
                     return mockWeekDayRessources;
@@ -440,7 +444,7 @@ namespace GirafRest.Test
                 dbMock.Setup(c => c.Pictograms).Returns(mockSet.Object);
                 dbMock.Setup(c => c.UserResources).Returns(mockRelationSet.Object);
                 dbMock.Setup(c => c.DepartmentResources).Returns(mockDepRes.Object);
-                dbMock.Setup(c => c.WeekdayResources).Returns(mockWeekDayRes.Object);
+                dbMock.Setup(c => c.Activities).Returns(mockWeekDayRes.Object);
                 dbMock.Setup(c => c.Departments).Returns(mockDeps.Object);
                 dbMock.Setup(c => c.Weeks).Returns(mockWeeks.Object);
                 dbMock.Setup(c => c.Users).Returns(mockUsers.Object);

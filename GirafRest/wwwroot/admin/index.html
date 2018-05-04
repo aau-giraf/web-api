@@ -25,7 +25,8 @@
                         <input type="text" placeholder="brugernavn" name="username" />
                         <input type="password" placeholder="kodeord" name="password" />
                         <input type="submit" value="Login" id="submitLogin">
-                        <div class="message" id="loginErrorMsg">Forkert kodeord eller adgangskode prøv venligst igen</div>
+                        <div class="errorMessage" id="loginErrorMsg">Forkert kodeord eller adgangskode prøv venligst igen</div>
+                        <div class="errorMessage" id="loginRoleErrorMsg">Borgere har ikke adgang til Giraf Administration</div>
                         <p class="message"><font color="#ffd268">OBS:</font> Ved glemt kodeord få kollega eller administrator til at nulstille dit kodeord</p>
                     </form>
                 </div>
@@ -39,6 +40,13 @@
             var loginurl = "/v1/Account/login";
 
             var formDataAsArray = $('form').serializeArray();
+
+            //https://stackoverflow.com/questions/38552003/how-to-decode-jwt-token-in-javascript
+            function parseJwt(token) {
+                var base64Url = token.split('.')[1];
+                var base64 = base64Url.replace('-', '+').replace('_', '/');
+                return JSON.parse(window.atob(base64));
+            };
 
             function formDataToJson(array) {
                 var result_dir = {};
@@ -57,6 +65,8 @@
             var data = JSON.stringify(obj);
 
             console.log(data);
+            $("#loginErrorMsg").css('visibility', 'collapse');
+            $("#loginRoleErrorMsg").css('visibility', 'collapse');
 
             $.ajax({
                 type: "POST",
@@ -69,9 +79,17 @@
                         $("#loginErrorMsg").css('visibility', 'visible')
                     }
                     else {
-                        localStorage.setItem("token", data.data);
-                        localStorage.setItem("username", username);
-                        window.location = "/admin/home.html";
+                        var payload = parseJwt(data.data);
+                        var role = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+                        if (role == "Guardian") {
+                            localStorage.setItem("role", role);
+                            localStorage.setItem("token", data.data);
+                            localStorage.setItem("username", username);
+                            window.location = "/admin/home.html";
+                        }
+                        else {
+                            $("#loginRoleErrorMsg").css('visibility', 'visible')
+                        }
                     }
                 }
             });

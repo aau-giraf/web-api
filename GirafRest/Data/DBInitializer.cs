@@ -254,19 +254,32 @@ namespace GirafRest.Setup
             Console.WriteLine("Adding weekdays to users");
             var Weekdays = new Weekday[]
             {
-                new Weekday(Days.Monday, new List<Pictogram> { Pictograms[0], Pictograms[1], Pictograms[2], Pictograms[3], Pictograms[4] }),
-                new Weekday(Days.Tuesday, new List<Pictogram> { Pictograms[5], Pictograms[6], Pictograms[7], Pictograms[8] }),
-                new Weekday(Days.Wednesday, new List<Pictogram> { Pictograms[9], Pictograms[10], Pictograms[11], Pictograms[12], Pictograms[13] }),
-                new Weekday(Days.Thursday, new List<Pictogram> { Pictograms[8], Pictograms[6], Pictograms[7], Pictograms[5] }),
-                new Weekday(Days.Friday, new List<Pictogram> { Pictograms[0], Pictograms[7]}),
-                new Weekday(Days.Saturday, new List<Pictogram> { Pictograms[8], Pictograms[5]}),
-                new Weekday(Days.Sunday, new List<Pictogram> { Pictograms[3], Pictograms[5]})
+                new Weekday(Days.Monday, 
+                    new List<Pictogram> { Pictograms[0], Pictograms[1], Pictograms[2], Pictograms[3], Pictograms[4] },
+                    new List<ActivityState>{ActivityState.Completed, ActivityState.Completed, ActivityState.Completed, ActivityState.Completed, ActivityState.Completed}),
+                new Weekday(Days.Tuesday, 
+                    new List<Pictogram> { Pictograms[5], Pictograms[6], Pictograms[7], Pictograms[8] },
+                    new List<ActivityState>{ActivityState.Completed, ActivityState.Active, ActivityState.Canceled, ActivityState.Completed}),
+                new Weekday(Days.Wednesday, 
+                    new List<Pictogram> { Pictograms[9], Pictograms[10], Pictograms[11], Pictograms[12], Pictograms[13] },
+                    new List<ActivityState>{ActivityState.Completed, ActivityState.Active, ActivityState.Active, ActivityState.Active, ActivityState.Active}),
+                new Weekday(Days.Thursday, 
+                    new List<Pictogram> { Pictograms[8], Pictograms[6], Pictograms[7], Pictograms[5] },
+                    new List<ActivityState>{ActivityState.Active, ActivityState.Canceled, ActivityState.Active, ActivityState.Active}),
+                new Weekday(Days.Friday, 
+                    new List<Pictogram> { Pictograms[0], Pictograms[7]},
+                    new List<ActivityState>{ActivityState.Active, ActivityState.Active}),
+                new Weekday(Days.Saturday, 
+                    new List<Pictogram> { Pictograms[8], Pictograms[5]},
+                    new List<ActivityState>{ActivityState.Canceled, ActivityState.Canceled}),
+                new Weekday(Days.Sunday, 
+                    new List<Pictogram> { Pictograms[3], Pictograms[5]},
+                    new List<ActivityState>{ActivityState.Active, ActivityState.Active})
             };
 
             var sampleWeek = new Week(Pictograms[0]);
             foreach (var day in Weekdays)
             {
-                day.LastEdit = DateTime.Now;
                 context.Weekdays.Add(day);
                 sampleWeek.UpdateDay(day);
             }
@@ -282,19 +295,32 @@ namespace GirafRest.Setup
             Console.WriteLine("Adding weekdays to users");
             var Weekdays = new Weekday[]
             {
-                new Weekday(Days.Monday, new List<Pictogram> { Pictograms[0], Pictograms[1], Pictograms[2], Pictograms[3], Pictograms[4] }),
-                new Weekday(Days.Tuesday, new List<Pictogram> { Pictograms[5], Pictograms[6], Pictograms[7], Pictograms[8] }),
-                new Weekday(Days.Wednesday, new List<Pictogram> { Pictograms[9], Pictograms[10], Pictograms[11], Pictograms[12], Pictograms[13] }),
-                new Weekday(Days.Thursday, new List<Pictogram> { Pictograms[8], Pictograms[6], Pictograms[7], Pictograms[5] }),
-                new Weekday(Days.Friday, new List<Pictogram> { Pictograms[0], Pictograms[7]}),
-                new Weekday(Days.Saturday, new List<Pictogram> { Pictograms[8], Pictograms[5] }),
-                new Weekday(Days.Sunday, new List<Pictogram> { Pictograms[3], Pictograms[5] })
+                new Weekday(Days.Monday, 
+                    new List<Pictogram> { Pictograms[0], Pictograms[1], Pictograms[2], Pictograms[3], Pictograms[4] },
+                    new List<ActivityState>{ActivityState.Active, ActivityState.Active, ActivityState.Active, ActivityState.Active, ActivityState.Active, }),
+                new Weekday(Days.Tuesday, 
+                    new List<Pictogram> { Pictograms[5], Pictograms[6], Pictograms[7], Pictograms[8] },
+                    new List<ActivityState>{ActivityState.Active, ActivityState.Active, ActivityState.Active, ActivityState.Active, }),
+                new Weekday(Days.Wednesday, 
+                    new List<Pictogram> { Pictograms[9], Pictograms[10], Pictograms[11], Pictograms[12], Pictograms[13] },
+                    new List<ActivityState>{ActivityState.Active, ActivityState.Active, ActivityState.Active, ActivityState.Active, ActivityState.Active, }),
+                new Weekday(Days.Thursday, 
+                    new List<Pictogram> { Pictograms[8], Pictograms[6], Pictograms[7], Pictograms[5] },
+                    new List<ActivityState>{ActivityState.Active, ActivityState.Active, ActivityState.Active, ActivityState.Active, }),
+                new Weekday(Days.Friday, 
+                    new List<Pictogram> { Pictograms[0], Pictograms[7]},
+                    new List<ActivityState>{ActivityState.Active, ActivityState.Active, }),
+                new Weekday(Days.Saturday, 
+                    new List<Pictogram> { Pictograms[8], Pictograms[5] },
+                    new List<ActivityState>{ActivityState.Active, ActivityState.Active, }),
+                new Weekday(Days.Sunday, 
+                    new List<Pictogram> { Pictograms[3], Pictograms[5] },
+                    new List<ActivityState>{ActivityState.Active, ActivityState.Active, })
             };
 
             var sampleWeek = new WeekTemplate(Pictograms[0]);
             foreach (var day in Weekdays)
             {
-                day.LastEdit = DateTime.Now;
                 context.Weekdays.Add(day);
                 sampleWeek.UpdateDay(day);
             }

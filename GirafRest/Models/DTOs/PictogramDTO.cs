@@ -11,23 +11,18 @@ namespace GirafRest.Models.DTOs
     /// </summary>
     public class PictogramDTO
     {
-        [Required]
+        public long Id { get; internal set; }
+
+        /// <summary>
+        /// The last time the pictogram was edited.
+        /// </summary>
+        public DateTime LastEdit { get; internal set; }
+
         /// <summary>
         /// The title of the pictogram.
         /// </summary>
         public string Title { get; set; }
 
-        /// <summary>
-        /// The id of the pictogram.
-        /// </summary>
-        /// 
-        public long Id { get; set; }
-        /// <summary>
-        /// The last time the pictogram was edited.
-        /// </summary>
-        public DateTime LastEdit { get; set; }
-
-        [Required]
         /// <summary>
         /// The accesslevel of the pictogram.
         /// </summary>
@@ -37,39 +32,27 @@ namespace GirafRest.Models.DTOs
         /// An array of bytes containing the pictogram's image.
         /// </summary>
         [JsonIgnore]
-        public byte[] Image { get; set; }
-        public string ImageUrl {get {return $"/v1/pictogram/{Id}/image/raw";}}
-        public string ImageHash {get  { return Image == null ? null : Convert.ToBase64String(MD5.Create().ComputeHash(Image)); }  }
+        public byte[] Image { get; internal set; }
+        public string ImageUrl { get { return $"/v1/pictogram/{Id}/image/raw"; } }
+        public string ImageHash { get { return Image == null ? null : Convert.ToBase64String(MD5.Create().ComputeHash(Image)); } }
 
-        /// <summary>
-        /// Creates a new pictogram data transfer object from a given pictogram.
-        /// </summary>
-        /// <param name="Pictogram">The pictogram to create a DTO for.</param>
         public PictogramDTO(Pictogram pictogram)
         {
             if (pictogram != null)
             {
-                this.Id = pictogram.Id;
-                this.LastEdit = pictogram.LastEdit;
                 this.Title = pictogram.Title;
                 this.AccessLevel = pictogram.AccessLevel;
+                this.Id = pictogram.Id;
+                this.LastEdit = pictogram.LastEdit;
                 this.Image = pictogram.Image;
             }
         }
 
         /// <summary>
-        /// Creates a new pictogram data transfer object from a given pictogram, which also includes the pictogram's image.
-        /// </summary>
-        /// <param name="pictogram">The pictogram to create a DTO for.</param>
-        /// <param name="image">An array of bytes containing the pictogram's image.</param>
-        public PictogramDTO(Pictogram pictogram, byte[] image) : this(pictogram)
-        {
-            this.Image = image;
-        }
-
-        /// <summary>
         /// DO NOT DELETE THIS! NEWTONSOFT REQUIRES AN EMPTY CONSTRUCTOR!
         /// </summary>
-        public PictogramDTO() {}
+        public PictogramDTO()
+        {
+        }
     }
 }

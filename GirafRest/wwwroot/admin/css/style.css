@@ -143,8 +143,8 @@ h1{
   display: none;
 }
 
-#loginErrorMsg{
-    visibility: hidden;
+.errorMessage {
+    visibility: collapse;
     color: #ff6c00;
     font-size: 1.5vh;
     text-decoration: underline;
