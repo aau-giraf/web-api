@@ -2,7 +2,7 @@
 {
     public enum ErrorCode
     {
-        Error,
+        Error = 1,
         FormatError,
         NoError,
         NotAuthorized,
