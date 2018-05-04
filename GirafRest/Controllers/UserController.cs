@@ -134,7 +134,7 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Find information on the user with the username supplied as a url query parameter or the current user.
+        /// Find information on the user with the id given
         /// </summary>
         /// <returns>
         /// Data about the user
@@ -147,8 +147,6 @@ namespace GirafRest.Controllers
             //Declare needed variables
             GirafUser user;
 
-            //Check if the caller has supplied a query, find the user with the given name if so,
-            //else find the user with the given username.
             if (string.IsNullOrEmpty(id))
                 return new ErrorResponse<SettingDTO>(ErrorCode.MissingProperties, "id");
 
@@ -166,7 +164,7 @@ namespace GirafRest.Controllers
 
             var errorCode = _authentication.CheckUserAccess(authUser, authRole, user, userRole);
             if (errorCode.HasValue)
-                new ErrorResponse<SettingDTO>(ErrorCode.NotAuthorized);
+                return new ErrorResponse<SettingDTO>(ErrorCode.NotAuthorized);
 
             return new Response<SettingDTO>(new SettingDTO(user.Settings));
         }
