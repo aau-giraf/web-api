@@ -10,7 +10,7 @@ namespace GirafRest.Models.DTOs
     /// <summary>
     /// Giraf roles
     /// </summary>
-    public enum GirafRoles { Citizen, Department, Guardian, SuperUser }
+    public enum GirafRoles { Citizen=1, Department, Guardian, SuperUser }
 
     /// <summary>
     /// Defines the structure of GirafUsers when serializing and deserializing data. Data transfer objects (DTOs) 

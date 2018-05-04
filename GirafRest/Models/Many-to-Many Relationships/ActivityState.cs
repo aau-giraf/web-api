@@ -2,7 +2,7 @@
 {
     public enum ActivityState
     {
-        Normal,
+        Normal = 1,
         Active,
         Canceled,
         Completed
