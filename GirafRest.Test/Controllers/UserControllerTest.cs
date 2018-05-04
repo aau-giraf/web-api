@@ -71,7 +71,6 @@ namespace GirafRest.Test
                 DefaultTimer = DefaultTimer.analogClock,
                 ActivitiesCount = 5,
                 NrOfDaysToDisplay = 5,
-                ColorThemeWeekSchedules = ColorThemeWeekSchedules.yellowAndWhite,
                 GreyScale = true}
             };
 
@@ -871,8 +870,6 @@ namespace GirafRest.Test
             Assert.Equal(DefaultTimer.analogClock, _testContext.MockUsers[CitizenDepTwo].Settings.DefaultTimer);
             Assert.Equal(5, _testContext.MockUsers[CitizenDepTwo].Settings.ActivitiesCount);
             Assert.Equal(5, _testContext.MockUsers[CitizenDepTwo].Settings.NrOfDaysToDisplay);
-            Assert.Equal(ColorThemeWeekSchedules.yellowAndWhite, 
-                         _testContext.MockUsers[CitizenDepTwo].Settings.ColorThemeWeekSchedules);
             Assert.True(_testContext.MockUsers[CitizenDepTwo].Settings.GreyScale);
         }
 

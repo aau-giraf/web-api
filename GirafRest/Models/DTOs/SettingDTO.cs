@@ -9,7 +9,7 @@ namespace GirafRest.Models.DTOs
     public enum CancelMark { Removed = 1, Cross = 2}
     public enum DefaultTimer { hourglass = 1, analogClock = 2 }
     public enum Theme { girafYellow = 1, girafGreen = 2, girafRed = 3, androidBlue = 4}
-    public enum ColorThemeWeekSchedules {standard = 1, yellowAndWhite = 2}
+
     /// <summary>
     /// A Data Transfer Object for the user settings used by the launcher
     /// </summary>
@@ -49,11 +49,6 @@ namespace GirafRest.Models.DTOs
         [Required]
         public Theme Theme { get; set; }
         /// <summary>
-        /// Property for setting the color theme of weekschedules
-        /// </summary>
-        [Required]
-        public ColorThemeWeekSchedules ColorThemeWeekSchedules { get; set; }
-        /// <summary>
         /// defines the number of days to display for a user in a weekschedule
         /// </summary>
         public int? NrOfDaysToDisplay { get; set; }
@@ -77,7 +72,6 @@ namespace GirafRest.Models.DTOs
             this.ActivitiesCount = options.ActivitiesCount;
             this.Theme = options.Theme;
             this.NrOfDaysToDisplay = options.NrOfDaysToDisplay;
-            this.ColorThemeWeekSchedules = options.ColorThemeWeekSchedules;
             this.GreyScale = options.GreyScale;
             this.WeekDayColors = SetWeekDayColorsFromModel(options.WeekDayColors);
         }
@@ -89,7 +83,6 @@ namespace GirafRest.Models.DTOs
             CancelMark = CancelMark.Cross;
             DefaultTimer = DefaultTimer.analogClock;
             Theme = Theme.girafYellow;
-            ColorThemeWeekSchedules = ColorThemeWeekSchedules.yellowAndWhite;
         }
 
         private List<WeekDayColorDTO> SetWeekDayColorsFromModel(List<WeekDayColor> weekDayColors){

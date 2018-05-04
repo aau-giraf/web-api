@@ -58,17 +58,14 @@ namespace GirafRest.Models
         public int? NrOfDaysToDisplay { get; set; }
 
         /// <summary>
-        /// Property for setting the color theme of weekschedules
-        /// </summary>
-        [Required]
-        public ColorThemeWeekSchedules ColorThemeWeekSchedules { get; set; }
-
-        /// <summary>
         /// Flag for indicating whether or not greyscale is enabled
         /// </summary>
         public bool GreyScale { get; set; }
 
-
+        /// <summary>
+        /// Each day in a weekschedule has a hexcolor associated
+        /// </summary>
+        /// <value>The week day colors.</value>
         public List<WeekDayColor> WeekDayColors { get; set; }
 
         /// <summary>
@@ -83,7 +80,6 @@ namespace GirafRest.Models
             Theme = Theme.girafYellow;
             NrOfDaysToDisplay = 7;
             TimerSeconds = 900;
-            ColorThemeWeekSchedules = ColorThemeWeekSchedules.standard;
             GreyScale = false;
 
         }
@@ -101,7 +97,6 @@ namespace GirafRest.Models
             this.ActivitiesCount = newOptions.ActivitiesCount;
             this.Theme = newOptions.Theme;
             this.NrOfDaysToDisplay = newOptions.NrOfDaysToDisplay;
-            this.ColorThemeWeekSchedules = newOptions.ColorThemeWeekSchedules;
             this.GreyScale = newOptions.GreyScale;
             updateWeekDayColors(newOptions.WeekDayColors);
         }
