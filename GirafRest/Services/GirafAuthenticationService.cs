@@ -25,6 +25,7 @@ namespace GirafRest.Services
         /// <summary>
         ///  Given the authenticated user and the id on another user this methods check if the authenticated user
         /// has the access to edit the provided users userinformation
+        /// Does not currently support parents
         /// </summary>
         /// <returns>null if no errorcodes</returns>
         public ErrorCode? CheckUserAccess(GirafUser authUser, GirafRoles authUserRole, GirafUser userToEdit, GirafRoles userRole)
