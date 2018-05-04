@@ -141,7 +141,7 @@ namespace GirafRest.Test
             // modify name
             var newWeek = new WeekDTO(week)
             {
-                Name = "Test Week"
+                Name = "new name"
             };
             var res = wc.UpdateWeek(2018, 20, newWeek).Result;
 

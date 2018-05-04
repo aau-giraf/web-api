@@ -685,6 +685,7 @@ namespace GirafRest.Controllers
             if (!IsCorrectHexValues)
                 return new ErrorResponse<SettingDTO>(ErrorCode.InvalidHexValues);
 
+            var user = _giraf._context.Users.Include(u => u.Settings).ThenInclude(w => w.WeekDayColors).FirstOrDefault(u => u.Id == id);
             if (user == null)
                 return new ErrorResponse<SettingDTO>(ErrorCode.UserNotFound);
 
