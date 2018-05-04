@@ -88,6 +88,7 @@ namespace GirafRest.Controllers
                 .Include(w => w.Thumbnail)
                 .Include(u => u.Weekdays)
                     .ThenInclude(wd => wd.Activities)
+                        .ThenInclude(a => a.Pictogram)
                 .Where(t => t.DepartmentKey == user.DepartmentKey)
                 .FirstOrDefaultAsync(w => w.Id == id));
             
@@ -159,7 +160,7 @@ namespace GirafRest.Controllers
             if(template == null)
                 return new ErrorResponse<WeekTemplateDTO>(ErrorCode.WeekTemplateNotFound);
             
-            if(await HasEditRights(user, template.DepartmentKey))
+            if(!(await HasEditRights(user, template.DepartmentKey)))
                 return new ErrorResponse<WeekTemplateDTO>(ErrorCode.NotAuthorized);
             
             var errorCode = await SetWeekFromDTO(newValuesDTO, template, _giraf);
