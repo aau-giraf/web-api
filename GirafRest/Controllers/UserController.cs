@@ -812,8 +812,7 @@ namespace GirafRest.Controllers
                 !(Enum.IsDefined(typeof(CompleteMark), options.CompleteMark)) ||
                 !(Enum.IsDefined(typeof(CancelMark), options.CancelMark)) ||
                 !(Enum.IsDefined(typeof(DefaultTimer), options.DefaultTimer)) ||
-                !(Enum.IsDefined(typeof(Theme), options.Theme)) || 
-                !(Enum.IsDefined(typeof(ColorThemeWeekSchedules), options.ColorThemeWeekSchedules))) 
+                !(Enum.IsDefined(typeof(Theme), options.Theme))) 
             {
                 return ErrorCode.InvalidProperties;
             }
