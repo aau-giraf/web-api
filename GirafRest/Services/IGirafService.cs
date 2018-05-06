@@ -50,7 +50,7 @@ namespace GirafRest.Services
         /// </summary>
         /// <param name="username">The username of the user to fetch.</param>
         /// <returns>A loaded user, i.e. a user with all related data.</returns>
-        Task<GirafUser> LoadByNameAsync(string username);
+        Task<GirafUser> LoadByIdAsync(string username);
 
         /// <summary>
         /// Loads the image of the request body.

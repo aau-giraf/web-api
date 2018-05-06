@@ -61,25 +61,6 @@ namespace GirafRest.Controllers
             _roleManager = roleManager;
             _authentication = authentication;
         }
-        
-
-        /// <summary>
-        /// Returns currently logged in users username
-        /// </summary>
-        /// <returns>
-        /// Reponse with username.
-        /// UnAuthorized if user is not logged in.
-        /// </returns>
-        [HttpGet("username")]
-        public async Task<Response<string>> Username()
-        {
-            //First attempt to fetch the user and check that he exists
-            var user = await _giraf.LoadUserAsync(HttpContext.User);
-            if (user == null)
-                return new ErrorResponse<string>(ErrorCode.NotAuthorized);
-
-            return new Response<string>(user.UserName);
-        }
 
         /// <summary>
         /// Find information on the user with the username supplied as a url query parameter or the current user.
@@ -89,48 +70,22 @@ namespace GirafRest.Controllers
         /// MissingProperties if no username is provided
         /// UserNotFound if user was not found, or logged in user is not authorized to see user.
         ///</returns>
-        [HttpGet("{username}")]
-        public async Task<Response<GirafUserDTO>> GetUser(string username)
+        [HttpGet("{id}")]
+        public async Task<Response<GirafUserDTO>> GetUser(string id)
         {
-            //Declare needed variables
-            GirafUser user;
-
-            //Check if the caller has supplied a query, find the user with the given name if so,
-            //else find the user with the given username.
-            if (string.IsNullOrEmpty(username))
+            if (string.IsNullOrEmpty(id))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "username");
 
             //First attempt to fetch the user and check that he exists
-            user = await _giraf.LoadByNameAsync(username);
+            var user =  _giraf._context.Users.FirstOrDefault(u => u.Id == id);
             if (user == null)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
 
-            //Get the current user and check if he is a guardian in the same department as the user
-            //or an Admin, in which cases the user is allowed to see the user.
-            var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
-            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
-            // if we are trying to login as the same user simply return the launchersettigns
-            if (currentUser.Id == user.Id)
-                return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));
-            if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Guardian) ||
-                await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.Department))
-            {
-                //Check if the guardian is in the same department as the user
-                if (user.DepartmentKey != currentUser.DepartmentKey)
-                    //We do not reveal if a user with the given username exists
-                    return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
-            }
-            else if (await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser))
-            {
-                //No additional checks required, simply skip to Ok.
-            }
-            else
-                //We do not reveal if a user with the given username exists
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
+            // check access rights
+            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
 
-            // Get the roles the user is associated with
-
-            return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));
+            return new Response<GirafUserDTO>(new GirafUserDTO(user, await _roleManager.findUserRole(_giraf._userManager, user)));
         }
 
         /// <summary>
@@ -144,79 +99,20 @@ namespace GirafRest.Controllers
         [HttpGet("{id}/settings")]
         public async Task<Response<SettingDTO>> GetSettings(string id)
         {
-            //Declare needed variables
-            GirafUser user;
 
             if (string.IsNullOrEmpty(id))
                 return new ErrorResponse<SettingDTO>(ErrorCode.MissingProperties, "id");
 
             //First attempt to fetch the user and check that he exists
-            user = _giraf._context.Users.Include(u => u.Settings).ThenInclude(w => w.WeekDayColors).FirstOrDefault(u => u.Id == id);
+            var user = _giraf._context.Users.Include(u => u.Settings).ThenInclude(w => w.WeekDayColors).FirstOrDefault(u => u.Id == id);
             if (user == null)
                 return new ErrorResponse<SettingDTO>(ErrorCode.UserNotFound);
 
-            //Get the current user and check if he is a guardian in the same department as the user
-            //or an Admin, in which cases the user is allowed to edit the settings.
-            var authUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
-
-            GirafRoles authRole = await _roleManager.findUserRole(_giraf._userManager, authUser);
-            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user); 
-
-            var errorCode = _authentication.CheckUserAccess(authUser, authRole, user, userRole);
-            if (errorCode.HasValue)
+            // check access rights
+            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse<SettingDTO>(ErrorCode.NotAuthorized);
 
             return new Response<SettingDTO>(new SettingDTO(user.Settings));
-        }
-        
-        /// <summary>
-        /// Read the currently authorized user's settings object.
-        /// </summary>
-        /// <returns>The current user's settings if Ok </returns>
-        [HttpGet("settings")]
-        [Authorize]
-        public async Task<Response<SettingDTO>> ReadUserSettins()
-        {
-            var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
-
-            return await GetSettings(user.Id);
-        }
-
-        /// <summary>
-        /// Get information about the logged in user.
-        /// </summary>
-        /// <returns>
-        /// Information about the logged in user
-        /// </returns>
-        [HttpGet("")]
-        public async Task<Response<GirafUserDTO>> GetUser()
-        {
-            //First attempt to fetch the user and check that he exists
-            var user = await _giraf.LoadUserAsync(HttpContext.User);
-            if (user == null)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
-
-            // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
-
-            return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));
-        }
-
-        /// <summary>
-        /// Updates username and screenname for the current authenticated user.
-        /// </summary>
-        /// <param name="userDTO">A DTO containing ALL the new information for the given user.</param>
-        /// <returns>
-        /// MissingProperties if username or screenname is null
-        /// If succesfull returns the DTO corresponding to the newly updates user.
-        /// </returns>
-        [HttpPut("")]
-        public async Task<Response<GirafUserDTO>> UpdateUser([FromBody] string Username, [FromBody] string ScreenName)
-        {
-            //Fetch the user
-            var user = await _giraf.LoadUserAsync(HttpContext.User);
-
-            return await UpdateUser(user.Id, Username, ScreenName);
         }
 
         /// <summary>
@@ -238,18 +134,18 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties);
 
             var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
+            // Get the roles the user is associated with
+            var userRole = await _roleManager.findUserRole(_giraf._userManager, user);
             if (user == null)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
 
+            // check access rights
+            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
+            
             // check whether user with that username already exist that does dot have the same id
             if (_giraf._context.Users.Any(u => u.UserName == Username && u.Id != user.Id))
-            {
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.UserAlreadyExists);
-            }
-
-            // current authenticated user
-            var authenticatedUser = await _giraf.LoadUserAsync(HttpContext.User);
-            var authRole = await _roleManager.findUserRole(_giraf._userManager, authenticatedUser);
 
             // update fields if they are not null
             if (!String.IsNullOrEmpty(Username))
@@ -257,20 +153,6 @@ namespace GirafRest.Controllers
 
             if (!String.IsNullOrEmpty(ScreenName))
                 user.DisplayName = ScreenName;
-            // Get the roles the user is associated with
-            var userRole = await _roleManager.findUserRole(_giraf._userManager, user);
-
-            if (authenticatedUser.Id == user.Id){
-                //Save changes and return the user with updated information.
-                _giraf._context.Users.Update(user);
-                await _giraf._context.SaveChangesAsync();
-                return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));
-            }
-
-            var errorCode = _authentication.CheckUserAccess(authenticatedUser, authRole, user, userRole);
-            if (errorCode.HasValue)
-                return new ErrorResponse<GirafUserDTO>(errorCode.Value);
-                
 
             // save and return 
             _giraf._context.Users.Update(user);
@@ -330,20 +212,25 @@ namespace GirafRest.Controllers
         /// Missingproperties if no new image specified
         /// returns succes respons if no error occured
         /// </returns>
-        [HttpPut("icon")]
-        public async Task<Response> SetUserIcon()
+        [HttpPut("{id}/icon")]
+        public async Task<Response> SetUserIcon(string id)
         {
-            var usr = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
 
-            if (usr == null)
+            if (user == null)
                 return new ErrorResponse(ErrorCode.UserNotFound);
+
+            // check access rights
+            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
+            
 
             byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body);
 
             if (image.Length < IMAGE_CONTENT_TYPE_DEFINITION)
                 return new ErrorResponse(ErrorCode.MissingProperties, "Image");
 
-            usr.UserIcon = image;
+            user.UserIcon = image;
             await _giraf._context.SaveChangesAsync();
 
             return new Response();
@@ -357,43 +244,25 @@ namespace GirafRest.Controllers
         /// UserHasNoIcon if trying to delete an icon that does not exist
         /// Succes response if no error
         /// </returns>
-        [HttpDelete("icon")]
-        public async Task<Response> DeleteUserIcon()
+        [HttpDelete("{id}/icon")]
+        public async Task<Response> DeleteUserIcon(string id)
         {
-            var usr = await _giraf._userManager.GetUserAsync(HttpContext.User);
-            if (usr.UserIcon == null)
+            var user = _giraf._context.Users.Include(u => u.UserIcon).FirstOrDefault(u => u.Id == id);
+            if (user.UserIcon == null)
                 return new ErrorResponse(ErrorCode.UserHasNoIcon);
 
-            usr.UserIcon = null;
+            // check access rights
+            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
+
+            user.UserIcon = null;
             await _giraf._context.SaveChangesAsync();
 
             return new Response();
         }
         #endregion
-        #region Not strictly necessary methods, but more efficient than a PUT to user, as they only update a single value
+        #region Methods for adding relations to entities for user
 
-        /// <summary>
-        /// Updates the display name of the current user.
-        /// </summary>
-        /// <param name="displayName">The new display name of the user.</param>
-        /// <returns>MissingProperties if no display name was specified
-        /// success response and the user if all went smooth.</returns>
-        [HttpPut("display-name")]
-        public async Task<Response<GirafUserDTO>> UpdateDisplayName([FromBody] string displayName)
-        {
-            if (string.IsNullOrEmpty(displayName))
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "displayname");
-
-            var user = await _giraf.LoadUserAsync(HttpContext.User);
-
-            user.DisplayName = displayName;
-            await _giraf._context.SaveChangesAsync();
-
-            // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
-
-            return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));
-        }
 
         /// <summary>
         /// Adds a resource to the given user's list of resources.
@@ -408,21 +277,25 @@ namespace GirafRest.Controllers
         /// NotAuthorized if we do not own the ressource
         /// UserAlreadyOwnsResource if trying to add a ressource we already own
         /// </returns>
-        [HttpPost("{username}/resource")]
-        public async Task<Response<GirafUserDTO>> AddUserResource(string username, [FromBody] ResourceIdDTO resourceIdDTO)
+        [HttpPost("{id}/resource")]
+        public async Task<Response<GirafUserDTO>> AddUserResource(string id, [FromBody] ResourceIdDTO resourceIdDTO)
         {
             //Check if valid parameters have been specified in the call
-            if (string.IsNullOrEmpty(username))
+            if (string.IsNullOrEmpty(id))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "username");
 
             if (resourceIdDTO == null)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "resourceIdDTO");
 
             //Attempt to find the target user and check that he exists
-            var user = await _giraf.LoadByNameAsync(username);
+            var user = _giraf._context.Users.Include(u => u.Resources).ThenInclude(dr => dr.Pictogram).FirstOrDefault(u => u.Id == id);
 
             if (user == null)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
+
+            // check access rights
+            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
 
             //Find the resource and check that it actually does exist - also verify that the resource is private
             var resource = await _giraf._context.Pictograms
@@ -434,6 +307,7 @@ namespace GirafRest.Controllers
 
             if (resource.AccessLevel != AccessLevel.PRIVATE)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.ResourceMustBePrivate);
+
 
             //Check that the currently authenticated user owns the resource
             var curUsr = await _giraf.LoadUserAsync(HttpContext.User);
@@ -466,9 +340,14 @@ namespace GirafRest.Controllers
         /// UserDoesNotOwnResource if authenticatedUser does not own ressource
         /// The GirafUserDTO if no errors.
         /// </returns>
-        [HttpDelete("resource")]
-        public async Task<Response<GirafUserDTO>> DeleteResource([FromBody] ResourceIdDTO resourceIdDTO)
+        [HttpDelete("{id}/resource")]
+        public async Task<Response<GirafUserDTO>> DeleteResource(string id, [FromBody] ResourceIdDTO resourceIdDTO)
         {
+            //Check if the caller owns the resource
+            var user = _giraf._context.Users.Include(r => r.Resources).ThenInclude(dr => dr.Pictogram).FirstOrDefault(u => u.Id == id);
+            if (user == null)
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
+            
             //Check that valid parameters have been specified in the call
             if (resourceIdDTO == null)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "resourceIdDTO");
@@ -479,31 +358,30 @@ namespace GirafRest.Controllers
                 .FirstOrDefaultAsync();
             if (resource == null) return new ErrorResponse<GirafUserDTO>(ErrorCode.ResourceNotFound);
 
-            //Check if the caller owns the resource
-            var curUsr = await _giraf.LoadUserAsync(HttpContext.User);
-            if (curUsr == null)
+            // check access rights
+            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
 
             //Fetch the relationship from the database and check that it exists
             var relationship = await _giraf._context.UserResources
-                 .Where(ur => ur.PictogramKey == resource.Id && ur.OtherKey == curUsr.Id)
+                 .Where(ur => ur.PictogramKey == resource.Id && ur.OtherKey == user.Id)
                 .FirstOrDefaultAsync();
             if (relationship == null) return new ErrorResponse<GirafUserDTO>(ErrorCode.UserDoesNotOwnResource);
 
             //Remove the resource - both from the user's list and the database
-            curUsr.Resources.Remove(relationship);
+            user.Resources.Remove(relationship);
             _giraf._context.UserResources.Remove(relationship);
             await _giraf._context.SaveChangesAsync();
 
             // Get the roles the user is associated with
-            var userRole = await _roleManager.findUserRole(_giraf._userManager, curUsr);
+            var userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
             //Return Ok and the user - the resource is now visible in user.Resources
-            return new Response<GirafUserDTO>(new GirafUserDTO(curUsr, userRole));
+            return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));
         }
 
         /// <summary>
-        /// Gets the citizens for the specific user corresponding to the provided username.
+        /// Gets the citizens for the specific user corresponding to the provided id.
         /// </summary>
         /// <returns>
         /// MissingProperties if username is null
@@ -511,18 +389,21 @@ namespace GirafRest.Controllers
         /// List of all citizens as DTO if ok
         /// </returns>
         /// <param name="username">Username.</param>
-        [HttpGet("{username}/citizens")]
-	[Authorize (Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
-        public async Task<Response<List<UserNameDTO>>> GetCitizens(string username)
+        [HttpGet("{id}/citizens")]
+        [Authorize (Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
+        public async Task<Response<List<UserNameDTO>>> GetCitizens(string id)
         {
-            if (String.IsNullOrEmpty(username))
-                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.MissingProperties, "username");
-            var user = await _giraf.LoadByNameAsync(username);
+            if (String.IsNullOrEmpty(id))
+                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.MissingProperties, "id");
+            var user = await _giraf.LoadByIdAsync(id);
             var citizens = new List<UserNameDTO>();
+
+            // check access rights
+            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.NotAuthorized);
 
             foreach (var citizen in user.Citizens)
             {
-                var templist = _giraf._context.Users.ToList();
                 var girafUser = _giraf._context.Users.FirstOrDefault(u => u.Id == citizen.CitizenId);
                 citizens.Add(new UserNameDTO { UserId = girafUser.Id, UserName = girafUser.UserName });
             }
@@ -536,20 +417,25 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Gets the guardians for the specific user corresponding to the provided username.
+        /// Gets the guardians for the specific user corresponding to the provided id.
         /// </summary>
         /// <returns>
         /// MissingProperties if username is null
         /// UserHasNoGuardians is user has no guardians
         /// List of all guardians if ok </returns>
-        /// <param name="username">Username.</param>
-        [HttpGet("{username}/guardians")]
+        /// <param name="id">Username.</param>
+        [HttpGet("{id}/guardians")]
         [Authorize]
-        public async Task<Response<List<UserNameDTO>>> GetGuardians(string username)
+        public async Task<Response<List<UserNameDTO>>> GetGuardians(string id)
         {
-            if (String.IsNullOrEmpty(username))
-                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.MissingProperties, "username");
-            var user = await _giraf.LoadByNameAsync(username);
+            var user = await _giraf.LoadByIdAsync(id);
+            if (user == null)
+                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.InvalidProperties, "id");
+
+            // check access rights
+            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.NotAuthorized);
+
             var guardians = new List<UserNameDTO>();
             foreach (var guardian in user.Guardians)
             {
@@ -569,31 +455,34 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Removes a user from its department.
         /// </summary>
-        /// <param name="username">Username.</param>
+        /// <param name="id">Username.</param>
         /// <returns>
         /// UserNotFound if a user with the given username does not exsist.
         /// DepartmentNotFound if the user does not belong to any department.
         /// DepartmentDTO in its updated state if no problems occured.
         /// </returns>
-        [HttpDelete("{username}/department")]
-        public async Task<Response<DepartmentDTO>> RemoveDepartment(string username)
+        [HttpDelete("{id}/department")]
+        public async Task<Response<DepartmentDTO>> RemoveDepartment(string id)
         {
-            // TODO: Check that authorized user is a guardian of the department, is the department user or a superuser
-            if(string.IsNullOrEmpty(username))
+            if(string.IsNullOrEmpty(id))
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.MissingProperties, "username");
 
-            var usr = await _giraf._context
+            var user = await _giraf._context
                 .Users
                 .Include(u => u.Department)
-                .Where(u => u.UserName == username)
+                .Where(u => u.Id == id)
                 .FirstOrDefaultAsync();
             
-            if(usr == null)
+            if(user == null)
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.UserNotFound);
+
+            // check access rights
+            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+                return new ErrorResponse<DepartmentDTO>(ErrorCode.NotAuthorized);
             
             var dep = await _giraf._context
                 .Departments
-                .Where(d => d.Key == usr.DepartmentKey)
+                .Where(d => d.Key == user.DepartmentKey)
                 .Include(d => d.Members)
                 .Include(d => d.Resources)
                 .FirstOrDefaultAsync();
@@ -601,18 +490,25 @@ namespace GirafRest.Controllers
             if (dep == null)
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.DepartmentNotFound);
 
-            usr.DepartmentKey = null;
+            user.DepartmentKey = null;
             _giraf._context.SaveChanges();
             
             return new Response<DepartmentDTO>(new DepartmentDTO(dep));
         }
 
-        [HttpPost("guardian/{guardianId}/citizen/{citizenId}")]
+        [HttpPost("{id}/citizen/{citizenId}")]
         [Authorize (Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
-        public async Task<Response<GirafUserDTO>> AddGuardianCitizenRelationship(string guardianId, string citizenId)
+        public async Task<Response<GirafUserDTO>> AddGuardianCitizenRelationship(string id, string citizenId)
         {
             var citizen = await _giraf._userManager.FindByIdAsync(citizenId);
-            var guardian = await _giraf._userManager.FindByIdAsync(guardianId);
+            var guardian = await _giraf._userManager.FindByIdAsync(id);
+
+            if (guardian == null || citizen == null)
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
+
+            // check access rights
+            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), guardian)))
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
 
             if(citizen == null || guardian == null)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound, "User, either guardian or citizen, not found");
@@ -629,21 +525,6 @@ namespace GirafRest.Controllers
             citizen.AddGuardian(guardian);
 
             return new Response<GirafUserDTO>(new GirafUserDTO(citizen, GirafRoles.Citizen));
-        }
-
-        /// <summary>
-        /// Updates the currently authenticated user settings.
-        /// </summary>
-        /// <returns>
-        /// MissingProperties if options is null or some required fields is not set
-        /// </returns>
-        /// <param name="options">Options.</param>
-        [HttpPut("settings")]
-        public async Task<Response<SettingDTO>> UpdateUserSettings([FromBody] SettingDTO options)
-        {
-            var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
-
-            return await UpdateUserSettings(user.Id, options);
         }
 
         /// <summary>
@@ -689,14 +570,10 @@ namespace GirafRest.Controllers
 
             if (user.Settings == null)
                 return new ErrorResponse<SettingDTO>(ErrorCode.MissingSettings);
-
-            var authUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
-            var authUserRole = await _roleManager.findUserRole(_giraf._userManager, authUser);
-            var userRole = await _roleManager.findUserRole(_giraf._userManager, user);
-
-            var errorCode = _authentication.CheckUserAccess(authUser, authUserRole, user, userRole);
-            if (errorCode != null)
-                return new ErrorResponse<SettingDTO>(errorCode.Value);
+            
+            // check access rights
+            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+                return new ErrorResponse<SettingDTO>(ErrorCode.NotAuthorized);
 
             user.Settings.UpdateFrom(options);
             // lets update the weekday colours
@@ -784,18 +661,6 @@ namespace GirafRest.Controllers
                     if (cUser != null)
                         user.AddCitizen(cUser);
                 }
-            }
-        }
-
-        /// <summary>
-        /// Writes all errors found by identity to the logger.
-        /// </summary>
-        /// <param name="result">The result from Identity when executing user-related actions.</param>
-        private void AddErrors(IdentityResult result)
-        {
-            foreach (var error in result.Errors)
-            {
-                _giraf._logger.LogError(error.Description);
             }
         }
 

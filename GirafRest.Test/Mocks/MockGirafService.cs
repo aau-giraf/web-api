@@ -11,6 +11,7 @@ using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace GirafRest.Test.Mocks
 {
@@ -79,9 +80,9 @@ namespace GirafRest.Test.Mocks
             return Task.FromResult(image);
         }
 
-        public Task<GirafUser> LoadByNameAsync(string username)
+        public Task<GirafUser> LoadByIdAsync(string id)
         {
-            return _userManager.FindByNameAsync(username);
+            return Task.FromResult(_context.Users.FirstOrDefault(u => u.Id == id));
         }
     }
 }
