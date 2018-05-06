@@ -1,7 +1,9 @@
 ﻿using System;
+using GirafRest.Data;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
+using Microsoft.AspNetCore.Identity;
 
 namespace GirafRest
 {
@@ -10,10 +12,11 @@ namespace GirafRest
     /// </summary>
     public interface IAuthenticationService
     {
-        Data.GirafDbContext _context
-        {
-            get;
-        }
+        GirafDbContext _context { get; }
+
+        RoleManager<GirafRole> _roleManager { get; }
+
+        UserManager<GirafUser> _userManager { get; }
 
         /// <summary>
         /// Checks if a user has access to edit information for another user i.ie that the authentication user
@@ -21,8 +24,7 @@ namespace GirafRest
         /// </summary>
         /// <returns>The user access.</returns>
         /// <param name="authUser">Auth user.</param>
-        /// <param name="authUserRole">Auth user role.</param>
         /// <param name="userToEdit">User to edit.</param>
-        ErrorCode? CheckUserAccess(GirafUser authUser, GirafRoles authUserRole, GirafUser userToEdit, GirafRoles userRole);
+        System.Threading.Tasks.Task<bool> CheckUserAccess(GirafUser authUser, GirafUser userToEdit);
     }
 }
