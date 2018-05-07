@@ -82,7 +82,6 @@ namespace GirafRest.Controllers
             if (emptyThumbnail == null)
             {
                 //Create default thumbnail
-                var emptyThumbnail = _giraf._context.Pictograms.FirstOrDefault(r => r.Title == "default");
                 if (emptyThumbnail == null)
                 {
                     _giraf._context.Pictograms.Add(new Pictogram("default", AccessLevel.PUBLIC));
@@ -146,20 +145,20 @@ namespace GirafRest.Controllers
         /// Ok and a serialized version of the updated week if everything went well.</returns>
         [HttpDelete("{weekYear}/{weekNumber}")]
         [Authorize]
-        public async Task<Response<IEnumerable<WeekBaseDTO>>> DeleteWeek(int weekYear, int weekNumber)
+        public async Task<Response<IEnumerable<WeekDTO>>> DeleteWeek(int weekYear, int weekNumber)
         {
             var user = await _giraf.LoadUserAsync(HttpContext.User);
-            if (user == null) return new ErrorResponse<IEnumerable<WeekBaseDTO>>(ErrorCode.UserNotFound);
+            if (user == null) return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.UserNotFound);
             if (user.WeekSchedule.Any(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber))
             {
                 var week = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber);
                 if (week == null) return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.NoWeekScheduleFound);
                 user.WeekSchedule.Remove(week);
                 await _giraf._context.SaveChangesAsync();
-                return new Response<IEnumerable<WeekBaseDTO>>(user.WeekSchedule.Select(w => new WeekDTO(w)));
+                return new Response<IEnumerable<WeekDTO>>(user.WeekSchedule.Select(w => new WeekDTO(w)));
             }
             else
-                return new ErrorResponse<IEnumerable<WeekBaseDTO>>(ErrorCode.NoWeekScheduleFound);
+                return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.NoWeekScheduleFound);
         }
     }
 }

@@ -62,8 +62,9 @@
         InvalidDay,
         DuplicateWeekScheduleName,
         ColorMustHaveUniqueDay,
-        InvalidHexValues
+        InvalidHexValues,
         WeekTemplateNotFound,
         NotImplemented,
+        UserMustBeInDepartment
     }
 }
