@@ -102,7 +102,7 @@ namespace GirafRest.Test
                         {
                             UserName = "Admin",
                             Id = "admin",
-                            DepartmentKey = 1
+                            DepartmentKey = 1,
                         },
                         new GirafUser()
                         {
@@ -475,6 +475,7 @@ namespace GirafRest.Test
                     return mockUserRoles;
                 }
             }
+
             #endregion
             
             

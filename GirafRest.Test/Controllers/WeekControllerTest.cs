@@ -141,13 +141,14 @@ namespace GirafRest.Test
             // modify name
             var newWeek = new WeekDTO(week)
             {
-                Name = "Test Week"
+                Name = "new name"
             };
             var res = wc.UpdateWeek(2018, 20, newWeek).Result;
+
             Assert.IsType<Response<WeekDTO>>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.True(res.Success);
-            Assert.Equal("Test Week", res.Data.Name);
+            Assert.Equal("new name", res.Data.Name);
 
         }
 
@@ -203,8 +204,6 @@ namespace GirafRest.Test
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
-
-
-        #endregion
+       #endregion
     }
 }

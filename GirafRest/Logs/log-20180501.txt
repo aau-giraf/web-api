@@ -1,0 +1,9 @@
+01-05-2018 13:21:08; Kurt; Kurt; GET; /v1/Week/2018/20; NoError; 9fe4612d-5a74-4b93-b27b-5aa7d7994bf4; 9fe4612d-5a74-4b93-b27b-5aa7d7994bf4
+01-05-2018 13:21:10; Kurt; Kurt; GET; /v1/Week/2018/20; NoError; 9fe4612d-5a74-4b93-b27b-5aa7d7994bf4; 9fe4612d-5a74-4b93-b27b-5aa7d7994bf4
+01-05-2018 13:26:09; Kurt; Kurt; DELETE; /v1/Week/2018/20; NoWeekScheduleFound; 9fe4612d-5a74-4b93-b27b-5aa7d7994bf4; 9fe4612d-5a74-4b93-b27b-5aa7d7994bf4
+01-05-2018 13:26:12; Kurt; Kurt; DELETE; /v1/Week/2018/20; NoWeekScheduleFound; 9fe4612d-5a74-4b93-b27b-5aa7d7994bf4; 9fe4612d-5a74-4b93-b27b-5aa7d7994bf4
+01-05-2018 13:26:14; Kurt; Kurt; DELETE; /v1/Week/2018/20; NoWeekScheduleFound; 9fe4612d-5a74-4b93-b27b-5aa7d7994bf4; 9fe4612d-5a74-4b93-b27b-5aa7d7994bf4
+01-05-2018 13:26:19; Kurt; Kurt; PUT; /v1/Week/2018/20; NoError; 9fe4612d-5a74-4b93-b27b-5aa7d7994bf4; 9fe4612d-5a74-4b93-b27b-5aa7d7994bf4
+01-05-2018 13:26:21; Kurt; Kurt; PUT; /v1/Week/2018/20; NoError; 9fe4612d-5a74-4b93-b27b-5aa7d7994bf4; 9fe4612d-5a74-4b93-b27b-5aa7d7994bf4
+01-05-2018 13:26:23; Kurt; Kurt; PUT; /v1/Week/2018/20; NoError; 9fe4612d-5a74-4b93-b27b-5aa7d7994bf4; 9fe4612d-5a74-4b93-b27b-5aa7d7994bf4
+01-05-2018 13:27:46; Kurt; Kurt; PUT; /v1/Week/2018/20; NoError; 9fe4612d-5a74-4b93-b27b-5aa7d7994bf4; 9fe4612d-5a74-4b93-b27b-5aa7d7994bf4

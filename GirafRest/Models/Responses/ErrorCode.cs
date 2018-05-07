@@ -2,7 +2,7 @@
 {
     public enum ErrorCode
     {
-        Error,
+        Error = 1,
         FormatError,
         NoError,
         NotAuthorized,
@@ -61,8 +61,9 @@
         WeekAlreadyExists,
         InvalidDay,
         DuplicateWeekScheduleName,
+        ColorMustHaveUniqueDay,
+        InvalidHexValues
         WeekTemplateNotFound,
         NotImplemented,
-        UserMustBeInDepartment
     }
 }
