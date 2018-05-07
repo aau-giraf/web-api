@@ -56,7 +56,9 @@ class WeekTemplateControllerTest(TestCase):
 
         ensureError(response, check)
 
-    @test(skip_if_failed=['logins'], expect_fail=True)
+    templateId = None
+
+    @test(skip_if_failed=['logins'])
     def postNewTemplate(self, check):
         'Post a new template'
         template1DTO = {
@@ -92,24 +94,26 @@ class WeekTemplateControllerTest(TestCase):
             ]
         }
 
-        response = requests.post(Test.url + 'WeekTemplate', headers=auth(self.graatand), data=template1DTO).json()
+        response = requests.post(Test.url + 'WeekTemplate', headers=auth(self.graatand), json=template1DTO).json()
 
         ensureSuccess(response, check)
-        template1Id = response['data']['id']
+        self.templateId = response['data']['id']
 
-        response = requests.get(Test.url + 'WeekTemplate/{0}'.format(template1Id), headers=auth(self.graatand)).json()
+        response = requests.get(Test.url + 'WeekTemplate/{0}'.format(self.templateId),
+                                headers=auth(self.graatand)).json()
         ensureSuccess(response, check)
 
         check.equal("Template1", response['data']['name'])
         check.equal(28, response['data']['thumbnail']['id'])
-        check.equal(2, response['data']['days']['4']['pictogram']['id'])
+        check.equal(6, response['data']['days'][0]['activities'][1]['pictogram']['id'])
+        check.equal(7, response['data']['days'][1]['activities'][1]['pictogram']['id'])
 
     @test(skip_if_failed=['postNewTemplate'])
     def updateTemplate(self, check):
         'Put new stuff into the template'
         template2DTO = {
             "thumbnail": {"id": 29},
-            "name": "Template1",
+            "name": "Template2",
             "days": [
                 {
                     "day": "Monday",
@@ -140,17 +144,21 @@ class WeekTemplateControllerTest(TestCase):
             ]
         }
 
-        response = requests.put(Test.url + 'WeekTemplate/{0}'.format(self.templateId), headers=auth(self.graatand), data=template2DTO).json()
+        response = requests.put(Test.url + 'WeekTemplate/{0}'.format(self.templateId),
+                                headers=auth(self.graatand),
+                                json=template2DTO).json()
 
         ensureSuccess(response, check)
-        template2Id = response['data']['id']
 
-        response = requests.get(Test.url + 'WeekTemplate/{0}'.format(self.templateId), headers=auth(self.graatand)).json()
+        response = requests.get(Test.url + 'WeekTemplate/{0}'.format(self.templateId),
+                                headers=auth(self.graatand)).json()
+
         ensureSuccess(response, check)
 
         check.equal("Template2", response['data']['name'])
         check.equal(29, response['data']['thumbnail']['id'])
-        check.equal(3, response['data']['days']['4']['pictogram']['id'])
+        check.equal(7, response['data']['days'][0]['activities'][1]['pictogram']['id'])
+        check.equal(8, response['data']['days'][1]['activities'][1]['pictogram']['id'])
 
     @test(skip_if_failed=['postNewTemplate'], depends=['updateTemplate'])
     def deleteTemplate(self, check):

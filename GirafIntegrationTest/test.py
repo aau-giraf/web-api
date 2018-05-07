@@ -6,9 +6,10 @@ from testLib import *
 
 # Nice error message if the server is down.
 try:
-    result = requests.post(Test.url + 'User').json()
+    result = requests.get(Test.url + 'User/username')
+    result = result.json()
     result['success']
-except:
+except :
     print('Could not get response from server. \n'
           'Exiting...\n')
     sys.exit()

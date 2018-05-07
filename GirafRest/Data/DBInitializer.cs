@@ -299,7 +299,7 @@ namespace GirafRest.Setup
 
         private static void AddSampleWeekTemplate(GirafDbContext context, IList<Pictogram> pictograms, IList<Department> departments)
         {
-            Console.WriteLine("Adding weekdays to users");
+            Console.WriteLine("Adding templates");
             var weekdays = new Weekday[]
             {
                 new Weekday(Days.Monday, 
@@ -331,16 +331,16 @@ namespace GirafRest.Setup
                     new List<ActivityState>{Active, Active, })
             };
 
-            var sampleWeek = new WeekTemplate(departments[0]);
-            sampleWeek.Name = "SkabelonUge";
-            sampleWeek.Thumbnail = pictograms[0];
+            var sampleTemplate = new WeekTemplate(departments[0]);
+            sampleTemplate.Name = "SkabelonUge";
+            sampleTemplate.Thumbnail = pictograms[0];
             foreach (var day in weekdays)
             {
                 context.Weekdays.Add(day);
-                sampleWeek.UpdateDay(day);
+                sampleTemplate.UpdateDay(day);
             }
 
-            context.WeekTemplates.Add(sampleWeek);
+            context.WeekTemplates.Add(sampleTemplate);
             context.SaveChanges();
         }
         #endregion
