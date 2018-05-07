@@ -75,8 +75,6 @@ namespace GirafRest.Test
                 GreyScale = true}
             };
 
-
-
             return usercontroller;
         }
 
@@ -743,24 +741,6 @@ namespace GirafRest.Test
 
             Assert.Equal(Orientation.landscape, _testContext.MockUsers[CitizenDepTwo].Settings.Orientation);
         }        
-
-        /// <summary>
-        /// Check that we can in fact can update a citizens usersettings as their guardian
-        /// </summary>
-        [Fact]
-        public void UpdateUserSettings_AsTheirGuardian_Success()
-        {
-            var usercontroller = initializeTest();
-
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GuardianDepTwo]);
-
-            var dto = UserSettings[0];
-            dto.CompleteMark = CompleteMark.MovedRight;
-            var res = usercontroller.UpdateUserSettings(_testContext.MockUsers[CitizenDepTwo].Id, dto).Result;
-
-            Assert.True(res.Success);
-            Assert.Equal(CompleteMark.MovedRight, _testContext.MockUsers[CitizenDepTwo].Settings.CompleteMark);
-        }
 
         [Fact]
         public void UpdateUserSettings_analogClock_defaultTimer_Success()
