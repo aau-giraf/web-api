@@ -28,10 +28,10 @@ class AccountController(TestCase):
     @test(skip_if_failed=["loginAsGraatand"])
     def getUsernameWithAuth(self, check):
         "GETting username with authorization"
-        response = requests.get(Test.url + 'user/username', headers = {"Authorization":"Bearer {0}".format(AccountController.graatandToken)}).json()
+        response = requests.get(Test.url + 'user', headers = {"Authorization":"Bearer {0}".format(AccountController.graatandToken)}).json()
         check.is_true(response['success'])
         check.is_not_none(response['data'])
-        check.equal(response['data'], "Graatand")
+        check.equal(response['data']['username'], "Graatand")
 
     @test()
     def loginInvalidPassword(self, check):
@@ -68,9 +68,9 @@ class AccountController(TestCase):
     @test(skip_if_failed=["loginAsGunnar"])
     def testGunnarsToken(self, check):
         "Check if gunnars token is valid"
-        response = requests.get(Test.url + 'user/username', headers = {"Authorization":"Bearer {0}".format(AccountController.gunnarToken)}).json()
+        response = requests.get(Test.url + 'user', headers = {"Authorization":"Bearer {0}".format(AccountController.gunnarToken)}).json()
         check.is_true(response['success'])
-        check.equal(response['data'], AccountController.gunnarUsername)
+        check.equal(response['data']['username'], AccountController.gunnarUsername)
 
     @test(skip_if_failed=["loginAsGunnar"])
     def testGunnarRole(self, check):

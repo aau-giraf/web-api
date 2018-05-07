@@ -148,18 +148,19 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Updates username and screenname for the current authenticated user.
         /// </summary>
-        /// <param name="userDTO">A DTO containing ALL the new information for the given user.</param>
+        /// <param name="Username">The new username</param>
+        /// <param name="Screenname">The new screenname</param>
         /// <returns>
         /// MissingProperties if username or screenname is null
         /// If succesfull returns the DTO corresponding to the newly updates user.
         /// </returns>
         [HttpPut("")]
-        public async Task<Response<GirafUserDTO>> UpdateUser([FromBody] string Username, [FromBody] string ScreenName)
+        public async Task<Response<GirafUserDTO>> UpdateUser([FromBody] GirafUserDTO newUser)
         {
             //Fetch the user
             var user = await _giraf.LoadUserAsync(HttpContext.User);
 
-            return await UpdateUser(user.Id, Username, ScreenName);
+            return await UpdateUser(user.Id, newUser);
         }
 
         /// <summary>
@@ -175,9 +176,9 @@ namespace GirafRest.Controllers
         /// Succes response with the DTO for the updates user if all went smooth
         /// </returns>
         [HttpPut("{id}")]
-        public async Task<Response<GirafUserDTO>> UpdateUser(string id, [FromBody] string Username, [FromBody] string ScreenName)
+        public async Task<Response<GirafUserDTO>> UpdateUser(string id, [FromBody] GirafUserDTO newUser)
         {
-            if (Username == null && ScreenName == null)
+            if (newUser.Username == null && newUser.ScreenName == null)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties);
 
             var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
@@ -191,15 +192,15 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
             
             // check whether user with that username already exist that does dot have the same id
-            if (_giraf._context.Users.Any(u => u.UserName == Username && u.Id != user.Id))
+            if (_giraf._context.Users.Any(u => u.UserName == newUser.Username && u.Id != user.Id))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.UserAlreadyExists);
 
             // update fields if they are not null
-            if (!String.IsNullOrEmpty(Username))
-                user.UserName = Username;
+            if (!String.IsNullOrEmpty(newUser.Username))
+                user.UserName = newUser.Username;
 
-            if (!String.IsNullOrEmpty(ScreenName))
-                user.DisplayName = ScreenName;
+            if (!String.IsNullOrEmpty(newUser.ScreenName))
+                user.DisplayName = newUser.ScreenName;
 
             // save and return 
             _giraf._context.Users.Update(user);
@@ -443,11 +444,14 @@ namespace GirafRest.Controllers
             if (String.IsNullOrEmpty(id))
                 return new ErrorResponse<List<UserNameDTO>>(ErrorCode.MissingProperties, "id");
             var user = await _giraf.LoadByIdAsync(id);
+            var authUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
             var citizens = new List<UserNameDTO>();
 
             // check access rights
-            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+            if (!(await _authentication.CheckUserAccess(authUser, user)))
+            {
                 return new ErrorResponse<List<UserNameDTO>>(ErrorCode.NotAuthorized);
+            }
 
             var userRole = (await _roleManager.findUserRole(_giraf._userManager, user));
             if (userRole != GirafRoles.Guardian)

@@ -89,7 +89,6 @@ namespace GirafRest.Models
         /// <param name="newOptions">The DTO containing new settings</param>
         public void UpdateFrom(SettingDTO newOptions)
         {
-
             this.Orientation = newOptions?.Orientation ?? this.Orientation;
             this.CompleteMark = newOptions?.CompleteMark ?? this.CompleteMark;
             this.CancelMark = newOptions?.CancelMark ?? this.CancelMark;
