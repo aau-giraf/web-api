@@ -70,6 +70,26 @@ namespace GirafRest.Controllers
         /// MissingProperties if no username is provided
         /// UserNotFound if user was not found, or logged in user is not authorized to see user.
         ///</returns>
+        [HttpGet("")]
+        public async Task<Response<GirafUserDTO>> GetUser()
+        {
+            //First attempt to fetch the user and check that he exists
+            var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            if (user == null)
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
+
+            return new Response<GirafUserDTO>(new GirafUserDTO(user, await _roleManager.findUserRole(_giraf._userManager, user)));
+        }
+
+
+        /// <summary>
+        /// Find information on the user with the username supplied as a url query parameter or the current user.
+        /// </summary>
+        /// <returns>
+        /// Data about the user
+        /// MissingProperties if no username is provided
+        /// UserNotFound if user was not found, or logged in user is not authorized to see user.
+        ///</returns>
         [HttpGet("{id}")]
         public async Task<Response<GirafUserDTO>> GetUser(string id)
         {
