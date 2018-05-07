@@ -153,13 +153,12 @@ namespace GirafRest.Test.Controllers
         public void AddUser_ExistingDepartment_OK()
         {
             var dc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
             var userName = "Admin";
-            var user = new GirafUserDTO()
+            var user = new GirafUserDTO(mockUser, GirafRoles.SuperUser)
             {
-                Username = userName,
-                Id = "admin",
-                Department = 1
+                Username = userName
             };
 
             var res = dc.AddUser(DEPARTMENT_TWO, user.Id).Result;
