@@ -37,7 +37,7 @@ class UserControllerTest(TestCase):
         self.graatand = login('Graatand', check)
 
     @test(skip_if_failed=['loginAsKurt'])
-    def GetKurt(self, check):
+    def GetKurtID(self, check):
         'Get User info for kurt'
         response = requests.get(Test.url + 'User', headers=auth(self.kurt)).json()
         ensureSuccess(response, check)
@@ -45,7 +45,7 @@ class UserControllerTest(TestCase):
         self.kurtId = response['data']['id']
 
     @test(skip_if_failed=['loginAsGraatand'])
-    def GetGraatand(self, check):
+    def GetGraatandID(self, check):
         'Get User info graatand'
         response = requests.get(Test.url + 'User', headers=auth(self.graatand)).json()
         ensureSuccess(response, check)
@@ -92,14 +92,14 @@ class UserControllerTest(TestCase):
         self.gunnarId = response['data']['id']
 
     @test(skip_if_failed=['newCharlie'])
-    def getCharlieInfo(self, check):
+    def getCharlieID(self, check):
         'Get User info'
         response = requests.get(Test.url + 'User' , headers=auth(self.charlie)).json()
         ensureSuccess(response, check)
         check.equal(response['data']['username'], self.charlieUsername)
         self.charlieId = response['data']['id']
 
-    @test(skip_if_failed=['newCharlie', 'getCharlieInfo'])
+    @test(skip_if_failed=['newCharlie', 'getCharlieID'])
     def unauthorizedUserInfo(self, check):
         'Gunnar tries to get charlies user info'
         response = requests.get(Test.url + 'User/' + self.charlieId,
@@ -112,21 +112,20 @@ class UserControllerTest(TestCase):
         'Graatand gets gunnars user info'
         response = requests.get(Test.url + 'User/' + self.gunnarId, headers=auth(self.graatand)).json()
         ensureSuccess(response, check)
-        check.equal(response['data']['username'], 'Gunnar');
+        check.equal(response['data']['username'], self.gunnarUsername);
 
     # TODO: Play with images(user avatar) when I figure out how
 
-    @test(skip_if_failed=['registerGunnar', 'userInfo'])   # TODO: This call is somehow incorrect.
+    @test(skip_if_failed=['registerGunnar', 'userInfo'])
     def setDisplayName(self, check):
         'Set display name'
-        response = requests.put(Test.url + 'User/{0}display-name'.format(self.gunnarId),
-                                json='HE WHO WAITS BEHIND THE WALL',
+        response = requests.put(Test.url + 'User/{0}'.format(self.gunnarId),
+                                json={ "userName": self.gunnarUsername, "screenName":"HE WHO WAITS BEHIND THE WALL" },
                                 headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
         # Check that display name was updated
         response = requests.get(Test.url + 'User', headers=auth(self.gunnar)).json()
         check.equal(response['data']['screenName'], 'HE WHO WAITS BEHIND THE WALL')
-
 
     @test(skip_if_failed=['registerGunnar'])
     def newPictogram(self, check):
@@ -152,25 +151,10 @@ class UserControllerTest(TestCase):
         'Gunnar gives Charlie his Wednesday pictogram'
         response = requests.post(Test.url + 'User/{0}/resource/'.format(self.charlieId),
                                  json=self.wednesdayIDBody,
-                                 headers=auth(self.charlie)).json()
-        ensureSuccess(response, check)
+                                 headers=auth(self.gunnar)).json()
 
-        check.is_true(hasPictogram(self.charlie, self.wednesdayID),
-                      message='Charlie did not get Wednesday pictogram')
-
-    @test(skip_if_failed=['newPictogram', 'giveCharliePictogram'])
-    def removePictogram(self, check):
-        'Remove wednesday pictogram'
-        response = requests.delete(Test.url + 'User/{0}/resource'.format(self.charlieId),
-                                   json=self.wednesdayIDBody,
-                                   headers=auth(self.charlie)).json()
-        ensureSuccess(response, check)
-
-        check.is_false(hasPictogram(self.gunnar, self.wednesdayID),
-                       message='Gunnar still has Wednesday pictogram')
-
-        check.is_true(hasPictogram(self.charlie, self.wednesdayID),
-                      message='Charlie lost Wednesday pictogam as well')
+        ensureError(response, check)
+        check.is_false(hasPictogram(self.charlie, self.wednesdayID))
 
     @test(skip_if_failed=['registerGunnar', 'userInfo'])
     def settings(self, check):
@@ -233,32 +217,32 @@ class UserControllerTest(TestCase):
         check.equal("#FF00FF",  response['data']['weekDayColors'][0]['hexColor'])
         check.equal(1,          response['data']['weekDayColors'][0]['day'])
 
-    @test(skip_if_failed=['loginAsKurt'])
+    @test(skip_if_failed=['GetKurtID'])
     def kurtCitizens(self, check):
-        'Get Kurt\'s citizens(none)'
+        'Get Kurt\'s citizens'
         response = requests.get(Test.url + 'User/{0}/citizens'.format(self.kurtId),
                                 headers=auth(self.kurt)).json()
         ensureError(response, check)
 
-    @test(skip_if_failed=['loginAsGraatand'])
+    @test(skip_if_failed=['GetGraatandID'])
     def graatandCitizens(self, check):
-        'Get Graatand\'s citizens(some)'
+        'Get Graatand\'s citizens'
         response = requests.get(Test.url + 'User/{0}/citizens'.format(self.graatandId),
                                 headers=auth(self.graatand)).json()
-        if ensureSuccess(response, check):
-            check.equal('Kurt', response['data'][0]['userName'])
+        ensureSuccess(response, check)
+        check.equal('Kurt', response['data'][0]['userName'])
 
-    @test(skip_if_failed=['loginAsKurt'])
+    @test(skip_if_failed=['GetKurtID'])
     def kurtGuardians(self, check):
-        'Get Kurt\'s guardians(some)'
+        'Get Kurt\'s guardians'
         response = requests.get(Test.url + 'User/{0}/guardians'.format(self.kurtId),
                                 headers=auth(self.kurt)).json()
-        if ensureSuccess(response, check):
-            check.is_true('Graatand', response['data'][0]['userName'])
+        ensureSuccess(response, check)
+        check.is_true('Graatand', response['data'][0]['userName'])
 
-    @test(skip_if_failed=['loginAsGraatand'])
+    @test(skip_if_failed=['GetGraatandID'])
     def graatandGuardians(self, check):
-        'Get Graatand\'s guardians(none)'
+        'Get Graatand\'s guardians'
         response = requests.get(Test.url + 'User/{0}/guardians'.format(self.graatandId),
                                 headers=auth(self.graatand)).json()
         ensureError(response, check)

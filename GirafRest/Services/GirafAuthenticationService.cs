@@ -35,7 +35,7 @@ namespace GirafRest.Services
         /// has the access to edit the provided users userinformation
         /// Does not currently support parents
         /// </summary>
-        /// <returns>null if no errorcodes</returns>
+        /// <returns>True if authUser can access userToEdit. False otherwise</returns>
         public async Task<bool> CheckUserAccess(GirafUser authUser, GirafUser userToEdit)
         {
             if (authUser == null || userToEdit == null)
