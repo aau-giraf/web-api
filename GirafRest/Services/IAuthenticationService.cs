@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using GirafRest.Data;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
@@ -25,6 +26,15 @@ namespace GirafRest
         /// <returns>The user access.</returns>
         /// <param name="authUser">Auth user.</param>
         /// <param name="userToEdit">User to edit.</param>
-        System.Threading.Tasks.Task<bool> CheckUserAccess(GirafUser authUser, GirafUser userToEdit);
+        Task<bool> CheckUserAccess(GirafUser authUser, GirafUser userToEdit);
+
+        /// <summary>
+        /// Method for checking if a specific user has the rights to add a specific role to a given department
+        /// </summary>
+        /// <returns>The register rights.</returns>
+        /// <param name="authUser">Auth user.</param>
+        /// <param name="roleToAdd">Role to add.</param>
+        /// <param name="departmentKey">Department key.</param>
+        Task<bool> CheckRegisterRights(GirafUser authUser, GirafRoles roleToAdd, long departmentKey);
     }
 }

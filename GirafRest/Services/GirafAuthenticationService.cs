@@ -67,5 +67,35 @@ namespace GirafRest.Services
 
             return true;
         }
+
+        /// <summary>
+        /// Checks that a user gots the rights to register a specific role to a specific department
+        /// Citizen can never register, department and guardian can only register guardians and citizens in same dep
+        /// Super user can register all roles
+        /// </summary>
+        /// <returns>The to department.</returns>
+        /// <param name="authUser">Auth user.</param>
+        /// <param name="userToEdit">User to edit.</param>
+        public async Task<bool> CheckRegisterRights(GirafUser authUser, GirafRoles roleToAdd, long departmentKey)
+        {
+            if (authUser == null)
+                return false;
+
+            var authUserRole = (await _roleManager.findUserRole(_userManager, authUser));
+
+            if (authUserRole == GirafRoles.Citizen)
+                return false;
+
+            if (authUserRole == GirafRoles.Guardian || authUserRole == GirafRoles.Department)
+            {
+                if (!(roleToAdd == GirafRoles.Guardian || roleToAdd == GirafRoles.Citizen) 
+                    && departmentKey == authUser.DepartmentKey)
+                {
+                    return false;
+                }
+            }
+            // only super users can add Department role in fact a super user can do anything so just return true
+            return true;
+        }
     }
 }
