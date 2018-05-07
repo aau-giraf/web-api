@@ -11,7 +11,6 @@ using Moq;
 using Xunit;
 using Xunit.Abstractions;
 using static GirafRest.Test.UnitTestExtensions.TestContext;
-using static GirafRest.Models.DTOs.GirafUserDTO;
 
 namespace GirafRest.Test
 {
@@ -437,15 +436,15 @@ namespace GirafRest.Test
         }
 
         [Theory]
-        [InlineData(ADMIN_DEP_ONE, DEPARTMENT_USER_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(ADMIN_DEP_ONE, DEPARTMENT_USER_DEP_TWO, ErrorCode.Forbidden)]
         [InlineData(ADMIN_DEP_ONE, GUARDIAN_DEP_TWO, ErrorCode.NoError)]
-        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_THREE, ErrorCode.NoError)]
-        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_THREE, ErrorCode.Forbidden)]
+        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_TWO, ErrorCode.Forbidden)]
         [InlineData(DEPARTMENT_USER_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NoError)]
-        [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.Forbidden)]
         [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
         [InlineData(DEPARTMENT_USER_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
-        [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.Forbidden)]
         [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
@@ -453,9 +452,11 @@ namespace GirafRest.Test
         public void GetCitizens_AuthenticationChecks(int authUser, int userToEdit, ErrorCode expectedError)
         {
             var usercontroller = initializeTest();
-            var user = _testContext.MockUsers[GUARDIAN_DEP_TWO];
+            var user = _testContext.MockUsers[authUser];
             _testContext.MockUserManager.MockLoginAsUser(user);
-            var res = usercontroller.GetCitizens(user.Id).Result;
+            var res = usercontroller.GetCitizens(_testContext.MockUsers[userToEdit].Id).Result;
+
+            Assert.Equal(expectedError, res.ErrorCode);
 
         }
 
@@ -494,31 +495,8 @@ namespace GirafRest.Test
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
-        
-        [Fact]
-        public void AddGuardianCitizenRelationship_AddGuardianToCitizen_Success()
-        {
-            var usercontroller = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = usercontroller.AddGuardianCitizenRelationship(_testContext.MockUsers[1].Id, _testContext.MockUsers[2].Id);
 
-            Assert.IsType<Response<GirafUserDTO>>(res.Result);
-            Assert.True(res.Result.Success);
-        }
 
-        [Fact]
-        public void AddGuardianCitizenRelationship_InvalidGuardianUser_Error()
-        {
-            var usercontroller = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = usercontroller.AddGuardianCitizenRelationship("", _testContext.MockUsers[2].Id);
-
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res.Result);
-            Assert.False(res.Result.Success);
-            Assert.Equal(ErrorCode.UserNotFound, res.Result.ErrorCode);
-        }
-
-// REMEMBER ME
         [Fact]
         public void UpdateUser_ScreenNameNull_Success(){
             var usercontroller = initializeTest();
@@ -576,7 +554,60 @@ namespace GirafRest.Test
             Assert.Equal("Gunnar", res.Data.ScreenName);
         }
 
+        [Theory]
+        [InlineData(ADMIN_DEP_ONE, DEPARTMENT_USER_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(ADMIN_DEP_ONE, GUARDIAN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_THREE, ErrorCode.NoError)]
+        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
+        [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
+        [InlineData(CITIZEN_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NotAuthorized)]
+        [InlineData(CITIZEN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
+        [InlineData(CITIZEN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
+        public void UpdateUser_AuthenticationChecks(int authUser, int userToEdit, ErrorCode expectedError)
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[authUser]);
+            var userName = "Henning";
+            var screenName = "Heavy Henning";
+            var res = usercontroller.UpdateUser(_testContext.MockUsers[userToEdit].Id, userName, screenName).Result;
+
+            Assert.Equal(expectedError, res.ErrorCode);
+        }
+
         #endregion
+
+        #region GuardianRelation 
+
+        [Fact]
+        public void AddGuardianCitizenRelationship_AddGuardianToCitizen_Success()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var res = usercontroller.AddGuardianCitizenRelationship(_testContext.MockUsers[1].Id, _testContext.MockUsers[2].Id);
+
+            Assert.IsType<Response<GirafUserDTO>>(res.Result);
+            Assert.True(res.Result.Success);
+        }
+
+        [Fact]
+        public void AddGuardianCitizenRelationship_InvalidGuardianUser_Error()
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var res = usercontroller.AddGuardianCitizenRelationship("", _testContext.MockUsers[2].Id);
+
+            Assert.IsType<ErrorResponse<GirafUserDTO>>(res.Result);
+            Assert.False(res.Result.Success);
+            Assert.Equal(ErrorCode.UserNotFound, res.Result.ErrorCode);
+        }
+
+        #endregion
+
 
         #region AddUserResource
         [Fact]
@@ -596,6 +627,7 @@ namespace GirafRest.Test
             Assert.True(_testContext.MockUsers[CITIZEN_DEP_TWO].Resources
                         .FirstOrDefault(r => r.PictogramKey == GuardianPrivatePictogram) != null);
         }
+
 
         [Fact]
         public void AddUserResource_OwnPrivateInvalidUser_Error()
@@ -943,7 +975,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void UpdateSameUserSettings_Success(){
+        public void UpdateUserSettings_UpdateSameUserSettings_Success(){
             var usercontroller = initializeTest();
             var user = _testContext.MockUsers[CITIZEN_DEP_TWO];
             _testContext.MockUserManager.MockLoginAsUser(user);
@@ -961,7 +993,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void UpdateOtherUserSettings_Error()
+        public void UpdateUserSettings_UpdateOtherUserSettings_Error()
         {
             var usercontroller = initializeTest();
             var user = _testContext.MockUsers[CITIZEN_DEP_THREE];
@@ -976,34 +1008,32 @@ namespace GirafRest.Test
             Assert.False(res.Success);
         }
 
-        #endregion
-
-        
-        #region RemoveDepartment
-        [Fact]
-        public void RemoveDepartment_RemoveExistingUser_OK()
+        [Theory]
+        [InlineData(ADMIN_DEP_ONE, DEPARTMENT_USER_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(ADMIN_DEP_ONE, GUARDIAN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_THREE, ErrorCode.NoError)]
+        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
+        [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
+        [InlineData(CITIZEN_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NotAuthorized)]
+        [InlineData(CITIZEN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
+        [InlineData(CITIZEN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
+        public void UpdateUserSettings__AuthenticationChecks(int authUser, int userToEdit, ErrorCode expectedError)
         {
-            var userController = initializeTest();
-            var user = _testContext.MockUsers.Where(u => u.UserName == CitizenUsername).FirstOrDefault();
-            _testContext.MockUserManager.MockLoginAsUser(user);            
-            
-            var res = userController.RemoveDepartment(user.Id).Result;
+            var usercontroller = initializeTest();
+            var user = _testContext.MockUsers[authUser];
+            _testContext.MockUserManager.MockLoginAsUser(user);
+            var dto = UserSettings[0];
 
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            Assert.True(res.Success);
-            // TODO: Check that department no longer has this user
-            
+            var res = usercontroller.UpdateUserSettings(_testContext.MockUsers[userToEdit].Id, dto).Result;
+
+            Assert.Equal(expectedError, res.ErrorCode);
         }
-        
-        [Fact]
-        public void RemoveUser_RemoveNullUser_BadRequest()
-        {
-            var userController = initializeTest();
-            var res = userController.RemoveDepartment(null).Result;
-            Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
-        }
+
         #endregion
 
     }
