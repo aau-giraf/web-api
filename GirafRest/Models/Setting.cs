@@ -89,20 +89,22 @@ namespace GirafRest.Models
         /// <param name="newOptions">The DTO containing new settings</param>
         public void UpdateFrom(SettingDTO newOptions)
         {
-            this.Orientation = newOptions.Orientation;
-            this.CompleteMark = newOptions.CompleteMark;
-            this.CancelMark = newOptions.CancelMark;
-            this.DefaultTimer = newOptions.DefaultTimer;
-            this.TimerSeconds = newOptions.TimerSeconds;
-            this.ActivitiesCount = newOptions.ActivitiesCount;
-            this.Theme = newOptions.Theme;
-            this.NrOfDaysToDisplay = newOptions.NrOfDaysToDisplay;
-            this.GreyScale = newOptions.GreyScale;
-            updateWeekDayColors(newOptions.WeekDayColors);
+
+            this.Orientation = newOptions?.Orientation ?? this.Orientation;
+            this.CompleteMark = newOptions?.CompleteMark ?? this.CompleteMark;
+            this.CancelMark = newOptions?.CancelMark ?? this.CancelMark;
+            this.DefaultTimer = newOptions?.DefaultTimer ?? this.DefaultTimer;
+            this.TimerSeconds = newOptions?.TimerSeconds ?? this.TimerSeconds;
+            this.ActivitiesCount = newOptions?.ActivitiesCount ?? this.ActivitiesCount;
+            this.Theme = newOptions?.Theme ?? this.Theme;
+            this.NrOfDaysToDisplay = newOptions?.NrOfDaysToDisplay ?? this.NrOfDaysToDisplay;
+            this.GreyScale = newOptions?.GreyScale ?? this.GreyScale;
+            if(newOptions.WeekDayColors != null)
+                updateWeekDayColors(newOptions.WeekDayColors);
         }
 
         private void updateWeekDayColors(List<WeekDayColorDTO> weekDayColors){
-            if (this.WeekDayColors != null)
+            if (WeekDayColors != null)
             {
                 foreach (var weekDayColor in weekDayColors)
                 {

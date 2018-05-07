@@ -288,68 +288,6 @@ namespace GirafRest.Test
         }
         #endregion
 
-        #region ForgotPassword
-        [Fact]
-        public void ForgotPassword_UserExist_Success()
-        {
-            var accountController = InitializeTest();
-
-            var res = accountController.ForgotPassword(new ForgotPasswordDTO()
-            {
-                Username = _testContext.MockUsers[ADMIN_DEP_ONE].UserName,
-                Email = "unittest@giraf.cs.aau.dk"
-            }).Result;
-
-            Assert.IsType<Response>(res);
-            Assert.True(res.Success);
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-        }
-
-        [Fact]
-        // Returns Ok as we do not want anyone to know if a given user does not exist
-        public void ForgotPassword_UserDoesNotExist_Success()
-        {
-            var accountController = InitializeTest();
-
-            var res = accountController.ForgotPassword(new ForgotPasswordDTO()
-            {
-                Username = "UserDoNotExist",
-                Email = "UserDoNotExist@UserDoNotExist.com"
-            }).Result;
-
-            Assert.IsType<Response>(res);
-            Assert.True(res.Success);
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-        }
-
-        [Fact]
-        public void ForgotPassword_NoEmail_Error()
-        {
-            var accountController = InitializeTest();
-
-            var res = accountController.ForgotPassword(new ForgotPasswordDTO()
-            {
-                Username = _testContext.MockUsers[ADMIN_DEP_ONE].UserName
-            }).Result;
-
-            Assert.IsType<ErrorResponse>(res);
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
-        }
-
-        [Fact]
-        public void ForgotPassword_NullDTO_Error()
-        {
-            var accountController = InitializeTest();
-
-            var res = accountController.ForgotPassword(null).Result;
-
-            Assert.IsType<ErrorResponse>(res);
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
-        }
-        #endregion
-
         #region SetPassword
         [Fact]
         public void SetPassword_ValidInput_Success()

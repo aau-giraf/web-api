@@ -205,6 +205,8 @@ namespace GirafRest.Test
             _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule = tempWeek;
         }
 
+        #endregion
+        #region CreateWeek
         [Fact]
         public void UpdateWeek_OtherCitizenAsGuardian_Success()
         {
@@ -298,6 +300,6 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
 
-        #endregion
+    #endregion
     }
 }
