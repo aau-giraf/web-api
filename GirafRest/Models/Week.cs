@@ -20,6 +20,9 @@ namespace GirafRest.Models
         /// </summary>
         public int WeekNumber { get; set; }
 
+        /// <summary>
+        /// Empty constructor required for unit testing.
+        /// </summary>
         public Week() : base()
         {
 
@@ -28,12 +31,6 @@ namespace GirafRest.Models
         public Week(Pictogram thumbnail) : base(thumbnail)
         {
             
-        }
-
-        public Week(WeekDTO week) : base(week)
-        {
-            WeekYear = week.WeekYear;
-            WeekNumber = week.WeekNumber;
         }
     }
 }
