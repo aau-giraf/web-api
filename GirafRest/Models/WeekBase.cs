@@ -56,23 +56,6 @@ namespace GirafRest.Models
         }
 
         /// <summary>
-        /// Creates a new Week from the given WeekDTO.
-        /// </summary>
-        /// <param name="weekDTO">The data transfer object to create a new week from.</param>
-        public WeekBase(WeekDTO weekDTO) : this()
-        {
-            this.Name = weekDTO.Name;
-            if (weekDTO.Days != null)
-            {
-                foreach (var day in weekDTO.Days)
-                {
-                    UpdateDay(new Weekday(day));
-                }
-            }
-            this.ThumbnailKey = weekDTO.Thumbnail.Id;
-        }
-
-        /// <summary>
         /// Updates the given weekday of the Week with the new information found in 'day'.
         /// </summary>
         /// <param name="day">A day instance to update the week with - the old one is completely overridden.</param>
