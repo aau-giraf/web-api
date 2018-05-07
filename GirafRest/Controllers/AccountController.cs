@@ -142,9 +142,9 @@ namespace GirafRest.Controllers
 
             if (string.IsNullOrEmpty(model.Password))
                 return new ErrorResponse<string>(ErrorCode.MissingProperties, "password");
-            
+
             if (!(_giraf._context.Users.Any(u => u.UserName == model.Username)))
-               return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
+                return new ErrorResponse<string>(ErrorCode.InvalidCredentials); 
 
             var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, lockoutOnFailure: false);
 
