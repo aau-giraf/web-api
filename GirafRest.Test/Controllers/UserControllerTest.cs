@@ -886,24 +886,6 @@ namespace GirafRest.Test
             Assert.Equal(Orientation.landscape, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.Orientation);
         }        
 
-        /// <summary>
-        /// Check that we can in fact can update a citizens usersettings as their guardian
-        /// </summary>
-        [Fact]
-        public void UpdateUserSettings_AsTheirGuardian_Success()
-        {
-            var usercontroller = initializeTest();
-
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-
-            var dto = UserSettings[0];
-            dto.CompleteMark = CompleteMark.MovedRight;
-            var res = usercontroller.UpdateUserSettings(_testContext.MockUsers[CITIZEN_DEP_TWO].Id, dto).Result;
-
-            Assert.True(res.Success);
-            Assert.Equal(CompleteMark.MovedRight, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.CompleteMark);
-        }
-
         [Fact]
         public void UpdateUserSettings_analogClock_defaultTimer_Success()
         {

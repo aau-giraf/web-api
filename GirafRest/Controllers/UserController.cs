@@ -116,7 +116,6 @@ namespace GirafRest.Controllers
         [HttpGet("{id}/settings")]
         public async Task<Response<SettingDTO>> GetSettings(string id)
         {
-
             if (string.IsNullOrEmpty(id))
                 return new ErrorResponse<SettingDTO>(ErrorCode.MissingProperties, "id");
 
@@ -130,6 +129,37 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<SettingDTO>(ErrorCode.NotAuthorized);
 
             return new Response<SettingDTO>(new SettingDTO(user.Settings));
+        }
+        
+        /// <summary>
+        /// Read the currently authorized user's settings object.
+        /// </summary>
+        /// <returns>The current user's settings if Ok </returns>
+        [HttpGet("settings")]
+        [Authorize]
+        public async Task<Response<SettingDTO>> ReadUserSettins()
+        {
+            var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
+
+            return await GetSettings(user.Id);
+        }
+
+
+        /// <summary>
+        /// Updates username and screenname for the current authenticated user.
+        /// </summary>
+        /// <param name="userDTO">A DTO containing ALL the new information for the given user.</param>
+        /// <returns>
+        /// MissingProperties if username or screenname is null
+        /// If succesfull returns the DTO corresponding to the newly updates user.
+        /// </returns>
+        [HttpPut("")]
+        public async Task<Response<GirafUserDTO>> UpdateUser([FromBody] string Username, [FromBody] string ScreenName)
+        {
+            //Fetch the user
+            var user = await _giraf.LoadUserAsync(HttpContext.User);
+
+            return await UpdateUser(user.Id, Username, ScreenName);
         }
 
         /// <summary>
@@ -553,6 +583,21 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
+        /// Updates the currently authenticated user settings.
+        /// </summary>
+        /// <returns>
+        /// MissingProperties if options is null or some required fields is not set
+        /// </returns>
+        /// <param name="options">Options.</param>
+        [HttpPut("settings")]
+        public async Task<Response<SettingDTO>> UpdateUserSettings([FromBody] SettingDTO options)
+        {
+            var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
+
+            return await UpdateUserSettings(user.Id, options);
+        }
+
+        /// <summary>
         /// Updates the user settings for a user with the given id
         /// </summary>
         /// <returns>
@@ -563,6 +608,17 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<Response<SettingDTO>> UpdateUserSettings(string id, [FromBody] SettingDTO options)
         {
+            var user = _giraf._context.Users.Include(u => u.Settings).ThenInclude(w => w.WeekDayColors).FirstOrDefault(u => u.Id == id);
+            if (user == null)
+                return new ErrorResponse<SettingDTO>(ErrorCode.UserNotFound);
+
+            if (user.Settings == null)
+                return new ErrorResponse<SettingDTO>(ErrorCode.MissingSettings);
+            
+            // check access rights
+            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+                return new ErrorResponse<SettingDTO>(ErrorCode.NotAuthorized);
+
             if (!ModelState.IsValid)
                 return new ErrorResponse<SettingDTO>(ErrorCode.MissingProperties, ModelState.Values.Where(E => E.Errors.Count > 0)
                                   .SelectMany(E => E.Errors)
@@ -576,29 +632,21 @@ namespace GirafRest.Controllers
             if (error.HasValue)
                 return new ErrorResponse<SettingDTO>(ErrorCode.InvalidProperties, "Settings");
 
-            // Validate Correct format of WeekDayColorDTOs. A color must be set for each day
-            if (options.WeekDayColors.GroupBy(d => d.Day).Any(g => g.Count() != 1))
-                return new ErrorResponse<SettingDTO>(ErrorCode.ColorMustHaveUniqueDay);
+            if(options.WeekDayColors != null) {
+                // Validate Correct format of WeekDayColorDTOs. A color must be set for each day
+                if (options.WeekDayColors.GroupBy(d => d.Day).Any(g => g.Count() != 1))
+                    return new ErrorResponse<SettingDTO>(ErrorCode.ColorMustHaveUniqueDay);
 
-            // check if all days in weekdaycolours is valid
-            if (options.WeekDayColors.Any(w => !Enum.IsDefined(typeof(Days), w.Day)))
-                return new ErrorResponse<SettingDTO>(ErrorCode.InvalidDay);
 
-            // check that Colors are in correct format
-            var IsCorrectHexValues = IsWeekDayColorsCorrectHexFormat(options);
-            if (!IsCorrectHexValues)
-                return new ErrorResponse<SettingDTO>(ErrorCode.InvalidHexValues);
+                // check if all days in weekdaycolours is valid
+                if (options.WeekDayColors.Any(w => !Enum.IsDefined(typeof(Days), w.Day)))
+                    return new ErrorResponse<SettingDTO>(ErrorCode.InvalidDay);
 
-            var user = _giraf._context.Users.Include(u => u.Settings).ThenInclude(w => w.WeekDayColors).FirstOrDefault(u => u.Id == id);
-            if (user == null)
-                return new ErrorResponse<SettingDTO>(ErrorCode.UserNotFound);
-
-            if (user.Settings == null)
-                return new ErrorResponse<SettingDTO>(ErrorCode.MissingSettings);
-            
-            // check access rights
-            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return new ErrorResponse<SettingDTO>(ErrorCode.NotAuthorized);
+                // check that Colors are in correct format
+                var IsCorrectHexValues = IsWeekDayColorsCorrectHexFormat(options);
+                if (!IsCorrectHexValues)
+                    return new ErrorResponse<SettingDTO>(ErrorCode.InvalidHexValues);
+            }
 
             user.Settings.UpdateFrom(options);
             // lets update the weekday colours
