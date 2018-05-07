@@ -200,7 +200,7 @@ namespace GirafRest.Test
         public void UpdateWeekTemplate_NewTemplateValidDTO_Ok()
         {
             var wtc = InitializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserGuardian2Department2]);
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserAdmin]);
             var template = new WeekTemplate(_testContext.MockDepartments[MockDepartment2]);
             
             // modify name

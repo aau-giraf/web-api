@@ -208,7 +208,7 @@ namespace GirafRest.Controllers
             
             GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
-            if (user.DepartmentKey != templateDepartmentKey || userRole == GirafRoles.SuperUser)
+            if (user.DepartmentKey != templateDepartmentKey && userRole != GirafRoles.SuperUser)
                 return false;
             else
                 return true;
