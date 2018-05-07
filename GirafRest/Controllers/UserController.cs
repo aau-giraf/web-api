@@ -178,7 +178,7 @@ namespace GirafRest.Controllers
         [HttpPut("{id}")]
         public async Task<Response<GirafUserDTO>> UpdateUser(string id, [FromBody] GirafUserDTO newUser)
         {
-            if (newUser.Username == null && newUser.ScreenName == null)
+            if (newUser == null || newUser.Username == null || newUser.ScreenName == null)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties);
 
             var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
