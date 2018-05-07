@@ -271,49 +271,6 @@ namespace GirafRest.Controllers
             return new Response();
         }
 
-        #region Password recovery
-        /// <summary>
-        /// Use this endpoint to request a password reset link, which is send to the user's email address.
-        /// </summary>
-        /// <param name="model">A ForgotPasswordDTO, which contains a username and an email address.</param>
-        /// <returns>
-        /// An empty response if succesfull or an ErrorResponse if not succesfull
-        /// </returns>
-        [HttpPost("forgot-password")]
-        [AllowAnonymous]
-        public async Task<Response> ForgotPassword([FromBody] ForgotPasswordDTO model)
-        {
-            if (model == null)
-                return new ErrorResponse(ErrorCode.MissingProperties, "model");
-            if (string.IsNullOrEmpty(model.Username))
-                return new ErrorResponse(ErrorCode.MissingProperties, "username");
-            if (string.IsNullOrEmpty(model.Email))
-                return new ErrorResponse(ErrorCode.MissingProperties, "email");
-
-            string reply = $"An email has been sent to {model.Email} with a password reset link if the given username exists in the database.";
-
-            var user = await _giraf._userManager.FindByNameAsync(model.Username);
-            if (user == null)
-            {
-                // Don't reveal that the user does not exist or is not confirmed
-                return new Response();
-            }
-
-            var code = await _giraf._userManager.GeneratePasswordResetTokenAsync(user);
-            var callbackUrl = Url.Action(nameof(ResetPassword), "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
-            try
-            {
-                await _emailSender.SendEmailAsync(model.Email, "Nulstil kodeord",
-                   $"Du har mistet din kode til GIRAF. Du kan nulstille det her: <a href='{callbackUrl}'>Nulstil Kodeord</a>");
-            }
-            catch (Exception ex)
-            {
-                _giraf._logger.LogError($"An exception occured:\n{ex.Message}\nInner Exception:\n{ex.InnerException}");
-                return new ErrorResponse(ErrorCode.EmailServiceUnavailable);
-            }
-            return new Response();
-        }
-
         /// <summary>
         /// Creates a new password for the currently authenticated user.
         /// </summary>
@@ -377,72 +334,6 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Gets the view associated with the ResetPassword page.
-        /// </summary>
-        /// <param name="code">The reset password token that has been sent to the user via his email.</param>
-        /// <returns>
-        /// BadRequest if there is no valid code or the view if the code was valid.
-        /// </returns>
-        [HttpGet("reset-password")]
-        [AllowAnonymous]
-        public IActionResult ResetPassword(string code = null)
-        {
-            if (code == null)
-                return RedirectToAction("Error");
-            return View();
-        }
-
-        /// <summary>
-        /// Attempts to change the given user's password. If the DTO did not contain valid information simply returns the view with
-        /// the current information that the user has specified.
-        /// </summary>
-        /// <param name="model">A DTO containing the user's Username and Password.</param>
-        /// <returns>
-        /// The view if password was wrong or redirects to ResetPasswordConfirmation.
-        /// </returns>
-        [HttpPost("reset-password")]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ResetPassword(ResetPasswordDTO model)
-        {
-            //Check that all the necessary information was specified
-            if (!ModelState.IsValid)
-            {
-                //It was not, return the user to the view, where he may try again.
-                return View(model);
-            }
-            //Try to fetch the user from the given username. If the username does not exist simply return the
-            //confirmation page to avoid revealing that the username does not exist.
-            var user = await _giraf._userManager.FindByNameAsync(model.Username);
-            if (user == null)
-            {
-                // Don't reveal that the user does not exist
-                return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), "Account");
-            }
-            //Attempt to change the user's password and redirect him to the confirmation page.
-            var result = await _giraf._userManager.ResetPasswordAsync(user, model.Code, model.Password);
-            if (result.Succeeded)
-            {
-                return RedirectToAction(nameof(AccountController.ResetPasswordConfirmation), "Account");
-            }
-            AddErrors(result);
-            return View();
-        }
-
-        /// <summary>
-        /// Get the view associated with the ResetPasswordConfirmation page.
-        /// </summary>
-        /// <returns>
-        /// The view.
-        /// </returns>
-        [HttpGet("reset-password-confirmation")]
-        [AllowAnonymous]
-        public IActionResult ResetPasswordConfirmation()
-        {
-            return View();
-        }
-
-        /// <summary>
         /// An end-point that simply returns Unauthorized. It is redirected to by the runtime when an unauthorized request
         /// to an end-point with the [Authorize] attribute is encountered.
         /// </summary>
@@ -454,7 +345,6 @@ namespace GirafRest.Controllers
         {
             return Unauthorized();
         }
-        #endregion
 
         #region Helpers
         /// <summary>
