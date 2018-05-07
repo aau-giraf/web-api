@@ -138,22 +138,16 @@ namespace GirafRest.Controllers
             if (string.IsNullOrEmpty(model.Username))
                 return new ErrorResponse<string>(ErrorCode.MissingProperties, "username");
 
-            //Check if a user is already logged in and attempt to login with the username given in the DTO
-            var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
-            var loginUser =  _giraf._context.Users.FirstOrDefault(u => u.UserName == model.Username);
-            if (loginUser == null) // If username is invalid
-                return new ErrorResponse<string>(ErrorCode.InvalidCredentials, "username");
-            var userRoles = await _roleManager.findUserRole(_giraf._userManager, loginUser);
-
             if (string.IsNullOrEmpty(model.Password))
-            {
                 return new ErrorResponse<string>(ErrorCode.MissingProperties, "password");
-            }
+            
             var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, lockoutOnFailure: false);
 
             if (!result.Succeeded)
                 return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
 
+            var loginUser = _giraf._context.Users.FirstOrDefault(u => u.UserName == model.Username);
+            var userRoles = await _roleManager.findUserRole(_giraf._userManager, loginUser);
             return new Response<string>(await GenerateJwtToken(loginUser, loginUser.Id, userRoles));
 
         }

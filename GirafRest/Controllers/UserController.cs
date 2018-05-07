@@ -40,14 +40,11 @@ namespace GirafRest.Controllers
         /// </summary>
         private readonly RoleManager<GirafRole> _roleManager;
 
+        /// <summary>
+        /// reference to the authenticationservice which provides commong authentication checks
+        /// </summary>
         private readonly IAuthenticationService _authentication;
 
-        /// <summary>
-        /// Constructor for the User-controller. This is called by the asp.net runtime.
-        /// </summary>
-        /// <param name="giraf">A reference to the GirafService.</param>
-        /// <param name="emailSender">A reference to the emailservice.</param>
-        /// <param name="loggerFactory">A reference to an implementation of ILoggerFactory. Used to create a logger.</param>
         public UserController(
             IGirafService giraf,
           IEmailService emailSender,
@@ -63,12 +60,12 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Find information on the user with the username supplied as a url query parameter or the current user.
+        /// Find information about the currently authenticated user.
         /// </summary>
         /// <returns>
-        /// Data about the user
+        /// Meta-data about the user
         /// MissingProperties if no username is provided
-        /// UserNotFound if user was not found, or logged in user is not authorized to see user.
+        /// UserNotFound if user was not found, or logged -in user is not authorized to see user.
         ///</returns>
         [HttpGet("")]
         public async Task<Response<GirafUserDTO>> GetUser()
