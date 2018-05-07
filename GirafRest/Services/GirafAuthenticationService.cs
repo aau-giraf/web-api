@@ -42,7 +42,7 @@ namespace GirafRest.Services
                 return false;
             
             var authUserRole = (await _roleManager.findUserRole(_userManager, authUser));
-            var userRole =  (await _roleManager.findUserRole(_userManager, authUser));
+            var userRole =  (await _roleManager.findUserRole(_userManager, userToEdit));
 
             if (authUser.Id == userToEdit.Id)
                 return true;

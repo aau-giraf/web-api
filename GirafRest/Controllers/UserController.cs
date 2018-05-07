@@ -419,6 +419,10 @@ namespace GirafRest.Controllers
             if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse<List<UserNameDTO>>(ErrorCode.NotAuthorized);
 
+            var userRole = (await _roleManager.findUserRole(_giraf._userManager, user));
+            if (userRole != GirafRoles.Guardian)
+                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.Forbidden);;
+
             foreach (var citizen in user.Citizens)
             {
                 var girafUser = _giraf._context.Users.FirstOrDefault(u => u.Id == citizen.CitizenId);
@@ -452,6 +456,10 @@ namespace GirafRest.Controllers
             // check access rights
             if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse<List<UserNameDTO>>(ErrorCode.NotAuthorized);
+
+            var userRole = (await _roleManager.findUserRole(_giraf._userManager, user));
+            if (userRole != GirafRoles.Citizen)
+                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.Forbidden); ;
 
             var guardians = new List<UserNameDTO>();
             foreach (var guardian in user.Guardians)

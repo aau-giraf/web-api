@@ -64,6 +64,32 @@ namespace GirafRest.Test
             Assert.Equal(weekschedule.Name, res.Data.FirstOrDefault().Name);
         }
 
+        [Theory]
+        [InlineData(ADMIN_DEP_ONE, DEPARTMENT_USER_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(ADMIN_DEP_ONE, GUARDIAN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_THREE, ErrorCode.NoError)]
+        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
+        [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
+        [InlineData(CITIZEN_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NotAuthorized)]
+        [InlineData(CITIZEN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
+        [InlineData(CITIZEN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
+        public void ReadWeekScheduleNames_CheckAuthentication(int authUser,
+                                                  int userToEdit, ErrorCode expectedError)
+        {
+            var wc = initializeTest();
+            var mockUser = _testContext.MockUsers[authUser];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+            var weekschedule = _testContext.MockWeeks[0];
+            _testContext.MockUsers[userToEdit].WeekSchedule = new List<Week>(){weekschedule};
+            var res = wc.ReadWeekSchedules(_testContext.MockUsers[userToEdit].Id).Result;
+            Assert.Equal(expectedError, res.ErrorCode);
+        }
+
         #endregion
         #region ReadWeekSchedule(id)
         [Fact]
@@ -94,52 +120,29 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
         }
 
-        [Fact]
-        public void ReadWeekSchedules_AccessCitizenSameDepAsGuardian_Success()
+        [Theory]
+        [InlineData(ADMIN_DEP_ONE, DEPARTMENT_USER_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(ADMIN_DEP_ONE, GUARDIAN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_THREE, ErrorCode.NoError)]
+        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
+        [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
+        [InlineData(CITIZEN_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NotAuthorized)]
+        [InlineData(CITIZEN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
+        [InlineData(CITIZEN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
+        public void ReadWeekSchedules_CheckAuthentication(int authUser, 
+                                                          int userToEdit, ErrorCode expectedError)
         {
             var wc = initializeTest();
-            var mockUser = _testContext.MockUsers[GUARDIAN_DEP_TWO];
+            var mockUser = _testContext.MockUsers[authUser];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
-            var res = wc.ReadUsersWeekSchedule(_testContext.MockUsers[CITIZEN_DEP_TWO].Id, 999, 999).Result;
+            var res = wc.ReadUsersWeekSchedule(_testContext.MockUsers[userToEdit].Id, 999, 999).Result;
 
-            Assert.True(res.Success);
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-        }
-
-        [Fact]
-        public void ReadWeekSchedules_AccessCitizenSameDepAsDep_Success()
-        {
-            var wc = initializeTest();
-            var mockUser = _testContext.MockUsers[DEPARTMENT_USER_DEP_TWO];
-            _testContext.MockUserManager.MockLoginAsUser(mockUser);
-            var res = wc.ReadUsersWeekSchedule(_testContext.MockUsers[CITIZEN_DEP_TWO].Id, 999, 999).Result;
-
-            Assert.True(res.Success);
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-        }
-
-        [Fact]
-        public void ReadWeekSchedules_AccessGuardianAsAdmin_Success()
-        {
-            var wc = initializeTest();
-            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
-            _testContext.MockUserManager.MockLoginAsUser(mockUser);
-            var res = wc.ReadUsersWeekSchedule(_testContext.MockUsers[GUARDIAN_DEP_TWO].Id, 999, 999).Result;
-
-            Assert.True(res.Success);
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-        }
-
-        [Fact]
-        public void ReadWeekSchedules_AccessOtherCitizensWeekAsCitizen_Error()
-        {
-            var wc = initializeTest();
-            var mockUser = _testContext.MockUsers[CITIZEN_DEP_THREE];
-            _testContext.MockUserManager.MockLoginAsUser(mockUser);
-            var res = wc.ReadUsersWeekSchedule(_testContext.MockUsers[CITIZEN_DEP_TWO].Id, 999, 999).Result;
-
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+            Assert.Equal(expectedError, res.ErrorCode);
         }
 
 
@@ -296,6 +299,33 @@ namespace GirafRest.Test
             Assert.IsType<ErrorResponse<WeekDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
+        }
+
+        [Theory]
+        [InlineData(ADMIN_DEP_ONE, DEPARTMENT_USER_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(ADMIN_DEP_ONE, GUARDIAN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_THREE, ErrorCode.NoError)]
+        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
+        [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
+        [InlineData(CITIZEN_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NotAuthorized)]
+        [InlineData(CITIZEN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
+        [InlineData(CITIZEN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
+        public void UpdateWeek_AuthenticationChecks(int authUser,
+                                          int userToEdit, ErrorCode expectedError)
+        {
+            var wc = initializeTest();
+            var mockUser = _testContext.MockUsers[authUser];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+            var week = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.First();
+
+            var res = wc.UpdateWeek(_testContext.MockUsers[userToEdit].Id, 2018, 20, new WeekDTO(week)).Result;
+
+            Assert.Equal(expectedError, res.ErrorCode);
         }
 
         #endregion
