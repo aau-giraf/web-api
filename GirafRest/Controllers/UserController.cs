@@ -657,6 +657,13 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<Response<SettingDTO>> UpdateUserSettings(string id, [FromBody] SettingDTO options)
         {
+            var user = _giraf._context.Users.Include(u => u.Settings).ThenInclude(w => w.WeekDayColors).FirstOrDefault(u => u.Id == id);
+            if (user == null)
+                return new ErrorResponse<SettingDTO>(ErrorCode.UserNotFound);
+
+            if (user.Settings == null)
+                return new ErrorResponse<SettingDTO>(ErrorCode.MissingSettings);
+            
             if (!ModelState.IsValid)
                 return new ErrorResponse<SettingDTO>(ErrorCode.MissingProperties, ModelState.Values.Where(E => E.Errors.Count > 0)
                                   .SelectMany(E => E.Errors)
@@ -670,25 +677,21 @@ namespace GirafRest.Controllers
             if (error.HasValue)
                 return new ErrorResponse<SettingDTO>(ErrorCode.InvalidProperties, "Settings");
 
-            // Validate Correct format of WeekDayColorDTOs. A color must be set for each day
-            if (options.WeekDayColors.GroupBy(d => d.Day).Any(g => g.Count() != 1))
-                return new ErrorResponse<SettingDTO>(ErrorCode.ColorMustHaveUniqueDay);
+            if(options.WeekDayColors != null) {
+                // Validate Correct format of WeekDayColorDTOs. A color must be set for each day
+                if (options.WeekDayColors.GroupBy(d => d.Day).Any(g => g.Count() != 1))
+                    return new ErrorResponse<SettingDTO>(ErrorCode.ColorMustHaveUniqueDay);
 
-            // check if all days in weekdaycolours is valid
-            if (options.WeekDayColors.Any(w => !Enum.IsDefined(typeof(Days), w.Day)))
-                return new ErrorResponse<SettingDTO>(ErrorCode.InvalidDay);
+                // check if all days in weekdaycolours is valid
+                if (options.WeekDayColors.Any(w => !Enum.IsDefined(typeof(Days), w.Day)))
+                    return new ErrorResponse<SettingDTO>(ErrorCode.InvalidDay);
 
-            // check that Colors are in correct format
-            var IsCorrectHexValues = IsWeekDayColorsCorrectHexFormat(options);
-            if (!IsCorrectHexValues)
-                return new ErrorResponse<SettingDTO>(ErrorCode.InvalidHexValues);
+                // check that Colors are in correct format
+                var IsCorrectHexValues = IsWeekDayColorsCorrectHexFormat(options);
+                if (!IsCorrectHexValues)
+                    return new ErrorResponse<SettingDTO>(ErrorCode.InvalidHexValues);
+            }
 
-            var user = _giraf._context.Users.Include(u => u.Settings).ThenInclude(w => w.WeekDayColors).FirstOrDefault(u => u.Id == id);
-            if (user == null)
-                return new ErrorResponse<SettingDTO>(ErrorCode.UserNotFound);
-
-            if (user.Settings == null)
-                return new ErrorResponse<SettingDTO>(ErrorCode.MissingSettings);
 
             var authUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
             var authUserRole = await _roleManager.findUserRole(_giraf._userManager, authUser);
