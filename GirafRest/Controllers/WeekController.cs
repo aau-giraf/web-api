@@ -16,7 +16,7 @@ namespace GirafRest.Controllers
     /// <summary>
     /// The WeekController allows the user to view and update his week schedule along with deleting it.
     /// </summary>
-    [Route("v1/[controller]")]
+    [Route("v1/User")]
     public class WeekController : Controller
     {
         /// <summary>
@@ -46,7 +46,7 @@ namespace GirafRest.Controllers
         /// ErrorCode.NoWeekScheduleFound if we can not find any weekschedule on the user
         /// <returns>
         /// </returns>
-        [HttpGet("{userId}")]
+        [HttpGet("{userId}/week")]
         [Authorize]
         public async Task<Response<IEnumerable<WeekNameDTO>>> ReadWeekSchedules(string userId)
         {
@@ -71,7 +71,7 @@ namespace GirafRest.Controllers
         /// <param name="weekNumber">The week number of the week schedule to fetch.</param>
         /// <returns>NotFound if the user does not have a week with the given id or
         /// Ok and a serialized version of the week if he does.</returns>
-        [HttpGet("{userId}/{weekYear}/{weekNumber}")]
+        [HttpGet("{userId}/week/{weekYear}/{weekNumber}")]
         [Authorize]
         public async Task<Response<WeekDTO>> ReadUsersWeekSchedule(string userId, int weekYear, int weekNumber)
         {
@@ -111,7 +111,7 @@ namespace GirafRest.Controllers
         /// <param name="weekNumber">weeknr of week you want to update.</param>
         /// <param name="newWeek">A serialized Week with new information.</param>
 
-        [HttpPut("{userId}/{weekYear}/{weekNumber}")]
+        [HttpPut("{userId}/week/{weekYear}/{weekNumber}")]
         [Authorize]
         public async Task<Response<WeekDTO>> UpdateWeek(string userId, int weekYear, int weekNumber, [FromBody]WeekDTO newWeek)
         {
@@ -172,7 +172,7 @@ namespace GirafRest.Controllers
         /// <param name="newWeek">A serialized Week with new information.</param>
         /// <returns>NotFound if the user does not have a week schedule or
         /// Ok and a serialized version of the updated week if everything went well.</returns>
-        [HttpDelete("{userId}/{weekYear}/{weekNumber}")]
+        [HttpDelete("{userId}/week/{weekYear}/{weekNumber}")]
         [Authorize]
         public async Task<Response<IEnumerable<WeekDTO>>> DeleteWeek(string userId, int weekYear, int weekNumber)
         {
