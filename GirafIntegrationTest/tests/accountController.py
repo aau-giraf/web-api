@@ -54,10 +54,18 @@ class AccountController(TestCase):
         "Register Gunnar, without logging in"
         # Will generate a unique enough number, so the user isn't already created
         AccountController.gunnarUsername = 'Gunnar{0}'.format(str(time.time()))
-        response = requests.post(Test.url + 'account/register', json = {"username": AccountController.gunnarUsername ,"password": "password","departmentId": 1}).json()
+        response = requests.post(Test.url + 'account/register', json = {"username": AccountController.gunnarUsername ,"password": "password", "role": "Citizen", "departmentId": 1}).json()
+        check.is_false(response['success'])
+
+    @test()
+    def registerUserGunnarWithAuth(self, check):
+        "Register Gunnar, with graatand"
+        # Will generate a unique enough number, so the user isn't already created
+        AccountController.gunnarUsername = 'Gunnar{0}'.format(str(time.time()))
+        response = requests.post(Test.url + 'account/register', headers = {"Authorization":"Bearer {0}".format(AccountController.graatandToken)}, json = {"username": AccountController.gunnarUsername ,"password": "password", "role": "Citizen", "departmentId": 1}).json()
         check.is_true(response['success'])
 
-    @test(skip_if_failed=["registerUserGunnarNoAuth"])
+    @test(skip_if_failed=["registerUserGunnarWithAuth"])
     def loginAsGunnar(self, check):
         "Login as new user"
         response = requests.post(Test.url + 'account/login', json = {"username": AccountController.gunnarUsername, "password": "password"}).json()
