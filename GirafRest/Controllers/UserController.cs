@@ -158,7 +158,7 @@ namespace GirafRest.Controllers
         public async Task<Response<GirafUserDTO>> UpdateUser([FromBody] GirafUserDTO newUser)
         {
             //Fetch the user
-            var user = await _giraf.LoadUserAsync(HttpContext.User);
+            var user = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
 
             return await UpdateUser(user.Id, newUser);
         }
@@ -360,7 +360,7 @@ namespace GirafRest.Controllers
 
 
             //Check that the currently authenticated user owns the resource
-            var curUsr = await _giraf.LoadUserAsync(HttpContext.User);
+            var curUsr = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
             var resourceOwnedByCaller = await _giraf.CheckPrivateOwnership(resource, curUsr);
             if (!resourceOwnedByCaller)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);

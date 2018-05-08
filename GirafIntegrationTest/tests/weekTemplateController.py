@@ -8,7 +8,7 @@ def auth(token):
 
 
 class WeekTemplateControllerTest(TestCase):
-    "Week Template Controller TEst"
+    "Week Template Controller Test"
     graatand = None
     aliceUsername = None
     alice = None
