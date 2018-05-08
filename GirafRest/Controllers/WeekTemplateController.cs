@@ -52,7 +52,7 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<Response<IEnumerable<WeekTemplateNameDTO>>> GetWeekTemplates()
         {
-            var user = await _giraf.LoadUserAsync(HttpContext.User);
+            var user = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
             if (user == null)
             {
                 return new ErrorResponse<IEnumerable<WeekTemplateNameDTO>>(ErrorCode.UserNotFound);
@@ -82,7 +82,7 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<Response<WeekTemplateDTO>> GetWeekTemplate(long id)
         {
-            var user = await _giraf.LoadUserAsync(HttpContext.User);
+            var user = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
             
             var week = await (_giraf._context.WeekTemplates
                 .Include(w => w.Thumbnail)
@@ -111,7 +111,7 @@ namespace GirafRest.Controllers
         [Authorize (Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
         public async Task<Response<WeekTemplateDTO>> CreateWeekTemplate([FromBody] WeekTemplateDTO templateDTO)
         {
-            var user = await _giraf.LoadUserAsync(HttpContext.User);
+            var user = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
             if (user == null) return new ErrorResponse<WeekTemplateDTO>(ErrorCode.UserNotFound);
 
             if(templateDTO == null) return new ErrorResponse<WeekTemplateDTO>(ErrorCode.MissingProperties);
@@ -146,7 +146,7 @@ namespace GirafRest.Controllers
         [Authorize (Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
         public async Task<Response<WeekTemplateDTO>> UpdateWeekTemplate(long id, [FromBody] WeekTemplateDTO newValuesDTO)
         {
-            var user = await _giraf.LoadUserAsync(HttpContext.User);
+            var user = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
             if (user == null) return new ErrorResponse<WeekTemplateDTO>(ErrorCode.UserNotFound);
 
             if(newValuesDTO == null) return new ErrorResponse<WeekTemplateDTO>(ErrorCode.MissingProperties);
@@ -184,7 +184,7 @@ namespace GirafRest.Controllers
         [Authorize (Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
         public async Task<Response> DeleteTemplate(long id)
         {
-            var user = await _giraf.LoadUserAsync(HttpContext.User);
+            var user = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
             if (user == null) return new ErrorResponse<WeekTemplateDTO>(ErrorCode.UserNotFound);
 
             var template = _giraf._context.WeekTemplates
