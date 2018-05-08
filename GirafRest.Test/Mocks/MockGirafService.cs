@@ -43,8 +43,7 @@ namespace GirafRest.Test.Mocks
                 return Task.FromResult(false);
 
             var ownsResource = _context.UserResources
-                                       .Where(ur => ur.Pictogram == pictogram && ur.Other == user)
-                .Any();
+                .Any(ur => ur.Pictogram == pictogram && ur.Other == user);
 
             if (ownsResource)
                 return Task.FromResult(true);
@@ -58,9 +57,9 @@ namespace GirafRest.Test.Mocks
                 return Task.FromResult(false);
 
             var ownsResource = _context.DepartmentResources
-                                       .Where(dr => dr.PictogramKey == pictogram.Id 
-                                              && dr.OtherKey == user.DepartmentKey)
-                .Any();
+                .Any(dr => dr.PictogramKey == pictogram.Id 
+                            && dr.OtherKey == user.DepartmentKey);
+            
             if (ownsResource)
                 return Task.FromResult(true);
 
