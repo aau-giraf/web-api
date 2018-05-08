@@ -47,6 +47,7 @@ namespace GirafRest.Services
         /// </summary>
         /// <param name="principal">The security claim - i.e. the information about the currently authenticated user.</param>
         /// <returns>A <see cref="GirafUser"/> with <b>all</b> related data.</returns>
+        public async Task<GirafUser> LoadAllUserDataAsync(System.Security.Claims.ClaimsPrincipal principal)  {
             if (principal == null) return null;
             var usr = (await _userManager.GetUserAsync(principal));
             if(usr == null) return null;

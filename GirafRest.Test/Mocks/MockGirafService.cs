@@ -66,7 +66,7 @@ namespace GirafRest.Test.Mocks
             return Task.FromResult(false);
         }
 
-        public Task<GirafUser> LoadUserAsync(ClaimsPrincipal principal)
+        public Task<GirafUser> LoadAllUserDataAsync(ClaimsPrincipal principal)
         {
             return _userManager.GetUserAsync(principal);
         }
