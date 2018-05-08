@@ -136,9 +136,10 @@ class DepartmentControllerTest(TestCase):
         'Register Gunnar to that department'
         self.gunnarUsername = 'Gunnar{0}'.format(str(time.time()))
 
-        response = requests.post(Test.url + 'account/register', json={
+        response = requests.post(Test.url + 'account/register', headers=auth(self.graatand), json={
             "username": self.gunnarUsername,
             "password": "password",
+            "role": "Citizen",
             "departmentId": self.dalgardsholmstuenId
         }).json()
 

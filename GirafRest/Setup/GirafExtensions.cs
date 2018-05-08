@@ -63,7 +63,10 @@ namespace GirafRest.Extensions
         /// <returns>
         /// Instance of GirafRole enum
         /// </returns>
-        public static async Task<GirafRoles> findUserRole(this RoleManager<GirafRole> roleManager, UserManager<GirafUser> userManager, GirafUser user)
+        public static async Task<GirafRoles> findUserRole(
+            this RoleManager<GirafRole> roleManager, 
+            UserManager<GirafUser> userManager, 
+            GirafUser user)
         {
             GirafRoles userRole = new GirafRoles();
             foreach (var role in roleManager.Roles)

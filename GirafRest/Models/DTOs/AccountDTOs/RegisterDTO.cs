@@ -12,14 +12,12 @@ namespace GirafRest.Models.DTOs.AccountDTOs
         /// The users username.
         /// </summary>
         [Required]
-        [Display(Name = "Brugernavn")]
         public string Username { get; set; }
 
         /// <summary>
         /// The users password.
         /// </summary>
         [Required]
-        [Display(Name = "Kodeord")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
@@ -36,7 +34,9 @@ namespace GirafRest.Models.DTOs.AccountDTOs
         /// The users departmentid.
         /// </summary>
         [Required]
-        [Display(Name = "Afdelingsnummer")]
         public long? DepartmentId { get; set; }
+
+        [Required]
+        public GirafRoles Role { get; set; }
     }
 }

@@ -28,10 +28,10 @@ class AccountController(TestCase):
     @test(skip_if_failed=["loginAsGraatand"])
     def getUsernameWithAuth(self, check):
         "GETting username with authorization"
-        response = requests.get(Test.url + 'user/username', headers = {"Authorization":"Bearer {0}".format(AccountController.graatandToken)}).json()
+        response = requests.get(Test.url + 'user', headers = {"Authorization":"Bearer {0}".format(AccountController.graatandToken)}).json()
         check.is_true(response['success'])
         check.is_not_none(response['data'])
-        check.equal(response['data'], "Graatand")
+        check.equal(response['data']['username'], "Graatand")
 
     @test()
     def loginInvalidPassword(self, check):
@@ -54,10 +54,18 @@ class AccountController(TestCase):
         "Register Gunnar, without logging in"
         # Will generate a unique enough number, so the user isn't already created
         AccountController.gunnarUsername = 'Gunnar{0}'.format(str(time.time()))
-        response = requests.post(Test.url + 'account/register', json = {"username": AccountController.gunnarUsername ,"password": "password","departmentId": 1}).json()
+        response = requests.post(Test.url + 'account/register', json = {"username": AccountController.gunnarUsername ,"password": "password", "role": "Citizen", "departmentId": 1}).json()
+        check.is_false(response['success'])
+
+    @test()
+    def registerUserGunnarWithAuth(self, check):
+        "Register Gunnar, with graatand"
+        # Will generate a unique enough number, so the user isn't already created
+        AccountController.gunnarUsername = 'Gunnar{0}'.format(str(time.time()))
+        response = requests.post(Test.url + 'account/register', headers = {"Authorization":"Bearer {0}".format(AccountController.graatandToken)}, json = {"username": AccountController.gunnarUsername ,"password": "password", "role": "Citizen", "departmentId": 1}).json()
         check.is_true(response['success'])
 
-    @test(skip_if_failed=["registerUserGunnarNoAuth"])
+    @test(skip_if_failed=["registerUserGunnarWithAuth"])
     def loginAsGunnar(self, check):
         "Login as new user"
         response = requests.post(Test.url + 'account/login', json = {"username": AccountController.gunnarUsername, "password": "password"}).json()
@@ -68,9 +76,9 @@ class AccountController(TestCase):
     @test(skip_if_failed=["loginAsGunnar"])
     def testGunnarsToken(self, check):
         "Check if gunnars token is valid"
-        response = requests.get(Test.url + 'user/username', headers = {"Authorization":"Bearer {0}".format(AccountController.gunnarToken)}).json()
+        response = requests.get(Test.url + 'user', headers = {"Authorization":"Bearer {0}".format(AccountController.gunnarToken)}).json()
         check.is_true(response['success'])
-        check.equal(response['data'], AccountController.gunnarUsername)
+        check.equal(response['data']['username'], AccountController.gunnarUsername)
 
     @test(skip_if_failed=["loginAsGunnar"])
     def testGunnarRole(self, check):

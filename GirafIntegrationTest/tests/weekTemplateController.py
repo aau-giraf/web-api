@@ -8,19 +8,21 @@ def auth(token):
 
 
 class WeekTemplateControllerTest(TestCase):
+    "Week Template Controller Test"
     graatand = None
     aliceUsername = None
     alice = None
 
     @test()
     def logins(self, check):
+        "logins"
         response = login('Graatand', check)
         self.graatand = response
 
         self.aliceUsername = 'Alice{0}'.format(str(time.time()))
 
-        response = requests.post(Test.url + 'account/register',
-                                 json={"username": self.aliceUsername, "password": "password",
+        response = requests.post(Test.url + 'account/register', headers=auth(self.graatand),
+                                 json={"username": self.aliceUsername, "password": "password", "role": "Citizen",
                                        "departmentId": 2}).json()
         ensureSuccess(response, check)
 

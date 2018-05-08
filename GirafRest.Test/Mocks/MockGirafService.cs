@@ -11,6 +11,7 @@ using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace GirafRest.Test.Mocks
 {
@@ -42,8 +43,7 @@ namespace GirafRest.Test.Mocks
                 return Task.FromResult(false);
 
             var ownsResource = _context.UserResources
-                                       .Where(ur => ur.Pictogram == pictogram && ur.Other == user)
-                .Any();
+                .Any(ur => ur.Pictogram == pictogram && ur.Other == user);
 
             if (ownsResource)
                 return Task.FromResult(true);
@@ -57,17 +57,23 @@ namespace GirafRest.Test.Mocks
                 return Task.FromResult(false);
 
             var ownsResource = _context.DepartmentResources
-                                       .Where(dr => dr.PictogramKey == pictogram.Id 
-                                              && dr.OtherKey == user.DepartmentKey)
-                .Any();
+                .Any(dr => dr.PictogramKey == pictogram.Id 
+                            && dr.OtherKey == user.DepartmentKey);
+            
             if (ownsResource)
                 return Task.FromResult(true);
 
             return Task.FromResult(false);
         }
 
-        public Task<GirafUser> LoadUserAsync(ClaimsPrincipal principal)
+        public Task<GirafUser> LoadAllUserDataAsync(ClaimsPrincipal principal)
         {
+            return _userManager.GetUserAsync(principal);
+        }
+
+        public Task<GirafUser> LoadBasicUserDataAsync(ClaimsPrincipal principal)
+        {
+            //Same as above, because it is not the job of unit-tests to simulate that.
             return _userManager.GetUserAsync(principal);
         }
 
@@ -79,9 +85,9 @@ namespace GirafRest.Test.Mocks
             return Task.FromResult(image);
         }
 
-        public Task<GirafUser> LoadByNameAsync(string username)
+        public Task<GirafUser> LoadByIdAsync(string id)
         {
-            return _userManager.FindByNameAsync(username);
+            return Task.FromResult(_context.Users.FirstOrDefault(u => u.Id == id));
         }
     }
 }

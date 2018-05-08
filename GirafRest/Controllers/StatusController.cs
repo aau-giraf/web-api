@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Net;
+using GirafRest.Models.Responses;
 using GirafRest.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,22 +15,22 @@ namespace GirafRest.Controllers
             _giraf = giraf;
         }
         [HttpGet("")]
-        public HttpStatusCode Status()
+        public Response Status()
         {
-            return HttpStatusCode.OK;
+            return new Response();
         }
 
         [HttpGet("database")]
-        public HttpStatusCode DatabaseStatus()
+        public Response DatabaseStatus()
         {
             try
             {
                 _giraf._context.Users.FirstOrDefault();
-                return HttpStatusCode.OK;
+                return new Response();
             }
             catch (System.Exception ex)
             {
-                return HttpStatusCode.InternalServerError;
+                return new ErrorResponse(ErrorCode.Error);
             }
         }
     }

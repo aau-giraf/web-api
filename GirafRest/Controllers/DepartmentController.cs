@@ -138,14 +138,14 @@ namespace GirafRest.Controllers
                     return new ErrorResponse<DepartmentDTO>(ErrorCode.MissingProperties,
                         "Deparment name has to be specified!");
 
-                var authenticatedUser = await _giraf.LoadUserAsync(HttpContext.User);
+                var authenticatedUser = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
                 
                 if(authenticatedUser == null)
                     return new ErrorResponse<DepartmentDTO>(ErrorCode.UserNotFound);
                 
                 var userRole = await _roleManager.findUserRole(_giraf._userManager, authenticatedUser);
 
-                if (!(await _giraf._userManager.IsInRoleAsync(authenticatedUser, GirafRole.SuperUser)))
+                if (userRole != GirafRoles.SuperUser)
                     return new ErrorResponse<DepartmentDTO>(ErrorCode.NotAuthorized);
 
                 //Add the department to the database.
@@ -288,7 +288,7 @@ namespace GirafRest.Controllers
         {
             //Fetch the department and check that it exists.
             var department = await _giraf._context.Departments.Where(d => d.Key == departmentId).FirstOrDefaultAsync();
-            var usr = await _giraf.LoadUserAsync(HttpContext.User);
+            var usr = await _giraf.LoadAllUserDataAsync(HttpContext.User);
 
             if (department == null)
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.DepartmentNotFound);
@@ -347,7 +347,7 @@ namespace GirafRest.Controllers
         public async Task<Response<DepartmentDTO>> RemoveResource(long resourceId)
         {
             //Fetch the department and check that it exists.
-            var usr = await _giraf.LoadUserAsync(HttpContext.User);
+            var usr = await _giraf.LoadAllUserDataAsync(HttpContext.User);
 
             //Fetch the resource with the given id, check that it exists.
             var resource = await _giraf._context.Pictograms

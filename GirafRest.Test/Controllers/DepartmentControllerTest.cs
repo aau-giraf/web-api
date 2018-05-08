@@ -153,13 +153,12 @@ namespace GirafRest.Test.Controllers
         public void AddUser_ExistingDepartment_OK()
         {
             var dc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
             var userName = "Admin";
-            var user = new GirafUserDTO()
+            var user = new GirafUserDTO(mockUser, GirafRoles.SuperUser)
             {
-                Username = userName,
-                Id = "admin",
-                Department = 1
+                Username = userName
             };
 
             var res = dc.AddUser(DEPARTMENT_TWO, user.Id).Result;
@@ -272,7 +271,7 @@ namespace GirafRest.Test.Controllers
             var dc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
             var depName = "Børnehave Toften";
-            var res = dc.Post(new DepartmentDTO() { Name = depName, ID = 666}).Result;
+            var res = dc.Post(new DepartmentDTO() { Name = depName, Id = 666}).Result;
 
             Assert.IsType<Response<DepartmentDTO>>(res);
             Assert.True(res.Success);
