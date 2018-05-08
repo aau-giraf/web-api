@@ -76,6 +76,21 @@ namespace GirafRest.Services
                     .ThenInclude(c => c.Citizen)
                     //And return it
                     .FirstOrDefaultAsync();
+        /// <summary>
+        /// Method for loading user from context, but including no fields. No reference types will be available.
+        /// </summary>
+        /// <param name="principal">The security claim - i.e. the information about the currently authenticated user.</param>
+        /// <returns>A <see cref="GirafUser"/> without any related data.</returns>
+        public async Task<GirafUser> LoadBasicUserDataAsync(System.Security.Claims.ClaimsPrincipal principal)
+        {
+            if (principal == null) return null;
+            var usr = (await _userManager.GetUserAsync(principal));
+            if(usr == null) return null;
+            return await _context.Users
+                //Get user by ID from database
+                .Where(u => u.Id == usr.Id)
+                //And return it
+                .FirstOrDefaultAsync();;
         }
 
         /// <summary>

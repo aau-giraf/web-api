@@ -44,6 +44,12 @@ namespace GirafRest.Services
         /// <param name="principal">A reference to HttpContext.User</param>
         /// <returns>The loaded user.</returns>
         Task<GirafUser> LoadUserAsync(ClaimsPrincipal principal);
+        /// <summary>
+        /// Loads only the user with the given username, excluding any associated data.
+        /// </summary>
+        /// <param name="principal">A reference to HttpContext.User</param>
+        /// <returns>The loaded user.</returns>
+        Task<GirafUser> LoadBasicUserDataAsync(ClaimsPrincipal principal);
 
         /// <summary>
         /// Loads the user with the given username and also includes all related data.

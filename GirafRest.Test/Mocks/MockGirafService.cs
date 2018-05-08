@@ -72,6 +72,23 @@ namespace GirafRest.Test.Mocks
             return _userManager.GetUserAsync(principal);
         }
 
+        public Task<GirafUser> LoadBasicUserDataAsync(ClaimsPrincipal principal)
+        {
+            var user = _userManager.GetUserAsync(principal).Result;
+            var result = new GirafUser()
+            {
+                AccessFailedCount = user.AccessFailedCount,
+                DepartmentKey = user.DepartmentKey,
+                ConcurrencyStamp = user.ConcurrencyStamp,
+                DisplayName = user.DisplayName,
+                Email = user.Email,
+                EmailConfirmed = user.EmailConfirmed,
+                Id = user.Id,
+                IsDepartment = user.IsDepartment
+            };
+            return new Task<GirafUser>(() => result);    //To do: clean out this async circus
+        }
+
         public Task<byte[]> ReadRequestImage(Stream bodyStream)
         {
             byte[] image = new byte[bodyStream.Length];
