@@ -33,7 +33,7 @@
             </v-toolbar>
             <v-content>
             <v-container fluid fill-width>
-               <citizens-page v-if="atPage('citizens')" v-on:add="addCitizen($event)" v-bind:citizens="citizens"></citizens-page>
+               <users-page v-if="atPage('citizens')" v-on:add="addCitizen($event)" v-bind:users="citizens"></citizens-page>
             </v-container>
             </v-content>
         </v-app>
@@ -42,7 +42,7 @@
     <script src="https://unpkg.com/vuetify/dist/vuetify.js"></script>
 
     <!-- Citizens -->
-    <script type="text/x-template" id="citizens-template">
+    <script type="text/x-template" id="users-template">
         <v-card>
             <v-dialog v-model="dialog" max-width="500px">
                 <v-card>
@@ -96,9 +96,9 @@
             </v-card>
     </script>
     <script>
-    Vue.component('citizens-page', {
-        template: '#citizens-template',
-        props: [ 'citizens', 'add' ],
+    Vue.component('users-page', {
+        template: '#users-template',
+        props: [ 'users', 'add' ],
         data () {
             return {
                 editedItem: {
@@ -141,6 +141,7 @@
                 this.logout();
             var pages = [
                 { icon: "people", name: "citizens", title: "Borgere" },
+                { icon: "people", name: "guardians", title: "Pædagoger" },
                 { icon: "lock", name: "logout", title: "Log ud" },
             ];
             return {
@@ -162,6 +163,8 @@
                     this.logout();
                 if(this.currentPage.name == "citizens")
                     this.getCitizens();
+                if(this.currentPage.name == "guardians")
+                    this.getGuardians();
             },
             logout() {
                 localStorage.removeItem("token");
