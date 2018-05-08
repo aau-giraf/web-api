@@ -128,7 +128,7 @@ namespace GirafRest.Controllers
                 if (pictogram.AccessLevel == AccessLevel.PUBLIC) 
                     return new Response<WeekPictogramDTO>(new WeekPictogramDTO(pictogram));
 
-                var usr = await _giraf.LoadUserAsync(HttpContext.User);
+                var usr = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
                 if (usr == null) 
                     return new ErrorResponse<WeekPictogramDTO>(ErrorCode.UserNotFound);
                 
@@ -159,8 +159,8 @@ namespace GirafRest.Controllers
         [HttpPost("")]
         public async Task<Response<WeekPictogramDTO>> CreatePictogram([FromBody]PictogramDTO pictogram)
         {
-
-            var user = await _giraf.LoadUserAsync(HttpContext.User);
+            //TODO: Method that only loads basic info and resources.
+            var user = await _giraf.LoadAllUserDataAsync(HttpContext.User);
 
             if (user == null) 
                 return new ErrorResponse<WeekPictogramDTO>(ErrorCode.NotFound);
@@ -217,7 +217,7 @@ namespace GirafRest.Controllers
             if (!ModelState.IsValid)
                 return new ErrorResponse<WeekPictogramDTO>(ErrorCode.InvalidModelState);
 
-            var usr = await _giraf.LoadUserAsync(HttpContext.User);
+            var usr = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
             if (usr == null) return new ErrorResponse<WeekPictogramDTO>(ErrorCode.NotFound);
             //Fetch the pictogram from the database and check that it exists
             var pict = await _giraf._context.Pictograms
@@ -248,7 +248,7 @@ namespace GirafRest.Controllers
         [HttpDelete("{id}")]
         public async Task<Response> DeletePictogram(int id)
         {
-            var usr = await _giraf.LoadUserAsync(HttpContext.User);
+            var usr = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
             if (usr == null) 
                 return new ErrorResponse(ErrorCode.NotFound);
             //Fetch the pictogram from the database and check that it exists
@@ -292,7 +292,7 @@ namespace GirafRest.Controllers
         [Consumes(IMAGE_TYPE_PNG, IMAGE_TYPE_JPEG)]
         [HttpPut("{id}/image")]
         public async Task<Response<WeekPictogramDTO>> SetPictogramImage(long id) {
-            var user = await _giraf.LoadUserAsync(HttpContext.User);
+            var user = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
             
             if (user == null) 
                 return new ErrorResponse<WeekPictogramDTO>(ErrorCode.UserNotFound);
@@ -338,7 +338,7 @@ namespace GirafRest.Controllers
             if (picto == null)
                 return new ErrorResponse<byte[]>(ErrorCode.PictogramNotFound);
             
-            var usr = await _giraf.LoadUserAsync(HttpContext.User);
+            var usr = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
             if (usr == null) 
                 return new ErrorResponse<byte[]>(ErrorCode.NotAuthorized);
 
@@ -361,7 +361,7 @@ namespace GirafRest.Controllers
         [HttpGet("{id}/image/raw")]
         public async Task<IActionResult> ReadRawPictogramImage(long id) {
             // fetch current authenticated user
-            var usr = await _giraf.LoadUserAsync(HttpContext.User);
+            var usr = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
             if (usr == null)
                 return NotFound();
 
@@ -430,7 +430,8 @@ namespace GirafRest.Controllers
             try
             {
                 //Find the user and add his pictograms to the result
-                var user = await _giraf.LoadUserAsync(HttpContext.User);
+                //TODO: Method that loads only basic user info and department.
+                var user = await _giraf.LoadAllUserDataAsync(HttpContext.User);
                 
                 if (user != null)
                 {
