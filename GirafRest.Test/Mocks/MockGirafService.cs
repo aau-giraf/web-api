@@ -73,19 +73,8 @@ namespace GirafRest.Test.Mocks
 
         public Task<GirafUser> LoadBasicUserDataAsync(ClaimsPrincipal principal)
         {
-            var user = _userManager.GetUserAsync(principal).Result;
-            var result = new GirafUser()
-            {
-                AccessFailedCount = user.AccessFailedCount,
-                DepartmentKey = user.DepartmentKey,
-                ConcurrencyStamp = user.ConcurrencyStamp,
-                DisplayName = user.DisplayName,
-                Email = user.Email,
-                EmailConfirmed = user.EmailConfirmed,
-                Id = user.Id,
-                IsDepartment = user.IsDepartment
-            };
-            return new Task<GirafUser>(() => result);    //To do: clean out this async circus
+            //Same as above, because it is not the job of unit-tests to simulate that.
+            return _userManager.GetUserAsync(principal);
         }
 
         public Task<byte[]> ReadRequestImage(Stream bodyStream)
