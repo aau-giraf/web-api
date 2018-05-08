@@ -12,7 +12,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// The id of the department.
         /// </summary>
-        public long ID { get; set; }
+        public long Id { get; set; }
         /// <summary>
         /// The name of the department.
         /// </summary>
@@ -32,7 +32,7 @@ namespace GirafRest.Models.DTOs
         /// <param name="department">The department to transfer.</param>
         public DepartmentDTO(Department department)
         {
-            this.ID = department.Key;
+            this.Id = department.Key;
             this.Name = department.Name;
             this.Members = new List<UserNameDTO> (department.Members.Select(m => new UserNameDTO(m.UserName, m.Id)));
             this.Resources = new List<long> (department.Resources.Select(dr => dr.PictogramKey));

@@ -195,9 +195,10 @@ namespace GirafRest.Controllers
             if (_giraf._context.Users.Any(u => u.UserName == newUser.Username && u.Id != user.Id))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.UserAlreadyExists);
 
+
             // update fields if they are not null
             if (!String.IsNullOrEmpty(newUser.Username))
-                user.UserName = newUser.Username;
+                await _giraf._userManager.SetUserNameAsync(user, newUser.Username);
 
             if (!String.IsNullOrEmpty(newUser.ScreenName))
                 user.DisplayName = newUser.ScreenName;
@@ -474,6 +475,43 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
+        /// Adds relation between an exisisting citizen and a guardian.
+        /// </summary>
+        /// <param name="id">Guardian id</param>
+        /// <param name="citizenId">Citizen id</param>
+        /// <returns></returns>
+        [HttpPost("{id}/citizens/{citizenId}")]
+        [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
+        public async Task<Response<GirafUserDTO>> AddGuardianCitizenRelationship(string id, string citizenId)
+        {
+            var citizen = await _giraf._userManager.FindByIdAsync(citizenId);
+            var guardian = await _giraf._userManager.FindByIdAsync(id);
+
+            if (guardian == null || citizen == null)
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
+
+            // check access rights
+            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), guardian)))
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
+
+            if (citizen == null || guardian == null)
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound, "User, either guardian or citizen, not found");
+
+            if (String.IsNullOrEmpty(citizen.UserName) || String.IsNullOrEmpty(guardian.UserName))
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "username");
+
+            var citRole = _roleManager.findUserRole(_giraf._userManager, citizen).Result;
+            var guaRole = _roleManager.findUserRole(_giraf._userManager, guardian).Result;
+
+            if (citRole != GirafRoles.Citizen || guaRole != GirafRoles.Guardian)
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidProperties, "Role error, either citizen is not a citizen or guardian is not a guardian");
+
+            citizen.AddGuardian(guardian);
+
+            return new Response<GirafUserDTO>(new GirafUserDTO(citizen, GirafRoles.Citizen));
+        }
+
+        /// <summary>
         /// Gets the guardians for the specific user corresponding to the provided id.
         /// </summary>
         /// <returns>
@@ -510,37 +548,6 @@ namespace GirafRest.Controllers
             }
 
             return new Response<List<UserNameDTO>>(guardians);
-        }
-
-        [HttpPost("{id}/citizen/{citizenId}")]
-        [Authorize (Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
-        public async Task<Response<GirafUserDTO>> AddGuardianCitizenRelationship(string id, string citizenId)
-        {
-            var citizen = await _giraf._userManager.FindByIdAsync(citizenId);
-            var guardian = await _giraf._userManager.FindByIdAsync(id);
-
-            if (guardian == null || citizen == null)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
-
-            // check access rights
-            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), guardian)))
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
-
-            if(citizen == null || guardian == null)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound, "User, either guardian or citizen, not found");
-
-            if (String.IsNullOrEmpty(citizen.UserName) || String.IsNullOrEmpty(guardian.UserName))
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "username");
-
-            var citRole = _roleManager.findUserRole(_giraf._userManager, citizen).Result;
-            var guaRole = _roleManager.findUserRole(_giraf._userManager, guardian).Result;
-
-            if (citRole != GirafRoles.Citizen || guaRole != GirafRoles.Guardian)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidProperties, "Role error, either citizen is not a citizen or guardian is not a guardian");
-
-            citizen.AddGuardian(guardian);
-
-            return new Response<GirafUserDTO>(new GirafUserDTO(citizen, GirafRoles.Citizen));
         }
 
         /// <summary>

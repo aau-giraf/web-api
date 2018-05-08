@@ -196,8 +196,7 @@ namespace GirafRest.Controllers
         /// MissingProperties if there was missing properties
         /// PasswordNotUpdated if the user wasn't logged in
         /// </returns>
-        [Route("User/{id}/Account/change-password")]
-        [HttpPost("change-password")]
+        [HttpPost("/v1/User/{id}/Account/change-password")]
         [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
         public async Task<Response> ChangePassword(string id, ChangePasswordDTO model)
         {
