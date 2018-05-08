@@ -175,7 +175,7 @@ namespace GirafRest.Controllers
 
             //Create the actual pictogram instance
             // if access level is not specified, missing properties
-            if(pictogram.AccessLevel == null) 
+            if(pictogram.AccessLevel == null || !Enum.IsDefined(typeof(AccessLevel), pictogram.AccessLevel)) 
                 return new ErrorResponse<WeekPictogramDTO>(ErrorCode.MissingProperties, "access level, pictogram");
 
             Pictogram pict =

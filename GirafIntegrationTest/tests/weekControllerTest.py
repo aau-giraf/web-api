@@ -66,7 +66,7 @@ class WeekControllerTest(TestCase):
     gunnar = None
     weekBody = None
     weekId = None
-
+    lee = None
 
     def setup_test(self):
         sevenDays = []
@@ -94,11 +94,16 @@ class WeekControllerTest(TestCase):
         self.badEnumValueWeekDTO = week(demonDays)
 
     @test()
+    def loginAsLee(self, check):
+        'Log in as Lee'
+        self.lee = login('Lee', check)
+
+    @test()
     def newGunnar(self, check):
         'Register Gunnar'
         self.gunnarUsername = 'Gunnar{0}'.format(str(time.time()))
-        response = requests.post(Test.url + 'account/register',
-                                 json={"username": self.gunnarUsername, "password": "password",
+        response = requests.post(Test.url + 'account/register', headers=auth(self.lee),
+                                 json={"username": self.gunnarUsername, "password": "password", "role": "Citizen",
                                        "departmentId": 1}).json()
         ensureSuccess(response, check)
 
