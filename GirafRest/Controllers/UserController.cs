@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System;
 using GirafRest.Extensions;
 using GirafRest.Models.Responses;
+using System.Text.RegularExpressions;
 
 namespace GirafRest.Controllers
 {
@@ -60,6 +61,7 @@ namespace GirafRest.Controllers
             _roleManager = roleManager;
             _authentication = authentication;
         }
+        
 
         /// <summary>
         /// Returns currently logged in users username
@@ -132,7 +134,7 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Find information on the user with the username supplied as a url query parameter or the current user.
+        /// Find information on the user with the id given
         /// </summary>
         /// <returns>
         /// Data about the user
@@ -145,13 +147,11 @@ namespace GirafRest.Controllers
             //Declare needed variables
             GirafUser user;
 
-            //Check if the caller has supplied a query, find the user with the given name if so,
-            //else find the user with the given username.
             if (string.IsNullOrEmpty(id))
                 return new ErrorResponse<SettingDTO>(ErrorCode.MissingProperties, "id");
 
             //First attempt to fetch the user and check that he exists
-            user = _giraf._context.Users.Include(u => u.Settings).FirstOrDefault(u => u.Id == id);
+            user = _giraf._context.Users.Include(u => u.Settings).ThenInclude(w => w.WeekDayColors).FirstOrDefault(u => u.Id == id);
             if (user == null)
                 return new ErrorResponse<SettingDTO>(ErrorCode.UserNotFound);
 
@@ -164,9 +164,22 @@ namespace GirafRest.Controllers
 
             var errorCode = _authentication.CheckUserAccess(authUser, authRole, user, userRole);
             if (errorCode.HasValue)
-                new ErrorResponse<SettingDTO>(ErrorCode.NotAuthorized);
+                return new ErrorResponse<SettingDTO>(ErrorCode.NotAuthorized);
 
             return new Response<SettingDTO>(new SettingDTO(user.Settings));
+        }
+        
+        /// <summary>
+        /// Read the currently authorized user's settings object.
+        /// </summary>
+        /// <returns>The current user's settings if Ok </returns>
+        [HttpGet("settings")]
+        [Authorize]
+        public async Task<Response<SettingDTO>> ReadUserSettins()
+        {
+            var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
+
+            return await GetSettings(user.Id);
         }
 
         /// <summary>
@@ -197,7 +210,7 @@ namespace GirafRest.Controllers
         /// MissingProperties if username or screenname is null
         /// If succesfull returns the DTO corresponding to the newly updates user.
         /// </returns>
-        [HttpPatch("")]
+        [HttpPut("")]
         public async Task<Response<GirafUserDTO>> UpdateUser([FromBody] string Username, [FromBody] string ScreenName)
         {
             //Fetch the user
@@ -218,7 +231,7 @@ namespace GirafRest.Controllers
         /// Not authorised if trying to update a user you do not have priveligies to update
         /// Succes response with the DTO for the updates user if all went smooth
         /// </returns>
-        [HttpPatch("{id}")]
+        [HttpPut("{id}")]
         public async Task<Response<GirafUserDTO>> UpdateUser(string id, [FromBody] string Username, [FromBody] string ScreenName)
         {
             if (Username == null && ScreenName == null)
@@ -619,29 +632,13 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Read the currently authorized user's settings object.
-        /// </summary>
-        /// <returns>The current user's settings if Ok </returns>
-        [HttpGet("settings")]
-        [Authorize]
-        public async Task<Response<SettingDTO>> ReadUserSettins()
-        {
-            var user = await _giraf.LoadUserAsync(HttpContext.User);
-
-            if (user == null)
-                return new ErrorResponse<SettingDTO>(ErrorCode.NotAuthorized);
-
-            return new Response<SettingDTO>(new SettingDTO(user.Settings));
-        }
-
-        /// <summary>
         /// Updates the currently authenticated user settings.
         /// </summary>
         /// <returns>
         /// MissingProperties if options is null or some required fields is not set
         /// </returns>
         /// <param name="options">Options.</param>
-        [HttpPatch("settings")]
+        [HttpPut("settings")]
         public async Task<Response<SettingDTO>> UpdateUserSettings([FromBody] SettingDTO options)
         {
             var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
@@ -656,10 +653,17 @@ namespace GirafRest.Controllers
         /// MissingProperties if options is null or some required fields is not set
         /// </returns>
         /// <param name="options">Options.</param>
-        [HttpPatch("{id}/settings")]
+        [HttpPut("{id}/settings")]
         [Authorize]
         public async Task<Response<SettingDTO>> UpdateUserSettings(string id, [FromBody] SettingDTO options)
         {
+            var user = _giraf._context.Users.Include(u => u.Settings).ThenInclude(w => w.WeekDayColors).FirstOrDefault(u => u.Id == id);
+            if (user == null)
+                return new ErrorResponse<SettingDTO>(ErrorCode.UserNotFound);
+
+            if (user.Settings == null)
+                return new ErrorResponse<SettingDTO>(ErrorCode.MissingSettings);
+            
             if (!ModelState.IsValid)
                 return new ErrorResponse<SettingDTO>(ErrorCode.MissingProperties, ModelState.Values.Where(E => E.Errors.Count > 0)
                                   .SelectMany(E => E.Errors)
@@ -673,13 +677,21 @@ namespace GirafRest.Controllers
             if (error.HasValue)
                 return new ErrorResponse<SettingDTO>(ErrorCode.InvalidProperties, "Settings");
 
-            var user =  _giraf._context.Users.Include(u => u.Settings).FirstOrDefault(u => u.Id == id);
+            if(options.WeekDayColors != null) {
+                // Validate Correct format of WeekDayColorDTOs. A color must be set for each day
+                if (options.WeekDayColors.GroupBy(d => d.Day).Any(g => g.Count() != 1))
+                    return new ErrorResponse<SettingDTO>(ErrorCode.ColorMustHaveUniqueDay);
 
-            if (user == null)
-                return new ErrorResponse<SettingDTO>(ErrorCode.UserNotFound);
+                // check if all days in weekdaycolours is valid
+                if (options.WeekDayColors.Any(w => !Enum.IsDefined(typeof(Days), w.Day)))
+                    return new ErrorResponse<SettingDTO>(ErrorCode.InvalidDay);
 
-            if (user.Settings == null)
-                return new ErrorResponse<SettingDTO>(ErrorCode.MissingSettings);
+                // check that Colors are in correct format
+                var IsCorrectHexValues = IsWeekDayColorsCorrectHexFormat(options);
+                if (!IsCorrectHexValues)
+                    return new ErrorResponse<SettingDTO>(ErrorCode.InvalidHexValues);
+            }
+
 
             var authUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
             var authUserRole = await _roleManager.findUserRole(_giraf._userManager, authUser);
@@ -687,10 +699,13 @@ namespace GirafRest.Controllers
 
             var errorCode = _authentication.CheckUserAccess(authUser, authUserRole, user, userRole);
             if (errorCode != null)
-                return new ErrorResponse<SettingDTO>(errorCode.Value); 
-            
+                return new ErrorResponse<SettingDTO>(errorCode.Value);
+
             user.Settings.UpdateFrom(options);
+            // lets update the weekday colours
+
             await _giraf._context.SaveChangesAsync();
+
             return new Response<SettingDTO>(new SettingDTO(user.Settings));
         }
 
@@ -798,8 +813,7 @@ namespace GirafRest.Controllers
                 !(Enum.IsDefined(typeof(CompleteMark), options.CompleteMark)) ||
                 !(Enum.IsDefined(typeof(CancelMark), options.CancelMark)) ||
                 !(Enum.IsDefined(typeof(DefaultTimer), options.DefaultTimer)) ||
-                !(Enum.IsDefined(typeof(Theme), options.Theme)) || 
-                !(Enum.IsDefined(typeof(ColorThemeWeekSchedules), options.ColorThemeWeekSchedules))) 
+                !(Enum.IsDefined(typeof(Theme), options.Theme))) 
             {
                 return ErrorCode.InvalidProperties;
             }
@@ -819,6 +833,20 @@ namespace GirafRest.Controllers
 
             return null;
         }
+
+        // Takes a list of WeekDayColorDTOs and check if the hex given is in correct format
+        private bool IsWeekDayColorsCorrectHexFormat(SettingDTO setting){
+            var regex = new Regex(@"#[0-9a-fA-F]{6}");
+            foreach (var weekDayColor in setting.WeekDayColors)
+            {
+                var hexColor = weekDayColor.HexColor;
+                Match match = regex.Match(weekDayColor.HexColor);
+                if (!match.Success)
+                    return false;
+            }
+            return true;
+        }
+
 
         #endregion
     }

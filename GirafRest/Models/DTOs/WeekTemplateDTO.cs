@@ -15,8 +15,11 @@ namespace GirafRest.Models.DTOs
         public WeekTemplateDTO(WeekTemplate weekTemplate) : base(weekTemplate)
         {
             this.DepartmentKey = weekTemplate.DepartmentKey;
+            this.Id = weekTemplate.Id;
         }
 
-        public long DepartmentKey { get; set; }
+        public long DepartmentKey { get; internal set; }
+        
+        public long Id { get; set; }
     }
 }

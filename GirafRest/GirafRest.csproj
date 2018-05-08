@@ -52,4 +52,7 @@
     <Folder Include="wwwroot\admin\view\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Remove="Views\_ViewImports.cshtml" />
+  </ItemGroup>
 </Project>

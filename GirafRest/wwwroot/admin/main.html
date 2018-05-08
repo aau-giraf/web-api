@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
+  <link href="https://unpkg.com/vuetify/dist/vuetify.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" media="screen" href="css/styles.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <div id="app">
+        <v-app id="inspire">
+            <v-navigation-drawer
+            fixed
+            v-model="drawer"
+            app
+            >
+            <v-list dense>
+                <v-list-tile v-for="page in pages" :key="page.name" @click="pageSelected(page)">
+                    <v-list-tile-action>
+                        <v-icon v-text="page.icon"></v-icon>
+                    </v-list-tile-action>
+                    <v-list-tile-content>
+                        <v-list-tile-title v-text="page.title"></v-list-tile-title>
+                    </v-list-tile-content>
+                </v-list-tile>
+            </v-list>
+            </v-navigation-drawer>
+            <v-toolbar color="primary" dark fixed app>
+            <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+            <v-toolbar-title v-text="currentPage.title"></v-toolbar-title>
+            </v-toolbar>
+            <v-content>
+            <v-container fluid fill-width>
+               <citizens-page v-if="atPage('citizens')" v-on:add="addCitizen($event)" v-bind:citizens="citizens"></citizens-page>
+            </v-container>
+            </v-content>
+        </v-app>
+    </div>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vuetify/dist/vuetify.js"></script>
+
+    <!-- Citizens -->
+    <script type="text/x-template" id="citizens-template">
+        <v-card>
+            <v-dialog v-model="dialog" max-width="500px">
+                <v-card>
+                    <v-card-title>
+                    <span class="headline">Opret Borger</span>
+                    </v-card-title>
+                    <v-card-text>
+                    <v-container grid-list-md>
+                        <v-layout wrap>
+                        <v-flex xs12 sm12 md12>
+                            <v-text-field v-model="editedItem.userName" label="Navn"></v-text-field>
+                        </v-flex>
+                        </v-layout>
+                    </v-container>
+                    </v-card-text>
+                    <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" flat @click.native="close">Annuller</v-btn>
+                    <v-btn color="blue darken-1" flat @click.native="save">Gem</v-btn>
+                    </v-card-actions>
+                </v-card>
+                </v-dialog>
+            <v-card-title>
+                <v-layout row>
+                    <v-flex xs5>
+                    <v-text-field
+                    v-model="search"
+                    append-icon="search"
+                    label="Search"
+                    single-line
+                    hide-details
+                    ></v-text-field>
+                    </v-flex>
+                    <v-flex xs7  class="text-xs-right">
+                        <v-btn color="primary" @click="dialog = true" class="mx-0">Opret Borger</v-btn>
+                    </v-flex>
+                </v-layout>
+            </v-card-title>
+            <v-data-table
+                :headers="headers"
+                :items="citizens"
+                :search="search"
+            >
+                <template slot="items" slot-scope="props">
+                <td>{{ props.item.userName }}</td>
+                </template>
+                <v-alert slot="no-results" :value="true" color="info" icon="warning">
+                Strengen "{{ search }}" gav ingen resulater.
+                </v-alert>
+            </v-data-table>
+            </v-card>
+    </script>
+    <script>
+    Vue.component('citizens-page', {
+        template: '#citizens-template',
+        props: [ 'citizens', 'add' ],
+        data () {
+            return {
+                editedItem: {
+                    userName: null
+                },
+                search: '',
+                dialog: false,
+                headers: [
+                    {
+                        text: 'Navn',
+                        align: 'left',
+                        value: 'userName'
+                    }
+                ]
+            };
+        },
+        methods: {
+            close () {
+                this.dialog = false;
+            },
+            save () {
+                this.citizens.push(this.editedItem);
+                this.$emit("add", this.editedItem);
+                this.editedItem = {
+                    userName: null
+                };
+                this.close();
+            }
+        }
+    });
+    </script>
+
+    <script>
+    var app = new Vue({
+        el: '#app',
+        data() {
+            var username = localStorage.getItem("username");
+            var token = localStorage.getItem("token");
+            if(username == undefined || token == undefined)
+                this.logout();
+            var pages = [
+                { icon: "people", name: "citizens", title: "Borgere" },
+                { icon: "lock", name: "logout", title: "Log ud" },
+            ];
+            return {
+                drawer: null,
+                token: token,
+                username: username,
+                citizens: [10,20,30],
+                currentPage: pages[0],
+                pages: pages
+            };
+        },
+        methods: {
+            init() {
+                this.pageSelected(this.currentPage);
+            },
+            pageSelected(page) {
+                this.currentPage = page;
+                if(this.currentPage.name == "logout")
+                    this.logout();
+                if(this.currentPage.name == "citizens")
+                    this.getCitizens();
+            },
+            logout() {
+                localStorage.removeItem("token");
+                localStorage.removeItem("username");
+                localStorage.removeItem("role");
+                window.location = "/admin/login.html";
+            },
+            getCitizens() {
+                var self = this;
+                $.ajax({
+                    url: "/v1/User/" + self.username + "/citizens",
+                    headers: { "Authorization": "Bearer " + self.token },
+                    success: function (data) {
+                        self.citizens = data.data;
+                    }
+                });
+            },
+            atPage(pageName){
+                return this.currentPage.name == pageName;
+            },
+            addCitizen(citizen) {
+                var self = this;
+                citizen.departmentId = 1;
+                citizen.password = "password";
+                $.ajax({
+                    url: "/v1/Account/register",
+                    type: 'POST',
+                    contentType: "application/json",
+                    data: JSON.stringify(citizen),
+                    headers: { "Authorization": "Bearer " + self.token },
+                    success: function (data) {
+                        if(!data.success)
+                            self.citizens.splice(self.citizens.indexOf(citizen), 1);
+                    }
+                });
+            }
+        }
+    });
+    app.init();
+    </script>
+    
+
+
+
+</body>
+</html>

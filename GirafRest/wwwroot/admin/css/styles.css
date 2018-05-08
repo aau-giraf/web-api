@@ -1,0 +1,10 @@
+#inspire.giraf-bg {
+    /* The image used */
+    background-image: url("/admin2/img/giraf.jpg");
+    /* Full height */
+    height: 100%;
+    /* Center and scale the image nicely */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}

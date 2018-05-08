@@ -18,15 +18,24 @@ class UserControllerTest(TestCase):
     'User Controller'
     graatand = None
     kurt = None
-
-    @test()
-    def logins(self, check):
-        'Log in as Graatand, Kurt'
-        self.graatand = login('Graatand', check)
-        self.kurt = login('Kurt', check)
-
     gunnarUsername = None
     gunnar = None
+    charlieUsername = None
+    charlie = None
+    wednesday = None
+    wendesdayID = None
+    wednesdayIDBody = None
+
+    @test()
+    def loginAsKurt(self, check):
+        'Log in as Kurt'
+        self.kurt = login('Kurt', check)
+
+    @test()
+    def loginAsGraatand(self, check):
+        'Log in as Graatand'
+        self.graatand = login('Graatand', check)
+
 
     @test()
     def registerGunnar(self, check):
@@ -46,8 +55,6 @@ class UserControllerTest(TestCase):
         response = requests.get(Test.url + 'User', headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
 
-    charlieUsername = None
-    charlie = None
 
     @test()
     def newCharlie(self, check):
@@ -107,9 +114,6 @@ class UserControllerTest(TestCase):
         response = requests.get(Test.url + 'User', headers=auth(self.gunnar)).json()
         check.equal(response['data']['screenName'], 'HE WHO WAITS BEHIND THE WALL')
 
-    wednesday = None
-    wendesdayID = None
-    wednesdayIDBody = None
 
     @test(skip_if_failed=['registerGunnar'])
     def newPictogram(self, check):
@@ -165,15 +169,15 @@ class UserControllerTest(TestCase):
     @test(skip_if_failed=['registerGunnar'])
     def settingsSetTheme(self, check):
         'Enable grayscale'
-        response = requests.patch(Test.url + 'User/settings', json={"theme": 3}, headers=auth(self.gunnar)).json()
-        ensureSuccess(response, check)
-        response = requests.get(Test.url + 'User/settings', headers=auth(self.gunnar)).json()
-        check.equal(3, response['data']['theme'])
+        response = requests.put(Test.url + 'User/settings', json={"theme": 3}, headers=auth(self.gunnar))
+        ensureSuccess(response.json(), check)
+        response = requests.get(Test.url + 'User/settings', headers=auth(self.gunnar))
+        check.equal(3, response.json()['data']['theme'])
 
     @test(skip_if_failed=['registerGunnar'])
     def settingsSetTimerSeconds(self, check):
         'Set default countdown time'
-        response = requests.patch(Test.url + 'User/settings', json={"timerSeconds": 3600}, headers=auth(self.gunnar)).json()
+        response = requests.put(Test.url + 'User/settings', json={"timerSeconds": 3600}, headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
         response = requests.get(Test.url + 'User/settings', headers=auth(self.gunnar)).json()
         check.equal(3600, response['data']['timerSeconds'])
@@ -182,41 +186,48 @@ class UserControllerTest(TestCase):
     def settingsMultiple(self, check):
         'Set all settings'
         body = {
-                "orientation": "landscape",
-                "completeMark": "Circle",
-                "cancelMark": "Cross",
-                "defaultTimer": "analogClock",
+                "orientation": 2,
+                "completeMark": 2,
+                "cancelMark": 1,
+                "defaultTimer": 2,
                 "timerSeconds": 60,
                 "activitiesCount": 3,
-                "theme": "girafRed",
-                "colorThemeWeekSchedules": "yellowAndWhite",
+                "theme": 3,
                 "nrOfDaysToDisplay": 2,
-                "greyScale": True
+                "greyScale": True,
+                "weekDayColors": [
+                    {
+                        "hexColor": "#FF00FF",
+                        "day": 1
+                    }
+                ]
         }
-        response = requests.patch(Test.url + 'User/settings', json=body, headers=auth(self.gunnar)).json()
+        response = requests.put(Test.url + 'User/settings', json=body, headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
 
         response = requests.get(Test.url + 'User/settings', headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
-        check.equal(2,      response['data']["orientation"])
-        check.equal(2,      response['data']["completeMark"])
-        check.equal(1,      response['data']["cancelMark"])
-        check.equal(2,      response['data']["defaultTimer"])
-        check.equal(60,      response['data']["timerSeconds"])
-        check.equal(3,      response['data']["activitiesCount"])
-        check.equal(3,      response['data']["theme"])
-        check.equal(2,      response['data']["colorThemeWeekSchedules"])
-        check.equal(2,         response['data']["nrOfDaysToDisplay"])
-        check.equal(True,      response['data']["greyScale"])
+        check.equal(2,          response['data']['orientation'])
+        check.equal(2,          response['data']['completeMark'])
+        check.equal(1,          response['data']['cancelMark'])
+        check.equal(2,          response['data']['defaultTimer'])
+        check.equal(60,         response['data']['timerSeconds'])
+        check.equal(3,          response['data']['activitiesCount'])
+        check.equal(3,          response['data']['theme'])
+        check.equal(2,          response['data']['nrOfDaysToDisplay'])
+        check.equal(True,       response['data']['greyScale'])
+        # THIS WORKS, BUT IS CONFUSING
+        check.equal("#FF00FF",  response['data']['weekDayColors'][0]['hexColor'])
+        check.equal(1,          response['data']['weekDayColors'][0]['day'])
 
-    @test(skip_if_failed=['logins'])
+    @test(skip_if_failed=['loginAsKurt'])
     def kurtCitizens(self, check):
         'Get Kurt\'s citizens(none)'
         response = requests.get(Test.url + 'User/Kurt/citizens',
                                 headers=auth(self.kurt)).json()
         ensureError(response, check)
 
-    @test(skip_if_failed=['logins'])
+    @test(skip_if_failed=['loginAsGraatand'])
     def graatandCitizens(self, check):
         'Get Graatand\'s citizens(some)'
         response = requests.get(Test.url + 'User/Graatand/citizens',
@@ -224,7 +235,7 @@ class UserControllerTest(TestCase):
         if ensureSuccess(response, check):
             check.equal('Kurt', response['data'][0]['userName'])
 
-    @test(skip_if_failed=['logins'])
+    @test(skip_if_failed=['loginAsKurt'])
     def kurtGuardians(self, check):
         'Get Kurt\'s guardians(some)'
         response = requests.get(Test.url + 'User/Kurt/guardians',
@@ -232,7 +243,7 @@ class UserControllerTest(TestCase):
         if ensureSuccess(response, check):
             check.is_true('Graatand', response['data'][0]['userName'])
 
-    @test(skip_if_failed=['logins'])
+    @test(skip_if_failed=['loginAsGraatand'])
     def graatandGuardians(self, check):
         'Get Graatand\'s guardians(none)'
         response = requests.get(Test.url + 'User/Graatand/guardians',

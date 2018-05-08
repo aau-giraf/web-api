@@ -18,7 +18,7 @@ namespace GirafRest.Test
 
         private const int ADMIN_DEP_ONE = 0;
         private const int GUARDIAN_DEP_TWO = 1;
-        private const int CITEZEN_DEP_THREE = 3; // Have no week
+        private const int CITEZEN_DEP_THREE = 3; // Has no week
         private const int WEEK_ZERO = 0;
         private const int DAY_ZERO = 0;
         private const int NONEXISTING = 999;
@@ -141,9 +141,10 @@ namespace GirafRest.Test
             // modify name
             var newWeek = new WeekDTO(week)
             {
-                Name = "Test Week"
+                Name = "new name"
             };
             var res = wc.UpdateWeek(2018, 20, newWeek).Result;
+
             Assert.IsType<Response<WeekDTO>>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.True(res.Success);

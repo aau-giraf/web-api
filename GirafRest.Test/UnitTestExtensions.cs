@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.Design.Serialization;
 using System.Linq;
 using GirafRest.Models;
 using Microsoft.AspNetCore.Identity;
@@ -88,6 +89,7 @@ namespace GirafRest.Test
             public const int UserGuardian2Department2 = 5;
             public const int UserDepartment2 = 6;
             public const int UserCitizenDepartment1 = 8;
+            public const int UserGuardianNoDepartment = 9;
             
             private List<GirafUser> mockUsers = null;
             public List<GirafUser> MockUsers
@@ -100,7 +102,7 @@ namespace GirafRest.Test
                         {
                             UserName = "Admin",
                             Id = "admin",
-                            DepartmentKey = 1
+                            DepartmentKey = 1,
                         },
                         new GirafUser()
                         {
@@ -148,6 +150,12 @@ namespace GirafRest.Test
                             UserName = "Citizen of dep 1",
                             Id = "citizen4",
                             DepartmentKey = 1
+                        },
+                        new GirafUser()
+                        {
+                            UserName = "Citizen of no department",
+                            Id = "citizen5NoDepartment",
+                            DepartmentKey = 0
                         }
                     };
 
@@ -186,6 +194,7 @@ namespace GirafRest.Test
                 get
                 {
                     if (mockWeeks == null) {
+                        //For the content of each day, see the MockDayResources field.
                         mockWeeks = new List<Week>()
                         {
                             new Week()
@@ -255,6 +264,56 @@ namespace GirafRest.Test
                     return mockWeeks;
                 }
             }
+
+            public const int Template1 = 0;
+            public const int Template2 = 1;
+            
+            private List<WeekTemplate> _mockWeekTemplates;
+            public List<WeekTemplate> MockWeekTemplates
+            {
+                get
+                {
+                    if (_mockWeekTemplates == null) {
+                        _mockWeekTemplates = new List<WeekTemplate>()
+                        {
+                            //For the content of each day, see the MockDayResources field.
+                            new WeekTemplate(MockDepartments[MockDepartment1])
+                            {
+                                Id = 1,
+                                Name = "Template1",
+                                Weekdays = new List<Weekday>(){
+                                    new Weekday(){
+                                        Day = Days.Monday
+                                    },
+                                    new Weekday(){
+                                        Day = Days.Tuesday
+                                    },
+                                    new Weekday(){
+                                        Day = Days.Wednesday
+                                    }
+                                }
+                            },
+                            new WeekTemplate(MockDepartments[MockDepartment1]){
+                                Id = 1,
+                                Name = "Template2",
+                                Weekdays = new List<Weekday>(){
+                                    new Weekday(){
+                                        Day = Days.Saturday
+                                    },
+                                    new Weekday(){
+                                        Day = Days.Sunday
+                                    }
+                                }
+                            },
+                        };
+                    }
+                    return _mockWeekTemplates;
+                }
+            }
+
+            public const int MockDepartment1 = 0;
+            public const int MockDepartment2 = 1;
+            
             private List<Department> mockDepartments;
             public IReadOnlyList<Department> MockDepartments
             {
@@ -305,6 +364,7 @@ namespace GirafRest.Test
                     return mockUserResources;
                 }
             }
+            
             private List<DepartmentResource> mockDepartmentResources;
             public IReadOnlyList<DepartmentResource> MockDepartmentResources
             {
@@ -330,13 +390,21 @@ namespace GirafRest.Test
                         mockWeekDayRessources = new List<Activity>()
                         {
                             new Activity(MockWeeks[0].Weekdays[0], MockPictograms[5], 0, ActivityState.Active),
-                            new Activity(MockWeeks[0].Weekdays[1], MockPictograms[6], 1, ActivityState.Canceled)
+                            new Activity(MockWeeks[0].Weekdays[1], MockPictograms[6], 1, ActivityState.Canceled),
+                            new Activity(MockWeekTemplates[Template1].Weekdays[1], MockPictograms[5], 0, ActivityState.Active),
+                            new Activity(MockWeekTemplates[Template1].Weekdays[0], MockPictograms[6], 1, ActivityState.Canceled),
                         };
 
                     return mockWeekDayRessources;
                 }
             }
 
+            public const int RoleSuperUser = 0;
+            public const int RoleGuardian = 1;
+            public const int RoleCitizen = 2;
+            public const int RoleDepartment = 3;
+            
+            
             private List<GirafRole> mockRoles;
             public List<GirafRole> MockRoles
             {
@@ -375,34 +443,42 @@ namespace GirafRest.Test
                             new IdentityUserRole<string> ()
                             {
                                 UserId = MockUsers[0].Id,
-                                RoleId = MockRoles[0].Id
+                                RoleId = MockRoles[RoleSuperUser].Id
                             },
                             new IdentityUserRole<string>()
                             {
                                 UserId = MockUsers[1].Id,
-                                RoleId = MockRoles[1].Id
+                                RoleId = MockRoles[RoleGuardian].Id
                             },
                             new IdentityUserRole<string>()
                             {
                                 UserId = MockUsers[2].Id,
-                                RoleId = MockRoles[2].Id
+                                RoleId = MockRoles[RoleCitizen].Id
                             },
                             new IdentityUserRole<string>()
                             {
                                 UserId = MockUsers[3].Id,
-                                RoleId = MockRoles[2].Id
+                                RoleId = MockRoles[RoleCitizen].Id
                             },
                             new IdentityUserRole<string>()
                             {
                                 UserId = MockUsers[6].Id,
-                                RoleId = MockRoles[3].Id
+                                RoleId = MockRoles[RoleDepartment].Id
+                            },
+                            new IdentityUserRole<string>()
+                            {
+                                UserId = MockUsers[UserGuardianNoDepartment].Id,
+                                RoleId = MockRoles[RoleGuardian].Id
                             },
                         };
 
                     return mockUserRoles;
                 }
             }
+
             #endregion
+            
+            
             public readonly Mock<MockDbContext> MockDbContext;
             public readonly MockUserManager MockUserManager;
             public Mock<HttpContext> MockHttpContext { get; set; }
@@ -439,6 +515,7 @@ namespace GirafRest.Test
                 var mockRoles = CreateMockDbSet(MockRoles);
                 var mockUserRoles = CreateMockDbSet(MockUserRoles);
                 var mockWeeks = CreateMockDbSet(MockWeeks);
+                var mockWeekTemplates = CreateMockDbSet(MockWeekTemplates);
                 var mockGuardianRelations = CreateMockDbSet(MockGuardianRelations);
                 var dbMock = new Mock<MockDbContext>();
                 dbMock.Setup(c => c.Pictograms).Returns(mockSet.Object);
@@ -447,6 +524,7 @@ namespace GirafRest.Test
                 dbMock.Setup(c => c.Activities).Returns(mockWeekDayRes.Object);
                 dbMock.Setup(c => c.Departments).Returns(mockDeps.Object);
                 dbMock.Setup(c => c.Weeks).Returns(mockWeeks.Object);
+                dbMock.Setup(c => c.WeekTemplates).Returns(mockWeekTemplates.Object);
                 dbMock.Setup(c => c.Users).Returns(mockUsers.Object);
                 dbMock.Setup(c => c.Roles).Returns(mockRoles.Object);
                 dbMock.Setup(c => c.UserRoles).Returns(mockUserRoles.Object);
