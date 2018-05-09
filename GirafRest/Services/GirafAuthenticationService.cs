@@ -126,5 +126,19 @@ namespace GirafRest.Services
 
             return HasTemplateAccess(authUser).Result && authUser?.DepartmentKey == departmentKey;
         }
+
+        /// <summary>
+        /// Method for checking whether the authenticated user is allowed to view information related to given department.
+        /// </summary>
+        /// <param name="authUser">The user in question</param>
+        /// <param name="departmentKey">Department in question</param>
+        public async Task<bool> HasReadDepartmentAccess(GirafUser authUser, long? departmentKey)
+        {
+            var authUserRole = (await _roleManager.findUserRole(_userManager, authUser));
+            if (authUserRole == GirafRoles.SuperUser)
+                return true;
+
+            return authUser.DepartmentKey == departmentKey;
+        }
     }
 }

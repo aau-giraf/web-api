@@ -121,8 +121,7 @@ namespace GirafRest.Test.Controllers
             var depDTO = new DepartmentDTO(new Department()
             {
                 Name = name
-
-            });
+            }, new List<UserNameDTO>());
 
             var res = dc.Post(depDTO).Result;
 
@@ -139,7 +138,7 @@ namespace GirafRest.Test.Controllers
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var depDTO = new DepartmentDTO(new Department()
             {
-            });
+            }, new List<UserNameDTO>());
 
             var res = dc.Post(depDTO).Result;
 
