@@ -34,8 +34,44 @@
             </v-toolbar>
             <v-content>
                 <v-container fluid fill-width>
-                    <users-page v-if="atPage('citizens')" v-on:add="addCitizen($event)" v-on:update="updateCitizen($event)" addtitle="Opret Borger" haspassword="false" edittitle="Rediger Borger" v-bind:users="citizens"></users-page>
-                    <users-page v-if="atPage('guardians')" v-on:add="addGuardian($event)" v-on:update="updateGuardian($event)" addtitle="Opret Pædagog" haspassword="true" edittitle="Rediger Pædagog" v-bind:users="guardians"></users-page>
+                    <names-page v-if="atPage('citizens')" 
+                        v-on:add="addCitizen($event)" 
+                        nameproperty="userName" 
+                        idproperty="userId" 
+                        deletetitle="Fjern Borger" 
+                        v-on:delete="deleteCitizen($event)" 
+                        v-on:update="updateCitizen($event)" 
+                        addtitle="Opret Borger" 
+                        haspassword="false" 
+                        edittitle="Rediger Borger" 
+                        v-bind:elements="citizens">
+                    </names-page>
+                    <names-page 
+                        v-if="atPage('guardians')" 
+                        v-on:add="addGuardian($event)" 
+                        nameproperty="userName" 
+                        idproperty="userId" 
+                        v-on:update="updateCitizen($event)" 
+                        v-on:delete="deleteCitizen($event)" 
+                        deletetitle="Fjern Pædagog" 
+                        addtitle="Opret Pædagog" 
+                        haspassword="true" 
+                        edittitle="Rediger Pædagog" 
+                        v-bind:elements="guardians">
+                    </names-page>
+                    <names-page 
+                        v-if="atPage('departments')" 
+                        v-on:add="addDepartment($event)" 
+                        nameproperty="name" 
+                        idproperty="id" 
+                        v-on:update="updateDepartment($event)" 
+                        v-on:delete="deleteDepartment($event)" 
+                        deletetitle="Fjern Afdeling" 
+                        addtitle="Opret Afdeling" 
+                        haspassword="false" 
+                        edittitle="Rediger Afdeling" 
+                        v-bind:elements="departments">
+                    </names-page>
                 </v-container>
             </v-content>
         </v-app>
@@ -43,8 +79,7 @@
     <script src="https://unpkg.com/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/vuetify/dist/vuetify.js"></script>
 
-    <!-- Citizens -->
-    <script type="text/x-template" id="users-template">
+    <script type="text/x-template" id="names-template">
         <v-card>
             <v-dialog v-model="dialog" max-width="500px">
                 <v-card>
@@ -55,8 +90,8 @@
                     <v-container grid-list-md>
                         <v-layout wrap>
                         <v-flex xs12 sm12 md12>
-                            <v-text-field v-model="editedItem.userName" label="Navn"></v-text-field>
-                            <v-text-field v-if="haspassword == 'true'" v-model="editedItem.password" label="Password"></v-text-field>
+                            <v-text-field v-model="editedItem[nameproperty]" label="Navn"></v-text-field>
+                            <v-text-field type="password" v-if="!isEditing && haspassword == 'true'" v-model="editedItem.password" label="Password"></v-text-field>
                         </v-flex>
                         </v-layout>
                     </v-container>
@@ -68,6 +103,27 @@
                     </v-card-actions>
                 </v-card>
             </v-dialog>
+            <v-dialog v-model="deleteDialog" max-width="500px">
+                    <v-card>
+                        <v-card-title>
+                        <span class="headline" v-text="deletetitle"></span>
+                        </v-card-title>
+                        <v-card-text>
+                        <v-container grid-list-md>
+                            <v-layout wrap>
+                            <v-flex xs12 sm12 md12>
+                                Er du sikker på at du vil slette '{{deletedItem[nameproperty]}}'?
+                            </v-flex>
+                            </v-layout>
+                        </v-container>
+                        </v-card-text>
+                        <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="blue darken-1" flat @click.native="deleteDialog = false">Annuller</v-btn>
+                        <v-btn color="red darken-1" flat @click.native="deleteElement(deletedItem)">Slet</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
             <v-card-title>
                 <v-layout row>
                     <v-flex xs5>
@@ -80,18 +136,25 @@
                     ></v-text-field>
                     </v-flex>
                     <v-flex xs7  class="text-xs-right">
-                        <v-btn color="primary" @click="addUser" class="mx-0">{{addtitle}}</v-btn>
+                        <v-btn color="primary" @click="addElement" class="mx-0">{{addtitle}}</v-btn>
                     </v-flex>
                 </v-layout>
             </v-card-title>
             <v-data-table
                 :headers="headers"
-                :items="users"
+                :items="elements"
                 :search="search"
             >
                 <template slot="items" slot-scope="props">
-                <td style="max-width: 100px;">{{ props.item.userName }}</td>
-                <td class="text-xs-right"><v-btn class="mx-0" @click="editUser(props.item)">Rediger</v-btn></td>
+                <td style="max-width: 100px;">{{ props.item[nameproperty] }}</td>
+                <td class="text-xs-right">
+                    <v-btn fab small dark color="primary" @click="editElement(props.item)">
+                        <v-icon color="white">edit</v-icon>
+                    </v-btn>
+                    <v-btn fab small dark color="red lighten-1" class="mx-0" @click="promptDelete(props.item)">
+                        <v-icon color="white">delete</v-icon>
+                    </v-btn>
+                </td>
                 </template>
                 <v-alert slot="no-results" :value="true" color="info" icon="warning">
                 Strengen "{{ search }}" gav ingen resulater.
@@ -100,26 +163,30 @@
             </v-card>
     </script>
     <script>
-    Vue.component('users-page', {
-        template: '#users-template',
-        props: [ 'users', 'add', 'update', 'addtitle', 'edittitle', 'haspassword' ],
+    Vue.component('names-page', {
+        template: '#names-template',
+        props: [ 'elements', 'add', 'update', 'delete', 'nameproperty', 'idproperty', 'addtitle', 'deletetitle', 'edittitle', 'haspassword' ],
         data () {
+            var self = this;
+            var editedItem = {};
+            editedItem[this.nameproperty] = null;
             return {
-                editedItem: {
-                    userName: null
-                },
+                editedItem: editedItem,
+                deletedItem: editedItem,
                 search: '',
                 dialog: false,
+                deleteDialog: false,
                 isEditing: false,
                 headers: [
                     {
                         text: 'Navn',
                         align: 'left',
-                        value: 'userName'
+                        value: self.nameproperty
                     },
                     {
                         text: "Handlinger",
                         align: 'right',
+                        value: self.idproperty
                     }
                 ]
             };
@@ -128,31 +195,40 @@
             close () {
                 this.dialog = false;
             },
-            addUser() {
+            addElement() {
                 this.isEditing = false;
                 this.editedItem = {
-                    userName: null,
                     password: null
                 };
+                this.editedItem[this.nameproperty] = null;
                 this.dialog = true;
             },
-            editUser(user) {
+            editElement(element) {
                 this.isEditing = true;
-                this.editedItem = {
-                    userId: user.userId,
-                    userName: user.userName
-                };
+                this.editedItem = {};
+                this.editedItem[this.idproperty] = element[this.idproperty];
+                this.editedItem[this.nameproperty] = element[this.nameproperty];
+                console.log(this.editedItem);
                 this.dialog = true;
+            },
+            promptDelete(element) {
+                this.deletedItem = element;
+                this.deleteDialog = true;
+            },
+            deleteElement(element) {
+                this.elements.splice(this.elements.indexOf(element), 1);
+                this.$emit("delete", this.element);
+                this.deleteDialog = false;
             },
             save() {
                 if (this.isEditing) {
                     var self = this;
-                    var existing = this.users.filter(function (u) { return u.userId == self.editedItem.userId; })[0];
-                    this.users[this.users.indexOf(existing)] = this.editedItem;
-                    this.users.push();
+                    var existing = this.elements.filter(function (u) { return u[self.idproperty] == self.editedItem[self.idproperty]; })[0];
+                    this.elements[this.elements.indexOf(existing)] = this.editedItem;
+                    this.elements.push();
                     this.$emit("update", { newItem: this.editedItem, oldItem: existing });
                 } else {
-                    this.users.push(this.editedItem);
+                    this.elements.push(this.editedItem);
                     this.$emit("add", this.editedItem);
                 }
                 
@@ -172,8 +248,10 @@
             var pages = [
                 { icon: "people", name: "citizens", title: "Borgere" },
                 { icon: "people", name: "guardians", title: "Pædagoger" },
-                { icon: "lock", name: "logout", title: "Log ud" },
             ];
+            if(user.role == "SuperUser")
+                pages.push({ icon: "location_city", name: "departments", title: "Afdelinger" });
+            pages.push({ icon: "lock", name: "logout", title: "Log ud" });
             return {
                 id: user.id,
                 departmentId: user.departmentId,
@@ -182,6 +260,7 @@
                 username: user.username,
                 citizens: [],
                 guardians: [],
+                departments: [],
                 currentPage: pages[0],
                 pages: pages
             };
@@ -198,6 +277,8 @@
                     this.getCitizens();
                 if(this.currentPage.name == "guardians")
                     this.getGuardians();
+                if(this.currentPage.name == "departments")
+                    this.getDepartments();
             },
             logout() {
                 localStorage.removeItem("user");
@@ -206,10 +287,10 @@
             getCitizens() {
                 var self = this;
                 $.ajax({
-                    url: "/v1/User/" + self.id + "/citizens",
+                    url: "/v1/Department/" + self.departmentId + "/",
                     headers: { "Authorization": "Bearer " + self.token },
                     success: function (data) {
-                        self.citizens = data.data;
+                        self.citizens = data.data.members.filter(function(m) { return m.userRole == "Citizen"; });
                     }
                 });
             },
@@ -219,7 +300,27 @@
                     url: "/v1/Department/" + self.departmentId + "/",
                     headers: { "Authorization": "Bearer " + self.token },
                     success: function (data) {
-                        self.guardians = data.data.members;
+                        self.guardians = data.data.members.filter(function(m) { return m.userRole == "Guardian"; });
+                    }
+                });
+            },
+            getGuardians() {
+                var self = this;
+                $.ajax({
+                    url: "/v1/Department/" + self.departmentId + "/",
+                    headers: { "Authorization": "Bearer " + self.token },
+                    success: function (data) {
+                        self.guardians = data.data.members.filter(function(m) { return m.userRole == "Guardian"; });
+                    }
+                });
+            },
+            getDepartments() {
+                var self = this;
+                $.ajax({
+                    url: "/v1/Department/",
+                    headers: { "Authorization": "Bearer " + self.token },
+                    success: function (data) {
+                        self.departments = data.data;
                     }
                 });
             },
@@ -229,8 +330,39 @@
             addCitizen(citizen) {
                 this.register(this.citizens, citizen, "Citizen");
             },
+            deleteCitizen(citizen) {
+                $.ajax({
+                    url: "/v1/User/" + citizen.userId,
+                    type: 'POST',
+                    contentType: "application/json",
+                    data: JSON.stringify(department),
+                    headers: { "Authorization": "Bearer " + self.token },
+                    success: function (data) {
+                        if (!data.success)
+                            self.departments.splice(self.departments.indexOf(department), 1);
+                        else
+                            department.id = data.data.id;
+                    }
+                });
+            },
             addGuardian(guardian) {
                 this.register(this.guardians, guardian, "Guardian");
+            },
+            addDepartment(department) {
+                var self = this;
+                $.ajax({
+                    url: "/v1/Department/",
+                    type: 'POST',
+                    contentType: "application/json",
+                    data: JSON.stringify(department),
+                    headers: { "Authorization": "Bearer " + self.token },
+                    success: function (data) {
+                        if (!data.success)
+                            self.departments.splice(self.departments.indexOf(department), 1);
+                        else
+                            department.id = data.data.id;
+                    }
+                });
             },
             register(users, user, role) {
                 var self = this;
@@ -257,6 +389,23 @@
             updateGuardian(e) {
                 this.updateUser(this.guardians, e.oldItem, e.newItem);
             },
+            updateDepartment(e) {
+                alert("Add call to api");
+                var self = this;
+                $.ajax({
+                    url: "/v1/Department/" + e.oldItem.id,
+                    type: 'PUT',
+                    contentType: "application/json",
+                    data: JSON.stringify(e.newItem),
+                    headers: { "Authorization": "Bearer " + self.token },
+                    success: function (data) {
+                        if (!data.success) {
+                            self.departments[self.departments.indexOf(e.newItem)] = e.oldItem;
+                            self.departments.push();
+                        }
+                    }
+                });
+            },
             updateUser(users, oldUser, newUser) {
                 var self = this;
                 newUser.screenName = newUser.userName;
@@ -268,13 +417,21 @@
                     headers: { "Authorization": "Bearer " + self.token },
                     success: function (data) {
                         if (!data.success) {
-                            users[users.indexOf(newUser)] = oldUser;
+                            users[elements.indexOf(newUser)] = oldUser;
                             users.push();
                         }
                     }
                 });
+            },
+            deleteCitizen(citizen){
+                alert("Add call to api");
+            },
+            deleteGuardian(guardian){
+                alert("Add call to api");
+            },
+            deleteDepartment(department){
+                alert("Add call to api");
             }
-
         }
     });
     app.init();
