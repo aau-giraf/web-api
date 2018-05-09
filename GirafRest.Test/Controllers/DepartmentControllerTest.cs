@@ -9,6 +9,7 @@ using GirafRest.Test.Mocks;
 using static GirafRest.Test.UnitTestExtensions;
 using Xunit.Abstractions;
 using System.Linq;
+using static GirafRest.Test.UnitTestExtensions.TestContext;
 
 namespace GirafRest.Test.Controllers
 {
@@ -55,6 +56,9 @@ namespace GirafRest.Test.Controllers
         public void Get_GetExistingDepartmentByID_OK()
         {
             var dc = initializeTest();
+            
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserGuardianDepartment1]);
+            
             var res = dc.Get(DEPARTMENT_ONE).Result;
 
             Assert.IsType<Response<DepartmentDTO>>(res);
@@ -69,11 +73,15 @@ namespace GirafRest.Test.Controllers
         {
             var dc = initializeTest();
             AddEmptyDepartmentList();
+            
+            
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserGuardianDepartment1]);
+            
             var res = dc.Get(DEPARTMENT_ONE).Result;
 
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
             Assert.False(res.Success);
-            Assert.Equal(res.ErrorCode, ErrorCode.NotFound);
+            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
 
         [Fact]

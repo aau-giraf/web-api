@@ -13,5 +13,5 @@ except :
           'Exiting...\n')
     sys.exit()
 
-integrate.TestRunner(dirs=["tests"], pattern="*.py").run()
+integrate.TestRunner(dirs=["tests"], pattern="departmentController.py").run()
 
