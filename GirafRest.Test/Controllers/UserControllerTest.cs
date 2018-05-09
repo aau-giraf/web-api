@@ -49,7 +49,6 @@ namespace GirafRest.Test
             var usercontroller = new UserController(
                 new MockGirafService(_testContext.MockDbContext.Object,
                 _testContext.MockUserManager),
-                new Mock<IEmailService>().Object,
                 _testContext.MockLoggerFactory.Object,
                 _testContext.MockRoleManager.Object,
                 new GirafAuthenticationService(_testContext.MockDbContext.Object,_testContext.MockRoleManager.Object,
@@ -211,7 +210,6 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[userToEdit]);
             _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
             usercontroller.SetUserIcon(_testContext.MockUsers[userToEdit].Id).Wait();
-            _testContext.MockUserManager.MockLogout();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[authUser]);
             var res = usercontroller.DeleteUserIcon(_testContext.MockUsers[userToEdit].Id).Result;
 

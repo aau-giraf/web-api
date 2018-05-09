@@ -65,6 +65,16 @@ namespace GirafRest.Controllers
         [HttpGet("{id}")]
         public async Task<Response<DepartmentDTO>> Get(long id)
         {
+            var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
+
+            if (currentUser == null)
+                return new ErrorResponse<DepartmentDTO>(ErrorCode.UserNotFound);
+                  
+            var isSuperUser = await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser);
+
+            if (currentUser?.DepartmentKey != id && !isSuperUser)
+                return new ErrorResponse<DepartmentDTO>(ErrorCode.NotAuthorized);
+            
             //.Include is used to get information on members aswell when getting the Department
             var department = _giraf._context.Departments
                 .Where(dep => dep.Key == id);
@@ -77,7 +87,8 @@ namespace GirafRest.Controllers
             if (depa == null)
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.NotFound);
 
-            return new Response<DepartmentDTO>(new DepartmentDTO(depa));
+            var members = DepartmentDTO.FindMembers(depa.Members, _roleManager, _giraf);
+            return new Response<DepartmentDTO>(new DepartmentDTO(depa, members));
         }
 
         /// <summary>
@@ -101,7 +112,7 @@ namespace GirafRest.Controllers
                   
             var isSuperUser = await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser);
 
-            if (currentUser?.Department.Key != department?.Key && !isSuperUser)
+            if (currentUser?.DepartmentKey != department?.Key && !isSuperUser)
                 return new ErrorResponse<List<UserNameDTO>>(ErrorCode.NotAuthorized);
 
 
@@ -116,9 +127,10 @@ namespace GirafRest.Controllers
             if (!userIds.Any()) return new ErrorResponse<List<UserNameDTO>>(ErrorCode.DepartmentHasNoCitizens);
 
             var usersNamesInDepartment = _giraf._context.Users
-                                               .Where(u => userIds.Any(ui => ui == u.Id)
-                                                      && u.DepartmentKey == department.Key)
-                                               .Select(u => new UserNameDTO(u.UserName, u.Id)).ToList();
+                .Where(u => userIds.Any(ui => ui == u.Id) && u.DepartmentKey == department.Key)
+                .Select(u =>
+                    new UserNameDTO(u.UserName, GirafRoles.Citizen, u.Id)
+                ).ToList();
 
             return new Response<List<UserNameDTO>>(usersNamesInDepartment);
         }
@@ -138,14 +150,14 @@ namespace GirafRest.Controllers
                     return new ErrorResponse<DepartmentDTO>(ErrorCode.MissingProperties,
                         "Deparment name has to be specified!");
 
-                var authenticatedUser = await _giraf.LoadUserAsync(HttpContext.User);
+                var authenticatedUser = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
                 
                 if(authenticatedUser == null)
                     return new ErrorResponse<DepartmentDTO>(ErrorCode.UserNotFound);
                 
                 var userRole = await _roleManager.findUserRole(_giraf._userManager, authenticatedUser);
 
-                if (!(await _giraf._userManager.IsInRoleAsync(authenticatedUser, GirafRole.SuperUser)))
+                if (userRole != GirafRoles.SuperUser)
                     return new ErrorResponse<DepartmentDTO>(ErrorCode.NotAuthorized);
 
                 //Add the department to the database.
@@ -200,7 +212,9 @@ namespace GirafRest.Controllers
 
                 //Save the changes and return the entity
                 await _giraf._context.SaveChangesAsync();
-                return new Response<DepartmentDTO>(new DepartmentDTO(department));
+
+                var members = DepartmentDTO.FindMembers(department.Members, _roleManager, _giraf);
+                return new Response<DepartmentDTO>(new DepartmentDTO(department, members));
             }
             catch (System.Exception e)
             {
@@ -267,7 +281,9 @@ namespace GirafRest.Controllers
             user.DepartmentKey = dep.Key;
             dep.Members.Add(user);
             await _giraf._context.SaveChangesAsync();
-            return new Response<DepartmentDTO>(new DepartmentDTO(dep));
+
+            var members = DepartmentDTO.FindMembers(dep.Members, _roleManager, _giraf);
+            return new Response<DepartmentDTO>(new DepartmentDTO(dep, members));
         }
 
         /// <summary>
@@ -288,7 +304,7 @@ namespace GirafRest.Controllers
         {
             //Fetch the department and check that it exists.
             var department = await _giraf._context.Departments.Where(d => d.Key == departmentId).FirstOrDefaultAsync();
-            var usr = await _giraf.LoadUserAsync(HttpContext.User);
+            var usr = await _giraf.LoadAllUserDataAsync(HttpContext.User);
 
             if (department == null)
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.DepartmentNotFound);
@@ -329,7 +345,8 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             //Return Ok and the department - the resource is now visible in deparment.Resources
-            return new Response<DepartmentDTO>(new DepartmentDTO(department));
+            var members = DepartmentDTO.FindMembers(department.Members, _roleManager, _giraf);
+            return new Response<DepartmentDTO>(new DepartmentDTO(department, members));
         }
 
         /// <summary>
@@ -347,7 +364,7 @@ namespace GirafRest.Controllers
         public async Task<Response<DepartmentDTO>> RemoveResource(long resourceId)
         {
             //Fetch the department and check that it exists.
-            var usr = await _giraf.LoadUserAsync(HttpContext.User);
+            var usr = await _giraf.LoadAllUserDataAsync(HttpContext.User);
 
             //Fetch the resource with the given id, check that it exists.
             var resource = await _giraf._context.Pictograms
@@ -374,7 +391,9 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             //Return Ok and the department - the resource is now visible in deparment.Resources
-            return new Response<DepartmentDTO>(new DepartmentDTO(usr.Department));
+
+            var members = DepartmentDTO.FindMembers(usr.Department.Members, _roleManager, _giraf);
+            return new Response<DepartmentDTO>(new DepartmentDTO(usr.Department, members));
         }
 
         #region Helpers

@@ -57,9 +57,10 @@ class UserControllerTest(TestCase):
         'Register Gunnar'
         self.gunnarUsername = 'Gunnar{0}'.format(str(time.time()))
 
-        response = requests.post(Test.url + 'account/register', json={
+        response = requests.post(Test.url + 'account/register', headers=auth(self.graatand), json={
             "username": self.gunnarUsername,
             "password": "password",
+            "role": "Citizen",
             "departmentId": 1
         }).json()
 
@@ -74,9 +75,10 @@ class UserControllerTest(TestCase):
     def newCharlie(self, check):
         'Register Charlie'
         self.charlieUsername = 'Charlie{0}'.format(str(time.time()))
-        response = requests.post(Test.url + 'account/register', json={
+        response = requests.post(Test.url + 'account/register', headers=auth(self.graatand), json={
             "username": self.charlieUsername,
             "password": "password",
+            "role": "Citizen",
             "departmentId": 1
         }).json()
         ensureSuccess(response, check)
