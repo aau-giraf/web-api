@@ -114,7 +114,7 @@ namespace GirafRest.Controllers
 
             var loginUser = _giraf._context.Users.FirstOrDefault(u => u.UserName == model.Username);
             var userRoles = await _roleManager.findUserRole(_giraf._userManager, loginUser);
-            return new Response<string>(await GenerateJwtToken(loginUser, loginUser.Id, userRoles));
+            return new Response<string>(await GenerateJwtToken(loginUser, userRoles));
 
         }
 
@@ -222,41 +222,6 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Attempts to login from to a user's account from one of his superior's. This allows departments
-        /// to login as Guardians and guardians to login as citizens. The superiors does not require 
-        /// password in order to login, but they must be in the same department. 
-        /// </summary>
-        /// <param name="superior">The Guardian user who is currently authenticated.</param>
-        /// <param name="username">The username of the citizen to login as.</param>
-        /// <param name="role">A string describing which role the target user is in.</param>
-        /// <returns>
-        /// A response containing a JwtToken or an ErrorReponse
-        /// </returns>
-        private async Task<Response<string>> AttemptRoleLoginTokenAsync(GirafUser superior, string username, string role)
-        {
-            //Attempt to find a user with the given username in the guardian's department
-            var loginUser = _giraf._context.Users.FirstOrDefault(u => u.UserName == username);
-
-            if (loginUser != null && loginUser.DepartmentKey == superior.DepartmentKey)
-            {
-                if (!await _giraf._userManager.IsInRoleAsync(loginUser, role))
-                    return new ErrorResponse<string>(ErrorCode.NotAuthorized);
-
-                await _signInManager.SignOutAsync();
-                await _signInManager.SignInAsync(loginUser, isPersistent: true);
-
-                // Get the roles the user is associated with
-                GirafRoles userRoles = await _roleManager.findUserRole(_giraf._userManager, loginUser);
-
-                return new Response<string>(await GenerateJwtToken(loginUser, User.Claims.FirstOrDefault(c => c.Type == "impersonatedBy")?.Value, userRoles));
-            }
-
-            //There was no user with the given username in the department - return invalidcredentials.
-            else
-                return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
-        }
-
-        /// <summary>
         /// Gets roles s.t we can get role from payload 
         /// </summary>
         /// <returns>The role claims.</returns>
@@ -277,13 +242,13 @@ namespace GirafRest.Controllers
         /// <returns>
         /// The Token as a string
         /// </returns>
-        private async Task<string> GenerateJwtToken(GirafUser user, string impersonatedBy, GirafRoles roles)
+        private async Task<string> GenerateJwtToken(GirafUser user, GirafRoles roles)
         {
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim("impersonatedBy", impersonatedBy ?? ""),
+                new Claim("departmentId", user.DepartmentKey?.ToString()),
             };
 
             claims.AddRange(await GetRoleClaims(user));

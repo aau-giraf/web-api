@@ -34,8 +34,8 @@
             </v-toolbar>
             <v-content>
                 <v-container fluid fill-width>
-                    <users-page v-if="atPage('citizens')" v-on:add="addCitizen($event)" v-on:update="updateCitizen($event)" addtitle="Opret Borger" edittitle="Rediger Borger" v-bind:users="citizens"></users-page>
-                    <users-page v-if="atPage('guardians')" v-on:add="addGuardian($event)" v-on:update="updateGuardian($event)" addtitle="Opret Pædagog" edittitle="Rediger Pædagog" v-bind:users="guardians"></users-page>
+                    <users-page v-if="atPage('citizens')" v-on:add="addCitizen($event)" v-on:update="updateCitizen($event)" addtitle="Opret Borger" haspassword="false" edittitle="Rediger Borger" v-bind:users="citizens"></users-page>
+                    <users-page v-if="atPage('guardians')" v-on:add="addGuardian($event)" v-on:update="updateGuardian($event)" addtitle="Opret Pædagog" haspassword="true" edittitle="Rediger Pædagog" v-bind:users="guardians"></users-page>
                 </v-container>
             </v-content>
         </v-app>
@@ -56,6 +56,7 @@
                         <v-layout wrap>
                         <v-flex xs12 sm12 md12>
                             <v-text-field v-model="editedItem.userName" label="Navn"></v-text-field>
+                            <v-text-field v-if="haspassword == 'true'" v-model="editedItem.password" label="Password"></v-text-field>
                         </v-flex>
                         </v-layout>
                     </v-container>
@@ -89,7 +90,8 @@
                 :search="search"
             >
                 <template slot="items" slot-scope="props">
-                <td @click="editUser(props.item)">{{ props.item.userName }}</td>
+                <td style="max-width: 100px;">{{ props.item.userName }}</td>
+                <td class="text-xs-right"><v-btn class="mx-0" @click="editUser(props.item)">Rediger</v-btn></td>
                 </template>
                 <v-alert slot="no-results" :value="true" color="info" icon="warning">
                 Strengen "{{ search }}" gav ingen resulater.
@@ -100,7 +102,7 @@
     <script>
     Vue.component('users-page', {
         template: '#users-template',
-        props: [ 'users', 'add', 'update', 'addtitle', 'edittitle' ],
+        props: [ 'users', 'add', 'update', 'addtitle', 'edittitle', 'haspassword' ],
         data () {
             return {
                 editedItem: {
@@ -114,6 +116,10 @@
                         text: 'Navn',
                         align: 'left',
                         value: 'userName'
+                    },
+                    {
+                        text: "Handlinger",
+                        align: 'right',
                     }
                 ]
             };
@@ -126,6 +132,7 @@
                 this.isEditing = false;
                 this.editedItem = {
                     userName: null,
+                    password: null
                 };
                 this.dialog = true;
             },
@@ -159,10 +166,8 @@
     var app = new Vue({
         el: '#app',
         data() {
-            var username = localStorage.getItem("username");
-            var token = localStorage.getItem("token");
-            var id = localStorage.getItem("id");
-            if(username == undefined || token == undefined)
+            var user = JSON.parse(localStorage.getItem("user"));
+            if(user == undefined)
                 this.logout();
             var pages = [
                 { icon: "people", name: "citizens", title: "Borgere" },
@@ -170,10 +175,11 @@
                 { icon: "lock", name: "logout", title: "Log ud" },
             ];
             return {
-                id: id,
+                id: user.id,
+                departmentId: user.departmentId,
                 drawer: null,
-                token: token,
-                username: username,
+                token: user.token,
+                username: user.username,
                 citizens: [],
                 guardians: [],
                 currentPage: pages[0],
@@ -194,10 +200,7 @@
                     this.getGuardians();
             },
             logout() {
-                localStorage.removeItem("token");
-                localStorage.removeItem("username");
-                localStorage.removeItem("role");
-                localStorage.removeItem("id");
+                localStorage.removeItem("user");
                 window.location = "/admin/login.html";
             },
             getCitizens() {
@@ -213,7 +216,7 @@
             getGuardians() {
                 var self = this;
                 $.ajax({
-                    url: "/v1/Department/" + 1 + "/",
+                    url: "/v1/Department/" + self.departmentId + "/",
                     headers: { "Authorization": "Bearer " + self.token },
                     success: function (data) {
                         self.guardians = data.data.members;
@@ -231,9 +234,9 @@
             },
             register(users, user, role) {
                 var self = this;
-                user.departmentId = 1;
+                user.departmentId = self.departmentId;
                 user.role = role;
-                user.password = "password";
+                user.password = user.password || "password";
                 $.ajax({
                     url: "/v1/Account/register",
                     type: 'POST',
@@ -243,6 +246,8 @@
                     success: function (data) {
                         if (!data.success)
                             users.splice(users.indexOf(user), 1);
+                        else
+                            user.userId = data.data.id;
                     }
                 });
             },

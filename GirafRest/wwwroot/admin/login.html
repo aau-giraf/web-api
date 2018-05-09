@@ -87,11 +87,16 @@
                                 var payload = parseJwt(data.data);
                                 var role = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
                                 var id = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
-                                if (role == "Guardian") {
-                                    localStorage.setItem("role", role);
-                                    localStorage.setItem("token", data.data);
-                                    localStorage.setItem("username", self.credentials.username);
-                                    localStorage.setItem("id", id);
+                                var department = payload['departmentId'];
+                                if (role == "Guardian" || role == "SuperUser" || role == "Department") {
+                                    var userInfo = {
+                                        role: role,
+                                        token: data.data,
+                                        username: self.credentials.username,
+                                        id: id,
+                                        departmentId: department
+                                    };
+                                    localStorage.setItem("user", JSON.stringify(userInfo));
                                     window.location = "/admin/main.html"
                                 } else {
                                     self.wrongRole = true;
