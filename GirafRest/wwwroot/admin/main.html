@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
-  <link href="https://unpkg.com/vuetify/dist/vuetify.min.css" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" media="screen" href="css/styles.css" />
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
+    <link href="https://unpkg.com/vuetify/dist/vuetify.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" media="screen" href="css/styles.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8" />
 </head>
 <body>
     <div id="app">
@@ -32,9 +33,10 @@
             <v-toolbar-title v-text="currentPage.title"></v-toolbar-title>
             </v-toolbar>
             <v-content>
-            <v-container fluid fill-width>
-               <users-page v-if="atPage('citizens')" v-on:add="addCitizen($event)" v-bind:users="citizens"></citizens-page>
-            </v-container>
+                <v-container fluid fill-width>
+                    <users-page v-if="atPage('citizens')" v-on:add="addCitizen($event)" v-on:update="updateCitizen($event)" addtitle="Opret Borger" edittitle="Rediger Borger" v-bind:users="citizens"></users-page>
+                    <users-page v-if="atPage('guardians')" v-on:add="addGuardian($event)" v-on:update="updateGuardian($event)" addtitle="Opret Pædagog" edittitle="Rediger Pædagog" v-bind:users="guardians"></users-page>
+                </v-container>
             </v-content>
         </v-app>
     </div>
@@ -47,7 +49,7 @@
             <v-dialog v-model="dialog" max-width="500px">
                 <v-card>
                     <v-card-title>
-                    <span class="headline">Opret Borger</span>
+                    <span class="headline" v-text="isEditing ? edittitle : addtitle"></span>
                     </v-card-title>
                     <v-card-text>
                     <v-container grid-list-md>
@@ -64,7 +66,7 @@
                     <v-btn color="blue darken-1" flat @click.native="save">Gem</v-btn>
                     </v-card-actions>
                 </v-card>
-                </v-dialog>
+            </v-dialog>
             <v-card-title>
                 <v-layout row>
                     <v-flex xs5>
@@ -77,17 +79,17 @@
                     ></v-text-field>
                     </v-flex>
                     <v-flex xs7  class="text-xs-right">
-                        <v-btn color="primary" @click="dialog = true" class="mx-0">Opret Borger</v-btn>
+                        <v-btn color="primary" @click="addUser" class="mx-0">{{addtitle}}</v-btn>
                     </v-flex>
                 </v-layout>
             </v-card-title>
             <v-data-table
                 :headers="headers"
-                :items="citizens"
+                :items="users"
                 :search="search"
             >
                 <template slot="items" slot-scope="props">
-                <td>{{ props.item.userName }}</td>
+                <td @click="editUser(props.item)">{{ props.item.userName }}</td>
                 </template>
                 <v-alert slot="no-results" :value="true" color="info" icon="warning">
                 Strengen "{{ search }}" gav ingen resulater.
@@ -98,7 +100,7 @@
     <script>
     Vue.component('users-page', {
         template: '#users-template',
-        props: [ 'users', 'add' ],
+        props: [ 'users', 'add', 'update', 'addtitle', 'edittitle' ],
         data () {
             return {
                 editedItem: {
@@ -106,6 +108,7 @@
                 },
                 search: '',
                 dialog: false,
+                isEditing: false,
                 headers: [
                     {
                         text: 'Navn',
@@ -119,12 +122,33 @@
             close () {
                 this.dialog = false;
             },
-            save () {
-                this.citizens.push(this.editedItem);
-                this.$emit("add", this.editedItem);
+            addUser() {
+                this.isEditing = false;
                 this.editedItem = {
-                    userName: null
+                    userName: null,
                 };
+                this.dialog = true;
+            },
+            editUser(user) {
+                this.isEditing = true;
+                this.editedItem = {
+                    userId: user.userId,
+                    userName: user.userName
+                };
+                this.dialog = true;
+            },
+            save() {
+                if (this.isEditing) {
+                    var self = this;
+                    var existing = this.users.filter(function (u) { return u.userId == self.editedItem.userId; })[0];
+                    this.users[this.users.indexOf(existing)] = this.editedItem;
+                    this.users.push();
+                    this.$emit("update", { newItem: this.editedItem, oldItem: existing });
+                } else {
+                    this.users.push(this.editedItem);
+                    this.$emit("add", this.editedItem);
+                }
+                
                 this.close();
             }
         }
@@ -137,6 +161,7 @@
         data() {
             var username = localStorage.getItem("username");
             var token = localStorage.getItem("token");
+            var id = localStorage.getItem("id");
             if(username == undefined || token == undefined)
                 this.logout();
             var pages = [
@@ -145,10 +170,12 @@
                 { icon: "lock", name: "logout", title: "Log ud" },
             ];
             return {
+                id: id,
                 drawer: null,
                 token: token,
                 username: username,
-                citizens: [10,20,30],
+                citizens: [],
+                guardians: [],
                 currentPage: pages[0],
                 pages: pages
             };
@@ -170,15 +197,26 @@
                 localStorage.removeItem("token");
                 localStorage.removeItem("username");
                 localStorage.removeItem("role");
+                localStorage.removeItem("id");
                 window.location = "/admin/login.html";
             },
             getCitizens() {
                 var self = this;
                 $.ajax({
-                    url: "/v1/User/" + self.username + "/citizens",
+                    url: "/v1/User/" + self.id + "/citizens",
                     headers: { "Authorization": "Bearer " + self.token },
                     success: function (data) {
                         self.citizens = data.data;
+                    }
+                });
+            },
+            getGuardians() {
+                var self = this;
+                $.ajax({
+                    url: "/v1/Department/" + 1 + "/",
+                    headers: { "Authorization": "Bearer " + self.token },
+                    success: function (data) {
+                        self.guardians = data.data.members;
                     }
                 });
             },
@@ -186,21 +224,52 @@
                 return this.currentPage.name == pageName;
             },
             addCitizen(citizen) {
+                this.register(this.citizens, citizen, "Citizen");
+            },
+            addGuardian(guardian) {
+                this.register(this.guardians, guardian, "Guardian");
+            },
+            register(users, user, role) {
                 var self = this;
-                citizen.departmentId = 1;
-                citizen.password = "password";
+                user.departmentId = 1;
+                user.role = role;
+                user.password = "password";
                 $.ajax({
                     url: "/v1/Account/register",
                     type: 'POST',
                     contentType: "application/json",
-                    data: JSON.stringify(citizen),
+                    data: JSON.stringify(user),
                     headers: { "Authorization": "Bearer " + self.token },
                     success: function (data) {
-                        if(!data.success)
-                            self.citizens.splice(self.citizens.indexOf(citizen), 1);
+                        if (!data.success)
+                            users.splice(users.indexOf(user), 1);
+                    }
+                });
+            },
+            updateCitizen(e) {
+                this.updateUser(this.citizens, e.oldItem, e.newItem);
+            },
+            updateGuardian(e) {
+                this.updateUser(this.guardians, e.oldItem, e.newItem);
+            },
+            updateUser(users, oldUser, newUser) {
+                var self = this;
+                newUser.screenName = newUser.userName;
+                $.ajax({
+                    url: "/v1/User/" + oldUser.userId,
+                    type: 'PUT',
+                    contentType: "application/json",
+                    data: JSON.stringify(newUser),
+                    headers: { "Authorization": "Bearer " + self.token },
+                    success: function (data) {
+                        if (!data.success) {
+                            users[users.indexOf(newUser)] = oldUser;
+                            users.push();
+                        }
                     }
                 });
             }
+
         }
     });
     app.init();
