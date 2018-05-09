@@ -1,5 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using GirafRest.Extensions;
+using GirafRest.Services;
+using Microsoft.AspNetCore.Identity;
 
 namespace GirafRest.Models.DTOs
 {
@@ -30,21 +33,35 @@ namespace GirafRest.Models.DTOs
         /// Creates a new department data transfer object from a given department.
         /// </summary>
         /// <param name="department">The department to transfer.</param>
-        public DepartmentDTO(Department department)
+        /// <param name="roleManager">Used for finding the members' roles.</param>
+        /// <param name="girafService">Used for finding the members' roles.</param>
+        public DepartmentDTO(Department department, IEnumerable<UserNameDTO> users)
         {
-            this.Id = department.Key;
-            this.Name = department.Name;
-            this.Members = new List<UserNameDTO> (department.Members.Select(m => new UserNameDTO(m.UserName, m.Id)));
-            this.Resources = new List<long> (department.Resources.Select(dr => dr.PictogramKey));
+            Id = department.Key;
+            Members = users.ToList();
+            Name = department.Name;
+            
+            Resources = new List<long> (department.Resources.Select(dr => dr.PictogramKey));
         }
 
         /// <summary>
-        /// DO NOT DELETE THIS! NEWTONSOFT REQUIRES AN EMPTY CONSTRUCTOR!
+        /// Testing framework requires empty constructor.
         /// </summary>
         public DepartmentDTO ()
         {
             Members = new List<UserNameDTO>();
             Resources = new List<long>();
+        }
+
+        public static List<UserNameDTO> FindMembers(IEnumerable<GirafUser> users, RoleManager<GirafRole> roleManager, IGirafService girafService)
+        {
+            return new List<UserNameDTO>(
+                users.Select(m => new UserNameDTO(
+                        m.UserName,
+                        roleManager.findUserRole(girafService._userManager, m).Result,
+                        m.Id
+                    )
+                ));
         }
     }
 }

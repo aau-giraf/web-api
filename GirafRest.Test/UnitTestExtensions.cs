@@ -90,6 +90,7 @@ namespace GirafRest.Test
             public const int UserDepartment2 = 6;
             public const int UserCitizenDepartment1 = 8;
             public const int UserGuardianNoDepartment = 9;
+            public const int UserGuardianDepartment1 = 10;
             
             private List<GirafUser> mockUsers = null;
             public List<GirafUser> MockUsers
@@ -97,67 +98,74 @@ namespace GirafRest.Test
                 get
                 {
                     if (mockUsers == null)
-                        mockUsers = new List<GirafUser>() {
-                        new GirafUser()
+                        mockUsers = new List<GirafUser>()
                         {
-                            UserName = "Admin",
-                            Id = "admin",
-                            DepartmentKey = 1,
-                        },
-                        new GirafUser()
-                        {
-                            UserName = "Guardian in dep 2",
-                            Id = "guardian2",
-                            DepartmentKey = 2,
-                        },
-                        new GirafUser()
-                        {
-                            UserName = "Citizen of dep 2",
-                            Id = "citizen2",
-                            DepartmentKey = 2
-                        },
-                        new GirafUser()
-                        {
-                            UserName = "Citizen of dep 3",
-                            Id = "citizen3",
-                            DepartmentKey = 3
-                        },
-                        new GirafUser()
-                        {
-                            UserName = "Admin without Department",
-                            Id = "nimda"
-                        },
-                        new GirafUser()
-                        {
-                            UserName = "Guardian 2 in dep 2",
-                            Id = "guardian22",
-                            DepartmentKey = 2
-                        },
-                        new GirafUser()
-                        {
-                            UserName = "Departmant in dep2",
-                            Id = "department2",
-                            DepartmentKey = 2,
-                        },
-                        new GirafUser()
-                        {
-                            UserName = "Guardian 3 in dep 3",
-                            Id = "guardian3",
-                            DepartmentKey = 1
-                        },
-                        new GirafUser()
-                        {
-                            UserName = "Citizen of dep 1",
-                            Id = "citizen4",
-                            DepartmentKey = 1
-                        },
-                        new GirafUser()
-                        {
-                            UserName = "Citizen of no department",
-                            Id = "citizen5NoDepartment",
-                            DepartmentKey = 0
-                        }
-                    };
+                            new GirafUser()
+                            {
+                                UserName = "Admin",
+                                Id = "admin",
+                                DepartmentKey = 1,
+                            },
+                            new GirafUser()
+                            {
+                                UserName = "Guardian in dep 2",
+                                Id = "guardian2",
+                                DepartmentKey = 2,
+                            },
+                            new GirafUser()
+                            {
+                                UserName = "Citizen of dep 2",
+                                Id = "citizen2",
+                                DepartmentKey = 2
+                            },
+                            new GirafUser()
+                            {
+                                UserName = "Citizen of dep 3",
+                                Id = "citizen3",
+                                DepartmentKey = 3
+                            },
+                            new GirafUser()
+                            {
+                                UserName = "Admin without Department",
+                                Id = "nimda"
+                            },
+                            new GirafUser()
+                            {
+                                UserName = "Guardian 2 in dep 2",
+                                Id = "guardian22",
+                                DepartmentKey = 2
+                            },
+                            new GirafUser()
+                            {
+                                UserName = "Departmant in dep2",
+                                Id = "department2",
+                                DepartmentKey = 2,
+                            },
+                            new GirafUser()
+                            {
+                                UserName = "Guardian 3 in dep 3",
+                                Id = "guardian3",
+                                DepartmentKey = 1
+                            },
+                            new GirafUser()
+                            {
+                                UserName = "Citizen of dep 1",
+                                Id = "citizen4",
+                                DepartmentKey = 1
+                            },
+                            new GirafUser()
+                            {
+                                UserName = "Citizen of no department",
+                                Id = "citizen5NoDepartment",
+                                DepartmentKey = 0
+                            },
+                            new GirafUser()
+                            {
+                                UserName = "Guardian in dep 1",
+                                Id = "GuardianDepartment1",
+                                DepartmentKey = 1
+                            }
+                        };
 
                     return mockUsers;
                 }
@@ -468,6 +476,16 @@ namespace GirafRest.Test
                             new IdentityUserRole<string>()
                             {
                                 UserId = MockUsers[UserGuardianNoDepartment].Id,
+                                RoleId = MockRoles[RoleGuardian].Id
+                            },
+                            new IdentityUserRole<string>()
+                            {
+                                UserId = MockUsers[UserGuardian2Department2].Id,
+                                RoleId = MockRoles[RoleGuardian].Id
+                            },
+                            new IdentityUserRole<string>()
+                            {
+                                UserId = MockUsers[UserGuardianDepartment1].Id,
                                 RoleId = MockRoles[RoleGuardian].Id
                             },
                         };

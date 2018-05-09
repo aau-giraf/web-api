@@ -255,7 +255,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void Register_GuardianRelation_Success(){
+        public void Register_GuardianRelation_AutomaticallyAdded(){
             var accountController = InitializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = accountController.Register(new RegisterDTO() { Username = "JohnDoe", 
@@ -267,7 +267,7 @@ namespace GirafRest.Test
             var guardian = _testContext.MockUsers.FirstOrDefault(u => u.UserName == "Guardian in dep 2");
             var newUser = _testContext.MockUsers.FirstOrDefault(u => u.UserName == "JohnDoe");
             // check data
-            Assert.Equal(1, newUser.Guardians.Count());
+            Assert.Equal(2, newUser.Guardians.Count());
             Assert.Equal(guardian, newUser.Guardians.First().Guardian);
         }
 
