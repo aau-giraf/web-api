@@ -26,7 +26,7 @@ namespace GirafRest
         /// <returns>The user access.</returns>
         /// <param name="authUser">Auth user.</param>
         /// <param name="userToEdit">User to edit.</param>
-        Task<bool> CheckUserAccess(GirafUser authUser, GirafUser userToEdit);
+        Task<bool> HasReadUserAccess(GirafUser authUser, GirafUser userToEdit);
 
         /// <summary>
         /// Method for checking if a specific user has the rights to add a specific role to a given department
@@ -35,6 +35,19 @@ namespace GirafRest
         /// <param name="authUser">Auth user.</param>
         /// <param name="roleToAdd">Role to add.</param>
         /// <param name="departmentKey">Department key.</param>
-        Task<bool> CheckRegisterRights(GirafUser authUser, GirafRoles roleToAdd, long departmentKey);
+        Task<bool> HasRegisterUserAccess(GirafUser authUser, GirafRoles roleToAdd, long departmentKey);
+        
+        /// <summary>
+        /// Method for checking wheteher the authenticated user is allowed to edit and view templates in general. 
+        /// </summary>
+        /// <param name="authUser">The user in question</param>
+        Task<bool> HasTemplateAccess(GirafUser authUser);
+
+        /// <summary>
+        /// Method for checking wheteher the authenticated user is allowed to edit and view templates in the given department. 
+        /// </summary>
+        /// <param name="authUser">The user in question</param>
+        /// <param name="departmentKey">Department of the template in question</param>
+        Task<bool> HasTemplateAccess(GirafUser authUser, long? departmentKey);
     }
 }

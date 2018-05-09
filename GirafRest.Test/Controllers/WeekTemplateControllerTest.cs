@@ -33,14 +33,20 @@ namespace GirafRest.Test
         private WeekTemplateController InitializeTest()
         {
             _testContext = new TestContext();
-            
-             var wtc = new WeekTemplateController(
+
+            var wtc = new WeekTemplateController(
                 new MockGirafService(
                     _testContext.MockDbContext.Object,
-                    _testContext.MockUserManager),
+                    _testContext.MockUserManager
+                    ),
                 _testContext.MockRoleManager.Object,
-                _testContext.MockLoggerFactory.Object
+                _testContext.MockLoggerFactory.Object,
+                new GirafAuthenticationService(_testContext.MockDbContext.Object,
+                    _testContext.MockRoleManager.Object,
+                    _testContext.MockUserManager
+                    )
             );
+            
 
             _testContext.MockHttpContext = wtc.MockHttpContext();
 
@@ -71,7 +77,7 @@ namespace GirafRest.Test
             var wtc = InitializeTest();
             
             //There are no weektemplates in department 2.
-            var user = _testContext.MockUsers[UserCitizenDepartment1];
+            var user = _testContext.MockUsers[UserGuardianDepartment1];
             _testContext.MockUserManager.MockLoginAsUser(user);
 
             var result = wtc.GetWeekTemplates().Result;
@@ -121,7 +127,7 @@ namespace GirafRest.Test
             var wtc = InitializeTest();
             
             //There are no weektemplates in department 2.
-            var user = _testContext.MockUsers[UserCitizenDepartment1];
+            var user = _testContext.MockUsers[UserGuardianDepartment1];
             _testContext.MockUserManager.MockLoginAsUser(user);
 
             var result = wtc.GetWeekTemplate(_testContext.MockWeekTemplates[Template1].Id).Result;
