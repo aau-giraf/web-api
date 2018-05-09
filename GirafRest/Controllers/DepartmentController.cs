@@ -66,6 +66,9 @@ namespace GirafRest.Controllers
         public async Task<Response<DepartmentDTO>> Get(long id)
         {
             var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
+
+            if (currentUser == null)
+                return new ErrorResponse<DepartmentDTO>(ErrorCode.UserNotFound);
                   
             var isSuperUser = await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser);
 
