@@ -51,7 +51,7 @@ class PictogramController(TestCase):
         PictogramController.fishID = response['data']['id']
         check.not_equal(PictogramController.fishID, -213215, "Userdefined ID's should not be used in database")
 
-    @test(skip_if_failed=["loginAsKurt"], expect_fail=True)
+    @test(skip_if_failed=["loginAsKurt"])
     def postInvalidAccesslevel(self, check):
         "Post pictogram with invalid accesslevel"
         response = requests.post(Test.url + 'Pictogram', json={

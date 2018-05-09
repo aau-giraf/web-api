@@ -79,7 +79,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
 
             // check access rights
-            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+            if (!(await _authentication.HasReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
 
             return new Response<GirafUserDTO>(new GirafUserDTO(user, await _roleManager.findUserRole(_giraf._userManager, user)));
@@ -105,7 +105,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<SettingDTO>(ErrorCode.UserNotFound);
 
             // check access rights
-            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+            if (!(await _authentication.HasReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse<SettingDTO>(ErrorCode.NotAuthorized);
 
             return new Response<SettingDTO>(new SettingDTO(user.Settings));
@@ -136,7 +136,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
 
             // check access rights
-            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+            if (!(await _authentication.HasReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
             
             // check whether user with that username already exist that does dot have the same id
@@ -218,7 +218,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse(ErrorCode.UserNotFound);
 
             // check access rights
-            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+            if (!(await _authentication.HasReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
             
 
@@ -248,7 +248,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse(ErrorCode.UserHasNoIcon);
 
             // check access rights
-            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+            if (!(await _authentication.HasReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
 
             user.UserIcon = null;
@@ -291,7 +291,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
 
             // check access rights
-            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+            if (!(await _authentication.HasReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
 
             //Find the resource and check that it actually does exist - also verify that the resource is private
@@ -357,7 +357,7 @@ namespace GirafRest.Controllers
             if (resource == null) return new ErrorResponse<GirafUserDTO>(ErrorCode.ResourceNotFound);
 
             // check access rights
-            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+            if (!(await _authentication.HasReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
 
             //Fetch the relationship from the database and check that it exists
@@ -398,7 +398,7 @@ namespace GirafRest.Controllers
             var citizens = new List<UserNameDTO>();
 
             // check access rights
-            if (!(await _authentication.CheckUserAccess(authUser, user)))
+            if (!(await _authentication.HasReadUserAccess(authUser, user)))
             {
                 return new ErrorResponse<List<UserNameDTO>>(ErrorCode.NotAuthorized);
             }
@@ -438,7 +438,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
 
             // check access rights
-            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), guardian)))
+            if (!(await _authentication.HasReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), guardian)))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
 
             if (citizen == null || guardian == null)
@@ -475,7 +475,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<List<UserNameDTO>>(ErrorCode.InvalidProperties, "id");
 
             // check access rights
-            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+            if (!(await _authentication.HasReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse<List<UserNameDTO>>(ErrorCode.NotAuthorized);
 
             var userRole = (await _roleManager.findUserRole(_giraf._userManager, user));
@@ -516,7 +516,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<SettingDTO>(ErrorCode.MissingSettings);
             
             // check access rights
-            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+            if (!(await _authentication.HasReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse<SettingDTO>(ErrorCode.NotAuthorized);
 
             if (!ModelState.IsValid)

@@ -146,7 +146,7 @@ namespace GirafRest.Controllers
             // check that authenticated user has the right to add user for the given department
             // else all guardians, deps and admin roles can create user that does not belong to a dep
             if(model.DepartmentId != null){
-                if(!(await _authentication.CheckRegisterRights(await _giraf._userManager.GetUserAsync(HttpContext.User),
+                if(!(await _authentication.HasRegisterUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User),
                                                             model.Role, model.DepartmentId.Value)))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
             }
@@ -209,7 +209,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse(ErrorCode.MissingProperties, "newPassword", "oldPassword");
 
             // check access rights
-            if (!(await _authentication.CheckUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+            if (!(await _authentication.HasReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
 
             var result = await _giraf._userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
