@@ -49,5 +49,13 @@ namespace GirafRest
         /// <param name="authUser">The user in question</param>
         /// <param name="departmentKey">Department of the template in question</param>
         Task<bool> HasTemplateAccess(GirafUser authUser, long? departmentKey);
+
+        /// <summary>
+        /// Method for checking whether the authenticated user is allowed to view information related to given department.
+        /// </summary>
+        /// <param name="authUser">The user in question</param>
+        /// <param name="departmentKey">Department in question</param>
+        /// <returns></returns>
+        Task<bool> HasReadDepartmentAccess(GirafUser authUser, long? departmentKey);
     }
 }
