@@ -60,26 +60,6 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Find information about the currently authenticated user.
-        /// </summary>
-        /// <returns>
-        /// Meta-data about the user
-        /// MissingProperties if no username is provided
-        /// UserNotFound if user was not found, or logged -in user is not authorized to see user.
-        ///</returns>
-        [HttpGet("")]
-        public async Task<Response<GirafUserDTO>> GetUser()
-        {
-            //First attempt to fetch the user and check that he exists
-            var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
-            if (user == null)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
-
-            return new Response<GirafUserDTO>(new GirafUserDTO(user, await _roleManager.findUserRole(_giraf._userManager, user)));
-        }
-
-
-        /// <summary>
         /// Find information on the user with the username supplied as a url query parameter or the current user.
         /// </summary>
         /// <returns>
@@ -129,38 +109,6 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<SettingDTO>(ErrorCode.NotAuthorized);
 
             return new Response<SettingDTO>(new SettingDTO(user.Settings));
-        }
-        
-        /// <summary>
-        /// Read the currently authorized user's settings object.
-        /// </summary>
-        /// <returns>The current user's settings if Ok </returns>
-        [HttpGet("settings")]
-        [Authorize]
-        public async Task<Response<SettingDTO>> ReadUserSettins()
-        {
-            var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
-
-            return await GetSettings(user.Id);
-        }
-
-
-        /// <summary>
-        /// Updates username and screenname for the current authenticated user.
-        /// </summary>
-        /// <param name="Username">The new username</param>
-        /// <param name="Screenname">The new screenname</param>
-        /// <returns>
-        /// MissingProperties if username or screenname is null
-        /// If succesfull returns the DTO corresponding to the newly updates user.
-        /// </returns>
-        [HttpPut("")]
-        public async Task<Response<GirafUserDTO>> UpdateUser([FromBody] GirafUserDTO newUser)
-        {
-            //Fetch the user
-            var user = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
-
-            return await UpdateUser(user.Id, newUser);
         }
 
         /// <summary>
@@ -284,7 +232,6 @@ namespace GirafRest.Controllers
 
             return new Response();
         }
-
 
         /// <summary>
         /// Allows the user to delete his profile icon.
@@ -548,21 +495,6 @@ namespace GirafRest.Controllers
             }
 
             return new Response<List<UserNameDTO>>(guardians);
-        }
-
-        /// <summary>
-        /// Updates the currently authenticated user settings.
-        /// </summary>
-        /// <returns>
-        /// MissingProperties if options is null or some required fields is not set
-        /// </returns>
-        /// <param name="options">Options.</param>
-        [HttpPut("settings")]
-        public async Task<Response<SettingDTO>> UpdateUserSettings([FromBody] SettingDTO options)
-        {
-            var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
-
-            return await UpdateUserSettings(user.Id, options);
         }
 
         /// <summary>
