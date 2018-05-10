@@ -165,13 +165,15 @@ namespace GirafRest.Test
             var accountController = InitializeTest();
 
             var userName = "GenericName";
+            var displayName = "GenericDisplayName";
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = accountController.Register( new RegisterDTO()
+            var res = accountController.Register(new RegisterDTO()
             {
                 Username = userName,
                 Password = "GenericPassword",
                 DepartmentId = DEPARTMENT_ONE,
-                Role = GirafRoles.Citizen
+                Role = GirafRoles.Citizen,
+                DisplayName = displayName
             }).Result;
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
@@ -180,6 +182,28 @@ namespace GirafRest.Test
             // check data
             Assert.Equal(res.Data.Username, userName);
             Assert.Equal(res.Data.Department, DEPARTMENT_ONE);
+        }
+
+        [Fact]
+        public void Register_NoDisplayNameSetAsUsername_Success()
+        {
+            var accountController = InitializeTest();
+
+            var userName = "GenericName";
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var res = accountController.Register(new RegisterDTO()
+            {
+                Username = userName,
+                Password = "GenericPassword",
+                DepartmentId = DEPARTMENT_ONE,
+                Role = GirafRoles.Citizen,
+                DisplayName = null
+            }).Result;
+
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            Assert.True(res.Success);
+            Assert.NotNull(res.Data);
+            Assert.Equal(res.Data.ScreenName, userName);
         }
      
         [Fact]

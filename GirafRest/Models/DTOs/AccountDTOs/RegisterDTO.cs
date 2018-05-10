@@ -21,14 +21,10 @@ namespace GirafRest.Models.DTOs.AccountDTOs
         [DataType(DataType.Password)]
         public string Password { get; set; }
 
-        // /// <summary>
-        // /// The users password to avoid typos/mistakes.
-        // /// </summary>
-        // [Required]
-        // [Display(Name = "Bekræft kodeord")]
-        // [DataType(DataType.Password)]
-        // [Compare("Password", ErrorMessage = "De indtastede kodeord passer ikke sammen.")]
-        // public string ConfirmPassword { get; set; }
+        /// <summary>
+        /// The users DisplayName
+        /// </summary>
+        public string DisplayName { get; set; }
 
         /// <summary>
         /// The users departmentid.
