@@ -140,5 +140,11 @@ namespace GirafRest.Services
 
             return authUser.DepartmentKey == departmentKey;
         }
+
+        public async Task<bool> HasEditDepartmentAccess(GirafUser authUser, long? departmentKey)
+        {
+            var authUserRole = await _roleManager.findUserRole(_userManager, authUser);
+            return authUserRole == GirafRoles.SuperUser;
+        }
     }
 }

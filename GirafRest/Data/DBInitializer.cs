@@ -106,7 +106,7 @@ namespace GirafRest.Setup
             {
                 new GirafUser("Kurt", departments[0]),
                 new GirafUser("Graatand", departments[0]),
-                new GirafUser("Lee", departments[1]),
+                new GirafUser("Lee", null),
                 new GirafUser("Tobias", departments[0]),
                 new GirafUser("Decker", departments[0])
             };

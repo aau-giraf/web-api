@@ -9,6 +9,7 @@ using GirafRest.Test.Mocks;
 using static GirafRest.Test.UnitTestExtensions;
 using Xunit.Abstractions;
 using System.Linq;
+using GirafRest.Services;
 using static GirafRest.Test.UnitTestExtensions.TestContext;
 
 namespace GirafRest.Test.Controllers
@@ -41,8 +42,10 @@ namespace GirafRest.Test.Controllers
                 new MockGirafService(
                     _testContext.MockDbContext.Object,
                     _testContext.MockUserManager),
-                    _testContext.MockLoggerFactory.Object,
-                    _testContext.MockRoleManager.Object);
+                _testContext.MockLoggerFactory.Object,
+                _testContext.MockRoleManager.Object,
+                new GirafAuthenticationService(_testContext.MockDbContext.Object, _testContext.MockRoleManager.Object,
+                    _testContext.MockUserManager));
 
             _testContext.MockHttpContext = dc.MockHttpContext();
             _testContext.MockHttpContext.MockClearQueries();
