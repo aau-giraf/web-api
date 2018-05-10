@@ -11,7 +11,7 @@ import logging
 class Test:
     # This url should absolutely not point to anything persistent.
     # The database may well get wrecked by the tests.
-    url = "http://127.0.0.1:1690/v1/"
+    url = "http://127.0.0.1:5000/v1/"
 
 def ensureValidResponse(response, check):
     return check.is_not_none(response, message='Invalid response. Likely a 404 or a stacktrace.')
