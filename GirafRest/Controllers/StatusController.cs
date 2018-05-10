@@ -34,14 +34,16 @@ namespace GirafRest.Controllers
             }
         }
         
-        [HttpGet("version/hash")]
+        [HttpGet("version-info")]
         public Response<string> GetGitHash()
         {
             var gitpath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName + "/.git/";
-            var pathToHead = System.IO.File.ReadLines(gitpath + "HEAD").First().Split(" ")[1];
+            var pathToHead = System.IO.File.ReadLines(gitpath + "HEAD").First().Split(" ").Last();
 
             var hash = System.IO.File.ReadLines(gitpath +  pathToHead).First();
-            return new Response<string>(hash);
+            // this assumes that branches are not named with / however this should be enforced anyways
+            var branch = pathToHead.Split("/").Last();
+            return new Response<string>($"Branch: {branch} CommitHash: {hash}");
         }
 
 
