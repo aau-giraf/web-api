@@ -59,9 +59,9 @@ namespace GirafRest.Test.Controllers
         public void Get_GetExistingDepartmentByID_OK()
         {
             var dc = initializeTest();
-            
+
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserGuardianDepartment1]);
-            
+
             var res = dc.Get(DEPARTMENT_ONE).Result;
 
             Assert.IsType<Response<DepartmentDTO>>(res);
@@ -76,10 +76,10 @@ namespace GirafRest.Test.Controllers
         {
             var dc = initializeTest();
             AddEmptyDepartmentList();
-            
-            
+
+
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserGuardianDepartment1]);
-            
+
             var res = dc.Get(DEPARTMENT_ONE).Result;
 
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
@@ -117,16 +117,15 @@ namespace GirafRest.Test.Controllers
             Assert.Equal(res.ErrorCode, ErrorCode.NotFound);
         }
 
-
-
         #endregion
 
         #region Post
+
         [Fact]
         public void Post_NewDepartmentValidDTO_OK()
         {
             var dc = initializeTest();
-            var name = "dep1";  
+            var name = "dep1";
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
 
             var depDTO = new DepartmentDTO(new Department()
@@ -156,9 +155,11 @@ namespace GirafRest.Test.Controllers
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
+
         #endregion
 
         #region AddUser
+
         [Fact]
         public void AddUser_ExistingDepartment_OK()
         {
@@ -193,15 +194,17 @@ namespace GirafRest.Test.Controllers
         public void AddUser_ExistingDepartmentInvalidUser_BadRequest()
         {
             var dc = initializeTest();
-            var user = new GirafUserDTO(){};
+            var user = new GirafUserDTO() { };
             var res = dc.AddUser(DEPARTMENT_ONE, user.Id).Result;
 
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
             Assert.Equal(res.ErrorCode, ErrorCode.MissingProperties);
         }
+
         #endregion
 
         #region AddResource
+
         [Fact]
         public void AddResource_ValidDepartmentValidResource_Ok()
         {
@@ -249,9 +252,11 @@ namespace GirafRest.Test.Controllers
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
+
         #endregion
 
         #region RemoveResource
+
         [Fact]
         public void RemoveResource_RemoveExistingResource_OK()
         {
@@ -277,11 +282,12 @@ namespace GirafRest.Test.Controllers
         }
 
         [Fact]
-        public void AddDepartment_OkRequest(){
+        public void AddDepartment_OkRequest()
+        {
             var dc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
             var depName = "Børnehave Toften";
-            var res = dc.Post(new DepartmentDTO() { Name = depName, Id = 666}).Result;
+            var res = dc.Post(new DepartmentDTO() {Name = depName, Id = 666}).Result;
 
             Assert.IsType<Response<DepartmentDTO>>(res);
             Assert.True(res.Success);
@@ -291,7 +297,8 @@ namespace GirafRest.Test.Controllers
         }
 
         [Fact]
-        public void GetAllCitizensFromDepartment_OkRequest(){
+        public void GetAllCitizensFromDepartment_OkRequest()
+        {
             var dc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[DEPARTMENT_TWO_USER]);
             var departmentTwoId = _testContext.MockDepartments[DEPARTMENT_TWO_OBJECT].Key;
@@ -309,12 +316,14 @@ namespace GirafRest.Test.Controllers
         #endregion
 
         #region Helpers
+
         private void AddEmptyDepartmentList()
         {
             _testContext.MockDbContext.Reset();
             var emptyDep = CreateMockDbSet(new List<Department>());
             _testContext.MockDbContext.Setup(c => c.Departments).Returns(emptyDep.Object);
         }
+
         #endregion
     }
 }

@@ -42,8 +42,8 @@ namespace GirafRest.Services
             if (authUser == null || userToEdit == null)
                 return false;
             
-            var authUserRole = (await _roleManager.findUserRole(_userManager, authUser));
-            var userRole =  (await _roleManager.findUserRole(_userManager, userToEdit));
+            var authUserRole = await _roleManager.findUserRole(_userManager, authUser);
+            var userRole =  await _roleManager.findUserRole(_userManager, userToEdit);
 
             if (authUser.Id == userToEdit.Id)
                 return true;
@@ -53,7 +53,7 @@ namespace GirafRest.Services
 
             if (authUserRole == GirafRoles.Guardian)
             {
-                if ((authUser.DepartmentKey != userToEdit.DepartmentKey))
+                if (authUser.DepartmentKey != userToEdit.DepartmentKey)
                     return false;
 
                 if (userRole != GirafRoles.Citizen && userRole != GirafRoles.Guardian)
@@ -62,7 +62,7 @@ namespace GirafRest.Services
 
             if (authUserRole == GirafRoles.Department)
             {
-                if ((authUser.DepartmentKey != userToEdit.DepartmentKey))
+                if (authUser.DepartmentKey != userToEdit.DepartmentKey)
                     return false;
             }
 
@@ -82,7 +82,7 @@ namespace GirafRest.Services
             if (authUser == null)
                 return false;
 
-            var authUserRole = (await _roleManager.findUserRole(_userManager, authUser));
+            var authUserRole = await _roleManager.findUserRole(_userManager, authUser);
 
             if (authUserRole == GirafRoles.Citizen)
                 return false;
@@ -104,7 +104,7 @@ namespace GirafRest.Services
             if (authUser == null)
                 return false;
 
-            var authUserRole = (await _roleManager.findUserRole(_userManager, authUser));
+            var authUserRole = await _roleManager.findUserRole(_userManager, authUser);
             if (authUserRole == GirafRoles.SuperUser)
                 return true;
 
@@ -120,7 +120,7 @@ namespace GirafRest.Services
             if (departmentKey == null)
                 return false;
 
-            var authUserRole = (await _roleManager.findUserRole(_userManager, authUser));
+            var authUserRole = await _roleManager.findUserRole(_userManager, authUser);
             if (authUserRole == GirafRoles.SuperUser)
                 return true;
 
@@ -134,7 +134,7 @@ namespace GirafRest.Services
         /// <param name="departmentKey">Department in question</param>
         public async Task<bool> HasReadDepartmentAccess(GirafUser authUser, long? departmentKey)
         {
-            var authUserRole = (await _roleManager.findUserRole(_userManager, authUser));
+            var authUserRole = await _roleManager.findUserRole(_userManager, authUser);
             if (authUserRole == GirafRoles.SuperUser)
                 return true;
 
