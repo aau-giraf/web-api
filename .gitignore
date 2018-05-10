@@ -6,6 +6,7 @@
 **/\.idea/
 **/migrations/Sqlite*
 **/Migrations/Sqlite*
+**/Logs/*
 **/images/
 html/
 doxygen*
@@ -33,9 +34,9 @@ appsettings.json
 appsettings.Development.json
 Dockerfile
 
+scripts/*.bak
+
 *.pyc
-
+**/__pycache__
 GirafIntegrationTest/venv/
-
-
-GirafRest/Logs/
+GirafIntegrationTest/cookie
