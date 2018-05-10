@@ -34,6 +34,9 @@ appsettings.json
 appsettings.Development.json
 Dockerfile
 
-*.pyc
+scripts/*.bak
 
+*.pyc
+**/__pycache__
 GirafIntegrationTest/venv/
+GirafIntegrationTest/cookie
