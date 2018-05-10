@@ -215,6 +215,25 @@ namespace GirafRest.Controllers
             return new Response();
         }
 
+        [HttpDelete("account/user/{userId}")]
+        [Authorize]
+        public async Task<Response> DeleteUser(string userId)
+        {
+            var user = _giraf._context.Users.FirstOrDefault(u => u.Id == userId);
+            if (user == null)
+                return new ErrorResponse(ErrorCode.UserNotFound);
+
+            // tjek om man kan slette sig selv, før jeg kan bruge hasreaduseraccess (sig hvis logged in id = userid så fejl)
+
+            // check access rights
+            if (!(await _authentication.HasReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
+
+            var result = _giraf._context.Users.Remove(user);
+
+            return new Response();
+        }
+
         /// <summary>
         /// Attempts to login from to a user's account from one of his superior's. This allows departments
         /// to login as Guardians and guardians to login as citizens. The superiors does not require 

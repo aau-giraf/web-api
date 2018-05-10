@@ -321,7 +321,7 @@ namespace GirafRest.Test
             var ac = InitializeTest();
 
             var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
-                _testContext.MockUserManager.MockLoginAsUser(mockUser);
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
 
             ChangePasswordDTO cpDTO = new ChangePasswordDTO()
             {
@@ -334,7 +334,37 @@ namespace GirafRest.Test
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.PasswordNotUpdated, res.ErrorCode);
         }
-        
+
         #endregion
+
+        #region DeleteUser
+        [Fact]
+        public void DeleteUser_NotFound_Error()
+        {
+            var ac = InitializeTest();
+
+            var result = ac.DeleteUser("7394").Result;
+
+            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+
+            Assert.False(result.Success);
+            Assert.Equal(ErrorCode.UserNotFound, result.ErrorCode);
+        }
+
+        [Fact]
+        public void DeleteUser_ValidInput_Success()
+        {
+            var ac = InitializeTest();
+            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+
+            var result = ac.DeleteUser(mockUser.Id).Result;
+
+            Assert.True(result.Success);
+            Assert.Equal(ErrorCode.NoError, result.ErrorCode);
+        }
+        #endregion
+
     }
 }

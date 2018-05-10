@@ -9,6 +9,9 @@ class AccountController(TestCase):
     gunnarToken = None
     tobiasToken = None
     gunnarUsername = None
+    grundenbergerId = None
+    grundenbergerUsername = None
+    grundenberger = None
 
     @test()
     def getUsernameNoAuth(self, check):
@@ -24,6 +27,25 @@ class AccountController(TestCase):
         check.is_true(response['success'])
         check.is_not_none(response['data'])
         AccountController.graatandToken = response['data']
+
+    # create new user - add weekschdueles - add pictos - delete user - ensure user is deleted, 
+    @test(skip_if_failed=['loginAsGraatand'])
+    def registerGrundenberger(self, check):
+        'Register grundenberger'
+        self.grundenbergerUsername = 'grundenberger{0}'.format(str(time.time()))
+
+        response = requests.post(Test.url + 'account/register', headers=auth(self.graatandToken), json={
+            "username": self.grundenbergerUsername,
+            "password": "password",
+            "role": "Citizen",
+            "departmentId": 1
+        }).json()
+
+        ensureSuccess(response, check)
+        self.grundenberger = login(self.grundenbergerUsername, check)
+
+        response = requests.get(Test.url + 'User', headers=auth(self.grundenberger)).json()
+        ensureSuccess(response, check)
 
     @test(skip_if_failed=["loginAsGraatand"])
     def getUsernameWithAuth(self, check):
