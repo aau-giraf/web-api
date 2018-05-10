@@ -33,7 +33,7 @@ namespace GirafRest.Models
         [Required]
         public long PictogramKey { get; set; }
         //A reference to the actual resource.
-        [ForeignKey("ResourceKey")]
+        [ForeignKey("PictogramKey")]
         public virtual Pictogram Pictogram { get; set; }
 
         /// <summary>
