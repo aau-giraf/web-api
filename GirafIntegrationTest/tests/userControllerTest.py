@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import LargeData
 from testLib import *
 from integrate import TestCase, test
 import time
@@ -96,7 +97,7 @@ class UserControllerTest(TestCase):
     @test(skip_if_failed=['newCharlie'])
     def getCharlieID(self, check):
         'Get User info'
-        response = requests.get(Test.url + 'User' , headers=auth(self.charlie)).json()
+        response = requests.get(Test.url + 'User', headers=auth(self.charlie)).json()
         ensureSuccess(response, check)
         check.equal(response['data']['username'], self.charlieUsername)
         self.charlieId = response['data']['id']
@@ -122,7 +123,7 @@ class UserControllerTest(TestCase):
     def setDisplayName(self, check):
         'Set display name'
         response = requests.put(Test.url + 'User/{0}'.format(self.gunnarId),
-                                json={ "userName": self.gunnarUsername, "screenName":"HE WHO WAITS BEHIND THE WALL" },
+                                json={"userName": self.gunnarUsername, "screenName": "HE WHO WAITS BEHIND THE WALL"},
                                 headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
         # Check that display name was updated
@@ -165,59 +166,43 @@ class UserControllerTest(TestCase):
                                 headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
 
-    @test(skip_if_failed=['registerGunnar', 'userInfo'])
+    @test(skip_if_failed=['registerGunnar', 'userInfo'], expect_fail=True)
     def settingsSetTheme(self, check):
         'Enable grayscale'
-        response = requests.put(Test.url + 'User/settings', json={"theme": 3}, headers=auth(self.gunnar))
-        ensureSuccess(response.json(), check)
-        response = requests.get(Test.url + 'User/settings', headers=auth(self.gunnar))
-        check.equal(3, response.json()['data']['theme'])
+        response = requests.put(Test.url + 'User/settings', json=LargeData.grayscaleSettings, headers=auth(self.gunnar)).json()
+        ensureSuccess(response, check)
+        response = requests.get(Test.url + 'User/settings', headers=auth(self.gunnar)).json()
+        check.equal(3, response['data']['theme'])
 
-    @test(skip_if_failed=['registerGunnar', 'userInfo'])
+    @test(skip_if_failed=['registerGunnar', 'userInfo'], expect_fail=True)
     def settingsSetTimerSeconds(self, check):
         'Set default countdown time'
-        response = requests.put(Test.url + 'User/settings', json={"timerSeconds": 3600}, headers=auth(self.gunnar)).json()
+        response = requests.put(Test.url + 'User/settings', json=LargeData.timer1HourSettings,
+                                headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
         response = requests.get(Test.url + 'User/{0}/settings'.format(self.gunnarId), headers=auth(self.gunnar)).json()
         check.equal(3600, response['data']['timerSeconds'])
 
-    @test(skip_if_failed=['registerGunnar', 'userInfo'], depends=['settingsSetTheme', 'settingsSetLauncherAnimationsOn', 'settingsSetLauncherAnimationsOff']) # Run depends first, but if they fail, this can still run
-    def settingsMultiple(self, check):
+    @test(skip_if_failed=['registerGunnar', 'userInfo'], depends=['settingsSetTheme', 'settingsSetLauncherAnimationsOn',
+                                                                  'settingsSetLauncherAnimationsOff'])  # Run depends first, but if they fail, this can still run
+    def settingsMultiple(self, check, expect_fail=True):
         'Set all settings'
-        body = {
-                "orientation": 2,
-                "completeMark": 2,
-                "cancelMark": 1,
-                "defaultTimer": 2,
-                "timerSeconds": 60,
-                "activitiesCount": 3,
-                "theme": 3,
-                "nrOfDaysToDisplay": 2,
-                "greyScale": True,
-                "weekDayColors": [
-                    {
-                        "hexColor": "#FF00FF",
-                        "day": 1
-                    }
-                ]
-        }
-        response = requests.put(Test.url + 'User/settings', json=body, headers=auth(self.gunnar)).json()
+        response = requests.put(Test.url + 'User/settings', json=LargeData.allSettings, headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
 
         response = requests.get(Test.url + 'User/{0}/settings'.format(self.gunnarId), headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
-        check.equal(2,          response['data']['orientation'])
-        check.equal(2,          response['data']['completeMark'])
-        check.equal(1,          response['data']['cancelMark'])
-        check.equal(2,          response['data']['defaultTimer'])
-        check.equal(60,         response['data']['timerSeconds'])
-        check.equal(3,          response['data']['activitiesCount'])
-        check.equal(3,          response['data']['theme'])
-        check.equal(2,          response['data']['nrOfDaysToDisplay'])
-        check.equal(True,       response['data']['greyScale'])
-        # THIS WORKS, BUT IS CONFUSING
-        check.equal("#FF00FF",  response['data']['weekDayColors'][0]['hexColor'])
-        check.equal(1,          response['data']['weekDayColors'][0]['day'])
+        check.equal(2, response['data']['orientation'])
+        check.equal(2, response['data']['completeMark'])
+        check.equal(1, response['data']['cancelMark'])
+        check.equal(2, response['data']['defaultTimer'])
+        check.equal(60, response['data']['timerSeconds'])
+        check.equal(3, response['data']['activitiesCount'])
+        check.equal(3, response['data']['theme'])
+        check.equal(2, response['data']['nrOfDaysToDisplay'])
+        check.equal(True, response['data']['greyScale'])
+        check.equal("#FF00FF", response['data']['weekDayColors'][0]['hexColor'])
+        check.equal(1, response['data']['weekDayColors'][0]['day'])
 
     @test(skip_if_failed=['GetKurtID'])
     def kurtCitizens(self, check):

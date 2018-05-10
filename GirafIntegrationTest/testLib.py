@@ -9,6 +9,8 @@ import requests
 import logging
 
 class Test:
+    # This url should absolutely not point to anything persistent.
+    # The database may well get wrecked by the tests.
     url = "http://127.0.0.1:5000/v1/"
 
 
