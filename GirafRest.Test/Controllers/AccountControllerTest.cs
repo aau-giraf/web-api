@@ -46,10 +46,6 @@ namespace GirafRest.Test
         {
             _testContext = new TestContext();
 
-            var mockEmail = new Mock<IEmailService>();
-            mockEmail.Setup(e => e.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Callback(new System.Action<string, string, string>(OutputEmail))
-                .Returns(Task.FromResult(0));
 
             var mockSignInManager = new MockSignInManager(_testContext.MockUserManager, _testContext);
             var mockGirafService = new MockGirafService(_testContext.MockDbContext.Object, _testContext.MockUserManager);
@@ -60,7 +56,6 @@ namespace GirafRest.Test
             
             AccountController ac = new AccountController(
                 mockSignInManager,
-                mockEmail.Object,
                 _testContext.MockLoggerFactory.Object,
                 mockGirafService,
                 Options.Create(new JwtConfig()

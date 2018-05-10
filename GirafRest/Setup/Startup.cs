@@ -87,10 +87,6 @@ namespace GirafRest.Setup
             services.AddMySql(Configuration);
             configureIdentity<GirafDbContext>(services);
 
-            // Add email sender for account recorvery.
-            services.Configure<EmailConfig>(Configuration.GetSection("Email"));
-            services.AddTransient<IEmailService, MessageServices>();
-
             services.AddTransient<IAuthenticationService, GirafAuthenticationService>();
 
             // Add the implementation of IGirafService to the context, i.e. all common functionality for

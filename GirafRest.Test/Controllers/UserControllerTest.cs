@@ -49,7 +49,6 @@ namespace GirafRest.Test
             var usercontroller = new UserController(
                 new MockGirafService(_testContext.MockDbContext.Object,
                 _testContext.MockUserManager),
-                new Mock<IEmailService>().Object,
                 _testContext.MockLoggerFactory.Object,
                 _testContext.MockRoleManager.Object,
                 new GirafAuthenticationService(_testContext.MockDbContext.Object,_testContext.MockRoleManager.Object,

@@ -31,10 +31,6 @@ namespace GirafRest.Controllers
         /// </summary>
         private readonly SignInManager<GirafUser> _signInManager;
         /// <summary>
-        /// A reference to an email sender, that is used to send emails to users who request a new password.
-        /// </summary>
-        private readonly IEmailService _emailSender;
-        /// <summary>
         /// Reference to the GirafService, which contains helper methods used by most controllers.
         /// </summary>
         private readonly IGirafService _giraf;
@@ -64,7 +60,6 @@ namespace GirafRest.Controllers
         /// <param name="roleManager">A roleManager object for finding user roles</param>
         public AccountController(
             SignInManager<GirafUser> signInManager,
-            IEmailService emailSender,
             ILoggerFactory loggerFactory,
             IGirafService giraf,
             IOptions<JwtConfig> configuration,
@@ -72,7 +67,6 @@ namespace GirafRest.Controllers
             IAuthenticationService authentication)
         {
             _signInManager = signInManager;
-            _emailSender = emailSender;
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Account");
             _configuration = configuration;
