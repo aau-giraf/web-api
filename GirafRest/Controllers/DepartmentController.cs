@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using GirafRest.Models;
@@ -28,16 +29,22 @@ namespace GirafRest.Controllers
 
         private readonly RoleManager<GirafRole> _roleManager;
 
+        private readonly IAuthenticationService _authentication;
+
         /// <summary>
         /// Constructor for the department-controller. This is called by the asp.net runtime.
         /// </summary>
         /// <param name="giraf">A reference to the GirafService.</param>
         /// <param name="loggerFactory">A reference to an implementation of ILoggerFactory. Used to create a logger.</param>
-        public DepartmentController(IGirafService giraf, ILoggerFactory loggerFactory, RoleManager<GirafRole> roleManager)
+        public DepartmentController(IGirafService giraf, 
+            ILoggerFactory loggerFactory, 
+            RoleManager<GirafRole> roleManager, 
+            IAuthenticationService authentication)
         {
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Department");
             _roleManager = roleManager;
+            _authentication = authentication;
         }
 
         /// <summary>
@@ -347,6 +354,25 @@ namespace GirafRest.Controllers
             //Return Ok and the department - the resource is now visible in deparment.Resources
             var members = DepartmentDTO.FindMembers(department.Members, _roleManager, _giraf);
             return new Response<DepartmentDTO>(new DepartmentDTO(department, members));
+        }
+
+        [HttpDelete("{departmentId}")]
+        [Authorize]
+        public async Task<Response> DeleteDepartment(long departmentId)
+        {
+            var requestingUser = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
+            if (!_authentication.HasEditDepartmentAccess(requestingUser, departmentId).Result)
+                return new ErrorResponse(ErrorCode.NotAuthorized);
+
+            var department = _giraf._context.Departments
+                .FirstOrDefault(d => d.Key == departmentId);
+            if (department == null)
+                return new ErrorResponse(ErrorCode.DepartmentNotFound);
+
+            _giraf._context.Remove(department);
+            _giraf._context.SaveChanges();
+            
+            return new Response();
         }
 
         /// <summary>
