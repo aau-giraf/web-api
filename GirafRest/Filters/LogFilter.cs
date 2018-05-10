@@ -41,6 +41,7 @@ namespace GirafRest.Filters
             {
                 $"{DateTime.UtcNow}; {by}; {user}; {verb}; {p}; {error}; {byId}; {userId}"
             };
+            Directory.CreateDirectory("Logs");
             File.AppendAllLines(path, lines);
         }
     }

@@ -184,8 +184,8 @@ class UserControllerTest(TestCase):
         check.equal(3600, response['data']['timerSeconds'])
 
     @test(skip_if_failed=['registerGunnar', 'userInfo'], depends=['settingsSetTheme', 'settingsSetLauncherAnimationsOn',
-                                                                  'settingsSetLauncherAnimationsOff'])  # Run depends first, but if they fail, this can still run
-    def settingsMultiple(self, check, expect_fail=True):
+                                                                  'settingsSetLauncherAnimationsOff'], expect_fail=True)  # Run depends first, but if they fail, this can still run
+    def settingsMultiple(self, check):
         'Set all settings'
         response = requests.put(Test.url + 'User/settings', json=LargeData.allSettings, headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)

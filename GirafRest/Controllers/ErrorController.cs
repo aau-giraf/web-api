@@ -7,7 +7,7 @@ namespace GirafRest.Controllers
     public class ErrorController : Controller
     {
         [HttpGet(""), HttpPost(""), HttpPut(""), HttpDelete("")]
-        public Response Index([FromQuery] int status = 400)
+        public Response Index()
         {
             Response.StatusCode = 200;
 

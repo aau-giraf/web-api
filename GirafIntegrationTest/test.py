@@ -6,8 +6,7 @@ from testLib import *
 
 # Nice error message if the server is down.
 try:
-    result = requests.get(Test.url + 'Account/access-denied')
-    result = result.json()
+    result = requests.get(Test.url + 'Error').json()
 except :
     print('Could not get response from server. \n'
           'Exiting...\n')
