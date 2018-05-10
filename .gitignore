@@ -6,6 +6,7 @@
 **/\.idea/
 **/migrations/Sqlite*
 **/Migrations/Sqlite*
+**/Logs/*
 **/images/
 html/
 doxygen*
@@ -36,6 +37,3 @@ Dockerfile
 *.pyc
 
 GirafIntegrationTest/venv/
-
-
-GirafRest/Logs/
