@@ -221,8 +221,8 @@ namespace GirafRest.Controllers
             return new Response();
         }
 
-        [HttpDelete("/user/{userId}")]
-        [Authorize]
+        [HttpDelete("/v1/Account/user/{userId}")]
+        [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
         public async Task<Response> DeleteUser(string userId)
         {
             var user = _giraf._context.Users.FirstOrDefault(u => u.Id == userId);
