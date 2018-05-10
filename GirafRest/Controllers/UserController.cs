@@ -74,6 +74,7 @@ namespace GirafRest.Controllers
             return new Response<GirafUserDTO>(new GirafUserDTO(user, await _roleManager.findUserRole(_giraf._userManager, user)));
         }
 
+
         /// <summary>
         /// Find information on the user with the username supplied as a url query parameter or the current user.
         /// </summary>

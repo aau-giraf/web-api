@@ -36,7 +36,7 @@ class WeekTemplateControllerTest(TestCase):
         response = requests.get(Test.url + 'WeekTemplate', headers=auth(self.graatand)).json()
         ensureSuccess(response, check)
 
-        check.equal("SkabelonUge", response['data'][0]['name'])
+        check.equal("Skabelonuge", response['data'][0]['name'])
         check.equal(1, response['data'][0]['templateId'])
 
     @test(skip_if_failed=['logins'])
@@ -45,7 +45,7 @@ class WeekTemplateControllerTest(TestCase):
         response = requests.get(Test.url + 'WeekTemplate/1', headers=auth(self.graatand)).json()
         ensureSuccess(response, check)
 
-        check.equal("SkabelonUge", response['data']['name'])
+        check.equal("Skabelonuge", response['data']['name'])
         check.equal(1, response['data']['thumbnail']['id'])
         check.equal(1, response['data']['days'][0]['day'])
         check.equal(6, response['data']['days'][5]['day'])
