@@ -158,6 +158,12 @@ namespace GirafRest.Controllers
 
             //Create a new user with the supplied information
             var user = new GirafUser (model.Username, department);
+            if (model.DisplayName == null){
+                user.DisplayName = model.Username;
+            }
+            else{
+                user.DisplayName = model.DisplayName;
+            }
             var result = await _giraf._userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
