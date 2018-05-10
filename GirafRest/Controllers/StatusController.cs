@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using System.Net;
+﻿using System.IO;
+using System.Linq;
 using GirafRest.Models.Responses;
 using GirafRest.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -33,5 +33,17 @@ namespace GirafRest.Controllers
                 return new ErrorResponse(ErrorCode.Error);
             }
         }
+        
+        [HttpGet("version/hash")]
+        public Response<string> GetGitHash()
+        {
+            var gitpath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName + "/.git/";
+            var pathToHead = System.IO.File.ReadLines(gitpath + "HEAD").First().Split(" ")[1];
+
+            var hash = System.IO.File.ReadLines(gitpath +  pathToHead).First();
+            return new Response<string>(hash);
+        }
+
+
     }
 }
