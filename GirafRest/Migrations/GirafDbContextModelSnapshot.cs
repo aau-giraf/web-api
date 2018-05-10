@@ -501,7 +501,8 @@ namespace GirafRest.Migrations
                 {
                     b.HasOne("GirafRest.Models.Department", "Department")
                         .WithMany("Members")
-                        .HasForeignKey("DepartmentKey");
+                        .HasForeignKey("DepartmentKey")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("GirafRest.Models.Setting", "Settings")
                         .WithMany()
@@ -525,7 +526,8 @@ namespace GirafRest.Migrations
                 {
                     b.HasOne("GirafRest.Models.GirafUser")
                         .WithMany("WeekSchedule")
-                        .HasForeignKey("GirafUserId");
+                        .HasForeignKey("GirafUserId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("GirafRest.Models.Pictogram", "Thumbnail")
                         .WithMany()
@@ -537,11 +539,13 @@ namespace GirafRest.Migrations
                 {
                     b.HasOne("GirafRest.Models.Week")
                         .WithMany("Weekdays")
-                        .HasForeignKey("WeekId");
+                        .HasForeignKey("WeekId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("GirafRest.Models.WeekTemplate")
                         .WithMany("Weekdays")
-                        .HasForeignKey("WeekTemplateId");
+                        .HasForeignKey("WeekTemplateId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("GirafRest.Models.WeekTemplate", b =>

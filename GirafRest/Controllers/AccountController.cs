@@ -215,7 +215,7 @@ namespace GirafRest.Controllers
             return new Response();
         }
 
-        [HttpDelete("account/user/{userId}")]
+        [HttpDelete("/user/{userId}")]
         [Authorize]
         public async Task<Response> DeleteUser(string userId)
         {
@@ -230,6 +230,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
 
             var result = _giraf._context.Users.Remove(user);
+            _giraf._context.SaveChanges();
 
             return new Response();
         }

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace GirafRest.Migrations
 {
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -61,7 +61,6 @@ namespace GirafRest.Migrations
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     ActivitiesCount = table.Column<int>(nullable: true),
                     CancelMark = table.Column<int>(nullable: false),
-                    ColorThemeWeekSchedules = table.Column<int>(nullable: false),
                     CompleteMark = table.Column<int>(nullable: false),
                     DefaultTimer = table.Column<int>(nullable: false),
                     GreyScale = table.Column<bool>(nullable: false),
@@ -183,13 +182,34 @@ namespace GirafRest.Migrations
                         column: x => x.DepartmentKey,
                         principalTable: "Departments",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_AspNetUsers_Setting_SettingsKey",
                         column: x => x.SettingsKey,
                         principalTable: "Setting",
                         principalColumn: "Key",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "WeekDayColors",
+                columns: table => new
+                {
+                    Id = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Day = table.Column<int>(nullable: false),
+                    HexColor = table.Column<string>(nullable: true),
+                    SettingId = table.Column<long>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_WeekDayColors", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_WeekDayColors_Setting_SettingId",
+                        column: x => x.SettingId,
+                        principalTable: "Setting",
+                        principalColumn: "Key",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -350,7 +370,7 @@ namespace GirafRest.Migrations
                         column: x => x.GirafUserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Weeks_Pictograms_ThumbnailKey",
                         column: x => x.ThumbnailKey,
@@ -377,13 +397,13 @@ namespace GirafRest.Migrations
                         column: x => x.WeekId,
                         principalTable: "Weeks",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Weekdays_WeekTemplates_WeekTemplateId",
                         column: x => x.WeekTemplateId,
                         principalTable: "WeekTemplates",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -521,6 +541,11 @@ namespace GirafRest.Migrations
                 column: "PictogramKey");
 
             migrationBuilder.CreateIndex(
+                name: "IX_WeekDayColors_SettingId",
+                table: "WeekDayColors",
+                column: "SettingId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Weekdays_id",
                 table: "Weekdays",
                 column: "id",
@@ -591,6 +616,9 @@ namespace GirafRest.Migrations
 
             migrationBuilder.DropTable(
                 name: "UserResources");
+
+            migrationBuilder.DropTable(
+                name: "WeekDayColors");
 
             migrationBuilder.DropTable(
                 name: "Weekdays");
