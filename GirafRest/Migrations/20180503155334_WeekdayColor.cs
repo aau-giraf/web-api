@@ -34,6 +34,14 @@ namespace GirafRest.Migrations
                 name: "IX_WeekDayColors_SettingId",
                 table: "WeekDayColors",
                 column: "SettingId");
+
+            migrationBuilder.Sql("INSERT INTO WeekDayColors (SettingId, Day, HexColor) SELECT SettingsKey, 1, \"#067700\" From AspNetUsers");
+            migrationBuilder.Sql("INSERT INTO WeekDayColors (SettingId, Day, HexColor) SELECT SettingsKey, 2, \"#8c1086\" From AspNetUsers");
+            migrationBuilder.Sql("INSERT INTO WeekDayColors (SettingId, Day, HexColor) SELECT SettingsKey, 3, \"#ff7f00\" From AspNetUsers");
+            migrationBuilder.Sql("INSERT INTO WeekDayColors (SettingId, Day, HexColor) SELECT SettingsKey, 4, \"#0017ff\" From AspNetUsers");
+            migrationBuilder.Sql("INSERT INTO WeekDayColors (SettingId, Day, HexColor) SELECT SettingsKey, 5, \"#ffdd00\" From AspNetUsers");
+            migrationBuilder.Sql("INSERT INTO WeekDayColors (SettingId, Day, HexColor) SELECT SettingsKey, 6, \"#ff0102\" From AspNetUsers");
+            migrationBuilder.Sql("INSERT INTO WeekDayColors (SettingId, Day, HexColor) SELECT SettingsKey, 7, \"#ffffff\" From AspNetUsers");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
