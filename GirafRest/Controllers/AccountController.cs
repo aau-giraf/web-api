@@ -31,10 +31,6 @@ namespace GirafRest.Controllers
         /// </summary>
         private readonly SignInManager<GirafUser> _signInManager;
         /// <summary>
-        /// A reference to an email sender, that is used to send emails to users who request a new password.
-        /// </summary>
-        private readonly IEmailService _emailSender;
-        /// <summary>
         /// Reference to the GirafService, which contains helper methods used by most controllers.
         /// </summary>
         private readonly IGirafService _giraf;
@@ -64,7 +60,6 @@ namespace GirafRest.Controllers
         /// <param name="roleManager">A roleManager object for finding user roles</param>
         public AccountController(
             SignInManager<GirafUser> signInManager,
-            IEmailService emailSender,
             ILoggerFactory loggerFactory,
             IGirafService giraf,
             IOptions<JwtConfig> configuration,
@@ -72,7 +67,6 @@ namespace GirafRest.Controllers
             IAuthenticationService authentication)
         {
             _signInManager = signInManager;
-            _emailSender = emailSender;
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Account");
             _configuration = configuration;
@@ -164,6 +158,12 @@ namespace GirafRest.Controllers
 
             //Create a new user with the supplied information
             var user = new GirafUser (model.Username, department);
+            if (model.DisplayName == null){
+                user.DisplayName = model.Username;
+            }
+            else{
+                user.DisplayName = model.DisplayName;
+            }
             var result = await _giraf._userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
@@ -218,6 +218,26 @@ namespace GirafRest.Controllers
 
             await _signInManager.SignInAsync(user, isPersistent: false);
             _giraf._logger.LogInformation("User changed their password successfully.");
+            return new Response();
+        }
+
+        [HttpDelete("/v1/Account/user/{userId}")]
+        [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
+        public async Task<Response> DeleteUser(string userId)
+        {
+            var user = _giraf._context.Users.FirstOrDefault(u => u.Id == userId);
+            if (user == null)
+                return new ErrorResponse(ErrorCode.UserNotFound);
+
+            // tjek om man kan slette sig selv, før jeg kan bruge hasreaduseraccess (sig hvis logged in id = userid så fejl)
+
+            // check access rights
+            if (!(await _authentication.HasReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
+
+            var result = _giraf._context.Users.Remove(user);
+            _giraf._context.SaveChanges();
+
             return new Response();
         }
 

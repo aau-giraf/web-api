@@ -3,11 +3,6 @@ from testLib import *
 from integrate import TestCase, test
 import time
 
-
-def auth(token):
-    return {"Authorization": "Bearer {0}".format(token)}
-
-
 # Make sure the pictogram isn't in the list
 def pictogramIsInList(pictogramId, pictogramList):
     for pictogram in pictogramList:
@@ -18,12 +13,24 @@ def pictogramIsInList(pictogramId, pictogramList):
 
 class DepartmentControllerTest(TestCase):
     "Department Controller"
+
     url = Test.url
     dalgaardsholmstuen = 'Dalgaardsholmstuen{0}'.format(str(time.time()))
 
     lee = None
     graatand = None
     kurt = None
+    gunnar = None
+
+    gunnarUsername = None
+    gunnarID = None
+    gunnarBody = None
+
+    numberOfDepartments = None
+    dalgardsholmstuenId = None
+    dalgaardsholmstuenToken = None
+
+    cyclopianBody = None
 
     @test()
     def logins(self, check):
@@ -41,17 +48,14 @@ class DepartmentControllerTest(TestCase):
         ensureSuccess(response, check)
         self.kurt = response['data']
 
-    numberOfDepartments = None
 
     @test()
     def departmentList(self, check):
         'Get list of departments'
         response = requests.get(Test.url + 'Department').json()
-        if ensureSuccess(response, check):
-            self.numberOfDepartments = len(response['data'])
-        else:
-            self.numberOfDepartments = 0
-
+        ensureSuccess(response, check)
+        self.numberOfDepartments = len(response['data'])
+    
     @test(skip_if_failed=['logins', 'departmentList'])
     def unauthorizedDepartmentCreation0(self, check):
         'Graatand tries to create department'
@@ -84,9 +88,6 @@ class DepartmentControllerTest(TestCase):
 
         ensureSuccess(response, check)
         check.equal(self.numberOfDepartments, len(response['data']), 'Number of departments.\n')
-
-    dalgardsholmstuenId = None
-    dalgaardsholmstuenToken = None
 
     @test(skip_if_failed=['checkDepartmentCount'])
     def newDepartment(self, check):
@@ -126,10 +127,6 @@ class DepartmentControllerTest(TestCase):
         response = requests.get(Test.url + 'Department/-1').json()
         ensureError(response, check)
 
-    gunnarUsername = None
-    gunnarID = None
-    gunnarBody = None
-    gunnar = None
 
     @test(skip_if_failed=['newDepartment'])
     def newGunnar(self, check):
@@ -179,7 +176,6 @@ class DepartmentControllerTest(TestCase):
 
         check.is_true(gunnarFound, message='Gunnar was not included in list of department members.')
 
-    cyclopianBody = None
 
     @test(skip_if_failed=['newDepartment'])
     def newPictogram(self, check):

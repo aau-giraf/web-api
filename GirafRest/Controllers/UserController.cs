@@ -27,10 +27,7 @@ namespace GirafRest.Controllers
         private const string IMAGE_TYPE_PNG = "image/png";
         private const string IMAGE_TYPE_JPEG = "image/jpeg";
         private const int IMAGE_CONTENT_TYPE_DEFINITION = 25;
-        /// <summary>
-        /// An email sender that can be used to send emails to users that have lost their password.
-        /// </summary>
-        private readonly IEmailService _emailSender;
+
         /// <summary>
         /// A reference to GirafService, that defines common functionality for all controllers.
         /// </summary>
@@ -47,14 +44,12 @@ namespace GirafRest.Controllers
 
         public UserController(
             IGirafService giraf,
-          IEmailService emailSender,
           ILoggerFactory loggerFactory,
           RoleManager<GirafRole> roleManager, 
             IAuthenticationService authentication)
         {
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("User");
-            _emailSender = emailSender;
             _roleManager = roleManager;
             _authentication = authentication;
         }

@@ -46,10 +46,6 @@ namespace GirafRest.Test
         {
             _testContext = new TestContext();
 
-            var mockEmail = new Mock<IEmailService>();
-            mockEmail.Setup(e => e.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Callback(new System.Action<string, string, string>(OutputEmail))
-                .Returns(Task.FromResult(0));
 
             var mockSignInManager = new MockSignInManager(_testContext.MockUserManager, _testContext);
             var mockGirafService = new MockGirafService(_testContext.MockDbContext.Object, _testContext.MockUserManager);
@@ -60,7 +56,6 @@ namespace GirafRest.Test
             
             AccountController ac = new AccountController(
                 mockSignInManager,
-                mockEmail.Object,
                 _testContext.MockLoggerFactory.Object,
                 mockGirafService,
                 Options.Create(new JwtConfig()
@@ -170,13 +165,15 @@ namespace GirafRest.Test
             var accountController = InitializeTest();
 
             var userName = "GenericName";
+            var displayName = "GenericDisplayName";
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = accountController.Register( new RegisterDTO()
+            var res = accountController.Register(new RegisterDTO()
             {
                 Username = userName,
                 Password = "GenericPassword",
                 DepartmentId = DEPARTMENT_ONE,
-                Role = GirafRoles.Citizen
+                Role = GirafRoles.Citizen,
+                DisplayName = displayName
             }).Result;
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
@@ -185,6 +182,28 @@ namespace GirafRest.Test
             // check data
             Assert.Equal(res.Data.Username, userName);
             Assert.Equal(res.Data.Department, DEPARTMENT_ONE);
+        }
+
+        [Fact]
+        public void Register_NoDisplayNameSetAsUsername_Success()
+        {
+            var accountController = InitializeTest();
+
+            var userName = "GenericName";
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var res = accountController.Register(new RegisterDTO()
+            {
+                Username = userName,
+                Password = "GenericPassword",
+                DepartmentId = DEPARTMENT_ONE,
+                Role = GirafRoles.Citizen,
+                DisplayName = null
+            }).Result;
+
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            Assert.True(res.Success);
+            Assert.NotNull(res.Data);
+            Assert.Equal(res.Data.ScreenName, userName);
         }
      
         [Fact]
@@ -326,7 +345,7 @@ namespace GirafRest.Test
             var ac = InitializeTest();
 
             var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
-                _testContext.MockUserManager.MockLoginAsUser(mockUser);
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
 
             ChangePasswordDTO cpDTO = new ChangePasswordDTO()
             {
@@ -339,7 +358,37 @@ namespace GirafRest.Test
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.PasswordNotUpdated, res.ErrorCode);
         }
-        
+
         #endregion
+
+        #region DeleteUser
+        [Fact]
+        public void DeleteUser_NotFound_Error()
+        {
+            var ac = InitializeTest();
+
+            var result = ac.DeleteUser("7394").Result;
+
+            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+
+            Assert.False(result.Success);
+            Assert.Equal(ErrorCode.UserNotFound, result.ErrorCode);
+        }
+
+        [Fact]
+        public void DeleteUser_ValidInput_Success()
+        {
+            var ac = InitializeTest();
+            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+
+            var result = ac.DeleteUser(mockUser.Id).Result;
+
+            Assert.True(result.Success);
+            Assert.Equal(ErrorCode.NoError, result.ErrorCode);
+        }
+        #endregion
+
     }
 }

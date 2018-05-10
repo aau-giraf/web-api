@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
+import LargeData
 from testLib import *
 import time
 from integrate import TestCase, test
-from rawSampleImage import *
+from LargeData import *
 
 
 class PictogramController(TestCase):
@@ -110,7 +111,7 @@ class PictogramController(TestCase):
     def putImage(self, check):
         "Put image into Cursed Fish"
         response = requests.put(Test.url + 'Pictogram/{0}/image'.format(PictogramController.fishID),
-                                data=rawSampleImage,
+                                data=LargeData.rawSampleImage,
                                 headers={"Authorization": "Bearer {0}".format(PictogramController.kurtToken)}).json()
         check.is_true(response['success'])
 

@@ -72,58 +72,73 @@ namespace GirafRest.Data
             builder.Entity<UserResource>()
                 .HasOne(ur => ur.Other)
                 .WithMany(u => u.Resources)
-                .HasForeignKey(u => u.OtherKey);
+                .HasForeignKey(u => u.OtherKey)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<UserResource>()
                 .HasOne(ur => ur.Pictogram)
                 .WithMany(r => r.Users)
-                .HasForeignKey(dr => dr.PictogramKey);
+                .HasForeignKey(dr => dr.PictogramKey)
+                .OnDelete(DeleteBehavior.Cascade);
 
             //Configure a One-to-Many relationship between user and department
             builder.Entity<GirafUser>()
                 .HasOne<Department>(u => u.Department)
-                .WithMany(d => d.Members);
+                .WithMany(d => d.Members)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Department>()
                 .HasMany<WeekTemplate>(u => u.WeekTemplates)
-                .WithOne(d => d.Department);
+                .WithOne(d => d.Department)
+                .OnDelete(DeleteBehavior.Cascade);
 
             //And a One-to-Many relationship between Week and Weekday
             builder.Entity<Weekday>()
                 .HasOne<Week>()
-                .WithMany(w => w.Weekdays);
+                .WithMany(w => w.Weekdays)
+                .OnDelete(DeleteBehavior.Cascade);
 
             //And a One-to-Many relationship between WeekTemplate and Weekday
             builder.Entity<Weekday>()
                 .HasOne<WeekTemplate>()
-                .WithMany(w => w.Weekdays);
+                .WithMany(w => w.Weekdays)
+                .OnDelete(DeleteBehavior.Cascade);
 
             //Configure a many-to-many relationship between Weekday and Resource(Pictogram)
             builder.Entity<Activity>()
                 .HasOne<Weekday>(wr => wr.Other)
                    .WithMany(w => w.Activities)
-                .HasForeignKey(wr => wr.OtherKey);
+                .HasForeignKey(wr => wr.OtherKey)
+                .OnDelete(DeleteBehavior.Cascade);
             builder.Entity<Activity>()
                 .HasOne<Pictogram>(wr => wr.Pictogram)
                 .WithMany()
-                .HasForeignKey(wr => wr.PictogramKey);
+                .HasForeignKey(wr => wr.PictogramKey)
+                .OnDelete(DeleteBehavior.Cascade);
             
             // Configure that a citizen can have many guardians and that a citizen can have many guardians
             builder.Entity<GuardianRelation>()
                    .HasOne(gr => gr.Guardian)
                    .WithMany(g => g.Citizens)
-                   .HasForeignKey(go => go.GuardianId);
+                   .HasForeignKey(go => go.GuardianId)
+                   .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<GuardianRelation>()
                    .HasOne(gr => gr.Citizen)
                    .WithMany(c => c.Guardians)
-                   .HasForeignKey(mg => mg.CitizenId);
-
+                   .HasForeignKey(mg => mg.CitizenId)
+                   .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Setting>()
                    .HasMany(gr => gr.WeekDayColors)
                    .WithOne(c => c.Setting)
-                   .HasForeignKey(s => s.SettingId);
-        }
+                   .HasForeignKey(s => s.SettingId)
+                   .OnDelete(DeleteBehavior.Cascade);
 
+            // Configure a one-to-many relationship between user and weeks
+            builder.Entity<GirafUser>()
+                .HasMany<Week>(u => u.WeekSchedule)
+                .WithOne()
+                .OnDelete(DeleteBehavior.Cascade);
+        }
     }
 }
