@@ -14,11 +14,6 @@ namespace GirafRest.Setup
     /// </summary>
     public class DBInitializer
     {
-		/// <summary>
-		/// Initializes the local database with sample data.
-		/// </summary>
-		/// <param name="context">A reference to the database context.</param>
-		/// <param name="userManager">A reference to the userManager</param>
 		public static void Initialize(GirafDbContext context, UserManager<GirafUser> userManager)
 		{
             // Check if any data is in the database
@@ -31,17 +26,6 @@ namespace GirafRest.Setup
             AddSampleWeekAndWeekdays(context, pictograms);
             AddSampleWeekTemplate(context, pictograms, departments);
             context.SaveChanges();
-            // //For simplicity we simply add all the private pictograms to all users.
-            // foreach (var usr in context.Users)
-            // {
-            //     addPictogramsToUser(usr, Pictograms[0], Pictograms[1], Pictograms[2]);
-            // }
-			// context.SaveChanges();
-
-            // //Each department owns a single pictogram.
-            // addPictogramToDepartment(Departments[0], Pictograms[3]);
-            // addPictogramToDepartment(Departments[1], Pictograms[4]);
-			// context.SaveChanges();
 			
 			//Adding citizens to Guardian
 			foreach(var user in context.Users)
@@ -83,8 +67,8 @@ namespace GirafRest.Setup
         #region Sample data methods
         private static IList<Department> AddSampleDepartments(GirafDbContext context)
         {
-            System.Console.WriteLine("Adding some sample data to the database.");
-            System.Console.WriteLine("Adding departments.");
+            Console.WriteLine("Adding some sample data to the database.");
+            Console.WriteLine("Adding departments.");
             var departments = new Department[]
             {
                 new Department { Name = "Tobias' stue for godt humør"},
