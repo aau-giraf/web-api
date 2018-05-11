@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using GirafRest.Models;
 using GirafRest.Services;
-using GirafRest.Extensions;
 using GirafRest.Models.DTOs.AccountDTOs;
 using GirafRest.Models.DTOs.UserDTOs;
 using GirafRest.Models.DTOs;
@@ -26,38 +25,16 @@ namespace GirafRest.Controllers
     [Route("v1/[controller]")]
     public class AccountController : Controller
     {
-        /// <summary>
-        /// A reference to ASP.NET's sign-in manager, that is used to validate usernames and passwords.
-        /// </summary>
         private readonly SignInManager<GirafUser> _signInManager;
-        /// <summary>
-        /// Reference to the GirafService, which contains helper methods used by most controllers.
-        /// </summary>
+
         private readonly IGirafService _giraf;
-        /// <summary>
-        /// A reference to the role manager for the project.
-        /// </summary>
+
         private readonly RoleManager<GirafRole> _roleManager;
-        /// <summary>
-        /// Configuration
-        /// </summary>
+
         private readonly IOptions<JwtConfig> _configuration;
 
-        /// <summary>
-        /// reference to the authenticationservice which provides commong authentication checks
-        /// </summary>
         private readonly IAuthenticationService _authentication;
 
-        /// <summary>
-        /// Creates a new account controller. The account controller allows the users to sign in and out of their account
-        /// as well as creating and deleting users.
-        /// </summary>
-        /// <param name="signInManager">A reference to a sign in manager</param>
-        /// <param name="loggerFactory">A reference to a logger factory</param>
-        /// <param name="giraf">A reference to the implementation of the IGirafService interface.</param>
-        /// <param name="configuration">A configuration object</param>
-        /// <param name="roleManager">A roleManager object for finding user roles</param>
-        /// <param name="authentication">reference to the authentication service roles</param>
         public AccountController(
             SignInManager<GirafUser> signInManager,
             ILoggerFactory loggerFactory,

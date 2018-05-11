@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using GirafRest.Models;
@@ -15,27 +14,15 @@ using GirafRest.Extensions;
 
 namespace GirafRest.Controllers
 {
-    /// <summary>
-    /// The department controller serves the purpose of handling departments. It is capable of producing a
-    /// list of all departments in the system as well as adding resources and users to departments.
-    /// </summary>
     [Route("v1/[controller]")]
     public class DepartmentController : Controller
     {
-        /// <summary>
-        /// A reference to IGirafService, which defines common functionality for all controllers.
-        /// </summary>
         private readonly IGirafService _giraf;
 
         private readonly RoleManager<GirafRole> _roleManager;
 
         private readonly IAuthenticationService _authentication;
 
-        /// <summary>
-        /// Constructor for the department-controller. This is called by the asp.net runtime.
-        /// </summary>
-        /// <param name="giraf">A reference to the GirafService.</param>
-        /// <param name="loggerFactory">A reference to an implementation of ILoggerFactory. Used to create a logger.</param>
         public DepartmentController(IGirafService giraf, 
             ILoggerFactory loggerFactory, 
             RoleManager<GirafRole> roleManager, 
@@ -48,9 +35,9 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Gets the department names.
+        /// Get request for getting all the department names.
         /// </summary>
-        /// <returns>The department names.</returns>
+        /// <returns>A list of department names, returns NotFound if no departments in the system</returns>
         [HttpGet("")]
         public async Task<Response<List<DepartmentNameDTO>>> Get()
         {
@@ -67,8 +54,7 @@ namespace GirafRest.Controllers
         /// Get the department with the specified id.
         /// </summary>
         /// <param name="id">The id of the department to retrieve.</param>
-        /// <returns>NotFound if department with given id does not exsist
-        /// DepartmentDTO id the department does exsist.</returns>
+        /// <returns>The department as a DepartmentDTO if success else UserNotfound, NotAuthorised or NotFound</returns>
         [HttpGet("{id}")]
         public async Task<Response<DepartmentDTO>> Get(long id)
         {
@@ -101,8 +87,8 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Gets the citizen names.
         /// </summary>
-        /// <returns>The citizen names.</returns>
-        /// <param name="id">Department ID.</param>
+        /// <returns>The citizen names else DepartmentNotFound, NotAuthorised or DepartmentHasNoCitizens</returns>
+        /// <param name="id">Id of department to get citizens for</param>
         [HttpGet("{id}/citizens")]
         [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
         public async Task<Response<List<UserNameDTO>>> GetCitizenNamesAsync(long id)
@@ -113,7 +99,6 @@ namespace GirafRest.Controllers
 
             var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
 
-            // eager load department from context
            currentUser =  _giraf._context.Users.Include(a => a.Department)
                                                .FirstOrDefault(d => d.UserName == currentUser.UserName);
                   
@@ -122,17 +107,19 @@ namespace GirafRest.Controllers
             if (currentUser?.DepartmentKey != department?.Key && !isSuperUser)
                 return new ErrorResponse<List<UserNameDTO>>(ErrorCode.NotAuthorized);
 
-
+            // Get all citizens
             var roleCitizenId = _giraf._context.Roles.Where(r => r.Name == GirafRole.Citizen)
                                                      .Select(c => c.Id).FirstOrDefault();
 
             if (roleCitizenId == null) return new ErrorResponse<List<UserNameDTO>>(ErrorCode.DepartmentHasNoCitizens);
 
+            // get all users where id of role is in roleCitizenId
             var userIds = _giraf._context.UserRoles.Where(u => u.RoleId == roleCitizenId)
                                 .Select(r => r.UserId).Distinct();
 
             if (!userIds.Any()) return new ErrorResponse<List<UserNameDTO>>(ErrorCode.DepartmentHasNoCitizens);
 
+            // get a list of the name of all citizens in the department
             var usersNamesInDepartment = _giraf._context.Users
                 .Where(u => userIds.Any(ui => ui == u.Id) && u.DepartmentKey == department.Key)
                 .Select(u =>
@@ -145,8 +132,11 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Create a new department. it's only necesary to supply the departments name
         /// </summary>
-        /// <param name="depDTO">The department to add to the database.</param>
-        /// <returns>The new departmentDTO with all database-generated information.</returns>
+        /// <param name="depDTO">The department to add to the database as a JSON object
+        /// </param>
+        /// <returns>The new departmentDTO with all database-generated information if success 
+        /// else: MissingProperties, UserNotFound, NotAuthorised, InvalidProperties or CouldNotCreateDepartmentUser
+        /// </returns>
         [HttpPost("")]
         [Authorize]
         public async Task<Response<DepartmentDTO>> Post([FromBody]DepartmentDTO depDTO)
@@ -232,16 +222,12 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Add a user to the given department.
+        /// Add a user to the given department - requires role Department, Guardian or SuperUser
         /// </summary>
         /// <param name="departmentId"></param>
         /// <param name="userId">The ID of a GirafUser to be added to the department.</param>
-        /// <returns>MissingProperties if the userId is null
-        /// DepartmentNotFound if department of specified ID isn't found
-        /// UserNameAlreadyTakenWithinDepartment if a user with usr's username already exists in the specified department
-        /// UserNotFound if no user exists with the ID of usr
-        /// NotAuthorised if role is guardian/department but you are trying to add a role to a citizen that is not yours
-        /// A DepartmentDTO representing the new state of the department, if there were no problems.</returns>
+        /// <returns>Else: MissingProperties, UserNotFound, NotAuthorised, DepartmentUserNotFound, 
+        /// UserNameAlreadyTakenWithinDepartment or UserAlreadyHasDepartment
         [HttpPost("{departmentId}/user/{userId}")]
         [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
         public async Task<Response<DepartmentDTO>> AddUser(long departmentId, string userId)
@@ -298,12 +284,8 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="departmentId">Id of the department to add the resource to.</param>
         /// <param name="resourceId">Id of the resource to add to the department.</param>
-        /// <returns>
-        /// DepartmentNotFound If department wasn't found.
-        /// ResourceNotFound If no resource exists with the given ID.
-        /// NotAuthorized If user does not have ownership of resource.
-        /// DepartmentAlreadyOwnsResource If requested resource is already owned by requested department.
-        /// The DepartmentDTO represented the updated state of the department if there were no errors.
+        /// <returns> The DepartmentDTO represented the updated state of the department if there were no errors.
+        /// Else: DepartmentNotFound, ResourceNotFound, NotAuthorized or DepartmentAlreadyOwnsResourc
         /// </returns>
         [HttpPost("{departmentId}/resource/{resourceId}")]
         [Authorize]
@@ -356,6 +338,11 @@ namespace GirafRest.Controllers
             return new Response<DepartmentDTO>(new DepartmentDTO(department, members));
         }
 
+        /// <summary>
+        /// Endpoint for deleting the department with the given id
+        /// </summary>
+        /// <returns>Empty response on success else: NotAuthorised or DepartmentNotFound</returns>
+        /// <param name="departmentId">Identifier og department.</param>
         [HttpDelete("{departmentId}")]
         [Authorize]
         public async Task<Response> DeleteDepartment(long departmentId)
@@ -381,9 +368,7 @@ namespace GirafRest.Controllers
         /// <param name="resourceId"></param>
         /// <returns>
         /// DepartmentDTO of updated state if no problems occured.
-        /// RessourceNotFound if ressource could not be found
-        /// NotAuthorised if not authorised to delete ressource
-        /// ResourceNotOwnedByDepartment if ressource not owned by department
+        /// Else: ResourceNotFound, NotAuthorized or ResourceNotOwnedByDepartment
         /// </returns>
         [HttpDelete("resource/{resourceId}")]
         [Authorize]
@@ -417,40 +402,8 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             //Return Ok and the department - the resource is now visible in deparment.Resources
-
             var members = DepartmentDTO.FindMembers(usr.Department.Members, _roleManager, _giraf);
             return new Response<DepartmentDTO>(new DepartmentDTO(usr.Department, members));
         }
-
-        #region Helpers
-        /// <summary>
-        /// Produces a list of all departments that has 'nameQuery' in their name.
-        /// </summary>
-        /// <param name="nameQuery">A string to search for in the name of the departments.</param>
-        /// <returns>A list of all departments with 'nameQuery' in their name.</returns>
-        private IQueryable<Department> NameQueryFilter(string nameQuery)
-        {
-            if (string.IsNullOrEmpty(nameQuery)) nameQuery = "";
-            return _giraf._context.Departments.Where(d => d.Name.ToLower().Contains(nameQuery.ToLower()));
-        }
-
-        /// <summary>
-        /// Checks if a valid resource-id has been specified along with the request.
-        /// </summary>
-        /// <param name="resourceId">The resource-id specified in the request's body.</param>
-        /// <param name="resId">A ref parameter for storing the found resource-id.</param>
-        /// <returns>True if a valid resource-id was found, false otherwise.</returns>
-        private bool CheckResourceId(long? resourceId, ref long resId)
-        {
-            if (resourceId == null)
-            {
-                var resourceQuery = HttpContext.Request.Query["resourceId"];
-                if (string.IsNullOrEmpty(resourceQuery)) return false;
-                if (!long.TryParse(resourceQuery, out resId)) return false;
-            }
-            else resId = (long)resourceId;
-            return true;
-        }
-        #endregion
     }
 }
