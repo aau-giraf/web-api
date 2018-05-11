@@ -1,8 +1,8 @@
-#Giraf Backend
+# Giraf Backend
 
 This repository contains the backend API for the Giraf Project. The API is a .net-core project written in C#.
 
-##Build & Run
+## Build & Run
 
 To run the project locally with a MySQL database first do the following:
 
@@ -11,9 +11,8 @@ To run the project locally with a MySQL database first do the following:
   - Download and install MySQL Server and optionally MySQL Workbench or another database manager.
   - Create a database named giraf on the MySQL Server. This can be done from the workbench or via cli.
 
-1. open a terminal-emulator and navigate to {project-root}/web-api/GirafRest
+1. Open a terminal-emulator and navigate to `⋯/web-api/GirafRest`
 
-2. In a shell:
   - run `cp appsettings.template.json appsettings.Development.json`
   - update appsettings.Development.json with
 	- All fields <> in the"DefaultConnection" string.
