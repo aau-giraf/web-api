@@ -15,7 +15,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// The id of the department.
         /// </summary>
-        public long Id { get; set; }
+        public long Id { get; internal set; }
         /// <summary>
         /// The name of the department.
         /// </summary>

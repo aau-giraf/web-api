@@ -27,8 +27,6 @@ namespace GirafRest
         {
             Console.WriteLine("Welcome to Giraf REST Server.");
 
-            
-
             //Parse all the program arguments and stop execution if any invalid arguments were found.
             var pa = new ProgramArgumentParser();
             bool validArguments = pa.CheckProgramArguments(args);

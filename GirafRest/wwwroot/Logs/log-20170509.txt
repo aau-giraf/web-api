@@ -1,8 +1,0 @@
-2017-05-09T08:44:57.4221589+02:00 0HL4MKRGIEH42 [ERR] An exception occured:
-Authentication failed.
-Inner Exception:
- (a840fcd2)
-2017-05-09T08:45:22.2291107+02:00 0HL4MKRGIEH43 [ERR] An exception occured:
-Authentication failed.
-Inner Exception:
- (a840fcd2)

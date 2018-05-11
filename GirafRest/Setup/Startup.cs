@@ -183,7 +183,6 @@ namespace GirafRest.Setup
             RoleManager<GirafRole> roleManager,
             IApplicationLifetime appLifetime)
         {
-            //app.UsePathBase("/v1");
             //Configure logging for the application
             app.ConfigureLogging(loggerFactory);
             appLifetime.ApplicationStopped.Register(Log.CloseAndFlush);
