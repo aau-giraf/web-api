@@ -6,7 +6,6 @@ using Microsoft.Extensions.Logging;
 using GirafRest.Models;
 using GirafRest.Services;
 using GirafRest.Models.DTOs.AccountDTOs;
-using GirafRest.Models.DTOs.UserDTOs;
 using GirafRest.Models.DTOs;
 using System;
 using System.Linq;
