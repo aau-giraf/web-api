@@ -17,7 +17,6 @@
         ImageAlreadyExistOnPictogram,
         ImageNotContainedInRequest,
         InvalidCredentials,
-        InvalidModelState,
         InvalidProperties,
         MissingProperties,
         NoWeekScheduleFound,
