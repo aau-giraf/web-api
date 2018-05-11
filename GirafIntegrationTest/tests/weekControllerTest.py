@@ -127,10 +127,10 @@ class WeekControllerTest(TestCase):
         ensureError(response, check)
 
 
-    @test(skip_if_failed=['getGunnarID'])
+    @test(skip_if_failed=['getGunnarID', 'loginAsLee'])
     def newWeek(self, check):
         'Update week'
-        response = requests.put(Test.url + 'User/{0}/Week/2018/11'.format(self.gunnarID), headers=auth(self.gunnar), json=self.correctWeekDTO).json()
+        response = requests.put(Test.url + 'User/{0}/Week/2018/11'.format(self.gunnarID), headers=auth(self.lee), json=self.correctWeekDTO).json()
         ensureSuccess(response, check)
         self.weekYear = response['data']['weekYear']
         self.weekNumber = response['data']['weekNumber']
@@ -144,19 +144,19 @@ class WeekControllerTest(TestCase):
         self.weekYear = response['data'][0]['weekYear']
         self.weekNumber = response['data'][0]['weekNumber']
 
-    @test(depends=['getNoWeeks', 'newWeek'])
+    @test(depends=['getNoWeeks', 'newWeek', 'loginAsLee'])
     def newWeekTooManyDays(self, check):
         'Try to create week with too many weekdays'
-        response = requests.put(Test.url + 'User/{0}/Week/2018/11'.format(self.gunnarID), headers=auth(self.gunnar), json=self.tooManyDaysWeekDTO).json()
+        response = requests.put(Test.url + 'User/{0}/Week/2018/11'.format(self.gunnarID), headers=auth(self.lee), json=self.tooManyDaysWeekDTO).json()
         ensureError(response, check)
 
         response = requests.get(Test.url + 'User/{0}/Week'.format(self.gunnarID), headers=auth(self.gunnar)).json()
         check.equal(1, len(response['data']))
 
-    @test(depends=['getNoWeeks', 'newWeek'])
+    @test(depends=['getNoWeeks', 'newWeek', 'loginAsLee'])
     def newWeekInvalidEnums(self, check):
         'Try to create week with invalid weekday enum values'
-        response = requests.put(Test.url + 'User/{0}/Week/2018/11'.format(self.gunnarID), headers=auth(self.gunnar), json=self.badEnumValueWeekDTO).json()
+        response = requests.put(Test.url + 'User/{0}/Week/2018/11'.format(self.gunnarID), headers=auth(self.lee), json=self.badEnumValueWeekDTO).json()
         ensureError(response, check)
 
         response = requests.get(Test.url + 'User/{0}/Week'.format(self.gunnarID), headers=auth(self.gunnar)).json()
@@ -166,7 +166,7 @@ class WeekControllerTest(TestCase):
     def changeWeek(self, check):
         'Update whole week at once'
         response = requests.put(Test.url + 'User/{0}/Week/{1}/{2}'.format(self.gunnarID, self.weekYear, self.weekNumber),
-                                headers=auth(self.gunnar),
+                                headers=auth(self.lee),
                                 json=self.differentCorrectWeekDTO).json()
         ensureSuccess(response, check)
 
@@ -175,10 +175,10 @@ class WeekControllerTest(TestCase):
         for i in range(1, 6, 1):
             check.equal(2, response['data']['days'][i]['activities'][0]['pictogram']['id'])
 
-    @test(depends=['changeWeek'], skip_if_failed=['newWeek'])
+    @test(depends=['changeWeek', 'loginAsLee'], skip_if_failed=['newWeek'])
     def deleteWeek(self, check):
         'Delete the week'
-        response = requests.delete(Test.url + 'User/{0}/Week/{1}/{2}'.format(self.gunnarID, self.weekYear, self.weekNumber), headers=auth(self.gunnar)).json()
+        response = requests.delete(Test.url + 'User/{0}/Week/{1}/{2}'.format(self.gunnarID, self.weekYear, self.weekNumber), headers=auth(self.lee)).json()
         ensureSuccess(response, check)
 
         response = requests.get(Test.url + 'User/{0}/Week'.format(self.gunnarID), headers=auth(self.gunnar)).json()

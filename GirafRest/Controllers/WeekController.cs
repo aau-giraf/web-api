@@ -125,7 +125,7 @@ namespace GirafRest.Controllers
         /// <param name="newWeek">A serialized Week with new information.</param>
 
         [HttpPut("{userId}/week/{weekYear}/{weekNumber}")]
-        [Authorize]
+        [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
         public async Task<Response<WeekDTO>> UpdateWeek(string userId, int weekYear, int weekNumber, [FromBody]WeekDTO newWeek)
         {
             if (newWeek == null) return new ErrorResponse<WeekDTO>(ErrorCode.MissingProperties);
@@ -162,7 +162,7 @@ namespace GirafRest.Controllers
         /// <returns>NotFound if the user does not have a week schedule or
         /// Ok and a serialized version of the updated week if everything went well.</returns>
         [HttpDelete("{userId}/week/{weekYear}/{weekNumber}")]
-        [Authorize]
+        [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
         public async Task<Response<IEnumerable<WeekDTO>>> DeleteWeek(string userId, int weekYear, int weekNumber)
         {
             var user = await _giraf.LoadByIdAsync(userId);
