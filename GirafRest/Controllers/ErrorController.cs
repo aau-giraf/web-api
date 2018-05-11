@@ -7,6 +7,7 @@ namespace GirafRest.Controllers
     public class ErrorController : Controller
     {
         [HttpGet(""), HttpPost(""), HttpPut(""), HttpDelete("")]
+        // All errors redirects to this endpoint
         public Response Index()
         {
             Response.StatusCode = 200;
