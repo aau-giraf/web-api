@@ -35,7 +35,7 @@ namespace GirafRest.Models
         /// <summary>
         /// A reference to the actual resource.
         /// </summary>
-        [ForeignKey("ResourceKey")]
+        [ForeignKey("PictogramKey")]
         public virtual Pictogram Pictogram { get; set; }
 
         /// <summary>
