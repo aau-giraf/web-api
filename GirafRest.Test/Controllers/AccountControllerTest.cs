@@ -383,7 +383,7 @@ namespace GirafRest.Test
             var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
 
-            var result = ac.DeleteUser(mockUser.Id).Result;
+            var result = ac.DeleteUser(_testContext.MockUsers[CITIZEN_DEP_TWO].Id).Result;
 
             Assert.True(result.Success);
             Assert.Equal(ErrorCode.NoError, result.ErrorCode);

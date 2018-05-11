@@ -287,7 +287,7 @@ namespace GirafRest.Test.Controllers
             var dc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
             var depName = "Børnehave Toften";
-            var res = dc.Post(new DepartmentDTO() {Name = depName, Id = 666}).Result;
+            var res = dc.Post(new DepartmentDTO() {Name = depName}).Result;
 
             Assert.IsType<Response<DepartmentDTO>>(res);
             Assert.True(res.Success);

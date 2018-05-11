@@ -521,7 +521,7 @@ namespace GirafRest.Test
             var res = pc.DeletePictogram(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
+            Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
 
         [Fact]
@@ -532,7 +532,7 @@ namespace GirafRest.Test
             var res = pc.DeletePictogram(ADMIN_PRIVATE_PICTOGRAM).Result;
 
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
+            Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
 
         [Fact]
