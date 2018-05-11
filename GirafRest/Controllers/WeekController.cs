@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using GirafRest.Services;
 using GirafRest.Models.Responses;
-using static GirafRest.Controllers.SharedMethods;
+using static GirafRest.Shared.SharedMethods;
 
 namespace GirafRest.Controllers
 {
