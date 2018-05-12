@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace GirafRest
 {
     /// <summary>
-    /// A class that may be used to pass program arguments. It is currently hardcoded to support the arguments of GirafRest.
+    /// A class that may be used to pass program arguments
     /// </summary>
     public class ProgramArgumentParser
     {
