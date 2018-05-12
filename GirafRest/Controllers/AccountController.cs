@@ -53,7 +53,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// This endpoint allows the user to sign in to his/her account by providing valid username and password.
         /// </summary>
-        /// <param name="model">A LoginDTO i.e. a json object with username and password</param>
+        /// <param name="model">A <see cref="LoginDTO"/> i.e. a json object with username and password</param>
         /// <returns>
         /// JwtToken if credentials are valid else Errorcode: MissingProperties or InvalidCredentials
         /// </returns>
@@ -88,7 +88,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Register a new user in the REST-API
         /// </summary>
-        /// <param name="model">A reference to a RegisterDTO i.e. a json string containing;
+        /// <param name="model">A reference to a <see cref="RegisterDTO"/> i.e. a json string containing;
         /// Username, Password, DisplayName, departmentId and Role.</param>
         /// <returns>
         /// Response with a GirafUserDTO for the registered user One of the following Error codes:
@@ -164,7 +164,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Allows the user to change his password.
         /// </summary>
-        /// <param name="model">All information needed to change the password in a ChangePasswordDTO, i.e. old password, new password</param>
+        /// <param name="model">A reference to <see cref="ChangePasswordDTO"/></param>
         /// <returns>
         /// Empty Response on success. Else: Missingproperties, PasswordNotUpdated or UserNotFound
         /// </returns>
@@ -196,7 +196,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Deletes the user with the given id
         /// </summary>
-        /// <param name="userId">id for identifying the user to be deleted</param>
+        /// <param name="userId">id for identifying the given <see cref="GirafUser"/> to be deleted</param>
         /// <returns>Empty response on success else UserNotFound or NotAuthorized</returns>
         [HttpDelete("/v1/Account/user/{userId}")]
         [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
@@ -224,7 +224,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Gets roles s.t we can get role from payload 
         /// </summary>
-        /// <param name="user">User to get claims for</param>
+        /// <param name="user"><see cref="GirafUser"/> to get claims for</param>
         /// <returns>The role claims for the given user</returns>
         private async Task<List<Claim>> GetRoleClaims(GirafUser user)
         {
@@ -237,7 +237,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Generates a JSON Web Token Token (JwtToken) for a given user and role. Based on the method with the same name from https://github.com/jatarga/WebApiJwt/blob/master/Controllers/AccountController.cs
         /// </summary>
-        /// <param name="user">Which user to generate the token for</param>
+        /// <param name="user">Which <see cref="GirafUser"/> to generate the token for</param>
         /// <returns>
         /// JWT Token as a string
         /// </returns>
@@ -288,10 +288,6 @@ namespace GirafRest.Controllers
             }
         }
 
-        /// <summary>
-        /// // Add a relation to the newly created citizen, guardians
-        /// </summary>
-        /// <param name="user">user to add relation for.</param>
         private void AddGuardiansToCitizens(GirafUser user){
             
             var roleGuardianId = _giraf._context.Roles.Where(r => r.Name == GirafRole.Guardian)
@@ -306,10 +302,6 @@ namespace GirafRest.Controllers
             }
         }
 
-        /// <summary>
-        /// // Add a relation to the newly created guardian, citizens
-        /// </summary>
-        /// <param name="user">user to add relation for.</param>
         private void AddCitizensToGuardian(GirafUser user)
         {
             // Add a relation to all the newly created guardians citizens

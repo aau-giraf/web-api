@@ -11,6 +11,7 @@ using GirafRest.Models.Responses;
 using GirafRest.Services;
 using Microsoft.AspNetCore.Identity;
 using GirafRest.Extensions;
+using System;
 
 namespace GirafRest.Controllers
 {
@@ -53,7 +54,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Get the department with the specified id.
         /// </summary>
-        /// <param name="id">The id of the department to retrieve.</param>
+        /// <param name="id">The id of the <see cref="Department"/> to retrieve.</param>
         /// <returns>The department as a DepartmentDTO if success else UserNotfound, NotAuthorised or NotFound</returns>
         [HttpGet("{id}")]
         public async Task<Response<DepartmentDTO>> Get(long id)
@@ -88,7 +89,7 @@ namespace GirafRest.Controllers
         /// Gets the citizen names.
         /// </summary>
         /// <returns>The citizen names else DepartmentNotFound, NotAuthorised or DepartmentHasNoCitizens</returns>
-        /// <param name="id">Id of department to get citizens for</param>
+        /// <param name="id">Id of <see cref="Department"/> to get citizens for</param>
         [HttpGet("{id}/citizens")]
         [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
         public async Task<Response<List<UserNameDTO>>> GetCitizenNamesAsync(long id)
@@ -132,7 +133,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Create a new department. it's only necesary to supply the departments name
         /// </summary>
-        /// <param name="depDTO">The department to add to the database as a JSON object
+        /// <param name="depDTO">The <see cref="DepartmentDTO"/> to create
         /// </param>
         /// <returns>The new departmentDTO with all database-generated information if success 
         /// else: MissingProperties, UserNotFound, NotAuthorised, InvalidProperties or CouldNotCreateDepartmentUser
@@ -222,12 +223,13 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Add a user to the given department - requires role Department, Guardian or SuperUser
+        /// Add a user that does not have a department to the given department.
+        /// Requires role Department, Guardian or SuperUser
         /// </summary>
-        /// <param name="departmentId"></param>
-        /// <param name="userId">The ID of a GirafUser to be added to the department.</param>
+        /// <param name="departmentId">Identifier for the <see cref="Department" to add user to/></param>
+        /// <param name="userId">The ID of a <see cref="GirafUser"/> to be added to the department.</param>
         /// <returns>Else: MissingProperties, UserNotFound, NotAuthorised, DepartmentUserNotFound, 
-        /// UserNameAlreadyTakenWithinDepartment or UserAlreadyHasDepartment
+        /// UserNameAlreadyTakenWithinDepartment, UserAlreadyHasDepartment, or Forbidden
         [HttpPost("{departmentId}/user/{userId}")]
         [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
         public async Task<Response<DepartmentDTO>> AddUser(long departmentId, string userId)
@@ -265,6 +267,12 @@ namespace GirafRest.Controllers
             //Add the user and save these changes
             var user = await _giraf._context.Users.Where(u => u.Id == userId).FirstOrDefaultAsync();
 
+            var RoleOfUserToAdd = await _roleManager.findUserRole(_giraf._userManager, currentUser);
+
+            // only makes sense to add a guardian or citizen to a department
+            if (RoleOfUserToAdd == GirafRoles.SuperUser || RoleOfUserToAdd == GirafRoles.Department) 
+                return new ErrorResponse<DepartmentDTO>(ErrorCode.Forbidden); 
+
             if (user == null)
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.UserNotFound);
             
@@ -280,15 +288,40 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
+        /// Endpoint for deleting the <see cref="Department"/> with the given id
+        /// </summary>
+        /// <returns>Empty response on success else: NotAuthorised or DepartmentNotFound</returns>
+        /// <param name="departmentId">Identifier of <see cref="Department"/> to delete</param>
+        [HttpDelete("{departmentId}")]
+        [Authorize]
+        public async Task<Response> DeleteDepartment(long departmentId)
+        {
+            var requestingUser = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
+            if (!_authentication.HasEditDepartmentAccess(requestingUser, departmentId).Result)
+                return new ErrorResponse(ErrorCode.NotAuthorized);
+
+            var department = _giraf._context.Departments
+                .FirstOrDefault(d => d.Key == departmentId);
+            if (department == null)
+                return new ErrorResponse(ErrorCode.DepartmentNotFound);
+
+            _giraf._context.Remove(department);
+            _giraf._context.SaveChanges();
+            
+            return new Response();
+        }
+
+        /// <summary>
         /// Add a resource to the given department. After this call, the department owns the resource and it is available to all its members.
         /// </summary>
-        /// <param name="departmentId">Id of the department to add the resource to.</param>
-        /// <param name="resourceId">Id of the resource to add to the department.</param>
+        /// <param name="departmentId">Id of the <see cref="Department"/> to add the resource to.</param>
+        /// <param name="resourceId">Id of the <see cref="Pictogram"/> to add to the department.</param>
         /// <returns> The DepartmentDTO represented the updated state of the department if there were no errors.
         /// Else: DepartmentNotFound, ResourceNotFound, NotAuthorized or DepartmentAlreadyOwnsResourc
         /// </returns>
         [HttpPost("{departmentId}/resource/{resourceId}")]
         [Authorize]
+        [Obsolete("Not used by the new WeekPlanner and might need to be changed or deleted (see future works)")]
         public async Task<Response<DepartmentDTO>> AddResource(long departmentId, long resourceId)
         {
             //Fetch the department and check that it exists.
@@ -311,7 +344,7 @@ namespace GirafRest.Controllers
 
             //Check if the department already owns the resource
             var alreadyOwned = await _giraf._context.DepartmentResources
-                                           .Where(depres => depres.OtherKey == departmentId 
+                                           .Where(depres => depres.OtherKey == departmentId
                                                   && depres.PictogramKey == resourceId)
                 .AnyAsync();
 
@@ -339,39 +372,15 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Endpoint for deleting the department with the given id
-        /// </summary>
-        /// <returns>Empty response on success else: NotAuthorised or DepartmentNotFound</returns>
-        /// <param name="departmentId">Identifier og department.</param>
-        [HttpDelete("{departmentId}")]
-        [Authorize]
-        public async Task<Response> DeleteDepartment(long departmentId)
-        {
-            var requestingUser = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
-            if (!_authentication.HasEditDepartmentAccess(requestingUser, departmentId).Result)
-                return new ErrorResponse(ErrorCode.NotAuthorized);
-
-            var department = _giraf._context.Departments
-                .FirstOrDefault(d => d.Key == departmentId);
-            if (department == null)
-                return new ErrorResponse(ErrorCode.DepartmentNotFound);
-
-            _giraf._context.Remove(department);
-            _giraf._context.SaveChanges();
-            
-            return new Response();
-        }
-
-        /// <summary>
         /// Removes a resource from the users department.
         /// </summary>
-        /// <param name="resourceId"></param>
-        /// <returns>
-        /// DepartmentDTO of updated state if no problems occured.
+        /// <param name="resourceId">identifier of <see cref="Pictogram"/></param>
+        /// <returns> <see cref="DepartmentDTO"/> of updated state if no problems occured.
         /// Else: ResourceNotFound, NotAuthorized or ResourceNotOwnedByDepartment
         /// </returns>
         [HttpDelete("resource/{resourceId}")]
         [Authorize]
+        [Obsolete("Not used by the new WeekPlanner and might need to be changed or deleted (see future works)")]
         public async Task<Response<DepartmentDTO>> RemoveResource(long resourceId)
         {
             //Fetch the department and check that it exists.
