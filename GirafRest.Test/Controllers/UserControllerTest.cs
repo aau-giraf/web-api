@@ -605,7 +605,6 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = usercontroller.AddGuardianCitizenRelationship(_testContext.MockUsers[1].Id, _testContext.MockUsers[2].Id);
 
-            Assert.IsType<Response<GirafUserDTO>>(res.Result);
             Assert.True(res.Result.Success);
         }
 
@@ -616,7 +615,6 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = usercontroller.AddGuardianCitizenRelationship("", _testContext.MockUsers[2].Id);
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res.Result);
             Assert.False(res.Result.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.Result.ErrorCode);
         }
