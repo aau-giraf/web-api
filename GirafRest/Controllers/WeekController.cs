@@ -36,7 +36,7 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<Response<IEnumerable<WeekNameDTO>>> ReadWeekSchedules(string userId)
         {
-            var user = await _giraf.LoadByIdAsync(userId);
+            var user = await _giraf.LoadUserWithWeekSchedules(userId);
             if (user == null)
                 return new ErrorResponse<IEnumerable<WeekNameDTO>>(ErrorCode.UserNotFound);
 
@@ -61,7 +61,7 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<Response<WeekDTO>> ReadUsersWeekSchedule(string userId, int weekYear, int weekNumber)
         {
-            var user = await _giraf.LoadByIdAsync(userId);
+            var user = await _giraf.LoadUserWithWeekSchedules(userId);
             if (user == null)
                 return new ErrorResponse<WeekDTO>(ErrorCode.UserNotFound);
 
@@ -117,7 +117,7 @@ namespace GirafRest.Controllers
         {
             if (newWeek == null) return new ErrorResponse<WeekDTO>(ErrorCode.MissingProperties);
 
-            var user = await _giraf.LoadByIdAsync(userId);
+            var user = await _giraf.LoadUserWithWeekSchedules(userId);
             if (user == null) return new ErrorResponse<WeekDTO>(ErrorCode.UserNotFound);
 
             // check access rightss
@@ -152,7 +152,7 @@ namespace GirafRest.Controllers
         [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
         public async Task<Response> DeleteWeek(string userId, int weekYear, int weekNumber)
         {
-            var user = await _giraf.LoadByIdAsync(userId);
+            var user = await _giraf.LoadUserWithWeekSchedules(userId);
             if (user == null) return new ErrorResponse(ErrorCode.UserNotFound);
             // check access rightss
             if (!(await _authentication.HasReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))

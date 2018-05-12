@@ -37,13 +37,6 @@ namespace GirafRest.Services
         {
             get;
         }
-
-        /// <summary>
-        /// Loads the current user.
-        /// </summary>
-        /// <param name="principal">A reference to HttpContext.User</param>
-        /// <returns>The loaded user.</returns>
-        Task<GirafUser> LoadAllUserDataAsync(ClaimsPrincipal principal);
         
         /// <summary>
         /// Loads only the user with the given username, excluding any associated data.
@@ -53,11 +46,11 @@ namespace GirafRest.Services
         Task<GirafUser> LoadBasicUserDataAsync(ClaimsPrincipal principal);
 
         /// <summary>
-        /// Loads the user with the given username and also includes all related data.
+        /// Loads the user with week schedules.
         /// </summary>
-        /// <param name="username">The username of the user to fetch.</param>
-        /// <returns>A loaded user, i.e. a user with all related data.</returns>
-        Task<GirafUser> LoadByIdAsync(string username);
+        /// <returns>The user with week schedules.</returns>
+        /// <param name="id">Identifier of <see cref="GirafUser"/></param>
+        Task<GirafUser> LoadUserWithWeekSchedules(string id);
 
         /// <summary>
         /// Loads the image of the request body.
@@ -65,6 +58,13 @@ namespace GirafRest.Services
         /// <param name="bodyStream">A stream from which the request body may be read.</param>
         /// <returns>The image as a byte array.</returns>
         Task<byte[]> ReadRequestImage(Stream bodyStream);
+
+        /// <summary>
+        /// Loads the user with resources.
+        /// </summary>
+        /// <returns>The user with resources.</returns>
+        /// <param name="principal">The security claim - i.e. the information about the currently authenticated user.</param>
+        Task<GirafUser> LoadUserWithResources(ClaimsPrincipal id);
 
         /// <summary>
         /// Checks if the current user owns the given resource.

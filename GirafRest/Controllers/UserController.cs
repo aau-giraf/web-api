@@ -359,7 +359,7 @@ namespace GirafRest.Controllers
         {
             if (String.IsNullOrEmpty(id))
                 return new ErrorResponse<List<UserNameDTO>>(ErrorCode.MissingProperties, "id");
-            var user = await _giraf.LoadByIdAsync(id);
+            var user = _giraf._context.Users.Include(u => u.Citizens).FirstOrDefault(u => u.Id == id);
             var authUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
             var citizens = new List<UserNameDTO>();
 
@@ -397,7 +397,7 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<Response<List<UserNameDTO>>> GetGuardians(string id)
         {
-            var user = await _giraf.LoadByIdAsync(id);
+            var user = _giraf._context.Users.Include(u => u.Guardians).FirstOrDefault(u => u.Id == id);
             if (user == null)
                 return new ErrorResponse<List<UserNameDTO>>(ErrorCode.InvalidProperties, "id");
 

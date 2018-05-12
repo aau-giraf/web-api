@@ -327,7 +327,7 @@ namespace GirafRest.Controllers
         {
             //Fetch the department and check that it exists.
             var department = await _giraf._context.Departments.Where(d => d.Key == departmentId).FirstOrDefaultAsync();
-            var usr = await _giraf.LoadAllUserDataAsync(HttpContext.User);
+            var usr = await _giraf.LoadUserWithResources(HttpContext.User);
 
             if (department == null)
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.DepartmentNotFound);
@@ -385,7 +385,7 @@ namespace GirafRest.Controllers
         public async Task<Response<DepartmentDTO>> RemoveResource(long resourceId)
         {
             //Fetch the department and check that it exists.
-            var usr = await _giraf.LoadAllUserDataAsync(HttpContext.User);
+            var usr = await _giraf.LoadUserWithResources(HttpContext.User);
 
             //Fetch the resource with the given id, check that it exists.
             var resource = await _giraf._context.Pictograms
