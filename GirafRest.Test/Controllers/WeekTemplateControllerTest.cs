@@ -72,7 +72,7 @@ namespace GirafRest.Test
         }
         
         [Fact]
-        public void GetWeekTemplates_SomeTemplates_OK()
+        public void GetWeekTemplates_SomeTemplates_Success()
         {
             var wtc = InitializeTest();
             
@@ -122,7 +122,7 @@ namespace GirafRest.Test
         }
         
         [Fact]
-        public void GetWeekTemplate_ActualTemplate_OK()
+        public void GetWeekTemplate_ActualTemplate_Success()
         {
             var wtc = InitializeTest();
             
@@ -144,7 +144,7 @@ namespace GirafRest.Test
         #region CreateWeekTemplate
         
         [Fact]
-        public void CreateWeekTemplate_NewTemplateValidDTO_Ok()
+        public void CreateWeekTemplate_NewTemplateValidDTO_Success()
         {
             var wtc = InitializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserGuardian2Department2]);
@@ -200,7 +200,7 @@ namespace GirafRest.Test
         #region UpdateWeekTemplate
         
         [Fact]
-        public void UpdateWeekTemplate_NewTemplateValidDTO_Ok()
+        public void UpdateWeekTemplate_NewTemplateValidDTO_Success()
         {
             var wtc = InitializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserAdmin]);
