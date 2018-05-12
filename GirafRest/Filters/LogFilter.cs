@@ -20,11 +20,7 @@ namespace GirafRest.Filters
             _giraf = giraf;
         }
 
-        public void OnActionExecuting(ActionExecutingContext context)
-        {
-            
-        }
-
+        public void OnActionExecuting(ActionExecutingContext context) {}
         public void OnActionExecuted(ActionExecutedContext context)
         {
             string path = "Logs/log-" + DateTime.Now.Year + DateTime.Now.Month.ToString().PadLeft(2, '0') + DateTime.Now.Day.ToString().PadLeft(2, '0') + ".txt";
