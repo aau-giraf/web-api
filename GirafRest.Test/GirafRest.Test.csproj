@@ -46,4 +46,7 @@
   <ItemGroup>
     <Folder Include="Playlists" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="Playlists\Choice.playlist" />
+  </ItemGroup>
 </Project>

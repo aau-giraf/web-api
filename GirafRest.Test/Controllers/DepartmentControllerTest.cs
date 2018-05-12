@@ -12,7 +12,7 @@ using System.Linq;
 using GirafRest.Services;
 using static GirafRest.Test.UnitTestExtensions.TestContext;
 
-namespace GirafRest.Test.Controllers
+namespace GirafRest.Test
 {
     public class DepartmentControllerTest
     {
@@ -28,6 +28,8 @@ namespace GirafRest.Test.Controllers
         private const int ADMIN_DEP_ONE = 0;
         private const int DEPARTMENT_TWO_USER = 6;
         private const int DEPARTMENT_TWO_OBJECT = 1;
+        private const int CITIZEN_NO_DEPARTMENT = 9;
+        private const int CITIZEN_DEP_THREE = 3;
 
         public DepartmentControllerTest(ITestOutputHelper testLogger)
         {
@@ -166,17 +168,28 @@ namespace GirafRest.Test.Controllers
             var dc = initializeTest();
             var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
-            var userName = "Admin";
-            var user = new GirafUserDTO(mockUser, GirafRoles.SuperUser)
-            {
-                Username = userName
-            };
+            var user = _testContext.MockUsers[CITIZEN_NO_DEPARTMENT];
+
+            var res = dc.AddUser(DEPARTMENT_TWO, user.Id).Result;
+
+
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+        }
+
+        [Fact]
+        public void AddUser_ExistingDepartment_Error()
+        {
+            var dc = initializeTest();
+            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+            var user = _testContext.MockUsers[CITIZEN_DEP_THREE];
 
             var res = dc.AddUser(DEPARTMENT_TWO, user.Id).Result;
 
             Assert.IsType<ErrorResponse<DepartmentDTO>>(res);
             Assert.Equal(ErrorCode.UserAlreadyHasDepartment, res.ErrorCode);
         }
+
 
         [Fact]
         public void AddUser_NonExistingDepartment_NotFound()

@@ -265,9 +265,10 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.UserNameAlreadyTakenWithinDepartment);
 
             //Add the user and save these changes
-            var user = await _giraf._context.Users.Where(u => u.Id == userId).FirstOrDefaultAsync();
+            var user = await _giraf._context.Users.Where(u => u.Id == userId).Include(u => u.Department)
+                                   .FirstOrDefaultAsync();
 
-            var RoleOfUserToAdd = await _roleManager.findUserRole(_giraf._userManager, currentUser);
+            var RoleOfUserToAdd = await _roleManager.findUserRole(_giraf._userManager, user);
 
             // only makes sense to add a guardian or citizen to a department
             if (RoleOfUserToAdd == GirafRoles.SuperUser || RoleOfUserToAdd == GirafRoles.Department) 
