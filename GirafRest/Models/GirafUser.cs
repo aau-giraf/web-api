@@ -28,60 +28,20 @@ namespace GirafRest.Models
         /// </summary>
         public virtual ICollection<GuardianRelation> Citizens { get; set; }
 
-        /// <summary>
-        /// The display name for the user.
-        /// </summary>
         public string DisplayName { get; set; }
-        /// <summary>
-        /// The profile icon of the user.
-        /// </summary>
+
         public virtual byte[] UserIcon { get; set; }
 
-        /// <summary>
-        /// The key of the user's department.
-        /// </summary>
         [ForeignKey("Department")]
         public long? DepartmentKey { get; set; }
-        /// <summary>
-        /// A reference to the user's department.
-        /// </summary>
+
         public virtual Department Department { get; set; }
 
-        /// <summary>
-        /// A collection of the user's week schedules.
-        /// </summary>
         public virtual ICollection<Week> WeekSchedule { get; set; }
 
-        /// <summary>
-        /// A collection of the user's resources.
-        /// </summary>
         public virtual ICollection<UserResource> Resources { get; set; }
 
-        /// <summary>
-        /// A field for storing all relevant options that the user has specified in the GirafLauncher.
-        /// </summary>
         public virtual Setting Settings { get; set; }
-        
-        /// <summary>
-        /// Creates a new user with the specified user name, associated with the given department.
-        /// </summary>
-        /// <param name="userName">The username.</param>
-        /// <param name="department">The department to which the user should be added.</param>
-        public GirafUser(string userName, Department department) : base(userName)
-        {
-            IntialiseData();
-            Settings.InitialiseWeekDayColors();
-            DepartmentKey = department?.Key ?? -1;
-        }
-
-        /// <summary>
-        /// DO NOT DELETE
-        /// THIS CONSTRUCTOR IS USED BY NEWTONSOFT AND SHOULD ONLY BE USED BY NEWTONSOFT
-        /// </summary>
-        public GirafUser()
-        {
-            IntialiseData();
-        }
 
         private void IntialiseData()
         {
@@ -92,10 +52,6 @@ namespace GirafRest.Models
             this.Guardians = new List<GuardianRelation>();
         }
 
-        /// <summary>
-        /// Adds the citizens.
-        /// </summary>
-        /// <param name="citizens">Citizens.</param>
         public void AddCitizens(List<GirafUser> citizens){
             foreach (var citizen in citizens)
             {
@@ -108,10 +64,6 @@ namespace GirafRest.Models
             this.Citizens.Add(new GuardianRelation(this, citizen));
         }
 
-        /// <summary>
-        /// Adds the guardians.
-        /// </summary>
-        /// <param name="guardians">Guardians.</param>
         public void AddGuardians(List<GirafUser> guardians)
         {
             foreach (var guardian in guardians)
@@ -124,6 +76,20 @@ namespace GirafRest.Models
         {
             this.Guardians.Add(new GuardianRelation(guardian, this));
         }
+
+        public GirafUser(string userName, Department department) : base(userName)
+        {
+            IntialiseData();
+            Settings.InitialiseWeekDayColors();
+            DepartmentKey = department?.Key ?? -1;
+        }
+
+        // DO NOT DELETE
+        public GirafUser()
+        {
+            IntialiseData();
+        }
+
        
     }
 }

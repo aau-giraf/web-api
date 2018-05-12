@@ -58,7 +58,7 @@ namespace GirafRest.Test
 
         
         [Fact]
-        public void GetWeekTemplates_NoTemplates_NoneFound()
+        public void GetWeekTemplates_NoTemplates_NoWeekTemplateFound()
         {
             var wtc = InitializeTest();
             
@@ -68,7 +68,7 @@ namespace GirafRest.Test
 
             var result = wtc.GetWeekTemplates().Result;
 
-            Assert.IsType<ErrorResponse<IEnumerable<WeekTemplateNameDTO>>>(result);
+            Assert.Equal(ErrorCode.NoWeekTemplateFound, result.ErrorCode);
         }
         
         [Fact]
@@ -94,7 +94,7 @@ namespace GirafRest.Test
         #region GetWeekTemplate
         
         [Fact]
-        public void GetWeekTemplate_InvalidID_NotFound()
+        public void GetWeekTemplate_InvalidID_NoWeekTemplateFound()
         {
             var wtc = InitializeTest();
             
@@ -104,11 +104,11 @@ namespace GirafRest.Test
 
             var result = wtc.GetWeekTemplate(int.MaxValue).Result;
 
-            Assert.IsType<ErrorResponse<WeekTemplateDTO>>(result);
+            Assert.Equal(ErrorCode.NoWeekTemplateFound, result.ErrorCode);
         }
 
         [Fact]
-        public void GetWeekTemplate_FromOtherDepartment_NotFound()
+        public void GetWeekTemplate_FromOtherDepartment_NoWeekTemplateFound()
         {
             var wtc = InitializeTest();
             
@@ -118,7 +118,7 @@ namespace GirafRest.Test
 
             var result = wtc.GetWeekTemplate(Template1).Result;
 
-            Assert.IsType<ErrorResponse<WeekTemplateDTO>>(result);
+            Assert.Equal(ErrorCode.NoWeekTemplateFound, result.ErrorCode);
         }
         
         [Fact]
@@ -132,7 +132,6 @@ namespace GirafRest.Test
 
             var result = wtc.GetWeekTemplate(_testContext.MockWeekTemplates[Template1].Id).Result;
 
-            Assert.IsType<Response<WeekTemplateDTO>>(result);
             Assert.True(result.Success);
             Assert.Equal("Template1", result.Data.Name);
             Assert.Contains(Days.Wednesday, result.Data.Days.Select(d => d.Day));
@@ -159,15 +158,13 @@ namespace GirafRest.Test
             };
 
             var res = wtc.CreateWeekTemplate(templateDTO).Result;
-            
-            Assert.IsType<Response<WeekTemplateDTO>>(res);
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+
             Assert.True(res.Success);
             Assert.Equal("Test Week", res.Data.Name);
         }
         
         [Fact]
-        public void CreateWeekTemplate_NoDays_BadRequest()
+        public void CreateWeekTemplate_NoDays_InvalidAmountOfWeekdays()
         {
             var wtc = InitializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserGuardian2Department2]);
@@ -181,18 +178,18 @@ namespace GirafRest.Test
 
             var res = wtc.CreateWeekTemplate(templateDTO).Result;
             
-            Assert.IsType<ErrorResponse<WeekTemplateDTO>>(res);
+            Assert.Equal(ErrorCode.InvalidAmountOfWeekdays, res.ErrorCode);
         }
 
         [Fact]
-        public void CreateWeekTemplate_NullDTO_BadRequest()
+        public void CreateWeekTemplate_NullDTO_MissingProperties()
         {
             var wtc = InitializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserGuardian2Department2]);
             
             var res = wtc.CreateWeekTemplate(null).Result;
 
-            Assert.IsType<ErrorResponse<WeekTemplateDTO>>(res);
+            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
 
 
@@ -217,40 +214,35 @@ namespace GirafRest.Test
             };
 
             var res = wtc.UpdateWeekTemplate(_testContext.MockWeekTemplates[Template1].Id, templateDTO).Result;
-            
-            Assert.IsType<Response<WeekTemplateDTO>>(res);
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+
             Assert.True(res.Success);
             Assert.Equal("Test Week", res.Data.Name);
         }
         
         [Fact]
-        public void UpdateWeekTemplate_NoDays_BadRequest()
+        public void UpdateWeekTemplate_AsGuadianOfOtherDepartment_NotAuthorised()
         {
             var wtc = InitializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserGuardian2Department2]);
             var template = new WeekTemplate(_testContext.MockDepartments[MockDepartment2]);
-            
+
             // modify name
-            var templateDTO = new WeekTemplateDTO(template)
-            {
-                Name = "Test Week"
-            };
+            var templateDTO = new WeekTemplateDTO(template){Name = "Test hest"};
 
             var res = wtc.UpdateWeekTemplate(_testContext.MockWeekTemplates[Template1].Id, templateDTO).Result;
             
-            Assert.IsType<ErrorResponse<WeekTemplateDTO>>(res);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);;
         }
 
         [Fact]
-        public void UpdateWeekTemplate_NullDTO_BadRequest()
+        public void UpdateWeekTemplate_NullDTO_MissingProperties()
         {
             var wtc = InitializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserGuardian2Department2]);
             
             var res = wtc.UpdateWeekTemplate(_testContext.MockWeekTemplates[Template1].Id, null).Result;
 
-            Assert.IsType<ErrorResponse<WeekTemplateDTO>>(res);
+            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode); ;
         }
 
 

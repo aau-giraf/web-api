@@ -36,7 +36,6 @@ namespace GirafRest.Services
         /// has the access to edit the provided user's userinformation.
         /// Does not currently support parents.
         /// </summary>
-        /// <returns>True if authUser can access userToEdit. False otherwise</returns>
         public async Task<bool> HasReadUserAccess(GirafUser authUser, GirafUser userToEdit)
         {
             if (authUser == null || userToEdit == null)
@@ -74,9 +73,6 @@ namespace GirafRest.Services
         /// Citizen can never register, department and guardian can only register guardians and citizens in same dep
         /// Super user can register all roles
         /// </summary>
-        /// <returns>The to department.</returns>
-        /// <param name="authUser">Auth user.</param>
-        /// <param name="userToEdit">User to edit.</param>
         public async Task<bool> HasRegisterUserAccess(GirafUser authUser, GirafRoles roleToAdd, long departmentKey)
         {
             if (authUser == null)
@@ -99,19 +95,17 @@ namespace GirafRest.Services
             return true;
         }
 
+        /// <summary>
+        /// Check that a user has access to read the template of a given user
+        /// </summary>
         public async Task<bool> HasTemplateAccess(GirafUser authUser)
         {
             if (authUser == null)
                 return false;
 
             var authUserRole = await _roleManager.findUserRole(_userManager, authUser);
-            if (authUserRole == GirafRoles.SuperUser)
-                return true;
-
-            if (!(authUserRole == GirafRoles.Guardian || 
-                  authUserRole == GirafRoles.Department))
+            if (authUserRole == GirafRoles.Citizen)
                 return false;
-            
             return true;
         }
 
@@ -130,8 +124,6 @@ namespace GirafRest.Services
         /// <summary>
         /// Method for checking whether the authenticated user is allowed to view information related to given department.
         /// </summary>
-        /// <param name="authUser">The user in question</param>
-        /// <param name="departmentKey">Department in question</param>
         public async Task<bool> HasReadDepartmentAccess(GirafUser authUser, long? departmentKey)
         {
             var authUserRole = await _roleManager.findUserRole(_userManager, authUser);

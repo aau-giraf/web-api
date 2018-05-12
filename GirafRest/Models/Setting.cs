@@ -13,15 +13,9 @@ namespace GirafRest.Models
     /// </summary>
     public class Setting
     {
-        /// <summary>
-        /// Key for LauncherOptions
-        /// </summary>
         [Key]
         public long Key { get; private set; }
 
-        /// <summary>
-        /// Preferred orientation of device/screen
-        /// </summary>
         [Required]
         public Orientation Orientation { get; set; }
         /// <summary>
@@ -69,21 +63,6 @@ namespace GirafRest.Models
         public List<WeekDayColor> WeekDayColors { get; set; }
 
         /// <summary>
-        /// Required empty constructor
-        /// </summary>
-        public Setting()
-        {
-            Orientation = Orientation.portrait;
-            CompleteMark = CompleteMark.Checkmark;
-            CancelMark = CancelMark.Cross;
-            DefaultTimer = DefaultTimer.analogClock;
-            Theme = Theme.girafYellow;
-            NrOfDaysToDisplay = 7;
-            TimerSeconds = 900;
-            GreyScale = false;
-
-        }
-        /// <summary>
         /// Updates all settings based on a DTO
         /// </summary>
         /// <param name="newOptions">The DTO containing new settings</param>
@@ -127,6 +106,22 @@ namespace GirafRest.Models
                 new WeekDayColor(){Day = Days.Sunday, HexColor = "#ffffff", SettingId = Key},
 
             };
+        }
+
+        /// <summary>
+        /// DO NOT DELETE
+        /// </summary>
+        public Setting()
+        {
+            Orientation = Orientation.portrait;
+            CompleteMark = CompleteMark.Checkmark;
+            CancelMark = CancelMark.Cross;
+            DefaultTimer = DefaultTimer.analogClock;
+            Theme = Theme.girafYellow;
+            NrOfDaysToDisplay = 7;
+            TimerSeconds = 900;
+            GreyScale = false;
+
         }
     }
 }
