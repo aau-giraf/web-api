@@ -20,8 +20,6 @@ namespace GirafRest.Controllers
     [Route("v1/[controller]")]
     public class UserController : Controller
     {
-        private const string IMAGE_TYPE_PNG = "image/png";
-        private const string IMAGE_TYPE_JPEG = "image/jpeg";
         private const int IMAGE_CONTENT_TYPE_DEFINITION = 25;
 
         private readonly IGirafService _giraf;
@@ -445,9 +443,6 @@ namespace GirafRest.Controllers
             if (!(await _authentication.HasReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), guardian)))
                 return new ErrorResponse(ErrorCode.NotAuthorized);
 
-            if (citizen == null || guardian == null)
-                return new ErrorResponse(ErrorCode.UserNotFound, "Citizen", "Guardian");
-
             var citRole = _roleManager.findUserRole(_giraf._userManager, citizen).Result;
             var guaRole = _roleManager.findUserRole(_giraf._userManager, guardian).Result;
 
@@ -484,8 +479,8 @@ namespace GirafRest.Controllers
 
             if (!ModelState.IsValid)
                 return new ErrorResponse<SettingDTO>(ErrorCode.MissingProperties, ModelState.Values.Where(E => E.Errors.Count > 0)
-                                  .SelectMany(E => E.Errors)
-                                  .Select(E => E.ErrorMessage)
+                                  .SelectMany(e => e.Errors)
+                                  .Select(e => e.ErrorMessage)
                                   .ToArray());
             
             if (options == null)
@@ -506,8 +501,8 @@ namespace GirafRest.Controllers
                     return new ErrorResponse<SettingDTO>(ErrorCode.InvalidDay);
 
                 // check that Colors are in correct format
-                var IsCorrectHexValues = IsWeekDayColorsCorrectHexFormat(options);
-                if (!IsCorrectHexValues)
+                var isCorrectHexValues = IsWeekDayColorsCorrectHexFormat(options);
+                if (!isCorrectHexValues)
                     return new ErrorResponse<SettingDTO>(ErrorCode.InvalidHexValues);
             }
 
@@ -561,7 +556,6 @@ namespace GirafRest.Controllers
             var regex = new Regex(@"#[0-9a-fA-F]{6}");
             foreach (var weekDayColor in setting.WeekDayColors)
             {
-                var hexColor = weekDayColor.HexColor;
                 Match match = regex.Match(weekDayColor.HexColor);
                 if (!match.Success)
                     return false;

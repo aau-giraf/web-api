@@ -1,9 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using GirafRest.Data;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
-using GirafRest.Models.Responses;
 using Microsoft.AspNetCore.Identity;
 
 namespace GirafRest
