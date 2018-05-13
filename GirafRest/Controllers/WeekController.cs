@@ -5,7 +5,6 @@ using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using GirafRest.Services;
 using GirafRest.Models.Responses;
@@ -79,11 +78,8 @@ namespace GirafRest.Controllers
             if (emptyThumbnail == null)
             {
                 //Create default thumbnail
-                if (emptyThumbnail == null)
-                {
-                    _giraf._context.Pictograms.Add(new Pictogram("default", AccessLevel.PUBLIC));
-                    await _giraf._context.SaveChangesAsync();
-                }
+                _giraf._context.Pictograms.Add(new Pictogram("default", AccessLevel.PUBLIC));
+                await _giraf._context.SaveChangesAsync();
                 emptyThumbnail = _giraf._context.Pictograms.FirstOrDefault(r => r.Title == "default");
 
                 return new Response<WeekDTO>(new WeekDTO() { WeekYear = weekYear, Name = $"{weekYear} - {weekNumber}", WeekNumber = weekNumber, Thumbnail = new Models.DTOs.WeekPictogramDTO(emptyThumbnail), Days = new int[] { 1, 2, 3, 4, 5, 6, 7 }.Select(d => new WeekdayDTO() { Activities = new List<ActivityDTO>(), Day = (Days)d }).ToArray() });
@@ -144,8 +140,9 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Deletes all information for the entire week with the given year and week number.
         /// </summary>
-        /// <param name="id">If of the week to update information for.</param>
-        /// <param name="newWeek">A serialized Week with new information.</param>
+        /// <param name="userId"></param>
+        /// <param name="weekYear"></param>
+        /// <param name="weekNumber"></param>
         /// <returns>Success Reponse else UserNotFound, NotAuthorized,
         /// or NoWeekScheduleFound </returns>
         [HttpDelete("{userId}/week/{weekYear}/{weekNumber}")]

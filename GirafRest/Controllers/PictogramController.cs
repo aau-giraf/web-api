@@ -360,8 +360,6 @@ namespace GirafRest.Controllers
                 case AccessLevel.PRIVATE:
                     ownsPictogram = await _giraf.CheckPrivateOwnership(picto, usr);
                     break;
-                default:
-                    break;
             }
             if (!ownsPictogram)
                 return false;

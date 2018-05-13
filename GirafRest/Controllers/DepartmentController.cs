@@ -226,10 +226,10 @@ namespace GirafRest.Controllers
         /// Add a user that does not have a department to the given department.
         /// Requires role Department, Guardian or SuperUser
         /// </summary>
-        /// <param name="departmentId">Identifier for the <see cref="Department" to add user to/></param>
+        /// <param name="departmentId">Identifier for the <see cref="Department"/>to add user to</param>
         /// <param name="userId">The ID of a <see cref="GirafUser"/> to be added to the department.</param>
         /// <returns>Else: MissingProperties, UserNotFound, NotAuthorised, DepartmentUserNotFound, 
-        /// UserNameAlreadyTakenWithinDepartment, UserAlreadyHasDepartment, or Forbidden
+        /// UserNameAlreadyTakenWithinDepartment, UserAlreadyHasDepartment, or Forbidden </returns>
         [HttpPost("{departmentId}/user/{userId}")]
         [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
         public async Task<Response<DepartmentDTO>> AddUser(long departmentId, string userId)
@@ -252,7 +252,7 @@ namespace GirafRest.Controllers
                 }
             }
 
-            Department dep = await _giraf._context.Departments
+            var dep = await _giraf._context.Departments
                 .Where(d => d.Key == departmentId)
                 .Include(d => d.Members)
                 .FirstOrDefaultAsync();
