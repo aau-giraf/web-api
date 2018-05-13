@@ -171,6 +171,7 @@ namespace GirafRest.Controllers
                 .Include(w => w.Thumbnail)
                 .Include(u => u.Weekdays)
                     .ThenInclude(wd => wd.Activities)
+                        .ThenInclude(e => e.Pictogram)
                 .FirstOrDefault(t => id == t.Id);
 
             if (template == null)
@@ -204,9 +205,7 @@ namespace GirafRest.Controllers
             if (user == null) return new ErrorResponse<WeekTemplateDTO>(ErrorCode.UserNotFound);
 
             var template = _giraf._context.WeekTemplates
-                .Include(w => w.Weekdays)
-                    .ThenInclude(w => w.Activities)
-                .FirstOrDefault(t => id == t.Id);
+                                          .FirstOrDefault(t => id == t.Id);
 
             if (template == null)
                 return new ErrorResponse<WeekTemplateDTO>(ErrorCode.WeekTemplateNotFound);

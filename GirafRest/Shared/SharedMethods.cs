@@ -36,7 +36,6 @@ namespace GirafRest.Shared
 
             week.Thumbnail = thumbnail;
 
-            var orderedDays = week.Weekdays.OrderBy(w => w.Day).ToArray();
             foreach (var day in weekDTO.Days)
             {
                 var wkDay = new Weekday(day);

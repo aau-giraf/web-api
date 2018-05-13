@@ -67,6 +67,21 @@ namespace GirafRest.Services
         }
 
         /// <summary>
+        /// Method for loading user from context and eager loading <b>resources</b> fields
+        /// </summary>
+        /// <param name="principal">The security claim - i.e. the information about the currently authenticated user.</param>
+        /// <returns>A <see cref="GirafUser"/> with <b>all</b> related data.</returns>
+        public async Task<GirafUser> LoadUserWithDepartment(System.Security.Claims.ClaimsPrincipal principal)
+        {
+            if (principal == null) return null;
+            var usr = (await _userManager.GetUserAsync(principal));
+            if (usr == null) return null;
+            return await _context.Users
+                .Include(u => u.Department)
+                .FirstOrDefaultAsync();
+        }
+
+        /// <summary>
         /// Method for loading user from context, but including no fields. No reference types will be available.
         /// </summary>
         /// <param name="principal">The security claim - i.e. the information about the currently authenticated user.</param>

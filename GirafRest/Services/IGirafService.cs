@@ -81,5 +81,12 @@ namespace GirafRest.Services
         /// <param name="user">A reference to the user in question.</param>
         /// <returns>True if the user's department owns the resource, false if not.</returns>
         Task<bool> CheckProtectedOwnership(Pictogram resource, GirafUser user);
+
+        /// <summary>
+        /// Loads the user with department.
+        /// </summary>
+        /// <returns>The user with department.</returns>
+        /// <param name="principal">Principal.</param>
+        Task<GirafUser> LoadUserWithDepartment(ClaimsPrincipal principal);
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using GirafRest.Services;
 using GirafRest.Models.Responses;
 using static GirafRest.Shared.SharedMethods;
+using Microsoft.EntityFrameworkCore;
 
 namespace GirafRest.Controllers
 {
@@ -35,7 +36,7 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<Response<IEnumerable<WeekNameDTO>>> ReadWeekSchedules(string userId)
         {
-            var user = await _giraf.LoadUserWithWeekSchedules(userId);
+            var user = _giraf._context.Users.Include(u => u.WeekSchedule).FirstOrDefault(u => u.Id == userId);
             if (user == null)
                 return new ErrorResponse<IEnumerable<WeekNameDTO>>(ErrorCode.UserNotFound);
 
@@ -149,7 +150,7 @@ namespace GirafRest.Controllers
         [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
         public async Task<Response> DeleteWeek(string userId, int weekYear, int weekNumber)
         {
-            var user = await _giraf.LoadUserWithWeekSchedules(userId);
+            var user =  _giraf._context.Users.Include(u => u.WeekSchedule).FirstOrDefault(u => u.Id == userId);
             if (user == null) return new ErrorResponse(ErrorCode.UserNotFound);
             // check access rightss
             if (!(await _authentication.HasReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))

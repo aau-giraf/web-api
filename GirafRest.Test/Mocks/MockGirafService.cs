@@ -89,5 +89,10 @@ namespace GirafRest.Test.Mocks
         {
             return _userManager.GetUserAsync(principal);
         }
+
+        public Task<GirafUser> LoadUserWithDepartment(ClaimsPrincipal principal)
+        {
+            return _userManager.GetUserAsync(principal);
+        }
     }
 }

@@ -376,7 +376,7 @@ namespace GirafRest.Controllers
             try
             {
                 //Find the user and add his pictograms to the result
-                var user = await _giraf.LoadUserWithResources(HttpContext.User);
+                var user = await _giraf.LoadUserWithDepartment(HttpContext.User);
                 
                 if (user != null)
                 {

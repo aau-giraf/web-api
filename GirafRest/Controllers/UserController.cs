@@ -423,7 +423,7 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Adds relation between an exisisting citizen and an existing guardian.
+        /// Adds relation between the authenticated user (guardian) and an existing citizen.
         /// </summary>
         /// <param name="id">Guardian id</param>
         /// <param name="citizenId">Citizen id</param>
@@ -433,8 +433,8 @@ namespace GirafRest.Controllers
         [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
         public async Task<Response> AddGuardianCitizenRelationship(string id, string citizenId)
         {
-            var citizen = await _giraf._userManager.FindByIdAsync(citizenId);
-            var guardian = await _giraf._userManager.FindByIdAsync(id);
+            var citizen = _giraf._context.Users.Include(u => u.Guardians).FirstOrDefault(u => u.Id == citizenId);
+            var guardian = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
 
             if (guardian == null || citizen == null)
                 return new ErrorResponse(ErrorCode.UserNotFound);
