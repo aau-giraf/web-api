@@ -47,22 +47,21 @@ namespace GirafRest.Services
             if (authUser.Id == userToEdit.Id)
                 return true;
 
-            if (authUserRole == GirafRoles.Citizen && authUser.Id != userToEdit.Id)
+            if (userRole == GirafRoles.SuperUser)
                 return false;
 
-            if (authUserRole == GirafRoles.Guardian)
+            switch (authUserRole)
             {
-                if (authUser.DepartmentKey != userToEdit.DepartmentKey)
+                case GirafRoles.Citizen:
                     return false;
-
-                if (userRole != GirafRoles.Citizen && userRole != GirafRoles.Guardian)
-                    return false;
-            }
-
-            if (authUserRole == GirafRoles.Department)
-            {
-                if (authUser.DepartmentKey != userToEdit.DepartmentKey)
-                    return false;
+                case GirafRoles.Guardian:
+                    if (authUser.DepartmentKey != userToEdit.DepartmentKey || userRole != GirafRoles.Citizen)
+                        return false;
+                    break;
+                case GirafRoles.Department:
+                    if (authUser.DepartmentKey != userToEdit.DepartmentKey)
+                        return false;
+                    break;
             }
 
             return true;
