@@ -31,42 +31,57 @@
             <v-toolbar color="primary" dark fixed app>
             <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
             <v-toolbar-title v-text="currentPage.title"></v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-toolbar-title v-text="username + ' (' + roleString(role) + ')'"></v-toolbar-title>
             </v-toolbar>
             <v-content>
                 <v-container fluid fill-width>
-                    <names-page v-if="atPage('citizens')" 
+                    <v-layout row wrap v-if="!atPage('departments') && role == 'SuperUser'">
+                        <v-flex xs6>
+                            <v-subheader style="margin-top: 10px;" class="bold">Vælg Afdeling:</v-subheader>
+                        </v-flex>
+                        <v-flex xs6>
+                            <v-select
+                            :items="departments"
+                            item-text="name"
+                            item-value="id"
+                            v-model="departmentId"
+                            @change="departmentChanged($event)"
+                            label="Afdeling"
+                            single-line
+                            ></v-select>
+                        </v-flex>
+                    </v-layout>
+                    <names-page v-if="atPage('citizens') && departmentId != null" 
+                        :loading="citizensLoading"
                         v-on:add="addCitizen($event)" 
                         nameproperty="userName" 
                         idproperty="userId" 
                         deletetitle="Fjern Borger" 
                         v-on:delete="deleteCitizen($event)" 
-                        v-on:update="updateCitizen($event)"
-                        v-on:select-department="selectActiveDepartment($event)"
+                        v-on:update="updateCitizen($event)" 
                         addtitle="Opret Borger" 
                         haspassword="false" 
                         edittitle="Rediger Borger" 
-                        v-bind:departments="departments"
-                        v-bind:selectedDepartment="selectedDepartment"
                         v-bind:elements="citizens">
                     </names-page>
                     <names-page 
-                        v-if="atPage('guardians')" 
+                        v-if="atPage('guardians') && departmentId != null" 
+                        :loading="guardiansLoading"
                         v-on:add="addGuardian($event)" 
                         nameproperty="userName" 
                         idproperty="userId" 
                         v-on:update="updateCitizen($event)" 
                         v-on:delete="deleteCitizen($event)" 
-                        v-on:select-department="selectActiveDepartment($event)"
                         deletetitle="Fjern Pædagog" 
                         addtitle="Opret Pædagog" 
                         haspassword="true" 
-                        edittitle="Rediger Pædagog"
-                        v-bind:departments="departments"
-                        v-bind:selectedDepartment="selectedDepartment"
+                        edittitle="Rediger Pædagog" 
                         v-bind:elements="guardians">
                     </names-page>
                     <names-page 
                         v-if="atPage('departments')" 
+                        :loading="departmentsLoading"
                         v-on:add="addDepartment($event)" 
                         nameproperty="name" 
                         idproperty="id" 
@@ -75,9 +90,7 @@
                         deletetitle="Fjern Afdeling" 
                         addtitle="Opret Afdeling" 
                         haspassword="false" 
-                        edittitle="Rediger Afdeling"
-                        v-bind:departments="departments"
-                        v-bind:selectedDepartment="departmentId"
+                        edittitle="Rediger Afdeling" 
                         v-bind:elements="departments">
                     </names-page>
                 </v-container>
@@ -132,76 +145,50 @@
                         </v-card-actions>
                     </v-card>
                 </v-dialog>
-            <v-card v-if="selectedDepartment != null">
-                <v-card-title>
-                    <v-layout row>
-                        <v-flex xs5>
-                        <v-text-field
-                        v-model="search"
-                        append-icon="search"
-                        label="Search"
-                        single-line
-                        hide-details
-                        ></v-text-field>
-                        </v-flex>
-                        <v-flex xs7  class="text-xs-right">
-                            <v-btn color="primary" @click="addElement" class="mx-0">{{addtitle}}</v-btn>
-                        </v-flex>
-                    </v-layout>
-                </v-card-title>
-                <v-data-table
-                    :headers="headers"
-                    :items="elements"
-                    :search="search"
-                >
-                    <template slot="items" slot-scope="props">
-                    <td style="max-width: 100px;">{{ props.item[nameproperty] }}</td>
-                    <td class="text-xs-right">
-                        <v-btn fab small dark color="primary" @click="editElement(props.item)">
-                            <v-icon color="white">edit</v-icon>
-                        </v-btn>
-                        <v-btn fab small dark color="red lighten-1" class="mx-0" @click="promptDelete(props.item)">
-                            <v-icon color="white">delete</v-icon>
-                        </v-btn>
-                    </td>
-                    </template>
-                    <v-alert slot="no-results" :value="true" color="info" icon="warning">
-                    Strengen "{{ search }}" gav ingen resulater.
-                    </v-alert>
-                </v-data-table>
+            <v-card-title>
+                <v-layout row>
+                    <v-flex xs5>
+                    <v-text-field
+                    v-model="search"
+                    append-icon="search"
+                    label="Search"
+                    single-line
+                    hide-details
+                    ></v-text-field>
+                    </v-flex>
+                    <v-flex xs7  class="text-xs-right">
+                        <v-btn color="primary" @click="addElement" class="mx-0">{{addtitle}}</v-btn>
+                    </v-flex>
+                </v-layout>
+            </v-card-title>
+            <v-data-table
+                :headers="headers"
+                :items="elements"
+                :search="search"
+                :loading="loading"
+            >
+                <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
+                <template slot="items" slot-scope="props">
+                <td style="max-width: 100px;">{{ props.item[nameproperty] }}</td>
+                <td class="text-xs-right">
+                    <v-btn fab small dark color="primary" @click="editElement(props.item)">
+                        <v-icon color="white">edit</v-icon>
+                    </v-btn>
+                    <v-btn fab small dark color="red lighten-1" class="mx-0" @click="promptDelete(props.item)">
+                        <v-icon color="white">delete</v-icon>
+                    </v-btn>
+                </td>
+                </template>
+                <v-alert slot="no-results" :value="true" color="info" icon="warning">
+                Strengen "{{ search }}" gav ingen resulater.
+                </v-alert>
+            </v-data-table>
             </v-card>
-            <v-card v-if="selectedDepartment == null">
-                <v-card-title>
-                    <v-layout row>
-                        <v-flex xs5>
-                        <v-text-field
-                        v-model="search"
-                        append-icon="search"
-                        label="Search"
-                        single-line
-                        hide-details
-                        ></v-text-field>
-                        </v-flex>
-                    </v-layout>
-                </v-card-title>
-                <v-data-table
-                    :items="departments"
-                    :search="search"
-                >
-                    <template slot="items" slot-scope="props">
-                    <td style="max-width: 100px;" @click="selectDepartment(props.item)">{{ props.item['name'] }}</td>
-                    </template>
-                    <v-alert slot="no-results" :value="true" color="info" icon="warning">
-                    Strengen "{{ search }}" gav ingen resulater.
-                    </v-alert>
-                </v-data-table>
-            </v-card>
-        </v-card>
     </script>
     <script>
     Vue.component('names-page', {
         template: '#names-template',
-        props: [ 'elements', 'add', 'update', 'delete', 'nameproperty', 'idproperty', 'addtitle', 'deletetitle', 'edittitle', 'haspassword', 'departments', 'selectedDepartment' ],
+        props: [ 'elements', 'add', 'update', 'delete', 'nameproperty', 'loading', 'idproperty', 'addtitle', 'deletetitle', 'edittitle', 'haspassword' ],
         data () {
             var self = this;
             var editedItem = {};
@@ -244,7 +231,6 @@
                 this.editedItem = {};
                 this.editedItem[this.idproperty] = element[this.idproperty];
                 this.editedItem[this.nameproperty] = element[this.nameproperty];
-                console.log(this.editedItem);
                 this.dialog = true;
             },
             promptDelete(element) {
@@ -253,11 +239,8 @@
             },
             deleteElement(element) {
                 this.elements.splice(this.elements.indexOf(element), 1);
-                this.$emit("delete", this.element);
+                this.$emit("delete", element);
                 this.deleteDialog = false;
-            },
-            selectDepartment(department) {
-                this.$emit("select-department", department);
             },
             save() {
                 if (this.isEditing) {
@@ -284,25 +267,28 @@
             var user = JSON.parse(localStorage.getItem("user"));
             if(user == undefined)
                 this.logout();
-            var pages = [];
+            var pages = [
+                { icon: "people", name: "citizens", title: "Borgere" },
+                { icon: "people", name: "guardians", title: "Pædagoger" },
+            ];
             if(user.role == "SuperUser")
-                pages.push({ icon: "location_city", name: "departments", title: "Afdelinger" });
-            pages.push({ icon: "people", name: "citizens", title: "Borgere" });
-            pages.push({ icon: "people", name: "guardians", title: "Pædagoger" });
+                pages.splice(0, 0, { icon: "location_city", name: "departments", title: "Afdelinger" });
             pages.push({ icon: "lock", name: "logout", title: "Log ud" });
             return {
                 id: user.id,
-                departmentId: user.departmentId,
+                departmentId: user.departmentId == "" ? null : parseInt(user.departmentId),
+                citizensLoading: false,
+                guardiansLoading: false,
+                departmentsLoading: false,
                 drawer: null,
                 token: user.token,
+                role: user.role,
                 username: user.username,
                 citizens: [],
                 guardians: [],
                 departments: [],
-                selectedDepartment: null,
                 currentPage: pages[0],
-                pages: pages,
-                user: user
+                pages: pages
             };
         },
         methods: {
@@ -311,14 +297,13 @@
             },
             pageSelected(page) {
                 this.currentPage = page;
-                if(this.user.role == "SuperUser")
-                    this.getDepartments();
+                this.getDepartments();
                 if(this.currentPage.name == "logout")
                     this.logout();
-                if(this.currentPage.name == "citizens")
-                    this.getCitizens();
-                if(this.currentPage.name == "guardians")
-                    this.getGuardians();
+                if(this.currentPage.name == "citizens" && this.departmentId != null)
+                    this.getCitizens(this.departmentId);
+                if(this.currentPage.name == "guardians" && this.departmentId != null)
+                    this.getGuardians(this.departmentId);
                 if(this.currentPage.name == "departments")
                     this.getDepartments();
             },
@@ -326,37 +311,56 @@
                 localStorage.removeItem("user");
                 window.location = "/admin/login.html";
             },
-            selectActiveDepartment(e) {
-                this.selectedDepartment = e.id;
-                this.pageSelected(this.currentPage);
+            roleString(role) {
+                if(role == "Guardian"){
+                    return "Pædagog";
+                }
+                if(role == "Department"){
+                    return "Afdeling";
+                }
+                if(role == "SuperUser"){
+                    return "Administrator";
+                }
             },
-            getCitizens() {
+            departmentChanged(departmentId) {
+                if(this.currentPage.name == "citizens")
+                    this.getCitizens(departmentId);
+                if(this.currentPage.name == "guardians")
+                    this.getGuardians(departmentId);
+            },
+            getCitizens(departmentId) {
                 var self = this;
+                this.citizensLoading = true;
                 $.ajax({
-                    url: "/v1/Department/" + self.departmentId + "/",
+                    url: "/v1/Department/" + departmentId + "/",
                     headers: { "Authorization": "Bearer " + self.token },
                     success: function (data) {
                         self.citizens = data.data.members.filter(function(m) { return m.userRole == "Citizen"; });
+                        self.citizensLoading = false;
                     }
                 });
             },
-            getGuardians() {
+            getGuardians(departmentId) {
                 var self = this;
+                this.guardiansLoading = true;
                 $.ajax({
-                    url: "/v1/Department/" + self.departmentId + "/",
+                    url: "/v1/Department/" + departmentId + "/",
                     headers: { "Authorization": "Bearer " + self.token },
                     success: function (data) {
                         self.guardians = data.data.members.filter(function(m) { return m.userRole == "Guardian"; });
+                        self.guardiansLoading = false;
                     }
                 });
             },
             getDepartments() {
                 var self = this;
+                this.departmentsLoading = true;
                 $.ajax({
                     url: "/v1/Department/",
                     headers: { "Authorization": "Bearer " + self.token },
                     success: function (data) {
                         self.departments = data.data;
+                        self.departmentsLoading = false;
                     }
                 });
             },
@@ -365,21 +369,6 @@
             },
             addCitizen(citizen) {
                 this.register(this.citizens, citizen, "Citizen");
-            },
-            deleteCitizen(citizen) {
-                $.ajax({
-                    url: "/v1/User/" + citizen.userId,
-                    type: 'POST',
-                    contentType: "application/json",
-                    data: JSON.stringify(department),
-                    headers: { "Authorization": "Bearer " + self.token },
-                    success: function (data) {
-                        if (!data.success)
-                            self.departments.splice(self.departments.indexOf(department), 1);
-                        else
-                            department.id = data.data.id;
-                    }
-                });
             },
             addGuardian(guardian) {
                 this.register(this.guardians, guardian, "Guardian");
@@ -460,13 +449,46 @@
                 });
             },
             deleteCitizen(citizen){
-                alert("Add call to api");
+                var self = this;
+                $.ajax({
+                    url: "/v1/Account/user/" + citizen.userId,
+                    type: 'DELETE',
+                    contentType: "application/json",
+                    headers: { "Authorization": "Bearer " + self.token },
+                    success: function (data) {
+                        if (!data.success) {
+                            self.citizens.push(citizen);
+                        }
+                    }
+                });
             },
             deleteGuardian(guardian){
-                alert("Add call to api");
+                var self = this;
+                $.ajax({
+                    url: "/v1/Account/user/" + guardian.userId,
+                    type: 'DELETE',
+                    contentType: "application/json",
+                    headers: { "Authorization": "Bearer " + self.token },
+                    success: function (data) {
+                        if (!data.success) {
+                            self.guardians.push(guardian);
+                        }
+                    }
+                });
             },
             deleteDepartment(department){
-                alert("Add call to api");
+                var self = this;
+                $.ajax({
+                    url: "/v1/Department/" + department.id,
+                    type: 'DELETE',
+                    contentType: "application/json",
+                    headers: { "Authorization": "Bearer " + self.token },
+                    success: function (data) {
+                        if (!data.success) {
+                            self.departments.push(department);
+                        }
+                    }
+                });
             }
         }
     });
