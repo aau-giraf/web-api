@@ -187,16 +187,17 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Allows the user to change his password.
+        /// Allows the user to change his password if they know their old password.
         /// </summary>
-        /// <param name="model">All information needed to change the password in a ChangePasswordDTO, i.e. old password, new password
-        /// and a confirmation of the new password.</param>
+        /// <param name="model">All information needed to change the password in a ChangePasswordDTO, i.e. old password and the new password.</param>
         /// <returns>
         /// Empty Response on success. 
+        /// UserNotFound if invalid user id was suplied
         /// MissingProperties if there was missing properties
+        /// NotAuthorized if the  currently logged in user is not allowed to change the given users password
         /// PasswordNotUpdated if the user wasn't logged in
         /// </returns>
-        [HttpPost("/v1/User/{id}/Account/change-password")]
+        [HttpPut("/v1/User/{id}/Account/password")]
         [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
         public async Task<Response> ChangePassword(string id,[FromBody] ChangePasswordDTO model)
         {
@@ -219,6 +220,60 @@ namespace GirafRest.Controllers
             await _signInManager.SignInAsync(user, isPersistent: false);
             _giraf._logger.LogInformation("User changed their password successfully.");
             return new Response();
+        }
+
+        /// <summary>
+        /// Allows a user to set a new password if they forgot theirs.
+        /// </summary>
+        /// <param name="model">All information needed to set the password in a ResetPasswordDTO, i.e. password and reset token.</param>
+        /// <returns>
+        /// Empty Response on success. 
+        /// UserNotFound if invalid user id was suplied
+        /// MissingProperties if there was missing properties
+        /// </returns>
+        [HttpPost("/v1/User/{id}/Account/password")]
+        [AllowAnonymous]
+        public async Task<Response> ChangePassword(string id, ResetPasswordDTO model)
+        {
+            var user =  _giraf._context.Users.FirstOrDefault(u => u.Id == id);
+            if (user == null)
+                return new ErrorResponse(ErrorCode.UserNotFound);
+            if (model == null)
+                return new ErrorResponse(ErrorCode.MissingProperties, "Token", "Password");
+            if (model.Token == null || model.Password == null)
+                return new ErrorResponse(ErrorCode.MissingProperties, "Token", "Password");
+
+            var result = await _giraf._userManager.ResetPasswordAsync(user, model.Token, model.Password);
+            if(!result.Succeeded)
+                return new ErrorResponse(ErrorCode.InvalidProperties, "Token");
+
+            await _signInManager.SignInAsync(user, isPersistent: false);
+            _giraf._logger.LogInformation("User changed their password successfully.");
+            return new Response();
+        }
+
+        /// <summary>
+        /// Allows the user to get a password reset token for a given user
+        /// </summary>
+        /// <returns>
+        /// Return the password reset token on success. 
+        /// UserNotFound if invalid user id was suplied
+        /// NotAuthorized if the  currently logged in user is not allowed to change the given users password
+        /// </returns>
+        [HttpGet("/v1/User/{id}/Account/password-reset-token")]
+        [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
+        public async Task<Response> ChangePassword(string id)
+        {
+            var user =  _giraf._context.Users.FirstOrDefault(u => u.Id == id);
+            if (user == null)
+                return new ErrorResponse(ErrorCode.UserNotFound);
+
+            // check access rights
+            if (!(await _authentication.HasReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
+
+            var result = await _giraf._userManager.GeneratePasswordResetTokenAsync(user);
+            return new Response<string>(result);
         }
 
         [HttpDelete("/v1/Account/user/{userId}")]

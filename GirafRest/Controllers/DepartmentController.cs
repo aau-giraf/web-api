@@ -356,6 +356,29 @@ namespace GirafRest.Controllers
             return new Response<DepartmentDTO>(new DepartmentDTO(department, members));
         }
 
+        [HttpPut("{departmentId}/name")]
+        [Authorize]
+        public async Task<Response> ChangeDepartmentName(long departmentId, string name)
+        {
+            var requestingUser = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
+            if (!_authentication.HasEditDepartmentAccess(requestingUser, departmentId).Result)
+                return new ErrorResponse(ErrorCode.NotAuthorized);
+
+            var department = _giraf._context.Departments
+                .FirstOrDefault(d => d.Key == departmentId);
+            if (department == null)
+                return new ErrorResponse(ErrorCode.DepartmentNotFound);
+
+            if(string.IsNullOrEmpty(name))
+                return new ErrorResponse(ErrorCode.MissingProperties, "Name");
+
+            department.Name = name;
+
+            _giraf._context.SaveChanges();
+            
+            return new Response();
+        }
+
         [HttpDelete("{departmentId}")]
         [Authorize]
         public async Task<Response> DeleteDepartment(long departmentId)

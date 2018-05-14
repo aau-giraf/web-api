@@ -8,23 +8,15 @@ namespace GirafRest.Models.DTOs.AccountDTOs
     public class ResetPasswordDTO
     {
         /// <summary>
-        /// The users username.
-        /// </summary>
-        [Required(ErrorMessage = "Indtast venligst dit brugernavn her.")]
-        [Display(Name = "Brugernavn")]
-        public string Username { get; set; }
-
-        /// <summary>
         /// The users password.
         /// </summary>
-        [Required(ErrorMessage = "Indtast venligst dit kodeord her.")]
+        [Required]
         [DataType(DataType.Password)]
-        [Display(Name = "Kodeord")]
         public string Password { get; set; }
 
         /// <summary>
-        /// Reset password confirmation code. Used when a user request a password reset, this code needs to be added to the url in order to reset.
+        /// Reset password token. Used when a user request a password reset.
         /// </summary>
-        public string Code { get; set; }
+        public string Token { get; set; }
     }
 }
