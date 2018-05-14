@@ -6,16 +6,12 @@ using Microsoft.AspNetCore.Identity;
 
 namespace GirafRest.Models.DTOs
 {
-    /// <summary>
-    /// Defines the structure of a Department when serializing and deserializing data. Data transfer objects (DTOs) 
-    /// were introduced in the project due to problems with circular references in the model classes.
-    /// </summary>
     public class DepartmentDTO
     {
         /// <summary>
         /// The id of the department.
         /// </summary>
-        public long Id { get; set; }
+        public long Id { get; internal set; }
         /// <summary>
         /// The name of the department.
         /// </summary>
@@ -44,9 +40,6 @@ namespace GirafRest.Models.DTOs
             Resources = new List<long> (department.Resources.Select(dr => dr.PictogramKey));
         }
 
-        /// <summary>
-        /// Testing framework requires empty constructor.
-        /// </summary>
         public DepartmentDTO ()
         {
             Members = new List<UserNameDTO>();

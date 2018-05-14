@@ -21,7 +21,7 @@ namespace GirafRest.Models
         public int WeekNumber { get; set; }
 
         /// <summary>
-        /// Empty constructor required for unit testing.
+        /// DO NOT DELETE
         /// </summary>
         public Week() : base()
         {

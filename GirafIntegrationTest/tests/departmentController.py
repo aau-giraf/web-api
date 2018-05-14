@@ -35,19 +35,11 @@ class DepartmentControllerTest(TestCase):
     @test()
     def logins(self, check):
         "Login as Lee, Graatand and Kurt"
-        response = requests.post(Test.url + 'account/login', json={"username": "Lee", "password": "password"}).json()
-        ensureSuccess(response, check)
-        self.lee = response['data']
+        self.lee = login('Lee', check)
 
-        response = requests.post(Test.url + 'account/login',
-                                 json={"username": "Graatand", "password": "password"}).json()
-        ensureSuccess(response, check)
-        self.graatand = response['data']
+        self.graatand = login('Graatand', check)
 
-        response = requests.post(Test.url + 'account/login', json={"username": "Kurt", "password": "password"}).json()
-        ensureSuccess(response, check)
-        self.kurt = response['data']
-
+        self.kurt = login('Kurt', check)
 
     @test()
     def departmentList(self, check):

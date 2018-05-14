@@ -78,6 +78,14 @@ Finally run the following shell-commands in the `scripts` directory and substitu
   - Migrate data from the old database (in `girafdump.sql`)
     `mysql -u<user> -p < migrate.sql`
 
+## Program Arguments
+It is possible to give the following arguments to the API:
+
+  - --Port=<Port> to specify which port the API should run on
+  - --List which list the possible arguments 
+  - --sample-data which seeds the database with data for testing
+  - --logfile=<Filename> which creates a logfile per day for debugging at GirafRest/wwwroot/DebugLogs
+
 ## API Reference
 
 For API reference start the API and navigate to localhost:5000/swagger

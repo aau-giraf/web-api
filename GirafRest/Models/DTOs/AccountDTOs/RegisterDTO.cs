@@ -2,10 +2,6 @@
 
 namespace GirafRest.Models.DTOs.AccountDTOs
 {
-    /// <summary>
-    /// This class is used when a new user is to be created. It simply defines the structure of the expected
-    /// json string.
-    /// </summary>
     public class RegisterDTO
     {
         /// <summary>

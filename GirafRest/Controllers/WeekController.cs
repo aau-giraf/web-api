@@ -5,32 +5,20 @@ using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using GirafRest.Services;
 using GirafRest.Models.Responses;
-using static GirafRest.Controllers.SharedMethods;
+using static GirafRest.Shared.SharedMethods;
 
 namespace GirafRest.Controllers
 {
-    /// <summary>
-    /// The WeekController allows the user to view and update his week schedule along with deleting it.
-    /// </summary>
     [Route("v1/User")]
     public class WeekController : Controller
     {
-        /// <summary>
-        /// A reference to GirafService, that contains common functionality for all controllers.
-        /// </summary>
         private readonly IGirafService _giraf;
 
         private readonly IAuthenticationService _authentication;
 
-        /// <summary>
-        /// Constructor for the Week-controller. This is called by the asp.net runtime.
-        /// </summary>
-        /// <param name="giraf">A reference to the GirafService.</param>
-        /// <param name="loggerFactory">A reference to an implementation of ILoggerFactory. Used to create a logger.</param>
         public WeekController(IGirafService giraf, ILoggerFactory loggerFactory, IAuthenticationService authentication)
         {
             _giraf = giraf;
@@ -39,13 +27,10 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Gets all week schedule name and ids containing activities for the currently authenticated citizen.
+        /// Gets list of <see cref="WeekNameDTO"/> for all schedules belonging to the user with the provided id
         /// </summary>
-        /// All WeekScheduleNameDTOs if succesfull request
-        /// ErrorCode.UserNotFound if we cannot find any user in the DB
-        /// ErrorCode.NoWeekScheduleFound if we can not find any weekschedule on the user
-        /// <returns>
-        /// </returns>
+        /// <returns>List of <see cref="WeekNameDTO"/> on success else UserNotFound or NoWeekScheduleFound</returns>
+        /// <param name="userId">User identifier for the <see cref="GirafUser" to get schedules for/></param>
         [HttpGet("{userId}/week")]
         [Authorize]
         public async Task<Response<IEnumerable<WeekNameDTO>>> ReadWeekSchedules(string userId)
@@ -65,12 +50,12 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Gets the schedule with the specified week number and year.
+        /// Gets the <see cref="WeekDTO"/> with the specified week number and year for the user with the given id
         /// </summary>
         /// <param name="weekYear">The year of the week schedule to fetch.</param>
         /// <param name="weekNumber">The week number of the week schedule to fetch.</param>
-        /// <returns>NotFound if the user does not have a week with the given id or
-        /// Ok and a serialized version of the week if he does.</returns>
+        /// <returns><see cref="WeekDTO"/> for the requested week on success else UserNotFound or NotAuthorized</returns>
+        /// <param name="userId">Identifier of the <see cref="GirafUser"/> to request schedule for</param>
         [HttpGet("{userId}/week/{weekYear}/{weekNumber}")]
         [Authorize]
         public async Task<Response<WeekDTO>> ReadUsersWeekSchedule(string userId, int weekYear, int weekNumber)
@@ -93,11 +78,8 @@ namespace GirafRest.Controllers
             if (emptyThumbnail == null)
             {
                 //Create default thumbnail
-                if (emptyThumbnail == null)
-                {
-                    _giraf._context.Pictograms.Add(new Pictogram("default", AccessLevel.PUBLIC));
-                    await _giraf._context.SaveChangesAsync();
-                }
+                _giraf._context.Pictograms.Add(new Pictogram("default", AccessLevel.PUBLIC));
+                await _giraf._context.SaveChangesAsync();
                 emptyThumbnail = _giraf._context.Pictograms.FirstOrDefault(r => r.Title == "default");
 
                 return new Response<WeekDTO>(new WeekDTO() { WeekYear = weekYear, Name = $"{weekYear} - {weekNumber}", WeekNumber = weekNumber, Thumbnail = new Models.DTOs.WeekPictogramDTO(emptyThumbnail), Days = new int[] { 1, 2, 3, 4, 5, 6, 7 }.Select(d => new WeekdayDTO() { Activities = new List<ActivityDTO>(), Day = (Days)d }).ToArray() });
@@ -123,9 +105,10 @@ namespace GirafRest.Controllers
         /// <param name="weekYear">year of the week you want to update</param>
         /// <param name="weekNumber">weeknr of week you want to update.</param>
         /// <param name="newWeek">A serialized Week with new information.</param>
-
+        /// <returns><see cref="WeekDTO"/> for the requested week on success else MissingProperties, UserNotFound 
+        /// or NotAuthorized</returns>
         [HttpPut("{userId}/week/{weekYear}/{weekNumber}")]
-        [Authorize]
+        [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
         public async Task<Response<WeekDTO>> UpdateWeek(string userId, int weekYear, int weekNumber, [FromBody]WeekDTO newWeek)
         {
             if (newWeek == null) return new ErrorResponse<WeekDTO>(ErrorCode.MissingProperties);
@@ -157,30 +140,31 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Deletes all information for the entire week with the given year and week number.
         /// </summary>
-        /// <param name="id">If of the week to update information for.</param>
-        /// <param name="newWeek">A serialized Week with new information.</param>
-        /// <returns>NotFound if the user does not have a week schedule or
-        /// Ok and a serialized version of the updated week if everything went well.</returns>
+        /// <param name="userId"></param>
+        /// <param name="weekYear"></param>
+        /// <param name="weekNumber"></param>
+        /// <returns>Success Reponse else UserNotFound, NotAuthorized,
+        /// or NoWeekScheduleFound </returns>
         [HttpDelete("{userId}/week/{weekYear}/{weekNumber}")]
-        [Authorize]
-        public async Task<Response<IEnumerable<WeekDTO>>> DeleteWeek(string userId, int weekYear, int weekNumber)
+        [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
+        public async Task<Response> DeleteWeek(string userId, int weekYear, int weekNumber)
         {
             var user = await _giraf.LoadByIdAsync(userId);
-            if (user == null) return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.UserNotFound);
+            if (user == null) return new ErrorResponse(ErrorCode.UserNotFound);
             // check access rightss
             if (!(await _authentication.HasReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.NotAuthorized);
+                return new ErrorResponse(ErrorCode.NotAuthorized);
             
             if (user.WeekSchedule.Any(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber))
             {
                 var week = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber);
-                if (week == null) return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.NoWeekScheduleFound);
+                if (week == null) return new ErrorResponse(ErrorCode.NoWeekScheduleFound);
                 user.WeekSchedule.Remove(week);
                 await _giraf._context.SaveChangesAsync();
-                return new Response<IEnumerable<WeekDTO>>(user.WeekSchedule.Select(w => new WeekDTO(w)));
+                return new Response();
             }
             else
-                return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.NoWeekScheduleFound);
+                return new ErrorResponse(ErrorCode.NoWeekScheduleFound);
         }
     }
 }

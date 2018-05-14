@@ -5,9 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using GirafRest.Models;
 using GirafRest.Services;
-using GirafRest.Extensions;
 using GirafRest.Models.DTOs.AccountDTOs;
-using GirafRest.Models.DTOs.UserDTOs;
 using GirafRest.Models.DTOs;
 using System;
 using System.Linq;
@@ -26,38 +24,16 @@ namespace GirafRest.Controllers
     [Route("v1/[controller]")]
     public class AccountController : Controller
     {
-        /// <summary>
-        /// A reference to ASP.NET's sign-in manager, that is used to validate usernames and passwords.
-        /// </summary>
         private readonly SignInManager<GirafUser> _signInManager;
-        /// <summary>
-        /// Reference to the GirafService, which contains helper methods used by most controllers.
-        /// </summary>
+
         private readonly IGirafService _giraf;
-        /// <summary>
-        /// A reference to the role manager for the project.
-        /// </summary>
+
         private readonly RoleManager<GirafRole> _roleManager;
-        /// <summary>
-        /// Configuration
-        /// </summary>
+
         private readonly IOptions<JwtConfig> _configuration;
 
-        /// <summary>
-        /// reference to the authenticationservice which provides commong authentication checks
-        /// </summary>
         private readonly IAuthenticationService _authentication;
 
-        /// <summary>
-        /// Creates a new account controller. The account controller allows the users to sign in and out of their account
-        /// as well as creating new users. The account controller is automatically instantiated by ASP.NET.
-        /// </summary>
-        /// <param name="signInManager">A reference to a sign in manager</param>
-        /// <param name="emailSender">A reference to an implementation of the IEmailSender interface.</param>
-        /// <param name="loggerFactory">A reference to a logger factory</param>
-        /// <param name="giraf">A reference to the implementation of the IGirafService interface.</param>
-        /// <param name="configuration">A configuration object</param>
-        /// <param name="roleManager">A roleManager object for finding user roles</param>
         public AccountController(
             SignInManager<GirafUser> signInManager,
             ILoggerFactory loggerFactory,
@@ -75,13 +51,11 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// This endpoint allows the user to sign in to his account by providing valid username and password.
+        /// This endpoint allows the user to sign in to his/her account by providing valid username and password.
         /// </summary>
-        /// <param name="model">A LoginDTO(LoginViewModelDTO), i.e. a json-string with a username and a password field.</param>
+        /// <param name="model">A <see cref="LoginDTO"/> i.e. a json object with username and password</param>
         /// <returns>
-        /// JwtToken if credentials are valid
-        /// MissingProperties if any information in body is null or empty
-        /// InvalidCredentials if invalid username or password
+        /// JwtToken if credentials are valid else Errorcode: MissingProperties or InvalidCredentials
         /// </returns>
         [HttpPost("login")]
         [AllowAnonymous]
@@ -107,18 +81,19 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
 
             var loginUser = _giraf._context.Users.FirstOrDefault(u => u.UserName == model.Username);
-            var userRoles = await _roleManager.findUserRole(_giraf._userManager, loginUser);
-            return new Response<string>(await GenerateJwtToken(loginUser, loginUser.Id, userRoles));
+            return new Response<string>(await GenerateJwtToken(loginUser, loginUser.Id));
 
         }
 
         /// <summary>
         /// Register a new user in the REST-API
         /// </summary>
-        /// <param name="model">A reference to a RegisterDTO(RegisterViewModelDTO), i.e. a json string containing three strings;
-        /// Username and Password.</param>
+        /// <param name="model">A reference to a <see cref="RegisterDTO"/> i.e. a json string containing;
+        /// Username, Password, DisplayName, departmentId and Role.</param>
         /// <returns>
-        /// Response with a GirafUserDTO with either the new user or an error
+        /// Response with a GirafUserDTO for the registered user One of the following Error codes:
+        ///  Missingproperties, InvalidCredentials, RoleNotFound, NotAuthorised, UserAlreadyExist, DepartmentNotFound,
+        ///  Error
         /// </returns>
         [HttpPost("register")]
         [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
@@ -189,12 +164,9 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Allows the user to change his password.
         /// </summary>
-        /// <param name="model">All information needed to change the password in a ChangePasswordDTO, i.e. old password, new password
-        /// and a confirmation of the new password.</param>
+        /// <param name="model">A reference to <see cref="ChangePasswordDTO"/></param>
         /// <returns>
-        /// Empty Response on success. 
-        /// MissingProperties if there was missing properties
-        /// PasswordNotUpdated if the user wasn't logged in
+        /// Empty Response on success. Else: Missingproperties, PasswordNotUpdated or UserNotFound
         /// </returns>
         [HttpPost("/v1/User/{id}/Account/change-password")]
         [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
@@ -221,6 +193,11 @@ namespace GirafRest.Controllers
             return new Response();
         }
 
+        /// <summary>
+        /// Deletes the user with the given id
+        /// </summary>
+        /// <param name="userId">id for identifying the given <see cref="GirafUser"/> to be deleted</param>
+        /// <returns>Empty response on success else UserNotFound or NotAuthorized</returns>
         [HttpDelete("/v1/Account/user/{userId}")]
         [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
         public async Task<Response> DeleteUser(string userId)
@@ -229,7 +206,10 @@ namespace GirafRest.Controllers
             if (user == null)
                 return new ErrorResponse(ErrorCode.UserNotFound);
 
-            // tjek om man kan slette sig selv, før jeg kan bruge hasreaduseraccess (sig hvis logged in id = userid så fejl)
+            // A user cannot delete himself/herself
+            var authenticatedUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            if (authenticatedUser == null || (authenticatedUser.Id == userId))
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
 
             // check access rights
             if (!(await _authentication.HasReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
@@ -242,45 +222,10 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// Attempts to login from to a user's account from one of his superior's. This allows departments
-        /// to login as Guardians and guardians to login as citizens. The superiors does not require 
-        /// password in order to login, but they must be in the same department. 
-        /// </summary>
-        /// <param name="superior">The Guardian user who is currently authenticated.</param>
-        /// <param name="username">The username of the citizen to login as.</param>
-        /// <param name="role">A string describing which role the target user is in.</param>
-        /// <returns>
-        /// A response containing a JwtToken or an ErrorReponse
-        /// </returns>
-        private async Task<Response<string>> AttemptRoleLoginTokenAsync(GirafUser superior, string username, string role)
-        {
-            //Attempt to find a user with the given username in the guardian's department
-            var loginUser = _giraf._context.Users.FirstOrDefault(u => u.UserName == username);
-
-            if (loginUser != null && loginUser.DepartmentKey == superior.DepartmentKey)
-            {
-                if (!await _giraf._userManager.IsInRoleAsync(loginUser, role))
-                    return new ErrorResponse<string>(ErrorCode.NotAuthorized);
-
-                await _signInManager.SignOutAsync();
-                await _signInManager.SignInAsync(loginUser, isPersistent: true);
-
-                // Get the roles the user is associated with
-                GirafRoles userRoles = await _roleManager.findUserRole(_giraf._userManager, loginUser);
-
-                return new Response<string>(await GenerateJwtToken(loginUser, User.Claims.FirstOrDefault(c => c.Type == "impersonatedBy")?.Value, userRoles));
-            }
-
-            //There was no user with the given username in the department - return invalidcredentials.
-            else
-                return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
-        }
-
-        /// <summary>
         /// Gets roles s.t we can get role from payload 
         /// </summary>
-        /// <returns>The role claims.</returns>
-        /// <param name="user">User.</param>
+        /// <param name="user"><see cref="GirafUser"/> to get claims for</param>
+        /// <returns>The role claims for the given user</returns>
         private async Task<List<Claim>> GetRoleClaims(GirafUser user)
         {
             var roleclaims = new List<Claim>();
@@ -292,12 +237,11 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Generates a JSON Web Token Token (JwtToken) for a given user and role. Based on the method with the same name from https://github.com/jatarga/WebApiJwt/blob/master/Controllers/AccountController.cs
         /// </summary>
-        /// <param name="user">Which user</param>
-        /// <param name="roles">Which roles</param>
+        /// <param name="user">Which <see cref="GirafUser"/> to generate the token for</param>
         /// <returns>
-        /// The Token as a string
+        /// JWT Token as a string
         /// </returns>
-        private async Task<string> GenerateJwtToken(GirafUser user, string impersonatedBy, GirafRoles roles)
+        private async Task<string> GenerateJwtToken(GirafUser user, string impersonatedBy)
         {
             var claims = new List<Claim>
             {
@@ -323,6 +267,11 @@ namespace GirafRest.Controllers
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
+        /// <summary>
+        /// Simple helper method for converting a role as enum to a role as string
+        /// </summary>
+        /// <returns>The role as a string</returns>
+        /// <param name="role">A given role as enum that should be converted to a string</param>
         private string GirafRoleFromEnumToString(GirafRoles role){
             switch (role)
             {
@@ -338,11 +287,7 @@ namespace GirafRest.Controllers
                     return null;
             }
         }
-        /// <summary>
-        /// // Add a relation to all the newly created citizens guardians
-        /// </summary>
-        /// <param name="user">user to add relation for.</param>
-        /// <param name="department">department the user belongs to.</param>
+
         private void AddGuardiansToCitizens(GirafUser user){
             
             var roleGuardianId = _giraf._context.Roles.Where(r => r.Name == GirafRole.Guardian)

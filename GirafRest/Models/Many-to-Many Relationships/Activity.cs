@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace GirafRest.Models
 {
     /// <summary>
-    /// Defines a many-to-many relationship between weekday and resource.
+    /// Defines a many-to-many relationship between <see cref="Weekday"/> and <see cref="Pictogram"/> (called resource).
     /// </summary>
     public class Activity
     {

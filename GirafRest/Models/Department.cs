@@ -11,38 +11,21 @@ namespace GirafRest.Models
     /// to all users in the department.
     /// </summary>
     public class Department {
-        /// <summary>
-        /// The id of the department entity.
-        /// </summary>
         [Column("id")]
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Key { get; set; }
 
-        /// <summary>
-        /// The name of the department.
-        /// </summary>
         [Required]
         public string Name { get; set; }
 
-        /// <summary>
-        /// A collection of members associated with the department.
-        /// </summary>
         public virtual ICollection<GirafUser> Members { get; set; }
 
-        /// <summary>
-        /// A collection of all resources owned by the department.
-        /// </summary>
         public virtual ICollection<DepartmentResource> Resources { get; set; }
 
-        /// <summary>
-        /// A collection of all week templates owned by the department.
-        /// </summary>
         public virtual ICollection<WeekTemplate> WeekTemplates { get; set; }
 
-        /// <summary>
-        /// DO NOT DELETE THIS.
-        /// </summary>
+        // DO NOT DELETE
         public Department () {
             Members = new List<GirafUser>();
             Resources = new List<DepartmentResource>();

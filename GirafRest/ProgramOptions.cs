@@ -12,12 +12,6 @@ namespace GirafRest
     public static class ProgramOptions
     {
         /// <summary>
-        /// The name of the connection string element in the XML configuration-file
-        /// Defaults to the appsettings.Development.json file
-        /// </summary>
-        public static string ConnectionStringName = "appsettings.Development.json";
-
-        /// <summary>
         /// An option that indicates whether the user has specified that sample data should be added to the database on start up.
         /// </summary>
         public static bool GenerateSampleData = false;
@@ -39,6 +33,6 @@ namespace GirafRest
         /// <summary>
         /// The directory where log-files should be placed.
         /// </summary>
-        public static readonly string LogDirectory = Path.Combine("wwwroot", "Logs");
+        public static readonly string LogDirectory = Path.Combine("wwwroot", "DebugLogs");
     }
 }

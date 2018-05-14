@@ -6,7 +6,7 @@ using GirafRest.Models.Responses;
 using GirafRest.Services;
 using Microsoft.EntityFrameworkCore;
 
-namespace GirafRest.Controllers
+namespace GirafRest.Shared
 {
     public static class SharedMethods
     {

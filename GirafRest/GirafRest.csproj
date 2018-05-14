@@ -52,6 +52,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Migrations\" />
+    <Folder Include="wwwroot\DebugLogs\" />
+    <Folder Include="Shared\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="Views\_ViewImports.cshtml" />

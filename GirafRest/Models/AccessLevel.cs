@@ -1,7 +1,7 @@
 namespace GirafRest.Models
 {
     /// <summary>
-    /// Defines access levels of resources in the system.
+    /// Defines access levels of <see cref="Pictogram"/> in the system.
     /// </summary>
     public enum AccessLevel
     {
