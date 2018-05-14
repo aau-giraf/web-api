@@ -8,3 +8,5 @@
     background-repeat: no-repeat;
     background-size: cover;
 }
+
+html {overflow-y:scroll !important;}
