@@ -6,7 +6,7 @@ using GirafRest.Models.Responses;
 using GirafRest.Services;
 using Microsoft.EntityFrameworkCore;
 
-namespace GirafRest.Controllers
+namespace GirafRest.Shared
 {
     public static class SharedMethods
     {
@@ -36,7 +36,6 @@ namespace GirafRest.Controllers
 
             week.Thumbnail = thumbnail;
 
-            var orderedDays = week.Weekdays.OrderBy(w => w.Day).ToArray();
             foreach (var day in weekDTO.Days)
             {
                 var wkDay = new Weekday(day);

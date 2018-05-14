@@ -143,7 +143,7 @@ namespace GirafRest.Test
                             },
                             new GirafUser()
                             {
-                                UserName = "Guardian 3 in dep 3",
+                                UserName = "Guardian 3 in dep 1",
                                 Id = "guardian3",
                                 DepartmentKey = 1
                             },
@@ -346,13 +346,23 @@ namespace GirafRest.Test
                                 {
                                     MockUsers[1],
                                     MockUsers[2],
-                                    MockUsers[3],
                                     MockUsers[5]
                                 }
-                            }
-                        };
+                            },
+                            new Department()
+                                {
+                                    Key = 3,
+                                    Name = "Mock Department3",
+                                    Members = new List<GirafUser>()
+                                    {
+                                        MockUsers[3],
+                                    }
+                                }
+                            };
+
                     if (mockUsers != null) { 
                         mockUsers[DepartmentTwoUser].Department = mockDepartments[1];
+                        mockUsers[3].Department = mockDepartments[2];
                     }
                     return mockDepartments;
                 }
@@ -475,6 +485,11 @@ namespace GirafRest.Test
                             },
                             new IdentityUserRole<string>()
                             {
+                                UserId = MockUsers[9].Id,
+                                RoleId = MockRoles[RoleGuardian].Id
+                            },
+                            new IdentityUserRole<string>()
+                            {
                                 UserId = MockUsers[UserGuardianNoDepartment].Id,
                                 RoleId = MockRoles[RoleGuardian].Id
                             },
@@ -487,7 +502,7 @@ namespace GirafRest.Test
                             {
                                 UserId = MockUsers[UserGuardianDepartment1].Id,
                                 RoleId = MockRoles[RoleGuardian].Id
-                            },
+                            }
                         };
 
                     return mockUserRoles;

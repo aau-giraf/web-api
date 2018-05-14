@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GirafRest.Extensions;
@@ -11,7 +12,7 @@ using Microsoft.Extensions.Logging;
 using GirafRest.Services;
 using GirafRest.Models.Responses;
 using Microsoft.AspNetCore.Identity;
-using static GirafRest.Controllers.SharedMethods;
+using static GirafRest.Shared.SharedMethods;
 
 namespace GirafRest.Controllers
 {
@@ -40,6 +41,7 @@ namespace GirafRest.Controllers
         /// <param name="giraf">A reference to the GirafService.</param>
         /// <param name="roleManager">A reference to the... no, wait, just take a guess, eh?</param>
         /// <param name="loggerFactory">A reference to an implementation of ILoggerFactory. Used to create a logger.</param>
+        /// <param name="authentication"></param>
         public WeekTemplateController(IGirafService giraf, 
             RoleManager<GirafRole> roleManager, 
             ILoggerFactory loggerFactory, 
@@ -63,8 +65,8 @@ namespace GirafRest.Controllers
         {
             var user = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
             
-            if (! await _authentication.HasTemplateAccess(user) )
-                return new ErrorResponse<IEnumerable<WeekTemplateNameDTO>>(ErrorCode.NotFound);
+            if (! await _authentication.HasTemplateAccess(user))
+                return new ErrorResponse<IEnumerable<WeekTemplateNameDTO>>(ErrorCode.NotAuthorized);
             
             var result = _giraf._context.WeekTemplates
                              .Where(t => t.DepartmentKey == user.DepartmentKey)
@@ -100,9 +102,12 @@ namespace GirafRest.Controllers
                         .ThenInclude(a => a.Pictogram)
                 .Where(t => t.DepartmentKey == user.DepartmentKey)
                 .FirstOrDefaultAsync(w => w.Id == id));
-            
+
+            if (template == null)
+                return new ErrorResponse<WeekTemplateDTO>(ErrorCode.NoWeekTemplateFound);
+
             if (! await _authentication.HasTemplateAccess(user, template?.DepartmentKey) )
-                return new ErrorResponse<WeekTemplateDTO>(ErrorCode.NotFound);
+                return new ErrorResponse<WeekTemplateDTO>(ErrorCode.NotAuthorized);
             
             return new Response<WeekTemplateDTO>(new WeekTemplateDTO(template));
         }
@@ -111,21 +116,21 @@ namespace GirafRest.Controllers
         /// Creates new week template in the department of the given user. 
         /// Available to Supers, Departments and Guardians.
         /// </summary>
-        /// <param name="templateDTO">After successful execution, a new week template will be created with the same values as this DTO.</param>
+        /// <param name="templateDto">After successful execution, a new week template will be created with the same values as this DTO.</param>
         /// <returns>UserMustBeInDepartment if user has no associated department.
         /// MissingProperties if properties are missing.
         /// ResourceNotFound if any pictogram id is invalid.
         /// A DTO containing the full information on the created template otherwise.</returns>
         [HttpPost("")]
         [Authorize (Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
-        public async Task<Response<WeekTemplateDTO>> CreateWeekTemplate([FromBody] WeekTemplateDTO templateDTO)
+        public async Task<Response<WeekTemplateDTO>> CreateWeekTemplate([FromBody] WeekTemplateDTO templateDto)
         {
             var user = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
             
-            if (! await _authentication.HasTemplateAccess(user) )
-                return new ErrorResponse<WeekTemplateDTO>(ErrorCode.NotFound);
+            if (! await _authentication.HasTemplateAccess(user))
+                return new ErrorResponse<WeekTemplateDTO>(ErrorCode.NotAuthorized);
 
-            if(templateDTO == null) return new ErrorResponse<WeekTemplateDTO>(ErrorCode.MissingProperties);
+            if(templateDto == null) return new ErrorResponse<WeekTemplateDTO>(ErrorCode.MissingProperties);
 
             Department department = _giraf._context.Departments.FirstOrDefault(d => d.Key == user.DepartmentKey);
             if(department == null)
@@ -133,7 +138,7 @@ namespace GirafRest.Controllers
             
             var newTemplate = new WeekTemplate(department);
 
-            var errorCode = await SetWeekFromDTO(templateDTO, newTemplate, _giraf);
+            var errorCode = await SetWeekFromDTO(templateDto, newTemplate, _giraf);
             if (errorCode != null)
                 return new ErrorResponse<WeekTemplateDTO>(errorCode.ErrorCode, errorCode.ErrorProperties);
 
@@ -141,13 +146,13 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
             return new Response<WeekTemplateDTO>(new WeekTemplateDTO(newTemplate));
         }
-        
+
         /// <summary>
         /// Overwrite the information of a week template.
         /// Available to all Supers, and to Departments and Guardians of the same department as the template.
         /// </summary>
         /// <param name="id">Id of the template to overwrite.</param>
-        /// <param name="templateDTO">After successful execution, specified template will have the same values as this DTO.</param>
+        /// <param name="newValuesDto">After successful execution, specified template will have the same values as this DTO</param>
         /// <returns> WeekTemplateNotFound if no template exists with the given id.
         /// NotAuthorized if not available to authenticated user(see summary).
         /// MissingProperties if properties are missing.
@@ -155,23 +160,27 @@ namespace GirafRest.Controllers
         /// A DTO containing the full information on the created template otherwise.</returns>
         [HttpPut("{id}")]
         [Authorize (Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
-        public async Task<Response<WeekTemplateDTO>> UpdateWeekTemplate(long id, [FromBody] WeekTemplateDTO newValuesDTO)
+        public async Task<Response<WeekTemplateDTO>> UpdateWeekTemplate(long id, [FromBody] WeekTemplateDTO newValuesDto)
         {
             var user = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
             if (user == null) return new ErrorResponse<WeekTemplateDTO>(ErrorCode.UserNotFound);
 
-            if(newValuesDTO == null) return new ErrorResponse<WeekTemplateDTO>(ErrorCode.MissingProperties);
+            if(newValuesDto == null) return new ErrorResponse<WeekTemplateDTO>(ErrorCode.MissingProperties);
 
             var template = _giraf._context.WeekTemplates
                 .Include(w => w.Thumbnail)
                 .Include(u => u.Weekdays)
                     .ThenInclude(wd => wd.Activities)
+                        .ThenInclude(e => e.Pictogram)
                 .FirstOrDefault(t => id == t.Id);
-            
+
+            if (template == null)
+                return new ErrorResponse<WeekTemplateDTO>(ErrorCode.WeekTemplateNotFound);
+
             if (! await _authentication.HasTemplateAccess(user, template?.DepartmentKey) )
-                return new ErrorResponse<WeekTemplateDTO>(ErrorCode.NotFound);
+                return new ErrorResponse<WeekTemplateDTO>(ErrorCode.NotAuthorized);
             
-            var errorCode = await SetWeekFromDTO(newValuesDTO, template, _giraf);
+            var errorCode = await SetWeekFromDTO(newValuesDto, template, _giraf);
             if (errorCode != null)
                 return new ErrorResponse<WeekTemplateDTO>(errorCode.ErrorCode, errorCode.ErrorProperties);
 
@@ -196,13 +205,13 @@ namespace GirafRest.Controllers
             if (user == null) return new ErrorResponse<WeekTemplateDTO>(ErrorCode.UserNotFound);
 
             var template = _giraf._context.WeekTemplates
-                .Include(w => w.Weekdays)
-                    .ThenInclude(w => w.Activities)
-                .FirstOrDefault(t => id == t.Id);
-            
-            
+                                          .FirstOrDefault(t => id == t.Id);
+
+            if (template == null)
+                return new ErrorResponse<WeekTemplateDTO>(ErrorCode.WeekTemplateNotFound);
+
             if (! await _authentication.HasTemplateAccess(user, template?.DepartmentKey) )
-                return new ErrorResponse<WeekTemplateDTO>(ErrorCode.NotFound);
+                return new ErrorResponse<WeekTemplateDTO>(ErrorCode.NotAuthorized);
 
             _giraf._context.WeekTemplates.Remove(template);
             await _giraf._context.SaveChangesAsync();

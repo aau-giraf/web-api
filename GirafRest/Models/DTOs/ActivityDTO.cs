@@ -22,8 +22,14 @@
 
         public WeekPictogramDTO Pictogram { get; set; }
 
+        /// <summary>
+        /// The order that the activity will appear on in a weekschedule. If two has same order it is a choice
+        /// </summary>
         public int Order { get; set; }
-        
+
+        /// <summary>
+        /// The current ActivityState
+        /// </summary>
         public ActivityState State { get; set; }
 
         public long Id { get; internal set; }

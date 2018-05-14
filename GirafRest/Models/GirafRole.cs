@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace GirafRest.Models
 {
     /// <summary>
-    /// All the roles and policies available in the system. 
+    /// All the roles available in the system
     /// </summary>
     public class GirafRole : IdentityRole<string>
     {
@@ -18,15 +18,7 @@ namespace GirafRest.Models
         public const string Department = "Department";
         public const string SuperUser = "SuperUser";
 
-        // Policies
-        public const string RequireCitizen = "RequireCitizen";
-        public const string RequireSuperUser = "RequireSuperUser";
-        public const string RequireGuardian = "RequireGuardian";
-        public const string RequireGuardianOrSuperUser = "RequireGuardianOrSuperUser";
-        public const string RequireDepartment = "RequireDepartment";
-        public const string RequireDepartmentOrSuperUser = "RequireDepartmentOrSuperUser";
-        public const string RequireSuperUserOrGuardianOrDepartment = "RequireSuperUserOrGuardianOrDepartment";
-
+        // DO NOT DELETE
         public GirafRole()
         {
 

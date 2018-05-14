@@ -37,11 +37,6 @@ namespace GirafRest.Setup
     /// </summary>
     public class Startup
     {
-        /// <summary>
-        /// Creates a new Startup-instance, which is used to configure the server.
-        /// Startup is automatically instantiated by the ASP.NET runtime.
-        /// </summary>
-        /// <param name="env"></param>
         public Startup(IHostingEnvironment env)
         {
             HostingEnvironment = env;
@@ -78,7 +73,6 @@ namespace GirafRest.Setup
         /// This method gets called by the runtime. Use this method to add services to the application.
         /// A service is some class instance that may be used by all classes of the application.
         /// </summary>
-        /// <param name="services">A collection of all services in the application</param>
         public void ConfigureServices(IServiceCollection services)
         {
             services.Configure<JwtConfig>(Configuration.GetSection("Jwt"));
@@ -166,15 +160,6 @@ namespace GirafRest.Setup
         /// <summary>
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         /// </summary>
-        /// <param name="app">An application builder, used to configure the request pipeline.</param>
-        /// <param name="env">A reference to an implementation of IHostingEnvironment, that stores information
-        /// on how the server should be hosted.</param>
-        /// <param name="loggerFactory">A logger factory, in this context used to configure how the loggers
-        /// should behave.</param>
-        /// <param name="roleManager">A reference to the roleManager, used here to ensure that roles are setup</param>
-        /// <param name="userManager">A reference to the usermanager, in this case used to create sample users.</param>
-        /// <param name="appLifetime">A reference to an implementation of IApplicationLifetime, that has a set of events,
-        /// that signal when the application starts, end and so fourth.</param>
         public void Configure(
             IApplicationBuilder app,
             IHostingEnvironment env,
@@ -183,7 +168,6 @@ namespace GirafRest.Setup
             RoleManager<GirafRole> roleManager,
             IApplicationLifetime appLifetime)
         {
-            //app.UsePathBase("/v1");
             //Configure logging for the application
             app.ConfigureLogging(loggerFactory);
             appLifetime.ApplicationStopped.Register(Log.CloseAndFlush);

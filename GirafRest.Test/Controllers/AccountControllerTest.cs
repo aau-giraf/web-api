@@ -7,9 +7,7 @@ using Xunit;
 using Xunit.Abstractions;
 using static GirafRest.Test.UnitTestExtensions;
 using GirafRest.Services;
-using System.Threading.Tasks;
 using GirafRest.Models.DTOs;
-using GirafRest.Models.DTOs.UserDTOs;
 using GirafRest.Models.Responses;
 using Microsoft.Extensions.Options;
 using System.Linq;
@@ -130,7 +128,7 @@ namespace GirafRest.Test
 
         [Fact]
         // If no user is found with given user name, return ErrorResponse with relevant ErrorCode (invalid credentials ensures we do not give the bad guys any information)
-        public void Login_UsernameInvalidPasswordOk_Error()
+        public void Login_UsernameInvalidPasswordOk_InvalidCredentials()
         {
             var accountController = InitializeTest();
 
@@ -146,7 +144,7 @@ namespace GirafRest.Test
 
         [Fact]
         // Trying to login with no credentials:
-        public void Login_NullDTO_Error()
+        public void Login_NullDTO_MissingProperties()
         {
             var accountController = InitializeTest();
 
@@ -207,7 +205,7 @@ namespace GirafRest.Test
         }
      
         [Fact]
-        public void Register_ExistingUsername_Error()
+        public void Register_ExistingUsername_UserAlreadyExists()
         {
             var accountController = InitializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -224,7 +222,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void Register_NoUsername_Error()
+        public void Register_NoUsername_InvalidCredentials()
         {
             var accountController = InitializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -259,7 +257,7 @@ namespace GirafRest.Test
         }
         
         [Fact]
-        public void Register_BlankDTO_Error()
+        public void Register_BlankDTO_InvalidCredentials()
         {
             var accountController = InitializeTest();
 
@@ -274,7 +272,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void Register_GuardianRelation_AutomaticallyAdded(){
+        public void Register_GuardianRelation_Success(){
             var accountController = InitializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = accountController.Register(new RegisterDTO() { Username = "JohnDoe", 
@@ -291,7 +289,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void Register_NullDTO_Error()
+        public void Register_NullDTO_MissingProperties()
         {
             var accountController = InitializeTest();
 
@@ -324,7 +322,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void ChangePassword_NullDTO_Error()
+        public void ChangePassword_NullDTO_MissingProperties()
         {
             var ac = InitializeTest();
 
@@ -340,7 +338,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void ChangePassword_WrongOldPassword_Error()
+        public void ChangePassword_WrongOldPassword_PasswordNotUpdated()
         {
             var ac = InitializeTest();
 
@@ -363,7 +361,7 @@ namespace GirafRest.Test
 
         #region DeleteUser
         [Fact]
-        public void DeleteUser_NotFound_Error()
+        public void DeleteUser_NotFound_UserNotFound()
         {
             var ac = InitializeTest();
 
@@ -383,7 +381,7 @@ namespace GirafRest.Test
             var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
 
-            var result = ac.DeleteUser(mockUser.Id).Result;
+            var result = ac.DeleteUser(_testContext.MockUsers[CITIZEN_DEP_TWO].Id).Result;
 
             Assert.True(result.Success);
             Assert.Equal(ErrorCode.NoError, result.ErrorCode);

@@ -166,28 +166,28 @@ class UserControllerTest(TestCase):
                                 headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
 
-    @test(skip_if_failed=['registerGunnar', 'userInfo'], expect_fail=True)
+    @test(skip_if_failed=['registerGunnar', 'userInfo'])
     def settingsSetTheme(self, check):
         'Enable grayscale'
-        response = requests.put(Test.url + 'User/settings', json=LargeData.grayscaleSettings, headers=auth(self.gunnar)).json()
+        response = requests.put(Test.url + 'User/{0}/settings'.format(self.gunnarId), json=LargeData.grayscaleSettings, headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
-        response = requests.get(Test.url + 'User/settings', headers=auth(self.gunnar)).json()
-        check.equal(3, response['data']['theme'])
+        response = requests.get(Test.url + 'User/{0}/settings'.format(self.gunnarId), headers=auth(self.gunnar)).json()
+        check.equal(LargeData.grayscaleSettings['theme'], response['data']['theme'])
 
-    @test(skip_if_failed=['registerGunnar', 'userInfo'], expect_fail=True)
+    @test(skip_if_failed=['registerGunnar', 'userInfo'])
     def settingsSetTimerSeconds(self, check):
         'Set default countdown time'
-        response = requests.put(Test.url + 'User/settings', json=LargeData.timer1HourSettings,
+        response = requests.put(Test.url + 'User/{0}/settings'.format(self.gunnarId), json=LargeData.timer1HourSettings,
                                 headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
         response = requests.get(Test.url + 'User/{0}/settings'.format(self.gunnarId), headers=auth(self.gunnar)).json()
-        check.equal(3600, response['data']['timerSeconds'])
+        check.equal(LargeData.timer1HourSettings['timerSeconds'], response['data']['timerSeconds'])
 
     @test(skip_if_failed=['registerGunnar', 'userInfo'], depends=['settingsSetTheme', 'settingsSetLauncherAnimationsOn',
-                                                                  'settingsSetLauncherAnimationsOff'], expect_fail=True)  # Run depends first, but if they fail, this can still run
+                                                                  'settingsSetLauncherAnimationsOff'])
     def settingsMultiple(self, check):
         'Set all settings'
-        response = requests.put(Test.url + 'User/settings', json=LargeData.allSettings, headers=auth(self.gunnar)).json()
+        response = requests.put(Test.url + 'User/{0}/settings'.format(self.gunnarId), json=LargeData.allSettings, headers=auth(self.gunnar)).json()
         ensureSuccess(response, check)
 
         response = requests.get(Test.url + 'User/{0}/settings'.format(self.gunnarId), headers=auth(self.gunnar)).json()

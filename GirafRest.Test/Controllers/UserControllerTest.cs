@@ -88,7 +88,6 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
             var res = userController.SetUserIcon(mockUser.Id).Result;
 
-            Assert.IsType<Response>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
         }
@@ -102,11 +101,15 @@ namespace GirafRest.Test
         [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
         [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
         [InlineData(DEPARTMENT_USER_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
+        [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(GUARDIAN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
+        [InlineData(GUARDIAN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
         [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
+        [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
         public void CreateUserIncon_AuthenticationChecks(int authUser,
                   int userToEdit, ErrorCode expectedError)
         {
@@ -130,14 +133,12 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
             var res = usercontroller.SetUserIcon(_testContext.MockUsers[0].Id).Result;
 
-            Assert.IsType<Response>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
 
             // Get icon to be sure it is set
             var res2 = usercontroller.GetUserIcon(_testContext.MockUsers[0].Id).Result;
 
-            Assert.IsType<Response<ImageDTO>>(res2);
             Assert.True(res2.Success);
             Assert.True(res2.Data.Image != null);
         }
@@ -156,6 +157,10 @@ namespace GirafRest.Test
         [InlineData(CITIZEN_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
+        [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(GUARDIAN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
+        [InlineData(GUARDIAN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
+        [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
         public void UpdateUserIcon_AuthenticationChecks(int authUser,
           int userToEdit, ErrorCode expectedError)
         {
@@ -178,13 +183,11 @@ namespace GirafRest.Test
             usercontroller.SetUserIcon(_testContext.MockUsers[0].Id).Wait();
             var res = usercontroller.DeleteUserIcon(_testContext.MockUsers[0].Id).Result;
 
-            Assert.IsType<Response>(res);
             Assert.True(res.Success);
 
             // Get icon to be sure it is deleted
             var res2 = usercontroller.GetUserIcon(_testContext.MockUsers[0].Id).Result;
 
-            Assert.IsType<ErrorResponse<ImageDTO>>(res2);
             Assert.False(res2.Success);
             Assert.Equal(ErrorCode.UserHasNoIcon, res2.ErrorCode);
         }
@@ -203,6 +206,10 @@ namespace GirafRest.Test
         [InlineData(CITIZEN_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
+        [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(GUARDIAN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
+        [InlineData(GUARDIAN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
+        [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
         public void DeleteUserIcon_AuthenticationChecks(int authUser,
                                                         int userToEdit, ErrorCode expectedError)
         {
@@ -226,7 +233,6 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             var res = usercontroller.GetUser(mockUser.Id).Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
             Assert.True(res.Success);
             // check that we are logged in as the correct user
             Assert.Equal(res.Data.Username, mockUser.UserName);
@@ -242,7 +248,6 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             var res = usercontroller.GetUser(mockUser.Id).Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(res.Data.Username, mockUser.UserName);
             Assert.Equal(res.Data.Department, mockUser.DepartmentKey);
@@ -258,20 +263,18 @@ namespace GirafRest.Test
 
             var res = usercontroller.GetUser(mockUser.Id).Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(_testContext.MockUsers[GUARDIAN_DEP_TWO].UserName, res.Data.Username);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
         }
 
         [Fact]
-        public void GetUser_GuardianLoginUsernameNotInDepartment_Error()
+        public void GetUser_GuardianLoginUsernameNotInDepartment_UserNotFound()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             var res = usercontroller.GetUser("invalid").Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
@@ -285,32 +288,29 @@ namespace GirafRest.Test
             var res = usercontroller.GetUser(mockUser.Id).Result;
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            Assert.IsType<Response<GirafUserDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(_testContext.MockUsers[ADMIN_DEP_ONE].UserName, res.Data.Username);
             Assert.Equal(_testContext.MockUsers[ADMIN_DEP_ONE].DepartmentKey, res.Data.Department);
         }
 
         [Fact]
-        public void GetUser_AdminLoginInvalidUsername_Error()
+        public void GetUser_AdminLoginInvalidUsername_UserNotFound()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = usercontroller.GetUser("invalidId").Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
 
         [Fact]
-        public void GetUser_LoginAsCitizenTryGetOtherCitizen_Error()
+        public void GetUser_LoginAsCitizenTryGetOtherCitizen_NotAuthorized()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_THREE]);
             var res = usercontroller.GetUser(_testContext.MockUsers[CITIZEN_DEP_TWO].Id).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
@@ -321,7 +321,7 @@ namespace GirafRest.Test
         [Fact]
         // Because guardians are allowed to call Get Guardians of a given citizen, they will get UserHasNoGuardians error if called on a guardian
         // GetUser_GetCitizensAsCitizen_Error is omitted as it gives a different error depending on from where it is called. It should give NotFound as a Citizen is not authorised to call the method, however, Authorize does not work properly when unit testing and therefore it would return UserHasNoCitizens error.
-        public void GetUser_GetGuardiansAsGuardian_Error()
+        public void GetUser_GetGuardiansAsGuardian_Forbidden()
         {
             var usercontroller = initializeTest();
             var user = _testContext.MockUsers[GUARDIAN_DEP_TWO];
@@ -329,7 +329,6 @@ namespace GirafRest.Test
             var res = usercontroller.GetGuardians(user.Id).Result;
 
             Assert.Equal(ErrorCode.Forbidden, res.ErrorCode);
-            Assert.IsType<ErrorResponse<List<UserNameDTO>>>(res);
             Assert.False(res.Success);
         }
 
@@ -348,7 +347,6 @@ namespace GirafRest.Test
             }
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            Assert.IsType<Response<List<UserNameDTO>>>(res);
 
             Assert.Equal(res.Data.FirstOrDefault().UserName, guardians.FirstOrDefault().UserName);
             Assert.Equal(res.Data.Count(), guardians.Count());
@@ -356,7 +354,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void GetUser_GetGuardiansAsCitizenWrongUsername_Error()
+        public void GetUser_GetGuardiansAsCitizenWrongUsername_Invalid()
         {
             var usercontroller = initializeTest();
             var user = _testContext.MockUsers[CITIZEN_DEP_TWO];
@@ -364,7 +362,6 @@ namespace GirafRest.Test
             var res = usercontroller.GetGuardians("").Result;
 
             Assert.Equal(ErrorCode.InvalidProperties, res.ErrorCode);
-            Assert.IsType<ErrorResponse<List<UserNameDTO>>>(res);
             Assert.False(res.Success);
         }
 
@@ -382,6 +379,10 @@ namespace GirafRest.Test
         [InlineData(CITIZEN_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
+        [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(GUARDIAN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
+        [InlineData(GUARDIAN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
+        [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
         public void GetGuardians_AuthenticationChecks(int authUser, int userToEdit, ErrorCode expectedError)
         {
             var usercontroller = initializeTest();
@@ -413,7 +414,6 @@ namespace GirafRest.Test
             citizens.Add(new UserNameDTO { UserId = citizenUser.Id, UserName = citizenUser.UserName });
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            Assert.IsType<Response<List<UserNameDTO>>>(res);
 
             Assert.Equal(res.Data.FirstOrDefault().UserName, citizens.FirstOrDefault().UserName);
             Assert.Equal(res.Data.Count(), citizens.Count());
@@ -421,7 +421,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void GetUser_GetCitizensAsGuardianWrongUsername_Error()
+        public void GetUser_GetCitizensAsGuardianWrongUsername_MissingProperties()
         {
             var usercontroller = initializeTest();
             var user = _testContext.MockUsers[GUARDIAN_DEP_TWO];
@@ -429,7 +429,6 @@ namespace GirafRest.Test
             var res = usercontroller.GetCitizens("").Result;
 
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
-            Assert.IsType<ErrorResponse<List<UserNameDTO>>>(res);
             Assert.False(res.Success);
         }
 
@@ -447,6 +446,8 @@ namespace GirafRest.Test
         [InlineData(CITIZEN_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
+        [InlineData(GUARDIAN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
+        [InlineData(GUARDIAN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
         public void GetCitizens_AuthenticationChecks(int authUser, int userToEdit, ErrorCode expectedError)
         {
             var usercontroller = initializeTest();
@@ -478,7 +479,6 @@ namespace GirafRest.Test
                 .Result;
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            Assert.IsType<Response<GirafUserDTO>>(res);
             Assert.True(res.Success);
             // check that the updated data is correct
             Assert.Equal(newUserName, res.Data.Username);
@@ -486,20 +486,19 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void UpdateUser_ValidUserNullDTO_Error()
+        public void UpdateUser_ValidUserNullDTO_MissingProperties()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = usercontroller.UpdateUser(null, null).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
 
 
         [Fact]
-        public void UpdateUser_ScreenNameNull_Error(){
+        public void UpdateUser_ScreenNameNull_MissingProperties(){
             var usercontroller = initializeTest();
             var mockUser = _testContext.MockUsers[UserCitizenDepartment1];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
@@ -513,7 +512,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void UpdateUser_Error()
+        public void UpdateUser_NotAuthorized()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserDepartment2]);
@@ -523,7 +522,6 @@ namespace GirafRest.Test
                 ScreenName = "Charles Junior"
             }).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
@@ -539,7 +537,6 @@ namespace GirafRest.Test
                 ScreenName = "Junior"
             }).Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             // check data
@@ -558,7 +555,6 @@ namespace GirafRest.Test
                 ScreenName = "Gunnar"
             }).Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             // check data
@@ -580,6 +576,9 @@ namespace GirafRest.Test
         [InlineData(CITIZEN_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
+        [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(GUARDIAN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
+        [InlineData(GUARDIAN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
         public void UpdateUser_AuthenticationChecks(int authUser, int userToEdit, ErrorCode expectedError)
         {
             var usercontroller = initializeTest();
@@ -605,18 +604,16 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = usercontroller.AddGuardianCitizenRelationship(_testContext.MockUsers[1].Id, _testContext.MockUsers[2].Id);
 
-            Assert.IsType<Response<GirafUserDTO>>(res.Result);
             Assert.True(res.Result.Success);
         }
 
         [Fact]
-        public void AddGuardianCitizenRelationship_InvalidGuardianUser_Error()
+        public void AddGuardianCitizenRelationship_InvalidGuardianUser_UserNotFound()
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = usercontroller.AddGuardianCitizenRelationship("", _testContext.MockUsers[2].Id);
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res.Result);
             Assert.False(res.Result.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.Result.ErrorCode);
         }
@@ -635,7 +632,6 @@ namespace GirafRest.Test
                 .AddUserResource(targetUserId, new ResourceIdDTO() {Id = GuardianPrivatePictogram})
                 .Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             // check ressource is added correctly
@@ -645,7 +641,7 @@ namespace GirafRest.Test
 
 
         [Fact]
-        public void AddUserResource_OwnPrivateInvalidUser_Error()
+        public void AddUserResource_OwnPrivateInvalidUser_UserNotFound()
         {
             var usercontroller = initializeTest();
             string targetUserId = "INVALID";
@@ -654,14 +650,13 @@ namespace GirafRest.Test
                 .AddUserResource(targetUserId, new ResourceIdDTO() { Id = GuardianPrivatePictogram })
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
 
 
         [Fact]
-        public void AddUserResource_OwnProtectedValidUser_Error()
+        public void AddUserResource_OwnProtectedValidUser_ResourceMustBePrivate()
         {
             var usercontroller = initializeTest();
             string targetUserId = _testContext.MockUsers[CITIZEN_DEP_TWO].Id;
@@ -670,14 +665,13 @@ namespace GirafRest.Test
                 .AddUserResource(targetUserId, new ResourceIdDTO() { Id = GuardianProtectedPictogram })
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.ResourceMustBePrivate, res.ErrorCode);
         }
 
 
         [Fact]
-        public void AddUserResource_OwnProtectedInvalidUser_Error()
+        public void AddUserResource_OwnProtectedInvalidUser_UserNotFound()
         {
             var usercontroller = initializeTest();
             string targetUserId = "INVALID";
@@ -686,13 +680,12 @@ namespace GirafRest.Test
                 .AddUserResource(targetUserId, new ResourceIdDTO() { Id = PublicPictogram })
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
 
         [Fact]
-        public void AddUserResource_AnotherProtectedValidUser_Error() 
+        public void AddUserResource_AnotherProtectedValidUser_NotAuthorized() 
         {
             var usercontroller = initializeTest();
             string targetUserId = _testContext.MockUsers[CITIZEN_DEP_TWO].Id;
@@ -701,13 +694,12 @@ namespace GirafRest.Test
                 .AddUserResource(targetUserId, new ResourceIdDTO() { Id = CitizenPrivatePictogram })
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
         [Fact]
-        public void AddUserResource_AnotherProtectedInvalidUser_Error()
+        public void AddUserResource_AnotherProtectedInvalidUser_UserNotFound()
         {
             var usercontroller = initializeTest();
             string targetUserId = "INVALID";
@@ -716,13 +708,12 @@ namespace GirafRest.Test
                 .AddUserResource(targetUserId, new ResourceIdDTO() { Id = PublicPictogram })
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
 
         [Fact]
-        public void AddUserResource_PublicValidUser_Error()
+        public void AddUserResource_PublicValidUser_NotAuthorized()
         {
             var usercontroller = initializeTest();
             string targetUserId = _testContext.MockUsers[GUARDIAN_DEP_TWO].Id;
@@ -731,13 +722,12 @@ namespace GirafRest.Test
                 .AddUserResource(targetUserId, new ResourceIdDTO() { Id = CitizenPrivatePictogram })
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
         [Fact]
-        public void AddUserResource_PublicInvalidUser_Error()
+        public void AddUserResource_PublicInvalidUser_UserNotFound()
         {
             var usercontroller = initializeTest();
             string targetUserId = "INVALID";
@@ -746,13 +736,12 @@ namespace GirafRest.Test
                 .AddUserResource(targetUserId, new ResourceIdDTO() { Id = PublicPictogram })
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
 
         [Fact]
-        public void AddUserResource_AnotherPrivateValidUser_Error()
+        public void AddUserResource_AnotherPrivateValidUser_NotAuthorized()
         {
             var usercontroller = initializeTest();
             string targetUserId = _testContext.MockUsers[GUARDIAN_DEP_TWO].Id;
@@ -761,13 +750,12 @@ namespace GirafRest.Test
                 .AddUserResource(targetUserId, new ResourceIdDTO() { Id = GuardianPrivatePictogram })
                 .Result;
             
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
        }
 
         [Fact]
-        public void AddUserResource_AnotherPrivateInvalidUser_Error()
+        public void AddUserResource_AnotherPrivateInvalidUser_UserNotFound()
         {
             var usercontroller = initializeTest();
             string targetUserId = "INVALID";
@@ -776,8 +764,7 @@ namespace GirafRest.Test
             var res = usercontroller
                 .AddUserResource(targetUserId, new ResourceIdDTO() { Id = PublicPictogram })
                 .Result;
-
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
+            
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
@@ -793,7 +780,6 @@ namespace GirafRest.Test
                 .DeleteResource(mockuser.Id,new ResourceIdDTO() { Id = GuardianPrivatePictogram })
                 .Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             // check that ressource no longer exist
@@ -808,13 +794,12 @@ namespace GirafRest.Test
                 .DeleteResource("INVALID",new ResourceIdDTO() { Id = GuardianPrivatePictogram })
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
 
         [Fact]
-        public void DeleteResource_OwnProtectedValidUser_Error()
+        public void DeleteResource_OwnProtectedValidUser_UserDoesNotOwnResource()
         {
             var usercontroller = initializeTest();
             var mockUser = _testContext.MockUsers[GUARDIAN_DEP_TWO];
@@ -823,13 +808,12 @@ namespace GirafRest.Test
                 .DeleteResource(mockUser.Id, new ResourceIdDTO() { Id = GuardianProtectedPictogram })
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserDoesNotOwnResource, res.ErrorCode);
         }
 
         [Fact]
-        public void DeleteResource_OwnProtectedInvalidUser_Error()
+        public void DeleteResource_OwnProtectedInvalidUser_UserDoesNotOwnResource()
         {
             var usercontroller = initializeTest();
             var mockUser = _testContext.MockUsers[GUARDIAN_DEP_TWO];
@@ -838,13 +822,12 @@ namespace GirafRest.Test
                 .DeleteResource(mockUser.Id, new ResourceIdDTO() { Id = GuardianProtectedPictogram })
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserDoesNotOwnResource, res.ErrorCode);
         }
 
         [Fact]
-        public void DeleteResource_PublicValidUser_Error()
+        public void DeleteResource_PublicValidUser_UserDoesNotOwnResource()
         {
             var usercontroller = initializeTest();
             var mockUser = _testContext.MockUsers[GUARDIAN_DEP_TWO];
@@ -854,13 +837,12 @@ namespace GirafRest.Test
                 .DeleteResource(mockUser.Id, new ResourceIdDTO() { Id = PublicPictogram })
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserDoesNotOwnResource, res.ErrorCode);
         }
 
         [Fact]
-        public void DeleteResource_PublicInvalidUser_Error()
+        public void DeleteResource_PublicInvalidUser_UserNotFound()
         {
             var usercontroller = initializeTest();
 
@@ -868,7 +850,6 @@ namespace GirafRest.Test
                 .DeleteResource("Invalid", new ResourceIdDTO() { Id = PublicPictogram })
                 .Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
@@ -1007,22 +988,6 @@ namespace GirafRest.Test
             Assert.True(_testContext.MockUsers[CITIZEN_DEP_TWO].Settings.GreyScale);
         }
 
-        [Fact]
-        public void UpdateUserSettings_UpdateOtherUserSettings_Error()
-        {
-            var usercontroller = initializeTest();
-            var user = _testContext.MockUsers[CITIZEN_DEP_THREE];
-            _testContext.MockUserManager.MockLoginAsUser(user);
-
-            var idOfUserToUpdate = _testContext.MockUsers[CITIZEN_DEP_TWO].Id;
-
-            var dto = UserSettings[0];
-            var res = usercontroller.UpdateUserSettings(idOfUserToUpdate, dto).Result;
-
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
-            Assert.False(res.Success);
-        }
-
         [Theory]
         [InlineData(ADMIN_DEP_ONE, DEPARTMENT_USER_DEP_TWO, ErrorCode.NoError)]
         [InlineData(ADMIN_DEP_ONE, GUARDIAN_DEP_TWO, ErrorCode.NoError)]
@@ -1037,6 +1002,10 @@ namespace GirafRest.Test
         [InlineData(CITIZEN_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
+        [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
+        [InlineData(GUARDIAN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
+        [InlineData(GUARDIAN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
+        [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
         public void UpdateUserSettings__AuthenticationChecks(int authUser, int userToEdit, ErrorCode expectedError)
         {
             var usercontroller = initializeTest();

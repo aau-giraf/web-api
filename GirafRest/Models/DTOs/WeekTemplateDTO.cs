@@ -18,8 +18,14 @@ namespace GirafRest.Models.DTOs
             this.Id = weekTemplate.Id;
         }
 
+        /// <summary>
+        /// Key of the department the template belongs to
+        /// </summary>
         public long DepartmentKey { get; internal set; }
-        
+
+        /// <summary>
+        /// Id of the corresponding <see cref="WeekTemplate"/>
+        /// </summary>
         public long Id { get; set; }
     }
 }

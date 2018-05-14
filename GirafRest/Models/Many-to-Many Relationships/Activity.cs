@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace GirafRest.Models
 {
     /// <summary>
-    /// Defines a many-to-many relationship between weekday and resource.
+    /// Defines a many-to-many relationship between <see cref="Weekday"/> and <see cref="Pictogram"/> (called resource).
     /// </summary>
     public class Activity
     {
@@ -34,7 +34,7 @@ namespace GirafRest.Models
         /// <summary>
         /// A reference to the actual resource.
         /// </summary>
-        [ForeignKey("ResourceKey")]
+        [ForeignKey("PictogramKey")]
         public virtual Pictogram Pictogram { get; set; }
 
         [Required]

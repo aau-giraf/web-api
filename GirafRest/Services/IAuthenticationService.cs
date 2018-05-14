@@ -1,9 +1,7 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using GirafRest.Data;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
-using GirafRest.Models.Responses;
 using Microsoft.AspNetCore.Identity;
 
 namespace GirafRest
@@ -26,7 +24,7 @@ namespace GirafRest
         /// <returns>The user access.</returns>
         /// <param name="authUser">Auth user.</param>
         /// <param name="userToEdit">User to edit.</param>
-        Task<bool> HasReadUserAccess(GirafUser authUser, GirafUser userToEdit);
+        Task<bool> HasEditOrReadUserAccess(GirafUser authUser, GirafUser userToEdit);
 
         /// <summary>
         /// Method for checking if a specific user has the rights to add a specific role to a given department

@@ -1,19 +1,20 @@
-## Synopsis
+# Giraf Backend
 
 This repository contains the backend API for the Giraf Project. The API is a .net-core project written in C#.
+
+## Build & Run
 
 To run the project locally with a MySQL database first do the following:
 
 0. Prerequisites:
-  - Download and install .NET Core 2.1.101 SDK
-  - Download and install MySQL Server and optionally MySQL Workbench or another database manager
+  - Download and install .NET Core 2.1.101 SDK or a version backwardly compatible with it.
+  - Download and install MySQL Server and optionally MySQL Workbench or another database manager.
   - Create a database named giraf on the MySQL Server. This can be done from the workbench or via cli.
 
-1. open a terminal-emulator and navigate to {project-root}/web-api/GirafRest
+1. Open a terminal-emulator and navigate to `⋯/web-api/GirafRest`
 
-2. In a shell:
   - run `cp appsettings.template.json appsettings.Development.json`
-  - update appsettings.Development.json with 
+  - update appsettings.Development.json with
 	- All fields <> in the"DefaultConnection" string.
     - Jwt.JwtKey field, which must be any (random) string of, at least 40, alpha-numeric charecters
     - Jwt.JwtIssuer field, which is your name or organization. For example "Aalborg University"
@@ -21,7 +22,15 @@ To run the project locally with a MySQL database first do the following:
   - run `dotnet ef database update`
   - run `dotnet run --sample-data`
 
-Once the API is running locally you can navigate to `http://localhost:5000/swagger/` to see and tryout requests to the endpoints
+The `--sample-data` flag will generate sample data if target database is empty, and we recommend using this flag by default. Other possible flags are:
+
+        --prod=[true|false]		| If true then connect to production db, defaults to false.
+        --port=integer			| Specify which port to host the server on, defaults to 5000.
+        --list				    | List options
+        --sample-data		    | Tells the rest-api to generate some sample data. This only works on an empty database.
+        --logfile=string		| Toggles logging to a file, the string specifies the path to the file relative to the working directory.
+
+Once the API is running locally you can navigate to `http://localhost:5000/swagger/` to see and tryout requests to the endpoints. We recommend keeping a text file with often-used DTOs and bearer tokens as part of your workflow.
 
 3. (Optional) To login via swagger:
   - Make a Account/Login request with valid login-info (username: `Tobias`, password: `password`)
@@ -69,9 +78,19 @@ Finally run the following shell-commands in the `scripts` directory and substitu
   - Migrate data from the old database (in `girafdump.sql`)
     `mysql -u<user> -p < migrate.sql`
 
+## Program Arguments
+It is possible to give the following arguments to the API:
+
+  - --Port=<Port> to specify which port the API should run on
+  - --List which list the possible arguments 
+  - --sample-data which seeds the database with data for testing
+  - --logfile=<Filename> which creates a logfile per day for debugging at GirafRest/wwwroot/DebugLogs
+
 ## API Reference
 
 For API reference start the API and navigate to localhost:5000/swagger
+
+Descriptions are generated from method summaries etc. in the code.
 
 ## Contributors
 

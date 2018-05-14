@@ -35,19 +35,11 @@ class DepartmentControllerTest(TestCase):
     @test()
     def logins(self, check):
         "Login as Lee, Graatand and Kurt"
-        response = requests.post(Test.url + 'account/login', json={"username": "Lee", "password": "password"}).json()
-        ensureSuccess(response, check)
-        self.lee = response['data']
+        self.lee = login('Lee', check)
 
-        response = requests.post(Test.url + 'account/login',
-                                 json={"username": "Graatand", "password": "password"}).json()
-        ensureSuccess(response, check)
-        self.graatand = response['data']
+        self.graatand = login('Graatand', check)
 
-        response = requests.post(Test.url + 'account/login', json={"username": "Kurt", "password": "password"}).json()
-        ensureSuccess(response, check)
-        self.kurt = response['data']
-
+        self.kurt = login('Kurt', check)
 
     @test()
     def departmentList(self, check):
@@ -267,27 +259,6 @@ class DepartmentControllerTest(TestCase):
                                  json=pictogram,
                                  headers=auth(self.gunnar)).json()
         ensureError(response, check)
-
-    @test(skip_if_failed=['logins', 'newDepartment'], expect_fail=True)
-    def unauthorizedPictogramAdd4(self, check):
-        'Gunnar tries to add a pictogram directly through pictogram controller to Dalgaardsholmstuen'
-        body = {
-            "accessLevel": 2,
-            "title": "The End of the World as We Know It",
-            "id": -1,
-            "lastEdit": "2018-03-19T10:40:26.587Z"
-        }
-        response = requests.post(Test.url + 'pictogram', json=body, headers={"Authorization": "Bearer {0}".format(
-            self.gunnar)}).json()
-        ensureSuccess(response, check)
-        pictogram = response['data']
-
-        # Check that nothing's changed in database
-        response = requests.get(Test.url + 'Department/{0}'.format(self.dalgardsholmstuenId),
-                                headers=auth(self.lee)).json()
-        ensureSuccess(response, check)
-        check.is_false(pictogramIsInList(pictogram['id'], response['data']['resources']),
-                       message='Pictogram was found in department resources, but should not have been added')
 
     @test(skip_if_failed=['unauthorizedPictogramAdd', 'unauthorizedPictogramAdd1'])
     def pictogramAdd(self, check):

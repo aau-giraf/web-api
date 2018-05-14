@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 namespace GirafRest
 {
     /// <summary>
-    /// A class that may be used to pass program arguments. It is currently hardcoded to support the arguments of GirafRest.
+    /// A class that may be used to pass program arguments
     /// </summary>
     public class ProgramArgumentParser
     {
         /// <summary>
         /// A list of arguments that are allowed by the application.
         /// </summary>
-        private const string _options = "\t--prod=[true|false]\t\t| If true then connect to production db, defaults to false.\n" +
+        private const string _options =
                           "\t--port=integer\t\t\t| Specify which port to host the server on, defaults to 5000.\n" +
                           "\t--list\t\t\t\t| List options\n" +
                           "\t--sample-data\t\t| Tells the rest-api to generate some sample data. This only works on an empty database.\n" +
@@ -41,7 +41,6 @@ namespace GirafRest
         public ProgramArgumentParser()
         {
             programArgumentDictionary = new Dictionary<string, ProgramArgumentHandler>();
-            programArgumentDictionary["--prod"] = programArgumentProduction;
             programArgumentDictionary["--port"] = programArgumentPort;
             programArgumentDictionary["--list"] = (x) => Console.WriteLine(_options);
             programArgumentDictionary["--sample-data"] = (x) =>
@@ -89,29 +88,6 @@ namespace GirafRest
                     "The exception was:\n");
                 Console.WriteLine(e.Message);
                 return false;
-            }
-        }
-
-        /// <summary>
-        /// Configures whether to run in production mode or not.
-        /// </summary>
-        /// <param name="productionMode">Either true or false depending on the user's choice of production mode.</param>
-        private void programArgumentProduction(params string[] productionMode)
-        {
-            if (productionMode[0].Equals("true"))
-            {
-                Console.WriteLine("\tEnabling production mode,");
-                ProgramOptions.ConnectionStringName = "appsettings.json";
-            }
-            else if (productionMode[0].Equals("false"))
-            {
-                Console.WriteLine("\tEnabling debugging mode.");
-                ProgramOptions.ConnectionStringName = "appsettings.Development.json";
-            }
-            else
-            {
-                throw new ArgumentException("\tERROR: Invalid production parameter was specified, expected [true|false] but found "
-                    + productionMode[0]);
             }
         }
 

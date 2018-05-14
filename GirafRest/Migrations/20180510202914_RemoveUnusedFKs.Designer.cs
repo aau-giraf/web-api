@@ -13,9 +13,10 @@ using System;
 namespace GirafRest.Migrations
 {
     [DbContext(typeof(GirafDbContext))]
-    partial class GirafDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180510202914_RemoveUnusedFKs")]
+    partial class RemoveUnusedFKs
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -94,6 +95,8 @@ namespace GirafRest.Migrations
                     b.Property<long>("OtherKey");
 
                     b.Property<long>("PictogramKey");
+
+                    b.Property<long?>("ResourceKey");
 
                     b.HasKey("Key");
 

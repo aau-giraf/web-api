@@ -5,10 +5,6 @@ using System.Linq;
 
 namespace GirafRest.Models.DTOs
 {
-    /// <summary>
-    /// Defines the structure of Weekday when serializing and deserializing data. Data transfer objects (DTOs) 
-    /// were introduced in the project due to problems with circular references in the model classes.
-    /// </summary>
     public class WeekdayDTO
     {
         /// <summary>
