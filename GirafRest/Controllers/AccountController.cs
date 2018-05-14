@@ -233,7 +233,7 @@ namespace GirafRest.Controllers
         /// </returns>
         [HttpPost("/v1/User/{id}/Account/password")]
         [AllowAnonymous]
-        public async Task<Response> ChangePassword(string id, ResetPasswordDTO model)
+        public async Task<Response> ChangePassword(string id, [FromBody] ResetPasswordDTO model)
         {
             var user =  _giraf._context.Users.FirstOrDefault(u => u.Id == id);
             if (user == null)
@@ -262,15 +262,15 @@ namespace GirafRest.Controllers
         /// </returns>
         [HttpGet("/v1/User/{id}/Account/password-reset-token")]
         [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
-        public async Task<Response> ChangePassword(string id)
+        public async Task<Response<string>> ChangePassword(string id)
         {
             var user =  _giraf._context.Users.FirstOrDefault(u => u.Id == id);
             if (user == null)
-                return new ErrorResponse(ErrorCode.UserNotFound);
+                return new ErrorResponse<string>(ErrorCode.UserNotFound);
 
             // check access rights
             if (!(await _authentication.HasReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
+                return new ErrorResponse<string>(ErrorCode.NotAuthorized);
 
             var result = await _giraf._userManager.GeneratePasswordResetTokenAsync(user);
             return new Response<string>(result);

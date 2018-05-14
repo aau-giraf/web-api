@@ -63,6 +63,7 @@
                     <names-page v-if="atPage('citizens') && departmentId != null" 
                         :loading="citizensLoading"
                         v-on:add="addCitizen($event)" 
+                        v-bind:token="token"
                         nameproperty="userName" 
                         idproperty="userId" 
                         deletetitle="Fjern Borger" 
@@ -77,6 +78,7 @@
                         v-if="atPage('guardians') && departmentId != null" 
                         :loading="guardiansLoading"
                         v-on:add="addGuardian($event)" 
+                        v-bind:token="token"
                         nameproperty="userName" 
                         idproperty="userId" 
                         v-on:update="updateCitizen($event)" 
@@ -91,6 +93,7 @@
                         v-if="atPage('departments')" 
                         :loading="departmentsLoading"
                         v-on:add="addDepartment($event)" 
+                        v-bind:token="token"
                         nameproperty="name" 
                         idproperty="id" 
                         v-on:update="updateDepartment($event)" 
@@ -255,7 +258,7 @@
                 deleteDialog: false,
                 resetDialog: false,
                 isEditing: false,
-                resetLink: window.location.host + window.location.pathname + "?user-id=" + "test" + "&reset-token=" + "test" + "&username=" + "testuser" + "&role=" + "testrole" + "#reset",
+                resetLink: null,
                 headers: [
                     {
                         text: 'Navn',
@@ -299,7 +302,19 @@
                 this.deleteDialog = false;
             },
             showResetLink(element) {
-                this.resetDialog = true;
+                var self = this;
+                self.resetDialog = true;
+                $.ajax({
+                    url: "/v1/User/" + element[this.idproperty] + "/Account/password-reset-token",
+                    type: 'GET',
+                    contentType: "application/json",
+                    headers: { "Authorization": "Bearer " + self.token },
+                    success: function (data) {
+                        if(data.success){
+                            self.resetLink = window.location.host + window.location.pathname + "?user-id=" + element[self.idproperty] + "&reset-token=" + encodeURIComponent(data.data) + "&username=" + element[self.nameproperty] + "&role=Resetting#reset";
+                        }
+                    }
+                });
             },
             save() {
                 if (this.isEditing) {
@@ -332,8 +347,10 @@
                 <v-icon>check</v-icon>
                 <br>
                 Adgangskoden blev ændret.
+                <br>
+                <v-btn v-if="resetToken != null" color="primary" @click="login" class="mx-0">Log ind</v-btn>
             </v-card-text>
-            <v-card-title>
+            <v-card-title v-if="isSuccess == null">
                 <span class="headline">
                     Nulstil adgangskoden for '{{username}}'
                 </span>
@@ -373,8 +390,8 @@
                     var self = this;
                     if(this.resetToken == null){
                         $.ajax({
-                            url: "/v1/User/" + self.userId + "/Account/change-password",
-                            type: 'POST',
+                            url: "/v1/User/" + self.userId + "/Account/password",
+                            type: 'PUT',
                             contentType: "application/json",
                             data: JSON.stringify({ oldPassword: self.oldPassword, newPassword: self.newPassword }),
                             headers: { "Authorization": "Bearer " + self.token },
@@ -383,13 +400,24 @@
                             }
                         });
                     } else {
-
+                        $.ajax({
+                            url: "/v1/User/" + self.userId + "/Account/password",
+                            type: 'POST',
+                            contentType: "application/json",
+                            data: JSON.stringify({ token: self.resetToken, password: self.newPassword }),
+                            success: function (data) {
+                                self.isSuccess = data.success;
+                            }
+                        });
                     }
                 },
                 tryAgain() {
                     this.isSuccess = null;
                     this.oldPassword = null;
                     this.newPassword = null;
+                },
+                login() {
+                    window.location = "/admin/login.html";
                 }
             }
         });
@@ -586,10 +614,9 @@
                     this.updateUser(this.guardians, e.oldItem, e.newItem);
                 },
                 updateDepartment(e) {
-                    alert("Add call to api");
                     var self = this;
                     $.ajax({
-                        url: "/v1/Department/" + e.oldItem.id,
+                        url: "/v1/Department/" + e.oldItem.id + "/name",
                         type: 'PUT',
                         contentType: "application/json",
                         data: JSON.stringify(e.newItem),

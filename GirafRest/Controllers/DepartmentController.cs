@@ -358,7 +358,7 @@ namespace GirafRest.Controllers
 
         [HttpPut("{departmentId}/name")]
         [Authorize]
-        public async Task<Response> ChangeDepartmentName(long departmentId, string name)
+        public async Task<Response> ChangeDepartmentName(long departmentId, [FromBody] DepartmentNameDTO nameDTO)
         {
             var requestingUser = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
             if (!_authentication.HasEditDepartmentAccess(requestingUser, departmentId).Result)
@@ -369,10 +369,10 @@ namespace GirafRest.Controllers
             if (department == null)
                 return new ErrorResponse(ErrorCode.DepartmentNotFound);
 
-            if(string.IsNullOrEmpty(name))
+            if(nameDTO == null || string.IsNullOrEmpty(nameDTO.Name))
                 return new ErrorResponse(ErrorCode.MissingProperties, "Name");
 
-            department.Name = name;
+            department.Name = nameDTO.Name;
 
             _giraf._context.SaveChanges();
             
