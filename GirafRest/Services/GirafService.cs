@@ -82,6 +82,28 @@ namespace GirafRest.Services
         }
 
         /// <summary>
+        /// Method for loading user from context and eager loading fields requied to read their <b>week schedules</b>
+        /// </summary>
+        /// <param name="principal">The security claim - i.e. the information about the currently authenticated user.</param>
+        /// <returns>A <see cref="GirafUser"/> with <b>all</b> related data.</returns>
+        public async Task<GirafUser> LoadUserWithWeekSchedules(string id){
+            var user = await _context.Users
+                //First load the user from the database
+                .Where(u => u.Id.ToLower() == id.ToLower())
+                // then load his week schedule
+                .Include(u => u.WeekSchedule)
+                .ThenInclude(w => w.Thumbnail)
+                .Include(u => u.WeekSchedule)
+                .ThenInclude(w => w.Weekdays)
+                .ThenInclude(wd => wd.Activities)
+                .ThenInclude(e => e.Pictogram)
+                //And return it
+                .FirstOrDefaultAsync();
+
+            return user;
+        }
+
+        /// <summary>
         /// Method for loading user from context, but including no fields. No reference types will be available.
         /// </summary>
         /// <param name="principal">The security claim - i.e. the information about the currently authenticated user.</param>
@@ -96,23 +118,6 @@ namespace GirafRest.Services
                 .Where(u => u.Id == usr.Id)
                 //And return it
                 .FirstOrDefaultAsync();;
-        }
-
-        public async Task<GirafUser> LoadUserWithWeekSchedules(string id){
-            var user = await _context.Users
-                         //First load the user from the database
-                         .Where(u => u.Id.ToLower() == id.ToLower())
-                        // then load his week schedule
-                        .Include(u => u.WeekSchedule)
-                        .ThenInclude(w => w.Thumbnail)
-                        .Include(u => u.WeekSchedule)
-                        .ThenInclude(w => w.Weekdays)
-                        .ThenInclude(wd => wd.Activities)
-                        .ThenInclude(e => e.Pictogram)
-                        //And return it
-                        .FirstOrDefaultAsync();
-
-            return user;
         }
 
         /// <summary>

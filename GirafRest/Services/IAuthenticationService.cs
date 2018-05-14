@@ -24,7 +24,7 @@ namespace GirafRest
         /// <returns>The user access.</returns>
         /// <param name="authUser">Auth user.</param>
         /// <param name="userToEdit">User to edit.</param>
-        Task<bool> HasReadUserAccess(GirafUser authUser, GirafUser userToEdit);
+        Task<bool> HasEditOrReadUserAccess(GirafUser authUser, GirafUser userToEdit);
 
         /// <summary>
         /// Method for checking if a specific user has the rights to add a specific role to a given department

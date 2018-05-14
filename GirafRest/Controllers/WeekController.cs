@@ -41,7 +41,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<IEnumerable<WeekNameDTO>>(ErrorCode.UserNotFound);
 
             // check access rightss
-            if (!(await _authentication.HasReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+            if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse<IEnumerable<WeekNameDTO>>(ErrorCode.NotAuthorized);
             
             if (!user.WeekSchedule.Any())
@@ -66,7 +66,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<WeekDTO>(ErrorCode.UserNotFound);
 
             // check access rightss
-            if (!(await _authentication.HasReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+            if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse<WeekDTO>(ErrorCode.NotAuthorized);
             
             var week = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber);
@@ -118,7 +118,7 @@ namespace GirafRest.Controllers
             if (user == null) return new ErrorResponse<WeekDTO>(ErrorCode.UserNotFound);
 
             // check access rightss
-            if (!(await _authentication.HasReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+            if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse<WeekDTO>(ErrorCode.NotAuthorized);
 
             Week week = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber);
@@ -153,7 +153,7 @@ namespace GirafRest.Controllers
             var user =  _giraf._context.Users.Include(u => u.WeekSchedule).FirstOrDefault(u => u.Id == userId);
             if (user == null) return new ErrorResponse(ErrorCode.UserNotFound);
             // check access rightss
-            if (!(await _authentication.HasReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+            if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse(ErrorCode.NotAuthorized);
             
             if (user.WeekSchedule.Any(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber))
