@@ -514,6 +514,9 @@
                     if(this.currentPage.name == "departments")
                         this.getDepartments();
                     window.location.hash = page.name;
+                    if(window.innerWidth < 1264) {
+                        this.drawer = false;
+                    }
                 },
                 logout() {
                     localStorage.removeItem("user");
