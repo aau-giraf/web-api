@@ -230,10 +230,9 @@ namespace GirafRest.Controllers
         /// Empty Response on success. 
         /// UserNotFound if invalid user id was suplied
         /// MissingProperties if there was missing properties
-        /// NotAuthorized if the  currently logged in user is not allowed to change the given users password
         /// </returns>
         [HttpPost("/v1/User/{id}/Account/password")]
-        [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
+        [AllowAnonymous]
         public async Task<Response> ChangePassword(string id, ResetPasswordDTO model)
         {
             var user =  _giraf._context.Users.FirstOrDefault(u => u.Id == id);
@@ -243,10 +242,6 @@ namespace GirafRest.Controllers
                 return new ErrorResponse(ErrorCode.MissingProperties, "Token", "Password");
             if (model.Token == null || model.Password == null)
                 return new ErrorResponse(ErrorCode.MissingProperties, "Token", "Password");
-
-            // check access rights
-            if (!(await _authentication.HasReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
 
             var result = await _giraf._userManager.ResetPasswordAsync(user, model.Token, model.Password);
             if(!result.Succeeded)
