@@ -198,7 +198,7 @@ namespace GirafRest.Controllers
         /// </returns>
         [HttpPost("/v1/User/{id}/Account/change-password")]
         [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
-        public async Task<Response> ChangePassword(string id, ChangePasswordDTO model)
+        public async Task<Response> ChangePassword(string id,[FromBody] ChangePasswordDTO model)
         {
             var user =  _giraf._context.Users.FirstOrDefault(u => u.Id == id);
             if (user == null)
