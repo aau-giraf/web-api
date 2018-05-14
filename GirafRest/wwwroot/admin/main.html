@@ -17,6 +17,16 @@
             v-model="drawer"
             app
             >
+            <v-toolbar flat>
+                <v-list>
+                    <v-list-tile>
+                    <v-list-tile-title class="title">
+                        Giraf Administration
+                    </v-list-tile-title>
+                    </v-list-tile>
+                </v-list>
+            </v-toolbar>
+            <v-divider></v-divider>
             <v-list dense>
                 <v-list-tile v-for="page in pages" :key="page.name" @click="pageSelected(page)">
                     <v-list-tile-action>
