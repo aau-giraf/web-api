@@ -181,7 +181,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse(ErrorCode.MissingProperties, "newPassword", "oldPassword");
 
             // check access rights
-            if (!(await _authentication.HasReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+            if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
 
             var result = await _giraf._userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
@@ -212,7 +212,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
 
             // check access rights
-            if (!(await _authentication.HasReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+            if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
 
             var result = _giraf._context.Users.Remove(user);

@@ -114,8 +114,7 @@ namespace GirafRest.Controllers
         [HttpPost("")]
         public async Task<Response<WeekPictogramDTO>> CreatePictogram([FromBody]PictogramDTO pictogram)
         {
-            //TODO: Method that only loads basic info and resources.
-            var user = await _giraf.LoadAllUserDataAsync(HttpContext.User);
+            var user = await _giraf.LoadUserWithResources(HttpContext.User);
 
             if (user == null) 
                 return new ErrorResponse<WeekPictogramDTO>(ErrorCode.NotFound);
@@ -377,8 +376,7 @@ namespace GirafRest.Controllers
             try
             {
                 //Find the user and add his pictograms to the result
-                //TODO: Method that loads only basic user info and department.
-                var user = await _giraf.LoadAllUserDataAsync(HttpContext.User);
+                var user = await _giraf.LoadUserWithDepartment(HttpContext.User);
                 
                 if (user != null)
                 {

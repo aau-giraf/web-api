@@ -66,11 +66,6 @@ namespace GirafRest.Test.Mocks
             return Task.FromResult(false);
         }
 
-        public Task<GirafUser> LoadAllUserDataAsync(ClaimsPrincipal principal)
-        {
-            return _userManager.GetUserAsync(principal);
-        }
-
         public Task<GirafUser> LoadBasicUserDataAsync(ClaimsPrincipal principal)
         {
             //Same as above, because it is not the job of unit-tests to simulate that.
@@ -85,9 +80,19 @@ namespace GirafRest.Test.Mocks
             return Task.FromResult(image);
         }
 
-        public Task<GirafUser> LoadByIdAsync(string id)
+        public Task<GirafUser> LoadUserWithWeekSchedules(string id)
         {
             return Task.FromResult(_context.Users.FirstOrDefault(u => u.Id == id));
+        }
+
+        public Task<GirafUser> LoadUserWithResources(ClaimsPrincipal principal)
+        {
+            return _userManager.GetUserAsync(principal);
+        }
+
+        public Task<GirafUser> LoadUserWithDepartment(ClaimsPrincipal principal)
+        {
+            return _userManager.GetUserAsync(principal);
         }
     }
 }

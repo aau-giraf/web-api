@@ -255,6 +255,7 @@ namespace GirafRest.Controllers
             var dep = await _giraf._context.Departments
                 .Where(d => d.Key == departmentId)
                 .Include(d => d.Members)
+                .Include(d => d.Resources)
                 .FirstOrDefaultAsync();
 
             if (dep == null)
@@ -264,7 +265,7 @@ namespace GirafRest.Controllers
             if (dep.Members.Any(u => u.Id == userId))
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.UserNameAlreadyTakenWithinDepartment);
 
-            //Add the user and save these changes
+
             var user = await _giraf._context.Users.Where(u => u.Id == userId).Include(u => u.Department)
                                    .FirstOrDefaultAsync();
 
@@ -325,12 +326,16 @@ namespace GirafRest.Controllers
         [Obsolete("Not used by the new WeekPlanner and might need to be changed or deleted (see future works)")]
         public async Task<Response<DepartmentDTO>> AddResource(long departmentId, long resourceId)
         {
-            //Fetch the department and check that it exists.
-            var department = await _giraf._context.Departments.Where(d => d.Key == departmentId).FirstOrDefaultAsync();
-            var usr = await _giraf.LoadAllUserDataAsync(HttpContext.User);
+            var usr = await _giraf.LoadUserWithResources(HttpContext.User);
 
+            //Fetch the department and check that it exists no need to load ressources already on user
+            var department = await _giraf._context.Departments.Where(d => d.Key == departmentId)
+                                         .Include(d => d.Members)
+                                         .FirstOrDefaultAsync();
+            
             if (department == null)
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.DepartmentNotFound);
+            
 
             //Fetch the resource with the given id, check that it exists and that the user owns it.
             var resource = await _giraf._context.Pictograms.Where(f => f.Id == resourceId).FirstOrDefaultAsync();
@@ -355,7 +360,11 @@ namespace GirafRest.Controllers
             //Remove resource from user
             var usrResource = await _giraf._context.UserResources
                                           .Where(ur => ur.PictogramKey == resource.Id && ur.OtherKey == usr.Id)
-                .FirstOrDefaultAsync();
+                                          .FirstOrDefaultAsync();
+
+            if (usrResource == null)
+                return new ErrorResponse<DepartmentDTO>(ErrorCode.ResourceNotFound);
+
             usr.Resources.Remove(usrResource);
             await _giraf._context.SaveChangesAsync();
 
@@ -363,13 +372,13 @@ namespace GirafRest.Controllers
             resource.AccessLevel = AccessLevel.PROTECTED;
 
             //Create a relationship between the department and the resource.
-            var dr = new DepartmentResource(department, resource);
+            var dr = new DepartmentResource(usr.Department, resource);
             await _giraf._context.DepartmentResources.AddAsync(dr);
             await _giraf._context.SaveChangesAsync();
 
             //Return Ok and the department - the resource is now visible in deparment.Resources
             var members = DepartmentDTO.FindMembers(department.Members, _roleManager, _giraf);
-            return new Response<DepartmentDTO>(new DepartmentDTO(department, members));
+            return new Response<DepartmentDTO>(new DepartmentDTO(usr.Department, members));
         }
 
         /// <summary>
@@ -385,7 +394,15 @@ namespace GirafRest.Controllers
         public async Task<Response<DepartmentDTO>> RemoveResource(long resourceId)
         {
             //Fetch the department and check that it exists.
-            var usr = await _giraf.LoadAllUserDataAsync(HttpContext.User);
+            var usr = await _giraf.LoadUserWithResources(HttpContext.User);
+
+            //Fetch the department and check that it exists. No need to fetch dep ressources they are already on user
+            var department = await _giraf._context.Departments.Where(d => d.Key == usr.DepartmentKey)
+                                         .Include(d => d.Members)
+                                         .FirstOrDefaultAsync();
+
+            if (department == null)
+                return new ErrorResponse<DepartmentDTO>(ErrorCode.DepartmentNotFound);
 
             //Fetch the resource with the given id, check that it exists.
             var resource = await _giraf._context.Pictograms
@@ -402,7 +419,7 @@ namespace GirafRest.Controllers
 
             //Check if the department already owns the resource and remove if so.
             var drrelation = await _giraf._context.DepartmentResources
-                                         .Where(dr => dr.PictogramKey == resource.Id && dr.OtherKey == usr.Department.Key)
+                                         .Where(dr => dr.PictogramKey == resource.Id && dr.OtherKey == department.Key)
                 .FirstOrDefaultAsync();
 
             if (drrelation == null)
@@ -412,7 +429,7 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             //Return Ok and the department - the resource is now visible in deparment.Resources
-            var members = DepartmentDTO.FindMembers(usr.Department.Members, _roleManager, _giraf);
+            var members = DepartmentDTO.FindMembers(department.Members, _roleManager, _giraf);
             return new Response<DepartmentDTO>(new DepartmentDTO(usr.Department, members));
         }
     }
