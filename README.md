@@ -22,6 +22,14 @@ To run the project locally with a MySQL database first do the following:
   - run `dotnet ef database update`
   - run `dotnet run --sample-data`
 
+The `--sample-data` flag will generate sample data if target database is empty, and we recommend using this flag by default. Other possible flags are:
+
+        --prod=[true|false]		| If true then connect to production db, defaults to false.
+        --port=integer			| Specify which port to host the server on, defaults to 5000.
+        --list				    | List options
+        --sample-data		    | Tells the rest-api to generate some sample data. This only works on an empty database.
+        --logfile=string		| Toggles logging to a file, the string specifies the path to the file relative to the working directory.
+
 Once the API is running locally you can navigate to `http://localhost:5000/swagger/` to see and tryout requests to the endpoints. We recommend keeping a text file with often-used DTOs and bearer tokens as part of your workflow.
 
 3. (Optional) To login via swagger:
