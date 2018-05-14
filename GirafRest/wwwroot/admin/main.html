@@ -16,15 +16,10 @@
             fixed
             v-model="drawer"
             app
+            mobile-break-point="800"
             >
             <v-toolbar flat>
-                <v-list>
-                    <v-list-tile>
-                    <v-list-tile-title class="title">
-                        Giraf Administration
-                    </v-list-tile-title>
-                    </v-list-tile>
-                </v-list>
+                <v-toolbar-title>Giraf Administration</v-toolbar-title>
             </v-toolbar>
             <v-divider></v-divider>
             <v-list dense>
@@ -120,7 +115,6 @@
     </div>
     <script src="https://unpkg.com/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/vuetify/dist/vuetify.js"></script>
-
     <script type="text/x-template" id="names-template">
         <v-card>
             <v-dialog v-model="dialog" max-width="500px">
@@ -496,7 +490,6 @@
             methods: {
                 init() {
                     var pageName = window.location.hash.replace("#", "");
-                    console.log(pageName);
                     this.currentPage = this.pages.filter(function(p){ return p.name.toLowerCase() == pageName.toLowerCase(); })[0];
                     if(this.currentPage == null)
                         this.currentPage = this.pages[0];
@@ -514,7 +507,7 @@
                     if(this.currentPage.name == "departments")
                         this.getDepartments();
                     window.location.hash = page.name;
-                    if(window.innerWidth < 1264) {
+                    if(window.innerWidth < 800) {
                         this.drawer = false;
                     }
                 },

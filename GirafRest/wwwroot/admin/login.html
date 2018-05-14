@@ -51,14 +51,16 @@
         var loginurl = "/v1/Account/login";
         var vm = new Vue({
             el: '#app',
-            data: {
-                errorProperties: [],
-                errorKey: null,
-                wrongCredentials: false,
-                wrongRole: false,
-                credentials: {
-                    username: null,
-                    password: null
+            data() { 
+                return {
+                    errorProperties: [],
+                    errorKey: null,
+                    wrongCredentials: false,
+                    wrongRole: false,
+                    credentials: {
+                        username: null,
+                        password: null
+                    }
                 }
             },
             methods: {
