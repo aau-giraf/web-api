@@ -20,25 +20,32 @@ namespace GirafRest.Filters
             _giraf = giraf;
         }
 
-        public void OnActionExecuting(ActionExecutingContext context) {}
+        public void OnActionExecuting(ActionExecutingContext context)
+        {
+
+        }
+
+        private static readonly object filelock = new object();
+
         public void OnActionExecuted(ActionExecutedContext context)
         {
             string path = "Logs/log-" + DateTime.Now.Year + DateTime.Now.Month.ToString().PadLeft(2, '0') + DateTime.Now.Day.ToString().PadLeft(2, '0') + ".txt";
             var controller = context.Controller as Controller;
             string userId = controller.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            string byId = controller.User.Claims.FirstOrDefault(c => c.Type == "impersonatedBy")?.Value;
             var user = _giraf._context.Users.FirstOrDefault(u => u.Id == userId)?.UserName;
-            var by = _giraf._context.Users.FirstOrDefault(u => u.Id == byId)?.UserName;
             string p = context.HttpContext.Request.Path;
             string verb = context.HttpContext.Request.Method;
             var action = context.ActionDescriptor.DisplayName;
             var error = ((context.Result as ObjectResult)?.Value as Response)?.ErrorCode.ToString();
             string[] lines = new string[]
             {
-                $"{DateTime.UtcNow}; {by}; {user}; {verb}; {p}; {error}; {byId}; {userId}"
+                $"{DateTime.UtcNow}; {user}; {userId}; {verb}; {p}; {error}"
             };
-            Directory.CreateDirectory("Logs");
-            File.AppendAllLines(path, lines);
+            lock (filelock)
+            {
+                Directory.CreateDirectory("Logs");
+                File.AppendAllLines(path, lines);
+            }
         }
     }
 
