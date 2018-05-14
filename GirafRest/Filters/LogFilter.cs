@@ -20,7 +20,13 @@ namespace GirafRest.Filters
             _giraf = giraf;
         }
 
-        public void OnActionExecuting(ActionExecutingContext context) {}
+        public void OnActionExecuting(ActionExecutingContext context)
+        {
+
+        }
+
+        private static readonly object filelock = new object();
+
         public void OnActionExecuted(ActionExecutedContext context)
         {
             string path = "Logs/log-" + DateTime.Now.Year + DateTime.Now.Month.ToString().PadLeft(2, '0') + DateTime.Now.Day.ToString().PadLeft(2, '0') + ".txt";
@@ -35,8 +41,11 @@ namespace GirafRest.Filters
             {
                 $"{DateTime.UtcNow}; {user}; {userId}; {verb}; {p}; {error}"
             };
-            Directory.CreateDirectory("Logs");
-            File.AppendAllLines(path, lines);
+            lock (filelock)
+            {
+                Directory.CreateDirectory("Logs");
+                File.AppendAllLines(path, lines);
+            }
         }
     }
 
