@@ -2,9 +2,9 @@
 {
     public class ActivityDTO
     {
-        public ActivityDTO(WeekPictogramDTO pictogram, int order, ActivityState state)
+        public ActivityDTO(long id, WeekPictogramDTO pictogram, int order, ActivityState state)
         {
-            this.Id = pictogram.Id;
+            this.Id = id;
             this.Pictogram = pictogram;
             this.Order = order;
             this.State = state;
