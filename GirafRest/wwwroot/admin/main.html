@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
@@ -69,6 +69,7 @@
                         :loading="citizensLoading"
                         v-on:add="addCitizen($event)" 
                         v-bind:token="token"
+                        v-bind:elementid="id"
                         nameproperty="userName" 
                         idproperty="userId" 
                         deletetitle="Fjern Borger" 
@@ -76,6 +77,9 @@
                         v-on:update="updateCitizen($event)" 
                         addtitle="Opret Borger" 
                         haspassword="false" 
+                        showgeneratepassword="true"
+                        showdelete="true"
+                        showedit="true"
                         edittitle="Rediger Borger" 
                         v-bind:elements="citizens">
                     </names-page>
@@ -84,6 +88,7 @@
                         :loading="guardiansLoading"
                         v-on:add="addGuardian($event)" 
                         v-bind:token="token"
+                        v-bind:elementid="id"
                         nameproperty="userName" 
                         idproperty="userId" 
                         v-on:update="updateCitizen($event)" 
@@ -91,6 +96,9 @@
                         deletetitle="Fjern Pædagog" 
                         addtitle="Opret Pædagog" 
                         haspassword="true" 
+                        v-bind:showdelete="(role == 'Department' || role == 'SuperUser') ? 'true' : 'false'" 
+                        v-bind:showgeneratepassword="(role == 'Department' || role == 'SuperUser') ? 'true' : 'false'" 
+                        v-bind:showedit="(role == 'Department' || role == 'SuperUser') ? 'true' : 'false'" 
                         edittitle="Rediger Pædagog" 
                         v-bind:elements="guardians">
                     </names-page>
@@ -99,6 +107,7 @@
                         :loading="departmentsLoading"
                         v-on:add="addDepartment($event)" 
                         v-bind:token="token"
+                        v-bind:elementid="id"
                         nameproperty="name" 
                         idproperty="id" 
                         v-on:update="updateDepartment($event)" 
@@ -106,6 +115,9 @@
                         deletetitle="Fjern Afdeling" 
                         addtitle="Opret Afdeling" 
                         haspassword="false" 
+                        showgeneratepassword="false" 
+                        showdelete="true" 
+                        showedit="true"
                         edittitle="Rediger Afdeling" 
                         v-bind:elements="departments">
                     </names-page>
@@ -229,13 +241,13 @@
                 <template slot="items" slot-scope="props">
                 <td style="max-width: 100px;">{{ props.item[nameproperty] }}</td>
                 <td class="text-xs-right">
-                    <v-btn v-if="haspassword" fab small dark color="grey" class="mx-0" @click="showResetLink(props.item)">
+                    <v-btn v-if="showgeneratepassword == 'true'" fab small dark color="grey" class="mx-0" @click="showResetLink(props.item)">
                         <v-icon color="white">vpn_key</v-icon>
                     </v-btn>
-                    <v-btn fab small dark color="primary" class="mx-0" @click="editElement(props.item)">
+                    <v-btn v-if="showedit == 'true' || props.item[idproperty] == elementid" fab small dark color="primary" class="mx-0" @click="editElement(props.item)">
                         <v-icon color="white">edit</v-icon>
                     </v-btn>
-                    <v-btn fab small dark color="red lighten-1" class="mx-0" @click="promptDelete(props.item)">
+                    <v-btn v-if="showdelete == 'true'" fab small dark color="red lighten-1" class="mx-0" @click="promptDelete(props.item)">
                         <v-icon color="white">delete</v-icon>
                     </v-btn>
                 </td>
@@ -249,7 +261,7 @@
     <script>
     Vue.component('names-page', {
         template: '#names-template',
-        props: [ 'elements', 'add', 'token', 'update', 'delete', 'nameproperty', 'loading', 'idproperty', 'addtitle', 'deletetitle', 'edittitle', 'haspassword' ],
+        props: ['elements', 'elementid', 'add', 'token', 'update', 'showgeneratepassword', 'showedit', 'showdelete', 'delete', 'nameproperty', 'loading', 'idproperty', 'addtitle', 'deletetitle', 'edittitle', 'haspassword' ],
         data () {
             var self = this;
             var editedItem = {};
@@ -307,6 +319,7 @@
             },
             showResetLink(element) {
                 var self = this;
+                self.resetLink = null;
                 self.resetDialog = true;
                 $.ajax({
                     url: "/v1/User/" + element[this.idproperty] + "/Account/password-reset-token",

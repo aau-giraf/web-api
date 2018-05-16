@@ -12,6 +12,12 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="wwwroot\admin\view\**" />
+    <Content Remove="wwwroot\admin\view\**" />
+    <EmbeddedResource Remove="wwwroot\admin\view\**" />
+    <None Remove="wwwroot\admin\view\**" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="2.0.1" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Cors" Version="5.2.4" />
     <PackageReference Include="NETCore.MailKit" Version="2.0.2" />
@@ -51,7 +57,6 @@
     <Compile Remove="Models\UpdatePictogramDTO.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="wwwroot\admin\view\" />
     <Folder Include="Migrations\" />
     <Folder Include="wwwroot\DebugLogs\" />
     <Folder Include="Shared\" />
