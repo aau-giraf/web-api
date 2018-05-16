@@ -25,7 +25,7 @@ def ensureError(response, check):
 
 def ensureErrorWithKey(response, check, errorKey):
     check.is_false(response['success'])
-    check.is_equal(response['errorKey'], errorKey)
+    check.equal(response['errorKey'], errorKey)
 
 
 def ensureNotAuthorized(response, check):
