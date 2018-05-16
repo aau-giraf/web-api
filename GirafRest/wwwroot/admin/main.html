@@ -241,15 +241,24 @@
                 <template slot="items" slot-scope="props">
                 <td style="max-width: 100px;">{{ props.item[nameproperty] }}</td>
                 <td class="text-xs-right">
-                    <v-btn v-if="showgeneratepassword == 'true'" fab small dark color="grey" class="mx-0" @click="showResetLink(props.item)">
-                        <v-icon color="white">vpn_key</v-icon>
-                    </v-btn>
-                    <v-btn v-if="showedit == 'true' || props.item[idproperty] == elementid" fab small dark color="primary" class="mx-0" @click="editElement(props.item)">
-                        <v-icon color="white">edit</v-icon>
-                    </v-btn>
-                    <v-btn v-if="showdelete == 'true'" fab small dark color="red lighten-1" class="mx-0" @click="promptDelete(props.item)">
-                        <v-icon color="white">delete</v-icon>
-                    </v-btn>
+                    <v-tooltip bottom>
+                        <v-btn slot="activator" v-if="showgeneratepassword == 'true'" fab small dark color="grey" class="mx-0" @click="showResetLink(props.item)">
+                            <v-icon color="white">vpn_key</v-icon>
+                        </v-btn>
+                        <span>Nulstil adgangskode</span>
+                    </v-tooltip>
+                    <v-tooltip bottom>
+                        <v-btn slot="activator" v-if="showedit == 'true' || props.item[idproperty] == elementid" fab small dark color="primary" class="mx-0" @click="editElement(props.item)">
+                            <v-icon color="white">edit</v-icon>
+                        </v-btn>
+                        <span>Rediger</span>
+                    </v-tooltip>
+                    <v-tooltip bottom>
+                        <v-btn slot="activator" v-if="showdelete == 'true'" fab small dark color="red lighten-1" class="mx-0" @click="promptDelete(props.item)">
+                            <v-icon color="white">delete</v-icon>
+                        </v-btn>
+                        <span>Fjern</span>
+                    </v-tooltip>
                 </td>
                 </template>
                 <v-alert slot="no-results" :value="true" color="info" icon="warning">
