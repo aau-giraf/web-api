@@ -164,4 +164,11 @@ class WeekTemplateControllerTest(TestCase):
 
     @test(skip_if_failed=['postNewTemplate'], depends=['updateTemplate'])
     def deleteTemplate(self, check):
-        'Dele the template again.'
+        'Delete the template again.'
+        response = requests.delete(Test.url + 'WeekTemplate/{0}'.format(self.templateId),
+                                   headers=auth(self.graatand)).json()
+        ensureSuccess(response, check)
+
+        response = requests.get(Test.url + 'WeekTemplate/{0}'.format(self.templateId),
+                                headers=auth(self.graatand)).json()
+        ensureErrorWithKey(response, check, "NoWeekTemplateFound")
