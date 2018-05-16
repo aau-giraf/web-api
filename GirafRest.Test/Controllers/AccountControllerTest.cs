@@ -315,7 +315,7 @@ namespace GirafRest.Test
                 NewPassword = "PASSWORD"
             };
 
-            var res = ac.ChangePassword(mockUser.Id, cpDTO).Result;
+            var res = ac.ChangePasswordByOldPassword(mockUser.Id, cpDTO).Result;
 
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
@@ -331,7 +331,7 @@ namespace GirafRest.Test
 
             ChangePasswordDTO cpDTO = null;
 
-            var res = ac.ChangePassword(mockUser.Id, cpDTO).Result;
+            var res = ac.ChangePasswordByOldPassword(mockUser.Id, cpDTO).Result;
 
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
@@ -351,7 +351,7 @@ namespace GirafRest.Test
                 NewPassword = "PASSWORD",
             };
 
-            var res = ac.ChangePassword(mockUser.Id, cpDTO).Result;
+            var res = ac.ChangePasswordByOldPassword(mockUser.Id, cpDTO).Result;
 
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.PasswordNotUpdated, res.ErrorCode);

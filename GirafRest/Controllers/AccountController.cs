@@ -170,7 +170,7 @@ namespace GirafRest.Controllers
         /// </returns>
         [HttpPut("/v1/User/{id}/Account/password")]
         [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
-        public async Task<Response> ChangePassword(string id,[FromBody] ChangePasswordDTO model)
+        public async Task<Response> ChangePasswordByOldPassword(string id,[FromBody] ChangePasswordDTO model)
         {
             var user =  _giraf._context.Users.FirstOrDefault(u => u.Id == id);
             if (user == null)
@@ -204,7 +204,7 @@ namespace GirafRest.Controllers
         /// </returns>
         [HttpPost("/v1/User/{id}/Account/password")]
         [AllowAnonymous]
-        public async Task<Response> ChangePassword(string id, [FromBody] ResetPasswordDTO model)
+        public async Task<Response> ChangePasswordByToken(string id, [FromBody] ResetPasswordDTO model)
 
         {
             var user =  _giraf._context.Users.FirstOrDefault(u => u.Id == id);
@@ -234,7 +234,7 @@ namespace GirafRest.Controllers
         /// </returns>
         [HttpGet("/v1/User/{id}/Account/password-reset-token")]
         [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
-        public async Task<Response<string>> ChangePassword(string id)
+        public async Task<Response<string>> GetPasswordResetToken(string id)
         {
             var user =  _giraf._context.Users.FirstOrDefault(u => u.Id == id);
             if (user == null)
