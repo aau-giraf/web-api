@@ -4,15 +4,18 @@ using System.Collections.Generic;
 
 namespace GirafRest.Migrations
 {
-    public partial class MakeGirafUserIdOnWeekRequired : Migration
+    public partial class MakeGirafIdUnWeekRequired : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.Sql("DELETE FROM Weeks WHERE GirafUserId is NULL");
             migrationBuilder.AlterColumn<string>(
                 name: "GirafUserId",
                 table: "Weeks",
                 nullable: false,
-                oldClrType: typeof(string));
+                maxLength: 127,
+                type: "varchar(127)"
+            );
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -21,8 +24,9 @@ namespace GirafRest.Migrations
                 name: "GirafUserId",
                 table: "Weeks",
                 nullable: true,
-                oldClrType: typeof(string),
-                oldNullable: true);
+                maxLength: 127,
+                type: "varchar(127)"
+            );
         }
     }
 }

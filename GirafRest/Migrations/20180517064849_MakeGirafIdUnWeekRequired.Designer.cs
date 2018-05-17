@@ -13,8 +13,8 @@ using System;
 namespace GirafRest.Migrations
 {
     [DbContext(typeof(GirafDbContext))]
-    [Migration("20180516124710_MakeGirafUserIdOnWeekRequired")]
-    partial class MakeGirafUserIdOnWeekRequired
+    [Migration("20180517064849_MakeGirafIdUnWeekRequired")]
+    partial class MakeGirafIdUnWeekRequired
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
