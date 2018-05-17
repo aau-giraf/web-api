@@ -43,74 +43,81 @@ namespace GirafRest.Services
         }
 
         /// <summary>
-        /// Method for loading user from context and eager loading fields
+        /// Method for loading user from context and eager loading <b>resources</b> fields
         /// </summary>
         /// <param name="principal">The security claim - i.e. the information about the currently authenticated user.</param>
-        /// <returns>A <see cref="GirafUser"/> with related data.</returns>
-        public async Task<GirafUser> LoadUserAsync(System.Security.Claims.ClaimsPrincipal principal)  {
+        /// <returns>A <see cref="GirafUser"/> with <b>all</b> related data.</returns>
+        public async Task<GirafUser> LoadUserWithResources(System.Security.Claims.ClaimsPrincipal principal)
+        {
+            if (principal == null) return null;
+            var usr = (await _userManager.GetUserAsync(principal));
+            if (usr == null) return null;
+            return await _context.Users
+                //Get user by ID from database
+                .Where(u => u.Id == usr.Id)
+                //Then load his pictograms - both the relationship and the actual pictogram
+                .Include(u => u.Resources)
+                    .ThenInclude(ur => ur.Pictogram)
+                //Then load his department and their pictograms
+                .Include(u => u.Department)
+                    .ThenInclude(d => d.Resources)
+                        .ThenInclude(dr => dr.Pictogram)
+                //And return it
+                .FirstOrDefaultAsync();
+        }
+
+        /// <summary>
+        /// Method for loading user from context and eager loading <b>resources</b> fields
+        /// </summary>
+        /// <param name="principal">The security claim - i.e. the information about the currently authenticated user.</param>
+        /// <returns>A <see cref="GirafUser"/> with <b>all</b> related data.</returns>
+        public async Task<GirafUser> LoadUserWithDepartment(System.Security.Claims.ClaimsPrincipal principal)
+        {
+            if (principal == null) return null;
+            var usr = (await _userManager.GetUserAsync(principal));
+            if (usr == null) return null;
+            return await _context.Users
+                .Include(u => u.Department)
+                .FirstOrDefaultAsync();
+        }
+
+        /// <summary>
+        /// Method for loading user from context and eager loading fields requied to read their <b>week schedules</b>
+        /// </summary>
+        /// <param name="principal">The security claim - i.e. the information about the currently authenticated user.</param>
+        /// <returns>A <see cref="GirafUser"/> with <b>all</b> related data.</returns>
+        public async Task<GirafUser> LoadUserWithWeekSchedules(string id){
+            var user = await _context.Users
+                //First load the user from the database
+                .Where(u => u.Id.ToLower() == id.ToLower())
+                // then load his week schedule
+                .Include(u => u.WeekSchedule)
+                .ThenInclude(w => w.Thumbnail)
+                .Include(u => u.WeekSchedule)
+                .ThenInclude(w => w.Weekdays)
+                .ThenInclude(wd => wd.Activities)
+                .ThenInclude(e => e.Pictogram)
+                //And return it
+                .FirstOrDefaultAsync();
+
+            return user;
+        }
+
+        /// <summary>
+        /// Method for loading user from context, but including no fields. No reference types will be available.
+        /// </summary>
+        /// <param name="principal">The security claim - i.e. the information about the currently authenticated user.</param>
+        /// <returns>A <see cref="GirafUser"/> without any related data.</returns>
+        public async Task<GirafUser> LoadBasicUserDataAsync(System.Security.Claims.ClaimsPrincipal principal)
+        {
             if (principal == null) return null;
             var usr = (await _userManager.GetUserAsync(principal));
             if(usr == null) return null;
             return await _context.Users
-                    //First load the user from the database
-                    .Where (u => u.Id == usr.Id)
-                    //Then load his pictograms - both the relationship and the actual pictogram
-                    .Include(u => u.Resources)
-                    .ThenInclude(ur => ur.Pictogram)
-                    //Then load his department and their pictograms
-                    .Include(u => u.Department)
-                    .ThenInclude(d => d.Resources)
-                    .ThenInclude(dr => dr.Pictogram)
-                    // then load his week schedule
-                    .Include(u => u.WeekSchedule)
-                    .ThenInclude(w => w.Thumbnail)
-                    .Include(u => u.WeekSchedule)
-                    .ThenInclude(w => w.Weekdays)
-                    .ThenInclude(wd => wd.Activities)
-                    .ThenInclude(e => e.Pictogram)
-                    .Include(u => u.Settings)
-                    .ThenInclude(s => s.WeekDayColors)
-                    .Include(u => u.Guardians)
-                    .ThenInclude(g => g.Guardian)
-                    .Include(u => u.Citizens)
-                    .ThenInclude(c => c.Citizen)
-                    //And return it
-                    .FirstOrDefaultAsync();
-        }
-
-        /// <summary>
-        /// Loads the user with the given username and also includes all related data.
-        /// </summary>
-        /// <param name="username">The username of the user to fetch.</param>
-        /// <returns>A loaded user, i.e. a user with all related data.</returns>
-        public async Task<GirafUser> LoadByNameAsync(string username)
-        {
-            var user = await  _context.Users
-                    //First load the user from the database
-                    .Where(u => u.UserName.ToLower() == username.ToLower())
-                    //Then load his pictograms - both the relationship and the actual pictogram
-                    .Include(u => u.Resources)
-                    .ThenInclude(ur => ur.Pictogram)
-                    //Then load his department and their pictograms
-                    .Include(u => u.Department)
-                    .ThenInclude(d => d.Resources)
-                    // then load his week schedule
-                    .Include(u => u.WeekSchedule)
-                    .ThenInclude(w => w.Thumbnail)
-                    .Include(u => u.WeekSchedule)
-                    .ThenInclude(w => w.Weekdays)
-                    .ThenInclude(wd => wd.Activities)
-                    .ThenInclude(e => e.Pictogram)
-                    .Include(u => u.Settings)
-                    .ThenInclude(s => s.WeekDayColors)
-                    .Include(u => u.Guardians)
-                    .ThenInclude(g => g.Guardian)
-                    .Include(u => u.Citizens)
-                    .ThenInclude(c => c.Citizen)
-                    //And return it
-                    .FirstOrDefaultAsync();
-
-            return user;
+                //Get user by ID from database
+                .Where(u => u.Id == usr.Id)
+                //And return it
+                .FirstOrDefaultAsync();;
         }
 
         /// <summary>

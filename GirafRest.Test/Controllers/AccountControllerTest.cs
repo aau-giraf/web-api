@@ -7,9 +7,7 @@ using Xunit;
 using Xunit.Abstractions;
 using static GirafRest.Test.UnitTestExtensions;
 using GirafRest.Services;
-using System.Threading.Tasks;
 using GirafRest.Models.DTOs;
-using GirafRest.Models.DTOs.UserDTOs;
 using GirafRest.Models.Responses;
 using Microsoft.Extensions.Options;
 using System.Linq;
@@ -46,10 +44,6 @@ namespace GirafRest.Test
         {
             _testContext = new TestContext();
 
-            var mockEmail = new Mock<IEmailService>();
-            mockEmail.Setup(e => e.SendEmailAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>()))
-                .Callback(new System.Action<string, string, string>(OutputEmail))
-                .Returns(Task.FromResult(0));
 
             var mockSignInManager = new MockSignInManager(_testContext.MockUserManager, _testContext);
             var mockGirafService = new MockGirafService(_testContext.MockDbContext.Object, _testContext.MockUserManager);
@@ -60,7 +54,6 @@ namespace GirafRest.Test
             
             AccountController ac = new AccountController(
                 mockSignInManager,
-                mockEmail.Object,
                 _testContext.MockLoggerFactory.Object,
                 mockGirafService,
                 Options.Create(new JwtConfig()
@@ -69,7 +62,9 @@ namespace GirafRest.Test
                     JwtIssuer = "example.com",
                     JwtExpireDays = 30
                 }),
-                roleManager);
+                roleManager,
+                new GirafAuthenticationService(_testContext.MockDbContext.Object, _testContext.MockRoleManager.Object,
+                                               _testContext.MockUserManager));
 
             _testContext.MockHttpContext = ac.MockHttpContext();
             _testContext.MockHttpContext
@@ -87,7 +82,7 @@ namespace GirafRest.Test
         // Check if possible to login with mock credentials. All passwords are initialised (Data folder, DBInitializer.cs) to be "password"
 
         [Fact]
-        public void Login_CredentialsOk_OK()
+        public void Login_CredentialsOk_Success()
         {
             var accountController = InitializeTest();
 
@@ -98,7 +93,6 @@ namespace GirafRest.Test
             }).Result;
 
             // Assert if type is reponse (verfies that it is the exact type and not a derived type (ErrorResponse)). No functionality enforces that we should not have type=ErrorResponse, ErrorCode=NoError OR type=Response, ErrorCode=some actual error
-            Assert.IsType<Response<string>>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             // Check that jwt token is not null and atleast contains 40 characters
             Assert.NotNull(res.Data);
@@ -107,7 +101,7 @@ namespace GirafRest.Test
 
         // Same user log in twice no problem
         [Fact]
-        public void Login_SameUserLoginTwice_OK()
+        public void Login_SameUserLoginTwice_Success()
         {
             var accountController = InitializeTest();
             var username = _testContext.MockUsers[ADMIN_DEP_ONE].UserName;
@@ -125,7 +119,6 @@ namespace GirafRest.Test
             }).Result;
 
             // accountController.Login returns: new Response<GirafUserDTO>(new GirafUserDTO(loginUser, userRoles)) if login succeded
-            Assert.IsType<Response<string>>(resB);
             Assert.Equal(ErrorCode.NoError, resB.ErrorCode);
             Assert.True(resB.Success);
             // Check that jwt token is not null and atleast contains 40 characters
@@ -135,7 +128,7 @@ namespace GirafRest.Test
 
         [Fact]
         // If no user is found with given user name, return ErrorResponse with relevant ErrorCode (invalid credentials ensures we do not give the bad guys any information)
-        public void Login_UsernameInvalidPasswordOk_Unauthorized()
+        public void Login_UsernameInvalidPasswordOk_InvalidCredentials()
         {
             var accountController = InitializeTest();
 
@@ -145,146 +138,42 @@ namespace GirafRest.Test
                 Password = "password"
             }).Result;
 
-            Assert.IsType<ErrorResponse<string>>(res);
             Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
             Assert.False(res.Success);
         }
 
         [Fact]
         // Trying to login with no credentials:
-        public void Login_NullDTO_BadRequest()
+        public void Login_NullDTO_MissingProperties()
         {
             var accountController = InitializeTest();
 
             var res = accountController.Login(null).Result;
 
-            Assert.IsType<ErrorResponse<string>>(res);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
             Assert.False(res.Success);
         }
 
-        [Fact]
-        // A guardian should be able to login as citizen
-        public void Login_LoginAsGuardianDTOWithCitizenName_Ok()
-        {
-            var ac = InitializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-            
-            var res = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[CITIZEN_DEP_TWO].UserName }).Result;
-
-            Assert.IsType<Response<string>>(res);
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            Assert.True(res.Success);
-            // Check that jwt token is not null and atleast contains 40 characters
-            Assert.NotNull(res.Data);
-            Assert.True(res.Data.Length >= 40);
-        }
-
-        [Fact]
-        // Guardian cannot login as admin, if departments do not match
-        public void Login_LoginAsGuardianDTOWithAdminInNoDep_NotFound()
-        {
-            var ac = InitializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-
-            var res = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[ADMIN_NO_DEP].UserName }).Result;
-
-            Assert.IsType<ErrorResponse<string>>(res);
-            Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
-            Assert.False(res.Success);
-        }
-
-        [Fact]
-        // Guardian cannot login as another guardian (not even if in same department)
-        public void Login_LoginAsGuardianDTOWithGuardianInSameDep_Unauthorized()
-        {
-            var ac = InitializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-
-            var res = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[ANOTHER_GUARDIAN_DEP_TWO].UserName }).Result;
-
-            Assert.IsType<ErrorResponse<string>>(res);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
-            Assert.False(res.Success);
-        }
-
-        [Fact]
-        // Guardian cannot login as user that is not in their own department
-        public void Login_LoginAsGuardianDTOWithUserInAnotherDep_NotFound()
-        {
-            var ac = InitializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-
-            var res = ac.Login(new LoginDTO()
-            {
-                Username = _testContext.MockUsers[CITIZEN_DEP_THREE].UserName
-            }).Result;
-
-            Assert.IsType<ErrorResponse<string>>(res);
-            Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
-            Assert.False(res.Success);
-        }
-
-        [Fact]
-        // Citizen cannot login as Guardian
-        public void Login_LoginAsCitizenDTOWithGuardianInSameDep_Unauthorized()
-        {
-            var ac = InitializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_TWO]);
-
-            var res = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[GUARDIAN_DEP_TWO].UserName}).Result;
-
-            Assert.IsType<ErrorResponse<string>>(res);
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
-        }
-
-        [Fact]
-        public void Login_LoginAsDepartmentDTOWithGuardianInSameDep_Ok()
-        {
-            var ac = InitializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[DEPARTMENT_DEP_TWO]);
-
-            var res = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[GUARDIAN_DEP_TWO].UserName }).Result;
-
-            Assert.IsType<Response<string>>(res);
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            Assert.True(res.Success);
-            // Check that jwt token is not null and atleast contains 40 characters
-            Assert.NotNull(res.Data);
-            Assert.True(res.Data.Length >= 40);
-        }
-
-        [Fact]
-        public void Login_LoginAsGuardianDTOWithDepartmentInSameDep_Unauthorized()
-        {
-            var ac = InitializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-
-            var res = ac.Login(new LoginDTO() { Username = _testContext.MockUsers[DEPARTMENT_DEP_TWO].UserName }).Result;
-
-            Assert.IsType<ErrorResponse<string>>(res);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
-            Assert.False(res.Success);
-        }
         #endregion
 
         #region Register
         [Fact]
-        public void Register_InputOk_ExpectOK()
+        public void Register_InputOk_Success()
         {
             var accountController = InitializeTest();
 
             var userName = "GenericName";
-
-            var res = accountController.Register( new RegisterDTO()
+            var displayName = "GenericDisplayName";
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var res = accountController.Register(new RegisterDTO()
             {
                 Username = userName,
                 Password = "GenericPassword",
-                DepartmentId = DEPARTMENT_ONE
+                DepartmentId = DEPARTMENT_ONE,
+                Role = GirafRoles.Citizen,
+                DisplayName = displayName
             }).Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.True(res.Success);
             Assert.NotNull(res.Data);
@@ -292,36 +181,57 @@ namespace GirafRest.Test
             Assert.Equal(res.Data.Username, userName);
             Assert.Equal(res.Data.Department, DEPARTMENT_ONE);
         }
-     
+
         [Fact]
-        public void Register_ExistingUsername_BadRequest()
+        public void Register_NoDisplayNameSetAsUsername_Success()
         {
             var accountController = InitializeTest();
 
+            var userName = "GenericName";
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var res = accountController.Register(new RegisterDTO()
+            {
+                Username = userName,
+                Password = "GenericPassword",
+                DepartmentId = DEPARTMENT_ONE,
+                Role = GirafRoles.Citizen,
+                DisplayName = null
+            }).Result;
+
+            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            Assert.True(res.Success);
+            Assert.NotNull(res.Data);
+            Assert.Equal(res.Data.ScreenName, userName);
+        }
+     
+        [Fact]
+        public void Register_ExistingUsername_UserAlreadyExists()
+        {
+            var accountController = InitializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = accountController.Register(new RegisterDTO()
             {
                 Username = _testContext.MockUsers[ADMIN_DEP_ONE].UserName,
                 Password = "password",
-                DepartmentId = DEPARTMENT_ONE
+                DepartmentId = DEPARTMENT_ONE,
+                Role = GirafRoles.Citizen
             }).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.Equal(ErrorCode.UserAlreadyExists, res.ErrorCode);
             Assert.False(res.Success);
         }
 
         [Fact]
-        public void Register_NoUsername_BadRequest()
+        public void Register_NoUsername_InvalidCredentials()
         {
             var accountController = InitializeTest();
-            
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = accountController.Register(new RegisterDTO()
             {
                 Password = "password",
                 DepartmentId = DEPARTMENT_ONE
             }).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
             Assert.False(res.Success);
         }
@@ -329,17 +239,17 @@ namespace GirafRest.Test
         [Fact]
         // Account may exist without department
         // If user is without department, then Department=null, otherwise department = user.DepartmentKey
-        public void Register_NoDepartment_OkDepKeyIsMinus1()
+        public void Register_NoDepartment_Success()
         {
             var accountController = InitializeTest();
-            
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = accountController.Register(new RegisterDTO()
             {
                 Username = "NewUser",
-                Password = "password"
+                Password = "password",
+                Role = GirafRoles.Citizen
             }).Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             // check data
@@ -347,7 +257,7 @@ namespace GirafRest.Test
         }
         
         [Fact]
-        public void Register_BlankDTO_BadRequest()
+        public void Register_BlankDTO_InvalidCredentials()
         {
             var accountController = InitializeTest();
 
@@ -357,145 +267,47 @@ namespace GirafRest.Test
                 Password = ""
             }).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
         }
 
         [Fact]
-        public void Register_GuardianRelation_OkRequest(){
+        public void Register_GuardianRelation_Success(){
             var accountController = InitializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = accountController.Register(new RegisterDTO() { Username = "JohnDoe", 
-                Password= "iSecretlyLoveMileyCyrus", DepartmentId = 2}).Result;
+                Password= "iSecretlyLoveMileyCyrus", DepartmentId = 2, Role = GirafRoles.Citizen}).Result;
 
-            Assert.IsType<Response<GirafUserDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             // fetch expected guardian from test data
             var guardian = _testContext.MockUsers.FirstOrDefault(u => u.UserName == "Guardian in dep 2");
             var newUser = _testContext.MockUsers.FirstOrDefault(u => u.UserName == "JohnDoe");
             // check data
-            Assert.Equal(1, newUser.Guardians.Count());
+            Assert.Equal(2, newUser.Guardians.Count());
             Assert.Equal(guardian, newUser.Guardians.First().Guardian);
         }
 
         [Fact]
-        public void Register_NullDTO_BadRequest()
+        public void Register_NullDTO_MissingProperties()
         {
             var accountController = InitializeTest();
 
             var res = accountController.Register(null).Result;
 
-            Assert.IsType<ErrorResponse<GirafUserDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
         #endregion
 
-        #region ForgotPassword
-        [Fact]
-        public void ForgotPassword_UserExist_Ok()
-        {
-            var accountController = InitializeTest();
-
-            var res = accountController.ForgotPassword(new ForgotPasswordDTO()
-            {
-                Username = _testContext.MockUsers[ADMIN_DEP_ONE].UserName,
-                Email = "unittest@giraf.cs.aau.dk"
-            }).Result;
-
-            Assert.IsType<Response>(res);
-            Assert.True(res.Success);
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-        }
-
-        [Fact]
-        // Returns Ok as we do not want anyone to know if a given user does not exist
-        public void ForgotPassword_UserDoesNotExist_Ok()
-        {
-            var accountController = InitializeTest();
-
-            var res = accountController.ForgotPassword(new ForgotPasswordDTO()
-            {
-                Username = "UserDoNotExist",
-                Email = "UserDoNotExist@UserDoNotExist.com"
-            }).Result;
-
-            Assert.IsType<Response>(res);
-            Assert.True(res.Success);
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-        }
-
-        [Fact]
-        public void ForgotPassword_NoEmail_BadRequest()
-        {
-            var accountController = InitializeTest();
-
-            var res = accountController.ForgotPassword(new ForgotPasswordDTO()
-            {
-                Username = _testContext.MockUsers[ADMIN_DEP_ONE].UserName
-            }).Result;
-
-            Assert.IsType<ErrorResponse>(res);
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
-        }
-
-        [Fact]
-        public void ForgotPassword_NullDTO_BadRequest()
-        {
-            var accountController = InitializeTest();
-
-            var res = accountController.ForgotPassword(null).Result;
-
-            Assert.IsType<ErrorResponse>(res);
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
-        }
-        #endregion
-
-        #region SetPassword
-        [Fact]
-        public void SetPassword_ValidInput_Ok()
-        {
-            var ac = InitializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            SetPasswordDTO spDTO = new SetPasswordDTO()
-            {
-                NewPassword = "newPassword",
-            };
-            
-            var res = ac.SetPassword(spDTO).Result;
-
-            Assert.IsType<Response>(res);
-            Assert.True(res.Success);
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-        }
-
-        [Fact]
-        public void SetPasswod_NullDTO_BadRequest()
-        {
-            var ac = InitializeTest();
-
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-
-            SetPasswordDTO spDTO = null;
-
-            var res = ac.SetPassword(spDTO).Result;
-
-            Assert.IsType<ErrorResponse>(res);
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
-        }
-        #endregion
 
         #region ChangePassword
         [Fact]
-        public void ChangePassword_ValidInput_Ok()
+        public void ChangePassword_ValidInput_Success()
         {
             var ac = InitializeTest();
-
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
 
             ChangePasswordDTO cpDTO = new ChangePasswordDTO()
             {
@@ -503,35 +315,35 @@ namespace GirafRest.Test
                 NewPassword = "PASSWORD"
             };
 
-            var res = ac.ChangePassword(cpDTO).Result;
+            var res = ac.ChangePasswordByOldPassword(mockUser.Id, cpDTO).Result;
 
-            Assert.IsType<Response>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
         }
 
         [Fact]
-        public void ChangePassword_NullDTO_BadRequest()
+        public void ChangePassword_NullDTO_MissingProperties()
         {
             var ac = InitializeTest();
 
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+                _testContext.MockUserManager.MockLoginAsUser(mockUser);
 
             ChangePasswordDTO cpDTO = null;
 
-            var res = ac.ChangePassword(cpDTO).Result;
+            var res = ac.ChangePasswordByOldPassword(mockUser.Id, cpDTO).Result;
 
-            Assert.IsType<ErrorResponse>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
         }
 
         [Fact]
-        public void ChangePassword_WrongOldPassword_BadRequest()
+        public void ChangePassword_WrongOldPassword_PasswordNotUpdated()
         {
             var ac = InitializeTest();
 
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
 
             ChangePasswordDTO cpDTO = new ChangePasswordDTO()
             {
@@ -539,13 +351,42 @@ namespace GirafRest.Test
                 NewPassword = "PASSWORD",
             };
 
-            var res = ac.ChangePassword(cpDTO).Result;
+            var res = ac.ChangePasswordByOldPassword(mockUser.Id, cpDTO).Result;
 
-            Assert.IsType<ErrorResponse>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.PasswordNotUpdated, res.ErrorCode);
         }
-        
+
         #endregion
+
+        #region DeleteUser
+        [Fact]
+        public void DeleteUser_NotFound_UserNotFound()
+        {
+            var ac = InitializeTest();
+
+            var result = ac.DeleteUser("7394").Result;
+
+            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+
+            Assert.False(result.Success);
+            Assert.Equal(ErrorCode.UserNotFound, result.ErrorCode);
+        }
+
+        [Fact]
+        public void DeleteUser_ValidInput_Success()
+        {
+            var ac = InitializeTest();
+            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+
+            var result = ac.DeleteUser(_testContext.MockUsers[CITIZEN_DEP_TWO].Id).Result;
+
+            Assert.True(result.Success);
+            Assert.Equal(ErrorCode.NoError, result.ErrorCode);
+        }
+        #endregion
+
     }
 }

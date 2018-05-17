@@ -5,6 +5,9 @@ using GirafRest.Models;
 
 namespace GirafRest
 {
+    /// <summary>
+    /// Pivot table for many-many between <see cref="Guardian"/> and <see cref="Citizen"/>/>
+    /// </summary>
     public class GuardianRelation
     {
         /// <summary>

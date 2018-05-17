@@ -17,7 +17,6 @@
         ImageAlreadyExistOnPictogram,
         ImageNotContainedInRequest,
         InvalidCredentials,
-        InvalidModelState,
         InvalidProperties,
         MissingProperties,
         NoWeekScheduleFound,
@@ -62,6 +61,9 @@
         InvalidDay,
         DuplicateWeekScheduleName,
         ColorMustHaveUniqueDay,
-        InvalidHexValues
+        InvalidHexValues,
+        WeekTemplateNotFound,
+        NotImplemented,
+        UserMustBeInDepartment
     }
 }

@@ -13,15 +13,9 @@ namespace GirafRest.Models
     /// </summary>
     public class Setting
     {
-        /// <summary>
-        /// Key for LauncherOptions
-        /// </summary>
         [Key]
         public long Key { get; private set; }
 
-        /// <summary>
-        /// Preferred orientation of device/screen
-        /// </summary>
         [Required]
         public Orientation Orientation { get; set; }
         /// <summary>
@@ -58,56 +52,37 @@ namespace GirafRest.Models
         public int? NrOfDaysToDisplay { get; set; }
 
         /// <summary>
-        /// Property for setting the color theme of weekschedules
-        /// </summary>
-        [Required]
-        public ColorThemeWeekSchedules ColorThemeWeekSchedules { get; set; }
-
-        /// <summary>
         /// Flag for indicating whether or not greyscale is enabled
         /// </summary>
         public bool GreyScale { get; set; }
 
-
+        /// <summary>
+        /// Each day in a weekschedule has a hexcolor associated
+        /// </summary>
+        /// <value>The week day colors.</value>
         public List<WeekDayColor> WeekDayColors { get; set; }
 
-        /// <summary>
-        /// Required empty constructor
-        /// </summary>
-        public Setting()
-        {
-            Orientation = Orientation.portrait;
-            CompleteMark = CompleteMark.Checkmark;
-            CancelMark = CancelMark.Cross;
-            DefaultTimer = DefaultTimer.analogClock;
-            Theme = Theme.girafYellow;
-            NrOfDaysToDisplay = 7;
-            TimerSeconds = 900;
-            ColorThemeWeekSchedules = ColorThemeWeekSchedules.standard;
-            GreyScale = false;
-
-        }
         /// <summary>
         /// Updates all settings based on a DTO
         /// </summary>
         /// <param name="newOptions">The DTO containing new settings</param>
         public void UpdateFrom(SettingDTO newOptions)
         {
-            this.Orientation = newOptions.Orientation;
-            this.CompleteMark = newOptions.CompleteMark;
-            this.CancelMark = newOptions.CancelMark;
-            this.DefaultTimer = newOptions.DefaultTimer;
-            this.TimerSeconds = newOptions.TimerSeconds;
-            this.ActivitiesCount = newOptions.ActivitiesCount;
-            this.Theme = newOptions.Theme;
-            this.NrOfDaysToDisplay = newOptions.NrOfDaysToDisplay;
-            this.ColorThemeWeekSchedules = newOptions.ColorThemeWeekSchedules;
-            this.GreyScale = newOptions.GreyScale;
-            updateWeekDayColors(newOptions.WeekDayColors);
+            this.Orientation = newOptions?.Orientation ?? this.Orientation;
+            this.CompleteMark = newOptions?.CompleteMark ?? this.CompleteMark;
+            this.CancelMark = newOptions?.CancelMark ?? this.CancelMark;
+            this.DefaultTimer = newOptions?.DefaultTimer ?? this.DefaultTimer;
+            this.TimerSeconds = newOptions?.TimerSeconds ?? this.TimerSeconds;
+            this.ActivitiesCount = newOptions?.ActivitiesCount ?? this.ActivitiesCount;
+            this.Theme = newOptions?.Theme ?? this.Theme;
+            this.NrOfDaysToDisplay = newOptions?.NrOfDaysToDisplay ?? this.NrOfDaysToDisplay;
+            this.GreyScale = newOptions?.GreyScale ?? this.GreyScale;
+            if(newOptions.WeekDayColors != null)
+                updateWeekDayColors(newOptions.WeekDayColors);
         }
 
         private void updateWeekDayColors(List<WeekDayColorDTO> weekDayColors){
-            if (this.WeekDayColors != null)
+            if (WeekDayColors != null)
             {
                 foreach (var weekDayColor in weekDayColors)
                 {
@@ -131,6 +106,22 @@ namespace GirafRest.Models
                 new WeekDayColor(){Day = Days.Sunday, HexColor = "#ffffff", SettingId = Key},
 
             };
+        }
+
+        /// <summary>
+        /// DO NOT DELETE
+        /// </summary>
+        public Setting()
+        {
+            Orientation = Orientation.portrait;
+            CompleteMark = CompleteMark.Checkmark;
+            CancelMark = CancelMark.Cross;
+            DefaultTimer = DefaultTimer.analogClock;
+            Theme = Theme.girafYellow;
+            NrOfDaysToDisplay = 7;
+            TimerSeconds = 900;
+            GreyScale = false;
+
         }
     }
 }

@@ -18,5 +18,6 @@ namespace GirafRest
             this.Name = name;
         }
 
+        public DepartmentNameDTO() {}
     }
 }

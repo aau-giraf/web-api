@@ -57,13 +57,12 @@ namespace GirafRest.Test
 
         #region ReadPictogram(id)
         [Fact]
-        public void ReadPictogram_NoLoginGetExistingPublic_Ok()
+        public void ReadPictogram_NoLoginGetExistingPublic_Success()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLogout();
             var res = pc.ReadPictogram(PUBLIC_PICTOGRAM).Result;
 
-            Assert.IsType<Response<PictogramDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError,res.ErrorCode);
             //Check data
@@ -71,13 +70,12 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void ReadPictogram_LoginGetExistingPublic_Ok()
+        public void ReadPictogram_LoginGetExistingPublic_Success()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = pc.ReadPictogram(PUBLIC_PICTOGRAM).Result;
 
-            Assert.IsType<Response<PictogramDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             //Check data
@@ -85,7 +83,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void ReadPictogram_NoLoginGetExistingPrivate_Unauthorized() {
+        public void ReadPictogram_NoLoginGetExistingPrivate_UserNotFound() {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLogout();
             var res = pc.ReadPictogram(ADMIN_PRIVATE_PICTOGRAM).Result;
@@ -95,7 +93,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void ReadPictogram_NoLoginGetExistingProtected_Unauthorized() {
+        public void ReadPictogram_NoLoginGetExistingProtected_UserNotFound() {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLogout();
             var res = pc.ReadPictogram(DEP_ONE_PROTECTED_PICTOGRAM).Result;
@@ -105,24 +103,22 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void ReadPictogram_LoginGetOwnPrivate_Ok() {
+        public void ReadPictogram_LoginGetOwnPrivate_Success() {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = pc.ReadPictogram(ADMIN_PRIVATE_PICTOGRAM).Result;
 
-            Assert.IsType<Response<PictogramDTO>>(res);
             Assert.True(res.Success);
             // check we got the correct ressource back
             Assert.True(res.Data.Id == ADMIN_PRIVATE_PICTOGRAM);
         }
 
         [Fact]
-        public void ReadPictogram_LoginGetProtectedInOwnDepartment_Ok() {
+        public void ReadPictogram_LoginGetProtectedInOwnDepartment_Success() {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = pc.ReadPictogram(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
-            Assert.IsType<Response<PictogramDTO>>(res);
             Assert.True(res.Success);
             // check we got the correct ressource back
             Assert.True(res.Data.Id == DEP_ONE_PROTECTED_PICTOGRAM);
@@ -171,28 +167,26 @@ namespace GirafRest.Test
 
         #region ReadPictograms()
         [Fact]
-        public void ReadPictograms_NoLoginGetAll_Ok6Pictograms()
+        public void ReadPictograms_NoLoginGetAll_Success()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLogout();
             _testContext.MockHttpContext.MockClearQueries();
             var res = pc.ReadPictograms(null, 1, 10).Result;
 
-            Assert.IsType<Response<List<PictogramDTO>>>(res);
             Assert.True(res.Success);
             // Do we get the expected amount?
             Assert.True(_testContext.MockPictograms.Count(m => m.AccessLevel == AccessLevel.PUBLIC) == res.Data.Count);
         }
 
         [Fact]
-        public void ReadPictograms_LoginGetAll_Ok5Pictograms()
+        public void ReadPictograms_LoginGetAll_Success()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             _testContext.MockHttpContext.MockClearQueries();
             var res = pc.ReadPictograms("", 1, 5).Result;
 
-            Assert.IsType<Response<List<PictogramDTO>>>(res);
             Assert.True(res.Success);
             // Check that we get exactly five pictograms back
             Assert.True(5 == res.Data.Count);
@@ -207,19 +201,17 @@ namespace GirafRest.Test
             // Check that the algorithm works on long queries
             var res = pc.ReadPictograms("NoTestWithoutHorsePleaseDontRaiseAnException", 1, 100).Result;
 
-            Assert.IsType<Response<List<PictogramDTO>>>(res);
             Assert.True(res.Success);
         }
 
         [Fact]
-        public void ReadPictograms_LoginGetAllWithValidQuery_Ok1Pictogram()
+        public void ReadPictograms_LoginGetAllWithValidQuery_Success()
         {
             var pc = initializeTest();
             var pictTitle = "picto1";
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = pc.ReadPictograms(pictTitle,1,1).Result;
 
-            Assert.IsType<Response<List<PictogramDTO>>>(res);
             Assert.True(res.Success);
             Assert.True(1 == res.Data.Count);
             // check that we actually got the right pictogram
@@ -228,13 +220,12 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void ReadPictograms_NoUser_GetClosestTwoImanges()
+        public void ReadPictograms_NoUser_Success()
         {
             var pc = initializeTest();
             var pictTitle = "cat";
             var res = pc.ReadPictograms(pictTitle, 1, 2).Result;
 
-            Assert.IsType<Response<List<PictogramDTO>>>(res);
             Assert.True(res.Success);
             Assert.True(2 == res.Data.Count);
             // We expect to get the pictograms with title cat and then cat1 and these are closest to the query
@@ -249,7 +240,7 @@ namespace GirafRest.Test
         private const string pictogramName = "TP";
 
         [Fact]
-        public void CreatePictogram_LoginValidPublicDTO_Ok()
+        public void CreatePictogram_LoginValidPublicDTO_Success()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
@@ -261,7 +252,6 @@ namespace GirafRest.Test
             };
             var res = pc.CreatePictogram(dto).Result;
 
-            Assert.IsType<Response<PictogramDTO>>(res);
             Assert.True(res.Success);
             // check that title is set correctly
             Assert.Equal("Public " + pictogramName, res.Data.Title);
@@ -270,7 +260,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void CreatePictogram_LoginValidPrivateDTO_Ok()
+        public void CreatePictogram_LoginValidPrivateDTO_Success()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
@@ -282,7 +272,6 @@ namespace GirafRest.Test
             };
             var res = pc.CreatePictogram(dto).Result;
 
-            Assert.IsType<Response<PictogramDTO>>(res);
             Assert.True(res.Success);
             // check that title is set correctly
             Assert.Equal("Private " + pictogramName, res.Data.Title);
@@ -291,7 +280,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void CreatePictogram_LoginValidProtectedDTO_Ok()
+        public void CreatePictogram_LoginValidProtectedDTO_Success()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
@@ -303,7 +292,6 @@ namespace GirafRest.Test
             };
             var res = pc.CreatePictogram(dto).Result;
 
-            Assert.IsType<Response<PictogramDTO>>(res);
             Assert.True(res.Success);
             // check that title is set correctly
             Assert.Equal("Protected " + pictogramName, res.Data.Title);
@@ -312,7 +300,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void CreatePictogram_LoginInvalidDTO_BadRequest()
+        public void CreatePictogram_LoginInvalidDTO_MissingProperties()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
@@ -324,7 +312,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void CreatePictogram_NoAccessLevel_BadRequest()
+        public void CreatePictogram_NoAccessLevel_MissingProperties()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
@@ -343,7 +331,7 @@ namespace GirafRest.Test
 
         #region UpdatePictogramInfo
         [Fact]
-        public void UpdatePictogramInfo_NoLoginPrivate_Unauthorized()
+        public void UpdatePictogramInfo_NoLoginPrivate_NotFound()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLogout();
@@ -355,13 +343,12 @@ namespace GirafRest.Test
             };
             var res = pc.UpdatePictogramInfo(ADMIN_PRIVATE_PICTOGRAM, dto).Result;
 
-            Assert.IsType<ErrorResponse<PictogramDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
 
         [Fact]
-        public void UpdatePictogramInfo_NoLoginProtected_Unauthorized()
+        public void UpdatePictogramInfo_NoLoginProtected_NotFound()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLogout();
@@ -373,13 +360,12 @@ namespace GirafRest.Test
             };
             var res = pc.UpdatePictogramInfo(DEP_ONE_PROTECTED_PICTOGRAM, dto).Result;
 
-            Assert.IsType<ErrorResponse<PictogramDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
 
         [Fact]
-        public void UpdatePictogramInfo_LoginOwnPublic_Ok()
+        public void UpdatePictogramInfo_LoginOwnPublic_Success()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -392,7 +378,6 @@ namespace GirafRest.Test
             };
             var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
 
-            Assert.IsType<Response<PictogramDTO>>(res);
             Assert.True(res.Success);
             // check that pictogram was updated correctly
             Assert.Equal(title, res.Data.Title);
@@ -402,7 +387,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void UpdatePictogramInfo_LoginOwnProtected_Ok()
+        public void UpdatePictogramInfo_LoginOwnProtected_Success()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -415,7 +400,6 @@ namespace GirafRest.Test
             };
             var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
 
-            Assert.IsType<Response<PictogramDTO>>(res);
             Assert.True(res.Success);
             // check data
             Assert.Equal(title, res.Data.Title);
@@ -423,7 +407,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void UpdatePictogramInfo_LoginOwnPrivate_Ok()
+        public void UpdatePictogramInfo_LoginOwnPrivate_Success()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -436,7 +420,6 @@ namespace GirafRest.Test
             };
             var res = pc.UpdatePictogramInfo(dto.Id, dto).Result;
 
-            Assert.IsType<Response<PictogramDTO>>(res);
             Assert.True(res.Success);
             // check data
             Assert.Equal(title, res.Data.Title);
@@ -456,7 +439,6 @@ namespace GirafRest.Test
             };
             var res = pc.UpdatePictogramInfo(ADMIN_PRIVATE_PICTOGRAM, dto).Result;
 
-            Assert.IsType<ErrorResponse<PictogramDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
@@ -474,7 +456,6 @@ namespace GirafRest.Test
             };
             var res = pc.UpdatePictogramInfo(DEP_ONE_PROTECTED_PICTOGRAM, dto).Result;
 
-            Assert.IsType<ErrorResponse<PictogramDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
@@ -492,13 +473,12 @@ namespace GirafRest.Test
             };
             var res = pc.UpdatePictogramInfo(NONEXISTING_PICTOGRAM, dto).Result;
 
-            Assert.IsType<ErrorResponse<PictogramDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.PictogramNotFound, res.ErrorCode);
         }
 
         [Fact]
-        public void UpdatePictogramInfo_LoginInvalidDTO_BadRequest()
+        public void UpdatePictogramInfo_LoginInvalidDTO_MissingProperties()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
@@ -510,10 +490,8 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void UpdatePictogramInfo_PictogramOwnerModifyAccessLevel_Ok()
+        public void UpdatePictogramInfo_PictogramOwnerModifyAccessLevel_Success()
         {
-            // ADMIN_DEP_ONE has pictogram with id = ADMIN_PRIVATE_PICTOGRAM, it is private, update to public
-
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
 
@@ -524,7 +502,6 @@ namespace GirafRest.Test
             };
             var res = pc.UpdatePictogramInfo(ADMIN_PRIVATE_PICTOGRAM, dto).Result;
 
-            Assert.IsType<Response<PictogramDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             // check that acess level is changed correctly
@@ -535,57 +512,54 @@ namespace GirafRest.Test
 
         #region DeletePictogram
         [Fact]
-        public void DeletePictogram_NoLoginProtected_Unauthorized()
+        public void DeletePictogram_NoLoginProtected_UserNotFound()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLogout();
             var res = pc.DeletePictogram(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
+            Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
 
         [Fact]
-        public void DeletePictogram_NoLoginPrivate_Unauthorized()
+        public void DeletePictogram_NoLoginPrivate_UserNotFound()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLogout();
             var res = pc.DeletePictogram(ADMIN_PRIVATE_PICTOGRAM).Result;
 
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
+            Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
 
         [Fact]
-        public void DeletePictogram_LoginPublic_Ok()
+        public void DeletePictogram_LoginPublic_Success()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = pc.DeletePictogram(PUBLIC_PICTOGRAM).Result;
 
-            Assert.IsType<Response>(res);
             Assert.True(res.Success);
         }
 
         [Fact]
-        public void DeletePictogram_LoginOwnProtected_Ok()
+        public void DeletePictogram_LoginOwnProtected_Success()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = pc.DeletePictogram(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
-            Assert.IsType<Response>(res);
             Assert.True(res.Success);
         }
 
         [Fact]
-        public void DeletePictogram_LoginOwnPrivate_Ok()
+        public void DeletePictogram_LoginOwnPrivate_Success()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = pc.DeletePictogram(ADMIN_PRIVATE_PICTOGRAM).Result;
 
-            Assert.IsType<Response>(res);
             Assert.True(res.Success);
         }
 
@@ -625,7 +599,7 @@ namespace GirafRest.Test
 
         #region CreateImage
         [Fact]
-        public void CreateImage_NoLoginProtected_Unauthorized()
+        public void CreateImage_NoLoginProtected_UserNotFound()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLogout();
@@ -633,12 +607,11 @@ namespace GirafRest.Test
             var res = pc.SetPictogramImage(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
             Assert.False(res.Success);
-            Assert.IsType<ErrorResponse<PictogramDTO>>(res);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
 
         [Fact]
-        public void CreateImage_NoLoginPrivate_Unauthorized()
+        public void CreateImage_NoLoginPrivate_UserNotFound()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLogout();
@@ -646,12 +619,11 @@ namespace GirafRest.Test
             var res = pc.SetPictogramImage(ADMIN_PRIVATE_PICTOGRAM).Result;
 
             Assert.False(res.Success);
-            Assert.IsType<ErrorResponse<PictogramDTO>>(res);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
 
         [Fact]
-        public void CreateImage_LoginPublic_Ok()
+        public void CreateImage_LoginPublic_Success()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -659,7 +631,6 @@ namespace GirafRest.Test
             var res = pc.SetPictogramImage(PUBLIC_PICTOGRAM).Result;
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            Assert.IsType<Response<PictogramDTO>>(res);
             Assert.True(res.Success);
             Assert.True(res.Data.Image != null);
 
@@ -670,7 +641,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void CreateImage_LoginPrivate_Ok()
+        public void CreateImage_LoginPrivate_Success()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -678,7 +649,6 @@ namespace GirafRest.Test
             var res = pc.SetPictogramImage(ADMIN_PRIVATE_PICTOGRAM).Result;
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            Assert.IsType<Response<PictogramDTO>>(res);
             Assert.True(res.Success);
             Assert.True(res.Data.Image != null);
 
@@ -688,7 +658,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void CreateImage_LoginProtected_Ok()
+        public void CreateImage_LoginProtected_Success()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -697,7 +667,6 @@ namespace GirafRest.Test
             var res = pc.SetPictogramImage(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            Assert.IsType<Response<PictogramDTO>>(res);
             Assert.True(res.Success);
             Assert.True(res.Data.Image != null);
 
@@ -714,7 +683,6 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
             var res = pc.SetPictogramImage(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
-            Assert.IsType<ErrorResponse<PictogramDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
@@ -727,7 +695,6 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
             var res = pc.SetPictogramImage(ADMIN_PRIVATE_PICTOGRAM).Result;
 
-            Assert.IsType<ErrorResponse<PictogramDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
@@ -740,13 +707,12 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
             var res = pc.SetPictogramImage(NONEXISTING_PICTOGRAM).Result;
 
-            Assert.IsType<ErrorResponse<PictogramDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.PictogramNotFound, res.ErrorCode);
         }
 
         [Fact]
-        public void CreateImage_PublicJpeg_Ok()
+        public void CreateImage_PublicJpeg_Success()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_ONE]);
@@ -755,7 +721,6 @@ namespace GirafRest.Test
             var res = pc.SetPictogramImage(PUBLIC_PICTOGRAM).Result;
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            Assert.IsType<Response<PictogramDTO>>(res);
             Assert.True(res.Success);
             Assert.True(res.Data.Image != null);
 
@@ -768,7 +733,7 @@ namespace GirafRest.Test
 
         #region UpdatePictogramImage
         [Fact]
-        public void UpdatePictogramImage_NoLoginProtected_Unauthorized()
+        public void UpdatePictogramImage_NoLoginProtected_UserNotFound()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -776,20 +741,18 @@ namespace GirafRest.Test
 
             var img = pc.SetPictogramImage(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
-            Assert.IsType<Response<PictogramDTO>>(img);
             Assert.True(img.Success);
             Assert.Equal(ErrorCode.NoError, img.ErrorCode);
 
             _testContext.MockUserManager.MockLogout();
             var res = pc.SetPictogramImage(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
-            Assert.IsType<ErrorResponse<PictogramDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
 
         [Fact]
-        public void UpdatePictogramImage_NoLoginPrivate_Unauthorized()
+        public void UpdatePictogramImage_NoLoginPrivate_UserNotFound()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -800,13 +763,12 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLogout();
             var res = pc.SetPictogramImage(ADMIN_PRIVATE_PICTOGRAM).Result;
 
-            Assert.IsType<ErrorResponse<PictogramDTO>>(res);
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
 
         [Fact]
-        public void UpdatePictogramImage_LoginPublic_Ok()
+        public void UpdatePictogramImage_LoginPublic_Success()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -814,7 +776,6 @@ namespace GirafRest.Test
             var res = pc.SetPictogramImage(PUBLIC_PICTOGRAM).Result;
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            Assert.IsType<Response<PictogramDTO>>(res);
             Assert.True(res.Success);
             Assert.True(res.Data.Image != null);
 
@@ -825,7 +786,7 @@ namespace GirafRest.Test
 
 
         [Fact]
-        public void UpdatePictogramImage_LoginPrivate_Ok()
+        public void UpdatePictogramImage_LoginPrivate_Success()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -833,7 +794,6 @@ namespace GirafRest.Test
             var res = pc.SetPictogramImage(ADMIN_PRIVATE_PICTOGRAM).Result;
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            Assert.IsType<Response<PictogramDTO>>(res);
             Assert.True(res.Success);
             Assert.True(res.Data.Image != null);
 
@@ -844,7 +804,7 @@ namespace GirafRest.Test
 
 
         [Fact]
-        public void UpdatePictogramImage_LoginProtected_Ok()
+        public void UpdatePictogramImage_LoginProtected_Success()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -852,7 +812,6 @@ namespace GirafRest.Test
             var res = pc.SetPictogramImage(ADMIN_PRIVATE_PICTOGRAM).Result;
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            Assert.IsType<Response<PictogramDTO>>(res);
             Assert.True(res.Success);
             Assert.True(res.Data.Image != null);
 
@@ -894,7 +853,7 @@ namespace GirafRest.Test
 
 
         [Fact]
-        public void UpdatePictogramImage_LoginNullBody_BadRequest()
+        public void UpdatePictogramImage_SuperAdminUpdatePublicPicto_Success()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -908,7 +867,7 @@ namespace GirafRest.Test
 
 
         [Fact]
-        public void UpdatePictogramImage_LoginNonexisting_NotFound()
+        public void UpdatePictogramImage_LoginNonexistingPicto_NotFound()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -920,7 +879,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void UpdatePictogramImage_PublicJpegToJpeg_Ok()
+        public void UpdatePictogramImage_PublicJpegToJpeg_Success()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -933,7 +892,6 @@ namespace GirafRest.Test
             var res = pc.SetPictogramImage(PUBLIC_PICTOGRAM).Result;
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            Assert.IsType<Response<PictogramDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
 
@@ -943,7 +901,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void UpdatePictogramImage_PublicPngToJpeg_Ok()
+        public void UpdatePictogramImage_PublicPngToJpeg_Success()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -962,7 +920,6 @@ namespace GirafRest.Test
             var res = pc.SetPictogramImage(PUBLIC_PICTOGRAM).Result;
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            Assert.IsType<Response<PictogramDTO>>(res);
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
 
@@ -1005,7 +962,7 @@ namespace GirafRest.Test
         }
         
         [Fact]
-        public void ReadPictogramImage_LoginPublic_Ok()
+        public void ReadPictogramImage_LoginPublic_Success()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -1023,7 +980,7 @@ namespace GirafRest.Test
         }
         
         [Fact]
-        public void ReadPictogramImage_LoginProtected_Ok()
+        public void ReadPictogramImage_LoginProtected_Success()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
@@ -1106,7 +1063,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void ReadRawPictogramImage_GetPrivate_OK()
+        public void ReadRawPictogramImage_GetPrivate_Success()
         {
             try
             {
@@ -1134,7 +1091,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void ReadRawPictogramImage_GetPublic_OK()
+        public void ReadRawPictogramImage_GetPublic_Success()
         {
             try
             {
@@ -1162,13 +1119,12 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void ReadRawPictogramImage_NoLoginPrivate_Unauthorized()
+        public void ReadRawPictogramImage_NoLoginPrivate_NotFound()
         {
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             _testContext.MockUserManager.MockLogout();
             var res = pc.ReadRawPictogramImage(ADMIN_PRIVATE_PICTOGRAM).Result;
-            
 
             Assert.IsType<NotFoundResult>(res);
         }

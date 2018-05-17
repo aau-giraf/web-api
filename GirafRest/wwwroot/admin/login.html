@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
+  <link href="https://unpkg.com/vuetify/dist/vuetify.min.css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" media="screen" href="css/styles.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+    <div id="app">
+    <v-app id="inspire" class="giraf-bg">
+        <v-content>
+        <v-container fluid fill-height>
+            <v-layout align-center justify-center>
+            <v-flex xs12 sm8 md4>
+                <v-card class="elevation-12">
+                <v-toolbar dark color="primary">
+                    <v-toolbar-title>Giraf Administration</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                </v-toolbar>
+                <v-form @submit="login(); $event.preventDefault()">
+                    <v-card-text>
+                        <v-text-field :error-messages="msg('username', 'Indtast venligst brugernavn')" v-model="credentials.username" prepend-icon="person" label="Brugernavn" type="text"></v-text-field>
+                        <v-text-field :error-messages="msg('password', 'Indtast venligst adgangskode')" v-model="credentials.password" prepend-icon="lock" label="Adgangskode" type="password"></v-text-field>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn color="primary" type="submit">Login</v-btn>
+                    </v-card-actions>
+                    <v-alert color="primary" v-model="wrongCredentials" dismissible type="info">Forkert brugernavn eller adgangskode</v-alert>
+                    <v-alert color="primary" v-model="wrongRole" dismissible type="info">Borgere har ikke adgang til Giraf Administration</v-alert>
+                </v-form>
+                </v-card>
+            </v-flex>
+            </v-layout>
+        </v-container>
+        </v-content>
+    </v-app>
+    </div>
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vuetify/dist/vuetify.js"></script>
+    <script>
+        //https://stackoverflow.com/questions/38552003/how-to-decode-jwt-token-in-javascript
+        function parseJwt(token) {
+            var base64Url = token.split('.')[1];
+            var base64 = base64Url.replace('-', '+').replace('_', '/');
+            return JSON.parse(window.atob(base64));
+        };
+        var loginurl = "/v1/Account/login";
+        var vm = new Vue({
+            el: '#app',
+            data() { 
+                return {
+                    errorProperties: [],
+                    errorKey: null,
+                    wrongCredentials: false,
+                    wrongRole: false,
+                    credentials: {
+                        username: null,
+                        password: null
+                    }
+                }
+            },
+            methods: {
+                login: function () {
+                    var self = this;
+                    self.errorProperties = [];
+                    $.ajax({
+                        type: "POST",
+                        contentType: "application/json; charset=utf-8",
+                        url: loginurl,
+                        data: JSON.stringify(self.credentials),
+                        success: function (data) {
+                            if (!data.success) {
+                                self.wrongRole = false;
+                                if(data.errorKey == 'InvalidCredentials')
+                                    self.wrongCredentials = true;
+                                else
+                                {
+                                    self.errorProperties = data.errorProperties;
+                                    self.errorKey = data.errorKey;
+                                    self.wrongCredentials = false;
+                                }
+                            }
+                            else {
+                                self.wrongCredentials = false;
+                                var payload = parseJwt(data.data);
+                                var role = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+                                var id = payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
+                                var department = payload['departmentId'];
+                                if (role == "Guardian" || role == "SuperUser" || role == "Department") {
+                                    var userInfo = {
+                                        role: role,
+                                        token: data.data,
+                                        username: self.credentials.username,
+                                        id: id,
+                                        departmentId: department
+                                    };
+                                    localStorage.setItem("user", JSON.stringify(userInfo));
+                                    window.location = "/admin/main.html"
+                                } else {
+                                    self.wrongRole = true;
+                                }
+                            }
+                        }
+                    });
+                    return true;
+                },
+                msg: function(value, message) {
+                    if(this.errorProperties.indexOf(value) != -1 || this.errorKey == value){
+                        return message;
+                    }
+                }
+            }
+    })
+  </script>
+</body>
+</html>

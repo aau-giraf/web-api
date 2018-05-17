@@ -2,6 +2,15 @@
 
 The section on running the tests has been bumped to the top for your convenience. Read on for tips and insights on maintenance and trouble-shooting of the tests.
 
+See also [The wiki page](http://web.giraf.cs.aau.dk/w/rest_api_-_development/integration_test/)
+
+## File structure
+`⋯/test.py` is the main executable.
+
+`⋯/tests` contains the tests themselves, with one file/class for each controller in the backend.
+
+`⋯/testLib.py` contains methods for frequently used actions such as logging in and ensureing the success of a request.
+
 ## Running the tests
 The main project must be running in order for the integration tests to have a server to communicate with. See `README.md` in root folder for that.
 
@@ -32,13 +41,6 @@ Similar on all systems. From a shell, do `python`. From the python prompt do `pi
 The tests within this folder are concerned with how all components of the backend work together when integrated. Calls are made to the API endpoints against a (locally) running backend server, and the responses received are checked.
 
 This allows testing for things like access rights and correct storage and subsequent retrieval from the database. The flipside is that some tests may depend on others(logging in before checking access rights) and that the reason for the failure of a particular test may lie in multiple different components.
-
-## File structure
-`⋯/test.py` is the main executable.
-
-`⋯/tests` contains the tests themselves, with one file/class for each controller in the backend.
-
-`⋯/testLib.py` contains methods for frequently used actions such as logging in and ensureing the success of a request.
 
 ## Testing framework
 Full documentation such as it is can be found at [@test(skip_if_failed=['loginAsKurt'])]. 
@@ -81,10 +83,9 @@ Assertions can either be made directly from the given `check` object, or from co
 
 `index exception` or `key exception` is thrown when trying to access some field in the `response` which does not exist.
 
-
 ## Contributors
 
-SW613f18 & SW615f17
+SW613f18
 
 ## License
 

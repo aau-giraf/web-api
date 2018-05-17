@@ -22,6 +22,15 @@ To run the project locally with a MySQL database first do the following:
   - run `dotnet ef database update`
   - run `dotnet run --sample-data`
 
+The `--sample-data` flag will generate sample data if target database is empty, and we recommend using this flag by default. Other possible flags are:
+
+        --prod=[true|false]		| If true then connect to production db, defaults to false.
+        --port=integer			| Specify which port to host the server on, defaults to 5000.
+        --list				    | List options
+        --sample-data		    | Tells the rest-api to generate some sample data. This only works on an empty database.
+        --logfile=string		| Toggles logging to a file, the string specifies the path to the file relative to the working directory.
+
+
 Once the API is running locally you can navigate to `http://localhost:5000/swagger/` to see and tryout requests to the endpoints. We recommend keeping a text file with often-used DTOs and bearer tokens as part of your workflow.
 
 3. (Optional) To login via swagger:
@@ -54,21 +63,13 @@ You can now generate a client side API in for example C# by running either of th
   - `java -jar modules/swagger-codegen-cli/target/swagger-codegen-cli.jar generate  -i http://localhost:5000/swagger/v1/swagger.json -l csharp -o Client/Generated/` 
   - `swagger-codegen generate -i http://localhost:5000/swagger/v1/swagger.json -l csharp`
 
-## Migrate Old Database To New Database
-To migrate an old database for use with newer versions, a migrate.sql-script will be maintained in `scripts/migrate.sql`.
-A database dump of the old production-database is also present in this directory.
+## Program Arguments
+It is possible to give the following arguments to the API:
 
-To migrate the old database to the new, ensure that dotnet is configured to use the `giraf` database or alter the script to target yours.
-Finally run the following shell-commands in the `scripts` directory and substitute `<user>` with your mysql-username and enter your mysql-password when prompted:
-
-  - If you already have a giraf-database that you want to preserve: 
-    `mysqldump -uroot -p --databases giraf > giraf.sql.bak`
-  - Drop the old database
-    `echo "DROP DATABASE giraf;" | mysql -u<user> -p`
-  - Create the structure for the new database
-    `cd ../GirafRest && dotnet ef database update && cd ../scripts`
-  - Migrate data from the old database (in `girafdump.sql`)
-    `mysql -u<user> -p < migrate.sql`
+  - --Port=<Port> to specify which port the API should run on
+  - --List which list the possible arguments 
+  - --sample-data which seeds the database with data for testing
+  - --logfile=<Filename> which creates a logfile per day for debugging at GirafRest/wwwroot/DebugLogs
 
 ## API Reference
 

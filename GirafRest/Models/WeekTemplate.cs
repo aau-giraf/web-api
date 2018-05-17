@@ -10,6 +10,17 @@ namespace GirafRest.Models
 {
     public class WeekTemplate : WeekBase
     {
+        [ForeignKey("Department")]
+        public long DepartmentKey { get; set; }
+        
+        /// <summary>
+        /// A reference to the department using this template.
+        /// </summary>
+        public virtual Department Department { get; set; }
+
+        /// <summary>
+        /// DO NOT DELETE
+        /// </summary>
         public WeekTemplate()
         {
         }
@@ -17,22 +28,9 @@ namespace GirafRest.Models
         /// <summary>
         /// A constructor for week setting only the thumbnail.
         /// </summary>
-        public WeekTemplate(Pictogram thumbnail) : base(thumbnail)
+        public WeekTemplate(Department department)
         {
+            DepartmentKey = department?.Key ?? -1;
         }
-        /// <summary>
-        /// Creates a new WeekTemplate from the given WeekDTO.
-        /// </summary>
-        /// <param name="weekDTO">The data transfer object to create a new week template from.</param>
-        public WeekTemplate(WeekDTO weekDTO, long departmentKet) : base(weekDTO)
-        {
-        }
-
-        [ForeignKey("Department")]
-        public long DepartmentKey { get; set; }
-        /// <summary>
-        /// A reference to the department using this template.
-        /// </summary>
-        public virtual Department Department { get; set; }
     }
 }

@@ -3,11 +3,6 @@ from testLib import *
 from integrate import TestCase, test
 import time
 
-
-def auth(token):
-    return {"Authorization": "Bearer {0}".format(token)}
-
-
 # Make sure the pictogram isn't in the list
 def pictogramIsInList(pictogramId, pictogramList):
     for pictogram in pictogramList:
@@ -18,40 +13,41 @@ def pictogramIsInList(pictogramId, pictogramList):
 
 class DepartmentControllerTest(TestCase):
     "Department Controller"
+
     url = Test.url
     dalgaardsholmstuen = 'Dalgaardsholmstuen{0}'.format(str(time.time()))
 
     lee = None
     graatand = None
     kurt = None
+    gunnar = None
+
+    gunnarUsername = None
+    gunnarID = None
+    gunnarBody = None
+
+    numberOfDepartments = None
+    dalgardsholmstuenId = None
+    dalgaardsholmstuenToken = None
+
+    cyclopianBody = None
 
     @test()
     def logins(self, check):
         "Login as Lee, Graatand and Kurt"
-        response = requests.post(Test.url + 'account/login', json={"username": "Lee", "password": "password"}).json()
-        ensureSuccess(response, check)
-        self.lee = response['data']
+        self.lee = login('Lee', check)
 
-        response = requests.post(Test.url + 'account/login',
-                                 json={"username": "Graatand", "password": "password"}).json()
-        ensureSuccess(response, check)
-        self.graatand = response['data']
+        self.graatand = login('Graatand', check)
 
-        response = requests.post(Test.url + 'account/login', json={"username": "Kurt", "password": "password"}).json()
-        ensureSuccess(response, check)
-        self.kurt = response['data']
-
-    numberOfDepartments = None
+        self.kurt = login('Kurt', check)
 
     @test()
     def departmentList(self, check):
         'Get list of departments'
         response = requests.get(Test.url + 'Department').json()
-        if ensureSuccess(response, check):
-            self.numberOfDepartments = len(response['data'])
-        else:
-            self.numberOfDepartments = 0
-
+        ensureSuccess(response, check)
+        self.numberOfDepartments = len(response['data'])
+    
     @test(skip_if_failed=['logins', 'departmentList'])
     def unauthorizedDepartmentCreation0(self, check):
         'Graatand tries to create department'
@@ -85,9 +81,6 @@ class DepartmentControllerTest(TestCase):
         ensureSuccess(response, check)
         check.equal(self.numberOfDepartments, len(response['data']), 'Number of departments.\n')
 
-    dalgardsholmstuenId = None
-    dalgaardsholmstuenToken = None
-
     @test(skip_if_failed=['checkDepartmentCount'])
     def newDepartment(self, check):
         'Lee creates department'
@@ -114,7 +107,7 @@ class DepartmentControllerTest(TestCase):
     @test(skip_if_failed=['newDepartment'])
     def getDepartment(self, check):
         'Get the newly created Dalgaardsholmstuen'
-        response = requests.get(Test.url + 'Department/{0}'.format(self.dalgardsholmstuenId)).json()
+        response = requests.get(Test.url + 'Department/{0}'.format(self.dalgardsholmstuenId), headers=auth(self.lee)).json()
         ensureSuccess(response, check)
         check.equal(response.get('data').get('name'), self.dalgaardsholmstuen,
                     message='Name should\'ve been {0} but was {1}'.format(self.dalgaardsholmstuen,
@@ -126,19 +119,16 @@ class DepartmentControllerTest(TestCase):
         response = requests.get(Test.url + 'Department/-1').json()
         ensureError(response, check)
 
-    gunnarUsername = None
-    gunnarID = None
-    gunnarBody = None
-    gunnar = None
 
     @test(skip_if_failed=['newDepartment'])
     def newGunnar(self, check):
         'Register Gunnar to that department'
         self.gunnarUsername = 'Gunnar{0}'.format(str(time.time()))
 
-        response = requests.post(Test.url + 'account/register', json={
+        response = requests.post(Test.url + 'account/register', headers=auth(self.lee), json={
             "username": self.gunnarUsername,
             "password": "password",
+            "role": "Citizen",
             "departmentId": self.dalgardsholmstuenId
         }).json()
 
@@ -168,7 +158,7 @@ class DepartmentControllerTest(TestCase):
         }
 
         # Find Gunnar among users
-        response = requests.get(Test.url + 'Department/{0}'.format(self.dalgardsholmstuenId)).json()
+        response = requests.get(Test.url + 'Department/{0}'.format(self.dalgardsholmstuenId), headers=auth(self.lee)).json()
         ensureSuccess(response, check)
 
         gunnarFound = False
@@ -178,7 +168,6 @@ class DepartmentControllerTest(TestCase):
 
         check.is_true(gunnarFound, message='Gunnar was not included in list of department members.')
 
-    cyclopianBody = None
 
     @test(skip_if_failed=['newDepartment'])
     def newPictogram(self, check):
@@ -203,7 +192,9 @@ class DepartmentControllerTest(TestCase):
         ensureError(response, check)
 
         # Check that nothing's changed in database
-        response = requests.get(Test.url + 'Department/{0}'.format(self.dalgardsholmstuenId)).json()
+        response = requests.get(Test.url + 'Department/{0}'.format(self.dalgardsholmstuenId),
+                                headers=auth(self.lee)).json()
+        ensureSuccess(response, check)
         check.is_false(pictogramIsInList(self.cyclopianBody['id'], response['data']['resources']),
                        message='Pictogram was found in department resources, but should not have been added')
 
@@ -216,7 +207,9 @@ class DepartmentControllerTest(TestCase):
         ensureError(response, check)
 
         # Check that nothing's changed in database
-        response = requests.get(Test.url + 'Department/{0}'.format(self.dalgardsholmstuenId)).json()
+        response = requests.get(Test.url + 'Department/{0}'.format(self.dalgardsholmstuenId),
+                                headers=auth(self.lee)).json()
+        ensureSuccess(response, check)
         check.is_false(pictogramIsInList(self.cyclopianBody['id'], response['data']['resources']),
                        message='Pictogram was found in department resources, but should not have been added')
 
@@ -241,7 +234,9 @@ class DepartmentControllerTest(TestCase):
         ensureError(response, check)
 
         # Check that nothing's changed in database
-        response = requests.get(Test.url + 'Department/{0}'.format(self.dalgardsholmstuenId)).json()
+        response = requests.get(Test.url + 'Department/{0}'.format(self.dalgardsholmstuenId),
+                                headers=auth(self.lee)).json()
+        ensureSuccess(response, check)
         check.is_false(pictogramIsInList(pictogram['id'], response['data']['resources']),
                        message='Pictogram was found in department resources, but should not have been added')
 
@@ -265,25 +260,6 @@ class DepartmentControllerTest(TestCase):
                                  headers=auth(self.gunnar)).json()
         ensureError(response, check)
 
-    @test(skip_if_failed=['logins', 'newDepartment'], expect_fail=True)
-    def unauthorizedPictogramAdd4(self, check):
-        'Gunnar tries to add a pictogram directly through pictogram controller to Dalgaardsholmstuen'
-        body = {
-            "accessLevel": 2,
-            "title": "The End of the World as We Know It",
-            "id": -1,
-            "lastEdit": "2018-03-19T10:40:26.587Z"
-        }
-        response = requests.post(Test.url + 'pictogram', json=body, headers={"Authorization": "Bearer {0}".format(
-            self.gunnar)}).json()
-        ensureSuccess(response, check)
-        pictogram = response['data']
-
-        # Check that nothing's changed in database
-        response = requests.get(Test.url + 'Department/{0}'.format(self.dalgardsholmstuenId)).json()
-        check.is_false(pictogramIsInList(pictogram['id'], response['data']['resources']),
-                       message='Pictogram was found in department resources, but should not have been added')
-
     @test(skip_if_failed=['unauthorizedPictogramAdd', 'unauthorizedPictogramAdd1'])
     def pictogramAdd(self, check):
         'Add Cyclopian to Dalgaardsholmstuen'
@@ -293,7 +269,9 @@ class DepartmentControllerTest(TestCase):
         ensureSuccess(response, check)
 
         # Check that something's changed in database
-        response = requests.get(Test.url + 'Department/{0}'.format(self.dalgardsholmstuenId)).json()
+        response = requests.get(Test.url + 'Department/{0}'.format(self.dalgardsholmstuenId),
+                                headers=auth(self.lee)).json()
+        ensureSuccess(response, check)
         check.is_true(pictogramIsInList(self.cyclopianBody['id'], response['data']['resources']),
                       message='Pictogram was not found in department resources')
 
@@ -306,7 +284,9 @@ class DepartmentControllerTest(TestCase):
         ensureError(response, check)
 
         # Check that nothing's changed in database
-        response = requests.get(Test.url + 'Department/{0}'.format(self.dalgardsholmstuenId)).json()
+        response = requests.get(Test.url + 'Department/{0}'.format(self.dalgardsholmstuenId),
+                                headers=auth(self.lee)).json()
+        ensureSuccess(response, check)
         check.is_true(pictogramIsInList(self.cyclopianBody['id'], response['data']['resources']),
                       message='Pictogram was not found in department resources')
 

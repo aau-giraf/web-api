@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace GirafRest.Models
 {
     /// <summary>
-    /// Defines a many-to-many relationship between users and resources.
+    /// Defines a many-to-many relationship between <see cref="GirafUser"/> and <see cref="Pictogram"/> (ressource)
     /// </summary>
     public class UserResource
     {
@@ -33,7 +33,7 @@ namespace GirafRest.Models
         [Required]
         public long PictogramKey { get; set; }
         //A reference to the actual resource.
-        [ForeignKey("ResourceKey")]
+        [ForeignKey("PictogramKey")]
         public virtual Pictogram Pictogram { get; set; }
 
         /// <summary>

@@ -5,6 +5,9 @@ using GirafRest.Models;
 
 namespace GirafRest
 {
+    /// <summary>
+    /// The entity for enabling a day to have a specific Color
+    /// </summary>
     public class WeekDayColor
     {
         [Key]
@@ -20,7 +23,9 @@ namespace GirafRest
 
         public Setting Setting { get; set; }
 
-
+        /// <summary>
+        /// DO NOT DELETE
+        /// </summary>
         public WeekDayColor()
         {
             

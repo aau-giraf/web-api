@@ -6,18 +6,10 @@ using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
+using Microsoft.Extensions.Logging;
 
 namespace GirafRest
 {
-    /// <summary>
-    /// An enum to store the user's choice of database option.
-    /// </summary>
-    public enum DbOption { SQLite, MySQL }
-
-
-    /// <summary>
-    /// The main class for the Giraf REST-api.
-    /// </summary>
     public class Program
     {
         public static IConfiguration Configuration { get; set; }
@@ -26,15 +18,12 @@ namespace GirafRest
         {
             Console.WriteLine("Welcome to Giraf REST Server.");
 
-            
-
             //Parse all the program arguments and stop execution if any invalid arguments were found.
             var pa = new ProgramArgumentParser();
             bool validArguments = pa.CheckProgramArguments(args);
             if(!validArguments) return;
 
             //Build the host from the given arguments.
-
             try{
                 BuildWebHost(args).Run();
             }
@@ -62,6 +51,10 @@ namespace GirafRest
                {
                    config.Sources.Clear();            
                })
+                .ConfigureLogging((hostingContext, logging) =>
+                {
+                    logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                })
                .UseDefaultServiceProvider(options =>options.ValidateScopes = false)
                .UseApplicationInsights()
                .Build();

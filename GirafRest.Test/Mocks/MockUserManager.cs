@@ -89,6 +89,12 @@ namespace GirafRest.Test.Mocks
             return Task.FromResult($"ResetTokenFor{user.UserName}");
         }
 
+        public override Task<IdentityResult> SetUserNameAsync(GirafUser user, string userName)
+        {
+            user.UserName = userName;
+            return Task.FromResult(new IdentityResult());
+        }
+
         public override Task<IdentityResult> AddPasswordAsync(GirafUser user, string password)
         {
             _signInManager.usernamePasswordList.Add(new Tuple<string, string>(user.UserName, password));
