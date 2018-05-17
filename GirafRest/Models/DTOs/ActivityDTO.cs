@@ -32,7 +32,7 @@
         /// </summary>
         public ActivityState State { get; set; }
 
-        public long Id { get; internal set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// This is used in the WeekPlanner app by the frontend groups and should never be set from our side
