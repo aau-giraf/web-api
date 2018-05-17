@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 <head>
     <link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' rel="stylesheet">
@@ -65,10 +65,11 @@
                             ></v-select>
                         </v-flex>
                     </v-layout>
-                    <names-page v-if="atPage('citizens') && departmentId != null" 
+                    <names-page v-bind:visibleif="atPage('citizens') && departmentId != null" 
                         :loading="citizensLoading"
                         v-on:add="addCitizen($event)" 
                         v-bind:token="token"
+                        v-bind:elementid="id"
                         nameproperty="userName" 
                         idproperty="userId" 
                         deletetitle="Fjern Borger" 
@@ -76,14 +77,18 @@
                         v-on:update="updateCitizen($event)" 
                         addtitle="Opret Borger" 
                         haspassword="false" 
+                        showgeneratepassword="true"
+                        showdelete="true"
+                        showedit="true"
                         edittitle="Rediger Borger" 
                         v-bind:elements="citizens">
                     </names-page>
                     <names-page 
-                        v-if="atPage('guardians') && departmentId != null" 
+                        v-bind:visibleif="atPage('guardians') && departmentId != null" 
                         :loading="guardiansLoading"
                         v-on:add="addGuardian($event)" 
                         v-bind:token="token"
+                        v-bind:elementid="id"
                         nameproperty="userName" 
                         idproperty="userId" 
                         v-on:update="updateCitizen($event)" 
@@ -91,14 +96,18 @@
                         deletetitle="Fjern Pædagog" 
                         addtitle="Opret Pædagog" 
                         haspassword="true" 
+                        v-bind:showdelete="(role == 'Department' || role == 'SuperUser') ? 'true' : 'false'" 
+                        v-bind:showgeneratepassword="(role == 'Department' || role == 'SuperUser') ? 'true' : 'false'" 
+                        v-bind:showedit="(role == 'Department' || role == 'SuperUser') ? 'true' : 'false'" 
                         edittitle="Rediger Pædagog" 
                         v-bind:elements="guardians">
                     </names-page>
                     <names-page 
-                        v-if="atPage('departments')" 
+                        v-bind:visibleif="atPage('departments')" 
                         :loading="departmentsLoading"
                         v-on:add="addDepartment($event)" 
                         v-bind:token="token"
+                        v-bind:elementid="id"
                         nameproperty="name" 
                         idproperty="id" 
                         v-on:update="updateDepartment($event)" 
@@ -106,6 +115,9 @@
                         deletetitle="Fjern Afdeling" 
                         addtitle="Opret Afdeling" 
                         haspassword="false" 
+                        showgeneratepassword="false" 
+                        showdelete="true" 
+                        showedit="true"
                         edittitle="Rediger Afdeling" 
                         v-bind:elements="departments">
                     </names-page>
@@ -116,149 +128,154 @@
     <script src="https://unpkg.com/vue/dist/vue.js"></script>
     <script src="https://unpkg.com/vuetify/dist/vuetify.js"></script>
     <script type="text/x-template" id="names-template">
-        <v-card>
+        <v-card v-if="visibleif">
             <v-dialog v-model="dialog" max-width="500px">
                 <v-card>
                     <v-card-title>
-                    <span class="headline" v-text="isEditing ? edittitle : addtitle"></span>
+                        <span class="headline" v-text="isEditing ? edittitle : addtitle"></span>
                     </v-card-title>
                     <v-card-text>
-                    <v-container grid-list-md>
-                        <v-layout wrap>
-                        <v-flex xs12 sm12 md12>
-                            <v-text-field v-model="editedItem[nameproperty]" label="Navn"></v-text-field>
-                            <v-text-field type="password" v-if="!isEditing && haspassword == 'true'" v-model="editedItem.password" label="Password"></v-text-field>
-                        </v-flex>
-                        </v-layout>
-                    </v-container>
+                        <v-container grid-list-md>
+                            <v-layout wrap>
+                                <v-flex xs12 sm12 md12>
+                                    <v-text-field v-model="editedItem[nameproperty]" label="Navn"></v-text-field>
+                                    <v-text-field type="password" v-if="!isEditing && haspassword == 'true'" v-model="editedItem.password" label="Password"></v-text-field>
+                                </v-flex>
+                            </v-layout>
+                        </v-container>
                     </v-card-text>
                     <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" flat @click.native="close">Annuller</v-btn>
-                    <v-btn color="blue darken-1" flat @click.native="save">Gem</v-btn>
+                        <v-spacer></v-spacer>
+                        <v-btn color="blue darken-1" flat @click.native="close">Annuller</v-btn>
+                        <v-btn color="blue darken-1" flat @click.native="save">Gem</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
             <v-dialog v-model="dialog" max-width="500px">
                 <v-card>
                     <v-card-title>
-                    <span class="headline" v-text="isEditing ? edittitle : addtitle"></span>
+                        <span class="headline" v-text="isEditing ? edittitle : addtitle"></span>
                     </v-card-title>
                     <v-card-text>
-                    <v-container grid-list-md>
-                        <v-layout wrap>
-                        <v-flex xs12 sm12 md12>
-                            <v-text-field v-model="editedItem[nameproperty]" label="Navn"></v-text-field>
-                            <v-text-field type="password" v-if="!isEditing && haspassword == 'true'" v-model="editedItem.password" label="Password"></v-text-field>
-                        </v-flex>
-                        </v-layout>
-                    </v-container>
+                        <v-container grid-list-md>
+                            <v-layout wrap>
+                                <v-flex xs12 sm12 md12>
+                                    <v-text-field v-model="editedItem[nameproperty]" label="Navn"></v-text-field>
+                                    <v-text-field type="password" v-if="!isEditing && haspassword == 'true'" v-model="editedItem.password" label="Password"></v-text-field>
+                                </v-flex>
+                            </v-layout>
+                        </v-container>
                     </v-card-text>
                     <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" flat @click.native="close">Annuller</v-btn>
-                    <v-btn color="blue darken-1" flat @click.native="save">Gem</v-btn>
+                        <v-spacer></v-spacer>
+                        <v-btn color="blue darken-1" flat @click.native="close">Annuller</v-btn>
+                        <v-btn color="blue darken-1" flat @click.native="save">Gem</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
             <v-dialog v-model="resetDialog" max-width="500px">
                 <v-card>
                     <v-card-title>
-                    <span class="headline">Link til at nulstille adgangskode</span>
+                        <span class="headline">Link til at nulstille adgangskode</span>
                     </v-card-title>
                     <v-card-text>
-                    <v-container grid-list-md>
-                        <v-layout wrap>
-                        <v-flex xs12 sm12 md12>
-                            Kopier og send dette link til brugeren der skal have ny adgangskode <br>
-                            <v-text-field v-model="resetLink" onClick="this.setSelectionRange(0, this.value.length)" label="Reset link"></v-text-field>
-                        </v-flex>
-                        </v-layout>
-                    </v-container>
+                        <v-container grid-list-md>
+                            <v-layout wrap>
+                                <v-flex xs12 sm12 md12>
+                                    Kopier og send dette link til brugeren der skal have ny adgangskode <br>
+                                    <v-text-field v-model="resetLink" onClick="this.setSelectionRange(0, this.value.length)" label="Reset link"></v-text-field>
+                                </v-flex>
+                            </v-layout>
+                        </v-container>
                     </v-card-text>
                     <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" flat @click.native="resetDialog = false">OK</v-btn>
+                        <v-spacer></v-spacer>
+                        <v-btn color="blue darken-1" flat @click.native="resetDialog = false">OK</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
             <v-dialog v-model="deleteDialog" max-width="500px">
                 <v-card>
                     <v-card-title>
-                    <span class="headline" v-text="deletetitle"></span>
+                        <span class="headline" v-text="deletetitle"></span>
                     </v-card-title>
                     <v-card-text>
-                    <v-container grid-list-md>
-                        <v-layout wrap>
-                        <v-flex xs12 sm12 md12>
-                            Er du sikker på at du vil slette '{{deletedItem[nameproperty]}}'?
-                        </v-flex>
-                        </v-layout>
-                    </v-container>
+                        <v-container grid-list-md>
+                            <v-layout wrap>
+                                <v-flex xs12 sm12 md12>
+                                    Er du sikker på at du vil slette '{{deletedItem[nameproperty]}}'?
+                                </v-flex>
+                            </v-layout>
+                        </v-container>
                     </v-card-text>
                     <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" flat @click.native="deleteDialog = false">Annuller</v-btn>
-                    <v-btn color="red darken-1" flat @click.native="deleteElement(deletedItem)">Slet</v-btn>
+                        <v-spacer></v-spacer>
+                        <v-btn color="blue darken-1" flat @click.native="deleteDialog = false">Annuller</v-btn>
+                        <v-btn color="red darken-1" flat @click.native="deleteElement(deletedItem)">Slet</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
             <v-card-title>
                 <v-layout row>
                     <v-flex xs5>
-                    <v-text-field
-                    v-model="search"
-                    append-icon="search"
-                    label="Search"
-                    single-line
-                    hide-details
-                    ></v-text-field>
+                        <v-text-field v-model="search"
+                                      append-icon="search"
+                                      label="Søg"
+                                      single-line
+                                      hide-details></v-text-field>
                     </v-flex>
-                    <v-flex xs7  class="text-xs-right">
+                    <v-flex xs7 class="text-xs-right">
                         <v-btn color="primary" @click="addElement" class="mx-0">{{addtitle}}</v-btn>
                     </v-flex>
                 </v-layout>
             </v-card-title>
-            <v-data-table
-                :headers="headers"
-                :items="elements"
-                :search="search"
-                :loading="loading"
-            >
+            <v-data-table :headers="headers"
+                          :items="elements"
+                          :search="search"
+                          :loading="loading">
                 <v-progress-linear slot="progress" color="blue" indeterminate></v-progress-linear>
                 <template slot="items" slot-scope="props">
-                <td style="max-width: 100px;">{{ props.item[nameproperty] }}</td>
-                <td class="text-xs-right">
-                    <v-btn v-if="haspassword" fab small dark color="grey" class="mx-0" @click="showResetLink(props.item)">
-                        <v-icon color="white">vpn_key</v-icon>
-                    </v-btn>
-                    <v-btn fab small dark color="primary" class="mx-0" @click="editElement(props.item)">
-                        <v-icon color="white">edit</v-icon>
-                    </v-btn>
-                    <v-btn fab small dark color="red lighten-1" class="mx-0" @click="promptDelete(props.item)">
-                        <v-icon color="white">delete</v-icon>
-                    </v-btn>
-                </td>
+                    <td style="max-width: 100px;">{{ props.item[nameproperty] }}</td>
+                    <td class="text-xs-right">
+                        <v-tooltip bottom>
+                            <v-btn slot="activator" v-if="showgeneratepassword == 'true'" fab small dark color="grey" class="mx-0" @click="showResetLink(props.item)">
+                                <v-icon color="white">vpn_key</v-icon>
+                            </v-btn>
+                            <span>Nulstil adgangskode</span>
+                        </v-tooltip>
+                        <v-tooltip bottom>
+                            <v-btn slot="activator" v-if="showedit == 'true' || props.item[idproperty] == elementid" fab small dark color="primary" class="mx-0" @click="editElement(props.item)">
+                                <v-icon color="white">edit</v-icon>
+                            </v-btn>
+                            <span>Rediger</span>
+                        </v-tooltip>
+                        <v-tooltip bottom>
+                            <v-btn slot="activator" v-if="showdelete == 'true'" fab small dark color="red lighten-1" class="mx-0" @click="promptDelete(props.item)">
+                                <v-icon color="white">delete</v-icon>
+                            </v-btn>
+                            <span>Fjern</span>
+                        </v-tooltip>
+                    </td>
                 </template>
                 <v-alert slot="no-results" :value="true" color="info" icon="warning">
-                Strengen "{{ search }}" gav ingen resulater.
+                    Strengen "{{ search }}" gav ingen resulater.
                 </v-alert>
             </v-data-table>
-            </v-card>
+        </v-card>
     </script>
     <script>
     Vue.component('names-page', {
         template: '#names-template',
-        props: [ 'elements', 'add', 'token', 'update', 'delete', 'nameproperty', 'loading', 'idproperty', 'addtitle', 'deletetitle', 'edittitle', 'haspassword' ],
-        data () {
+        props: ['elements', 'elementid', 'visibleif', 'add', 'token', 'update', 'showgeneratepassword', 'showedit', 'showdelete', 'delete', 'nameproperty', 'loading', 'idproperty', 'addtitle', 'deletetitle', 'edittitle', 'haspassword' ],
+        data: function () {
             var self = this;
             var editedItem = {};
             editedItem[this.nameproperty] = null;
             return {
                 editedItem: editedItem,
                 deletedItem: editedItem,
-                search: '',
                 dialog: false,
+                search: '',
                 deleteDialog: false,
                 resetDialog: false,
                 isEditing: false,
@@ -307,6 +324,7 @@
             },
             showResetLink(element) {
                 var self = this;
+                self.resetLink = null;
                 self.resetDialog = true;
                 $.ajax({
                     url: "/v1/User/" + element[this.idproperty] + "/Account/password-reset-token",
@@ -476,6 +494,7 @@
                     guardiansLoading: false,
                     departmentsLoading: false,
                     drawer: null,
+                    search: '',
                     token: user.token,
                     resetToken: resetToken,
                     role: user.role,
