@@ -39,7 +39,7 @@ namespace GirafRest.Filters
             var error = ((context.Result as ObjectResult)?.Value as Response)?.ErrorCode.ToString();
             string[] lines = new string[]
             {
-                $"{DateTime.UtcNow}; {user}; {userId}; {verb}; {p}; {error}"
+                $"{DateTime.UtcNow.ToString("o")}; {user}; {userId}; {verb}; {p}; {error}"
             };
             lock (filelock)
             {
