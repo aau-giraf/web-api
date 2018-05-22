@@ -75,4 +75,4 @@ SW613f18 & SW615f17
 
 ## License
 MIT License
-Copyright (c) [2018-present] [Aalborg University]
+Copyright (c) 2018-present Aalborg University
