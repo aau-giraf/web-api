@@ -63,14 +63,6 @@ You can now generate a client side API in for example C# by running either of th
   - `java -jar modules/swagger-codegen-cli/target/swagger-codegen-cli.jar generate  -i http://localhost:5000/swagger/v1/swagger.json -l csharp -o Client/Generated/` 
   - `swagger-codegen generate -i http://localhost:5000/swagger/v1/swagger.json -l csharp`
 
-## Program Arguments
-It is possible to give the following arguments to the API:
-
-  - --Port=<Port> to specify which port the API should run on
-  - --List which list the possible arguments 
-  - --sample-data which seeds the database with data for testing
-  - --logfile=<Filename> which creates a logfile per day for debugging at GirafRest/wwwroot/DebugLogs
-
 ## API Reference
 
 For API reference start the API and navigate to localhost:5000/swagger
@@ -82,5 +74,5 @@ Descriptions are generated from method summaries etc. in the code.
 SW613f18 & SW615f17
 
 ## License
-
-Copyright [2018] [Aalborg University]
+MIT License
+Copyright (c) [2018-present] [Aalborg University]
