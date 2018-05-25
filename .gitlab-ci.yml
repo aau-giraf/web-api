@@ -1,0 +1,37 @@
+image: "giraf/web-api-dotnetcore-build:latest"
+# The image contains only dotnetcore-build 2.?.? (not latest)
+
+stages:
+#    - "build"
+    - "test"
+    - "deploy"
+
+#build:
+#    stage: "build"
+#    script:
+#        - dotnet build GirafRest/GirafRest.csproj
+#        # dotnet build automatically calls dotnet restore if necessary
+
+test:
+    stage: "test"
+    script:
+        - dotnet test GirafRest.Test/GirafRest.Test.csproj
+        # dotnet test automatically calls dotnet restore and dotnet build
+
+#deploy:
+#    stage: "deploy"
+#    only: 
+#        - develop
+#        - release
+#        - master
+        # Figure out how release-branch deployment is going to work (problem is: release commits have numbers in names)
+#    script:
+#        - cd continuousDeployment/
+#        - chmod +x cd.sh
+#        - ./cd.sh
+        # Calls the webhook on the server to create a container for the web-api
+
+        # - "cd ../GirafRest/"
+        # - dotnet run --sample-data
+        # - dotnet ef database update
+        # - "cd ../"
