@@ -69,6 +69,12 @@ For API reference start the API and navigate to localhost:5000/swagger
 
 Descriptions are generated from method summaries etc. in the code.
 
+## Admin Panel
+The Admin panel is currently hosted together with the API and the login page is located at: `host/admin/login.html`
+Through the admin panel it is possible to adminstrate users and departments of Giraf and different roles in the system has different functionality and access rights.
+Note that it is possible to generate a reset link for users that you have access to. This link is intended to only work if accessed by an unauthorised user.
+For more information see the project report of group sw613f18
+
 ## Contributors
 
 SW613f18 & SW615f17
