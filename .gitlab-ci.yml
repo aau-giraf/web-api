@@ -1,0 +1,16 @@
+image: "giraf/web-api-dotnetcore-build:latest"
+# The image contains only dotnetcore-build 2.?.? (not latest)
+
+stages:
+    - "test"
+    - "deploy"
+
+test:
+    stage: "test"
+    script:
+        - dotnet test GirafRest.Test/GirafRest.Test.csproj
+        # dotnet test automatically calls dotnet restore and dotnet build
+
+## DEPLOY STAGE NOT IMPLEMENTED
+# It can be done in this way: use a GitLab webhook whenever this pipeline succeeds
+# The webhooks invokes a call to the dockerDeploymentScript that can be found in the Tools/Server repository
