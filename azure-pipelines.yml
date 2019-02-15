@@ -13,5 +13,7 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
-- script: dotnet build --configuration $(buildConfiguration)
+- script: |
+    dotnet build --configuration $(buildConfiguration)
+    dotnet test GirafRest.Test/GirafRest.Test.csproj
   displayName: 'dotnet build $(buildConfiguration)'
