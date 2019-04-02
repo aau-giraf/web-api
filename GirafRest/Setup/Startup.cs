@@ -28,6 +28,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
 using GirafRest.Filters;
 using AspNetCoreRateLimit;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace GirafRest.Setup
 {
