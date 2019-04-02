@@ -132,7 +132,6 @@ namespace GirafRest.Test.Services
             _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
             _client = _server.CreateClient();
             var response = await _client.GetAsync("/");
-            System.Diagnostics.Debugger.Break();
             Assert.False(response.StatusCode == (System.Net.HttpStatusCode)429);
         }
         #endregion
