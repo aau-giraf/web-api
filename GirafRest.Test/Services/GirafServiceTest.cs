@@ -5,6 +5,12 @@ using static GirafRest.Test.UnitTestExtensions;
 using System.Linq;
 using System.IO;
 using System;
+using Org.BouncyCastle.Crypto.Tls;
+using System.Net.Http;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.TestHost;
+using GirafRest.Setup;
+using System.Threading.Tasks;
 
 namespace GirafRest.Test.Services
 {
@@ -14,6 +20,9 @@ namespace GirafRest.Test.Services
 
         private const int ADMIN_DEP_ONE = 0;
         private const int GUARDIAN_DEP_TWO = 1;
+
+        private TestServer _server;
+        private HttpClient _client;
 
         public GirafServiceTest()
         {
@@ -97,6 +106,30 @@ namespace GirafRest.Test.Services
             var res = gs.CheckProtectedOwnership((Pictogram)notUserDepartment.Resources.First().Pictogram, user);
 
             Assert.False(res.Result);
+        }
+        #endregion
+        #region IpRateLimiting
+        [Fact]
+        public async Task CheckIpRateLimiting_ToManyRequests_StatusCode429()
+        {
+            _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
+            _client = _server.CreateClient();
+            HttpResponseMessage response = null;
+            for (int i=0; i<5; i++)
+            {
+                response = await _client.GetAsync("/");
+            }
+
+            Assert.True(response.StatusCode == (System.Net.HttpStatusCode)429);
+        }
+
+        [Fact]
+        public async Task CheckIpRateLimiting_ToManyRequests_StatusCode200()
+        {
+            _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
+            _client = _server.CreateClient();
+            var response = await _client.GetAsync("/");
+            Assert.True(response.StatusCode == System.Net.HttpStatusCode.OK);
         }
         #endregion
     }
