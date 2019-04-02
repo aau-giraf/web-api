@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using GirafRest.Setup;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace GirafRest.Test.Services
 {
@@ -114,8 +115,9 @@ namespace GirafRest.Test.Services
         {
             _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
             _client = _server.CreateClient();
+
             HttpResponseMessage response = null;
-            for (int i=0; i<5; i++)
+            for (int i = 0; i < 15; i++)
             {
                 response = await _client.GetAsync("/");
             }
