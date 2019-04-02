@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.TestHost;
 using GirafRest.Setup;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
+using System.Threading;
 
 namespace GirafRest.Test.Services
 {
@@ -111,13 +112,13 @@ namespace GirafRest.Test.Services
         #endregion
         #region IpRateLimiting
         [Fact]
-        public async Task CheckIpRateLimiting_ToManyRequests_StatusCode429()
+        public async Task CheckIpRateLimiting_ToManyRequests_True_StatusCode429()
         {
             _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
             _client = _server.CreateClient();
 
             HttpResponseMessage response = null;
-            for (int i = 0; i < 15; i++)
+            for (int i = 0; i < 5; i++)
             {
                 response = await _client.GetAsync("/");
             }
@@ -126,12 +127,13 @@ namespace GirafRest.Test.Services
         }
 
         [Fact]
-        public async Task CheckIpRateLimiting_ToManyRequests_StatusCode200()
+        public async Task CheckIpRateLimiting_ToManyRequests_False_StatusCode200()
         {
             _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
             _client = _server.CreateClient();
             var response = await _client.GetAsync("/");
-            Assert.True(response.StatusCode == System.Net.HttpStatusCode.OK);
+            System.Diagnostics.Debugger.Break();
+            Assert.False(response.StatusCode == (System.Net.HttpStatusCode)429);
         }
         #endregion
     }
