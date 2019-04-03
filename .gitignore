@@ -40,3 +40,4 @@ scripts/*.bak
 **/__pycache__
 GirafIntegrationTest/venv/
 GirafIntegrationTest/cookie
+.DS_Store
