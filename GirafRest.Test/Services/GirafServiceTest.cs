@@ -112,11 +112,12 @@ namespace GirafRest.Test.Services
         #endregion
         #region IpRateLimiting
         [Fact]
-        public async Task CheckIpRateLimiting_ToManyRequests_True_StatusCode429()
+        public async Task CheckIpRateLimiting_TooManyRequests_True_StatusCode429()
         {
             _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
             _client = _server.CreateClient();
 
+            //5 requests to forces the 429 reponse
             HttpResponseMessage response = null;
             for (int i = 0; i < 5; i++)
             {
@@ -127,7 +128,7 @@ namespace GirafRest.Test.Services
         }
 
         [Fact]
-        public async Task CheckIpRateLimiting_ToManyRequests_False_StatusCode200()
+        public async Task CheckIpRateLimiting_TooManyRequests_False_StatusCode429()
         {
             _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
             _client = _server.CreateClient();
