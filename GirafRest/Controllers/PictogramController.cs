@@ -326,7 +326,6 @@ namespace GirafRest.Controllers
                 .Where(pictogram => pictogram.Id == id)
                 .FirstOrDefaultAsync();
 
-            _giraf._logger.LogInformation("IMAGEHASH: " + picto.ImageHash);
             if (picto == null || picto.ImageHash == null)
                 return NotFound();
             
