@@ -29,8 +29,8 @@ namespace GirafRest.Models {
         [Required]
         public AccessLevel AccessLevel { get; set; }
 
-        [Column("Image")]
-        public byte[] Image { get; set; }
+        [Column("ImageHash")]
+        public String ImageHash { get; set; }
 
         /// <summary>
         /// Currently not used, but old applications needs this
@@ -55,8 +55,8 @@ namespace GirafRest.Models {
             this.LastEdit = DateTime.Now;
             this.AccessLevel = (AccessLevel)other.AccessLevel;
             this.Title = other.Title;
-            if(other.Image != null)
-                this.Image = other.Image;
+            if(other.ImageHash != null)
+                this.ImageHash = other.ImageHash;
         }
 
         // DO NOT DELETE
@@ -66,11 +66,11 @@ namespace GirafRest.Models {
             this.AccessLevel = accessLevel;
         }
 
-        public Pictogram(string title, AccessLevel accessLevel, byte[] image) : this()
+        public Pictogram(string title, AccessLevel accessLevel, String imageHash) : this()
         {
             this.Title = title;
             this.AccessLevel = accessLevel;
-            this.Image = image;
+            this.ImageHash = imageHash;
         }
     }
 }

@@ -1,5 +1,7 @@
 # Giraf Backend
 
+[![Build Status](https://dev.azure.com/aau-giraf/giraf/_apis/build/status/aau-giraf.web-api?branchName=master)](https://dev.azure.com/aau-giraf/giraf/_build/latest?definitionId=1&branchName=master)
+
 This repository contains the backend API for the Giraf Project. The API is a .net-core project written in C#.
 
 ## Build & Run
