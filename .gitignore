@@ -32,7 +32,6 @@ out
 *.sln
 appsettings.json
 appsettings.Development.json
-Dockerfile
 
 scripts/*.bak
 
