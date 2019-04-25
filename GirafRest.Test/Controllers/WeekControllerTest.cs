@@ -45,28 +45,6 @@ namespace GirafRest.Test
             return wc;
         }
 
-        #region ReadFullWeekSchedules
-
-        [Fact]
-        public void ReadFullWeekSchedules()
-        {
-            var wc = initializeTest();
-            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
-            _testContext.MockUserManager.MockLoginAsUser(mockUser);
-            var weekschedule = _testContext.MockWeeks[0];
-
-            var res = wc.ReadAllWeekSchedules(mockUser.Id).Result;
-
-            Assert.True(res.Success);
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            // check we got the right amount back
-            Assert.True(mockUser.WeekSchedule.Count() == res.Data.Count());
-            Assert.Equal(weekschedule.Name, res.Data.FirstOrDefault().Name);
-            Assert.Null(mockUser.WeekSchedule.Days);
-        }
-
-        #endregion ReadAllWeekSchedules
-
         #region ReadWeekSchedules
 
         [Fact]
