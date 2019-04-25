@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
 using GirafRest.Services;
 using GirafRest.Models.Responses;
+using Microsoft.AspNetCore.Hosting;
 
 namespace GirafRest.Controllers
 {
@@ -22,12 +23,16 @@ namespace GirafRest.Controllers
         private const string IMAGE_TYPE_JPEG = "image/jpeg";
 
         private readonly IGirafService _giraf;
+        
+        private readonly IHostingEnvironment _hostingEnvironment;
 
-        public PictogramController(IGirafService girafController, ILoggerFactory lFactory) 
+        public PictogramController(IGirafService girafController, ILoggerFactory lFactory, IHostingEnvironment hostingEnvironment) 
         {
             _giraf = girafController;
             _giraf._logger = lFactory.CreateLogger("Pictogram");
+            _hostingEnvironment = hostingEnvironment;
         }
+        
 
         #region PictogramHandling
         /// <summary>
@@ -240,8 +245,10 @@ namespace GirafRest.Controllers
         /// Else: UserNotFound, PictogramNotFound or NotAuthorized</returns>
         [Consumes(IMAGE_TYPE_PNG, IMAGE_TYPE_JPEG)]
         [HttpPut("{id}/image")]
-        public async Task<Response<WeekPictogramDTO>> SetPictogramImage(long id) {
-            var user = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
+        public async Task<Response<WeekPictogramDTO>> SetPictogramImage(long id)
+        {
+            return null;
+            /*var user = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
             
             if (user == null) 
                 return new ErrorResponse<WeekPictogramDTO>(ErrorCode.UserNotFound);
@@ -267,7 +274,7 @@ namespace GirafRest.Controllers
                 pictogram.Image = image;
 
             await _giraf._context.SaveChangesAsync();
-            return new Response<WeekPictogramDTO>(new WeekPictogramDTO(pictogram));
+            return new Response<WeekPictogramDTO>(new WeekPictogramDTO(pictogram));*/
         }
 
         /// <summary>
@@ -279,7 +286,8 @@ namespace GirafRest.Controllers
         [HttpGet("{id}/image")]
         public async Task<Response<byte[]>> ReadPictogramImage(long id) {
             //Fetch the pictogram and check that it actually exists and has an image.
-            var picto = await _giraf._context
+            return null;
+            /*var picto = await _giraf._context
                 .Pictograms
                 .Where(pictogram => pictogram.Id == id)
                 .FirstOrDefaultAsync();
@@ -290,13 +298,13 @@ namespace GirafRest.Controllers
             if (usr == null) 
                 return new ErrorResponse<byte[]>(ErrorCode.NotAuthorized);
 
-            if (picto.Image == null)
+            if (picto.ImageHash == null)
                 return new ErrorResponse<byte[]>(ErrorCode.PictogramHasNoImage);
 
             if (!CheckOwnership(picto, usr).Result)
                 return new ErrorResponse<byte[]>(ErrorCode.NotAuthorized);
 
-            return new Response<byte[]>(picto.Image);
+            return new Response<byte[]>(picto.ImageHash);*/
         }
 
         /// <summary>
@@ -318,12 +326,15 @@ namespace GirafRest.Controllers
                 .Where(pictogram => pictogram.Id == id)
                 .FirstOrDefaultAsync();
 
-            if (picto == null || picto.Image == null)
+            if (picto == null || picto.ImageHash == null)
                 return NotFound();
-
+            
             // you can get all public pictograms
             if (picto.AccessLevel == AccessLevel.PUBLIC)
-                return File(Convert.FromBase64String(System.Text.Encoding.UTF8.GetString(picto.Image)), "image/png");
+            {
+                _giraf._logger.LogInformation(_hostingEnvironment.ContentRootPath);
+                return PhysicalFile(_hostingEnvironment.ContentRootPath + "/../pictograms/" + picto.Id + ".png", IMAGE_TYPE_PNG);
+            }
 
             // you can only get a protected picogram if it is owned by your department
             if (picto.AccessLevel == AccessLevel.PROTECTED && !picto.Departments.Any(d => d.OtherKey == usr.DepartmentKey))
@@ -333,7 +344,7 @@ namespace GirafRest.Controllers
             if (picto.AccessLevel == AccessLevel.PRIVATE && !picto.Users.Any(d => d.OtherKey == usr.Id))
                 return NotFound();
 
-            return File(Convert.FromBase64String(System.Text.Encoding.UTF8.GetString(picto.Image)), "image/png");
+            return NotFound();
         }
 
         #endregion

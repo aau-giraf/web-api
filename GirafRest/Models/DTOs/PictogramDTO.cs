@@ -28,13 +28,9 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         public AccessLevel? AccessLevel { get; set; }
 
-        /// <summary>
-        /// An array of bytes containing the pictogram's image.
-        /// </summary>
-        [JsonIgnore]
-        public byte[] Image { get; internal set; }
+        public string ImageHash { get; set; }
+        
         public string ImageUrl { get { return $"/v1/pictogram/{Id}/image/raw"; } }
-        public string ImageHash { get { return Image == null ? null : Convert.ToBase64String(MD5.Create().ComputeHash(Image)); } }
 
         public PictogramDTO(Pictogram pictogram)
         {
@@ -44,7 +40,7 @@ namespace GirafRest.Models.DTOs
                 this.AccessLevel = pictogram.AccessLevel;
                 this.Id = pictogram.Id;
                 this.LastEdit = pictogram.LastEdit;
-                this.Image = pictogram.Image;
+                this.ImageHash = pictogram.ImageHash;
             }
         }
 
