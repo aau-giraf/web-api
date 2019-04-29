@@ -31,12 +31,15 @@ namespace GirafRest.Controllers
         private readonly IGirafService _giraf;
         
         private readonly IHostingEnvironment _hostingEnvironment;
+        
+        private readonly string imagePath;
 
         public PictogramController(IGirafService girafController, ILoggerFactory lFactory, IHostingEnvironment hostingEnvironment) 
         {
             _giraf = girafController;
             _giraf._logger = lFactory.CreateLogger("Pictogram");
             _hostingEnvironment = hostingEnvironment;
+            imagePath = _hostingEnvironment.ContentRootPath + "/../pictograms/";
         }
         
 
@@ -272,8 +275,9 @@ namespace GirafRest.Controllers
             
             //Update the image
             byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body);
-            var path = _hostingEnvironment.ContentRootPath+"/../pictograms/" + pictogram.Id + ".png";
-            
+
+            string path = imagePath + pictogram.Id + ".png";
+        
             if (image.Length > 0){
                 // Upload new image, change name to id of pictogram
                 System.IO.File.WriteAllBytes(path, new byte[0]);
@@ -318,7 +322,7 @@ namespace GirafRest.Controllers
             if (!CheckOwnership(picto, usr).Result)
                 return new ErrorResponse<byte[]>(ErrorCode.NotAuthorized);
 
-            return new Response<byte[]>(System.IO.File.ReadAllBytes(_hostingEnvironment.ContentRootPath + "/../pictograms/" + picto.Id + ".png"));
+            return new Response<byte[]>(System.IO.File.ReadAllBytes(imagePath + picto.Id + ".png"));
         }
 
         /// <summary>
@@ -346,8 +350,8 @@ namespace GirafRest.Controllers
             // you can get all public pictograms
             if (CheckOwnership(picto, usr).Result)
             {
-                _giraf._logger.LogInformation(_hostingEnvironment.ContentRootPath);
-                return PhysicalFile(_hostingEnvironment.ContentRootPath + "/../pictograms/" + picto.Id + ".png", IMAGE_TYPE_PNG);
+                _giraf._logger.LogInformation(imagePath);
+                return PhysicalFile(imagePath + picto.Id + ".png", IMAGE_TYPE_PNG);
             }
 
             // you can only get a protected picogram if it is owned by your department
