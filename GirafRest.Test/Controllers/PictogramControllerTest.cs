@@ -34,6 +34,7 @@ namespace GirafRest.Test
         private HostingEnvironment _hostEnv;
         private TestContext _testContext;
         private string _pictogramFolderPath;
+        private const string _pathToPictogramFolder = "/../pictograms/";
         
         private readonly ITestOutputHelper _testLogger;
 
@@ -44,12 +45,12 @@ namespace GirafRest.Test
             JPEG_FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Mocks", "MockImage.jpeg");
             _hostEnv = new HostingEnvironment();
             _hostEnv.ContentRootPath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.ToString();
-            _pictogramFolderPath = _hostEnv.ContentRootPath + "/../pictograms/";
+            _pictogramFolderPath = _hostEnv.ContentRootPath + _pathToPictogramFolder;
             
             // This folder is used to mock the file store of the production server.
             if (!Directory.Exists(_pictogramFolderPath))
             {
-                Directory.CreateDirectory(_hostEnv.ContentRootPath + "/../pictograms/");
+                Directory.CreateDirectory(_pictogramFolderPath);
             }
         }
 
