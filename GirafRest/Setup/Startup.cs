@@ -193,7 +193,6 @@ namespace GirafRest.Setup
             app.UseIpRateLimiting();
 
             //Configure logging for the application
-            //app.ConfigureLogging(loggerFactory);
             appLifetime.ApplicationStopped.Register(Log.CloseAndFlush);
 
             app.UseStatusCodePagesWithReExecute("/v1/Error", "?status={0}");
