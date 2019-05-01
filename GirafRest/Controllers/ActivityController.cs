@@ -8,51 +8,83 @@ using Microsoft.EntityFrameworkCore;
 using GirafRest.Data;
 using GirafRest.Models;
 using Microsoft.AspNetCore.Authorization;
+using GirafRest.Models.DTOs;
+using GirafRest.Services;
+using Microsoft.Extensions.Logging;
+using GirafRest.Models.Responses;
 
 namespace GirafRest.Controllers
 {
     [Authorize]
-    [Route("api/[controller]")]
+    [Route("v2/api/[controller]")]
     [ApiController]
     public class ActivityController : Controller
     {
-        private readonly GirafDbContext _context;
+        private readonly IAuthenticationService _authentication;
+        private readonly IGirafService _giraf;
 
-        public ActivityController(GirafDbContext context)
+        public ActivityController(IGirafService giraf, ILoggerFactory loggerFactory, IAuthenticationService authentication)
         {
-            _context = context;
+            _giraf = giraf;
+            _giraf._logger = loggerFactory.CreateLogger("Activity");
+            _authentication = authentication;
         }
 
         // POST: api/Activity
-        [HttpPost("{userId}/week/{weekYear}/{weekNumber}/{weekDay}")]
-        public async Task<ActionResult<Activity>> PostActivity([FromBody] Activity activity, string userId, int weekYear, int weekNumber, Days weekday)
+        [HttpPost("{userId}/{weekplanName}/{weekYear}/{weekNumber}/{weekDay}")]
+        [Authorize]
+        public async Task<Response<ActivityDTO>> PostActivity([FromBody] ActivityDTO activity, string userId, string weekplanName, int weekYear, int weekNumber, Days weekDay)
         {
-            _context.Activities.Add(activity);
-            await _context.SaveChangesAsync();
+            GirafUser user = await _giraf.LoadUserWithWeekSchedules(userId);
 
-            return CreatedAtAction("GetActivity", new { id = activity.Key }, activity);
+            // check access rights
+            if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+                return new ErrorResponse<ActivityDTO>(errorCode: ErrorCode.NotAuthorized);
+
+            var dbWeek = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber);
+
+            if (dbWeek != null)
+                return new ErrorResponse<ActivityDTO>(errorCode: ErrorCode.WeekNotFound);
+
+            Weekday dbWeekDay = dbWeek.Weekdays.First(day => day.Day == weekDay);
+
+            int order = dbWeekDay.Activities.Max(act => act.Order);
+            order++;
+
+            Activity dbActivity = new Activity(dbWeekDay, new Pictogram() { Id=activity.Pictogram.Id}, order, ActivityState.Normal);
+            _giraf._context.Activities.Add(dbActivity);
+            await _giraf._context.SaveChangesAsync();
+
+
+            return new Response<ActivityDTO>(new ActivityDTO(dbActivity));
         }
 
         // DELETE: api/Activity/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{userId}/delete/{activityId}")]
         [Authorize]
-        public async Task<ActionResult<Activity>> DeleteActivity(long id)
+        public async Task<Response> DeleteActivity(string userId, long activityId)
         {
-            var activity = await _context.Activities.FindAsync(id);
+            GirafUser user = _giraf._context.Users.Include(u => u.WeekSchedule).FirstOrDefault(u => u.Id == userId);
+
+            // check access rights
+            if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+                return new ErrorResponse(errorCode: ErrorCode.NotAuthorized);
+
+            var activity = await _giraf._context.Activities.FindAsync(activityId);
             if (activity == null)
             {
-                return NotFound();
+                return new ErrorResponse(errorCode: ErrorCode.NotFound);
             }
 
-            _context.Activities.Remove(activity);
-            await _context.SaveChangesAsync();
+            _giraf._context.Activities.Remove(activity);
+            await _giraf._context.SaveChangesAsync();
 
-            return activity;
+            return new Response();
         }
 
         private bool ActivityExists(long id)
         {
-            return _context.Activities.Any(e => e.Key == id);
+            return _giraf._context.Activities.Any(e => e.Key == id);
         }
     }
 }
