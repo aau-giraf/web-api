@@ -43,7 +43,7 @@ namespace GirafRest.Controllers
 
             var dbWeek = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber);
 
-            if (dbWeek != null)
+            if (dbWeek == null)
                 return new ErrorResponse<ActivityDTO>(errorCode: ErrorCode.WeekNotFound);
 
             Weekday dbWeekDay = dbWeek.Weekdays.First(day => day.Day == weekDay);
@@ -54,7 +54,6 @@ namespace GirafRest.Controllers
             Activity dbActivity = new Activity(dbWeekDay, new Pictogram() { Id=activity.Pictogram.Id}, order, ActivityState.Normal);
             _giraf._context.Activities.Add(dbActivity);
             await _giraf._context.SaveChangesAsync();
-
 
             return new Response<ActivityDTO>(new ActivityDTO(dbActivity));
         }
