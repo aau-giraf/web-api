@@ -27,7 +27,7 @@ namespace GirafRest.Controllers
         }
 
         // Update Activity
-        [HttpPut("update")]
+        [HttpPost("update")]
         [Authorize]
         public async Task<Response<ActivityDTO>> UpdateActivity([FromBody] ActivityDTO activity)
         {
@@ -43,7 +43,6 @@ namespace GirafRest.Controllers
             updateActivity.Key = activity.Id;
             updateActivity.Order = activity.Order;
             updateActivity.State = activity.State;
-            //updateActivity.Pictogram = new Pictogram() { Id = activity.Pictogram.Id, };
 
             await _giraf._context.SaveChangesAsync();
 

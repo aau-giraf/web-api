@@ -18,12 +18,12 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// The title of the pictogram.
         /// </summary>
-        public string Title { get; internal set; }
+        public string Title { get; set; }
 
         /// <summary>
         /// The accesslevel of the pictogram.
         /// </summary>
-        public AccessLevel? AccessLevel { get; internal set; }
+        public AccessLevel? AccessLevel { get; set; }
 
         /// <summary>
         /// An array of bytes containing the pictogram's image.
