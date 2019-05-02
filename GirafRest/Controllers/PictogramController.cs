@@ -8,15 +8,8 @@ using GirafRest.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
-using System.IO;
 using GirafRest.Services;
 using GirafRest.Models.Responses;
-using Microsoft.AspNetCore.Hosting;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Net.Mime;
-using System.Security.Cryptography;
 
 namespace GirafRest.Controllers
 {
@@ -29,19 +22,12 @@ namespace GirafRest.Controllers
         private const string IMAGE_TYPE_JPEG = "image/jpeg";
 
         private readonly IGirafService _giraf;
-        
-        private readonly IHostingEnvironment _hostingEnvironment;
-        
-        private readonly string imagePath;
 
-        public PictogramController(IGirafService girafController, ILoggerFactory lFactory, IHostingEnvironment hostingEnvironment) 
+        public PictogramController(IGirafService girafController, ILoggerFactory lFactory) 
         {
             _giraf = girafController;
             _giraf._logger = lFactory.CreateLogger("Pictogram");
-            _hostingEnvironment = hostingEnvironment;
-            imagePath = _hostingEnvironment.ContentRootPath + "/../pictograms/";
         }
-        
 
         #region PictogramHandling
         /// <summary>
@@ -254,15 +240,14 @@ namespace GirafRest.Controllers
         /// Else: UserNotFound, PictogramNotFound or NotAuthorized</returns>
         [Consumes(IMAGE_TYPE_PNG, IMAGE_TYPE_JPEG)]
         [HttpPut("{id}/image")]
-        public async Task<Response<WeekPictogramDTO>> SetPictogramImage(long id)
-        {
-            GirafUser user = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
+        public async Task<Response<WeekPictogramDTO>> SetPictogramImage(long id) {
+            var user = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
             
             if (user == null) 
                 return new ErrorResponse<WeekPictogramDTO>(ErrorCode.UserNotFound);
             
             //Attempt to fetch the pictogram from the database.
-            Pictogram pictogram = await _giraf._context
+            var pictogram = await _giraf._context
                 .Pictograms
                 .Where(p => p.Id == id)
                 .FirstOrDefaultAsync();
@@ -272,26 +257,15 @@ namespace GirafRest.Controllers
 
             if (!CheckOwnership(pictogram, user).Result)
                 return new ErrorResponse<WeekPictogramDTO>(ErrorCode.NotAuthorized);
-            
+
             //Update the image
             byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body);
 
-            string path = imagePath + pictogram.Id + ".png";
-        
-            if (image.Length > 0){
-                // Upload new image, change name to id of pictogram
-                System.IO.File.WriteAllBytes(path, new byte[0]);
-                
-                using (FileStream fs =
-                    new FileStream( path,
-                        FileMode.OpenOrCreate))
-                {
-                    fs.Write(image);
-                }
-            }
+            if (image.Length == 0)
+                pictogram.Image = null;
+            else
+                pictogram.Image = image;
 
-            pictogram.ImageHash = image.GetHashCode().ToString();
-            
             await _giraf._context.SaveChangesAsync();
             return new Response<WeekPictogramDTO>(new WeekPictogramDTO(pictogram));
         }
@@ -316,13 +290,13 @@ namespace GirafRest.Controllers
             if (usr == null) 
                 return new ErrorResponse<byte[]>(ErrorCode.NotAuthorized);
 
-            if (picto.ImageHash == null)
+            if (picto.Image == null)
                 return new ErrorResponse<byte[]>(ErrorCode.PictogramHasNoImage);
-            
+
             if (!CheckOwnership(picto, usr).Result)
                 return new ErrorResponse<byte[]>(ErrorCode.NotAuthorized);
 
-            return new Response<byte[]>(System.IO.File.ReadAllBytes(imagePath + picto.Id + ".png"));
+            return new Response<byte[]>(picto.Image);
         }
 
         /// <summary>
@@ -344,15 +318,12 @@ namespace GirafRest.Controllers
                 .Where(pictogram => pictogram.Id == id)
                 .FirstOrDefaultAsync();
 
-            if (picto == null || picto.ImageHash == null)
+            if (picto == null || picto.Image == null)
                 return NotFound();
-            
+
             // you can get all public pictograms
-            if (CheckOwnership(picto, usr).Result)
-            {
-                _giraf._logger.LogInformation(imagePath);
-                return PhysicalFile(imagePath + picto.Id + ".png", IMAGE_TYPE_PNG);
-            }
+            if (picto.AccessLevel == AccessLevel.PUBLIC)
+                return File(Convert.FromBase64String(System.Text.Encoding.UTF8.GetString(picto.Image)), "image/png");
 
             // you can only get a protected picogram if it is owned by your department
             if (picto.AccessLevel == AccessLevel.PROTECTED && !picto.Departments.Any(d => d.OtherKey == usr.DepartmentKey))
@@ -362,7 +333,7 @@ namespace GirafRest.Controllers
             if (picto.AccessLevel == AccessLevel.PRIVATE && !picto.Users.Any(d => d.OtherKey == usr.Id))
                 return NotFound();
 
-            return NotFound();
+            return File(Convert.FromBase64String(System.Text.Encoding.UTF8.GetString(picto.Image)), "image/png");
         }
 
         #endregion
@@ -390,8 +361,9 @@ namespace GirafRest.Controllers
                     ownsPictogram = await _giraf.CheckPrivateOwnership(picto, usr);
                     break;
             }
-
-            return ownsPictogram;
+            if (!ownsPictogram)
+                return false;
+            return true;
         }
 
         /// <summary>

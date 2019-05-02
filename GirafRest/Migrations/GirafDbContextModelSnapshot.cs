@@ -204,8 +204,8 @@ namespace GirafRest.Migrations
 
                     b.Property<int>("AccessLevel");
 
-                    b.Property<string>("ImageHash")
-                        .HasColumnName("ImageHash");
+                    b.Property<byte[]>("Image")
+                        .HasColumnName("Image");
 
                     b.Property<DateTime>("LastEdit");
 

@@ -30,7 +30,7 @@ INSERT INTO
 INSERT INTO AspNetUsers SELECT * FROM giraf_old.AspNetUsers;
 INSERT INTO AspNetRoles SELECT * FROM giraf_old.AspNetRoles;
 INSERT INTO AspNetUserRoles SELECT * FROM giraf_old.AspNetUserRoles;
-INSERT INTO Pictograms SELECT id, AccessLevel, ImageHash, LastEdit, Sound, Title FROM giraf_old.Frames WHERE Discriminator = "Pictogram";
+INSERT INTO Pictograms SELECT id, AccessLevel, TO_BASE64(Image), LastEdit, Sound, Title FROM giraf_old.Frames WHERE Discriminator = "Pictogram";
 
 
 INSERT INTO Weeks SELECT id, GirafUserId, Name, ThumbnailKey, 1, 1864 FROM giraf_old.Weeks;
@@ -42,6 +42,7 @@ Delete from Weeks where ThumbnailKey in (select Id from Pictograms WHERE Image i
 Delete from Pictograms WHERE Image is null;
 
 INSERT INTO Pictograms(id, Discriminator, LastEdit, AccessLevel, Image, Title, Sound) SELECT * FROM giraf_old.Frames WHERE Discriminator = "Pictogram";
+UPDATE Pictograms SET Image = TO_BASE64(Image);
 
 SET @newId = 0;
 
@@ -55,9 +56,9 @@ INSERT INTO WeekDayColors (Id, SettingId, Day, HexColor) SELECT (@newId := @newI
 
 DROP DATABASE giraf_old;
 
-Delete from Weekdays where WeekId in (select Id from Weeks where ThumbnailKey in (select Id from Pictograms WHERE ImageHash is null));
-Delete from Weeks where ThumbnailKey in (select Id from Pictograms WHERE ImageHash is null);
-Delete from Pictograms WHERE ImageHash is null;
+Delete from Weekdays where WeekId in (select Id from Weeks where ThumbnailKey in (select Id from Pictograms WHERE Image is null));
+Delete from Weeks where ThumbnailKey in (select Id from Pictograms WHERE Image is null);
+Delete from Pictograms WHERE Image is null;
 
 -- Update migrations-history from local db to prod-db
 -- mysqldump -p12345678 giraf __EFMigrationsHistory | mysql --host web.giraf.cs.aau.dk --port 3333 -u <DB-USER> -p<DB-PASSWORD> giraf-release

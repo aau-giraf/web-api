@@ -53,13 +53,13 @@ namespace GirafRest.Test
                         new Pictogram("No restrictions", AccessLevel.PUBLIC) {
                             Id = 2
                         },
-                        new Pictogram("Private for user 0", AccessLevel.PRIVATE, "en") {
+                        new Pictogram("Private for user 0", AccessLevel.PRIVATE, en) {
                             Id = 3
                         },
                         new Pictogram("Private for user 1", AccessLevel.PRIVATE) {
                             Id = 4
                         },
-                        new Pictogram("Protected for Dep 1", AccessLevel.PROTECTED, "epik")
+                        new Pictogram("Protected for Dep 1", AccessLevel.PROTECTED, epik)
                         {
                             Id = 5
                         },

@@ -27,8 +27,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
 using GirafRest.Filters;
-using AspNetCoreRateLimit;
-using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace GirafRest.Setup
 {
@@ -77,26 +75,6 @@ namespace GirafRest.Setup
         /// </summary>
         public void ConfigureServices(IServiceCollection services)
         {
-            #region RateLimit
-            // needed to load configuration from appsettings.json
-            services.AddOptions();
-
-            // needed to store rate limit counters and ip rules
-            services.AddMemoryCache();
-
-            //load general configuration from appsettings.json
-            services.Configure<IpRateLimitOptions>(Configuration.GetSection("IpRateLimiting"));
-
-            // inject counter and rules stores
-            services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
-            services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
-
-            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
-            // configuration (resolvers, counter key builders)
-            services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
-            #endregion
-
             services.Configure<JwtConfig>(Configuration.GetSection("Jwt"));
 
             //Add the database context to the server using extension-methods
@@ -190,8 +168,6 @@ namespace GirafRest.Setup
             RoleManager<GirafRole> roleManager,
             IApplicationLifetime appLifetime)
         {
-            app.UseIpRateLimiting();
-
             //Configure logging for the application
             app.ConfigureLogging(loggerFactory);
             appLifetime.ApplicationStopped.Register(Log.CloseAndFlush);
