@@ -44,11 +44,11 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<Response<ActivityDTO>> PostActivity([FromBody] ActivityDTO newActivity, string userId, string weekplanName, int weekYear, int weekNumber, Days weekDay)
         {
-            if (newActivity == null) 
+            if (newActivity == null)
                 return new ErrorResponse<ActivityDTO>(ErrorCode.MissingProperties);
 
             GirafUser user = await _giraf.LoadUserWithWeekSchedules(userId);
-            if (user == null) 
+            if (user == null)
                 return new ErrorResponse<ActivityDTO>(ErrorCode.UserNotFound);
 
             // check access rights
@@ -66,7 +66,7 @@ namespace GirafRest.Controllers
             int order = dbWeekDay.Activities.Max(act => act.Order);
             order++;
 
-            Activity dbActivity = new Activity(dbWeekDay, new Pictogram() { Id=newActivity.Pictogram.Id}, order, ActivityState.Normal);
+            Activity dbActivity = new Activity(dbWeekDay, new Pictogram() { Id = newActivity.Pictogram.Id }, order, ActivityState.Normal);
             _giraf._context.Activities.Add(dbActivity);
             await _giraf._context.SaveChangesAsync();
 
@@ -83,27 +83,24 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<Response> DeleteActivity(string userId, long activityId)
         {
-            GirafUser user = _giraf._context.Users.FirstOrDefault(u => u.Id == userId);
+            GirafUser user = await _giraf.LoadUserWithWeekSchedules(userId);
             if (user == null)
                 return new ErrorResponse(ErrorCode.UserNotFound);
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse(errorCode: ErrorCode.NotAuthorized);
-            
+
             if (!ActivityExists(activityId))
-            {
                 return new ErrorResponse(errorCode: ErrorCode.ActivityNotFound);
-            }
 
             // throws error if none of user's weeks' has the specific activity
-            if (!user.WeekSchedule.Any(w => w.Weekdays.Any(wd => wd.Activities.Any(act => act.Key==activityId))))
-            {
+            if (!user.WeekSchedule.Any(w => w.Weekdays.Any(wd => wd.Activities.Any(act => act.Key == activityId))))
                 return new ErrorResponse(errorCode: ErrorCode.NotAuthorized);
-            }
+
             List<Activity> a = _giraf._context.Activities.ToList(); ;
-            Activity targetActivity =  _giraf._context.Activities.First(act => act.Key == activityId);
-            
+            Activity targetActivity = _giraf._context.Activities.First(act => act.Key == activityId);
+
             _giraf._context.Activities.Remove(targetActivity);
             await _giraf._context.SaveChangesAsync();
 
