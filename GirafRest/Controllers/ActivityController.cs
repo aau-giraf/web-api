@@ -63,7 +63,7 @@ namespace GirafRest.Controllers
             if (dbWeekDay == null)
                 return new ErrorResponse<ActivityDTO>(ErrorCode.InvalidDay);
 
-            int order = dbWeekDay.Activities.Max(act => act.Order);
+            int order = dbWeekDay.Activities.Select(act => act.Order).DefaultIfEmpty(0).Max();
             order++;
 
             Activity dbActivity = new Activity(dbWeekDay, new Pictogram() { Id = newActivity.Pictogram.Id }, order, ActivityState.Normal);
