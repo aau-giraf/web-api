@@ -1,16 +1,10 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using System.Linq;
 using GirafRest.Controllers;
-using GirafRest.Data;
 using GirafRest.Models;
-using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
 using GirafRest.Services;
 using GirafRest.Test.Mocks;
-using Moq;
 using Xunit;
-using Xunit.Abstractions;
 using static GirafRest.Test.UnitTestExtensions;
 
 namespace GirafRest.Test
@@ -75,7 +69,7 @@ namespace GirafRest.Test
             Response res = activityController.DeleteActivity("invalidId", _existingId).Result;
 
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+            Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
     }
 }
