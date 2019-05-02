@@ -16,8 +16,7 @@ using GirafRest.Models.Responses;
 namespace GirafRest.Controllers
 {
     [Authorize]
-    [Route("v2/api/[controller]")]
-    [ApiController]
+    [Route("v2/[controller]")]
     public class ActivityController : Controller
     {
         private readonly IAuthenticationService _authentication;
@@ -30,40 +29,63 @@ namespace GirafRest.Controllers
             _authentication = authentication;
         }
 
-        // POST
+        /// <summary>
+        /// Add a new activity to a given weekplan on the given day.
+        /// </summary>
+        /// <param name="newActivity">a serialized version of the new activity.</param>
+        /// <param name="userId">id of the user that you want to add the activity for.</param>
+        /// <param name="weekplanName">name of the weekplan that you want to add the activity on.</param>
+        /// <param name="weekYear">year of the weekplan that you want to add the activity on.</param>
+        /// <param name="weekNumber">week number of the weekplan that you want to add the activity on.</param>
+        /// <param name="weekDay">day of the week that you want to add the activity on.</param>
+        /// <returns>Returns <see cref="ActivityDTO"/> for the requested activity on success else MissingProperties, 
+        /// UserNotFound, NotAuthorized, WeekNotFound or InvalidDay.</returns>
         [HttpPost("{userId}/{weekplanName}/{weekYear}/{weekNumber}/{weekDay}")]
         [Authorize]
-        public async Task<Response<ActivityDTO>> PostActivity([FromBody] ActivityDTO activity, string userId, string weekplanName, int weekYear, int weekNumber, Days weekDay)
+        public async Task<Response<ActivityDTO>> PostActivity([FromBody] ActivityDTO newActivity, string userId, string weekplanName, int weekYear, int weekNumber, Days weekDay)
         {
+            if (newActivity == null) 
+                return new ErrorResponse<ActivityDTO>(ErrorCode.MissingProperties);
+
             GirafUser user = await _giraf.LoadUserWithWeekSchedules(userId);
+            if (user == null) 
+                return new ErrorResponse<ActivityDTO>(ErrorCode.UserNotFound);
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse<ActivityDTO>(errorCode: ErrorCode.NotAuthorized);
 
             var dbWeek = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber);
-
             if (dbWeek == null)
                 return new ErrorResponse<ActivityDTO>(errorCode: ErrorCode.WeekNotFound);
 
-            Weekday dbWeekDay = dbWeek.Weekdays.First(day => day.Day == weekDay);
+            Weekday dbWeekDay = dbWeek.Weekdays.FirstOrDefault(day => day.Day == weekDay);
+            if (dbWeekDay == null)
+                return new ErrorResponse<ActivityDTO>(ErrorCode.InvalidDay);
 
             int order = dbWeekDay.Activities.Max(act => act.Order);
             order++;
 
-            Activity dbActivity = new Activity(dbWeekDay, new Pictogram() { Id=activity.Pictogram.Id}, order, ActivityState.Normal);
+            Activity dbActivity = new Activity(dbWeekDay, new Pictogram() { Id=newActivity.Pictogram.Id}, order, ActivityState.Normal);
             _giraf._context.Activities.Add(dbActivity);
             await _giraf._context.SaveChangesAsync();
 
             return new Response<ActivityDTO>(new ActivityDTO(dbActivity));
         }
 
-        // DELETE
+        /// <summary>
+        /// Delete an activity with a given id.
+        /// </summary>
+        /// <param name="userId">id of the user you want to delete an activity for.</param>
+        /// <param name="activityId">id of the activity you want to delete.</param>
+        /// <returns>Returns success response else UserNotFound, NotAuthorized or ActivityNotFound.</returns>
         [HttpDelete("{userId}/delete/{activityId}")]
         [Authorize]
         public async Task<Response> DeleteActivity(string userId, long activityId)
         {
-            GirafUser user = _giraf._context.Users.Include(u => u.WeekSchedule).FirstOrDefault(u => u.Id == userId);
+            GirafUser user = _giraf._context.Users.FirstOrDefault(u => u.Id == userId);
+            if (user == null)
+                return new ErrorResponse(ErrorCode.UserNotFound);
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
