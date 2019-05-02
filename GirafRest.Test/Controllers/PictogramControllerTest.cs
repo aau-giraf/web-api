@@ -11,15 +11,16 @@ using static GirafRest.Test.UnitTestExtensions;
 using GirafRest.Models.DTOs;
 using System.IO;
 using GirafRest.Models.Responses;
+using Microsoft.AspNetCore.Hosting.Internal;
 
 namespace GirafRest.Test
-{
+{   
     public class PictogramControllerTest
     {
         private const int NEW_PICTOGRAM_ID = 400;
         private const int ADMIN_DEP_ONE = 0;
         private const int GUARDIAN_DEP_TWO = 1;
-        private const int PUBLIC_PICTOGRAM = 0;
+        private const int PUBLIC_PICTOGRAM = 2;
         private const int EXISTING_PICTOGRAM = 0;
         private const int ADMIN_PRIVATE_PICTOGRAM = 3;
         private const int DEP_ONE_PROTECTED_PICTOGRAM = 5;
@@ -30,7 +31,10 @@ namespace GirafRest.Test
         private const int CITIZEN_DEP_ONE = 8;
 
 
+        private HostingEnvironment _hostEnv;
         private TestContext _testContext;
+        private string _pictogramFolderPath;
+        private const string _pathToPictogramFolder = "/../pictograms/";
         
         private readonly ITestOutputHelper _testLogger;
 
@@ -39,19 +43,37 @@ namespace GirafRest.Test
             _testLogger = output;
             PNG_FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Mocks", "MockImage.png");
             JPEG_FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Mocks", "MockImage.jpeg");
+            _hostEnv = new HostingEnvironment();
+            _hostEnv.ContentRootPath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.ToString();
+            _pictogramFolderPath = _hostEnv.ContentRootPath + _pathToPictogramFolder;
+            
+            // This folder is used to mock the file store of the production server.
+            if (!Directory.Exists(_pictogramFolderPath))
+            {
+                Directory.CreateDirectory(_pictogramFolderPath);
+            }
         }
 
         private PictogramController initializeTest()
         {
             _testContext = new TestContext();
-
+           
             var pc = new PictogramController(
-                new MockGirafService(_testContext.MockDbContext.Object,
-                _testContext.MockUserManager), _testContext.MockLoggerFactory.Object);
+                new MockGirafService(
+                    _testContext.MockDbContext.Object,
+                    _testContext.MockUserManager
+                ), 
+                _testContext.MockLoggerFactory.Object,
+                _hostEnv
+                );
             _testContext.MockHttpContext = pc.MockHttpContext();
             _testContext.MockHttpContext.MockQuery("limit", int.MaxValue.ToString());
             _testContext.MockHttpContext.MockQuery("start_from", "0");
-
+            _preparePictogramFolder(ADMIN_DEP_ONE);
+            _preparePictogramFolder(PUBLIC_PICTOGRAM);
+            _preparePictogramFolder(GUARDIAN_DEP_TWO);
+            _preparePictogramFolder(ADMIN_PRIVATE_PICTOGRAM);
+            _preparePictogramFolder(DEP_ONE_PROTECTED_PICTOGRAM);
             return pc;
         }
 
@@ -626,17 +648,20 @@ namespace GirafRest.Test
         public void CreateImage_LoginPublic_Success()
         {
             var pc = initializeTest();
+            
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
+            
             var res = pc.SetPictogramImage(PUBLIC_PICTOGRAM).Result;
-
+            
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.True(res.Success);
-            Assert.True(res.Data.Image != null);
+            Assert.NotNull(res.Data);
 
-            byte[] testImageAsByes = File.ReadAllBytes(PNG_FILEPATH);
+            byte[] testImageAsBytes = File.ReadAllBytes(PNG_FILEPATH);
+            byte[] actualImage = _loadPictogramFromDisk(PUBLIC_PICTOGRAM);
             // Check that the images is equivalent
-            Assert.Equal(testImageAsByes, res.Data.Image);
+            Assert.Equal(testImageAsBytes, actualImage);
 
         }
 
@@ -650,11 +675,12 @@ namespace GirafRest.Test
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.True(res.Success);
-            Assert.True(res.Data.Image != null);
+            Assert.NotNull(res.Data);
 
-            byte[] testImageAsByes = File.ReadAllBytes(PNG_FILEPATH);
+            byte[] testImageAsBytes = File.ReadAllBytes(PNG_FILEPATH);
+            byte[] actualImage = _loadPictogramFromDisk(ADMIN_PRIVATE_PICTOGRAM);
             // Check that the images is equivalent
-            Assert.Equal(testImageAsByes, res.Data.Image);
+            Assert.Equal(testImageAsBytes, actualImage);
         }
 
         [Fact]
@@ -668,11 +694,12 @@ namespace GirafRest.Test
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.True(res.Success);
-            Assert.True(res.Data.Image != null);
+            Assert.NotNull(res.Data);
 
-            byte[] testImageAsByes = File.ReadAllBytes(PNG_FILEPATH);
+            byte[] testImageAsBytes = File.ReadAllBytes(PNG_FILEPATH);
+            byte[] actualImage = _loadPictogramFromDisk(DEP_ONE_PROTECTED_PICTOGRAM);
             // Check that the images is equivalent
-            Assert.Equal(testImageAsByes, res.Data.Image);
+            Assert.Equal(testImageAsBytes, actualImage);
         }
 
         [Fact]
@@ -722,11 +749,13 @@ namespace GirafRest.Test
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.True(res.Success);
-            Assert.True(res.Data.Image != null);
+            Assert.NotNull(res.Data);
 
-            byte[] testImageAsByes = File.ReadAllBytes(JPEG_FILEPATH);
+            byte[] testImageAsBytes = File.ReadAllBytes(JPEG_FILEPATH);
+            byte[] actualImage = _loadPictogramFromDisk(PUBLIC_PICTOGRAM);
+            
             // Check that the images is equivalent
-            Assert.Equal(testImageAsByes, res.Data.Image);
+            Assert.Equal(testImageAsBytes, actualImage);
         }
 
         #endregion
@@ -777,11 +806,12 @@ namespace GirafRest.Test
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.True(res.Success);
-            Assert.True(res.Data.Image != null);
+            Assert.NotNull(res.Data);
 
-            byte[] testImageAsByes = File.ReadAllBytes(PNG_FILEPATH);
+            byte[] testImageAsBytes = File.ReadAllBytes(PNG_FILEPATH);
+            byte[] actualImage = _loadPictogramFromDisk(PUBLIC_PICTOGRAM);
             // Check that the images is equivalent
-            Assert.Equal(testImageAsByes, res.Data.Image);
+            Assert.Equal(testImageAsBytes, actualImage);
         }
 
 
@@ -795,11 +825,12 @@ namespace GirafRest.Test
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.True(res.Success);
-            Assert.True(res.Data.Image != null);
+            Assert.NotNull(res.Data);
 
-            byte[] testImageAsByes = File.ReadAllBytes(PNG_FILEPATH);
+            byte[] testImageAsBytes = File.ReadAllBytes(PNG_FILEPATH);
+            byte[] actualImage = _loadPictogramFromDisk(ADMIN_PRIVATE_PICTOGRAM);
             // Check that the images is equivalent
-            Assert.Equal(testImageAsByes, res.Data.Image);
+            Assert.Equal(testImageAsBytes, actualImage);
         }
 
 
@@ -813,11 +844,12 @@ namespace GirafRest.Test
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.True(res.Success);
-            Assert.True(res.Data.Image != null);
+            Assert.NotNull(res.Data);
 
-            byte[] testImageAsByes = File.ReadAllBytes(PNG_FILEPATH);
+            byte[] testImageAsBytes = File.ReadAllBytes(PNG_FILEPATH);
+            byte[] actualImage = _loadPictogramFromDisk(ADMIN_PRIVATE_PICTOGRAM);
             // Check that the images is equivalent
-            Assert.Equal(testImageAsByes, res.Data.Image);
+            Assert.Equal(testImageAsBytes, actualImage);
         }
 
 
@@ -895,9 +927,10 @@ namespace GirafRest.Test
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
 
-            byte[] testImageAsByes = File.ReadAllBytes(JPEG_FILEPATH);
+            byte[] testImageAsBytes = File.ReadAllBytes(JPEG_FILEPATH);
+            byte[] actualImage = _loadPictogramFromDisk(PUBLIC_PICTOGRAM);
             // Check that the images is equivalent
-            Assert.Equal(testImageAsByes, res.Data.Image);
+            Assert.Equal(testImageAsBytes, actualImage);
         }
 
         [Fact]
@@ -910,8 +943,9 @@ namespace GirafRest.Test
             var img = pc.SetPictogramImage(PUBLIC_PICTOGRAM).Result;
 
             byte[] pngTestImage = File.ReadAllBytes(PNG_FILEPATH);
+            byte[] actualImage = _loadPictogramFromDisk(PUBLIC_PICTOGRAM);
             // Check that we have correctly updated the image to a PNG image
-            Assert.Equal(pngTestImage, img.Data.Image);
+            Assert.Equal(pngTestImage, actualImage);
 
             img = pc.SetPictogramImage(PUBLIC_PICTOGRAM).Result;
 
@@ -923,9 +957,10 @@ namespace GirafRest.Test
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
 
-            byte[] testImageAsByes = File.ReadAllBytes(JPEG_FILEPATH);
+            byte[] testImageAsBytes = File.ReadAllBytes(JPEG_FILEPATH);
+            byte[] actualImage2 = _loadPictogramFromDisk(PUBLIC_PICTOGRAM);
             // Check that we have correctly updated the png image to the jpeg image
-            Assert.Equal(testImageAsByes, res.Data.Image);
+            Assert.Equal(testImageAsBytes, actualImage2);
         }
 
         #endregion
@@ -968,15 +1003,16 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
             var img = pc.SetPictogramImage(PUBLIC_PICTOGRAM).Result;
+            
             var res = pc.ReadPictogramImage(PUBLIC_PICTOGRAM).Result;
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.True(res.Success);
-            Assert.True(res.Data != null);
+            Assert.NotNull(res.Data);
 
-            byte[] testImageAsByes = File.ReadAllBytes(PNG_FILEPATH);
+            byte[] testImageAsBytes = File.ReadAllBytes(PNG_FILEPATH);
             // Check that we have correctly read the image - that is that the byte arrays of the expected and actual image is equal
-            Assert.Equal(testImageAsByes, res.Data);
+            Assert.Equal(testImageAsBytes, res.Data);
         }
         
         [Fact]
@@ -992,9 +1028,9 @@ namespace GirafRest.Test
             Assert.True(res.Success);
             Assert.True(res.Data != null);
 
-            byte[] testImageAsByes = File.ReadAllBytes(PNG_FILEPATH);
+            byte[] testImageAsBytes = File.ReadAllBytes(PNG_FILEPATH);
             // Check that we have correctly read the image - that is that the byte arrays of the expected and actual image is equal
-            Assert.Equal(testImageAsByes, res.Data);
+            Assert.Equal(testImageAsBytes, res.Data);
         }
         
         [Fact]
@@ -1065,57 +1101,40 @@ namespace GirafRest.Test
         [Fact]
         public void ReadRawPictogramImage_GetPrivate_Success()
         {
-            try
-            {
-                var pc = initializeTest();
-                _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-                var res = pc.ReadRawPictogramImage(ADMIN_PRIVATE_PICTOGRAM);
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var res = pc.ReadRawPictogramImage(ADMIN_PRIVATE_PICTOGRAM);
+    
+            Assert.True(res.IsCompleted);
+            Assert.IsType<PhysicalFileResult>(res.Result);
+    
+            var fileContent = ((PhysicalFileResult) res.Result);
+            
+            Assert.Equal("image/png", fileContent.ContentType);
 
-                Assert.True(res.IsCompleted);
-                Assert.IsType<FileContentResult>(res.Result);
-
-                var fileContent = ((FileContentResult) res.Result);
-                
-                // Get the expected image an convert to eight bit int array so we can compare with actual returned image
-                Assert.Equal("image/png", fileContent.ContentType);
-                var testImageTo8BitIntArray = Convert.FromBase64String(System.Text.Encoding.UTF8.GetString(_testContext
-                    .MockPictograms
-                    .FirstOrDefault(mp => mp.Id == ADMIN_PRIVATE_PICTOGRAM)?.Image));
-                // Check that we read the correct image
-                Assert.Equal(testImageTo8BitIntArray, fileContent.FileContents);
-            }
-            catch (Exception)
-            {
-                Assert.True(false);
-            }
+            var expectedImage = _loadPictogramFromDisk(ADMIN_PRIVATE_PICTOGRAM);
+            // Check that we read the correct image
+            Assert.Equal(expectedImage, File.ReadAllBytes(fileContent.FileName));
         }
 
         [Fact]
         public void ReadRawPictogramImage_GetPublic_Success()
         {
-            try
-            {
-                var pc = initializeTest();
-                _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-                var res = pc.ReadRawPictogramImage(DEP_ONE_PROTECTED_PICTOGRAM);
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var res = pc.ReadRawPictogramImage(DEP_ONE_PROTECTED_PICTOGRAM);
 
-                Assert.True(res.IsCompleted);
-                Assert.IsType<FileContentResult>(res.Result);
+            Assert.True(res.IsCompleted);
+            Assert.IsType<PhysicalFileResult>(res.Result);
 
-                var fileContent = ((FileContentResult)res.Result);
+            var fileContent = ((PhysicalFileResult)res.Result);
 
-                // Get the expected image an convert to eight bit int array so we can compare with actual returned image
-                Assert.Equal("image/png", fileContent.ContentType);
-                var testImageTo8BitIntArray = Convert.FromBase64String(System.Text.Encoding.UTF8.GetString(_testContext
-                    .MockPictograms
-                    .FirstOrDefault(mp => mp.Id == DEP_ONE_PROTECTED_PICTOGRAM)?.Image));
-                // Check that we read the correct image
-                Assert.Equal(testImageTo8BitIntArray, fileContent.FileContents);
-            }
-            catch(Exception)
-            {
-                Assert.True(false);
-            }
+            Assert.Equal("image/png", fileContent.ContentType);
+            
+            var expectedImage = _loadPictogramFromDisk(DEP_ONE_PROTECTED_PICTOGRAM);
+            // Check that we read the correct image
+            Assert.Equal(expectedImage, File.ReadAllBytes(fileContent.FileName));
+          
         }
 
         [Fact]
@@ -1156,6 +1175,23 @@ namespace GirafRest.Test
 
             return list;
         }
+        
+        private void _preparePictogramFolder(int publicPictogram)
+        {
+            using (FileStream fs = new FileStream(
+                _pictogramFolderPath+publicPictogram+".png", 
+                FileMode.OpenOrCreate)
+            )
+            {
+                fs.Write(new byte[2]);
+            }
+        }
+        
+        private byte[] _loadPictogramFromDisk(int publicPictogram)
+        {
+            return File.ReadAllBytes(_pictogramFolderPath + publicPictogram + ".png");
+        }
+
         #endregion
     }
 }

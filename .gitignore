@@ -32,7 +32,6 @@ out
 *.sln
 appsettings.json
 appsettings.Development.json
-Dockerfile
 
 scripts/*.bak
 
@@ -40,3 +39,6 @@ scripts/*.bak
 **/__pycache__
 GirafIntegrationTest/venv/
 GirafIntegrationTest/cookie
+**/.DS_Store
+
+pictograms/
