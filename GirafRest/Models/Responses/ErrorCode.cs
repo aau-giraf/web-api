@@ -65,6 +65,7 @@
         WeekTemplateNotFound,
         NotImplemented,
         UserMustBeInDepartment,
-        WeekNotFound
+        WeekNotFound,
+        ActivityNotFound
     }
 }
