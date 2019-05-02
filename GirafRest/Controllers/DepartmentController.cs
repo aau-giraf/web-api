@@ -46,7 +46,7 @@ namespace GirafRest.Controllers
             var departmentNameDTOs = await _giraf._context.Departments.Select(d => new DepartmentNameDTO(d.Key, d.Name)).ToListAsync();
 
             if (departmentNameDTOs.Count == 0)
-                return new ErrorResponse<List<DepartmentNameDTO>>(ErrorCode.NotFound);
+                return new ErrorResponse<List<DepartmentNameDTO>>(ErrorCode.ActivityNotFound);
 
             return new Response<List<DepartmentNameDTO>>(departmentNameDTOs);
         }
@@ -79,7 +79,7 @@ namespace GirafRest.Controllers
                 .FirstOrDefaultAsync();
 
             if (depa == null)
-                return new ErrorResponse<DepartmentDTO>(ErrorCode.NotFound);
+                return new ErrorResponse<DepartmentDTO>(ErrorCode.ActivityNotFound);
 
             var members = DepartmentDTO.FindMembers(depa.Members, _roleManager, _giraf);
             return new Response<DepartmentDTO>(new DepartmentDTO(depa, members));
