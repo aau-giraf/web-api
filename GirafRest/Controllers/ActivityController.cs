@@ -30,7 +30,7 @@ namespace GirafRest.Controllers
             _authentication = authentication;
         }
 
-        // POST: api/Activity
+        // POST
         [HttpPost("{userId}/{weekplanName}/{weekYear}/{weekNumber}/{weekDay}")]
         [Authorize]
         public async Task<Response<ActivityDTO>> PostActivity([FromBody] ActivityDTO activity, string userId, string weekplanName, int weekYear, int weekNumber, Days weekDay)
@@ -58,7 +58,7 @@ namespace GirafRest.Controllers
             return new Response<ActivityDTO>(new ActivityDTO(dbActivity));
         }
 
-        // DELETE: api/Activity/5
+        // DELETE
         [HttpDelete("{userId}/delete/{activityId}")]
         [Authorize]
         public async Task<Response> DeleteActivity(string userId, long activityId)
@@ -68,14 +68,21 @@ namespace GirafRest.Controllers
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse(errorCode: ErrorCode.NotAuthorized);
-
-            var activity = await _giraf._context.Activities.FindAsync(activityId);
-            if (activity == null)
+            
+            if (!ActivityExists(activityId))
             {
-                return new ErrorResponse(errorCode: ErrorCode.NotFound);
+                return new ErrorResponse(errorCode: ErrorCode.ActivityNotFound);
             }
 
-            _giraf._context.Activities.Remove(activity);
+            // throws error if none of user's weeks' has the specific activity
+            if (!user.WeekSchedule.Any(w => w.Weekdays.Any(wd => wd.Activities.Any(act => act.Key==activityId))))
+            {
+                return new ErrorResponse(errorCode: ErrorCode.NotAuthorized);
+            }
+            List<Activity> a = _giraf._context.Activities.ToList(); ;
+            Activity targetActivity =  _giraf._context.Activities.First(act => act.Key == activityId);
+            
+            _giraf._context.Activities.Remove(targetActivity);
             await _giraf._context.SaveChangesAsync();
 
             return new Response();
@@ -83,7 +90,7 @@ namespace GirafRest.Controllers
 
         private bool ActivityExists(long id)
         {
-            return _giraf._context.Activities.Any(e => e.Key == id);
+            return _giraf._context.Activities.Any(a => a.Key == id);
         }
     }
 }

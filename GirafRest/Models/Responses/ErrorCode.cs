@@ -6,7 +6,7 @@
         FormatError,
         NoError,
         NotAuthorized,
-        NotFound,
+        ActivityNotFound,
         ApplicationNotFound,
         ChoiceContainsInvalidPictogramId,
         CitizenAlreadyHasGuardian,
