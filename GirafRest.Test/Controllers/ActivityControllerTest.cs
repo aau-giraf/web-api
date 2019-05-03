@@ -134,6 +134,22 @@ namespace GirafRest.Test
         }
 
         [Fact]
+        public void PostActivity_InvalidWeekNameValidDTO_WeekNotFound()
+        {
+            ActivityController ac = InitializeTest();
+            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+            Week week = mockUser.WeekSchedule.First();
+
+            ActivityDTO newActivity = new ActivityDTO() { Pictogram = new WeekPictogramDTO(_testContext.MockPictograms.First()) };
+
+            var res = ac.PostActivity(newActivity, mockUser.Id, "WrongName", week.WeekYear, week.WeekYear, Days.Sunday).Result;
+
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.WeekNotFound, res.ErrorCode);
+        }
+
+        [Fact]
         public void PostActivity_NonExistingUserValidDayValidDTO_UserNotFound()
         {
             ActivityController ac = InitializeTest();
@@ -233,7 +249,7 @@ namespace GirafRest.Test
             Response res = activityController.DeleteActivity(loggedInUser.Id, _existingId).Result;
 
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+            Assert.Equal(ErrorCode.ActivityNotFound, res.ErrorCode);
         }
         #endregion
     }
