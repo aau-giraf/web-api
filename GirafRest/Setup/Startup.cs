@@ -27,6 +27,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections.Generic;
 using GirafRest.Filters;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace GirafRest.Setup
 {
