@@ -53,11 +53,11 @@ namespace GirafRest.Controllers
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return new ErrorResponse<ActivityDTO>(errorCode: ErrorCode.NotAuthorized);
+                return new ErrorResponse<ActivityDTO>(ErrorCode.NotAuthorized);
 
             var dbWeek = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber && string.Equals(w.Name, weekplanName));
             if (dbWeek == null)
-                return new ErrorResponse<ActivityDTO>(errorCode: ErrorCode.WeekNotFound);
+                return new ErrorResponse<ActivityDTO>(ErrorCode.WeekNotFound);
 
             Weekday dbWeekDay = dbWeek.Weekdays.FirstOrDefault(day => day.Day == weekDay);
             if (dbWeekDay == null)
@@ -89,24 +89,18 @@ namespace GirafRest.Controllers
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return new ErrorResponse(errorCode: ErrorCode.NotAuthorized);
+                return new ErrorResponse(ErrorCode.NotAuthorized);
 
             // throws error if none of user's weeks' has the specific activity
             if (!user.WeekSchedule.Any(w => w.Weekdays.Any(wd => wd.Activities.Any(act => act.Key == activityId))))
-                return new ErrorResponse(errorCode: ErrorCode.ActivityNotFound);
+                return new ErrorResponse(ErrorCode.ActivityNotFound);
 
-            List<Activity> a = _giraf._context.Activities.ToList(); ;
             Activity targetActivity = _giraf._context.Activities.First(act => act.Key == activityId);
 
             _giraf._context.Activities.Remove(targetActivity);
             await _giraf._context.SaveChangesAsync();
 
             return new Response();
-        }
-
-        private bool ActivityExists(long id)
-        {
-            return _giraf._context.Activities.Any(a => a.Key == id);
         }
     }
 }
