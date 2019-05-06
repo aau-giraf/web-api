@@ -252,5 +252,40 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.ActivityNotFound, res.ErrorCode);
         }
         #endregion
+
+        #region UpdateActivity
+        [Fact]
+        public void UpdateActivity_InvalidActivityDTO_MissingProperties()
+        {
+            ActivityController ac = InitializeTest();
+            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+            Week week = mockUser.WeekSchedule.First();
+
+            ActivityDTO newActivity = null;
+
+            var res = ac.UpdateActivity(newActivity).Result;
+
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
+        }
+
+        [Fact]
+        public void UpdateActivity_InvalidAtivityValidDTO_ActivityNotFound()
+        {
+            ActivityController ac = InitializeTest();
+            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+            Week week = mockUser.WeekSchedule.First();
+
+            ActivityDTO newActivity = new ActivityDTO() {Id=420};
+
+            var res = ac.UpdateActivity(newActivity).Result;
+
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.ActivityNotFound, res.ErrorCode);
+        }
+
+        #endregion
     }
 }

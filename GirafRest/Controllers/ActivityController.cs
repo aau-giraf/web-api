@@ -125,7 +125,7 @@ namespace GirafRest.Controllers
             Activity updateActivity = _giraf._context.Activities.FirstOrDefault(a => a.Key == activity.Id);
 
             if (updateActivity == null)
-                return new ErrorResponse<ActivityDTO>(errorCode: ErrorCode.WeekNotFound);
+                return new ErrorResponse<ActivityDTO>(ErrorCode.ActivityNotFound);
 
             updateActivity.Key = activity.Id;
             updateActivity.Order = activity.Order;
