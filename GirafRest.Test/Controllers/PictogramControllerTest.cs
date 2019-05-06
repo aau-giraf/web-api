@@ -344,7 +344,7 @@ namespace GirafRest.Test
             var res = pc.UpdatePictogramInfo(ADMIN_PRIVATE_PICTOGRAM, dto).Result;
 
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
+            Assert.Equal(ErrorCode.ActivityNotFound, res.ErrorCode);
         }
 
         [Fact]
@@ -361,7 +361,7 @@ namespace GirafRest.Test
             var res = pc.UpdatePictogramInfo(DEP_ONE_PROTECTED_PICTOGRAM, dto).Result;
 
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
+            Assert.Equal(ErrorCode.ActivityNotFound, res.ErrorCode);
         }
 
         [Fact]

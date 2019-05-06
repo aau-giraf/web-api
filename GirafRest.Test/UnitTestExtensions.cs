@@ -196,6 +196,34 @@ namespace GirafRest.Test
                 }
             }
 
+            private List<Activity> _mockActivities;
+            public List<Activity> MockActivities
+            {
+                get
+                {
+                    if (_mockActivities == null)
+                        _mockActivities = new List<Activity>()
+                        {
+                            new Activity(MockWeeks[0].Weekdays[0], MockPictograms[5], 0, ActivityState.Active){
+                                Key = 1,
+                                Order = 1,
+                                OtherKey = 1,
+                                PictogramKey = 1,
+                                State = ActivityState.Normal
+                            },
+                            new Activity(MockWeeks[0].Weekdays[1], MockPictograms[6], 1, ActivityState.Canceled),
+                            new Activity(MockWeekTemplates[Template1].Weekdays[1], MockPictograms[5], 0, ActivityState.Active),
+                            new Activity(MockWeekTemplates[Template1].Weekdays[0], MockPictograms[6], 1, ActivityState.Canceled),
+                        };
+
+                    return _mockActivities;
+                }
+                set
+                {
+                    _mockActivities = value;
+                }
+            }
+
             private List<Week> mockWeeks;
             public List<Week> MockWeeks
             {
@@ -399,24 +427,6 @@ namespace GirafRest.Test
                 }
             }
 
-            private List<Activity> mockWeekDayRessources;
-            public IReadOnlyList<Activity> MockWeekDayRessources
-            {
-                get
-                {
-                    if (mockWeekDayRessources == null)
-                        mockWeekDayRessources = new List<Activity>()
-                        {
-                            new Activity(MockWeeks[0].Weekdays[0], MockPictograms[5], 0, ActivityState.Active),
-                            new Activity(MockWeeks[0].Weekdays[1], MockPictograms[6], 1, ActivityState.Canceled),
-                            new Activity(MockWeekTemplates[Template1].Weekdays[1], MockPictograms[5], 0, ActivityState.Active),
-                            new Activity(MockWeekTemplates[Template1].Weekdays[0], MockPictograms[6], 1, ActivityState.Canceled),
-                        };
-
-                    return mockWeekDayRessources;
-                }
-            }
-
             public const int RoleSuperUser = 0;
             public const int RoleGuardian = 1;
             public const int RoleCitizen = 2;
@@ -541,7 +551,7 @@ namespace GirafRest.Test
                 var mockSet = CreateMockDbSet(MockPictograms);
                 var mockRelationSet = CreateMockDbSet(MockUserResources);
                 var mockDepRes = CreateMockDbSet(MockDepartmentResources);
-                var mockWeekDayRes = CreateMockDbSet(MockWeekDayRessources);
+                var mockActivities = CreateMockDbSet(MockActivities);
                 var mockDeps = CreateMockDbSet(MockDepartments);
                 //var mockPF = CreateMockDbSet(MockPictograms.Cast<PictoFrame>().ToList());
                 var mockUsers = CreateMockDbSet(MockUsers);
@@ -554,7 +564,7 @@ namespace GirafRest.Test
                 dbMock.Setup(c => c.Pictograms).Returns(mockSet.Object);
                 dbMock.Setup(c => c.UserResources).Returns(mockRelationSet.Object);
                 dbMock.Setup(c => c.DepartmentResources).Returns(mockDepRes.Object);
-                dbMock.Setup(c => c.Activities).Returns(mockWeekDayRes.Object);
+                dbMock.Setup(c => c.Activities).Returns(mockActivities.Object);
                 dbMock.Setup(c => c.Departments).Returns(mockDeps.Object);
                 dbMock.Setup(c => c.Weeks).Returns(mockWeeks.Object);
                 dbMock.Setup(c => c.WeekTemplates).Returns(mockWeekTemplates.Object);
@@ -565,7 +575,6 @@ namespace GirafRest.Test
                 //Make sure that all references are setup - Entity does not handle it for us this time.
                 MockUsers[0].Department = MockDepartments[0];
                 MockUsers[1].Department = MockDepartments[1];
-
                 return dbMock;
             }
 
