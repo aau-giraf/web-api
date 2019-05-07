@@ -275,9 +275,20 @@ namespace GirafRest.Controllers
             
             //Update the image
             byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body);
-
+            
+            // This sets the path that the system looks for when retrieving a pictogram
             string originalPath = imagePath + pictogram.Id + ".png";
+            
+            // This sets a temporary path, this is for the new uploaded file.
+            // We use it to ensure that we dont delete the old pictogram, before
+            // we know that we successfully saved the new pictogram.
             string tempPath = imagePath + pictogram.Id + "_temp.png";
+            
+            // This sets a path, that should be used if an pictogram already exists
+            // for the pictogram. This is to ensure we dont delete the old pictogram
+            // before we know that the entire process is successful.
+            // If something goes wrong this allows us to go in and rename the old path
+            // back to original path and no data will be lost.
             string oldPath = imagePath + pictogram.Id + "_old.png";
             
             
@@ -293,7 +304,8 @@ namespace GirafRest.Controllers
                 {
                     System.IO.File.Move(originalPath, oldPath);   
                     System.IO.File.Move(tempPath, originalPath);
-                }else if (System.IO.File.Exists(originalPath) && System.IO.File.Exists(oldPath))
+                }
+                else if (System.IO.File.Exists(originalPath) && System.IO.File.Exists(oldPath))
                 {
                     System.IO.File.Delete(oldPath);
                     System.IO.File.Move(originalPath, oldPath);   
