@@ -15,7 +15,7 @@ namespace GirafRest.Controllers
         {
             Response.StatusCode = 200;
 
-            return new ErrorResponse(ErrorCode.ActivityNotFound);
+            return new ErrorResponse(ErrorCode.NotFound);
         }
     }
 }

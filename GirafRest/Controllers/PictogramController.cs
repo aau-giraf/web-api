@@ -131,7 +131,7 @@ namespace GirafRest.Controllers
             var user = await _giraf.LoadUserWithResources(HttpContext.User);
 
             if (user == null) 
-                return new ErrorResponse<WeekPictogramDTO>(ErrorCode.ActivityNotFound);
+                return new ErrorResponse<WeekPictogramDTO>(ErrorCode.NotFound);
 
             if (pictogram == null) 
                 return new ErrorResponse<WeekPictogramDTO>(ErrorCode.MissingProperties, 
@@ -184,7 +184,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<WeekPictogramDTO>(ErrorCode.InvalidProperties);
 
             var usr = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
-            if (usr == null) return new ErrorResponse<WeekPictogramDTO>(ErrorCode.ActivityNotFound);
+            if (usr == null) return new ErrorResponse<WeekPictogramDTO>(ErrorCode.NotFound);
             //Fetch the pictogram from the database and check that it exists
             var pict = await _giraf._context.Pictograms
                 .Where(pic => pic.Id == id)

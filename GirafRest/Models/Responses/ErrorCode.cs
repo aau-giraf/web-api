@@ -6,7 +6,7 @@
         FormatError,
         NoError,
         NotAuthorized,
-        ActivityNotFound,
+        NotFound,
         ApplicationNotFound,
         ChoiceContainsInvalidPictogramId,
         CitizenAlreadyHasGuardian,
@@ -65,6 +65,7 @@
         WeekTemplateNotFound,
         NotImplemented,
         UserMustBeInDepartment,
-        WeekNotFound
+        WeekNotFound,
+        ActivityNotFound
     }
 }

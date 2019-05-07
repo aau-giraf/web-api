@@ -84,7 +84,7 @@ namespace GirafRest.Test
             var res = dc.Get(DEPARTMENT_ONE).Result;
 
             Assert.False(res.Success);
-            Assert.Equal(ErrorCode.ActivityNotFound, res.ErrorCode);
+            Assert.Equal(ErrorCode.NotFound, res.ErrorCode);
         }
 
         [Fact]
@@ -112,7 +112,7 @@ namespace GirafRest.Test
             var res = dc.Get().Result;
 
             Assert.False(res.Success);
-            Assert.Equal(res.ErrorCode, ErrorCode.ActivityNotFound);
+            Assert.Equal(res.ErrorCode, ErrorCode.NotFound);
         }
 
         #endregion
