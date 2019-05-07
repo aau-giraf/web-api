@@ -64,6 +64,8 @@
         InvalidHexValues,
         WeekTemplateNotFound,
         NotImplemented,
-        UserMustBeInDepartment
+        UserMustBeInDepartment,
+        WeekNotFound,
+        ActivityNotFound
     }
 }
