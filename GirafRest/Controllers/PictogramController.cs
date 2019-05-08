@@ -252,7 +252,7 @@ namespace GirafRest.Controllers
         /// <param name="id">Id of the pictogram to update the image for.</param>
         /// <returns>The updated pictogram along with its image.
         /// Else: UserNotFound, PictogramNotFound or NotAuthorized</returns>
-        [Consumes(IMAGE_TYPE_PNG, IMAGE_TYPE_JPEG)]
+        
         [HttpPut("{id}/image")]
         public async Task<Response<WeekPictogramDTO>> SetPictogramImage(long id)
         {
@@ -275,22 +275,57 @@ namespace GirafRest.Controllers
             
             //Update the image
             byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body);
-
-            string path = imagePath + pictogram.Id + ".png";
-        
+            
+            // This sets the path that the system looks for when retrieving a pictogram
+            string originalPath = imagePath + pictogram.Id + ".png";
+            
+            // This sets a temporary path, this is for the new uploaded file.
+            // We use it to ensure that we dont delete the old pictogram, before
+            // we know that we successfully saved the new pictogram.
+            string tempPath = imagePath + pictogram.Id + "_temp.png";
+            
+            // This sets a path, that should be used if an pictogram already exists
+            // for the pictogram. This is to ensure we dont delete the old pictogram
+            // before we know that the entire process is successful.
+            // If something goes wrong this allows us to go in and rename the old path
+            // back to original path and no data will be lost.
+            string oldPath = imagePath + pictogram.Id + "_old.png";
+            
+            
             if (image.Length > 0){
-                // Upload new image, change name to id of pictogram
-                System.IO.File.WriteAllBytes(path, new byte[0]);
-                
                 using (FileStream fs =
-                    new FileStream( path,
+                    new FileStream( tempPath,
                         FileMode.OpenOrCreate))
                 {
                     fs.Write(image);
                 }
+            
+                if (System.IO.File.Exists(originalPath) && !System.IO.File.Exists(oldPath))
+                {
+                    System.IO.File.Move(originalPath, oldPath);   
+                    System.IO.File.Move(tempPath, originalPath);
+                }
+                else if (System.IO.File.Exists(originalPath) && System.IO.File.Exists(oldPath))
+                {
+                    System.IO.File.Delete(oldPath);
+                    System.IO.File.Move(originalPath, oldPath);   
+                    System.IO.File.Move(tempPath, originalPath);
+                }
+                else
+                {
+                    System.IO.File.Move(tempPath, originalPath);
+                }
+    
+                // In case there were a old file, we can now safely delete it
+                // Since the new file is uploaded correctly at this point
+                if (System.IO.File.Exists(oldPath))
+                {
+                    System.IO.File.Delete(oldPath);    
+                }
+                
+                pictogram.ImageHash = image.GetHashCode().ToString();
             }
-
-            pictogram.ImageHash = image.GetHashCode().ToString();
+            
             
             await _giraf._context.SaveChangesAsync();
             return new Response<WeekPictogramDTO>(new WeekPictogramDTO(pictogram));
