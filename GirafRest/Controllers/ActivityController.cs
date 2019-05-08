@@ -123,6 +123,7 @@ namespace GirafRest.Controllers
             updateActivity.Key = activity.Id;
             updateActivity.Order = activity.Order;
             updateActivity.State = activity.State;
+            updateActivity.PictogramKey = activity.Pictogram.Id;
 
             await _giraf._context.SaveChangesAsync();
 
