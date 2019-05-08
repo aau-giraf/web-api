@@ -102,5 +102,31 @@ namespace GirafRest.Controllers
 
             return new Response();
         }
+
+        /// <summary>
+        /// Updates an activity with a given id.
+        /// </summary>
+        /// <param name="activity">a serialized version of the activity that will be updated.</param>
+        /// <returns>Returns <see cref="ActivityDTO"/> for the updated activity on success else MissingProperties or NotFound, 
+        [HttpPatch("update")]
+        [Authorize]
+        public async Task<Response<ActivityDTO>> UpdateActivity([FromBody] ActivityDTO activity)
+        {
+            if (activity == null)
+                return new ErrorResponse<ActivityDTO>(ErrorCode.MissingProperties);
+
+            Activity updateActivity = _giraf._context.Activities.FirstOrDefault(a => a.Key == activity.Id);
+
+            if (updateActivity == null)
+                return new ErrorResponse<ActivityDTO>(ErrorCode.ActivityNotFound);
+
+            updateActivity.Key = activity.Id;
+            updateActivity.Order = activity.Order;
+            updateActivity.State = activity.State;
+
+            await _giraf._context.SaveChangesAsync();
+
+            return new Response<ActivityDTO>(new ActivityDTO(updateActivity, activity.Pictogram));
+        }
     }
 }

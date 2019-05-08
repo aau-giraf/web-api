@@ -18,6 +18,14 @@
             this.State = weekdayResource.State;
         }
 
+        public ActivityDTO(Activity weekdayResource, WeekPictogramDTO pictogram)
+        {
+            this.Id = weekdayResource.Key;
+            this.Order = weekdayResource.Order;
+            this.State = weekdayResource.State;
+            this.Pictogram = pictogram;
+        }
+
         public ActivityDTO(){}
 
         public WeekPictogramDTO Pictogram { get; set; }

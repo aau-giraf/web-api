@@ -252,5 +252,52 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.ActivityNotFound, res.ErrorCode);
         }
         #endregion
+
+        #region UpdateActivity
+        [Fact]
+        public void UpdateActivity_InvalidActivityDTO_MissingProperties()
+        {
+            ActivityController ac = InitializeTest();
+            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+
+            ActivityDTO newActivity = null;
+
+            var res = ac.UpdateActivity(newActivity).Result;
+
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
+        }
+
+        [Fact]
+        public void UpdateActivity_InvalidActivityValidDTO_ActivityNotFound()
+        {
+            ActivityController ac = InitializeTest();
+            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+
+            ActivityDTO newActivity = new ActivityDTO() { Id = 420 };
+
+            var res = ac.UpdateActivity(newActivity).Result;
+
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.ActivityNotFound, res.ErrorCode);
+        }
+
+        [Fact]
+        public void UpdateActivity_ValidActivityValidDTO_ActivitySucess()
+        {
+            ActivityController ac = InitializeTest();
+            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+
+            ActivityDTO newActivity = new ActivityDTO() { Pictogram = new WeekPictogramDTO(_testContext.MockPictograms.First()) };
+
+            var res = ac.UpdateActivity(newActivity).Result;
+
+            Assert.True(res.Success);
+            Assert.Equal(newActivity.Pictogram.Id, res.Data.Pictogram.Id);
+        }
+        #endregion
     }
 }
