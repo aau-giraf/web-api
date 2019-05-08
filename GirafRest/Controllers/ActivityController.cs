@@ -120,7 +120,6 @@ namespace GirafRest.Controllers
             if (updateActivity == null)
                 return new ErrorResponse<ActivityDTO>(ErrorCode.ActivityNotFound);
 
-            updateActivity.Key = activity.Id;
             updateActivity.Order = activity.Order;
             updateActivity.State = activity.State;
             updateActivity.PictogramKey = activity.Pictogram.Id;
