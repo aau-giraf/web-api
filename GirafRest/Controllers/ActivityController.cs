@@ -109,7 +109,7 @@ namespace GirafRest.Controllers
         /// <param name="activity">a serialized version of the activity that will be updated.</param>
         /// <returns>Returns <see cref="ActivityDTO"/> for the updated activity on success else MissingProperties or NotFound, 
         [HttpPatch("update")]
-        [Authorize]
+        [Authorize] 
         public async Task<Response<ActivityDTO>> UpdateActivity([FromBody] ActivityDTO activity)
         {
             if (activity == null)
