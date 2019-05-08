@@ -13,17 +13,17 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// The last time the pictogram was edited.
         /// </summary>
-        public DateTime LastEdit { get; internal set; }
+        public DateTime LastEdit { get; set; }
 
         /// <summary>
         /// The title of the pictogram.
         /// </summary>
-        public string Title { get; internal set; }
+        public string Title { get; set; }
 
         /// <summary>
         /// The accesslevel of the pictogram.
         /// </summary>
-        public AccessLevel? AccessLevel { get; internal set; }
+        public AccessLevel? AccessLevel { get; set; }
 
         public string ImageHash { get; set; }
         public string ImageUrl { get { return $"/v1/pictogram/{Id}/image/raw"; } }
