@@ -108,21 +108,35 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="activity">a serialized version of the activity that will be updated.</param>
         /// <returns>Returns <see cref="ActivityDTO"/> for the updated activity on success else MissingProperties or NotFound, 
-        [HttpPatch("update")]
-        [Authorize]
-        public async Task<Response<ActivityDTO>> UpdateActivity([FromBody] ActivityDTO activity)
+        [HttpPatch("{userId}/update")]
+        [Authorize] 
+        public async Task<Response<ActivityDTO>> UpdateActivity([FromBody] ActivityDTO activity, string userId)
         {
             if (activity == null)
+            {
                 return new ErrorResponse<ActivityDTO>(ErrorCode.MissingProperties);
+            }
+
+            GirafUser user = await _giraf.LoadUserWithWeekSchedules(userId);
+            if (user == null)
+                return new ErrorResponse<ActivityDTO>(ErrorCode.UserNotFound);
+
+            // check access rights
+            if (!await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user))
+                return new ErrorResponse<ActivityDTO>(ErrorCode.NotAuthorized);
+
+            // throws error if none of user's weeks' has the specific activity
+            if (!user.WeekSchedule.Any(w => w.Weekdays.Any(wd => wd.Activities.Any(act => act.Key == activity.Id))))
+                return new ErrorResponse<ActivityDTO>(ErrorCode.ActivityNotFound);
 
             Activity updateActivity = _giraf._context.Activities.FirstOrDefault(a => a.Key == activity.Id);
 
             if (updateActivity == null)
                 return new ErrorResponse<ActivityDTO>(ErrorCode.ActivityNotFound);
 
-            updateActivity.Key = activity.Id;
             updateActivity.Order = activity.Order;
             updateActivity.State = activity.State;
+            updateActivity.PictogramKey = activity.Pictogram.Id;
 
             if ( activity.Timer != null)
             {
