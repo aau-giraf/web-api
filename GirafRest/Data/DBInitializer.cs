@@ -23,7 +23,7 @@ namespace GirafRest.Setup
             var departments = AddSampleDepartments(context);
             var users = AddSampleUsers(context, userManager, departments);
             var pictograms = AddSamplePictograms(context);
-            AddSampleWeekAndWeekdays(context, pictograms);
+            //AddSampleWeekAndWeekdays(context, pictograms);
             AddSampleWeekTemplate(context, pictograms, departments);
             context.SaveChanges();
 			

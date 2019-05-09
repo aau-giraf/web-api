@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GirafRest.Migrations
 {
     [DbContext(typeof(GirafDbContext))]
-    [Migration("20190508101143_AddedTimerTable")]
+    [Migration("20190509102801_AddedTimerTable")]
     partial class AddedTimerTable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
