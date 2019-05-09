@@ -48,6 +48,6 @@
         /// </summary>
         public bool IsChoiceBoard { get; set; }
 
-        public TimerDTO Timer { get; set; }
+        public TimerDTO Timer { get; set; } 
     }
 }
