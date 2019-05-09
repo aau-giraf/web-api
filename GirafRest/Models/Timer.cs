@@ -17,7 +17,7 @@ namespace GirafRest.Models
         /// <summary>
         /// Start time of the timer
         /// </summary>
-        public DateTime StartTime { get; set; }
+        public string StartTime { get; set; }
 
         /// <summary>
         /// The progress of the timer in miliseconds.

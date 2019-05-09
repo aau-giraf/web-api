@@ -256,7 +256,7 @@ namespace GirafRest.Migrations
 
                     b.Property<long>("Progress");
 
-                    b.Property<DateTime>("StartTime");
+                    b.Property<string>("StartTime");
 
                     b.HasKey("Key");
 

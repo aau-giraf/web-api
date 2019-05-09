@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace GirafRest.Migrations
@@ -19,7 +18,7 @@ namespace GirafRest.Migrations
                 {
                     Key = table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    StartTime = table.Column<DateTime>(nullable: false),
+                    StartTime = table.Column<string>(nullable: true),
                     Progress = table.Column<long>(nullable: false),
                     FullLength = table.Column<long>(nullable: false),
                     Paused = table.Column<bool>(nullable: false)
