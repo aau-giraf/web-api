@@ -11,8 +11,7 @@ namespace GirafRest.Migrations
             migrationBuilder.AddColumn<long>(
                 name: "TimerKey",
                 table: "Activities",
-                nullable: true,
-                defaultValue: null);
+                nullable: true);
 
             migrationBuilder.CreateTable(
                 name: "Timers",

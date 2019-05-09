@@ -50,7 +50,7 @@ namespace GirafRest.Migrations
 
                     b.Property<int>("State");
 
-                    b.Property<long>("TimerKey");
+                    b.Property<long?>("TimerKey");
 
                     b.HasKey("Key");
 
