@@ -24,6 +24,7 @@
             this.Order = weekdayResource.Order;
             this.State = weekdayResource.State;
             this.Pictogram = pictogram;
+            this.Timer = new TimerDTO(weekdayResource.Timer);
         }
 
         public ActivityDTO(){}
@@ -46,5 +47,7 @@
         /// This is used in the WeekPlanner app by the frontend groups and should never be set from our side
         /// </summary>
         public bool IsChoiceBoard { get; set; }
+
+        public TimerDTO Timer { get; set; }
     }
 }

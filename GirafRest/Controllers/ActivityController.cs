@@ -124,6 +124,17 @@ namespace GirafRest.Controllers
             updateActivity.Order = activity.Order;
             updateActivity.State = activity.State;
 
+            if ( activity.Timer != null)
+            {
+                updateActivity.Timer = new Timer
+                {
+                    StartTime = activity.Timer.StartTime,
+                    Progress = activity.Timer.Progress,
+                    FullLength = activity.Timer.FullLength,
+                    Paused = activity.Timer.Paused
+                };
+            }
+
             await _giraf._context.SaveChangesAsync();
 
             return new Response<ActivityDTO>(new ActivityDTO(updateActivity, activity.Pictogram));
