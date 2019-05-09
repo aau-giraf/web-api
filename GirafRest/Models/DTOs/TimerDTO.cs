@@ -3,7 +3,7 @@ namespace GirafRest.Models.DTOs
 {
     public class TimerDTO
     {
-        public TimerDTO(string startTime, long progress, long fullLength, bool paused)
+        public TimerDTO(long startTime, long progress, long fullLength, bool paused)
         {
             StartTime = startTime;
             Progress = progress;
@@ -23,7 +23,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// Start time of the timers
         /// </summary>
-        public string StartTime {get; set;}
+        public long StartTime {get; set;}
 
         /// <summary>
         /// The progress of the timer in miliseconds.
