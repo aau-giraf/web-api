@@ -150,18 +150,17 @@ namespace GirafRest.Controllers
         /// <returns>The requested image as a <see cref="ImageDTO"/></returns>
         /// <param name="id">Identifier of the <see cref="GirafUser"/>to get UserIcon for</param>
         [HttpGet("{id}/icon")]
-        public async Task<Response<ImageDTO>> GetUserIcon(string id)
+        public Task<Response<ImageDTO>> GetUserIcon(string id)
         {
             var user = _giraf._context.Users.Include(u => u.UserIcon).FirstOrDefault(u => u.Id == id);
-
             if (user == null)
-                return new ErrorResponse<ImageDTO>(ErrorCode.UserNotFound);
+                return Task.FromResult<Response<ImageDTO>>(new ErrorResponse<ImageDTO>(ErrorCode.UserNotFound));
                 
 
             if (user.UserIcon == null)
-                return new ErrorResponse<ImageDTO>(ErrorCode.UserHasNoIcon);
+                return Task.FromResult<Response<ImageDTO>>(new ErrorResponse<ImageDTO>(ErrorCode.UserHasNoIcon));
 
-            return new Response<ImageDTO>(new ImageDTO(user.UserIcon));
+            return Task.FromResult(new Response<ImageDTO>(new ImageDTO(user.UserIcon)));
         }
 
         /// <summary>
@@ -170,17 +169,18 @@ namespace GirafRest.Controllers
         /// <returns>The user icon as a png</returns>
         /// <param name="id">Identifier of the <see cref="GirafUser"/> to get icon for</param>
         [HttpGet("{id}/icon/raw")]
-        public async Task<IActionResult> GetRawUserIcon(string id)
+        public Task<IActionResult> GetRawUserIcon(string id)
         {
             var user = _giraf._context.Users.Include(u => u.UserIcon).FirstOrDefault(u => u.Id == id);
 
             if (user == null)
-                return NotFound();
+                return Task.FromResult<IActionResult>(NotFound());
 
             if (user.UserIcon == null)
-                return NotFound();
+                return Task.FromResult<IActionResult>(NotFound());
 
-            return File(Convert.FromBase64String(System.Text.Encoding.UTF8.GetString(user.UserIcon)), "image/png");
+
+            return Task.FromResult<IActionResult>(File(Convert.FromBase64String(System.Text.Encoding.UTF8.GetString(user.UserIcon)), "image/png"));
         }
 
         /// <summary>

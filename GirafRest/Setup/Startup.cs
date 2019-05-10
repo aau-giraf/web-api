@@ -58,7 +58,7 @@ namespace GirafRest.Setup
             builder.AddEnvironmentVariables();
             try {
                 Configuration = builder.Build();
-            } catch(FileNotFoundException ex) {
+            } catch(FileNotFoundException) {
                 Console.WriteLine("ERROR: Missing appsettings file");
                 Console.WriteLine("Exiting...");
                 System.Environment.Exit(1);
@@ -193,7 +193,6 @@ namespace GirafRest.Setup
             app.UseIpRateLimiting();
 
             //Configure logging for the application
-            app.ConfigureLogging(loggerFactory);
             appLifetime.ApplicationStopped.Register(Log.CloseAndFlush);
 
             app.UseStatusCodePagesWithReExecute("/v1/Error", "?status={0}");

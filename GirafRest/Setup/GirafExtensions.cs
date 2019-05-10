@@ -93,15 +93,10 @@ namespace GirafRest.Extensions
         /// </summary>
         /// <param name="app">A reference to the application builder, that is used to define the behaviour of the server.</param>
         /// <param name="loggerFactory">A reference to the loggerFactory that is used to define the behaviour of the loggers.</param>
-        public static void ConfigureLogging(this IApplicationBuilder app, ILoggerFactory loggerFactory)
+        public static void ConfigureLogging(this IApplicationBuilder app)
         {
-            loggerFactory
-                .AddConsole()
-                .AddDebug();
             if (ProgramOptions.LogToFile)
             {
-                //Save log files corresponding to the strings defined in Program.cs, in this case logs/log.txt
-                loggerFactory.AddFile(Path.Combine(ProgramOptions.LogDirectory, ProgramOptions.LogFilepath), LogLevel.Warning);
                 app.UseStaticFiles();
 
                 //Ensure that the folder for the log-files exists - create it if not.
