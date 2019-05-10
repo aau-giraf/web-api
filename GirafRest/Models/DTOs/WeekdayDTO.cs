@@ -29,7 +29,6 @@ namespace GirafRest.Models.DTOs
                 foreach (var elem in weekday.Activities.OrderBy(a => a.Order))
                 {
                     if(elem.Pictogram != null) Activities.Add(new ActivityDTO(elem));
-
                 }
             }
         }

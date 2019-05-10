@@ -138,8 +138,10 @@ namespace GirafRest.Controllers
             updateActivity.State = activity.State;
             updateActivity.PictogramKey = activity.Pictogram.Id;
 
-            if ( activity.Timer != null)
+            if (activity.Timer != null)
             {
+                updateActivity.TimerKey = activity.Timer.Key;
+
                 updateActivity.Timer = new Timer
                 {
                     StartTime = activity.Timer.StartTime,
@@ -147,6 +149,15 @@ namespace GirafRest.Controllers
                     FullLength = activity.Timer.FullLength,
                     Paused = activity.Timer.Paused
                 };
+            }
+            else
+            {
+                Timer placeTimer = _giraf._context.Timers.FirstOrDefault(t => t.Key == updateActivity.TimerKey);
+                if (placeTimer != null)
+                {               
+                    _giraf._context.Timers.Remove(placeTimer);
+                }
+                updateActivity.TimerKey = null;
             }
 
             await _giraf._context.SaveChangesAsync();

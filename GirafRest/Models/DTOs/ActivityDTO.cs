@@ -1,4 +1,6 @@
-﻿namespace GirafRest.Models.DTOs
+﻿using System;
+
+namespace GirafRest.Models.DTOs
 {
     public class ActivityDTO
     {
@@ -16,6 +18,11 @@
             this.Pictogram = new WeekPictogramDTO(weekdayResource.Pictogram);
             this.Order = weekdayResource.Order;
             this.State = weekdayResource.State;
+
+            if (weekdayResource.Timer != null)
+            {
+                this.Timer = new TimerDTO(weekdayResource.Timer);
+            }
         }
 
         public ActivityDTO(Activity weekdayResource, WeekPictogramDTO pictogram)
@@ -24,7 +31,6 @@
             this.Order = weekdayResource.Order;
             this.State = weekdayResource.State;
             this.Pictogram = pictogram;
-            this.Timer = new TimerDTO(weekdayResource.Timer);
         }
 
         public ActivityDTO(){}

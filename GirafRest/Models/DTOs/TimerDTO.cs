@@ -39,5 +39,7 @@ namespace GirafRest.Models.DTOs
         /// Boolean for setting whether the timer is paused.
         /// </summary>
         public bool Paused {get; set;}
+
+        public long? Key { get; set; }
     }
 }
