@@ -152,12 +152,15 @@ namespace GirafRest.Controllers
             }
             else
             {
-                Timer placeTimer = _giraf._context.Timers.FirstOrDefault(t => t.Key == updateActivity.TimerKey);
-                if (placeTimer != null)
-                {               
-                    _giraf._context.Timers.Remove(placeTimer);
+                if (updateActivity.TimerKey != null)
+                {
+                    Timer placeTimer = _giraf._context.Timers.FirstOrDefault(t => t.Key == updateActivity.TimerKey);
+                    if (placeTimer != null)
+                    {
+                        _giraf._context.Timers.Remove(placeTimer);
+                    }
+                    updateActivity.TimerKey = null;
                 }
-                updateActivity.TimerKey = null;
             }
 
             await _giraf._context.SaveChangesAsync();
