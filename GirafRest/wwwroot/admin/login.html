@@ -48,7 +48,7 @@
             var base64 = base64Url.replace('-', '+').replace('_', '/');
             return JSON.parse(window.atob(base64));
         };
-        var loginurl = "/v1/Account/login";
+        var loginurl = "../v1/Account/login";
         var vm = new Vue({
             el: '#app',
             data() { 
@@ -99,7 +99,7 @@
                                         departmentId: department
                                     };
                                     localStorage.setItem("user", JSON.stringify(userInfo));
-                                    window.location = "/admin/main.html"
+                                    window.location = "./main.html"
                                 } else {
                                     self.wrongRole = true;
                                 }
