@@ -1,8 +1,3 @@
-using GirafRest.Models.Responses;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace GirafRest.Models.DTOs
 {
     public class WeekDTO : WeekBaseDTO

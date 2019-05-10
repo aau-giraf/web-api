@@ -1,5 +1,4 @@
-﻿using System;
-namespace GirafRest.Models.DTOs
+﻿namespace GirafRest.Models.DTOs
 {
     public class TimerDTO
     {
