@@ -42,3 +42,4 @@ GirafIntegrationTest/cookie
 **/.DS_Store
 
 pictograms/
+GirafRest/wwwroot/DebugLogs/*
