@@ -140,15 +140,32 @@ namespace GirafRest.Controllers
 
             if (activity.Timer != null)
             {
-                updateActivity.TimerKey = activity.Timer.Key;
+                Timer placeTimer = _giraf._context.Timers.FirstOrDefault(t => t.Key == updateActivity.TimerKey);
 
-                updateActivity.Timer = new Timer
+                if (updateActivity.TimerKey == null)
                 {
-                    StartTime = activity.Timer.StartTime,
-                    Progress = activity.Timer.Progress,
-                    FullLength = activity.Timer.FullLength,
-                    Paused = activity.Timer.Paused
-                };
+                    updateActivity.TimerKey = activity.Timer.Key;
+                }
+
+                if (placeTimer != null)
+                {
+                    placeTimer.StartTime = activity.Timer.StartTime;
+                    placeTimer.Progress = activity.Timer.Progress;
+                    placeTimer.FullLength = activity.Timer.FullLength;
+                    placeTimer.Paused = activity.Timer.Paused;
+
+                    updateActivity.Timer = placeTimer;
+                }
+                else
+                {
+                    updateActivity.Timer = new Timer()
+                    {
+                        StartTime = activity.Timer.StartTime,
+                        Progress = activity.Timer.Progress,
+                        FullLength = activity.Timer.FullLength,
+                        Paused = activity.Timer.Paused,
+                    };
+                }
             }
             else
             {
