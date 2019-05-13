@@ -8,6 +8,7 @@ using GirafRest.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using GirafRest.Services;
 using GirafRest.Models.Responses;
@@ -302,18 +303,25 @@ namespace GirafRest.Controllers
             
                 if (System.IO.File.Exists(originalPath) && !System.IO.File.Exists(oldPath))
                 {
-                    System.IO.File.Move(originalPath, oldPath);   
-                    System.IO.File.Move(tempPath, originalPath);
+                    var step1 = Process.Start("/bin/mv "+originalPath+" "+oldPath);
+                    step1?.WaitForExit();
+                    var step2 = Process.Start("/bin/mv "+tempPath+" "+originalPath);
+                    step2?.WaitForExit();
+                    //System.IO.File.Move(originalPath, oldPath);   
+                    //System.IO.File.Move(tempPath, originalPath);
                 }
                 else if (System.IO.File.Exists(originalPath) && System.IO.File.Exists(oldPath))
                 {
                     System.IO.File.Delete(oldPath);
-                    System.IO.File.Move(originalPath, oldPath);   
-                    System.IO.File.Move(tempPath, originalPath);
+                    var step1 = Process.Start("/bin/mv "+originalPath+" "+oldPath);
+                    step1?.WaitForExit();
+                    var step2 = Process.Start("/bin/mv "+tempPath+" "+originalPath);
+                    step2?.WaitForExit();
                 }
                 else
                 {
-                    System.IO.File.Move(tempPath, originalPath);
+                    var step1 = Process.Start("/bin/mv "+tempPath+" "+originalPath);
+                    step1?.WaitForExit();
                 }
     
                 // In case there were a old file, we can now safely delete it
