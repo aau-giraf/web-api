@@ -36,6 +36,14 @@ namespace GirafRest.Models
         /// </summary>
         [ForeignKey("PictogramKey")]
         public virtual Pictogram Pictogram { get; set; }
+        
+        public long? TimerKey { get; set; }
+
+        /// <summary>
+        /// A reference to the actual timer.
+        /// </summary
+        [ForeignKey("TimerKey")]
+        public virtual Timer Timer { get; set; }
 
         [Required]
         public ActivityState State { get; set; }

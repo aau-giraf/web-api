@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -46,8 +47,7 @@ namespace GirafRest.Controllers
             
             if (!user.WeekSchedule.Any())
                 return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.NoWeekScheduleFound);
-            
-            return new Response<IEnumerable<WeekDTO>>(user.WeekSchedule.Select(w => new WeekDTO(w) {
+             return new Response<IEnumerable<WeekDTO>>(user.WeekSchedule.Select(w => new WeekDTO(w) {
                 Days = null
             }));
         }
@@ -96,10 +96,24 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<WeekDTO>(ErrorCode.NotAuthorized);
             
             var week = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber);
-            
+
             if (week != null)
+            {
+                foreach (var weekday in week.Weekdays)
+                {
+                    foreach (var activity in weekday.Activities)
+                    {
+                        if (activity.TimerKey != null)
+                        {
+                            var timerPlace = _giraf._context.Timers.FirstOrDefault(t => t.Key == activity.TimerKey);
+                            activity.Timer = timerPlace;
+                        }
+                    }
+                }
+                
                 return new Response<WeekDTO>(new WeekDTO(week));
-            
+            }
+
             //Create default thumbnail
             var emptyThumbnail = _giraf._context.Pictograms.FirstOrDefault(r => r.Title == "default");
             if (emptyThumbnail == null)

@@ -14,6 +14,9 @@ namespace GirafRest.Test
     {
         private const int ADMIN_DEP_ONE = 0;
         private const int GUARDIAN_DEP_TWO = 1;
+        private const int CITIZEN_NO_DEP = 9;
+
+        private const int PICTO_DEP_TWO = 6;
 
         private const int _existingId = 1;
         private const int _nonExistingId = 404;
@@ -250,6 +253,69 @@ namespace GirafRest.Test
 
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.ActivityNotFound, res.ErrorCode);
+        }
+        #endregion
+
+        #region UpdateActivity
+        [Fact]
+        public void UpdateActivity_InvalidActivityDTO_MissingProperties()
+        {
+            ActivityController ac = InitializeTest();
+            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+
+            ActivityDTO newActivity = null;
+
+            var res = ac.UpdateActivity(newActivity, mockUser.Id).Result;
+
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
+        }
+
+        [Fact]
+        public void UpdateActivity_InvalidActivityValidDTO_ActivityNotFound()
+        {
+            ActivityController ac = InitializeTest();
+            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+
+            ActivityDTO newActivity = new ActivityDTO() { Id = 420 };
+
+            var res = ac.UpdateActivity(newActivity, mockUser.Id).Result;
+
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.ActivityNotFound, res.ErrorCode);
+        }
+
+        [Fact]
+        public void UpdateActivity_ValidActivityInvalidUser_ActivityNotFound()
+        {
+            ActivityController ac = InitializeTest();
+            GirafUser mockUser = _testContext.MockUsers[GUARDIAN_DEP_TWO];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+            GirafUser differentMockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+
+            ActivityDTO newActivity = new ActivityDTO() { Pictogram = new WeekPictogramDTO(_testContext.MockPictograms.First()) };
+
+            var res = ac.UpdateActivity(newActivity, differentMockUser.Id).Result;
+
+            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+        }
+
+        [Fact]
+        public void UpdateActivity_ValidActivityValidDTO_ActivitySucess()
+        {
+            ActivityController ac = InitializeTest();
+            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE]; 
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+
+            ActivityDTO newActivity = new ActivityDTO() { Id = _testContext.MockActivities.First().Key, Pictogram = new WeekPictogramDTO(_testContext.MockPictograms.First()) };
+
+            var res = ac.UpdateActivity(newActivity, mockUser.Id).Result;
+
+            Assert.True(res.Success);
+            Assert.Equal(newActivity.Pictogram.Id, res.Data.Pictogram.Id);
         }
         #endregion
     }
