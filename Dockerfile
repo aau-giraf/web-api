@@ -20,7 +20,7 @@ FROM mcr.microsoft.com/dotnet/core/aspnet:2.2 AS runtime-env
 WORKDIR /srv
 
 # COPY from build envionment into local container.
-COPY --from=build-env /app/out .
+COPY --from=build-env /app .
 
 # Remove the appsettings files from the container 
 # so no passwords are pushed to docker hub
@@ -30,4 +30,4 @@ RUN rm appsettings*
 EXPOSE 5000
 
 # Start running the app.
-ENTRYPOINT ["dotnet", "GirafRest.dll", "--list"]
+ENTRYPOINT ["dotnet", "out/GirafRest.dll", "--list"]
