@@ -13,7 +13,14 @@ def write(id, outdir):
     MAX_W, MAX_H = 200, 200
     im = Image.new('RGB', (MAX_W, MAX_H), 'white')
     draw = ImageDraw.Draw(im)
-    font = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 36)
+
+    font = None
+    if sys.platform == 'linux':
+        font = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 36)
+    elif sys.platform == 'darwin':
+        font = ImageFont.truetype('Library/Fonts/Apple\ Chancery.ttf', 36)
+    elif sys.platform == 'win32':
+        font = ImageFont.truetype('C:\\Windows\\Fonts\\Calibri.ttf', 36)
 
     for line in para:
         w, h = draw.textsize(line, font=font)
