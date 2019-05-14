@@ -285,7 +285,8 @@ namespace GirafRest.Controllers
                 
                 if (!System.IO.File.Exists(path))
                 {
-                    System.IO.File.Create(path);
+                    var file = System.IO.File.Create(path);
+                    file.Close();
                 }
                 
                 using (FileStream fs =
