@@ -42,8 +42,9 @@ namespace GirafRest.Controllers
         /// UserNotFound, NotAuthorized, WeekNotFound or InvalidDay.</returns>
         [HttpPost("{userId}/{weekplanName}/{weekYear}/{weekNumber}/{weekDay}")]
         [Authorize]
-        public async Task<Response<ActivityDTO>> PostActivity([FromBody] ActivityDTO newActivity, string userId, string weekplanName, int weekYear, int weekNumber, Days weekDay)
+        public async Task<Response<ActivityDTO>> PostActivity([FromBody] ActivityDTO newActivity, string userId, string weekplanName, int weekYear, int weekNumber, int weekDayNmb)
         {
+            Days weekDay = (Days) weekDayNmb;
             if (newActivity == null)
                 return new ErrorResponse<ActivityDTO>(ErrorCode.MissingProperties);
 
