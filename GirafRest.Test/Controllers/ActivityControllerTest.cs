@@ -50,7 +50,7 @@ namespace GirafRest.Test
 
             ActivityDTO newActivity = new ActivityDTO() { Pictogram = new WeekPictogramDTO(_testContext.MockPictograms.First()) };
 
-            var res = ac.PostActivity(newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, Days.Monday).Result;
+            var res = ac.PostActivity(newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Monday).Result;
 
             Assert.True(res.Success);
             Assert.Equal(newActivity.Pictogram.Id, res.Data.Pictogram.Id);
@@ -66,7 +66,7 @@ namespace GirafRest.Test
 
             ActivityDTO newActivity = new ActivityDTO() { Pictogram = new WeekPictogramDTO(_testContext.MockPictograms.First()) };
 
-            var res = ac.PostActivity(newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, Days.Saturday).Result;
+            var res = ac.PostActivity(newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Saturday).Result;
 
             Assert.True(res.Success);
             Assert.Equal(newActivity.Pictogram.Id, res.Data.Pictogram.Id);
@@ -82,7 +82,7 @@ namespace GirafRest.Test
 
             ActivityDTO newActivity = null;
 
-            var res = ac.PostActivity(newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, Days.Monday).Result;
+            var res = ac.PostActivity(newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Monday).Result;
 
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
@@ -98,7 +98,7 @@ namespace GirafRest.Test
 
             ActivityDTO newActivity = new ActivityDTO() { Pictogram = new WeekPictogramDTO(_testContext.MockPictograms.First()) };
 
-            var res = ac.PostActivity(newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, Days.Sunday + 1).Result;
+            var res = ac.PostActivity(newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Sunday + 1).Result;
 
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.InvalidDay, res.ErrorCode);
@@ -114,7 +114,7 @@ namespace GirafRest.Test
 
             ActivityDTO newActivity = new ActivityDTO() { Pictogram = new WeekPictogramDTO(_testContext.MockPictograms.First()) };
 
-            var res = ac.PostActivity(newActivity, mockUser.Id, week.Name, 9000, week.WeekNumber, Days.Sunday).Result;
+            var res = ac.PostActivity(newActivity, mockUser.Id, week.Name, 9000, week.WeekNumber, (int)Days.Sunday).Result;
 
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.WeekNotFound, res.ErrorCode);
@@ -130,7 +130,7 @@ namespace GirafRest.Test
 
             ActivityDTO newActivity = new ActivityDTO() { Pictogram = new WeekPictogramDTO(_testContext.MockPictograms.First()) };
 
-            var res = ac.PostActivity(newActivity, mockUser.Id, week.Name, week.WeekYear, 54, Days.Sunday).Result;
+            var res = ac.PostActivity(newActivity, mockUser.Id, week.Name, week.WeekYear, 54, (int)Days.Sunday).Result;
 
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.WeekNotFound, res.ErrorCode);
@@ -146,7 +146,7 @@ namespace GirafRest.Test
 
             ActivityDTO newActivity = new ActivityDTO() { Pictogram = new WeekPictogramDTO(_testContext.MockPictograms.First()) };
 
-            var res = ac.PostActivity(newActivity, mockUser.Id, "WrongName", week.WeekYear, week.WeekYear, Days.Sunday).Result;
+            var res = ac.PostActivity(newActivity, mockUser.Id, "WrongName", week.WeekYear, week.WeekYear, (int)Days.Sunday).Result;
 
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.WeekNotFound, res.ErrorCode);
@@ -162,7 +162,7 @@ namespace GirafRest.Test
 
             ActivityDTO newActivity = new ActivityDTO() { Pictogram = new WeekPictogramDTO(_testContext.MockPictograms.First()) };
 
-            var res = ac.PostActivity(newActivity, "NonExistingUserId", week.Name, week.WeekYear, week.WeekNumber, Days.Sunday).Result;
+            var res = ac.PostActivity(newActivity, "NonExistingUserId", week.Name, week.WeekYear, week.WeekNumber, (int)Days.Sunday).Result;
 
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
@@ -179,7 +179,7 @@ namespace GirafRest.Test
 
             ActivityDTO newActivity = new ActivityDTO() { Pictogram = new WeekPictogramDTO(_testContext.MockPictograms.First()) };
 
-            var res = ac.PostActivity(newActivity, differentMockUser.Id, week.Name, week.WeekYear, week.WeekNumber, Days.Sunday).Result;
+            var res = ac.PostActivity(newActivity, differentMockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Sunday).Result;
 
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
