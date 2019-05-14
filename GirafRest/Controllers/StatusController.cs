@@ -37,7 +37,7 @@ namespace GirafRest.Controllers
                 _giraf._context.Users.FirstOrDefault();
                 return new Response();
             }
-            catch (System.Exception ex)
+            catch (System.Exception)
             {
                 return new ErrorResponse(ErrorCode.Error);
             }

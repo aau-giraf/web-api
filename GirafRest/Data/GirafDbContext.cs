@@ -25,6 +25,7 @@ namespace GirafRest.Data
         public virtual DbSet<UserResource> UserResources { get; set; }
         public virtual DbSet<DepartmentResource> DepartmentResources { get; set; }
         public virtual DbSet<Activity> Activities { get; set; }
+        public virtual DbSet<Timer> Timers { get; set; }
         public virtual DbSet<GuardianRelation> GuardianRelations { get; set; }
         public virtual DbSet<WeekDayColor> WeekDayColors { get; set; }
         public new virtual DbSet<GirafUser> Users { get { return base.Users; } set { base.Users = value; } }
@@ -115,6 +116,12 @@ namespace GirafRest.Data
                 .HasOne<Pictogram>(wr => wr.Pictogram)
                 .WithMany()
                 .HasForeignKey(wr => wr.PictogramKey)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Activity>()
+                .HasOne<Timer>(ac => ac.Timer)
+                .WithMany()
+                .HasForeignKey(ac => ac.TimerKey)
                 .OnDelete(DeleteBehavior.Cascade);
             
             // Configure that a citizen can have many guardians and that a citizen can have many guardians

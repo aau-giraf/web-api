@@ -327,7 +327,7 @@
                 self.resetLink = null;
                 self.resetDialog = true;
                 $.ajax({
-                    url: "/v1/User/" + element[this.idproperty] + "/Account/password-reset-token",
+                    url: "../v1/User/" + element[this.idproperty] + "/Account/password-reset-token",
                     type: 'GET',
                     contentType: "application/json",
                     headers: { "Authorization": "Bearer " + self.token },
@@ -355,7 +355,6 @@
         }
     });
     </script>
-
     <script type="text/x-template" id="password-template">
         <v-card>
             <v-card-text v-if="isSuccess == false" class="text-xs-center">
@@ -412,7 +411,7 @@
                     var self = this;
                     if(this.resetToken == null){
                         $.ajax({
-                            url: "/v1/User/" + self.userId + "/Account/password",
+                            url: "../v1/User/" + self.userId + "/Account/password",
                             type: 'PUT',
                             contentType: "application/json",
                             data: JSON.stringify({ oldPassword: self.oldPassword, newPassword: self.newPassword }),
@@ -423,7 +422,7 @@
                         });
                     } else {
                         $.ajax({
-                            url: "/v1/User/" + self.userId + "/Account/password",
+                            url: "../v1/User/" + self.userId + "/Account/password",
                             type: 'POST',
                             contentType: "application/json",
                             data: JSON.stringify({ token: self.resetToken, password: self.newPassword }),
@@ -439,7 +438,7 @@
                     this.newPassword = null;
                 },
                 login() {
-                    window.location = "/admin/login.html";
+                    window.location = "./login.html";
                 }
             }
         });
@@ -532,7 +531,7 @@
                 },
                 logout() {
                     localStorage.removeItem("user");
-                    window.location = "/admin/login.html";
+                    window.location = "./login.html";
                 },
                 roleString(role) {
                     if(role == "Guardian"){
@@ -556,7 +555,7 @@
                     var self = this;
                     this.citizensLoading = true;
                     $.ajax({
-                        url: "/v1/Department/" + departmentId + "/",
+                        url: "../v1/Department/" + departmentId + "/",
                         headers: { "Authorization": "Bearer " + self.token },
                         success: function (data) {
                             self.citizens = data.data.members.filter(function(m) { return m.userRole == "Citizen"; });
@@ -568,7 +567,7 @@
                     var self = this;
                     this.guardiansLoading = true;
                     $.ajax({
-                        url: "/v1/Department/" + departmentId + "/",
+                        url: "../v1/Department/" + departmentId + "/",
                         headers: { "Authorization": "Bearer " + self.token },
                         success: function (data) {
                             self.guardians = data.data.members.filter(function(m) { return m.userRole == "Guardian"; });
@@ -580,7 +579,7 @@
                     var self = this;
                     this.departmentsLoading = true;
                     $.ajax({
-                        url: "/v1/Department/",
+                        url: "../v1/Department/",
                         headers: { "Authorization": "Bearer " + self.token },
                         success: function (data) {
                             self.departments = data.data;
@@ -600,7 +599,7 @@
                 addDepartment(department) {
                     var self = this;
                     $.ajax({
-                        url: "/v1/Department/",
+                        url: "../v1/Department/",
                         type: 'POST',
                         contentType: "application/json",
                         data: JSON.stringify(department),
@@ -619,7 +618,7 @@
                     user.role = role;
                     user.password = user.password || "password";
                     $.ajax({
-                        url: "/v1/Account/register",
+                        url: "../v1/Account/register",
                         type: 'POST',
                         contentType: "application/json",
                         data: JSON.stringify(user),
@@ -641,7 +640,7 @@
                 updateDepartment(e) {
                     var self = this;
                     $.ajax({
-                        url: "/v1/Department/" + e.oldItem.id + "/name",
+                        url: "../v1/Department/" + e.oldItem.id + "/name",
                         type: 'PUT',
                         contentType: "application/json",
                         data: JSON.stringify(e.newItem),
@@ -658,7 +657,7 @@
                     var self = this;
                     newUser.screenName = newUser.userName;
                     $.ajax({
-                        url: "/v1/User/" + oldUser.userId,
+                        url: "../v1/User/" + oldUser.userId,
                         type: 'PUT',
                         contentType: "application/json",
                         data: JSON.stringify(newUser),
@@ -674,7 +673,7 @@
                 deleteCitizen(citizen){
                     var self = this;
                     $.ajax({
-                        url: "/v1/Account/user/" + citizen.userId,
+                        url: "../v1/Account/user/" + citizen.userId,
                         type: 'DELETE',
                         contentType: "application/json",
                         headers: { "Authorization": "Bearer " + self.token },
@@ -688,7 +687,7 @@
                 deleteGuardian(guardian){
                     var self = this;
                     $.ajax({
-                        url: "/v1/Account/user/" + guardian.userId,
+                        url: "../v1/Account/user/" + guardian.userId,
                         type: 'DELETE',
                         contentType: "application/json",
                         headers: { "Authorization": "Bearer " + self.token },
@@ -702,7 +701,7 @@
                 deleteDepartment(department){
                     var self = this;
                     $.ajax({
-                        url: "/v1/Department/" + department.id,
+                        url: "../v1/Department/" + department.id,
                         type: 'DELETE',
                         contentType: "application/json",
                         headers: { "Authorization": "Bearer " + self.token },
@@ -717,9 +716,5 @@
         });
         app.init();
     </script>
-    
-
-
-
 </body>
 </html>
