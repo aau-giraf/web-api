@@ -280,7 +280,6 @@ namespace GirafRest.Controllers
             // This sets the path that the system looks for when retrieving a pictogram
             string path = imagePath+ pictogram.Id + ".png";
 
-            Console.WriteLine("Image Length:"+image.Length);
             if (image.Length > 0){
                 using (FileStream fs =
                     new FileStream(path,
