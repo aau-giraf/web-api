@@ -37,10 +37,10 @@ namespace GirafRest.Controllers
         /// <param name="weekplanName">name of the weekplan that you want to add the activity on.</param>
         /// <param name="weekYear">year of the weekplan that you want to add the activity on.</param>
         /// <param name="weekNumber">week number of the weekplan that you want to add the activity on.</param>
-        /// <param name="weekDay">day of the week that you want to add the activity on.</param>
+        /// <param name="weekDayNmb">day of the week that you want to add the activity on (Monday=1, Sunday=7).</param>
         /// <returns>Returns <see cref="ActivityDTO"/> for the requested activity on success else MissingProperties, 
         /// UserNotFound, NotAuthorized, WeekNotFound or InvalidDay.</returns>
-        [HttpPost("{userId}/{weekplanName}/{weekYear}/{weekNumber}/{weekDay}")]
+        [HttpPost("{userId}/{weekplanName}/{weekYear}/{weekNumber}/{weekDayNmb}")]
         [Authorize]
         public async Task<Response<ActivityDTO>> PostActivity([FromBody] ActivityDTO newActivity, string userId, string weekplanName, int weekYear, int weekNumber, int weekDayNmb)
         {
