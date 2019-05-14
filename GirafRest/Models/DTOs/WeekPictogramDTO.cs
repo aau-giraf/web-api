@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
@@ -35,7 +36,7 @@ namespace GirafRest.Models.DTOs
                 this.Title = pictogram.Title;
                 this.AccessLevel = pictogram.AccessLevel;
                 this.Id = pictogram.Id;
-                this.LastEdit = pictogram.LastEdit;
+                this.LastEdit = pictogram.LastEdit.ToUniversalTime();
                 this.ImageHash = pictogram.ImageHash;
             }
         }
