@@ -282,16 +282,9 @@ namespace GirafRest.Controllers
         
             
             if (image.Length > 0){
-                
-                if (!System.IO.File.Exists(path))
-                {
-                    var file = System.IO.File.Create(path);
-                    file.Close();
-                }
-                
                 using (FileStream fs =
                     new FileStream(path,
-                        FileMode.Truncate))
+                        FileMode.Create))
                 {
                     
                     fs.Write(image);
