@@ -278,59 +278,24 @@ namespace GirafRest.Controllers
             byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body);
             
             // This sets the path that the system looks for when retrieving a pictogram
-            string originalPath = pictogram.Id + ".png";
-            
-            // This sets a temporary path, this is for the new uploaded file.
-            // We use it to ensure that we dont delete the old pictogram, before
-            // we know that we successfully saved the new pictogram.
-            string tempPath = pictogram.Id + "_temp.png";
-            
-            // This sets a path, that should be used if an pictogram already exists
-            // for the pictogram. This is to ensure we dont delete the old pictogram
-            // before we know that the entire process is successful.
-            // If something goes wrong this allows us to go in and rename the old path
-            // back to original path and no data will be lost.
-            string oldPath = pictogram.Id + "_old.png";
-            
+            string path = imagePath+ pictogram.Id + ".png";
+        
             
             if (image.Length > 0){
-                using (FileStream fs =
-                    new FileStream( imagePath+tempPath,
-                        FileMode.OpenOrCreate))
+                
+                if (!System.IO.File.Exists(path))
                 {
-                    fs.Write(image);
-                }
-            
-                if (System.IO.File.Exists(imagePath+originalPath) && !System.IO.File.Exists(imagePath+oldPath))
-                {
-                    var step1 = Process.Start("/bin/mv /pictograms/"+originalPath+" /pictograms/"+oldPath);
-                    step1?.WaitForExit();
-                    var step2 = Process.Start("/bin/mv /pictograms/"+tempPath+" /pictograms/"+originalPath);
-                    step2?.WaitForExit();
-                    //System.IO.File.Move(originalPath, oldPath);   
-                    //System.IO.File.Move(tempPath, originalPath);
-                }
-                else if (System.IO.File.Exists(imagePath+originalPath) && System.IO.File.Exists(imagePath+oldPath))
-                {
-                    System.IO.File.Delete(imagePath+oldPath);
-                    var step1 = Process.Start("/bin/mv /pictograms/"+originalPath+" /pictograms/"+oldPath);
-                    step1?.WaitForExit();
-                    var step2 = Process.Start("/bin/mv /pictograms/"+tempPath+" /pictograms/"+originalPath);
-                    step2?.WaitForExit();
-                }
-                else
-                {
-                    var step1 = Process.Start("/bin/mv /pictograms/"+tempPath+" /pictograms/"+originalPath);
-                    step1?.WaitForExit();
-                }
-    
-                // In case there were a old file, we can now safely delete it
-                // Since the new file is uploaded correctly at this point
-                if (System.IO.File.Exists(imagePath+oldPath))
-                {
-                    System.IO.File.Delete(imagePath+oldPath);    
+                    System.IO.File.Create(path);
                 }
                 
+                using (FileStream fs =
+                    new FileStream(path,
+                        FileMode.Truncate))
+                {
+                    
+                    fs.Write(image);
+                }
+
                 pictogram.ImageHash = image.GetHashCode().ToString();
             }
             
