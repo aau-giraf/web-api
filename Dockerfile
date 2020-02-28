@@ -11,19 +11,21 @@ RUN dotnet publish -c Release -o out
 
 #------------------------------------------#
 
-# Using microsoft aps net core 2.2 as hosting envionment
+# Use microsoft ASP.NET Core 3.1 as the runtime envionment
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS runtime-env
 WORKDIR /srv
 
-# COPY from build envionment into local container.
+# COPY the built files from the build environment into a local container
 COPY --from=build-env /app/out .
 
-# Remove the appsettings files from the container 
+# TODO: ALSO GET THE APPSETTINGS FILE FROM THE BUILD CONTAINER
+
+# Remove the appsettings files from the container
 # so no passwords are pushed to docker hub
 #RUN rm GirafRest/appsettings*
 
 # Expose the port intented for communications
 EXPOSE 5000
 
-# Start running the app.
+# Start running the app
 ENTRYPOINT ["dotnet", "GirafRest.dll", "--list"]
