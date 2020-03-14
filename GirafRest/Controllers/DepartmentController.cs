@@ -66,7 +66,7 @@ namespace GirafRest.Controllers
                   
             var isSuperUser = await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser);
 
-            if (currentUser?.DepartmentKey != id && !isSuperUser)
+            if (currentUser.DepartmentKey != id && !isSuperUser)
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.NotAuthorized);
             
             //.Include is used to get information on members aswell when getting the Department
@@ -105,7 +105,7 @@ namespace GirafRest.Controllers
                   
             var isSuperUser = await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser);
 
-            if (currentUser?.DepartmentKey != department?.Key && !isSuperUser)
+            if (currentUser.DepartmentKey != department.Key && !isSuperUser)
                 return new ErrorResponse<List<UserNameDTO>>(ErrorCode.NotAuthorized);
 
             // Get all citizens

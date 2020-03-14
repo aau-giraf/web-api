@@ -103,11 +103,11 @@ namespace GirafRest.Setup
             }
 
             // Add users to roles
-            var a = userManager.AddToRoleAsync(users[0], GirafRole.Citizen).Result;
-            a = userManager.AddToRoleAsync(users[1], GirafRole.Guardian).Result;
-            a = userManager.AddToRoleAsync(users[2], GirafRole.SuperUser).Result;
-            a = userManager.AddToRoleAsync(users[3], GirafRole.Department).Result;
-            a = userManager.AddToRoleAsync(users[4], GirafRole.Citizen).Result;
+            userManager.AddToRoleAsync(users[0], GirafRole.Citizen);
+            userManager.AddToRoleAsync(users[1], GirafRole.Guardian);
+            userManager.AddToRoleAsync(users[2], GirafRole.SuperUser);
+            userManager.AddToRoleAsync(users[3], GirafRole.Department);
+            userManager.AddToRoleAsync(users[4], GirafRole.Citizen);
 
             return users;
         }

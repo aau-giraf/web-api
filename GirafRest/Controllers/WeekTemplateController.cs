@@ -106,7 +106,7 @@ namespace GirafRest.Controllers
             if (template == null)
                 return new ErrorResponse<WeekTemplateDTO>(ErrorCode.NoWeekTemplateFound);
 
-            if (! await _authentication.HasTemplateAccess(user, template?.DepartmentKey) )
+            if (! await _authentication.HasTemplateAccess(user, template.DepartmentKey) )
                 return new ErrorResponse<WeekTemplateDTO>(ErrorCode.NotAuthorized);
             
             return new Response<WeekTemplateDTO>(new WeekTemplateDTO(template));
@@ -177,7 +177,7 @@ namespace GirafRest.Controllers
             if (template == null)
                 return new ErrorResponse<WeekTemplateDTO>(ErrorCode.WeekTemplateNotFound);
 
-            if (! await _authentication.HasTemplateAccess(user, template?.DepartmentKey) )
+            if (! await _authentication.HasTemplateAccess(user, template.DepartmentKey) )
                 return new ErrorResponse<WeekTemplateDTO>(ErrorCode.NotAuthorized);
             
             var errorCode = await SetWeekFromDTO(newValuesDto, template, _giraf);
@@ -210,7 +210,7 @@ namespace GirafRest.Controllers
             if (template == null)
                 return new ErrorResponse<WeekTemplateDTO>(ErrorCode.WeekTemplateNotFound);
 
-            if (! await _authentication.HasTemplateAccess(user, template?.DepartmentKey) )
+            if (! await _authentication.HasTemplateAccess(user, template.DepartmentKey) )
                 return new ErrorResponse<WeekTemplateDTO>(ErrorCode.NotAuthorized);
 
             _giraf._context.WeekTemplates.Remove(template);
