@@ -9,9 +9,9 @@ using Moq;
 using GirafRest.Test.Mocks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
 using System.IO;
 using System.Text;
+using System.Threading;
 
 namespace GirafRest.Test
 {
@@ -661,7 +661,7 @@ namespace GirafRest.Test
 
             var mockSet = new Mock<DbSet<T>>();
             mockSet.As<IAsyncEnumerable<T>>()
-                .Setup(m => m.GetEnumerator())
+                .Setup(m => m.GetAsyncEnumerator(It.IsAny<CancellationToken>()))
                 .Returns(new TestDbAsyncEnumerator<T>(data.GetEnumerator()));
             
 

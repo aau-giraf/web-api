@@ -55,6 +55,11 @@ namespace GirafRest.Test
             Task<TResult> task = Task.FromResult(Execute<TResult>(expression));
             return task;
         }
+
+        TResult IAsyncQueryProvider.ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     } 
  
     internal class TestDbAsyncEnumerable<T> : EnumerableQuery<T>, IAsyncEnumerable<T>, IQueryable<T> 
@@ -72,7 +77,7 @@ namespace GirafRest.Test
             return new TestDbAsyncEnumerator<T>(this.AsEnumerable().GetEnumerator()) as IAsyncEnumerator<T>; 
         }
 
-        IAsyncEnumerator<T> IAsyncEnumerable<T>.GetEnumerator()
+        public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default)
         {
             return new TestDbAsyncEnumerator<T>(this.AsEnumerable().GetEnumerator()) as IAsyncEnumerator<T>;
         }
@@ -81,9 +86,9 @@ namespace GirafRest.Test
         { 
             get { return new TestDbAsyncQueryProvider<T>(this); } 
         } 
-    } 
- 
-    internal class TestDbAsyncEnumerator<T> : IAsyncEnumerator<T> 
+    }
+
+    internal class TestDbAsyncEnumerator<T> : IAsyncEnumerator<T>
     { 
         private readonly IEnumerator<T> _inner; 
  
@@ -92,14 +97,23 @@ namespace GirafRest.Test
             _inner = inner; 
         } 
 
-        Task<bool> IAsyncEnumerator<T>.MoveNext(CancellationToken cancellationToken)
+        public ValueTask<bool> MoveNextAsync()
         {
-            return Task.FromResult(_inner.MoveNext()); 
+            return new ValueTask<bool>(_inner.MoveNext());
         }
 
-        void IDisposable.Dispose()
+        public ValueTask DisposeAsync()
         {
-            _inner.Dispose(); 
+            // Attempt to dispose, throw on failure
+            try
+            {
+                _inner.Dispose();
+                return default;
+            }
+            catch (Exception exception)
+            {
+                return new ValueTask(Task.FromException(exception));
+            }
         }
 
         T IAsyncEnumerator<T>.Current => _inner.Current;

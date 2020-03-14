@@ -18,6 +18,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Net.Mime;
 using System.Security.Cryptography;
+using Microsoft.Extensions.Hosting.Internal;
 
 namespace GirafRest.Controllers
 {
@@ -31,11 +32,11 @@ namespace GirafRest.Controllers
 
         private readonly IGirafService _giraf;
         
-        private readonly IHostingEnvironment _hostingEnvironment;
+        private readonly HostingEnvironment _hostingEnvironment;
         
         private readonly string imagePath;
 
-        public PictogramController(IGirafService girafController, ILoggerFactory lFactory, IHostingEnvironment hostingEnvironment) 
+        public PictogramController(IGirafService girafController, ILoggerFactory lFactory, HostingEnvironment hostingEnvironment) 
         {
             _giraf = girafController;
             _giraf._logger = lFactory.CreateLogger("Pictogram");

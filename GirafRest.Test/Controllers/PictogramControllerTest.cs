@@ -11,7 +11,8 @@ using static GirafRest.Test.UnitTestExtensions;
 using GirafRest.Models.DTOs;
 using System.IO;
 using GirafRest.Models.Responses;
-using Microsoft.AspNetCore.Hosting.Internal;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting.Internal;
 
 namespace GirafRest.Test
 {   
@@ -43,8 +44,10 @@ namespace GirafRest.Test
             _testLogger = output;
             PNG_FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Mocks", "MockImage.png");
             JPEG_FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Mocks", "MockImage.jpeg");
-            _hostEnv = new HostingEnvironment();
-            _hostEnv.ContentRootPath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.ToString();
+            _hostEnv = new HostingEnvironment
+            {
+                ContentRootPath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.ToString()
+            };
             _pictogramFolderPath = _hostEnv.ContentRootPath + _pathToPictogramFolder;
             
             // This folder is used to mock the file store of the production server.

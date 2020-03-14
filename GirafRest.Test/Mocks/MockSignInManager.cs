@@ -26,7 +26,8 @@ namespace GirafRest.Test.Mocks
                   new Mock<IUserClaimsPrincipalFactory<GirafUser>>().Object,
                   new Mock<IOptions<IdentityOptions>>().Object,
                   new Mock<ILogger<SignInManager<GirafUser>>>().Object,
-                  new Mock<IAuthenticationSchemeProvider>().Object)
+                  new Mock<IAuthenticationSchemeProvider>().Object,
+                  new Mock<IUserConfirmation<GirafUser>>().Object)
         {
             mum._signInManager = this;
             usernamePasswordList = tc.MockUsers.Select(u => new Tuple<string, string>(u.UserName, "password")).ToList();
