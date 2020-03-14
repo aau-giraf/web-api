@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using GirafRest.Filters;
 using AspNetCoreRateLimit;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using Microsoft.OpenApi.Models;
 
 namespace GirafRest.Setup
 {
@@ -124,21 +125,35 @@ namespace GirafRest.Setup
             // Register the Swagger generator, defining one or more Swagger documents
             services.AddSwaggerGen(c =>
             { 
-                c.SwaggerDoc("v1", new Info { Title = "The Giraf REST API", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "The Giraf REST API", Version = "v1" });
                 c.DescribeAllEnumsAsStrings();
                 var basePath = AppContext.BaseDirectory;
                 var xmlPath = Path.Combine(basePath, "GirafRest.xml");
                 c.IncludeXmlComments(xmlPath);
-                c.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
                     Name = "Authorization",
-                    In = "header",
-                    Type = "apiKey"
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey
                 });
-                c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
                 {
-                    { "Bearer", new string[] { } }
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Scheme = "oauth2",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header,
+
+                        },
+                        new List<string>()
+                    }
                 });
             });
         }
