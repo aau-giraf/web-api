@@ -253,7 +253,7 @@ namespace GirafRest.Test
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             // check data
-            Assert.Equal(null, res.Data.Department);
+            Assert.Null(res.Data.Department);
         }
         
         [Fact]

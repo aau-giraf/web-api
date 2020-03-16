@@ -8,20 +8,12 @@ using GirafRest.Models;
 using GirafRest.Services;
 using GirafRest.Extensions;
 using Microsoft.AspNetCore.Identity;
-using GirafRest.Controllers;
 using Serilog;
 using System;
-using Swashbuckle.AspNetCore.Swagger;
-using System.Net;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
-using GirafRest.Models.Responses;
 using System.IO;
 using System.Text;
-using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -30,6 +22,7 @@ using GirafRest.Filters;
 using AspNetCoreRateLimit;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Hosting;
 
 namespace GirafRest.Setup
 {
@@ -40,7 +33,7 @@ namespace GirafRest.Setup
     /// </summary>
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        public Startup(IWebHostEnvironment env)
         {
             HostingEnvironment = env;
             var coreEnvironement = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
@@ -66,7 +59,7 @@ namespace GirafRest.Setup
             }
         }
 
-        public IHostingEnvironment HostingEnvironment { get; }
+        public IWebHostEnvironment HostingEnvironment { get; }
         /// <summary>
         /// The configuration, contains information regarding connecting to the database
         /// </summary>
@@ -199,11 +192,11 @@ namespace GirafRest.Setup
         /// </summary>
         public void Configure(
             IApplicationBuilder app,
-            IHostingEnvironment env,
+            IWebHostEnvironment env,
             ILoggerFactory loggerFactory,
             UserManager<GirafUser> userManager,
             RoleManager<GirafRole> roleManager,
-            IApplicationLifetime appLifetime)
+            IHostApplicationLifetime appLifetime)
         {
             app.UseIpRateLimiting();
 

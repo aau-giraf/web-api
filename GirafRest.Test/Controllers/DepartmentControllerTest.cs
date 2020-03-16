@@ -217,7 +217,7 @@ namespace GirafRest.Test
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             //Check Data
-            Assert.True(res.Data.Resources.Any(r => r == RESOURCE_THREE));
+            Assert.Contains(res.Data.Resources, r => r == RESOURCE_THREE);
         }
 
         [Fact]
