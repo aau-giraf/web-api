@@ -233,3 +233,11 @@ class UserControllerTest(TestCase):
         response = requests.get(Test.url + 'User/{0}/guardians'.format(self.graatandId),
                                 headers=auth(self.graatand)).json()
         ensureError(response, check)
+
+
+    @test(skip_if_failed=['loginAsKurt', 'GetKurtID'])
+    def citizenCantChangeSettings(self, check):
+        'Checking citizen can\'t change settings'
+        respons = requests.put(Test.url + 'User/{0}/settings'.format(self.kurtId), json=LargeData.allSettings,
+                               headers=auth(self.kurt)).json()
+        ensureError(respons, check)
