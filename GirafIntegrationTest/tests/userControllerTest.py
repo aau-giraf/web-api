@@ -240,4 +240,4 @@ class UserControllerTest(TestCase):
         'Checking citizen can\'t change settings'
         response = requests.put(Test.url + 'User/{0}/settings'.format(self.kurtId), json=LargeData.allSettings,
                                headers=auth(self.kurt)).json()
-        ensureError(respons, check)
+        ensureError(response, check)
