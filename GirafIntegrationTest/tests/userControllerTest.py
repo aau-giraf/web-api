@@ -169,28 +169,28 @@ class UserControllerTest(TestCase):
     @test(skip_if_failed=['registerGunnar', 'userInfo'])
     def settingsSetTheme(self, check):
         'Enable grayscale'
-        response = requests.put(Test.url + 'User/{0}/settings'.format(self.gunnarId), json=LargeData.grayscaleSettings, headers=auth(self.gunnar)).json()
+        response = requests.put(Test.url + 'User/{0}/settings'.format(self.gunnarId), json=LargeData.grayscaleSettings, headers=auth(self.graatand)).json()
         ensureSuccess(response, check)
-        response = requests.get(Test.url + 'User/{0}/settings'.format(self.gunnarId), headers=auth(self.gunnar)).json()
+        response = requests.get(Test.url + 'User/{0}/settings'.format(self.gunnarId), headers=auth(self.graatand)).json()
         check.equal(LargeData.grayscaleSettings['theme'], response['data']['theme'])
 
     @test(skip_if_failed=['registerGunnar', 'userInfo'])
     def settingsSetTimerSeconds(self, check):
         'Set default countdown time'
         response = requests.put(Test.url + 'User/{0}/settings'.format(self.gunnarId), json=LargeData.timer1HourSettings,
-                                headers=auth(self.gunnar)).json()
+                                headers=auth(self.graatand)).json()
         ensureSuccess(response, check)
-        response = requests.get(Test.url + 'User/{0}/settings'.format(self.gunnarId), headers=auth(self.gunnar)).json()
+        response = requests.get(Test.url + 'User/{0}/settings'.format(self.gunnarId), headers=auth(self.graatand)).json()
         check.equal(LargeData.timer1HourSettings['timerSeconds'], response['data']['timerSeconds'])
 
     @test(skip_if_failed=['registerGunnar', 'userInfo'], depends=['settingsSetTheme', 'settingsSetLauncherAnimationsOn',
                                                                   'settingsSetLauncherAnimationsOff'])
     def settingsMultiple(self, check):
         'Set all settings'
-        response = requests.put(Test.url + 'User/{0}/settings'.format(self.gunnarId), json=LargeData.allSettings, headers=auth(self.gunnar)).json()
+        response = requests.put(Test.url + 'User/{0}/settings'.format(self.gunnarId), json=LargeData.allSettings, headers=auth(self.graatand)).json()
         ensureSuccess(response, check)
 
-        response = requests.get(Test.url + 'User/{0}/settings'.format(self.gunnarId), headers=auth(self.gunnar)).json()
+        response = requests.get(Test.url + 'User/{0}/settings'.format(self.gunnarId), headers=auth(self.graatand)).json()
         ensureSuccess(response, check)
         check.equal(2, response['data']['orientation'])
         check.equal(2, response['data']['completeMark'])
