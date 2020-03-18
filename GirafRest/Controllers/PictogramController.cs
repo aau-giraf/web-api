@@ -317,7 +317,26 @@ namespace GirafRest.Controllers
             if (!CheckOwnership(picto, usr).Result)
                 return new ErrorResponse<byte[]>(ErrorCode.NotAuthorized);
 
-            return new Response<byte[]>(System.IO.File.ReadAllBytes(imagePath + picto.Id + ".png"));
+            var pictoPath = $"{imagePath}{picto.Id}.png";
+
+            //Check if the actual, physical file exists on the drive
+            if(! System.IO.File.Exists(pictoPath))
+                return new ErrorResponse<byte[]>(ErrorCode.NotFound);
+            
+            
+            
+            //At this time, there is no '.NET native' way to check file permissions on Linux, so instead we catch an exception, if current (OS) user does not have read permission
+            try
+            {
+                byte[] data = System.IO.File.ReadAllBytes(pictoPath);
+                return new Response<byte[]>(data);
+            }
+            catch(UnauthorizedAccessException uAEx)
+            {
+                return new ErrorResponse<byte[]>(ErrorCode.NotAuthorized);
+            }
+
+
         }
 
         /// <summary>
@@ -343,21 +362,30 @@ namespace GirafRest.Controllers
                 return NotFound();
             
             // you can get all public pictograms
-            if (CheckOwnership(picto, usr).Result)
+            if (!CheckOwnership(picto, usr).Result)
+            {
+                return NotFound();
+            }
+
+            string pictoPath = $"{imagePath}{picto.Id}.png";
+
+            //Check if there actually is a file, as specified in the database
+            if(! System.IO.File.Exists(pictoPath))
+                return NotFound();
+
+            //At this time, there is no '.NET native' way to check file permissions on Linux, so instead we catch an exception, if current (OS) user does not have read permission
+            try
             {
                 _giraf._logger.LogInformation(imagePath);
                 return PhysicalFile(imagePath + picto.Id + ".png", IMAGE_TYPE_PNG);
             }
-
-            // you can only get a protected picogram if it is owned by your department
-            if (picto.AccessLevel == AccessLevel.PROTECTED && !picto.Departments.Any(d => d.OtherKey == usr.DepartmentKey))
-                return NotFound();
-
-            // you can only get a private pictogram if you are among the owners of the pictogram
-            if (picto.AccessLevel == AccessLevel.PRIVATE && !picto.Users.Any(d => d.OtherKey == usr.Id))
-                return NotFound();
-
-            return NotFound();
+            catch(UnauthorizedAccessException uAEx)
+            {
+                //This exception occurs if the current (OS) user, under which the api is running does not have read access to the file
+                //If this is the case, return HTTP code 403, Forbidden
+                return new StatusCodeResult(403); 
+            }
+            
         }
 
         #endregion
@@ -371,7 +399,7 @@ namespace GirafRest.Controllers
         /// <param name="usr">The user in question.</param>
         /// <returns>A bool indicating whether the user owns the pictogram or not.</returns>
         private async Task<bool> CheckOwnership(Pictogram picto, GirafUser usr)
-        {
+        { 
             var ownsPictogram = false;
             switch (picto.AccessLevel)
             {
