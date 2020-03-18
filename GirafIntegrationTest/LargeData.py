@@ -171,3 +171,19 @@ allSettings = {
           }
       ]
   }
+
+updatedSettings1 = {
+      "orientation": 1,
+      "completeMark": 2,
+      "cancelMark": 1,
+      "defaultTimer": 2,
+      "theme": 1
+  }
+
+updatedSettings2 = {
+      "orientation": 1,
+      "completeMark": 2,
+      "cancelMark": 1,
+      "defaultTimer": 2,
+      "theme": 2
+  }

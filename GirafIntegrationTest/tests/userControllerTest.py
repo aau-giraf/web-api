@@ -23,6 +23,8 @@ class UserControllerTest(TestCase):
     gunnar = None
     charlieUsername = None
     charlie = None
+    lee = None
+    tobias = None
     wednesday = None
     wendesdayID = None
     wednesdayIDBody = None
@@ -36,6 +38,16 @@ class UserControllerTest(TestCase):
     def loginAsGraatand(self, check):
         'Log in as Graatand'
         self.graatand = login('Graatand', check)
+
+    @test()
+    def loginAsLee(self, check):
+        'Log in as Lee'
+        self.lee = login('Lee', check)
+
+    @test()
+    def loginAsTobias(self, check):
+        'Log in as Tobias'
+        self.tobias = login('Tobias', check)
 
     @test(skip_if_failed=['loginAsKurt'])
     def GetKurtID(self, check):
@@ -241,3 +253,20 @@ class UserControllerTest(TestCase):
         response = requests.put(Test.url + 'User/{0}/settings'.format(self.kurtId), json=LargeData.allSettings,
                                headers=auth(self.kurt)).json()
         ensureError(response, check)
+
+    @test(skip_if_failed=['registerGunnar','loginAsLee', 'settingsMultiple'])
+    def superUserChangeCitizenSetting(self, check):
+        'Checking superUser can change citizens setting'
+        response = requests.put(Test.url + 'User/{0}/settings'.format(self.gunnarId), json=LargeData.updatedSettings1,
+                                headers=auth(self.lee)).json()
+        ensureSuccess(response, check)
+        check.equal(1, response['data']['theme'])
+
+
+    @test(skip_if_failed=['registerGunnar','loginAsTobias', 'settingsMultiple'])
+    def departmentChangeCitizenSetting(self, check):
+        'Checking department can change citizens setting'
+        response = requests.put(Test.url + 'User/{0}/settings'.format(self.gunnarId), json=LargeData.updatedSettings2,
+                                headers=auth(self.tobias)).json()
+        ensureSuccess(response, check)
+        check.equal(2, response['data']['theme'])
