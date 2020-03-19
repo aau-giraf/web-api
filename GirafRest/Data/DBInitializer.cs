@@ -18,8 +18,16 @@ namespace GirafRest.Setup
 		public static void Initialize(GirafDbContext context, UserManager<GirafUser> userManager)
 		{
             // Check if any data is in the database
-            if (context.Users.Any())
-				return;
+            if (context.Users.Any()){
+                ///<summary>
+                ///SampleDataHandler creates a samples.json file by storing current database data in plaintext, in samples.json
+                ///Use only if samples.json does not exist in Data folder and only sample data exists in the database
+                ///</summary>
+                //SampleDataHandler sampleHandler = new SampleDataHandler();
+                //sampleHandler.SerializeData(context);
+
+                return;
+            }
 
             var departments = AddSampleDepartments(context);
             var users = AddSampleUsers(context, userManager, departments);
