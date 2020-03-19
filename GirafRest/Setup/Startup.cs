@@ -104,6 +104,7 @@ namespace GirafRest.Setup
             services.AddTransient<IGirafService, GirafService>();
             services.AddMvc(options =>
             {
+                options.EnableEndpointRouting = false;
                 options.Filters.Add<LogFilter>();
             });
 
