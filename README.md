@@ -11,10 +11,10 @@ To run the project locally with a MySQL database first do the following:
 0. Prerequisites:
   - Download and install .NET Core 2.2 SDK or a version backwardly compatible with it.
   - Download MySQL installer
-  	* Install MySQL server 5.7, under the setup,create a root account with password “password”, and add a user with username “user” with password “password”.
+  	* Install MySQL server 5.7, under the setup, create a root account with password “password”, and add a user with username “user” with password “password”.
 	* (Optional) Install Workbench
   - Setup a giraf database/schema named giraf on the MySQL Server (can be done from Workbench or via cli).
-    * Through Workbench: Start MySQL Workbench. There should be a Local instance running under MySQL Connections, login using the created root password, “password”, create a new schema named giraf
+    * (Through Workbench) Start MySQL Workbench. There should be a Local instance running under MySQL Connections, log in using the created root password, “password”, create a new schema named giraf
 	
 1. Clone the web_api repository from GitHub
 
@@ -23,7 +23,7 @@ To run the project locally with a MySQL database first do the following:
   - Open the created file “appsettings.Development.json” file with a text editor
   - Change the following (Remember to remove the “<” and “>”) : 
     * The DefaultConnection on line 3 making it use the previously setup database name and user, change to: "DefaultConnection": "server=localhost;port=3306;userid=user;password=password;database=giraf;Allow User Variables=True"
-    * The Jwt.JwtKey on line 24 to be any (random) string of, at least 40, alpha-numeric charecters.
+    * The Jwt.JwtKey on line 24 to be any (random) string of, at least 40, alpha-numeric characters.
     * The Jwt.JwtIssuer on line 25 to your name or organization. For example "Aalborg University"
  
 3. Open a terminal and navigate to …\ web-api\GirafRest folder
@@ -31,7 +31,7 @@ To run the project locally with a MySQL database first do the following:
   - Run `dotnet ef database update`
   - Run `dotnet run --sample-data`
 
-The flags that can be used for run:
+The flags that can be used for the run:
 
         --prod=[true|false]		| If true then connect to production db, defaults to false.
         --port=integer		| Specify which port to host the server on, defaults to 5000.
@@ -42,12 +42,12 @@ The flags that can be used for run:
 Once the API is running locally you can navigate to http://localhost:5000/swagger/ to see and tryout requests to the endpoints. We recommend keeping a text file with often-used DTOs and bearer tokens as part of your workflow.
 
 3. (Optional) To login via swagger:
-  - Make a Account/Login request with valid login-info (username: `Tobias`, password: `password`)
+  - Make an Account/Login request with valid login-info (username: `Tobias`, password: `password`)
   - Copy the `data` field containing the token.
   - Click on the green Authorize button (Or the padlocks)
   - Write `bearer [your-token]` (note the space) in the input-field. 
   - Click Authorize and close the pop-up. 
-  - You are now authorized and can make autorized requests.
+  - You are now authorized and can make authorized requests.
 
 5. Let weekplanner use the local database and Giraf web_api server
   - In the weekplanner repository in the …/weekplanner/assets/environments.json file line 2 change the “http://srv.giraf.cs.aau.dk/PROD/API” to 
