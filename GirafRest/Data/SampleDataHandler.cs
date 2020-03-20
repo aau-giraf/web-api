@@ -23,7 +23,7 @@ namespace GirafRest.Setup
             jsonFile = path;
         }
 
-        public SampleData initSampleData()
+        public SampleData DeserializeData()
         {
             try
             {
@@ -45,6 +45,27 @@ namespace GirafRest.Setup
             data.userList = (from user in context.Users select user).ToList();
             data.departmentList = (from dep in context.Departments select dep).ToList();
             data.pictogramList = (from pic in context.Pictograms select pic).ToList();
+            data.weekList = (from user in context.Users select user.WeekSchedule.ToList()).ToList();
+            //data.activityList = (from d in (from a in data.weekList select a) select d.).ToList();
+
+            List<Activity> tempActList = new List<Activity>();
+
+            foreach (List<Week> weeks in data.weekList)
+            {
+                foreach (Week week in weeks)
+                {
+                    foreach (Weekday day in week.Weekdays.ToList())
+                    {
+                        foreach (Activity act in day.Activities)
+                        {
+                            tempActList.Add(act);
+                            Console.WriteLine(tempActList.ToString());
+                        }
+                    }
+                }
+            }
+
+            data.activityList = tempActList;
 
             string jsonSamples = JsonConvert.SerializeObject(data, new JsonSerializerSettings()
             {
@@ -61,5 +82,7 @@ namespace GirafRest.Setup
         public List<GirafUser> userList { get; set; }
         public List<Department> departmentList { get; set; }
         public List<Pictogram> pictogramList { get; set; }
+        public List<List<Week>> weekList { get; set; }
+        public List<Activity> activityList { get; set; }
     }
 }
