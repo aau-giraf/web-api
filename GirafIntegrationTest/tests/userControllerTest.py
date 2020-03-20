@@ -4,6 +4,8 @@ from testLib import *
 from integrate import TestCase, test
 import time
 
+from GirafIntegrationTest.testLib import login
+
 
 def auth(token):
     return {"Authorization": "Bearer {0}".format(token)}
@@ -23,6 +25,8 @@ class UserControllerTest(TestCase):
     gunnar = None
     charlieUsername = None
     charlie = None
+    blaatand = None
+    blaatandId = None
     wednesday = None
     wendesdayID = None
     wednesdayIDBody = None
@@ -36,6 +40,11 @@ class UserControllerTest(TestCase):
     def loginAsGraatand(self, check):
         'Log in as Graatand'
         self.graatand = login('Graatand', check)
+
+    @test()
+    def loginAsBlaatand(self, check):
+        'Log in as Blaatand'
+        self.blaatand = login('Blaatand', check)
 
     @test(skip_if_failed=['loginAsKurt'])
     def GetKurtID(self, check):
@@ -52,6 +61,14 @@ class UserControllerTest(TestCase):
         ensureSuccess(response, check)
         check.equal(response['data']['username'], 'Graatand')
         self.graatandId = response['data']['id']
+
+    @test(skip_if_failed=['loginAsBlaatand'])
+    def getBlaatandID(self, check):
+        'Get user info Blaatand'
+        response = requests.get(Test.url + 'User', headers=auth(self.blaatand)).json()
+        ensureSuccess(response, check)
+        check.equal(response['data']['username'], 'Blaatand')
+        self.blaatandId = response['data']['id']
 
     @test()
     def registerGunnar(self, check):
@@ -233,3 +250,11 @@ class UserControllerTest(TestCase):
         response = requests.get(Test.url + 'User/{0}/guardians'.format(self.graatandId),
                                 headers=auth(self.graatand)).json()
         ensureError(response, check)
+
+    @test(skip_if_failed=['getBlaatandID'])
+    def getNullSettingsBlaatand(self,check):
+        'Get settings for Blaatand and see null'
+        print(self.blaatandId)
+        response = requests.get(Test.url + 'User/{0}/settings'.format(self.blaatandId),
+                                headers=auth(self.blaatand)).json()
+        print(response)
