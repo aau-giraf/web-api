@@ -23,10 +23,10 @@ namespace GirafRest.Test
         }
         
         [Fact]
-        public void initSampleDataTest()
+        public void DeserializeDataTest()
         {
             SampleDataHandler dataHandler = new SampleDataHandler("..\\netcoreapp2.2\\Data\\samples.json");
-            SampleData data = dataHandler.initSampleData();
+            SampleData data = dataHandler.DeserializeData();
             
             List<GirafUser> users = data.userList;
             Console.WriteLine(data.userList.Count);
@@ -72,5 +72,6 @@ namespace GirafRest.Test
                 Assert.True(File.Exists(testJson));
             }
         }
+
     }
 }

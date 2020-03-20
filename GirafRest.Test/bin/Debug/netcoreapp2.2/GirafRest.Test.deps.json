@@ -32,7 +32,7 @@
       "AspNetCoreRateLimit/3.0.3": {
         "dependencies": {
           "Microsoft.AspNetCore.Http": "2.2.2",
-          "Newtonsoft.Json": "12.0.3"
+          "Newtonsoft.Json": "12.0.1"
         },
         "runtime": {
           "lib/netstandard2.0/AspNetCoreRateLimit.dll": {
@@ -321,7 +321,7 @@
       "Microsoft.IdentityModel.JsonWebTokens/5.4.0": {
         "dependencies": {
           "Microsoft.IdentityModel.Tokens": "5.4.0",
-          "Newtonsoft.Json": "12.0.3"
+          "Newtonsoft.Json": "12.0.1"
         },
         "runtime": {
           "lib/netstandard2.0/Microsoft.IdentityModel.JsonWebTokens.dll": {
@@ -341,7 +341,7 @@
       "Microsoft.IdentityModel.Tokens/5.4.0": {
         "dependencies": {
           "Microsoft.IdentityModel.Logging": "5.4.0",
-          "Newtonsoft.Json": "12.0.3",
+          "Newtonsoft.Json": "12.0.1",
           "System.Runtime.InteropServices.RuntimeInformation": "4.3.0",
           "System.Runtime.Serialization.Xml": "4.3.0",
           "System.Security.Claims": "4.3.0"
@@ -465,7 +465,7 @@
       "Microsoft.TestPlatform.TestHost/15.0.0": {
         "dependencies": {
           "Microsoft.TestPlatform.ObjectModel": "15.0.0",
-          "Newtonsoft.Json": "12.0.3"
+          "Newtonsoft.Json": "12.0.1"
         },
         "runtime": {
           "lib/netstandard1.5/Microsoft.TestPlatform.CommunicationUtilities.dll": {
@@ -626,7 +626,7 @@
       },
       "Microsoft.VisualStudio.Web.CodeGeneration.Contracts/2.2.3": {
         "dependencies": {
-          "Newtonsoft.Json": "12.0.3"
+          "Newtonsoft.Json": "12.0.1"
         },
         "runtime": {
           "lib/netstandard2.0/Microsoft.VisualStudio.Web.CodeGeneration.Contracts.dll": {
@@ -638,7 +638,7 @@
       "Microsoft.VisualStudio.Web.CodeGeneration.Core/2.2.3": {
         "dependencies": {
           "Microsoft.VisualStudio.Web.CodeGeneration.Templating": "2.2.3",
-          "Newtonsoft.Json": "12.0.3"
+          "Newtonsoft.Json": "12.0.1"
         },
         "runtime": {
           "lib/netstandard2.0/Microsoft.VisualStudio.Web.CodeGeneration.Core.dll": {
@@ -684,7 +684,7 @@
         "dependencies": {
           "Microsoft.CodeAnalysis.CSharp.Workspaces": "2.8.0",
           "Microsoft.VisualStudio.Web.CodeGeneration.Contracts": "2.2.3",
-          "Newtonsoft.Json": "12.0.3",
+          "Newtonsoft.Json": "12.0.1",
           "NuGet.Frameworks": "4.7.0"
         },
         "runtime": {
@@ -752,11 +752,11 @@
           }
         }
       },
-      "Newtonsoft.Json/12.0.3": {
+      "Newtonsoft.Json/12.0.1": {
         "runtime": {
           "lib/netstandard2.0/Newtonsoft.Json.dll": {
             "assemblyVersion": "12.0.0.0",
-            "fileVersion": "12.0.3.23909"
+            "fileVersion": "12.0.1.22727"
           }
         }
       },
@@ -783,7 +783,7 @@
       },
       "Pomelo.JsonObject/2.2.0": {
         "dependencies": {
-          "Newtonsoft.Json": "12.0.3"
+          "Newtonsoft.Json": "12.0.1"
         },
         "runtime": {
           "lib/netstandard2.0/Pomelo.JsonObject.dll": {
@@ -1030,7 +1030,7 @@
       },
       "Swashbuckle.AspNetCore.SwaggerUI/4.0.1": {
         "dependencies": {
-          "Newtonsoft.Json": "12.0.3"
+          "Newtonsoft.Json": "12.0.1"
         },
         "runtime": {
           "lib/netstandard2.0/Swashbuckle.AspNetCore.SwaggerUI.dll": {
@@ -1130,7 +1130,7 @@
         "dependencies": {
           "Microsoft.IdentityModel.JsonWebTokens": "5.4.0",
           "Microsoft.IdentityModel.Tokens": "5.4.0",
-          "Newtonsoft.Json": "12.0.3"
+          "Newtonsoft.Json": "12.0.1"
         },
         "runtime": {
           "lib/netstandard2.0/System.IdentityModel.Tokens.Jwt.dll": {
@@ -1281,7 +1281,6 @@
           "Microsoft.VisualStudio.Web.BrowserLink": "2.2.0",
           "Microsoft.VisualStudio.Web.CodeGeneration.Design": "2.2.3",
           "NETCore.MailKit": "2.0.2",
-          "Newtonsoft.Json": "12.0.3",
           "Pomelo.EntityFrameworkCore.MySql": "2.2.0",
           "Serilog.Extensions.Logging.File": "1.1.0",
           "Swashbuckle.AspNetCore": "4.0.1",
@@ -1622,12 +1621,12 @@
       "path": "netcore.mailkit/2.0.2",
       "hashPath": "netcore.mailkit.2.0.2.nupkg.sha512"
     },
-    "Newtonsoft.Json/12.0.3": {
+    "Newtonsoft.Json/12.0.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-6mgjfnRB4jKMlzHSl+VD+oUc1IebOZabkbyWj2RiTgWwYPPuaK1H97G1sHqGwPlS5npiF5Q0OrxN1wni2n5QWg==",
-      "path": "newtonsoft.json/12.0.3",
-      "hashPath": "newtonsoft.json.12.0.3.nupkg.sha512"
+      "sha512": "sha512-pBR3wCgYWZGiaZDYP+HHYnalVnPJlpP1q55qvVb+adrDHmFMDc1NAKio61xTwftK3Pw5h7TZJPJEEVMd6ty8rg==",
+      "path": "newtonsoft.json/12.0.1",
+      "hashPath": "newtonsoft.json.12.0.1.nupkg.sha512"
     },
     "NuGet.Frameworks/4.7.0": {
       "type": "package",
