@@ -14,21 +14,16 @@ To run the project locally with a MySQL database first do the following:
   	* Install MySQL server 5.7, under the setup,create a root account with password “password”, and add a user with username “user” with password “password”.
 	* (Optional) Install Workbench
   - Setup a giraf database/schema named giraf on the MySQL Server (can be done from Workbench or via cli).
-    * Through Workbench:	
-    	Start MySQL Workbench
-	There should be a Local instance running under MySQL Connections
-	Login using the created root password, “password”
-	Create a new schema named giraf
+    * Through Workbench: Start MySQL Workbench. There should be a Local instance running under MySQL Connections, login using the created root password, “password”, create a new schema named giraf
 	
 1. Clone the web_api repository from GitHub
 
 2. Setup the connection to the local MySQL server.
-  - In the …\ web-api\GirafRest create a copy of the file “appsettings.template.json” and call it “appsettings.Development.json”.
+  - In the …\ web-api\GirafRest create a copy of the file “appsettings.template.json” and name it “appsettings.Development.json”.
   - Open the created file “appsettings.Development.json” file with a text editor
-  - Using the previously setup change the following: 
-    * The DefaultConnection on line 3 to:
-    * "DefaultConnection": "server=localhost;port=3306;userid=user;password=password;database=giraf;Allow User Variables=True"
-    * The Jwt.JwtKey on line 24 to be any (random) string of, at least 40, alpha-numeric charecters. (Remember to remove the “<” and “>”.
+  - Change the following (Remember to remove the “<” and “>”) : 
+    * The DefaultConnection on line 3 making it use the previously setup database name and user, change to: "DefaultConnection": "server=localhost;port=3306;userid=user;password=password;database=giraf;Allow User Variables=True"
+    * The Jwt.JwtKey on line 24 to be any (random) string of, at least 40, alpha-numeric charecters.
     * The Jwt.JwtIssuer on line 25 to your name or organization. For example "Aalborg University"
  
 3. Open a terminal and navigate to …\ web-api\GirafRest folder
@@ -39,9 +34,9 @@ To run the project locally with a MySQL database first do the following:
 The flags that can be used for run:
 
         --prod=[true|false]		| If true then connect to production db, defaults to false.
-        --port=integer			| Specify which port to host the server on, defaults to 5000.
-        --list				    | List options
-        --sample-data		    | Tells the rest-api to generate some sample data. This only works on an empty database.
+        --port=integer		| Specify which port to host the server on, defaults to 5000.
+        --list			| List options
+        --sample-data		| Tells the rest-api to generate some sample data. This only works on an empty database.
         --logfile=string		| Toggles logging to a file, the string specifies the path to the file relative to the working directory.
 
 Once the API is running locally you can navigate to http://localhost:5000/swagger/ to see and tryout requests to the endpoints. We recommend keeping a text file with often-used DTOs and bearer tokens as part of your workflow.
@@ -95,7 +90,7 @@ For more information see the project report of group sw613f18
 
 ## Contributors
 
-SW613f18 & SW615f17
+SW615f20, SW613f18 & SW615f17
 
 ## License
 MIT License
