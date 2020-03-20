@@ -43,9 +43,23 @@ namespace GirafRest.Models
 
         public virtual Setting Settings { get; set; }
 
-        private void IntialiseData()
+        private void InitialiseData(GirafRoles role)
+        {
+            if (role == GirafRoles.Citizen)
+            {
+                this.Settings = new Setting();
+                this.Settings.InitialiseWeekDayColors();
+            }
+            this.Resources = new List<UserResource>();
+            this.WeekSchedule = new List<Week>();
+            this.Citizens = new List<GuardianRelation>();
+            this.Guardians = new List<GuardianRelation>();
+        }
+        
+        private void InitialiseData()
         {
             this.Settings = new Setting();
+            this.Settings.InitialiseWeekDayColors();
             this.Resources = new List<UserResource>();
             this.WeekSchedule = new List<Week>();
             this.Citizens = new List<GuardianRelation>();
@@ -77,17 +91,16 @@ namespace GirafRest.Models
             this.Guardians.Add(new GuardianRelation(guardian, this));
         }
 
-        public GirafUser(string userName, Department department) : base(userName)
+        public GirafUser(string userName, Department department, GirafRoles role) : base(userName)
         {
-            IntialiseData();
-            Settings.InitialiseWeekDayColors();
+            InitialiseData(role);
             DepartmentKey = department?.Key ?? -1;
         }
 
         // DO NOT DELETE
         public GirafUser()
         {
-            IntialiseData();
+            InitialiseData();
         }
 
        

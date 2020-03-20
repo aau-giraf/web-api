@@ -132,7 +132,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.DepartmentNotFound);
 
             //Create a new user with the supplied information
-            var user = new GirafUser (model.Username, department);
+            var user = new GirafUser (model.Username, department, model.Role);
             if (model.DisplayName == null){
                 user.DisplayName = model.Username;
             }
