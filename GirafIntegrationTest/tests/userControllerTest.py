@@ -253,8 +253,8 @@ class UserControllerTest(TestCase):
 
     @test(skip_if_failed=['getBlaatandID'])
     def getNullSettingsBlaatand(self,check):
-        'Get settings for Blaatand and see null'
+        'Get settings for Blaatand and see error'
         print(self.blaatandId)
         response = requests.get(Test.url + 'User/{0}/settings'.format(self.blaatandId),
                                 headers=auth(self.blaatand)).json()
-        print(response)
+        ensureError(response, check)
