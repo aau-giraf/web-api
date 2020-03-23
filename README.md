@@ -27,7 +27,7 @@ To run the project locally with a MySQL database first do the following:
     * The Jwt.JwtIssuer on line 25 to your name or organization. For example "Aalborg University"
  
 3. Open a terminal and navigate to …\ web-api\GirafRest folder
-  - Run `dotnet restore`
+  - Run `dotnet restore`  
   - Run `dotnet ef database update`
   - Run `dotnet run --sample-data`
 
@@ -51,8 +51,8 @@ Once the API is running locally you can navigate to http://localhost:5000/swagge
 
 5. Let weekplanner use the local database and Giraf web_api server
   - In the weekplanner repository in the …/weekplanner/assets/environments.json file line 2 change the “http://srv.giraf.cs.aau.dk/PROD/API” to 
-    * If using an Android emulator: “http://10.0.2.2:5000” 
-    * If using a hardware device: “http://localhost:5000”
+    * If using an Android emulator: “http://10.0.2.2:5000”. 
+    * If using a hardware device: Turn on "Use USB Tethering" in the device under networks settings. Next get your computers local ip under network settings, this should be used in the envrionments.json file followed by ":5000", E.g. “http://192.168.42.130:5000”. 
 
 ## Migrations (Only for developers of the API)
 If changes has been made to the model classes then a new migration should be added to be able to update the database without losing data:
