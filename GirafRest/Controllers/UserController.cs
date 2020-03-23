@@ -83,7 +83,7 @@ namespace GirafRest.Controllers
         /// Get user-settings for the user with the specified Id
         /// </summary>
         /// <param name="id">Identifier of the <see cref="GirafUser"/> to get settings for </param>
-        /// <returns> UserSettings for the user if success else MissingProperties, UserNotFound or NotAuthorized </returns>
+        /// <returns> UserSettings for the user if success else MissingProperties, UserNotFound, NotAuthorized or MissingSettings</returns>
         [HttpGet("{id}/settings")]
         public async Task<Response<SettingDTO>> GetSettings(string id)
         {
@@ -99,7 +99,14 @@ namespace GirafRest.Controllers
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse<SettingDTO>(ErrorCode.NotAuthorized);
 
-            return new Response<SettingDTO>(new SettingDTO(user.Settings));
+            // Get the role the user is associated with
+            var userRole = await _roleManager.findUserRole(_giraf._userManager, user);
+            
+            //Returns the user settings if the user is a citizen otherwise returns an error (only citizens has settings). 
+            if (userRole == GirafRoles.Citizen)
+                return new Response<SettingDTO>(new SettingDTO(user.Settings));
+            else
+                return new ErrorResponse<SettingDTO>(ErrorCode.MissingSettings); //TODO: Figure out correct error to send, remember to change documentation.
         }
 
         /// <summary>
@@ -464,7 +471,7 @@ namespace GirafRest.Controllers
         /// <param name="options">reference to a <see cref="SettingDTO"/> containing the new settings</param>
         [HttpPut("{id}/settings")]
         [Authorize]
-        public async Task<Response<SettingDTO>> UpdateUserSettings(string id, [FromBody] SettingDTO options)
+        public async Task<Response<SettingDTO>> UpdateUserSettings(string id, [FromBody] SettingDTO options) //TODO: Figure out if we want to check whether the user is a citizen before the missing settings check.
         {
             var user = _giraf._context.Users.Include(u => u.Settings).ThenInclude(w => w.WeekDayColors).FirstOrDefault(u => u.Id == id);
             if (user == null)
