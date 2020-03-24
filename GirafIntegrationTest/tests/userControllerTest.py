@@ -23,6 +23,8 @@ class UserControllerTest(TestCase):
     gunnar = None
     charlieUsername = None
     charlie = None
+    lee = None
+    tobias = None
     wednesday = None
     wendesdayID = None
     wednesdayIDBody = None
@@ -36,6 +38,16 @@ class UserControllerTest(TestCase):
     def loginAsGraatand(self, check):
         'Log in as Graatand'
         self.graatand = login('Graatand', check)
+
+    @test()
+    def loginAsLee(self, check):
+        'Log in as Lee'
+        self.lee = login('Lee', check)
+
+    @test()
+    def loginAsTobias(self, check):
+        'Log in as Tobias'
+        self.tobias = login('Tobias', check)
 
     @test(skip_if_failed=['loginAsKurt'])
     def GetKurtID(self, check):
@@ -169,28 +181,28 @@ class UserControllerTest(TestCase):
     @test(skip_if_failed=['registerGunnar', 'userInfo'])
     def settingsSetTheme(self, check):
         'Enable grayscale'
-        response = requests.put(Test.url + 'User/{0}/settings'.format(self.gunnarId), json=LargeData.grayscaleSettings, headers=auth(self.gunnar)).json()
+        response = requests.put(Test.url + 'User/{0}/settings'.format(self.gunnarId), json=LargeData.grayscaleSettings, headers=auth(self.graatand)).json()
         ensureSuccess(response, check)
-        response = requests.get(Test.url + 'User/{0}/settings'.format(self.gunnarId), headers=auth(self.gunnar)).json()
+        response = requests.get(Test.url + 'User/{0}/settings'.format(self.gunnarId), headers=auth(self.graatand)).json()
         check.equal(LargeData.grayscaleSettings['theme'], response['data']['theme'])
 
     @test(skip_if_failed=['registerGunnar', 'userInfo'])
     def settingsSetTimerSeconds(self, check):
         'Set default countdown time'
         response = requests.put(Test.url + 'User/{0}/settings'.format(self.gunnarId), json=LargeData.timer1HourSettings,
-                                headers=auth(self.gunnar)).json()
+                                headers=auth(self.graatand)).json()
         ensureSuccess(response, check)
-        response = requests.get(Test.url + 'User/{0}/settings'.format(self.gunnarId), headers=auth(self.gunnar)).json()
+        response = requests.get(Test.url + 'User/{0}/settings'.format(self.gunnarId), headers=auth(self.graatand)).json()
         check.equal(LargeData.timer1HourSettings['timerSeconds'], response['data']['timerSeconds'])
 
     @test(skip_if_failed=['registerGunnar', 'userInfo'], depends=['settingsSetTheme', 'settingsSetLauncherAnimationsOn',
                                                                   'settingsSetLauncherAnimationsOff'])
     def settingsMultiple(self, check):
         'Set all settings'
-        response = requests.put(Test.url + 'User/{0}/settings'.format(self.gunnarId), json=LargeData.allSettings, headers=auth(self.gunnar)).json()
+        response = requests.put(Test.url + 'User/{0}/settings'.format(self.gunnarId), json=LargeData.allSettings, headers=auth(self.graatand)).json()
         ensureSuccess(response, check)
 
-        response = requests.get(Test.url + 'User/{0}/settings'.format(self.gunnarId), headers=auth(self.gunnar)).json()
+        response = requests.get(Test.url + 'User/{0}/settings'.format(self.gunnarId), headers=auth(self.graatand)).json()
         ensureSuccess(response, check)
         check.equal(2, response['data']['orientation'])
         check.equal(2, response['data']['completeMark'])
@@ -233,3 +245,28 @@ class UserControllerTest(TestCase):
         response = requests.get(Test.url + 'User/{0}/guardians'.format(self.graatandId),
                                 headers=auth(self.graatand)).json()
         ensureError(response, check)
+
+
+    @test(skip_if_failed=['loginAsKurt', 'GetKurtID'])
+    def citizenCantChangeSettings(self, check):
+        'Checking citizen can\'t change settings'
+        response = requests.put(Test.url + 'User/{0}/settings'.format(self.kurtId), json=LargeData.allSettings,
+                               headers=auth(self.kurt)).json()
+        ensureError(response, check)
+
+    @test(skip_if_failed=['registerGunnar','loginAsLee', 'settingsMultiple'])
+    def superUserChangeCitizenSetting(self, check):
+        'Checking superUser can change citizens setting'
+        response = requests.put(Test.url + 'User/{0}/settings'.format(self.gunnarId), json=LargeData.updatedSettings1,
+                                headers=auth(self.lee)).json()
+        ensureSuccess(response, check)
+        check.equal(1, response['data']['theme'])
+
+
+    @test(skip_if_failed=['registerGunnar','loginAsTobias', 'settingsMultiple'])
+    def departmentChangeCitizenSetting(self, check):
+        'Checking department can change citizens setting'
+        response = requests.put(Test.url + 'User/{0}/settings'.format(self.gunnarId), json=LargeData.updatedSettings2,
+                                headers=auth(self.tobias)).json()
+        ensureSuccess(response, check)
+        check.equal(2, response['data']['theme'])
