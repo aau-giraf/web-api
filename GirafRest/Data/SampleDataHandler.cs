@@ -3,13 +3,11 @@
 using GirafRest.Data;
 using GirafRest.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 
 
 namespace GirafRest.Setup
@@ -46,6 +44,7 @@ namespace GirafRest.Setup
             List<GirafUser> userList = (from user in context.Users select user).ToList();
             List<Department> departmentList = (from dep in context.Departments select dep).ToList();
             List<Pictogram> pictogramList = (from pic in context.Pictograms select pic).ToList();
+            List<Activity> activityList = (from act in context.Activities select act).ToList();
             List<Weekday> weekdayList = (from day in context.Weekdays select day).ToList();
             List<Week> weekList = (from week in context.Weeks select week).ToList();
             List<WeekTemplate> weekTemplateList = (from weekTemplate in context.WeekTemplates select weekTemplate).ToList();
@@ -69,29 +68,36 @@ namespace GirafRest.Setup
                 }
             }
 
+
             foreach (Department dep in departmentList)
             {
                 data.DepartmentList.Add(new SampleDepartment(dep.Name));
             }
+
 
             foreach (Pictogram pic in pictogramList)
             {
                 data.PictogramList.Add(new SamplePictogram(pic.Title, pic.AccessLevel.ToString(), pic.ImageHash));
             }
 
+
             foreach (Weekday day in weekdayList)
             {
                 List<string> actIconTitles = new List<string>();
                 List<string> actStates = new List<string>();
 
-                foreach (Activity act in day.Activities)
+                foreach (Activity act in activityList)
                 {
-                    actIconTitles.Add(act.Pictogram.Title);
-                    actStates.Add(act.State.ToString());
+                    if (day.Id == act.OtherKey)
+                    {
+                        actIconTitles.Add(act.Pictogram.Title);
+                        actStates.Add(act.State.ToString());
+                    }
                 }
 
                 data.WeekdayList.Add(new SampleWeekday(day.Day, actIconTitles, actStates));
             }
+
 
             foreach (Week week in weekList)
             {
@@ -106,68 +112,22 @@ namespace GirafRest.Setup
                 data.WeekList.Add(new SampleWeek(week.Name, thumbKey));
             }
 
+
             foreach (WeekTemplate weekTemp in context.WeekTemplates)
             {
                 data.WeekTemplateList.Add(new SampleWeekTemplate(weekTemp.Name, weekTemp.ThumbnailKey, weekTemp.DepartmentKey));
             }
 
 
+
             string jsonSamples = JsonConvert.SerializeObject(data, new JsonSerializerSettings()
             {
-                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
                 Formatting = Formatting.Indented
             });
 
             File.WriteAllText(jsonFile, jsonSamples);
         }
-
-        //public void SerializeData(GirafDbContext context)
-        //{
-        //    SampleData data = new SampleData();
-
-        //    data.userList = (from user in context.Users select user).ToList();
-        //    data.departmentList = (from dep in context.Departments select dep).ToList();
-        //    data.pictogramList = (from pic in context.Pictograms select pic).ToList();
-        //    data.weekList = (from user in context.Users select user.WeekSchedule.ToList()).ToList();
-        //    //data.activityList = (from d in (from a in data.weekList select a) select d.).ToList();
-
-        //    List<Activity> tempActList = new List<Activity>();
-
-        //    foreach (List<Week> weeks in data.weekList)
-        //    {
-        //        foreach (Week week in weeks)
-        //        {
-        //            foreach (Weekday day in week.Weekdays.ToList())
-        //            {
-        //                foreach (Activity act in day.Activities)
-        //                {
-        //                    tempActList.Add(act);
-        //                    Console.WriteLine(tempActList.ToString());
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    data.activityList = tempActList;
-
-        //    string jsonSamples = JsonConvert.SerializeObject(data, new JsonSerializerSettings()
-        //    {
-        //        PreserveReferencesHandling = PreserveReferencesHandling.Objects,
-        //        Formatting = Formatting.Indented
-        //    });
-
-        //    File.WriteAllText(jsonFile, jsonSamples);
-        //}
     }
-
-    //public class SampleData
-    //{
-    //    public List<GirafUser> userList { get; set; }
-    //    public List<Department> departmentList { get; set; }
-    //    public List<Pictogram> pictogramList { get; set; }
-    //    public List<List<Week>> weekList { get; set; }
-    //    public List<Activity> activityList { get; set; }
-    //}
 
     public class SampleData
     {
