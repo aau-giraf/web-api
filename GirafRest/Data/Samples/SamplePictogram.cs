@@ -4,13 +4,13 @@
     {
         public string Title { get; set; }
         public string AccessLevel { get; set; }
-        public string Hash { get; set; }
+        public string ImageHash { get; set; }
 
-        public SamplePictogram(string name, string accessLevel, string hash)
+        public SamplePictogram(string name, string accessLevel, string imageHash)
         {
             Title = name;
             AccessLevel = accessLevel;
-            Hash = hash;
+            ImageHash = imageHash;
         }
     }
 }
