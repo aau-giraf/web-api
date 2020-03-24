@@ -3,12 +3,12 @@
     public class SampleWeek
     {
         public string Name { get; set; }
-        public long PictKey { get; set; }
+        public string ImageTitle { get; set; }
 
-        public SampleWeek(string name, long pictKey)
+        public SampleWeek(string name, string imageTitle)
         {
             Name = name;
-            PictKey = pictKey;
+            ImageTitle = imageTitle;
         }
     }
 }

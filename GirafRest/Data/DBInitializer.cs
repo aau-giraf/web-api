@@ -13,13 +13,13 @@ namespace GirafRest.Setup
     /// </summary>
     public class DBInitializer
     {
-        
+
         public static SampleDataHandler sampleHandler = new SampleDataHandler();
 
         public static void Initialize(GirafDbContext context, UserManager<GirafUser> userManager)
         {
             // Check if any data is in the database
-            if (context.Users.Any())
+            if (context.Departments.Any())
             {
                 ///<summary>
                 ///SampleDataHandler creates a samples.json file by storing current database data in plaintext, in samples.json
@@ -31,11 +31,11 @@ namespace GirafRest.Setup
             }
 
             SampleData sampleData = sampleHandler.DeserializeData();
-            AddSampleUsers(context, userManager, sampleData.UserList);
+            var departments = AddSampleDepartments(context, sampleData.DepartmentList);
+            AddSampleUsers(context, userManager, sampleData.UserList, departments);
             AddSamplePictograms(context, sampleData.PictogramList);
-            AddSampleWeekAndWeekdays(context, sampleData.WeekdayList, sampleData.WeekList);
-            AddSampleWeekTemplate(context, sampleData.PictogramList, sampleData.DepartmentList);
-            AddSampleDepartments(context, sampleData.DepartmentList);
+            AddSampleWeekAndWeekdays(context, sampleData.WeekList, sampleData.WeekdayList, sampleData.UserList);
+            AddSampleWeekTemplate(context, sampleData.WeekTemplateList, sampleData.WeekdayList, sampleData.UserList, departments);
 
             context.SaveChanges();
 
@@ -78,52 +78,22 @@ namespace GirafRest.Setup
         }
         #endregion
         #region Sample data methods
-        //private static void AddSampleDepartments(GirafDbContext context, List<Department> departments)
-        //{
-        //    Console.WriteLine("Adding some sample data to the database.");
-        //    Console.WriteLine("Adding departments.");
-
-        //    foreach (var department in departments)
-        //    {
-        //        context.Departments.Add(department);
-        //    }
-        //    context.SaveChanges();
-        //}
-
-        private static void AddSampleDepartments(GirafDbContext context, List<SampleDepartment> sampleDeps)
+        private static List<Department> AddSampleDepartments(GirafDbContext context, List<SampleDepartment> sampleDeps)
         {
             Console.WriteLine("Adding departments.");
-
             List<Department> departments = new List<Department>();
-            var sampleDepartments = sampleDeps;
-            foreach (var sampleDepartment in sampleDepartments)
+
+            foreach (SampleDepartment sampleDepartment in sampleDeps)
             {
                 var department = new Department { Name = sampleDepartment.Name };
                 context.Departments.Add(department);
+                departments.Add(department);
             }
             context.SaveChanges();
+            return departments;
         }
 
-        //private static void AddSampleUsers(GirafDbContext context, UserManager<GirafUser> userManager, IList<GirafUser> users)
-        //{
-        //    Console.WriteLine("Adding users.");
-
-        //    //users[0].UserIcon = null;
-        //    //Note that the call to .Result is a dangerous way to run async methods synchonously and thus should not be used elsewhere!
-        //    foreach (var user in users)
-        //    {
-        //        var x = userManager.CreateAsync(user, "password").Result;
-        //    }
-
-        //    // Add users to roles
-        //    var a = userManager.AddToRoleAsync(users[0], GirafRole.Citizen).Result;
-        //    a = userManager.AddToRoleAsync(users[1], GirafRole.Guardian).Result;
-        //    a = userManager.AddToRoleAsync(users[2], GirafRole.SuperUser).Result;
-        //    a = userManager.AddToRoleAsync(users[3], GirafRole.Department).Result;
-        //    a = userManager.AddToRoleAsync(users[4], GirafRole.Citizen).Result;
-        //}
-
-        private static void AddSampleUsers(GirafDbContext context, UserManager<GirafUser> userManager, List<SampleGirafUser> userList)
+        private static void AddSampleUsers(GirafDbContext context, UserManager<GirafUser> userManager, List<SampleGirafUser> userList, List<Department> departments)
         {
             Console.WriteLine("Adding users.");
             List<GirafUser> users = new List<GirafUser>();
@@ -131,15 +101,12 @@ namespace GirafRest.Setup
 
             foreach (var sampleUser in sampleUsers)
             {
-                var gUser = (new GirafUser { UserName = sampleUser.Name, DepartmentKey = sampleUser.DepKey });
+                GirafUser user = (new GirafUser { UserName = sampleUser.Name, 
+                    Department = departments.First(d => d.Name == sampleUser.DepartmentName) });
 
-                foreach (string week in sampleUser.Weeks)
-                {
-                    gUser.WeekSchedule.Add(context.Weeks.First(w => w.Name == week));
-                }
-                userManager.CreateAsync(gUser, sampleUser.Password);
-                userManager.AddToRoleAsync(gUser, sampleUser.Role);
-                users.Add(gUser);
+                var x = userManager.CreateAsync(user, sampleUser.Password).Result;
+                var a = userManager.AddToRoleAsync(user, sampleUser.Role).Result;
+                users.Add(user);
             }
         }
 
@@ -149,167 +116,115 @@ namespace GirafRest.Setup
             List<Pictogram> pictograms = new List<Pictogram>();
             foreach (var samplePict in samplePictogramsList)
             {
-                var pictogram = new Pictogram(samplePict.Title, (AccessLevel)Enum.Parse(typeof(AccessLevel), samplePict.AccessLevel), samplePict.Hash);
+                var pictogram = new Pictogram(samplePict.Title, (AccessLevel)Enum.Parse(typeof(AccessLevel), samplePict.AccessLevel), samplePict.ImageHash);
                 pictogram.LastEdit = DateTime.Now;
                 context.Add(pictogram);
                 pictograms.Add(pictogram);
             }
+            context.SaveChanges();
         }
 
-        //private static void AddSampleWeekAndWeekdays(GirafDbContext context, IList<Pictogram> pictograms)
-        //{
-        //    Console.WriteLine("Adding weekdays to users");
-        //    var weekdays = new Weekday[]
-        //    {
-        //        new Weekday(Days.Monday,
-        //            new List<Pictogram> { pictograms[0], pictograms[1], pictograms[2], pictograms[3], pictograms[4] },
-        //            new List<ActivityState>{Completed, Completed, Completed, Completed, Completed}),
-
-        //        new Weekday(Days.Tuesday,
-        //            new List<Pictogram> { pictograms[5], pictograms[6], pictograms[7], pictograms[8] },
-        //            new List<ActivityState>{Completed, Active, Canceled, Completed}),
-
-        //        new Weekday(Days.Wednesday,
-        //            new List<Pictogram> { pictograms[9], pictograms[10], pictograms[11], pictograms[12], pictograms[13] },
-        //            new List<ActivityState>{Completed, Active, Active, Active, Active}),
-
-        //        new Weekday(Days.Thursday,
-        //            new List<Pictogram> { pictograms[8], pictograms[6], pictograms[7], pictograms[5] },
-        //            new List<ActivityState>{Active, Canceled, Active, Active}),
-
-        //        new Weekday(Days.Friday,
-        //            new List<Pictogram> { pictograms[0], pictograms[7]},
-        //            new List<ActivityState>{Active, Active}),
-
-        //        new Weekday(Days.Saturday,
-        //            new List<Pictogram> { pictograms[8], pictograms[5]},
-        //            new List<ActivityState>{Canceled, Canceled}),
-
-        //        new Weekday(Days.Sunday,
-        //            new List<Pictogram> { pictograms[3], pictograms[5]},
-        //            new List<ActivityState>{Active, Active})
-        //    };
-
-        //    var sampleWeek = new Week(pictograms[0]);
-
-        //    foreach (var day in weekdays)
-        //    {
-        //        context.Weekdays.Add(day);
-        //        sampleWeek.UpdateDay(day);
-        //    }
-
-        //    sampleWeek.Name = "Normal Uge";
-        //    var usr = context.Users.First(u => u.UserName == "Kurt");
-        //    context.Weeks.Add(sampleWeek);
-        //    usr.WeekSchedule.Add(sampleWeek);
-        //    context.SaveChanges();
-        //}
-
-        private static void AddSampleWeekAndWeekdays(GirafDbContext context, List<SampleWeekday> sampleWeekdaysList, List<SampleWeek> sampleWeeksList)
+        private static void AddSampleWeekAndWeekdays(GirafDbContext context, List<SampleWeek> sampleWeeks, List<SampleWeekday> sampleWeekdays, List<SampleGirafUser> sampleUsers)
         {
             Console.WriteLine("Adding weekdays to users");
-            var sampleWeekdays = sampleWeekdaysList;
-            var sampleWeek = sampleWeeksList[0];
-            var week = new Week { Name = sampleWeek.Name, Thumbnail = context.Pictograms.First(p => p.Id == sampleWeek.PictKey) };
+            Pictogram thumbNail = null;
+            List<Week> weekList = new List<Week>();
 
-            foreach (var sampleWeekday in sampleWeekdays)
+            foreach (SampleWeek sampleWeek in sampleWeeks)
             {
-                List<Pictogram> activityIcons = new List<Pictogram>();
-                List<ActivityState> activityStates = new List<ActivityState>();
-
-                foreach (string actTitle in sampleWeekday.ActivityIconTitles)
+                foreach (Pictogram pic in context.Pictograms)
                 {
-                    foreach (Pictogram pic in context.Pictograms)
+                    if (pic.Title == sampleWeek.ImageTitle)
                     {
-                        if (actTitle == pic.Title)
-                        {
-                            activityIcons.Add(pic);
-                        }
+                        thumbNail = pic;
                     }
                 }
 
-                foreach (string actState in sampleWeekday.ActivityStates)
+                Week week = new Week { Name = sampleWeek.Name, Thumbnail = thumbNail };
+                AddDaysToWeekAndContext(sampleUsers, sampleWeekdays, week, context);
+                context.Weeks.Add(week);
+                weekList.Add(week);
+
+                foreach (GirafUser user in context.Users)
                 {
-                    foreach (Activity activity in context.Activities)
+                    foreach (SampleGirafUser sampleUser in sampleUsers)
                     {
-                        if (actState == activity.State.ToString())
+                        foreach (string userWeek in sampleUser.Weeks)
                         {
-                            activityStates.Add(activity.State);
+                            if ((userWeek == week.Name) && (user.UserName == sampleUser.Name))
+                            {
+                                user.WeekSchedule.Add(weekList.First(w => w.Name == userWeek));
+                            }
                         }
                     }
                 }
-
-                var day = (new Weekday(sampleWeekday.Day, activityIcons, activityStates));
-                context.Weekdays.Add(day);
-                week.UpdateDay(day);
             }
-            context.Weeks.Add(week);
-            context.SaveChanges();
         }
 
-        //private static void AddSampleWeekAndWeekdays(GirafDbContext context, List<SampleWeekday> sampleWeekdaysList, List<SampleWeek> sampleWeeksList)
-        //{
-        //    Console.WriteLine("Adding weekdays to users");
-        //    var sampleWeekdays = sampleWeekdaysList; // Need source
-        //    var sampleWeek = sampleWeeksList[0]; // Need source
-
-        //    var week = new Week { Name = sampleWeek.Name, Thumbnail = context.Pictograms.First(p => p.Id == sampleWeek.PictKey) };
-        //    foreach (var sampleWeekday in sampleWeekdays)
-        //    {
-        //        var activities = (from activity in sampleWeekday.ActivityIconTitles select (Activity)Enum.Parse(typeof(Activity), activity)).ToList();
-        //        var weekday = new Weekday(sampleWeekday.Day, sampleWeekday.ActivityIconTitles, activities);
-        //        context.Weekdays.Add(weekday);
-        //        week.UpdateDay(weekday);
-        //    }
-        //    context.Weeks.Add(week);
-        //    context.SaveChanges();
-        //}
-
-        private static void AddSampleWeekTemplate(GirafDbContext context, List<SamplePictogram> pictograms, List<SampleDepartment> departments)
+        private static void AddSampleWeekTemplate(GirafDbContext context, List<SampleWeekTemplate> sampleTemplates, List<SampleWeekday> sampleWeekdays, 
+            List<SampleGirafUser> sampleUsers, List<Department> departments)
         {
             Console.WriteLine("Adding templates");
-            var weekdays = new Weekday[]
+            Pictogram thumbNail = null;
+
+            foreach (SampleWeekTemplate sampleTemplate in sampleTemplates)
             {
-                new Weekday(Days.Monday,
-                    new List<Pictogram> { pictograms[0], pictograms[1], pictograms[2], pictograms[3], pictograms[4] },
-                    new List<ActivityState>{Active, Active, Active, Active, Active, }),
+                foreach (Pictogram pic in context.Pictograms)
+                {
+                    if (pic.Title == sampleTemplate.ImageTitle)
+                    {
+                        thumbNail = pic;
+                    }
+                }
 
-                new Weekday(Days.Tuesday,
-                    new List<Pictogram> { pictograms[5], pictograms[6], pictograms[7], pictograms[8] },
-                    new List<ActivityState>{Active, Active, Active, Active, }),
+                var template = new WeekTemplate { Name = sampleTemplate.Name, Thumbnail = thumbNail, 
+                    Department = departments.First(d => d.Name == sampleTemplate.DepartmentName) };
 
-                new Weekday(Days.Wednesday,
-                    new List<Pictogram> { pictograms[9], pictograms[10], pictograms[11], pictograms[12], pictograms[13] },
-                    new List<ActivityState>{Active, Active, Active, Active, Active, }),
+                AddDaysToWeekAndContext(sampleUsers, sampleWeekdays, template, context);
+                context.WeekTemplates.Add(template);
 
-                new Weekday(Days.Thursday,
-                    new List<Pictogram> { pictograms[8], pictograms[6], pictograms[7], pictograms[5] },
-                    new List<ActivityState>{Active, Active, Active, Active, }),
-
-                new Weekday(Days.Friday,
-                    new List<Pictogram> { pictograms[0], pictograms[7]},
-                    new List<ActivityState>{Active, Active, }),
-
-                new Weekday(Days.Saturday,
-                    new List<Pictogram> { pictograms[8], pictograms[5] },
-                    new List<ActivityState>{Active, Active, }),
-
-                new Weekday(Days.Sunday,
-                    new List<Pictogram> { pictograms[3], pictograms[5] },
-                    new List<ActivityState>{Active, Active, })
-            };
-
-            var sampleTemplate = new WeekTemplate(departments[0]);
-            sampleTemplate.Name = "SkabelonUge";
-            sampleTemplate.Thumbnail = pictograms[0];
-            foreach (var day in weekdays)
-            {
-                context.Weekdays.Add(day);
-                sampleTemplate.UpdateDay(day);
+                foreach (GirafUser user in context.Users)
+                {
+                    foreach (SampleGirafUser sampleUser in sampleUsers)
+                    {
+                        foreach (string userWeek in sampleUser.Weeks)
+                        {
+                            if ((userWeek == template.Name) && (user.UserName == sampleUser.Name))
+                            {
+                                user.WeekSchedule.Add(context.Weeks.First(w => w.Name == userWeek));
+                            }
+                        }
+                    }
+                }
             }
+        }
 
-            context.WeekTemplates.Add(sampleTemplate);
-            context.SaveChanges();
+
+        private static void AddDaysToWeekAndContext(List<SampleGirafUser> sampleUsers, List<SampleWeekday> sampleDays, WeekBase week, GirafDbContext context)
+        {
+            foreach (var sampleDay in sampleDays)
+            {
+                Days day = sampleDay.Day;
+                List<Pictogram> pictograms = new List<Pictogram>();
+                Pictogram pic = null;
+
+                foreach (string actIcon in sampleDay.ActivityIconTitles)
+                {
+                    foreach (Pictogram pict in context.Pictograms)
+                    {
+                        if (pict.Title == actIcon)
+                        {
+                            pic = pict;
+                        }
+                    }
+                    pictograms.Add(pic);
+                }
+
+                List<ActivityState> activityStates = (from activityState in sampleDay.ActivityStates select (ActivityState)Enum.Parse(typeof(ActivityState), activityState)).ToList<ActivityState>();
+                Weekday weekDay = new Weekday(day, pictograms, activityStates);
+                context.Weekdays.Add(weekDay);
+                week.UpdateDay(weekDay);
+            }
         }
         #endregion
     }
