@@ -42,7 +42,7 @@ The flags that can be used for the run:
 
 Once the API is running locally you can navigate to http://localhost:5000/swagger/ to see and tryout requests to the endpoints. We recommend keeping a text file with often-used DTOs and bearer tokens as part of your workflow.
 
-3. (Optional) To login via swagger:
+4. (Optional) To login via swagger:
   - Make an Account/Login request with valid login-info (username: `Tobias`, password: `password`)
   - Copy the `data` field containing the token.
   - Click on the green Authorize button (Or the padlocks).
