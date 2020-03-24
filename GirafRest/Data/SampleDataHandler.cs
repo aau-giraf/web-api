@@ -43,12 +43,12 @@ namespace GirafRest.Setup
         {
             SampleData data = new SampleData();
 
-            var userList = (from user in context.Users select user).ToList();
-            var departmentList = (from dep in context.Departments select dep).ToList();
-            var pictogramList = (from pic in context.Pictograms select pic).ToList();
-            var weekdayList = (from day in context.Weekdays select day).ToList();
-            var weekList = (from week in context.Weeks select week).ToList();
-            var weekTemplateList = (from weekTemplate in context.WeekTemplates select weekTemplate).ToList();
+            List<GirafUser> userList = (from user in context.Users select user).ToList();
+            List<Department> departmentList = (from dep in context.Departments select dep).ToList();
+            List<Pictogram> pictogramList = (from pic in context.Pictograms select pic).ToList();
+            List<Weekday> weekdayList = (from day in context.Weekdays select day).ToList();
+            List<Week> weekList = (from week in context.Weeks select week).ToList();
+            List<WeekTemplate> weekTemplateList = (from weekTemplate in context.WeekTemplates select weekTemplate).ToList();
 
 
             foreach (GirafUser user in userList)
@@ -58,7 +58,15 @@ namespace GirafRest.Setup
                 {
                     weekStrings.Add(week.Name);
                 }
-                data.UserList.Add(new SampleGirafUser(user.UserName, user.Department.Key, userManager.GetRolesAsync(user).ToString(), weekStrings, user.PasswordHash));
+
+                if (user.Department == null)
+                {
+                    data.UserList.Add(new SampleGirafUser(user.UserName, 0, userManager.GetRolesAsync(user).Result[0], weekStrings, user.PasswordHash));
+                }
+                else
+                {
+                    data.UserList.Add(new SampleGirafUser(user.UserName, user.Department.Key, userManager.GetRolesAsync(user).Result[0], weekStrings, user.PasswordHash));
+                }
             }
 
             foreach (Department dep in departmentList)
@@ -75,7 +83,7 @@ namespace GirafRest.Setup
             {
                 List<string> actIconTitles = new List<string>();
                 List<string> actStates = new List<string>();
-                
+
                 foreach (Activity act in day.Activities)
                 {
                     actIconTitles.Add(act.Pictogram.Title);
@@ -169,5 +177,15 @@ namespace GirafRest.Setup
         public List<SampleWeekday> WeekdayList { get; set; }
         public List <SampleWeek> WeekList { get; set; }
         public List <SampleWeekTemplate> WeekTemplateList { get; set; }
+
+        public SampleData()
+        {
+            UserList = new List<SampleGirafUser>();
+            DepartmentList = new List<SampleDepartment>();
+            PictogramList = new List<SamplePictogram>();
+            WeekdayList = new List<SampleWeekday>();
+            WeekList = new List<SampleWeek>();
+            WeekTemplateList = new List<SampleWeekTemplate>();
+        }
     }
 }

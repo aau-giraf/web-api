@@ -149,7 +149,7 @@ namespace GirafRest.Setup
             List<Pictogram> pictograms = new List<Pictogram>();
             foreach (var samplePict in samplePictogramsList)
             {
-                var pictogram = new Pictogram(samplePict.Title, (AccessLevel)Enum.Parse(typeof(AccessLevel), samplePict.AccessLevel), samplePict.Hash);
+                var pictogram = new Pictogram(samplePict.Title, (AccessLevel)Enum.Parse(typeof(AccessLevel), samplePict.AccessLevel), samplePict.ImageHash);
                 pictogram.LastEdit = DateTime.Now;
                 context.Add(pictogram);
                 pictograms.Add(pictogram);
@@ -231,6 +231,7 @@ namespace GirafRest.Setup
                 foreach (string actState in sampleWeekday.ActivityStates)
                 {
                     activityStates.Add((ActivityState)Enum.Parse(typeof(ActivityState), actState));
+                    //activityStates.Add(actState);
                 }
 
                 var day = (new Weekday(sampleWeekday.Day, activityIcons, activityStates));
