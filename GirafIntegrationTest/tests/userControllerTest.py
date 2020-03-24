@@ -297,7 +297,7 @@ class UserControllerTest(TestCase):
 
     @test(skip_if_failed=['loginAsLee', 'getBlaatandID'])
     def superUserChangeGuardianSettingError(self, check):
-        'Checking superUser can change citizens setting'
+        'Checking superUser cannot change guardian setting'
         response = requests.put(Test.url + 'User/{0}/settings'.format(self.blaatandId), json=LargeData.updatedSettings1,
                                 headers=auth(self.lee)).json()
         ensureError(response, check)
