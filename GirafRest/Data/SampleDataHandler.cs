@@ -1,6 +1,4 @@
-﻿
-
-using GirafRest.Data;
+﻿using GirafRest.Data;
 using GirafRest.Models;
 using Microsoft.AspNetCore.Identity;
 using Newtonsoft.Json;
@@ -60,11 +58,11 @@ namespace GirafRest.Setup
 
                 if (user.Department == null)
                 {
-                    data.UserList.Add(new SampleGirafUser(user.UserName, 0, userManager.GetRolesAsync(user).Result[0], weekStrings, user.PasswordHash));
+                    data.UserList.Add(new SampleGirafUser(user.UserName, "0", userManager.GetRolesAsync(user).Result[0], weekStrings, user.PasswordHash));
                 }
                 else
                 {
-                    data.UserList.Add(new SampleGirafUser(user.UserName, user.Department.Key, userManager.GetRolesAsync(user).Result[0], weekStrings, user.PasswordHash));
+                    data.UserList.Add(new SampleGirafUser(user.UserName, user.Department.Name, userManager.GetRolesAsync(user).Result[0], weekStrings, user.PasswordHash));
                 }
             }
 
@@ -101,21 +99,21 @@ namespace GirafRest.Setup
 
             foreach (Week week in weekList)
             {
-                long thumbKey = 0;
+                string thumbTitle = "0";
                 foreach (Pictogram pic in context.Pictograms)
                 {
-                    if (pic.Id == week.Thumbnail.Id)
+                    if (pic.Title == week.Thumbnail.Title)
                     {
-                        thumbKey = pic.Id;
+                        thumbTitle = pic.Title;
                     }
                 }
-                data.WeekList.Add(new SampleWeek(week.Name, thumbKey));
+                data.WeekList.Add(new SampleWeek(week.Name, thumbTitle));
             }
 
 
             foreach (WeekTemplate weekTemp in context.WeekTemplates)
             {
-                data.WeekTemplateList.Add(new SampleWeekTemplate(weekTemp.Name, weekTemp.ThumbnailKey, weekTemp.DepartmentKey));
+                data.WeekTemplateList.Add(new SampleWeekTemplate(weekTemp.Name, weekTemp.Thumbnail.Title, weekTemp.Department.Name));
             }
 
 

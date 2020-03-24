@@ -5,15 +5,15 @@ namespace GirafRest.Setup
     public class SampleGirafUser
     {
         public string Name { get; set; }
-        public long DepKey { get; set; }
+        public string DepartmentName { get; set; }
         public string Role { get; set; }
         public List<string> Weeks { get; set; }
         public string Password { get; set; }
 
-        public SampleGirafUser(string name, long depKey, string role, List<string> weeks, string password)
+        public SampleGirafUser(string name, string departmentName, string role, List<string> weeks, string password)
         {
             Name = name;
-            DepKey = depKey;
+            DepartmentName = departmentName;
             Role = role;
             Weeks = weeks;
             Password = password;

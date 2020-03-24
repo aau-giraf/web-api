@@ -2,35 +2,35 @@
   "UserList": [
     {
       "Name": "Decker",
-      "DepKey": 1,
+      "DepartmentName": "Tobias' stue for godt humør",
       "Role": "Citizen",
       "Weeks": [],
       "Password": "AQAAAAEAACcQAAAAEG8V592ZDqxeWnbZYLDG3DFa3h033wO+AmkL+DjV21SnqTmL4yr5dDv6gyaXSfzV9g=="
     },
     {
       "Name": "Lee",
-      "DepKey": 0,
+      "DepartmentName": "Bajer plejen",
       "Role": "SuperUser",
       "Weeks": [],
       "Password": "AQAAAAEAACcQAAAAEPM24cwRBGvGmtC9njEbeNu6pXDYhQVXI934nY54bVZdlFpl98n+ZzuWwOSs6WZU1A=="
     },
     {
       "Name": "Tobias",
-      "DepKey": 1,
+      "DepartmentName": "Tobias' stue for godt humør",
       "Role": "Department",
       "Weeks": [],
       "Password": "AQAAAAEAACcQAAAAEBcA74b9RZohy6KgloebLeGEWCcjoQIvaEhaPQVpWt/LU193mCZX8fWa4zIyzvEUGg=="
     },
     {
       "Name": "Graatand",
-      "DepKey": 1,
+      "DepartmentName": "Tobias' stue for godt humør",
       "Role": "Guardian",
       "Weeks": [],
       "Password": "AQAAAAEAACcQAAAAEDcm4UQWFP454ZS8Ghqs42GOlr04Sig2nA+JaZv9ykSyMSEc/sTHZ94DeofkrFF09Q=="
     },
     {
       "Name": "Kurt",
-      "DepKey": 1,
+      "DepartmentName": "Tobias' stue for godt humør",
       "Role": "Citizen",
       "Weeks": [
         "Normal Uge"
@@ -772,14 +772,14 @@
   "WeekList": [
     {
       "Name": "Normal Uge",
-      "PictKey": 1
+      "ImageTitle": "som"
     }
   ],
   "WeekTemplateList": [
     {
       "Name": "SkabelonUge",
-      "PictKey": 1,
-      "DepartmentKey": 1
+      "ImageTitle": "som",
+      "DepartmentName": "Tobias' stue for godt humør"
     }
   ]
 }

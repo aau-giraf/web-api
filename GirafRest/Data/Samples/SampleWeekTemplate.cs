@@ -3,14 +3,14 @@
     public class SampleWeekTemplate
     {
         public string Name { get; set; }
-        public long PictKey { get; set; }
-        public long DepartmentKey { get; set; }
+        public string ImageTitle { get; set; }
+        public string DepartmentName { get; set; }
 
-        public SampleWeekTemplate(string name, long pictKey, long departmentKey)
+        public SampleWeekTemplate(string name, string imageTitle, string departmentName)
         {
             Name = name;
-            PictKey = pictKey;
-            DepartmentKey = departmentKey;
+            ImageTitle = imageTitle;
+            DepartmentName = departmentName;
         }
     }  
 }
