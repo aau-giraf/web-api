@@ -34,7 +34,7 @@ namespace GirafRest.Setup
             AddSampleUsers(context, userManager, sampleData.UserList);
             AddSamplePictograms(context, sampleData.PictogramList);
             AddSampleWeekAndWeekdays(context, sampleData.WeekdayList, sampleData.WeekList);
-            AddSampleWeekTemplate(context, sampleData.PictogramList, sampleData.DepartmentList);
+            AddSampleWeekTemplate(context, context.Pictograms.ToList(), context.Departments.ToList());
             AddSampleDepartments(context, sampleData.DepartmentList);
 
             context.SaveChanges();
@@ -230,19 +230,14 @@ namespace GirafRest.Setup
 
                 foreach (string actState in sampleWeekday.ActivityStates)
                 {
-                    foreach (Activity activity in context.Activities)
-                    {
-                        if (actState == activity.State.ToString())
-                        {
-                            activityStates.Add(activity.State);
-                        }
-                    }
+                    activityStates.Add((ActivityState)Enum.Parse(typeof(ActivityState), actState));
                 }
 
                 var day = (new Weekday(sampleWeekday.Day, activityIcons, activityStates));
                 context.Weekdays.Add(day);
                 week.UpdateDay(day);
             }
+
             context.Weeks.Add(week);
             context.SaveChanges();
         }
@@ -265,7 +260,7 @@ namespace GirafRest.Setup
         //    context.SaveChanges();
         //}
 
-        private static void AddSampleWeekTemplate(GirafDbContext context, List<SamplePictogram> pictograms, List<SampleDepartment> departments)
+        private static void AddSampleWeekTemplate(GirafDbContext context, List<Pictogram> pictograms, List<Department> departments)
         {
             Console.WriteLine("Adding templates");
             var weekdays = new Weekday[]
