@@ -83,7 +83,7 @@ namespace GirafRest.Controllers
         /// Get user-settings for the user with the specified Id
         /// </summary>
         /// <param name="id">Identifier of the <see cref="GirafUser"/> to get settings for </param>
-        /// <returns> UserSettings for the user if success else MissingProperties, UserNotFound, NotAuthorized or MissingSettings</returns>
+        /// <returns> UserSettings for the user if success else MissingProperties, UserNotFound, NotAuthorized or RoleMustBeCitizien</returns>
         [HttpGet("{id}/settings")]
         public async Task<Response<SettingDTO>> GetSettings(string id)
         {
@@ -106,7 +106,7 @@ namespace GirafRest.Controllers
             if (userRole == GirafRoles.Citizen)
                 return new Response<SettingDTO>(new SettingDTO(user.Settings));
             else
-                return new ErrorResponse<SettingDTO>(ErrorCode.MissingSettings); //TODO: Figure out correct error to send, remember to change documentation.
+                return new ErrorResponse<SettingDTO>(ErrorCode.RoleMustBeCitizien);
         }
 
         /// <summary>
@@ -466,16 +466,20 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns>The updated user settings as a <see cref="SettingDTO"/> on success else UserNotFound,
         /// MissingSettings, NotAuthorized, MissingProperties, InvalidProperties, ColorMustHaveUniqueDay, 
-        /// IvalidDay, or InvalidHexValues</returns>
+        /// IvalidDay, InvalidHexValues or RoleMustBeCitizien </returns>
         /// <param name="id">Identifier of the <see cref="GirafUser"/> to update settings for</param>
         /// <param name="options">reference to a <see cref="SettingDTO"/> containing the new settings</param>
         [HttpPut("{id}/settings")]
         [Authorize]
-        public async Task<Response<SettingDTO>> UpdateUserSettings(string id, [FromBody] SettingDTO options) //TODO: Figure out if we want to check whether the user is a citizen before the missing settings check.
+        public async Task<Response<SettingDTO>> UpdateUserSettings(string id, [FromBody] SettingDTO options)
         {
             var user = _giraf._context.Users.Include(u => u.Settings).ThenInclude(w => w.WeekDayColors).FirstOrDefault(u => u.Id == id);
             if (user == null)
                 return new ErrorResponse<SettingDTO>(ErrorCode.UserNotFound);
+
+            var userRole = await _roleManager.findUserRole(_giraf._userManager, user);
+            if (userRole == GirafRoles.Citizen)
+                return new ErrorResponse<SettingDTO>(ErrorCode.RoleMustBeCitizien);
 
             if (user.Settings == null)
                 return new ErrorResponse<SettingDTO>(ErrorCode.MissingSettings);

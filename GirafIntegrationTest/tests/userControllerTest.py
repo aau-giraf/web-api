@@ -252,7 +252,7 @@ class UserControllerTest(TestCase):
         ensureError(response, check)
 
     @test(skip_if_failed=['getBlaatandID'])
-    def getNullSettingsBlaatand(self,check):
+    def getErrorSettingsBlaatand(self,check):
         'Get settings for Blaatand and see error'
         print(self.blaatandId)
         response = requests.get(Test.url + 'User/{0}/settings'.format(self.blaatandId),
