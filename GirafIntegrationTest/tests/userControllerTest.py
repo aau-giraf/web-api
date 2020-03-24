@@ -47,7 +47,8 @@ class UserControllerTest(TestCase):
     def loginAsBlaatand(self, check):
         'Log in as Blaatand'
         self.blaatand = login('Blaatand', check)
-        
+
+    @test()
     def loginAsLee(self, check):
         'Log in as Lee'
         self.lee = login('Lee', check)
@@ -293,3 +294,10 @@ class UserControllerTest(TestCase):
                                 headers=auth(self.tobias)).json()
         ensureSuccess(response, check)
         check.equal(2, response['data']['theme'])
+
+    @test(skip_if_failed=['loginAsLee', 'getBlaatandID'])
+    def superUserChangeGuardianSettingError(self, check):
+        'Checking superUser can change citizens setting'
+        response = requests.put(Test.url + 'User/{0}/settings'.format(self.blaatandId), json=LargeData.updatedSettings1,
+                                headers=auth(self.lee)).json()
+        ensureError(response, check)
