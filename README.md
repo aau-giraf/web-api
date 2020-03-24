@@ -9,39 +9,52 @@ This repository contains the backend API for the Giraf Project. The API is a .ne
 To run the project locally with a MySQL database first do the following:
 
 0. Prerequisites:
-  - Download and install .NET Core 2.1.101 SDK or a version backwardly compatible with it.
-  - Download and install MySQL Server and optionally MySQL Workbench or another database manager.
-  - Create a database named giraf on the MySQL Server. This can be done from the workbench or via cli.
+  - Download and install .NET Core 2.2 SDK or a version backwardly compatible with it (https://dotnet.microsoft.com/download/dotnet-core/2.2).
+  - Download MySQL installer (https://dev.mysql.com/downloads/installer/).
+  	* Install MySQL server 5.7, under the setup, create a root account with password “password”, and add a user with username “user” with password “password”.
+	* (Optional) Install Workbench.
+  - Setup a giraf database/schema named giraf on the MySQL Server (can be done from Workbench or via cli).
+    * (Through Workbench) Start MySQL Workbench. There should be a Local instance running under MySQL Connections, log in using the created root password, “password”, create a new schema named giraf.
+    * (Through cli) Open MySQL 5.8 Command Line Client (installed program) and login using the created root password “password”. Create a new database named giraf by typing the following command “CREATE DATABASE giraf;”
+	
+1. Clone the web_api repository from GitHub.
 
-1. Open a terminal-emulator and navigate to `⋯/web-api/GirafRest`
+2. Setup the connection to the local MySQL server.
+  - In the …\ web-api\GirafRest create a copy of the file “appsettings.template.json” and name it “appsettings.Development.json”.
+  - Open the created file “appsettings.Development.json” file with a text editor.
+  - Change the following (Remember to remove the “<” and “>”): 
+    * The DefaultConnection on line 3 making it use the previously setup database name and user, change to: "DefaultConnection": "server=localhost;port=3306;userid=user;password=password;database=giraf;Allow User Variables=True"
+    * The Jwt.JwtKey on line 24 to be any (random) string of, at least 40, alpha-numeric characters.
+    * The Jwt.JwtIssuer on line 25 to your name or organization. For example "Aalborg University"
+ 
+3. Open a terminal and navigate to …\ web-api\GirafRest folder.
+  - Run `dotnet restore`  
+  - Run `dotnet ef database update`
+  - Run `dotnet run --sample-data`
 
-  - run `cp appsettings.template.json appsettings.Development.json`
-  - update appsettings.Development.json with
-	- All fields <> in the"DefaultConnection" string.
-    - Jwt.JwtKey field, which must be any (random) string of, at least 40, alpha-numeric charecters
-    - Jwt.JwtIssuer field, which is your name or organization. For example "Aalborg University"
-  - run `dotnet restore`
-  - run `dotnet ef database update`
-  - run `dotnet run --sample-data`
-
-The `--sample-data` flag will generate sample data if target database is empty, and we recommend using this flag by default. Other possible flags are:
+The flags that can be used for the run:
 
         --prod=[true|false]		| If true then connect to production db, defaults to false.
-        --port=integer			| Specify which port to host the server on, defaults to 5000.
-        --list				    | List options
-        --sample-data		    | Tells the rest-api to generate some sample data. This only works on an empty database.
+        --port=integer		| Specify which port to host the server on, defaults to 5000.
+        --list			| List options
+        --sample-data		| Tells the rest-api to generate some sample data. This only works on an empty database.
         --logfile=string		| Toggles logging to a file, the string specifies the path to the file relative to the working directory.
 
+Once the API is running locally you can navigate to http://localhost:5000/swagger/ to see and tryout requests to the endpoints. We recommend keeping a text file with often-used DTOs and bearer tokens as part of your workflow.
 
-Once the API is running locally you can navigate to `http://localhost:5000/swagger/` to see and tryout requests to the endpoints. We recommend keeping a text file with often-used DTOs and bearer tokens as part of your workflow.
-
-3. (Optional) To login via swagger:
-  - Make a Account/Login request with valid login-info (username: `Tobias`, password: `password`)
+4. (Optional) To login via swagger:
+  - Make an Account/Login request with valid login-info (username: `Tobias`, password: `password`)
   - Copy the `data` field containing the token.
-  - Click on the green Authorize button (Or the padlocks)
+  - Click on the green Authorize button (Or the padlocks).
   - Write `bearer [your-token]` (note the space) in the input-field. 
   - Click Authorize and close the pop-up. 
-  - You are now authorized and can make autorized requests.
+  - You are now authorized and can make authorized requests.
+
+5. Let weekplanner use the local database and Giraf web_api server.
+  - In the weekplanner repository in the …/weekplanner/assets/environments.json file line 2 change the “http://srv.giraf.cs.aau.dk/DEV/API” to:
+    * If using an Android emulator: “http://10.0.2.2:5000”. 
+    * If using a hardware device: Turn on "Use USB Tethering" in the device under networks settings. Next get your computers local ip under network settings, this should be used in the envrionments.json file followed by ":5000", E.g. “http://192.168.42.130:5000”. 
+ - If you are having problems in this step and are using either Android Studio or IntelliJ, delete the build-folder created by the IDE and rebuild it. This should make sure that correct environments.json file is read.  
 
 ## Migrations (Only for developers of the API)
 If changes has been made to the model classes then a new migration should be added to be able to update the database without losing data:
@@ -79,7 +92,7 @@ For more information see the project report of group sw613f18
 
 ## Contributors
 
-SW613f18 & SW615f17
+SW615f20, SW613f18 & SW615f17
 
 ## License
 MIT License
