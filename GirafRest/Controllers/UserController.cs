@@ -470,7 +470,7 @@ namespace GirafRest.Controllers
         /// <param name="id">Identifier of the <see cref="GirafUser"/> to update settings for</param>
         /// <param name="options">reference to a <see cref="SettingDTO"/> containing the new settings</param>
         [HttpPut("{id}/settings")]
-        [Authorize]
+        [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
         public async Task<Response<SettingDTO>> UpdateUserSettings(string id, [FromBody] SettingDTO options)
         {
             var user = _giraf._context.Users.Include(u => u.Settings).ThenInclude(w => w.WeekDayColors).FirstOrDefault(u => u.Id == id);
