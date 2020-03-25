@@ -35,7 +35,7 @@ namespace GirafRest.Setup
             return null;
         }
 
-        public void SerializeData(GirafDbContext context, UserManager<GirafUser> userManager)
+        public async System.Threading.Tasks.Task SerializeDataAsync(GirafDbContext context, UserManager<GirafUser> userManager)
         {
             SampleData data = new SampleData();
 
@@ -56,13 +56,15 @@ namespace GirafRest.Setup
                     weekStrings.Add(week.Name);
                 }
 
+                var roles = await userManager.GetRolesAsync(user);
+
                 if (user.Department == null)
                 {
-                    data.UserList.Add(new SampleGirafUser(user.UserName, "0", userManager.GetRolesAsync(user).Result[0], weekStrings, user.PasswordHash));
+                    data.UserList.Add(new SampleGirafUser(user.UserName, "", roles[0], weekStrings, user.PasswordHash));
                 }
                 else
                 {
-                    data.UserList.Add(new SampleGirafUser(user.UserName, user.Department.Name, userManager.GetRolesAsync(user).Result[0], weekStrings, user.PasswordHash));
+                    data.UserList.Add(new SampleGirafUser(user.UserName, user.Department.Name, roles[0], weekStrings, user.PasswordHash));
                 }
             }
 
