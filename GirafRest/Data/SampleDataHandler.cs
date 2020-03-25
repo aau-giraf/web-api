@@ -120,6 +120,7 @@ namespace GirafRest.Setup
 
             string jsonSamples = JsonConvert.SerializeObject(data, new JsonSerializerSettings()
             {
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects,
                 Formatting = Formatting.Indented
             });
 

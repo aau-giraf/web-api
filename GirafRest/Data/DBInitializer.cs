@@ -85,29 +85,29 @@ namespace GirafRest.Setup
 
             foreach (SampleDepartment sampleDepartment in sampleDeps)
             {
-                var department = new Department { Name = sampleDepartment.Name };
+                Department department = new Department { Name = sampleDepartment.Name };
                 context.Departments.Add(department);
                 departments.Add(department);
             }
-            context.SaveChanges();
+            //context.SaveChanges();
             return departments;
         }
 
-        private static void AddSampleUsers(GirafDbContext context, UserManager<GirafUser> userManager, List<SampleGirafUser> userList, List<Department> departments)
+        private static void AddSampleUsers(GirafDbContext context, UserManager<GirafUser> userManager, List<SampleGirafUser> sampleUsers, List<Department> departments)
         {
             Console.WriteLine("Adding users.");
             List<GirafUser> users = new List<GirafUser>();
-            var sampleUsers = userList;
 
             foreach (var sampleUser in sampleUsers)
             {
                 GirafUser user = (new GirafUser { UserName = sampleUser.Name, 
-                    Department = departments.First(d => d.Name == sampleUser.DepartmentName) });
+                    Department = departments.FirstOrDefault(d => d.Name == sampleUser.DepartmentName) });
 
                 var x = userManager.CreateAsync(user, sampleUser.Password).Result;
                 var a = userManager.AddToRoleAsync(user, sampleUser.Role).Result;
                 users.Add(user);
             }
+            context.SaveChanges();
         }
 
         private static void AddSamplePictograms(GirafDbContext context, List<SamplePictogram> samplePictogramsList)
@@ -153,7 +153,7 @@ namespace GirafRest.Setup
                         {
                             if ((userWeek == week.Name) && (user.UserName == sampleUser.Name))
                             {
-                                user.WeekSchedule.Add(weekList.First(w => w.Name == userWeek));
+                                user.WeekSchedule.Add(weekList.FirstOrDefault(w => w.Name == userWeek));
                             }
                         }
                     }
@@ -178,7 +178,7 @@ namespace GirafRest.Setup
                 }
 
                 var template = new WeekTemplate { Name = sampleTemplate.Name, Thumbnail = thumbNail, 
-                    Department = departments.First(d => d.Name == sampleTemplate.DepartmentName) };
+                    Department = departments.FirstOrDefault(d => d.Name == sampleTemplate.DepartmentName) };
 
                 AddDaysToWeekAndContext(sampleUsers, sampleWeekdays, template, context);
                 context.WeekTemplates.Add(template);
@@ -191,7 +191,7 @@ namespace GirafRest.Setup
                         {
                             if ((userWeek == template.Name) && (user.UserName == sampleUser.Name))
                             {
-                                user.WeekSchedule.Add(context.Weeks.First(w => w.Name == userWeek));
+                                user.WeekSchedule.Add(context.Weeks.FirstOrDefault(w => w.Name == userWeek));
                             }
                         }
                     }
