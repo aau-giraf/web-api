@@ -56,6 +56,9 @@ namespace GirafRest.Test
             return task;
         }
 
+        // Appeared from the update to .NET Core 3.1.
+        // Reference: https://stackoverflow.com/questions/57314896/iasyncqueryprovider-mock-issue-when-migrated-to-net-core-3-adding-tresult-iasyn
+        // That leads to -> https://github.com/romantitov/MockQueryable/blob/master/src/MockQueryable/MockQueryable/TestAsyncEnumerable.cs
         TResult IAsyncQueryProvider.ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
         {
             var expectedResultType = typeof(TResult).GetGenericArguments()[0];
