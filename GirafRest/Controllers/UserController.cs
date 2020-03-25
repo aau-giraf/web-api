@@ -221,7 +221,6 @@ namespace GirafRest.Controllers
         public async Task<Response> DeleteUserIcon(string id)
         {
             var user = _giraf._context.Users.Include(u => u.UserIcon).FirstOrDefault(u => u.Id == id);
-            
             if (user == null)
                 return new ErrorResponse(ErrorCode.UserNotFound);
 
