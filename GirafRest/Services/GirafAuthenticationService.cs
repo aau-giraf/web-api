@@ -58,7 +58,7 @@ namespace GirafRest.Services
                         return false;
                     break;
                 case GirafRoles.SuperUser:
-                    return false;
+                    return true;
             }
 
             return true;
