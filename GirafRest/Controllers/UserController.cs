@@ -478,7 +478,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<SettingDTO>(ErrorCode.UserNotFound);
 
             var userRole = await _roleManager.findUserRole(_giraf._userManager, user);
-            if (userRole == GirafRoles.Citizen)
+            if (userRole != GirafRoles.Citizen)
                 return new ErrorResponse<SettingDTO>(ErrorCode.RoleMustBeCitizien);
 
             if (user.Settings == null)
