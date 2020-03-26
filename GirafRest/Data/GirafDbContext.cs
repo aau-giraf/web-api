@@ -47,11 +47,11 @@ namespace GirafRest.Data
             base.OnModelCreating(builder);
 
             //Indexes
-            builder.Entity<Department>().HasIndex(dep => dep.Name).IsUnique().ForSqlServerIsClustered();
-            builder.Entity<Pictogram>().HasIndex(pic => new {pic.Id, pic.Title}).IsUnique().ForSqlServerIsClustered();
-            builder.Entity<Weekday>().HasIndex(day => new {day.Id}).IsUnique().ForSqlServerIsClustered();
-            builder.Entity<Week>().HasIndex(week => week.Id).IsUnique().ForSqlServerIsClustered();
-            builder.Entity<GirafUser>().HasIndex(user => new { user.Id, user.UserName }).IsUnique().ForSqlServerIsClustered();
+            builder.Entity<Department>().HasIndex(dep => dep.Name).IsUnique().IsClustered();
+            builder.Entity<Pictogram>().HasIndex(pic => new {pic.Id, pic.Title}).IsUnique().IsClustered();
+            builder.Entity<Weekday>().HasIndex(day => new {day.Id}).IsUnique().IsClustered();
+            builder.Entity<Week>().HasIndex(week => week.Id).IsUnique().IsClustered();
+            builder.Entity<GirafUser>().HasIndex(user => new { user.Id, user.UserName }).IsUnique().IsClustered();
 
             builder.Entity<DepartmentResource>()
                 //States that one department is involved in each DepartmentResourceRelation

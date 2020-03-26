@@ -107,6 +107,10 @@ namespace GirafRest.Setup
                 options.EnableEndpointRouting = false;
                 options.Filters.Add<LogFilter>();
             });
+            services.AddControllers().AddNewtonsoftJson(options => {
+                options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+                options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+            });
 
             // Set up Cross-Origin Requests
             services.AddCors(o => o.AddPolicy("AllowAll", builder =>
@@ -120,7 +124,6 @@ namespace GirafRest.Setup
             services.AddSwaggerGen(c =>
             { 
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "The Giraf REST API", Version = "v1" });
-                c.DescribeAllEnumsAsStrings();
                 var basePath = AppContext.BaseDirectory;
                 var xmlPath = Path.Combine(basePath, "GirafRest.xml");
                 c.IncludeXmlComments(xmlPath);
