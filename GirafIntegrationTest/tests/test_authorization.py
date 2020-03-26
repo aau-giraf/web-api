@@ -8,30 +8,37 @@ class TestAuthorization(TestCase):
     """
     Tests for various API requests without authorization
     """
-    EXPIRED_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI1YmM0YzAzMC1mOGQxLTRhYTAtOTBlOC05MTNhMDYwOTA4Y" \
-                    "WIiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZml" \
-                    "lciI6Ijg0MTJkOTk1LWIzODEtNGY4My1iZDI1LWU5ODY2NzBiNTdkOSIsImV4cCI6MTUyNTMwMzQyNSwiaXNzIjoibm90b" \
-                    "WUiLCJhdWQiOiJub3RtZSJ9.8KXRRqF3B5s8tUki7u5j0TqK-189QIpApdOC6aSxOms"
 
     @classmethod
     def setUpClass(cls) -> None:
         """
-        Pretty messages printed when class is initialized
+        Setup necessary data and state when class is loaded
         """
         print('\033[33m' + 'Testing API requests without authorization' + '\033[0m')
         print('file://tests/test_authorization.py\n')
+        cls.EXPIRED_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI1YmM0YzAzMC1mOGQxLTRhYTAtOTBlOC05MTNh" \
+                            "MDYwOTA4YWIiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltc" \
+                            "y9uYW1laWRlbnRpZmllciI6Ijg0MTJkOTk1LWIzODEtNGY4My1iZDI1LWU5ODY2NzBiNTdkOSIsImV4cCI6MT" \
+                            "UyNTMwMzQyNSwiaXNzIjoibm90bWUiLCJhdWQiOiJub3RtZSJ9.8KXRRqF3B5s8tUki7u5j0TqK-189QIpApd" \
+                            "OC6aSxOms"
 
     @classmethod
     def tearDownClass(cls) -> None:
         """
-        Pretty messages printed when class tests are done running
+        Remove or resolve necessary data and states after class tests are done
         """
         print('\n----------------------------------------------------------------------\n')
 
     def setUp(self) -> None:
+        """
+        Setup necessary data and states before each test
+        """
         pass
 
     def tearDown(self) -> None:
+        """
+        Remove or resolve necessary data and states after each test
+        """
         pass
 
     """
@@ -42,7 +49,7 @@ class TestAuthorization(TestCase):
         """
         Testing setting password
         """
-        response = json.loads(post(f'{BASE_URL}v1/Account/password').content.decode('utf-8'))
+        response = json.loads(post(f'{BASE_URL}v1/User/0/Account/password').content.decode('utf-8'))
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -51,7 +58,7 @@ class TestAuthorization(TestCase):
         """
         Testing changing password
         """
-        response = json.loads(put(f'{BASE_URL}v1/Account/password').content.decode('utf-8'))
+        response = json.loads(put(f'{BASE_URL}v1/User/0/Account/password').content.decode('utf-8'))
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -60,7 +67,7 @@ class TestAuthorization(TestCase):
         """
         Testing getting password reset token
         """
-        response = json.loads(get(f'{BASE_URL}v1/Account/Graatand/password-reset-token').content.decode('utf-8'))
+        response = json.loads(get(f'{BASE_URL}v1/User/0/Account/password-reset-token').content.decode('utf-8'))
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -91,15 +98,6 @@ class TestAuthorization(TestCase):
         Testing adding user to department
         """
         response = json.loads(post(f'{BASE_URL}v1/Department/0/user/0').content.decode('utf-8'))
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'NotFound')
-
-    @order
-    def test_DELETE_department_user_no_auth(self):
-        """
-        Testing deleting user from department
-        """
-        response = json.loads(delete(f'{BASE_URL}v1/Department/0/user/0').content.decode('utf-8'))
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -226,7 +224,7 @@ class TestAuthorization(TestCase):
     @order
     def test_GET_user_no_auth(self):
         """
-        Testing getting user
+        Testing getting current user
         """
         response = json.loads(get(f'{BASE_URL}v1/User').content.decode('utf-8'))
         self.assertFalse(response['success'])
@@ -242,20 +240,29 @@ class TestAuthorization(TestCase):
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
+    def test_GET_user_settings_by_user_id_no_auth(self):
+        """
+        Testing getting user settings by user id
+        """
+        response = json.loads(get(f'{BASE_URL}v1/User/0/settings').content.decode('utf-8'))
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
+
+    @order
+    def test_PUT_update_user_settings_by_user_id_no_auth(self):
+        """
+        Testing updating user settings by user id
+        """
+        response = json.loads(put(f'{BASE_URL}v1/User/0/settings').content.decode('utf-8'))
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
+
+    @order
     def test_GET_user_icon_by_user_id_no_auth(self):
         """
         Testing getting user icon by user id
         """
         response = json.loads(get(f'{BASE_URL}v1/User/0/icon').content.decode('utf-8'))
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'NotFound')
-
-    @order
-    def test_GET_user_icon_raw_by_user_id_no_auth(self):
-        """
-        Testing getting raw user icon by user id
-        """
-        response = json.loads(get(f'{BASE_URL}v1/User/0/icon/raw').content.decode('utf-8'))
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -278,6 +285,15 @@ class TestAuthorization(TestCase):
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
+    def test_GET_user_icon_raw_by_user_id_no_auth(self):
+        """
+        Testing getting raw user icon by user id
+        """
+        response = json.loads(get(f'{BASE_URL}v1/User/0/icon/raw').content.decode('utf-8'))
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
+
+    @order
     def test_GET_user_citizens_by_user_id_no_auth(self):
         """
         Testing getting user citizens by user id
@@ -292,24 +308,6 @@ class TestAuthorization(TestCase):
         Testing getting user guardians by user id
         """
         response = json.loads(get(f'{BASE_URL}v1/User/0/guardians').content.decode('utf-8'))
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'NotFound')
-
-    @order
-    def test_GET_user_settings_by_user_id_no_auth(self):
-        """
-        Testing getting user settings by user id
-        """
-        response = json.loads(get(f'{BASE_URL}v1/User/0/settings').content.decode('utf-8'))
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'NotFound')
-
-    @order
-    def test_PUT_update_user_settings_by_user_id_no_auth(self):
-        """
-        Testing updating user settings by user id
-        """
-        response = json.loads(put(f'{BASE_URL}v1/User/0/settings').content.decode('utf-8'))
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
