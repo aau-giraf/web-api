@@ -1,12 +1,11 @@
-from unittest import TestCase
 from requests import get, post, put, delete
 import json
-from tests import order, BASE_URL
+from testlib import order, BASE_URL, GIRAFTestCase
 
 
-class TestAuthorization(TestCase):
+class TestAuthorization(GIRAFTestCase):
     """
-    Tests for various API requests without authorization
+    Testing API requests without authorization
     """
 
     @classmethod
@@ -14,8 +13,8 @@ class TestAuthorization(TestCase):
         """
         Setup necessary data and state when class is loaded
         """
-        print('\033[33m' + 'Testing API requests without authorization' + '\033[0m')
-        print('file://tests/test_authorization.py\n')
+        super(TestAuthorization, cls).setUpClass()
+        print(f'file:/{__file__}\n')
         cls.EXPIRED_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI1YmM0YzAzMC1mOGQxLTRhYTAtOTBlOC05MTNh" \
                             "MDYwOTA4YWIiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltc" \
                             "y9uYW1laWRlbnRpZmllciI6Ijg0MTJkOTk1LWIzODEtNGY4My1iZDI1LWU5ODY2NzBiNTdkOSIsImV4cCI6MT" \
@@ -27,7 +26,7 @@ class TestAuthorization(TestCase):
         """
         Remove or resolve necessary data and states after class tests are done
         """
-        print('\n----------------------------------------------------------------------\n')
+        super(TestAuthorization, cls).tearDownClass()
 
     def setUp(self) -> None:
         """
