@@ -33,6 +33,15 @@ class GIRAFTestCase(unittest.TestCase):
     Class for customizing the TestCase class. Should be passed in all GIRAF test classes.
     """
 
+    @classmethod
+    def setUpClass(cls) -> None:
+        doc = cls.__doc__.strip().split('\n')[0].strip() if cls.__doc__ else cls.__name__
+        print('\033[33m' + f'{doc}' + '\033[0m')
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        print('\n----------------------------------------------------------------------\n')
+
     def shortDescription(self) -> str:
         """
         Use the first line of the test method doc string as terminal output for info.
