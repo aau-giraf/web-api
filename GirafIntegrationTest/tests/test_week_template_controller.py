@@ -1,6 +1,6 @@
 from requests import get, post, put, delete
 import time
-from testlib import order, BASE_URL, auth, GIRAFTestCase, parse_image
+from testlib import order, BASE_URL, auth, GIRAFTestCase
 
 graatand_token = ''
 alice_token = ''
@@ -53,6 +53,8 @@ class TestWeekTemplateController(GIRAFTestCase):
     def test_week_template_login_as_graatand(self):
         """
         Testing logging in as Graatand
+
+        Endpoint: POST:/v1/Account/login
         """
         global graatand_token
         data = {'username': 'Graatand', 'password': 'password'}
@@ -66,6 +68,8 @@ class TestWeekTemplateController(GIRAFTestCase):
     def test_week_template_register_alice(self):
         """
         Testing registering Alice
+
+        Endpoint: POST:/v1/Account/register
         """
         data = {'username': alice_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
         response = post(f'{BASE_URL}v1/Account/register', headers=auth(graatand_token), json=data).json()
@@ -76,6 +80,8 @@ class TestWeekTemplateController(GIRAFTestCase):
     def test_week_template_login_as_alice(self):
         """
         Testing logging in as Alice
+
+        Endpoint: POST:/v1/Account/login
         """
         global alice_token
         data = {'username': alice_username, 'password': 'password'}
@@ -89,6 +95,8 @@ class TestWeekTemplateController(GIRAFTestCase):
     def test_week_template_get_all_templates(self):
         """
         Testing getting all templates
+
+        Endpoint: GET:/v1/WeekTemplate
         """
         response = get(f'{BASE_URL}v1/WeekTemplate', headers=auth(graatand_token)).json()
         self.assertTrue(response['success'])
@@ -101,6 +109,8 @@ class TestWeekTemplateController(GIRAFTestCase):
     def test_week_template_get_specific_template(self):
         """
         Testing getting specific template
+
+        Endpoint: GET:/v1/WeekTemplate/{id}
         """
         response = get(f'{BASE_URL}v1/WeekTemplate/1', headers=auth(graatand_token)).json()
         self.assertTrue(response['success'])
@@ -116,6 +126,8 @@ class TestWeekTemplateController(GIRAFTestCase):
     def test_week_template_get_template_outside_department(self):
         """
         Testing getting template from outside department
+
+        Endpoint: GET:/v1/WeekTemplate/{id}
         """
         response = get(f'{BASE_URL}v1/WeekTemplate/1', headers=auth(alice_token)).json()
         self.assertFalse(response['success'])
@@ -125,6 +137,8 @@ class TestWeekTemplateController(GIRAFTestCase):
     def test_week_template_add_new_template(self):
         """
         Testing adding new template
+
+        Endpoint: POST:/v1/WeekTemplate
         """
         global template_id
         response = post(f'{BASE_URL}v1/WeekTemplate', headers=auth(graatand_token), json=self.TEMPLATES[0]).json()
@@ -137,6 +151,8 @@ class TestWeekTemplateController(GIRAFTestCase):
     def test_week_template_ensure_added_template(self):
         """
         Testing ensuring template has been added
+
+        Endpoint: GET:/v1/WeekTemplate/{id}
         """
         response = get(f'{BASE_URL}v1/WeekTemplate/{template_id}', headers=auth(graatand_token)).json()
         self.assertTrue(response['success'])
@@ -150,6 +166,8 @@ class TestWeekTemplateController(GIRAFTestCase):
     def test_week_template_update_template(self):
         """
         Testing updating template
+
+        Endpoint: PUT:/v1/WeekTemplate/{id}
         """
         response = put(f'{BASE_URL}v1/WeekTemplate/{template_id}', headers=auth(graatand_token),
                        json=self.TEMPLATES[1]).json()
@@ -160,6 +178,8 @@ class TestWeekTemplateController(GIRAFTestCase):
     def test_week_template_ensure_updated_template(self):
         """
         Testing ensuring template has been updated
+
+        Endpoint: GET:/v1/WeekTemplate/{id}
         """
         response = get(f'{BASE_URL}v1/WeekTemplate/{template_id}', headers=auth(graatand_token)).json()
         self.assertTrue(response['success'])
@@ -173,6 +193,8 @@ class TestWeekTemplateController(GIRAFTestCase):
     def test_week_template_delete_template(self):
         """
         Testing deleting template
+
+        Endpoint: DELETE:/v1/WeekTemplate/{id}
         """
         response = delete(f'{BASE_URL}v1/WeekTemplate/{template_id}', headers=auth(graatand_token)).json()
         self.assertTrue(response['success'])
@@ -182,6 +204,8 @@ class TestWeekTemplateController(GIRAFTestCase):
     def test_week_template_ensure_deleted_template(self):
         """
         Testing ensuring template has been deleted
+
+        Endpoint: GET:/v1/WeekTemplate/{id}
         """
         response = get(f'{BASE_URL}v1/WeekTemplate/{template_id}', headers=auth(graatand_token)).json()
         self.assertFalse(response['success'])

@@ -51,9 +51,11 @@ class TestPictogramController(GIRAFTestCase):
         pass
 
     @order
-    def test_pictogram_login_as_kurt(self):
+    def test_pictogram_pictogram_login_as_kurt(self):
         """
         Testing logging in as Kurt
+
+        Endpoint: POST:/v1/Account/login
         """
         global kurt_token
         data = {'username': 'Kurt', 'password': 'password'}
@@ -64,9 +66,11 @@ class TestPictogramController(GIRAFTestCase):
         kurt_token = response['data']
 
     @order
-    def test_pictogram_get_all_pictograms(self):
+    def test_pictogram_pictogram_get_all_pictograms(self):
         """
         Testing getting all pictograms
+
+        Endpoint: GET:/v1/Pictogram
         """
         params = {'page': 1, 'pageSize': 10}
         response = get(f'{BASE_URL}v1/Pictogram', headers=auth(kurt_token), params=params).json()
@@ -77,9 +81,11 @@ class TestPictogramController(GIRAFTestCase):
             self.assertIn(picto, response['data'])
 
     @order
-    def test_get_single_public_pictogram(self):
+    def test_pictogram_get_single_public_pictogram(self):
         """
         Testing getting single public pictogram
+
+        Endpoint: GET:/v1/Pictogram/{id}
         """
         response = get(f'{BASE_URL}v1/Pictogram/2', headers=auth(kurt_token)).json()
         self.assertTrue(response['success'])
@@ -88,18 +94,22 @@ class TestPictogramController(GIRAFTestCase):
         self.assertDictEqual(self.PICTOGRAMS[1], response['data'])
 
     @order
-    def test_add_pictogram_invalid_access_level(self):
+    def test_pictogram_add_pictogram_invalid_access_level(self):
         """
         Testing adding pictogram with invalid access level
+
+        Endpoint: POST:/v1/Pictogram
         """
         response = post(f'{BASE_URL}v1/Pictogram', json=self.FISH, headers=auth(kurt_token)).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'MissingProperties')
 
     @order
-    def test_add_pictogram_private(self):
+    def test_pictogram_add_pictogram_private(self):
         """
         Testing adding private pictogram
+
+        Endpoint: POST:/v1/Pictogram
         """
         global fish_id
         self.FISH['accessLevel'] = 3
@@ -112,9 +122,11 @@ class TestPictogramController(GIRAFTestCase):
         fish_id = response['data']['id']
 
     @order
-    def test_get_fish_pictogram(self):
+    def test_pictogram_get_fish_pictogram(self):
         """
         Testing getting the newly added pictogram
+
+        Endpoint: GET:/v1/Pictogram/{id}
         """
         response = get(f'{BASE_URL}v1/Pictogram/{fish_id}', headers=auth(kurt_token)).json()
         self.assertTrue(response['success'])
@@ -123,9 +135,11 @@ class TestPictogramController(GIRAFTestCase):
         self.assertEqual(fish_name, response['data']['title'])
 
     @order
-    def test_update_fish_pictogram(self):
+    def test_pictogram_update_fish_pictogram(self):
         """
         Testing updating the newly added pictogram
+
+        Endpoint: PUT:/v1/Pictogram/{id}
         """
         global fish_name
         fish_name = f'cursed_{fish_name}'
@@ -135,9 +149,11 @@ class TestPictogramController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_check_updated_fish_pictogram(self):
+    def test_pictogram_check_updated_fish_pictogram(self):
         """
         Testing checking if update was successful
+
+        Endpoint: GET:/v1/Pictogram/{id}
         """
         response = get(f'{BASE_URL}v1/Pictogram/{fish_id}', headers=auth(kurt_token)).json()
         self.assertTrue(response['success'])
@@ -146,9 +162,11 @@ class TestPictogramController(GIRAFTestCase):
         self.assertEqual(fish_name, response['data']['title'])
 
     @order
-    def test_get_public_pictogram_image(self):
+    def test_pictogram_get_public_pictogram_image(self):
         """
         Testing getting image of public pictogram
+
+        Endpoint: GET:/v1/Pictogram/{id}/image
         """
         response = get(f'{BASE_URL}v1/Pictogram/2/image', headers=auth(kurt_token)).json()
         self.assertTrue(response['success'])
@@ -156,9 +174,11 @@ class TestPictogramController(GIRAFTestCase):
         self.assertIsNotNone(response['data'])
 
     @order
-    def test_get_raw_public_pictogram_image(self):
+    def test_pictogram_get_raw_public_pictogram_image(self):
         """
         Testing getting raw image of public pictogram
+
+        Endpoint: GET:/v1/Pictogram/{id}/image/raw
         """
         response = get(f'{BASE_URL}v1/Pictogram/6/image/raw', headers=auth(kurt_token))
         image = parse_image(response.content)
@@ -166,27 +186,33 @@ class TestPictogramController(GIRAFTestCase):
         self.assertEqual(image.format, 'PNG')
 
     @order
-    def test_update_fish_image(self):
+    def test_pictogram_update_fish_image(self):
         """
         Testing updating image of newly added pictogram
+
+        Endpoint: PUT:/v1/Pictogram/{id}/image
         """
         response = put(f'{BASE_URL}v1/Pictogram/{fish_id}/image', headers=auth(kurt_token), data=self.RAW_IMAGE).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_delete_fish_pictogram(self):
+    def test_pictogram_delete_fish_pictogram(self):
         """
         Testing deleting the newly added pictogram
+
+        Endpoint: DELETE:/v1/Pictogram/{id}
         """
         response = delete(f'{BASE_URL}v1/Pictogram/{fish_id}', headers=auth(kurt_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_ensure_fish_pictogram_deleted(self):
+    def test_pictogram_ensure_fish_pictogram_deleted(self):
         """
         Testing checking if the pictogram was deleted
+
+        Endpoint: GET:/v1/Pictogram/{id}
         """
         response = get(f'{BASE_URL}v1/Pictogram/{fish_id}', headers=auth(kurt_token)).json()
         self.assertFalse(response['success'])

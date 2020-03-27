@@ -17,7 +17,7 @@ pictograms = {}
 
 class TestAccountController(GIRAFTestCase):
     """
-    Testing API requests on Department endpoints
+    Testing API requests on Account endpoints
     """
 
     @classmethod
@@ -55,9 +55,11 @@ class TestAccountController(GIRAFTestCase):
         pass
 
     @order
-    def test_login_as_lee(self):
+    def test_department_login_as_lee(self):
         """
         Testing logging in as Lee
+
+        Endpoint: POST:/v1/Account/login
         """
         global lee_token
         data = {'username': 'Lee', 'password': 'password'}
@@ -68,9 +70,11 @@ class TestAccountController(GIRAFTestCase):
         lee_token = response['data']
 
     @order
-    def test_login_as_graatand(self):
+    def test_department_login_as_graatand(self):
         """
         Testing logging in as Graatand
+
+        Endpoint: POST:/v1/Account/login
         """
         global graatand_token
         data = {'username': 'Graatand', 'password': 'password'}
@@ -81,9 +85,11 @@ class TestAccountController(GIRAFTestCase):
         graatand_token = response['data']
 
     @order
-    def test_login_as_kurt(self):
+    def test_department_login_as_kurt(self):
         """
         Testing logging in as Kurt
+
+        Endpoint: POST:/v1/Account/login
         """
         global kurt_token
         data = {'username': 'Kurt', 'password': 'password'}
@@ -94,9 +100,11 @@ class TestAccountController(GIRAFTestCase):
         kurt_token = response['data']
 
     @order
-    def test_get_department_list(self):
+    def test_department_get_department_list(self):
         """
         Testing getting list of departments
+
+        Endpoint: GET:/v1/Department
         """
         global department_count
         response = get(f'{BASE_URL}v1/Department').json()
@@ -106,27 +114,33 @@ class TestAccountController(GIRAFTestCase):
         department_count = len(response['data'])
 
     @order
-    def test_create_department_as_graatand(self):
+    def test_department_create_department_as_graatand(self):
         """
         Testing trying to create new department as Graatand
+
+        Endpoint: POST:/v1/Department
         """
         response = post(f'{BASE_URL}v1/Department', json=self.DEPARTMENT, headers=auth(graatand_token)).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotAuthorized')
 
     @order
-    def test_create_department_as_kurt(self):
+    def test_department_create_department_as_kurt(self):
         """
         Testing trying to create new department as Kurt
+
+        Endpoint: POST:/v1/Department
         """
         response = post(f'{BASE_URL}v1/Department', json=self.DEPARTMENT, headers=auth(kurt_token)).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotAuthorized')
 
     @order
-    def test_get_department_count(self):
+    def test_department_get_department_count(self):
         """
         Testing ensuring no department has been created
+
+        Endpoint: GET:/v1/Department
         """
         response = get(f'{BASE_URL}v1/Department').json()
         self.assertTrue(response['success'])
@@ -135,9 +149,11 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(department_count, len(response['data']))
 
     @order
-    def test_create_department_as_lee(self):
+    def test_department_create_department_as_lee(self):
         """
         Testing trying to create new department as Lee
+
+        Endpoint: POST:/v1/Department
         """
         global dalgaard_id
         response = post(f'{BASE_URL}v1/Department', json=self.DEPARTMENT, headers=auth(lee_token)).json()
@@ -148,9 +164,11 @@ class TestAccountController(GIRAFTestCase):
         dalgaard_id = response['data']['id']
 
     @order
-    def test_login_as_department(self):
+    def test_department_login_as_department(self):
         """
         Testing logging in as newly created department
+
+        Endpoint: POST:/v1/Account/login
         """
         global dalgaard_token
         data = {'username': dalgaard_username, 'password': '0000'}
@@ -161,9 +179,11 @@ class TestAccountController(GIRAFTestCase):
         dalgaard_token = response['data']
 
     @order
-    def test_get_department(self):
+    def test_department_get_department(self):
         """
         Testing getting newly created department
+
+        Endpoint: GET:/v1/Department/{id}
         """
         response = get(f'{BASE_URL}v1/Department/{dalgaard_id}', headers=auth(lee_token)).json()
         self.assertTrue(response['success'])
@@ -173,18 +193,22 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(response['data']['name'], dalgaard_username)
 
     @order
-    def test_get_nonexistent_department(self):
+    def test_department_get_nonexistent_department(self):
         """
         Testing getting department that does not exist
+
+        Endpoint: GET:/v1/Department/{id}
         """
         response = get(f'{BASE_URL}v1/Department/-2').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'UserNotFound')
 
     @order
-    def test_register_gunnar_department(self):
+    def test_department_register_gunnar_department(self):
         """
         Testing registering Gunnar in newly created department
+
+        Endpoint: POST:/v1/Account/register
         """
         data = {'username': gunnar_username, 'password': 'password', 'role': 'Citizen', 'departmentId': dalgaard_id}
         response = post(f'{BASE_URL}v1/Account/register', json=data, headers=auth(lee_token)).json()
@@ -192,9 +216,11 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_login_as_gunnar_department(self):
+    def test_department_login_as_gunnar_department(self):
         """
         Testing logging in as Gunnar
+
+        Endpoint: POST:/v1/Account/register
         """
         global gunnar_token
         data = {'username': gunnar_username, 'password': 'password'}
@@ -205,9 +231,11 @@ class TestAccountController(GIRAFTestCase):
         gunnar_token = response['data']
 
     @order
-    def test_get_gunnar_id_department(self):
+    def test_department_get_gunnar_id_department(self):
         """
         Testing getting Gunnar's id
+
+        Endpoint: GET:/v1/User
         """
         global gunnar_id
         response = get(f'{BASE_URL}v1/User', headers=auth(gunnar_token)).json()
@@ -218,9 +246,11 @@ class TestAccountController(GIRAFTestCase):
         gunnar_id = response['data']['id']
 
     @order
-    def test_ensure_gunnar_in_department(self):
+    def test_department_ensure_gunnar_in_department(self):
         """
         Testing ensuring Gunnar is in department
+
+        Endpoint: GET:/v1/Department/{id}
         """
         response = get(f'{BASE_URL}v1/Department/{dalgaard_id}', headers=auth(lee_token)).json()
         self.assertTrue(response['success'])
@@ -230,9 +260,11 @@ class TestAccountController(GIRAFTestCase):
         self.assertTrue(any(x['userId'] == gunnar_id for x in response['data']['members']))
 
     @order
-    def test_department_add_pictogram(self):
+    def test_department_department_add_pictogram(self):
         """
         Testing adding pictogram with department
+
+        Endpoint: POST:/v1/Pictogram
         """
         global pictograms
         response = post(f'{BASE_URL}v1/Pictogram', json=self.NEW_PICTOGRAMS[0], headers=auth(dalgaard_token)).json()
@@ -242,10 +274,11 @@ class TestAccountController(GIRAFTestCase):
         pictograms['cyclopean'] = response['data']
 
     @order
-    def test_add_pictogram_to_dalgaard_with_kurt(self):
+    def test_department_add_pictogram_to_dalgaard_with_kurt(self):
         """
         Testing trying to add pictogram to Dalgaardsholmstuen with Kurt
 
+        Endpoint: POST:/v1/Department/{departmentId}/resource/{resourceId}
         NOTE: this endpoint is deprecated
         """
         response = post(f'{BASE_URL}v1/Department/{dalgaard_id}/resource/{pictograms["cyclopean"]["id"]}',
@@ -254,10 +287,11 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotAuthorized')
 
     @order
-    def test_add_pictogram_to_dalgaard_with_gunnar(self):
+    def test_department_add_pictogram_to_dalgaard_with_gunnar(self):
         """
         Testing trying to add pictogram to Dalgaardsholmstuen with Gunnar
 
+        Endpoint: POST:/v1/Department/{departmentId}/resource/{resourceId}
         NOTE: this endpoint is deprecated
         """
         response = post(f'{BASE_URL}v1/Department/{dalgaard_id}/resource/{pictograms["cyclopean"]["id"]}',
@@ -266,9 +300,11 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotAuthorized')
 
     @order
-    def test_add_new_pictogram_to_dalgaard_with_kurt(self):
+    def test_department_add_new_pictogram_to_dalgaard_with_kurt(self):
         """
         Testing trying to add new pictogram to Dalgaardsholmstuen with Kurt
+
+        Endpoint: POST:/v1/Pictogram
         """
         global pictograms
         response = post(f'{BASE_URL}v1/Pictogram', json=self.NEW_PICTOGRAMS[1], headers=auth(kurt_token)).json()
@@ -282,9 +318,11 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotAuthorized')
 
     @order
-    def test_add_new_pictogram_to_dalgaard_with_gunnar(self):
+    def test_department_add_new_pictogram_to_dalgaard_with_gunnar(self):
         """
         Testing trying to add new pictogram to Dalgaardsholmstuen with Gunnar
+
+        Endpoint: POST:/v1/Pictogram
         """
         global pictograms
         response = post(f'{BASE_URL}v1/Pictogram', json=self.NEW_PICTOGRAMS[2], headers=auth(gunnar_token)).json()
@@ -298,10 +336,11 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotAuthorized')
 
     @order
-    def test_ensure_no_pictograms_added_to_department(self):
+    def test_department_ensure_no_pictograms_added_to_department(self):
         """
         Testing ensuring no pictograms have been added to Dalgaardsholmstuen
 
+        Endpoint: GET:/v1/Department/{id}
         NOTE: this endpoint is deprecated
         """
         response = get(f'{BASE_URL}v1/Department/{dalgaard_id}', headers=auth(lee_token)).json()
@@ -311,10 +350,11 @@ class TestAccountController(GIRAFTestCase):
         self.assertFalse(any(x['id'] in response['data']['resources'] for x in pictograms.values()))
 
     @order
-    def test_add_pictogram_to_dalgaard(self):
+    def test_department_add_pictogram_to_dalgaard(self):
         """
         Testing adding pictogram to Dalgaardsholmstuen
 
+        Endpoint: POST:/v1/Department/{departmentId}/resource/{resourceId}
         NOTE: this endpoint is deprecated
         """
         response = post(f'{BASE_URL}v1/Department/{dalgaard_id}/resource/{pictograms["cyclopean"]["id"]}',
@@ -323,10 +363,11 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_ensure_pictogram_added_to_dalgaard(self):
+    def test_department_ensure_pictogram_added_to_dalgaard(self):
         """
         Testing ensuring pictogram is added to Dalgaardsholmstuen
 
+        Endpoint: GET:/v1/Department/{id}
         NOTE: this endpoint is deprecated
         """
         response = get(f'{BASE_URL}v1/Department/{dalgaard_id}', headers=auth(lee_token)).json()
@@ -336,10 +377,11 @@ class TestAccountController(GIRAFTestCase):
         self.assertTrue(any(x == pictograms['cyclopean']['id'] for x in response['data']['resources']))
 
     @order
-    def test_remove_pictogram_from_department_with_dalgaard(self):
+    def test_department_remove_pictogram_from_department_with_dalgaard(self):
         """
         Testing removing pictogram from Dalgaardsholmstuen with Dalgaardsholmstuen
 
+        Endpoint: POST:/v1/Department/resource/{resourceId}
         NOTE: this endpoint is deprecated
         """
         response = delete(f'{BASE_URL}v1/Department/resource/{pictograms["cyclopean"]["id"]}',

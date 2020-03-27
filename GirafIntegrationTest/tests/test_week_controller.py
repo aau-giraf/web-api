@@ -1,6 +1,6 @@
 from requests import get, post, put, delete
 import time
-from testlib import order, BASE_URL, auth, GIRAFTestCase, parse_image
+from testlib import order, BASE_URL, auth, GIRAFTestCase
 
 gunnar_username = f'Gunnar{time.time()}'
 gunnar_id = ''
@@ -12,7 +12,7 @@ lee_token = ''
 
 class TestWeekController(GIRAFTestCase):
     """
-    Testing API requests on Pictogram endpoints
+    Testing API requests on Week endpoints
     """
 
     @classmethod
@@ -45,17 +45,20 @@ class TestWeekController(GIRAFTestCase):
         """
         pass
 
-    def day(self, day_number: int) -> dict:
+    @staticmethod
+    def day(day_number: int) -> dict:
         return {'day': day_number, 'activities': [{'pictogram': {'title': 'sig', 'id': 4, 'state': 1,
                                                                  'lastEdit': '2018-03-28T10:47:51.628333',
                                                                  'accessLevel': 0}, 'order': 0}]}
 
-    def different_day(self, day_number: int) -> dict:
+    @staticmethod
+    def different_day(day_number: int) -> dict:
         return {'day': day_number, 'activities': [{'pictogram': {'title': 'JUNK', 'id': 2, 'state': 3,
                                                                  'lastEdit': '2017-03-28T10:47:51.628333',
                                                                  'accessLevel': 0}, 'order': 0}]}
 
-    def week(self, days: list) -> dict:
+    @staticmethod
+    def week(days: list) -> dict:
         return {'thumbnail': {'title': 'simpelt', 'id': 5, 'lastEdit': '2018-04-20T13:17:51.033Z', 'accessLevel': 0},
                 'name': 'Coronabots roll out', 'id': 0, 'days': days}
 
@@ -63,6 +66,8 @@ class TestWeekController(GIRAFTestCase):
     def test_week_login_as_lee(self):
         """
         Testing logging in as Lee
+
+        Endpoint: POST:/v1/Account/login
         """
         global lee_token
         data = {'username': 'Lee', 'password': 'password'}
@@ -76,6 +81,8 @@ class TestWeekController(GIRAFTestCase):
     def test_week_register_gunnar(self):
         """
         Testing registering Gunnar
+
+        Endpoint: POST:/v1/Account/register
         """
         data = {'username': gunnar_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
         response = post(f'{BASE_URL}v1/Account/register', headers=auth(lee_token), json=data).json()
@@ -86,6 +93,8 @@ class TestWeekController(GIRAFTestCase):
     def test_week_login_as_gunnar(self):
         """
         Testing logging in as Gunnar
+
+        Endpoint: POST:/v1/Account/login
         """
         global gunnar_token
         data = {'username': gunnar_username, 'password': 'password'}
@@ -99,6 +108,8 @@ class TestWeekController(GIRAFTestCase):
     def test_week_get_gunnar_id(self):
         """
         Testing getting Gunnar's id
+
+        Endpoint: GET:/v1/User
         """
         global gunnar_id
         response = get(f'{BASE_URL}v1/User', headers=auth(gunnar_token)).json()
@@ -111,6 +122,8 @@ class TestWeekController(GIRAFTestCase):
     def test_week_get_no_weeks(self):
         """
         Testing getting empty list of weeks
+
+        Endpoint: GET:/v1/User/{userId}/week
         """
         response = get(f'{BASE_URL}v1/User/{gunnar_id}/week', headers=auth(gunnar_token)).json()
         self.assertFalse(response['success'])
@@ -120,6 +133,8 @@ class TestWeekController(GIRAFTestCase):
     def test_week_add_week(self):
         """
         Testing adding week
+
+        Endpoint: PUT:/v1/User/{userId}/week/{weekYear}/{weekNumber}
         """
         global week_year, week_number
         response = put(f'{BASE_URL}v1/User/{gunnar_id}/week/2018/11', headers=auth(lee_token),
@@ -136,6 +151,8 @@ class TestWeekController(GIRAFTestCase):
     def test_week_get_new_weeks(self):
         """
         Testing getting list containing new week
+
+        Endpoint: GET:/v1/User/{userId}/week
         """
         response = get(f'{BASE_URL}v1/User/{gunnar_id}/week', headers=auth(gunnar_token)).json()
         self.assertTrue(response['success'])
@@ -148,6 +165,8 @@ class TestWeekController(GIRAFTestCase):
     def test_week_adding_week_too_many_days(self):
         """
         Testing adding week containing too many days
+
+        Endpoint: PUT:/v1/User/{userId}/week/{weekYear}/{weekNumber}
         """
         response = put(f'{BASE_URL}v1/User/{gunnar_id}/week/2018/12', headers=auth(lee_token),
                        json=self.too_many_days_week).json()
@@ -158,6 +177,8 @@ class TestWeekController(GIRAFTestCase):
     def test_week_ensure_week_too_many_days_not_added(self):
         """
         Testing ensuring week containing too many days was not added
+
+        Endpoint: GET:/v1/User/{userId}/week
         """
         response = get(f'{BASE_URL}v1/User/{gunnar_id}/week', headers=auth(gunnar_token)).json()
         self.assertTrue(response['success'])
@@ -169,6 +190,8 @@ class TestWeekController(GIRAFTestCase):
     def test_week_add_week_invalid_enums(self):
         """
         Testing adding new week with invalid enums
+
+        Endpoint: PUT:/v1/User/{userId}/week/{weekYear}/{weekNumber}
         """
         response = put(f'{BASE_URL}v1/User/{gunnar_id}/week/2018/13', headers=auth(lee_token),
                        json=self.bad_enum_value_week).json()
@@ -179,6 +202,8 @@ class TestWeekController(GIRAFTestCase):
     def test_week_ensure_week_invalid_enums_not_added(self):
         """
         Testing ensuring week with invalid enums was not added
+
+        Endpoint: GET:/v1/User/{userId}/week
         """
         response = get(f'{BASE_URL}v1/User/{gunnar_id}/week', headers=auth(gunnar_token)).json()
         self.assertTrue(response['success'])
@@ -190,6 +215,8 @@ class TestWeekController(GIRAFTestCase):
     def test_week_update_week(self):
         """
         Testing updating week
+
+        Endpoint: PUT:/v1/User/{userId}/week/{weekYear}/{weekNumber}
         """
         response = put(f'{BASE_URL}v1/User/{gunnar_id}/week/{week_year}/{week_number}', headers=auth(lee_token),
                        json=self.different_correct_week).json()
@@ -201,6 +228,8 @@ class TestWeekController(GIRAFTestCase):
     def test_week_ensure_updated_week(self):
         """
         Testing ensuring week has been updated
+
+        Endpoint: GET:/v1/User/{userId}/week/{weekYear}/{weekNumber}
         """
         response = get(f'{BASE_URL}v1/User/{gunnar_id}/week/{week_year}/{week_number}',
                        headers=auth(gunnar_token)).json()
@@ -213,6 +242,8 @@ class TestWeekController(GIRAFTestCase):
     def test_week_delete_week(self):
         """
         Testing deleting week
+
+        Endpoint: DELETE:/v1/User/{userId}/week/{weekYear}/{weekNumber}
         """
         response = delete(f'{BASE_URL}v1/User/{gunnar_id}/week/{week_year}/{week_number}',
                           headers=auth(lee_token)).json()
@@ -223,7 +254,9 @@ class TestWeekController(GIRAFTestCase):
     def test_week_ensure_week_deleted(self):
         """
         Testing ensuring week has been deleted
+
+        Endpoint: GET:/v1/User/{userId}/week
         """
-        response = get(f'{BASE_URL}v1/User/{gunnar_id}/week/', headers=auth(gunnar_token)).json()
+        response = get(f'{BASE_URL}v1/User/{gunnar_id}/week', headers=auth(gunnar_token)).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NoWeekScheduleFound')
