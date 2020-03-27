@@ -160,7 +160,7 @@ class TestPictogramController(GIRAFTestCase):
         """
         Testing getting raw image of public pictogram
         """
-        response = get(f'{BASE_URL}v1/Pictogram/2/image/raw', headers=auth(kurt_token))
+        response = get(f'{BASE_URL}v1/Pictogram/6/image/raw', headers=auth(kurt_token))
         image = parse_image(response.content)
         self.assertTupleEqual(image.size, (200, 200))
         self.assertEqual(image.format, 'PNG')
