@@ -3,12 +3,18 @@ from unittest.runner import TextTestResult, TextTestRunner
 from unittest.case import TestCase
 import time
 import warnings
+import io
+from PIL import Image
 
 BASE_URL = 'http://127.0.0.1:5000/'
 
 
 def auth(token: str) -> dict:
     return {'Authorization': f'Bearer {token}'}
+
+
+def parse_image(content: str) -> Image.Image:
+    return Image.open(io.BytesIO(content))
 
 
 def order_handler():
