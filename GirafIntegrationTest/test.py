@@ -1,5 +1,4 @@
 import unittest
-from unittest.runner import TextTestRunner
 from testlib import GIRAFTestResults, GIRAFTestRunner, compare
 
 
