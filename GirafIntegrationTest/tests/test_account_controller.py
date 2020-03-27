@@ -1,5 +1,4 @@
 from requests import get, post, put, delete
-import json
 import time
 from testlib import order, BASE_URL, auth, GIRAFTestCase
 
@@ -54,7 +53,7 @@ class TestAccountController(GIRAFTestCase):
         """
         global graatand_token
         data = {'username': 'Graatand', 'password': 'password'}
-        response = json.loads(post(f'{BASE_URL}v1/Account/login', json=data).content.decode('utf-8'))
+        response = post(f'{BASE_URL}v1/Account/login', json=data).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
@@ -66,7 +65,7 @@ class TestAccountController(GIRAFTestCase):
         Testing getting Graatand's id
         """
         global graatand_id
-        response = json.loads(get(f'{BASE_URL}v1/User', headers=auth(graatand_token)).content.decode('utf-8'))
+        response = get(f'{BASE_URL}v1/User', headers=auth(graatand_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data']['id'])
@@ -80,8 +79,7 @@ class TestAccountController(GIRAFTestCase):
         global grundenberger_username
         grundenberger_username = f'Grundenberger{time.time()}'
         data = {'username': grundenberger_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
-        response = json.loads(post(f'{BASE_URL}v1/Account/register', json=data, headers=auth(graatand_token))
-                              .content.decode('utf-8'))
+        response = post(f'{BASE_URL}v1/Account/register', json=data, headers=auth(graatand_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
 
@@ -92,7 +90,7 @@ class TestAccountController(GIRAFTestCase):
         """
         global grundenberger_token
         data = {'username': grundenberger_username, 'password': 'password'}
-        response = json.loads(post(f'{BASE_URL}v1/Account/login', json=data).content.decode('utf-8'))
+        response = post(f'{BASE_URL}v1/Account/login', json=data).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
@@ -104,7 +102,7 @@ class TestAccountController(GIRAFTestCase):
         Testing getting Grundenberger's id
         """
         global grundenberger_id
-        response = json.loads(get(f'{BASE_URL}v1/User', headers=auth(grundenberger_token)).content.decode('utf-8'))
+        response = get(f'{BASE_URL}v1/User', headers=auth(grundenberger_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data']['id'])
@@ -115,7 +113,7 @@ class TestAccountController(GIRAFTestCase):
         """
         Testing getting username using authorization
         """
-        response = json.loads(get(f'{BASE_URL}v1/User', headers=auth(graatand_token)).content.decode('utf-8'))
+        response = get(f'{BASE_URL}v1/User', headers=auth(graatand_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data']['username'])
@@ -127,7 +125,7 @@ class TestAccountController(GIRAFTestCase):
         Testing logging in with invalid password
         """
         data = {'username': 'Graatand', 'password': 'this-wont-work'}
-        response = json.loads(post(f'{BASE_URL}v1/Account/login', json=data).content.decode('utf-8'))
+        response = post(f'{BASE_URL}v1/Account/login', json=data).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'InvalidCredentials')
         self.assertIsNone(response['data'])
@@ -138,7 +136,7 @@ class TestAccountController(GIRAFTestCase):
         Testing logging in with invalid username
         """
         data = {'username': 'this-wont-work-either', 'password': 'password'}
-        response = json.loads(post(f'{BASE_URL}v1/Account/login', json=data).content.decode('utf-8'))
+        response = post(f'{BASE_URL}v1/Account/login', json=data).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'InvalidCredentials')
         self.assertIsNone(response['data'])
@@ -151,7 +149,7 @@ class TestAccountController(GIRAFTestCase):
         global gunnar_username
         gunnar_username = f'Gunnar{time.time()}'
         data = {'username': gunnar_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
-        response = json.loads(post(f'{BASE_URL}v1/Account/register', json=data).content.decode('utf-8'))
+        response = post(f'{BASE_URL}v1/Account/register', json=data).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -161,8 +159,7 @@ class TestAccountController(GIRAFTestCase):
         Testing registering Gunnar
         """
         data = {'username': gunnar_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
-        response = json.loads(post(f'{BASE_URL}v1/Account/register', json=data,
-                                   headers=auth(graatand_token)).content.decode('utf-8'))
+        response = post(f'{BASE_URL}v1/Account/register', json=data, headers=auth(graatand_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
 
@@ -173,7 +170,7 @@ class TestAccountController(GIRAFTestCase):
         """
         global gunnar_token
         data = {'username': gunnar_username, 'password': 'password'}
-        response = json.loads(post(f'{BASE_URL}v1/Account/login', json=data).content.decode('utf-8'))
+        response = post(f'{BASE_URL}v1/Account/login', json=data).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
@@ -185,7 +182,7 @@ class TestAccountController(GIRAFTestCase):
         Testing getting Gunnar's id
         """
         global gunnar_id
-        response = json.loads(get(f'{BASE_URL}v1/User', headers=auth(gunnar_token)).content.decode('utf-8'))
+        response = get(f'{BASE_URL}v1/User', headers=auth(gunnar_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
@@ -196,7 +193,7 @@ class TestAccountController(GIRAFTestCase):
         """
         Testing getting Gunnar's username
         """
-        response = json.loads(get(f'{BASE_URL}v1/User', headers=auth(gunnar_token)).content.decode('utf-8'))
+        response = get(f'{BASE_URL}v1/User', headers=auth(gunnar_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
@@ -207,7 +204,7 @@ class TestAccountController(GIRAFTestCase):
         """
         Testing getting Gunnar's role
         """
-        response = json.loads(get(f'{BASE_URL}v1/User', headers=auth(gunnar_token)).content.decode('utf-8'))
+        response = get(f'{BASE_URL}v1/User', headers=auth(gunnar_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
@@ -220,7 +217,7 @@ class TestAccountController(GIRAFTestCase):
         """
         global tobias_token
         data = {'username': 'Tobias', 'password': 'password'}
-        response = json.loads(post(f'{BASE_URL}v1/Account/login', json=data).content.decode('utf-8'))
+        response = post(f'{BASE_URL}v1/Account/login', json=data).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
@@ -231,8 +228,7 @@ class TestAccountController(GIRAFTestCase):
         """
         Testing deleting Graatand with Grundenberger
         """
-        response = json.loads(delete(f'{BASE_URL}v1/Account/user/{graatand_id}', headers=auth(grundenberger_token))
-                              .content.decode('utf-8'))
+        response = delete(f'{BASE_URL}v1/Account/user/{graatand_id}', headers=auth(grundenberger_token)).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -241,8 +237,7 @@ class TestAccountController(GIRAFTestCase):
         """
         Testing deleting Grundenberger
         """
-        response = json.loads(delete(f'{BASE_URL}v1/Account/user/{grundenberger_id}',
-                                     headers=auth(graatand_token)).content.decode('utf-8'))
+        response = delete(f'{BASE_URL}v1/Account/user/{grundenberger_id}', headers=auth(graatand_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
 
@@ -252,7 +247,7 @@ class TestAccountController(GIRAFTestCase):
         Testing logging in as Grundenberger after deletion
         """
         data = {'username': grundenberger_username, 'password': 'password'}
-        response = json.loads(post(f'{BASE_URL}v1/Account/login', json=data).content.decode('utf-8'))
+        response = post(f'{BASE_URL}v1/Account/login', json=data).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'InvalidCredentials')
         self.assertIsNone(response['data'])
@@ -262,8 +257,7 @@ class TestAccountController(GIRAFTestCase):
         """
         Testing Grundenberger's authorization after deletion
         """
-        response = json.loads(get(f'{BASE_URL}v1/User/{graatand_id}', headers=auth(grundenberger_token))
-                              .content.decode('utf-8'))
+        response = get(f'{BASE_URL}v1/User/{graatand_id}', headers=auth(grundenberger_token)).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotAuthorized')
         self.assertIsNone(response['data'])
@@ -274,8 +268,8 @@ class TestAccountController(GIRAFTestCase):
         Testing getting Gunnar's password reset token with Graatand
         """
         global gunnar_reset_token
-        response = json.loads(get(f'{BASE_URL}v1/User/{gunnar_id}/Account/password-reset-token',
-                                  headers=auth(graatand_token)).content.decode('utf-8'))
+        response = get(f'{BASE_URL}v1/User/{gunnar_id}/Account/password-reset-token',
+                       headers=auth(graatand_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
@@ -287,8 +281,8 @@ class TestAccountController(GIRAFTestCase):
         Testing resetting Gunnar's password with Graatand
         """
         data = {'password': 'brand-new-password', 'token': gunnar_reset_token}
-        response = json.loads(post(f'{BASE_URL}v1/User/{gunnar_id}/Account/password', json=data,
-                                   headers=auth(graatand_token)).content.decode('utf-8'))
+        response = post(f'{BASE_URL}v1/User/{gunnar_id}/Account/password', json=data,
+                        headers=auth(graatand_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
 
@@ -298,8 +292,8 @@ class TestAccountController(GIRAFTestCase):
         Testing resetting Grundenberger's password using Gunnar's token and Graatand's authorization
         """
         data = {'password': 'brand-new-password', 'token': gunnar_reset_token}
-        response = json.loads(post(f'{BASE_URL}v1/User/{grundenberger_id}/Account/password', json=data,
-                                   headers=auth(graatand_token)).content.decode('utf-8'))
+        response = post(f'{BASE_URL}v1/User/{grundenberger_id}/Account/password', json=data,
+                        headers=auth(graatand_token)).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'UserNotFound')
 
@@ -309,7 +303,7 @@ class TestAccountController(GIRAFTestCase):
         Testing resetting Gunnar's password with an invalid token
         """
         data = {'password': 'brand-new-password', 'token': 'invalid-token'}
-        response = json.loads(post(f'{BASE_URL}v1/User/{gunnar_id}/Account/password', json=data,
-                                   headers=auth(graatand_token)).content.decode('utf-8'))
+        response = post(f'{BASE_URL}v1/User/{gunnar_id}/Account/password', json=data,
+                        headers=auth(graatand_token)).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'InvalidProperties')

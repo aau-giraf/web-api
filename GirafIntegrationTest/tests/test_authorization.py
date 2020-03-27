@@ -1,5 +1,4 @@
 from requests import get, post, put, delete
-import json
 from testlib import order, BASE_URL, GIRAFTestCase
 
 
@@ -48,7 +47,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing setting password
         """
-        response = json.loads(post(f'{BASE_URL}v1/User/0/Account/password').content.decode('utf-8'))
+        response = post(f'{BASE_URL}v1/User/0/Account/password').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -57,7 +56,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing changing password
         """
-        response = json.loads(put(f'{BASE_URL}v1/User/0/Account/password').content.decode('utf-8'))
+        response = put(f'{BASE_URL}v1/User/0/Account/password').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -66,7 +65,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing getting password reset token
         """
-        response = json.loads(get(f'{BASE_URL}v1/User/0/Account/password-reset-token').content.decode('utf-8'))
+        response = get(f'{BASE_URL}v1/User/0/Account/password-reset-token').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -78,7 +77,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing creating new department
         """
-        response = json.loads(post(f'{BASE_URL}v1/Department').content.decode('utf-8'))
+        response = post(f'{BASE_URL}v1/Department').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -87,7 +86,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing getting department citizens
         """
-        response = json.loads(get(f'{BASE_URL}v1/Department/0/citizens').content.decode('utf-8'))
+        response = get(f'{BASE_URL}v1/Department/0/citizens').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -96,7 +95,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing adding user to department
         """
-        response = json.loads(post(f'{BASE_URL}v1/Department/0/user/0').content.decode('utf-8'))
+        response = post(f'{BASE_URL}v1/Department/0/user/0').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -108,7 +107,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing GET error
         """
-        response = json.loads(get(f'{BASE_URL}v1/Error').content.decode('utf-8'))
+        response = get(f'{BASE_URL}v1/Error').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -117,7 +116,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing POST error
         """
-        response = json.loads(post(f'{BASE_URL}v1/Error').content.decode('utf-8'))
+        response = post(f'{BASE_URL}v1/Error').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -129,7 +128,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing getting all pictograms
         """
-        response = json.loads(get(f'{BASE_URL}v1/Pictogram').content.decode('utf-8'))
+        response = get(f'{BASE_URL}v1/Pictogram').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -138,7 +137,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing creating new pictogram
         """
-        response = json.loads(post(f'{BASE_URL}v1/Pictogram').content.decode('utf-8'))
+        response = post(f'{BASE_URL}v1/Pictogram').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -147,7 +146,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing getting pictogram by id with
         """
-        response = json.loads(get(f'{BASE_URL}v1/Pictogram/0').content.decode('utf-8'))
+        response = get(f'{BASE_URL}v1/Pictogram/0').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -156,7 +155,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing updating pictogram info
         """
-        response = json.loads(put(f'{BASE_URL}v1/Pictogram/0').content.decode('utf-8'))
+        response = put(f'{BASE_URL}v1/Pictogram/0').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -165,7 +164,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing deleting pictogram by id
         """
-        response = json.loads(delete(f'{BASE_URL}v1/Pictogram/0').content.decode('utf-8'))
+        response = delete(f'{BASE_URL}v1/Pictogram/0').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -174,7 +173,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing getting pictogram image by id
         """
-        response = json.loads(get(f'{BASE_URL}v1/Pictogram/0/image').content.decode('utf-8'))
+        response = get(f'{BASE_URL}v1/Pictogram/0/image').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -183,7 +182,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing updating pictogram image by id
         """
-        response = json.loads(put(f'{BASE_URL}v1/Pictogram/0/image').content.decode('utf-8'))
+        response = put(f'{BASE_URL}v1/Pictogram/0/image').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -192,7 +191,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing getting raw pictogram image by id
         """
-        response = json.loads(get(f'{BASE_URL}v1/Pictogram/0/image/raw').content.decode('utf-8'))
+        response = get(f'{BASE_URL}v1/Pictogram/0/image/raw').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -204,7 +203,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing getting API status
         """
-        response = json.loads(get(f'{BASE_URL}v1/Status').content.decode('utf-8'))
+        response = get(f'{BASE_URL}v1/Status').json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
 
@@ -213,7 +212,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing getting API database status
         """
-        response = json.loads(get(f'{BASE_URL}v1/Status/database').content.decode('utf-8'))
+        response = get(f'{BASE_URL}v1/Status/database').json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
 
@@ -225,7 +224,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing getting current user
         """
-        response = json.loads(get(f'{BASE_URL}v1/User').content.decode('utf-8'))
+        response = get(f'{BASE_URL}v1/User').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -234,7 +233,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing updating user
         """
-        response = json.loads(put(f'{BASE_URL}v1/User/0').content.decode('utf-8'))
+        response = put(f'{BASE_URL}v1/User/0').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -243,7 +242,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing getting user settings by user id
         """
-        response = json.loads(get(f'{BASE_URL}v1/User/0/settings').content.decode('utf-8'))
+        response = get(f'{BASE_URL}v1/User/0/settings').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -252,7 +251,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing updating user settings by user id
         """
-        response = json.loads(put(f'{BASE_URL}v1/User/0/settings').content.decode('utf-8'))
+        response = put(f'{BASE_URL}v1/User/0/settings').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -261,7 +260,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing getting user icon by user id
         """
-        response = json.loads(get(f'{BASE_URL}v1/User/0/icon').content.decode('utf-8'))
+        response = get(f'{BASE_URL}v1/User/0/icon').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -270,7 +269,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing updating user icon by user id
         """
-        response = json.loads(put(f'{BASE_URL}v1/User/0/icon').content.decode('utf-8'))
+        response = put(f'{BASE_URL}v1/User/0/icon').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -279,7 +278,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing deleting user icon by user id
         """
-        response = json.loads(delete(f'{BASE_URL}v1/User/0/icon').content.decode('utf-8'))
+        response = delete(f'{BASE_URL}v1/User/0/icon').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -288,7 +287,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing getting raw user icon by user id
         """
-        response = json.loads(get(f'{BASE_URL}v1/User/0/icon/raw').content.decode('utf-8'))
+        response = get(f'{BASE_URL}v1/User/0/icon/raw').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -297,7 +296,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing getting user citizens by user id
         """
-        response = json.loads(get(f'{BASE_URL}v1/User/0/citizens').content.decode('utf-8'))
+        response = get(f'{BASE_URL}v1/User/0/citizens').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -306,7 +305,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing getting user guardians by user id
         """
-        response = json.loads(get(f'{BASE_URL}v1/User/0/guardians').content.decode('utf-8'))
+        response = get(f'{BASE_URL}v1/User/0/guardians').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -319,6 +318,6 @@ class TestAuthorization(GIRAFTestCase):
         Testing arbitrary request with expired token
         """
         headers = {'Authorization': f'Bearer {self.EXPIRED_TOKEN}'}
-        response = json.loads(get(f'{BASE_URL}v1/User', headers=headers).content.decode('utf-8'))
+        response = get(f'{BASE_URL}v1/User', headers=headers).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
