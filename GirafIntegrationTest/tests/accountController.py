@@ -139,6 +139,17 @@ class AccountController(TestCase):
         check.is_not_none(response['data'])
         self.tobiasToken = response['data']
 
+    @test(skip_if_failed=['loginAsTobias'])
+    def registerBlaatand(self,check):
+        "Register Guardian Blaatand"
+        response = requests.post(Test.url + 'account/register', headers=auth(self.tobiasToken), json={
+            "username": 'Blaatand',
+            "password": "password",
+            "role": "Guardian",
+            "departmentId": 1
+        }).json()
+        ensureSuccess(response, check)
+
     @test(skip_if_failed=['loginGrundenberger', 'getGrundenbergerInfo'])
     def tryDeleteGraatand(self, check):
         "Try deleting graatand with grundenberger"

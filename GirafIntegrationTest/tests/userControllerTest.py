@@ -4,6 +4,8 @@ from testLib import *
 from integrate import TestCase, test
 import time
 
+from GirafIntegrationTest.testLib import login
+
 
 def auth(token):
     return {"Authorization": "Bearer {0}".format(token)}
@@ -23,6 +25,8 @@ class UserControllerTest(TestCase):
     gunnar = None
     charlieUsername = None
     charlie = None
+    blaatand = None
+    blaatandId = None
     lee = None
     tobias = None
     wednesday = None
@@ -38,6 +42,11 @@ class UserControllerTest(TestCase):
     def loginAsGraatand(self, check):
         'Log in as Graatand'
         self.graatand = login('Graatand', check)
+
+    @test()
+    def loginAsBlaatand(self, check):
+        'Log in as Blaatand'
+        self.blaatand = login('Blaatand', check)
 
     @test()
     def loginAsLee(self, check):
@@ -64,6 +73,14 @@ class UserControllerTest(TestCase):
         ensureSuccess(response, check)
         check.equal(response['data']['username'], 'Graatand')
         self.graatandId = response['data']['id']
+
+    @test(skip_if_failed=['loginAsBlaatand'])
+    def getBlaatandID(self, check):
+        'Get user info Blaatand'
+        response = requests.get(Test.url + 'User', headers=auth(self.blaatand)).json()
+        ensureSuccess(response, check)
+        check.equal(response['data']['username'], 'Blaatand')
+        self.blaatandId = response['data']['id']
 
     @test()
     def registerGunnar(self, check):
@@ -246,6 +263,12 @@ class UserControllerTest(TestCase):
                                 headers=auth(self.graatand)).json()
         ensureError(response, check)
 
+    @test(skip_if_failed=['getBlaatandID'])
+    def getErrorSettingsBlaatand(self,check):
+        'Get settings for Blaatand and see error'
+        response = requests.get(Test.url + 'User/{0}/settings'.format(self.blaatandId),
+                                headers=auth(self.blaatand)).json()
+        ensureError(response, check)
 
     @test(skip_if_failed=['loginAsKurt', 'GetKurtID'])
     def citizenCantChangeSettings(self, check):
@@ -270,3 +293,10 @@ class UserControllerTest(TestCase):
                                 headers=auth(self.tobias)).json()
         ensureSuccess(response, check)
         check.equal(2, response['data']['theme'])
+
+    @test(skip_if_failed=['loginAsLee', 'getBlaatandID'])
+    def superUserChangeGuardianSettingError(self, check):
+        'Checking superUser cannot change guardian setting'
+        response = requests.put(Test.url + 'User/{0}/settings'.format(self.blaatandId), json=LargeData.updatedSettings1,
+                                headers=auth(self.lee)).json()
+        ensureError(response, check)
