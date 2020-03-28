@@ -6,32 +6,58 @@ import warnings
 import io
 from PIL import Image
 
+# base API url
 BASE_URL = 'http://127.0.0.1:5000/'
 
 
 def auth(token: str) -> dict:
+    """
+    Yields a dict containing an authorization header
+    :param token: auth token
+    :return: header dict
+    """
     return {'Authorization': f'Bearer {token}'}
 
 
-def parse_image(content: str) -> Image.Image:
+def parse_image(content: bytes) -> Image.Image:
+    """
+    Parses pictogram as a PIL image
+    :param content: binary image data
+    :return: image object
+    """
     return Image.open(io.BytesIO(content))
 
 
 def order_handler():
+    """
+    Creates functions for ordering tests.
+    :return: order and comparison handlers
+    """
     ordered = {}
 
     def ordered_handler(f):
+        """
+        Order handler. Sorts the function it decorates in the order it is written in the code.
+        :param f: the function it decorates
+        :return: the function it decorates
+        """
         ordered[f.__name__] = len(ordered)
         return f
 
     def compare_handler(a, b):
+        """
+        Comparison handler. The default sorter in unittest is set to this in test.py.
+        :param a: function to compare
+        :param b: function to compare
+        :return: ordered function list
+        """
         return [1, -1][ordered[a] < ordered[b]]
 
     return ordered_handler, compare_handler
 
 
+# instances of ordering and comparison functions for external import
 order, compare = order_handler()
-unittest.defaultTestLoader.sortTestMethodsUsing = compare
 
 
 class GIRAFTestCase(unittest.TestCase):
@@ -41,11 +67,17 @@ class GIRAFTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
+        """
+        Print the first line of the class doc string when initialized.
+        """
         doc = cls.__doc__.strip().split('\n')[0].strip() if cls.__doc__ else cls.__name__
         print('\033[33m' + f'{doc}' + '\033[0m')
 
     @classmethod
     def tearDownClass(cls) -> None:
+        """
+        Print a separation line when class is finished.
+        """
         print('\n----------------------------------------------------------------------\n')
 
     def shortDescription(self) -> str:
@@ -65,51 +97,85 @@ class GIRAFTestCase(unittest.TestCase):
 
     @property
     def method_doc(self):
+        """
+        Yield the methods doc string, or notify it is missing.
+        :return: doc string if present
+        """
         if self._testMethodDoc:
             return self._testMethodDoc
         else:
-            return '.'
+            return 'Missing method doc string'
 
 
 class GIRAFTestResults(TextTestResult):
+    """
+    Modifications to the base TextTestResult class. This class contains the results of the tests.
+    """
 
     def getDescription(self, test: TestCase) -> str:
-        doc_first_line = test.shortDescription()
-        return str(doc_first_line)
+        """
+        Gets the doc string of the current method.
+        :param test: test case class
+        :return: method doc string
+        """
+        return str(test.shortDescription())
 
     def addSuccess(self, test: TestCase) -> None:
+        """
+        If the test passes, this is printed to its line in the terminal, and a result is added to the results object
+        :param test: test case class
+        """
         super(TextTestResult, self).addSuccess(test)
         if self.showAll:
+            # pretty printing
             self.stream.writeln(f'{" " * (120 - len(test.shortDescription()))}' + '\033[32m' + 'OK' + '\033[0m')
         elif self.dots:
             self.stream.write('.')
             self.stream.flush()
 
     def addError(self, test: TestCase, err) -> None:
+        """
+        If the test yields an error, this is printed to its line in the terminal, and a result is added to the
+        results object
+        :param test: test case class
+        """
         super(TextTestResult, self).addError(test, err)
         if self.showAll:
+            # pretty printing
             self.stream.writeln(f'{" " * (120 - len(test.shortDescription()))}' + '\033[93m' + 'ERROR' + '\033[0m')
         elif self.dots:
             self.stream.write('E')
             self.stream.flush()
 
     def addFailure(self, test: TestCase, err) -> None:
+        """
+        If the test fails, this is printed to its line in the terminal, and a result is added to the results object
+        :param test: test case class
+        """
         super(TextTestResult, self).addFailure(test, err)
         if self.showAll:
+            # pretty printing
             self.stream.writeln(f'{" " * (120 - len(test.shortDescription()))}' + '\033[91m' + 'FAIL' + '\033[0m')
         elif self.dots:
             self.stream.write('F')
             self.stream.flush()
 
     def printErrors(self) -> None:
+        """
+        Prints stack traces and variable info of every failure and error.
+        """
         if self.dots or self.showAll:
             if len(self.errors) > 0 or len(self.failures) > 0:
+                # print blank line if no errors or failures are present
                 self.stream.writeln()
         self.printErrorList('ERROR', self.errors)
         self.printErrorList('FAIL', self.failures)
 
 
 class GIRAFTestRunner(TextTestRunner):
+    """
+    Modifications to the base TextTestRunner class. This class is in charge of running the tests.
+    """
 
     def run(self, test):
         "Run the given test case or test suite."
@@ -148,6 +214,8 @@ class GIRAFTestRunner(TextTestRunner):
         self.stream.writeln("Ran %d test%s in %.3fs" %
                             (run, run != 1 and "s" or "", timeTaken))
         self.stream.writeln()
+
+        # pretty printing
         self.stream.writeln(f'{result.testsRun - len(result.errors) - len(result.failures)} passed ('
                             f'{len(result.unexpectedSuccesses)} unexpected), {len(result.errors)} errors, '
                             f'{len(result.failures)} failed ({len(result.expectedFailures)} expected), '
