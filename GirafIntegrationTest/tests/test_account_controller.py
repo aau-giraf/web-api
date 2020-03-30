@@ -34,11 +34,6 @@ class TestAccountController(GIRAFTestCase):
         """
         super(TestAccountController, cls).tearDownClass()
 
-    def setUp(self) -> None:
-        """
-        Setup necessary data and states before each test
-        """
-        pass
 
     def tearDown(self) -> None:
         """
