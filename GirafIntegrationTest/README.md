@@ -104,7 +104,7 @@ To enforce this, the `@order` decorator **must be appended to all test methods**
 Should you create a new file, you should make sure that it/they follow the same format as the remaining classes, i.e. follow the same naming scheme, `test_domain_....py` for file name and `TestDomain` for the class. 
 
 The class should extend the `GIRAFTestCase` class from `testlib.py`.
-The class should also override the same methods: `setUpClass`, `tearDownClass`, `setUp`, `tearDown`.
+The class should also override the same methods: `setUpClass`, `tearDownClass`. If some data or states should be set up before each test you can override `setUp` and `tearDown` as well.
 
 For example, a file setup could look like so
 
@@ -133,18 +133,6 @@ class TestExampleController(GIRAFTestCase):
         Remove or resolve necessary data and states after class tests are done
         """
         super(TestWeekTemplateController, cls).tearDownClass()
-
-    def setUp(self) -> None:
-        """
-        Setup necessary data and states before each test
-        """
-        Pass
-
-    def tearDown(self) -> None:
-        """
-        Remove or resolve necessary data and states after each test
-        """
-        pass
     
     # test methods
 ```
