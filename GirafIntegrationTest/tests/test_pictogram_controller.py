@@ -39,7 +39,7 @@ class TestPictogramController(GIRAFTestCase):
         super(TestPictogramController, cls).tearDownClass()
 
     @order
-    def test_pictogram_pictogram_login_as_citizen(self):
+    def test_pictogram_can_login_as_citizen(self):
         """
         Testing logging in as Citizen
 
@@ -54,7 +54,7 @@ class TestPictogramController(GIRAFTestCase):
         citizen_token = response['data']
 
     @order
-    def test_pictogram_pictogram_get_all_pictograms(self):
+    def test_pictogram_can_get_all_pictograms(self):
         """
         Testing getting all pictograms
 
@@ -69,7 +69,7 @@ class TestPictogramController(GIRAFTestCase):
             self.assertIn(picto, response['data'])
 
     @order
-    def test_pictogram_get_single_public_pictogram(self):
+    def test_pictogram_can_get_single_public_pictogram(self):
         """
         Testing getting single public pictogram
 
@@ -82,7 +82,7 @@ class TestPictogramController(GIRAFTestCase):
         self.assertDictEqual(self.PICTOGRAMS[1], response['data'])
 
     @order
-    def test_pictogram_add_pictogram_invalid_access_level(self):
+    def test_pictogram_can_add_pictogram_invalid_access_level_should_fail(self):
         """
         Testing adding pictogram with invalid access level
 
@@ -93,7 +93,7 @@ class TestPictogramController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'MissingProperties')
 
     @order
-    def test_pictogram_add_pictogram_private(self):
+    def test_pictogram_can_add_private_pictogram(self):
         """
         Testing adding private pictogram
 
@@ -110,7 +110,7 @@ class TestPictogramController(GIRAFTestCase):
         new_picto_id = response['data']['id']
 
     @order
-    def test_pictogram_get_new_picto_pictogram(self):
+    def test_pictogram_can_get_new_pictogram(self):
         """
         Testing getting the newly added pictogram
 
@@ -123,7 +123,7 @@ class TestPictogramController(GIRAFTestCase):
         self.assertEqual(new_picto_name, response['data']['title'])
 
     @order
-    def test_pictogram_update_new_picto_pictogram(self):
+    def test_pictogram_can_update_new_pictogram(self):
         """
         Testing updating the newly added pictogram
 
@@ -137,7 +137,7 @@ class TestPictogramController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_pictogram_check_updated_new_picto_pictogram(self):
+    def test_pictogram_check_updated_new_pictogram(self):
         """
         Testing checking if update was successful
 
@@ -150,7 +150,7 @@ class TestPictogramController(GIRAFTestCase):
         self.assertEqual(new_picto_name, response['data']['title'])
 
     @order
-    def test_pictogram_get_public_pictogram_image(self):
+    def test_pictogram_can_get_public_pictogram_image(self):
         """
         Testing getting image of public pictogram
 
@@ -162,7 +162,7 @@ class TestPictogramController(GIRAFTestCase):
         self.assertIsNotNone(response['data'])
 
     @order
-    def test_pictogram_get_raw_public_pictogram_image(self):
+    def test_pictogram_can_get_raw_public_pictogram_image(self):
         """
         Testing getting raw image of public pictogram
 
@@ -174,7 +174,7 @@ class TestPictogramController(GIRAFTestCase):
         self.assertEqual(image.format, 'PNG')
 
     @order
-    def test_pictogram_update_new_picto_image(self):
+    def test_pictogram_can_update_new_pictogram_image(self):
         """
         Testing updating image of newly added pictogram
 
@@ -185,7 +185,7 @@ class TestPictogramController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_pictogram_delete_new_picto_pictogram(self):
+    def test_pictogram_can_delete_new_pictogram(self):
         """
         Testing deleting the newly added pictogram
 
@@ -196,7 +196,7 @@ class TestPictogramController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_pictogram_ensure_new_picto_pictogram_deleted(self):
+    def test_pictogram_ensure_new_pictogram_deleted(self):
         """
         Testing checking if the pictogram was deleted
 

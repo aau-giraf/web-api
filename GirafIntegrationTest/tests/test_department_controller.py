@@ -43,7 +43,7 @@ class TestAccountController(GIRAFTestCase):
         super(TestAccountController, cls).tearDownClass()
 
     @order
-    def test_department_login_as_super_user(self):
+    def test_department_can_login_as_super_user(self):
         """
         Testing logging in as Super User
 
@@ -58,7 +58,7 @@ class TestAccountController(GIRAFTestCase):
         super_user_token = response['data']
 
     @order
-    def test_department_login_as_guardian(self):
+    def test_department_can_login_as_guardian(self):
         """
         Testing logging in as Guardian
 
@@ -73,7 +73,7 @@ class TestAccountController(GIRAFTestCase):
         guardian_token = response['data']
 
     @order
-    def test_department_login_as_citizen1(self):
+    def test_department_can_login_as_citizen1(self):
         """
         Testing logging in as Citizen1
 
@@ -88,7 +88,7 @@ class TestAccountController(GIRAFTestCase):
         citizen1_token = response['data']
 
     @order
-    def test_department_get_department_list(self):
+    def test_department_can_get_department_list(self):
         """
         Testing getting list of departments
 
@@ -102,7 +102,7 @@ class TestAccountController(GIRAFTestCase):
         department_count = len(response['data'])
 
     @order
-    def test_department_create_department_as_guardian(self):
+    def test_department_can_create_department_as_guardian_should_fail(self):
         """
         Testing trying to create new department as Guardian
 
@@ -113,7 +113,7 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotAuthorized')
 
     @order
-    def test_department_create_department_as_citizen1(self):
+    def test_department_can_create_department_as_citizen1_should_fail(self):
         """
         Testing trying to create new department as Citizen1
 
@@ -124,7 +124,7 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotAuthorized')
 
     @order
-    def test_department_get_department_count(self):
+    def test_department_can_get_department_count(self):
         """
         Testing ensuring no department has been created
 
@@ -137,7 +137,7 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(department_count, len(response['data']))
 
     @order
-    def test_department_create_department_as_super_user(self):
+    def test_department_can_create_department_as_super_user(self):
         """
         Testing trying to create new department as Super User
 
@@ -152,7 +152,7 @@ class TestAccountController(GIRAFTestCase):
         department_id = response['data']['id']
 
     @order
-    def test_department_login_as_department(self):
+    def test_department_can_login_as_department(self):
         """
         Testing logging in as newly created department
 
@@ -167,7 +167,7 @@ class TestAccountController(GIRAFTestCase):
         department_token = response['data']
 
     @order
-    def test_department_get_department(self):
+    def test_department_can_get_new_department(self):
         """
         Testing getting newly created department
 
@@ -181,7 +181,7 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(response['data']['name'], department_username)
 
     @order
-    def test_department_get_nonexistent_department(self):
+    def test_department_can_get_nonexistent_department_should_fail(self):
         """
         Testing getting department that does not exist
 
@@ -192,7 +192,7 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'UserNotFound')
 
     @order
-    def test_department_register_citizen2_department(self):
+    def test_department_can_register_citizen2_department(self):
         """
         Testing registering Citizen1 in newly created department
 
@@ -204,7 +204,7 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_department_login_as_citizen2_department(self):
+    def test_department_can_login_as_citizen2(self):
         """
         Testing logging in as Citizen1
 
@@ -219,7 +219,7 @@ class TestAccountController(GIRAFTestCase):
         citizen2_token = response['data']
 
     @order
-    def test_department_get_citizen2_id_department(self):
+    def test_department_can_get_citizen2_id(self):
         """
         Testing getting Citizen1's id
 
@@ -234,7 +234,7 @@ class TestAccountController(GIRAFTestCase):
         citizen2_id = response['data']['id']
 
     @order
-    def test_department_ensure_citizen2_in_department(self):
+    def test_department_ensure_citizen2_is_in_department(self):
         """
         Testing ensuring Citizen1 is in department
 
@@ -248,7 +248,7 @@ class TestAccountController(GIRAFTestCase):
         self.assertTrue(any(x['userId'] == citizen2_id for x in response['data']['members']))
 
     @order
-    def test_department_department_add_pictogram(self):
+    def test_department_can_department_add_pictogram(self):
         """
         Testing adding pictogram with department
 
@@ -262,7 +262,7 @@ class TestAccountController(GIRAFTestCase):
         pictograms['cyclopean'] = response['data']
 
     @order
-    def test_department_add_pictogram_to_department_with_citizen1(self):
+    def test_department_can_add_pictogram_to_department_with_citizen1_should_fail(self):
         """
         Testing trying to add pictogram to Department with Citizen1
 
@@ -275,7 +275,7 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotAuthorized')
 
     @order
-    def test_department_add_pictogram_to_department_with_citizen2(self):
+    def test_department_can_add_pictogram_to_department_with_citizen2_should_fail(self):
         """
         Testing trying to add pictogram to Department with Citizen1
 
@@ -288,7 +288,7 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotAuthorized')
 
     @order
-    def test_department_add_new_pictogram_to_department_with_citizen1(self):
+    def test_department_can_add_new_pictogram_to_department_with_citizen1(self):
         """
         Testing trying to add new pictogram to Department with Citizen1
 
@@ -306,9 +306,9 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotAuthorized')
 
     @order
-    def test_department_add_new_pictogram_to_department_with_citizen2(self):
+    def test_department_can_add_new_pictogram_to_department_with_citizen2(self):
         """
-        Testing trying to add new pictogram to Department with Citizen1
+        Testing trying to add new pictogram to Department with Citizen2
 
         Endpoint: POST:/v1/Pictogram
         """
@@ -338,7 +338,7 @@ class TestAccountController(GIRAFTestCase):
         self.assertFalse(any(x['id'] in response['data']['resources'] for x in pictograms.values()))
 
     @order
-    def test_department_add_pictogram_to_department(self):
+    def test_department_can_add_pictogram_to_department(self):
         """
         Testing adding pictogram to Department
 
@@ -365,7 +365,7 @@ class TestAccountController(GIRAFTestCase):
         self.assertTrue(any(x == pictograms['cyclopean']['id'] for x in response['data']['resources']))
 
     @order
-    def test_department_remove_pictogram_from_department_with_department(self):
+    def test_department_can_remove_pictogram_from_department_with_department(self):
         """
         Testing removing pictogram from Department with Department
 

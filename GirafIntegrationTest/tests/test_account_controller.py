@@ -35,7 +35,7 @@ class TestAccountController(GIRAFTestCase):
         super(TestAccountController, cls).tearDownClass()
 
     @order
-    def test_account_login_as_guardian(self):
+    def test_account_can_login_as_guardian(self):
         """
         Testing logging in as Guardian
 
@@ -50,7 +50,7 @@ class TestAccountController(GIRAFTestCase):
         guardian_token = response['data']
 
     @order
-    def test_account_get_guardian_id(self):
+    def test_account_can_get_guardian_id(self):
         """
         Testing getting Guardian's id
 
@@ -64,7 +64,7 @@ class TestAccountController(GIRAFTestCase):
         guardian_id = response['data']['id']
 
     @order
-    def test_account_register_citizen2(self):
+    def test_account_can_register_citizen2(self):
         """
         Testing registering Citizen2
 
@@ -78,7 +78,7 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_account_login_as_citizen2(self):
+    def test_account_can_login_as_citizen2(self):
         """
         Testing logging in as Citizen2
 
@@ -93,7 +93,7 @@ class TestAccountController(GIRAFTestCase):
         citizen2_token = response['data']
 
     @order
-    def test_account_get_citizen2_id(self):
+    def test_account_can_get_citizen2_id(self):
         """
         Testing getting Citizen2's id
 
@@ -107,7 +107,7 @@ class TestAccountController(GIRAFTestCase):
         citizen2_id = response['data']['id']
 
     @order
-    def test_account_get_username_with_auth(self):
+    def test_account_can_get_username_with_auth(self):
         """
         Testing getting username using authorization
 
@@ -120,7 +120,7 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(response['data']['username'], 'Graatand')
 
     @order
-    def test_account_login_invalid_password(self):
+    def test_account_can_login_invalid_password_should_fail(self):
         """
         Testing logging in with invalid password
 
@@ -133,7 +133,7 @@ class TestAccountController(GIRAFTestCase):
         self.assertIsNone(response['data'])
 
     @order
-    def test_account_login_invalid_username(self):
+    def test_account_can_login_invalid_username_should_fail(self):
         """
         Testing logging in with invalid username
 
@@ -146,7 +146,7 @@ class TestAccountController(GIRAFTestCase):
         self.assertIsNone(response['data'])
 
     @order
-    def test_account_register_citizen1_no_auth(self):
+    def test_account_can_register_citizen1_should_fail(self):
         """
         Testing registering Citizen1 with no authorization
 
@@ -160,7 +160,7 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_account_register_citizen1(self):
+    def test_account_can_register_citizen1(self):
         """
         Testing registering Citizen1
 
@@ -172,7 +172,7 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_account_login_as_citizen1(self):
+    def test_account_can_login_as_citizen1(self):
         """
         Testing logging in as Citizen1
 
@@ -187,7 +187,7 @@ class TestAccountController(GIRAFTestCase):
         citizen1_token = response['data']
 
     @order
-    def test_account_get_citizen1_id(self):
+    def test_account_can_get_citizen1_id(self):
         """
         Testing getting Citizen1's id
 
@@ -201,7 +201,7 @@ class TestAccountController(GIRAFTestCase):
         citizen1_id = response['data']['id']
 
     @order
-    def test_account_get_citizen1_username(self):
+    def test_account_can_get_citizen1_username(self):
         """
         Testing getting Citizen1's username
 
@@ -214,7 +214,7 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(response['data']['username'], citizen1_username)
 
     @order
-    def test_account_get_citizen1_role(self):
+    def test_account_can_get_citizen1_role(self):
         """
         Testing getting Citizen1's role
 
@@ -227,7 +227,7 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(response['data']['roleName'], 'Citizen')
 
     @order
-    def test_account_login_as_department(self):
+    def test_account_can_login_as_department(self):
         """
         Testing logging in as Department
 
@@ -242,7 +242,7 @@ class TestAccountController(GIRAFTestCase):
         department_token = response['data']
 
     @order
-    def test_account_delete_guardian_with_citizen2(self):
+    def test_account_can_delete_guardian_with_citizen2_should_fail(self):
         """
         Testing deleting Guardian with Citizen2
 
@@ -253,7 +253,7 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_account_delete_citizen2(self):
+    def test_account_can_delete_citizen2(self):
         """
         Testing deleting Citizen2
 
@@ -264,7 +264,7 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_account_login_as_deleted_citizen2(self):
+    def test_account_can_login_as_deleted_citizen2_should_fail(self):
         """
         Testing logging in as Citizen2 after deletion
 
@@ -277,7 +277,7 @@ class TestAccountController(GIRAFTestCase):
         self.assertIsNone(response['data'])
 
     @order
-    def test_account_deleted_citizen2_auth(self):
+    def test_account_can_use_deleted_citizen2s_token(self):
         """
         Testing Citizen2's authorization after deletion
 
@@ -289,7 +289,7 @@ class TestAccountController(GIRAFTestCase):
         self.assertIsNone(response['data'])
 
     @order
-    def test_account_get_citizen1_reset_token(self):
+    def test_account_can_get_citizen1_reset_token(self):
         """
         Testing getting Citizen1's password reset token with Guardian
 
@@ -304,7 +304,7 @@ class TestAccountController(GIRAFTestCase):
         citizen1_reset_token = response['data']
 
     @order
-    def test_account_reset_citizen1_password(self):
+    def test_account_can_reset_citizen1_password(self):
         """
         Testing resetting Citizen1's password with Guardian
 
@@ -317,7 +317,7 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_account_reset_citizen2_password(self):
+    def test_account_can_reset_citizen2_password(self):
         """
         Testing resetting Citizen2's password using Citizen1's token and Guardian's authorization
 
@@ -330,7 +330,7 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'UserNotFound')
 
     @order
-    def test_account_reset_citizen1_password_invalid_token(self):
+    def test_account_can_reset_citizen1_password_invalid_token_should_fail(self):
         """
         Testing resetting Citizen1's password with an invalid token
 

@@ -57,7 +57,7 @@ class TestWeekController(GIRAFTestCase):
                 'name': 'Coronabots roll out', 'id': 0, 'days': days}
 
     @order
-    def test_week_login_as_super_user(self):
+    def test_week_can_login_as_super_user(self):
         """
         Testing logging in as Super User
 
@@ -72,7 +72,7 @@ class TestWeekController(GIRAFTestCase):
         super_user_token = response['data']
 
     @order
-    def test_week_register_citizen(self):
+    def test_week_can_register_citizen(self):
         """
         Testing registering Citizen
 
@@ -84,7 +84,7 @@ class TestWeekController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_week_login_as_citizen(self):
+    def test_week_can_login_as_citizen(self):
         """
         Testing logging in as Citizen
 
@@ -99,7 +99,7 @@ class TestWeekController(GIRAFTestCase):
         citizen_token = response['data']
 
     @order
-    def test_week_get_citizen_id(self):
+    def test_week_can_get_citizen_id(self):
         """
         Testing getting Citizen's id
 
@@ -113,7 +113,7 @@ class TestWeekController(GIRAFTestCase):
         citizen_id = response['data']['id']
 
     @order
-    def test_week_get_no_weeks(self):
+    def test_week_can_get_no_weeks_should_fail(self):
         """
         Testing getting empty list of weeks
 
@@ -124,7 +124,7 @@ class TestWeekController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoWeekScheduleFound')
 
     @order
-    def test_week_add_week(self):
+    def test_week_can_add_week(self):
         """
         Testing adding week
 
@@ -142,7 +142,7 @@ class TestWeekController(GIRAFTestCase):
         week_number = response['data']['weekNumber']
 
     @order
-    def test_week_get_new_weeks(self):
+    def test_week_can_get_new_weeks(self):
         """
         Testing getting list containing new week
 
@@ -156,7 +156,7 @@ class TestWeekController(GIRAFTestCase):
         self.assertEqual(11, response['data'][0]['weekNumber'])
 
     @order
-    def test_week_adding_week_too_many_days(self):
+    def test_week_can_add_week_with_too_many_days_should_fail(self):
         """
         Testing adding week containing too many days
 
@@ -168,7 +168,7 @@ class TestWeekController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'InvalidAmountOfWeekdays')
 
     @order
-    def test_week_ensure_week_too_many_days_not_added(self):
+    def test_week_ensure_week_with_too_many_days_not_added(self):
         """
         Testing ensuring week containing too many days was not added
 
@@ -181,7 +181,7 @@ class TestWeekController(GIRAFTestCase):
         self.assertEqual(1, len(response['data']))
 
     @order
-    def test_week_add_week_invalid_enums(self):
+    def test_week_can_add_week_with_invalid_enums_should_fail(self):
         """
         Testing adding new week with invalid enums
 
@@ -193,7 +193,7 @@ class TestWeekController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'InvalidDay')
 
     @order
-    def test_week_ensure_week_invalid_enums_not_added(self):
+    def test_week_ensure_week_with_invalid_enums_not_added(self):
         """
         Testing ensuring week with invalid enums was not added
 
@@ -206,7 +206,7 @@ class TestWeekController(GIRAFTestCase):
         self.assertEqual(1, len(response['data']))
 
     @order
-    def test_week_update_week(self):
+    def test_week_can_update_week(self):
         """
         Testing updating week
 
@@ -219,7 +219,7 @@ class TestWeekController(GIRAFTestCase):
         self.assertIsNotNone(response['data'])
 
     @order
-    def test_week_ensure_updated_week(self):
+    def test_week_ensure_week_is_updated(self):
         """
         Testing ensuring week has been updated
 
@@ -233,7 +233,7 @@ class TestWeekController(GIRAFTestCase):
         self.assertTrue(response['data']['days'][i]['activities'][0]['pictogram']['id'] == 2 for i in range(1, 6))
 
     @order
-    def test_week_delete_week(self):
+    def test_week_can_delete_week(self):
         """
         Testing deleting week
 

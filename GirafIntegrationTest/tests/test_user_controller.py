@@ -61,7 +61,7 @@ class TestUserController(GIRAFTestCase):
         super(TestUserController, cls).tearDownClass()
 
     @order
-    def test_user_login_as_citizen1(self):
+    def test_user_can_login_as_citizen1(self):
         """
         Testing logging in as Citizen1
 
@@ -76,7 +76,7 @@ class TestUserController(GIRAFTestCase):
         citizen1_token = response['data']
 
     @order
-    def test_user_login_as_guardian(self):
+    def test_user_can_login_as_guardian(self):
         """
         Testing logging in as Guardian
 
@@ -91,7 +91,7 @@ class TestUserController(GIRAFTestCase):
         guardian_token = response['data']
 
     @order
-    def test_user_login_as_super_user(self):
+    def test_user_can_login_as_super_user(self):
         """
         Testing logging in as Super User
 
@@ -106,7 +106,7 @@ class TestUserController(GIRAFTestCase):
         super_user_token = response['data']
 
     @order
-    def test_user_login_as_department(self):
+    def test_user_can_login_as_department(self):
         """
         Testing logging in as Department
 
@@ -121,7 +121,7 @@ class TestUserController(GIRAFTestCase):
         department_token = response['data']
 
     @order
-    def test_user_get_citizen1_id(self):
+    def test_user_can_get_citizen1_id(self):
         """
         Testing getting Citizen1's id
 
@@ -135,7 +135,7 @@ class TestUserController(GIRAFTestCase):
         citizen1_id = response['data']['id']
 
     @order
-    def test_user_get_guardian_id(self):
+    def test_user_can_get_guardian_id(self):
         """
         Testing getting Guardian's id
 
@@ -149,7 +149,7 @@ class TestUserController(GIRAFTestCase):
         guardian_id = response['data']['id']
 
     @order
-    def test_user_register_citizen2(self):
+    def test_user_can_register_citizen2(self):
         """
         Testing registering Citizen2
 
@@ -161,7 +161,7 @@ class TestUserController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_user_login_as_citizen2(self):
+    def test_user_can_login_as_citizen2(self):
         """
         Testing logging in as Citizen2
 
@@ -176,7 +176,7 @@ class TestUserController(GIRAFTestCase):
         citizen2_token = response['data']
 
     @order
-    def test_user_get_citizen2_id(self):
+    def test_user_can_get_citizen2_id(self):
         """
         Testing getting Citizen2's id
 
@@ -190,7 +190,7 @@ class TestUserController(GIRAFTestCase):
         citizen2_id = response['data']['id']
 
     @order
-    def test_user_register_citizen3(self):
+    def test_user_can_register_citizen3(self):
         """
         Testing registering Citizen3
 
@@ -202,7 +202,7 @@ class TestUserController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_user_login_as_citizen3(self):
+    def test_user_can_login_as_citizen3(self):
         """
         Testing logging in as Citizen3
 
@@ -217,7 +217,7 @@ class TestUserController(GIRAFTestCase):
         citizen3_token = response['data']
 
     @order
-    def test_user_get_citizen3_id(self):
+    def test_user_can_get_citizen3_id(self):
         """
         Testing getting Citizen3's id
 
@@ -231,7 +231,7 @@ class TestUserController(GIRAFTestCase):
         citizen3_id = response['data']['id']
 
     @order
-    def test_user_get_citizen3_id_with_citizen2(self):
+    def test_user_can_get_citizen3_id_with_citizen2_should_fail(self):
         """
         Testing getting Citizen3's id with Citizen2
 
@@ -242,7 +242,7 @@ class TestUserController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotAuthorized')
 
     @order
-    def test_user_get_citizen_info_as_guardian(self):
+    def test_user_can_get_citizen_info_as_guardian(self):
         """
         Testing getting citizen info as guardian
 
@@ -255,7 +255,7 @@ class TestUserController(GIRAFTestCase):
         self.assertEqual(response['data']['username'], citizen2_username)
 
     @order
-    def test_user_set_display_name(self):
+    def test_user_can_set_display_name(self):
         """
         Testing setting display name
 
@@ -267,7 +267,7 @@ class TestUserController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_user_get_display_name(self):
+    def test_user_can_get_display_name(self):
         """
         Testing ensuring display name is updated
 
@@ -280,7 +280,7 @@ class TestUserController(GIRAFTestCase):
         self.assertEqual(response['data']['screenName'], 'FBI Surveillance Van')
 
     @order
-    def test_user_add_new_pictogram_as_citizen2(self):
+    def test_user_can_add_new_pictogram_as_citizen2(self):
         """
         Testing adding new pictogram as Citizen2
 
@@ -295,7 +295,7 @@ class TestUserController(GIRAFTestCase):
         wednesday_id = response['data']['id']
 
     @order
-    def test_user_add_pictogram_to_citizen3_as_citizen2(self):
+    def test_user_can_add_pictogram_to_citizen3_as_citizen2(self):
         """
         Testing adding pictogram to Citizen3 as Citizen2
 
@@ -307,7 +307,7 @@ class TestUserController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotAuthorized')
 
     @order
-    def test_user_get_settings(self):
+    def test_user_can_get_settings(self):
         """
         Testing getting user settings
 
@@ -319,7 +319,7 @@ class TestUserController(GIRAFTestCase):
         self.assertIsNotNone(response['data'])
 
     @order
-    def test_user_enable_grayscale_theme(self):
+    def test_user_can_enable_grayscale_theme(self):
         """
         Testing setting grayscale theme
 
@@ -331,7 +331,7 @@ class TestUserController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_user_check_theme(self):
+    def test_user_can_check_theme(self):
         """
         Testing ensuring theme has been updated
 
@@ -345,7 +345,7 @@ class TestUserController(GIRAFTestCase):
         self.assertEqual(response['data']['theme'], self.GRAYSCALE_THEME['theme'])
 
     @order
-    def test_user_set_default_countdown_time(self):
+    def test_user_can_set_default_countdown_time(self):
         """
         Testing setting default countdown time
 
@@ -357,7 +357,7 @@ class TestUserController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_user_check_countdown_timer(self):
+    def test_user_can_check_countdown_timer(self):
         """
         Testing ensuring countdown timer has been updated
 
@@ -370,7 +370,7 @@ class TestUserController(GIRAFTestCase):
         self.assertEqual(response['data']['timerSeconds'], self.TIMER_ONE_HOUR['timerSeconds'])
 
     @order
-    def test_user_set_multiple_settings(self):
+    def test_user_can_set_multiple_settings(self):
         """
         Testing setting multiple settings at once
 
@@ -382,7 +382,7 @@ class TestUserController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_user_check_multiple_settings(self):
+    def test_user_can_check_multiple_settings(self):
         """
         Testing ensuring settings have been updated
 
@@ -405,7 +405,7 @@ class TestUserController(GIRAFTestCase):
         self.assertEqual(1, response['data']['weekDayColors'][0]['day'])
 
     @order
-    def test_user_get_citizen1_citizens(self):
+    def test_user_can_get_citizen1_citizens_should_fail(self):
         """
         Testing getting Citizen1's citizens
 
@@ -416,7 +416,7 @@ class TestUserController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_user_get_guardian_citizens(self):
+    def test_user_can_get_guardian_citizens(self):
         """
         Testing getting Guardian's citizens
 
@@ -429,7 +429,7 @@ class TestUserController(GIRAFTestCase):
         self.assertTrue(any(x['userName'] == 'Kurt' for x in response['data']))
 
     @order
-    def test_user_get_citizen1_guardians(self):
+    def test_user_can_get_citizen1_guardians(self):
         """
         Testing getting Citizen1's guardians
 
@@ -442,7 +442,7 @@ class TestUserController(GIRAFTestCase):
         self.assertTrue(any(x['userName'] == 'Graatand' for x in response['data']))
 
     @order
-    def test_user_get_guardian_guardians(self):
+    def test_user_can_get_guardian_guardians_should_fail(self):
         """
         Testing getting Guardian's guardians
 
@@ -453,7 +453,7 @@ class TestUserController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'Forbidden')
 
     @order
-    def test_user_change_settings_as_citizen(self):
+    def test_user_can_change_settings_as_citizen_should_fail(self):
         """
         Testing changing settings as citizen
 
@@ -465,7 +465,7 @@ class TestUserController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_user_change_settings_as_super_user(self):
+    def test_user_can_change_settings_as_super_user(self):
         """
         Testing changing settings as super user
 
@@ -479,7 +479,7 @@ class TestUserController(GIRAFTestCase):
         self.assertEqual(1, response['data']['theme'])
 
     @order
-    def test_user_change_settings_as_department(self):
+    def test_user_can_change_settings_as_department(self):
         """
         Testing changing settings as department
 

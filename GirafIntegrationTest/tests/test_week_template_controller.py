@@ -39,7 +39,7 @@ class TestWeekTemplateController(GIRAFTestCase):
         super(TestWeekTemplateController, cls).tearDownClass()
 
     @order
-    def test_week_template_login_as_guardian(self):
+    def test_week_template_can_login_as_guardian(self):
         """
         Testing logging in as Guardian
 
@@ -54,7 +54,7 @@ class TestWeekTemplateController(GIRAFTestCase):
         guardian_token = response['data']
 
     @order
-    def test_week_template_register_citizen(self):
+    def test_week_template_can_register_citizen(self):
         """
         Testing registering Citizen
 
@@ -66,7 +66,7 @@ class TestWeekTemplateController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_week_template_login_as_citizen(self):
+    def test_week_template_can_login_as_citizen(self):
         """
         Testing logging in as Citizen
 
@@ -81,7 +81,7 @@ class TestWeekTemplateController(GIRAFTestCase):
         citizen_token = response['data']
 
     @order
-    def test_week_template_get_all_templates(self):
+    def test_week_template_can_get_all_templates(self):
         """
         Testing getting all templates
 
@@ -95,7 +95,7 @@ class TestWeekTemplateController(GIRAFTestCase):
         self.assertEqual(1, response['data'][0]['templateId'])
 
     @order
-    def test_week_template_get_specific_template(self):
+    def test_week_template_can_get_specific_template(self):
         """
         Testing getting specific template
 
@@ -112,7 +112,7 @@ class TestWeekTemplateController(GIRAFTestCase):
         self.assertEqual(70, response['data']['days'][4]['activities'][1]['pictogram']['id'])
 
     @order
-    def test_week_template_get_template_outside_department(self):
+    def test_week_template_can_get_template_outside_department_should_fail(self):
         """
         Testing getting template from outside department
 
@@ -123,7 +123,7 @@ class TestWeekTemplateController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotAuthorized')
 
     @order
-    def test_week_template_add_new_template(self):
+    def test_week_template_can_add_new_template(self):
         """
         Testing adding new template
 
@@ -137,7 +137,7 @@ class TestWeekTemplateController(GIRAFTestCase):
         template_id = response['data']['id']
 
     @order
-    def test_week_template_ensure_added_template(self):
+    def test_week_template_ensure_template_is_added(self):
         """
         Testing ensuring template has been added
 
@@ -152,7 +152,7 @@ class TestWeekTemplateController(GIRAFTestCase):
         self.assertEqual(7, response['data']['days'][1]['activities'][1]['pictogram']['id'])
 
     @order
-    def test_week_template_update_template(self):
+    def test_week_template_can_update_template(self):
         """
         Testing updating template
 
@@ -164,7 +164,7 @@ class TestWeekTemplateController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_week_template_ensure_updated_template(self):
+    def test_week_template_ensure_template_is_updated(self):
         """
         Testing ensuring template has been updated
 
@@ -179,7 +179,7 @@ class TestWeekTemplateController(GIRAFTestCase):
         self.assertEqual(8, response['data']['days'][1]['activities'][1]['pictogram']['id'])
 
     @order
-    def test_week_template_delete_template(self):
+    def test_week_template_can_delete_template(self):
         """
         Testing deleting template
 
@@ -190,7 +190,7 @@ class TestWeekTemplateController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_week_template_ensure_deleted_template(self):
+    def test_week_template_ensure_template_is_deleted(self):
         """
         Testing ensuring template has been deleted
 
