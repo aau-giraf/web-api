@@ -35,11 +35,6 @@ class TestAccountController(GIRAFTestCase):
         super(TestAccountController, cls).tearDownClass()
 
 
-    def tearDown(self) -> None:
-        """
-        Remove or resolve necessary data and states after each test
-        """
-        pass
 
     @order
     def test_account_login_as_graatand(self):
