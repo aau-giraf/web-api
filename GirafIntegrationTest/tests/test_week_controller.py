@@ -2,12 +2,12 @@ from requests import get, post, put, delete
 import time
 from testlib import order, BASE_URL, auth, GIRAFTestCase
 
-gunnar_username = f'Gunnar{time.time()}'
-gunnar_id = ''
-gunnar_token = ''
+citizen_username = f'Gunnar{time.time()}'
+citizen_id = ''
+citizen_token = ''
 week_year = 0
 week_number = 0
-lee_token = ''
+super_user_token = ''
 
 
 class TestWeekController(GIRAFTestCase):
@@ -57,60 +57,60 @@ class TestWeekController(GIRAFTestCase):
                 'name': 'Coronabots roll out', 'id': 0, 'days': days}
 
     @order
-    def test_week_login_as_lee(self):
+    def test_week_login_as_super_user(self):
         """
-        Testing logging in as Lee
+        Testing logging in as Super User
 
         Endpoint: POST:/v1/Account/login
         """
-        global lee_token
+        global super_user_token
         data = {'username': 'Lee', 'password': 'password'}
         response = post(f'{BASE_URL}v1/Account/login', json=data).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
-        lee_token = response['data']
+        super_user_token = response['data']
 
     @order
-    def test_week_register_gunnar(self):
+    def test_week_register_citizen(self):
         """
-        Testing registering Gunnar
+        Testing registering Citizen
 
         Endpoint: POST:/v1/Account/register
         """
-        data = {'username': gunnar_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
-        response = post(f'{BASE_URL}v1/Account/register', headers=auth(lee_token), json=data).json()
+        data = {'username': citizen_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
+        response = post(f'{BASE_URL}v1/Account/register', headers=auth(super_user_token), json=data).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_week_login_as_gunnar(self):
+    def test_week_login_as_citizen(self):
         """
-        Testing logging in as Gunnar
+        Testing logging in as Citizen
 
         Endpoint: POST:/v1/Account/login
         """
-        global gunnar_token
-        data = {'username': gunnar_username, 'password': 'password'}
+        global citizen_token
+        data = {'username': citizen_username, 'password': 'password'}
         response = post(f'{BASE_URL}v1/Account/login', json=data).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
-        gunnar_token = response['data']
+        citizen_token = response['data']
 
     @order
-    def test_week_get_gunnar_id(self):
+    def test_week_get_citizen_id(self):
         """
-        Testing getting Gunnar's id
+        Testing getting Citizen's id
 
         Endpoint: GET:/v1/User
         """
-        global gunnar_id
-        response = get(f'{BASE_URL}v1/User', headers=auth(gunnar_token)).json()
+        global citizen_id
+        response = get(f'{BASE_URL}v1/User', headers=auth(citizen_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data']['id'])
-        gunnar_id = response['data']['id']
+        citizen_id = response['data']['id']
 
     @order
     def test_week_get_no_weeks(self):
@@ -119,7 +119,7 @@ class TestWeekController(GIRAFTestCase):
 
         Endpoint: GET:/v1/User/{userId}/week
         """
-        response = get(f'{BASE_URL}v1/User/{gunnar_id}/week', headers=auth(gunnar_token)).json()
+        response = get(f'{BASE_URL}v1/User/{citizen_id}/week', headers=auth(citizen_token)).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NoWeekScheduleFound')
 
@@ -131,7 +131,7 @@ class TestWeekController(GIRAFTestCase):
         Endpoint: PUT:/v1/User/{userId}/week/{weekYear}/{weekNumber}
         """
         global week_year, week_number
-        response = put(f'{BASE_URL}v1/User/{gunnar_id}/week/2018/11', headers=auth(lee_token),
+        response = put(f'{BASE_URL}v1/User/{citizen_id}/week/2018/11', headers=auth(super_user_token),
                        json=self.correct_week).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
@@ -148,7 +148,7 @@ class TestWeekController(GIRAFTestCase):
 
         Endpoint: GET:/v1/User/{userId}/week
         """
-        response = get(f'{BASE_URL}v1/User/{gunnar_id}/week', headers=auth(gunnar_token)).json()
+        response = get(f'{BASE_URL}v1/User/{citizen_id}/week', headers=auth(citizen_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
@@ -162,7 +162,7 @@ class TestWeekController(GIRAFTestCase):
 
         Endpoint: PUT:/v1/User/{userId}/week/{weekYear}/{weekNumber}
         """
-        response = put(f'{BASE_URL}v1/User/{gunnar_id}/week/2018/12', headers=auth(lee_token),
+        response = put(f'{BASE_URL}v1/User/{citizen_id}/week/2018/12', headers=auth(super_user_token),
                        json=self.too_many_days_week).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'InvalidAmountOfWeekdays')
@@ -174,7 +174,7 @@ class TestWeekController(GIRAFTestCase):
 
         Endpoint: GET:/v1/User/{userId}/week
         """
-        response = get(f'{BASE_URL}v1/User/{gunnar_id}/week', headers=auth(gunnar_token)).json()
+        response = get(f'{BASE_URL}v1/User/{citizen_id}/week', headers=auth(citizen_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
@@ -187,7 +187,7 @@ class TestWeekController(GIRAFTestCase):
 
         Endpoint: PUT:/v1/User/{userId}/week/{weekYear}/{weekNumber}
         """
-        response = put(f'{BASE_URL}v1/User/{gunnar_id}/week/2018/13', headers=auth(lee_token),
+        response = put(f'{BASE_URL}v1/User/{citizen_id}/week/2018/13', headers=auth(super_user_token),
                        json=self.bad_enum_value_week).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'InvalidDay')
@@ -199,7 +199,7 @@ class TestWeekController(GIRAFTestCase):
 
         Endpoint: GET:/v1/User/{userId}/week
         """
-        response = get(f'{BASE_URL}v1/User/{gunnar_id}/week', headers=auth(gunnar_token)).json()
+        response = get(f'{BASE_URL}v1/User/{citizen_id}/week', headers=auth(citizen_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
@@ -212,7 +212,7 @@ class TestWeekController(GIRAFTestCase):
 
         Endpoint: PUT:/v1/User/{userId}/week/{weekYear}/{weekNumber}
         """
-        response = put(f'{BASE_URL}v1/User/{gunnar_id}/week/{week_year}/{week_number}', headers=auth(lee_token),
+        response = put(f'{BASE_URL}v1/User/{citizen_id}/week/{week_year}/{week_number}', headers=auth(super_user_token),
                        json=self.different_correct_week).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
@@ -225,8 +225,8 @@ class TestWeekController(GIRAFTestCase):
 
         Endpoint: GET:/v1/User/{userId}/week/{weekYear}/{weekNumber}
         """
-        response = get(f'{BASE_URL}v1/User/{gunnar_id}/week/{week_year}/{week_number}',
-                       headers=auth(gunnar_token)).json()
+        response = get(f'{BASE_URL}v1/User/{citizen_id}/week/{week_year}/{week_number}',
+                       headers=auth(citizen_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
@@ -239,8 +239,8 @@ class TestWeekController(GIRAFTestCase):
 
         Endpoint: DELETE:/v1/User/{userId}/week/{weekYear}/{weekNumber}
         """
-        response = delete(f'{BASE_URL}v1/User/{gunnar_id}/week/{week_year}/{week_number}',
-                          headers=auth(lee_token)).json()
+        response = delete(f'{BASE_URL}v1/User/{citizen_id}/week/{week_year}/{week_number}',
+                          headers=auth(super_user_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
 
@@ -251,6 +251,6 @@ class TestWeekController(GIRAFTestCase):
 
         Endpoint: GET:/v1/User/{userId}/week
         """
-        response = get(f'{BASE_URL}v1/User/{gunnar_id}/week', headers=auth(gunnar_token)).json()
+        response = get(f'{BASE_URL}v1/User/{citizen_id}/week', headers=auth(citizen_token)).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NoWeekScheduleFound')

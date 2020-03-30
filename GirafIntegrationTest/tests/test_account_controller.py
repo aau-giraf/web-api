@@ -2,16 +2,16 @@ from requests import get, post, put, delete
 import time
 from testlib import order, BASE_URL, auth, GIRAFTestCase
 
-graatand_token = ''
-graatand_id = ''
-gunnar_token = ''
-gunnar_reset_token = ''
-gunnar_username = ''
-gunnar_id = ''
-grundenberger_token = ''
-grundenberger_id = ''
-grundenberger_username = ''
-tobias_token = ''
+guardian_token = ''
+guardian_id = ''
+citizen1_token = ''
+citizen1_reset_token = ''
+citizen1_username = ''
+citizen1_id = ''
+citizen2_token = ''
+citizen2_id = ''
+citizen2_username = ''
+department_token = ''
 
 
 class TestAccountController(GIRAFTestCase):
@@ -35,76 +35,76 @@ class TestAccountController(GIRAFTestCase):
         super(TestAccountController, cls).tearDownClass()
 
     @order
-    def test_account_login_as_graatand(self):
+    def test_account_login_as_guardian(self):
         """
-        Testing logging in as Graatand
+        Testing logging in as Guardian
 
         Endpoint: POST:/v1/Account/login
         """
-        global graatand_token
+        global guardian_token
         data = {'username': 'Graatand', 'password': 'password'}
         response = post(f'{BASE_URL}v1/Account/login', json=data).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
-        graatand_token = response['data']
+        guardian_token = response['data']
 
     @order
-    def test_account_get_graatand_id(self):
+    def test_account_get_guardian_id(self):
         """
-        Testing getting Graatand's id
+        Testing getting Guardian's id
 
         Endpoint: GET:/v1/User
         """
-        global graatand_id
-        response = get(f'{BASE_URL}v1/User', headers=auth(graatand_token)).json()
+        global guardian_id
+        response = get(f'{BASE_URL}v1/User', headers=auth(guardian_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data']['id'])
-        graatand_id = response['data']['id']
+        guardian_id = response['data']['id']
 
     @order
-    def test_account_register_grundenberger(self):
+    def test_account_register_citizen2(self):
         """
-        Testing registering Grundenberger
+        Testing registering Citizen2
 
         Endpoint: POST:/v1/Account/register
         """
-        global grundenberger_username
-        grundenberger_username = f'Grundenberger{time.time()}'
-        data = {'username': grundenberger_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
-        response = post(f'{BASE_URL}v1/Account/register', json=data, headers=auth(graatand_token)).json()
+        global citizen2_username
+        citizen2_username = f'Grundenberger{time.time()}'
+        data = {'username': citizen2_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
+        response = post(f'{BASE_URL}v1/Account/register', json=data, headers=auth(guardian_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_account_login_as_grundenberger(self):
+    def test_account_login_as_citizen2(self):
         """
-        Testing logging in as Grundenberger
+        Testing logging in as Citizen2
 
         Endpoint: POST:/v1/Account/login
         """
-        global grundenberger_token
-        data = {'username': grundenberger_username, 'password': 'password'}
+        global citizen2_token
+        data = {'username': citizen2_username, 'password': 'password'}
         response = post(f'{BASE_URL}v1/Account/login', json=data).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
-        grundenberger_token = response['data']
+        citizen2_token = response['data']
 
     @order
-    def test_account_get_grundenberger_id(self):
+    def test_account_get_citizen2_id(self):
         """
-        Testing getting Grundenberger's id
+        Testing getting Citizen2's id
 
         Endpoint: GET:/v1/User
         """
-        global grundenberger_id
-        response = get(f'{BASE_URL}v1/User', headers=auth(grundenberger_token)).json()
+        global citizen2_id
+        response = get(f'{BASE_URL}v1/User', headers=auth(citizen2_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data']['id'])
-        grundenberger_id = response['data']['id']
+        citizen2_id = response['data']['id']
 
     @order
     def test_account_get_username_with_auth(self):
@@ -113,7 +113,7 @@ class TestAccountController(GIRAFTestCase):
 
         Endpoint: GET:/v1/User
         """
-        response = get(f'{BASE_URL}v1/User', headers=auth(graatand_token)).json()
+        response = get(f'{BASE_URL}v1/User', headers=auth(guardian_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data']['username'])
@@ -146,198 +146,198 @@ class TestAccountController(GIRAFTestCase):
         self.assertIsNone(response['data'])
 
     @order
-    def test_account_register_gunnar_no_auth(self):
+    def test_account_register_citizen1_no_auth(self):
         """
-        Testing registering Gunnar with no authorization
+        Testing registering Citizen1 with no authorization
 
         Endpoint: POST:/v1/Account/register
         """
-        global gunnar_username
-        gunnar_username = f'Gunnar{time.time()}'
-        data = {'username': gunnar_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
+        global citizen1_username
+        citizen1_username = f'Gunnar{time.time()}'
+        data = {'username': citizen1_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
         response = post(f'{BASE_URL}v1/Account/register', json=data).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_account_register_gunnar(self):
+    def test_account_register_citizen1(self):
         """
-        Testing registering Gunnar
+        Testing registering Citizen1
 
         Endpoint: POST:/v1/Account/register
         """
-        data = {'username': gunnar_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
-        response = post(f'{BASE_URL}v1/Account/register', json=data, headers=auth(graatand_token)).json()
+        data = {'username': citizen1_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
+        response = post(f'{BASE_URL}v1/Account/register', json=data, headers=auth(guardian_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_account_login_as_gunnar(self):
+    def test_account_login_as_citizen1(self):
         """
-        Testing logging in as Gunnar
+        Testing logging in as Citizen1
 
         Endpoint: POST:/v1/Account/login
         """
-        global gunnar_token
-        data = {'username': gunnar_username, 'password': 'password'}
+        global citizen1_token
+        data = {'username': citizen1_username, 'password': 'password'}
         response = post(f'{BASE_URL}v1/Account/login', json=data).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
-        gunnar_token = response['data']
+        citizen1_token = response['data']
 
     @order
-    def test_account_get_gunnar_id(self):
+    def test_account_get_citizen1_id(self):
         """
-        Testing getting Gunnar's id
+        Testing getting Citizen1's id
 
         Endpoint: GET:/v1/User
         """
-        global gunnar_id
-        response = get(f'{BASE_URL}v1/User', headers=auth(gunnar_token)).json()
+        global citizen1_id
+        response = get(f'{BASE_URL}v1/User', headers=auth(citizen1_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
-        gunnar_id = response['data']['id']
+        citizen1_id = response['data']['id']
 
     @order
-    def test_account_get_gunnar_username(self):
+    def test_account_get_citizen1_username(self):
         """
-        Testing getting Gunnar's username
+        Testing getting Citizen1's username
 
         Endpoint: GET:/v1/User
         """
-        response = get(f'{BASE_URL}v1/User', headers=auth(gunnar_token)).json()
+        response = get(f'{BASE_URL}v1/User', headers=auth(citizen1_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
-        self.assertEqual(response['data']['username'], gunnar_username)
+        self.assertEqual(response['data']['username'], citizen1_username)
 
     @order
-    def test_account_get_gunnar_role(self):
+    def test_account_get_citizen1_role(self):
         """
-        Testing getting Gunnar's role
+        Testing getting Citizen1's role
 
         Endpoint: GET:/v1/User
         """
-        response = get(f'{BASE_URL}v1/User', headers=auth(gunnar_token)).json()
+        response = get(f'{BASE_URL}v1/User', headers=auth(citizen1_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
         self.assertEqual(response['data']['roleName'], 'Citizen')
 
     @order
-    def test_account_login_as_tobias(self):
+    def test_account_login_as_department(self):
         """
-        Testing logging in as Tobias
+        Testing logging in as Department
 
         Endpoint: POST:/v1/Account/login
         """
-        global tobias_token
+        global department_token
         data = {'username': 'Tobias', 'password': 'password'}
         response = post(f'{BASE_URL}v1/Account/login', json=data).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
-        tobias_token = response['data']
+        department_token = response['data']
 
     @order
-    def test_account_delete_graatand_with_grundenberger(self):
+    def test_account_delete_guardian_with_citizen2(self):
         """
-        Testing deleting Graatand with Grundenberger
+        Testing deleting Guardian with Citizen2
 
         Endpoint: DELETE:/v1/Account/user/{id}
         """
-        response = delete(f'{BASE_URL}v1/Account/user/{graatand_id}', headers=auth(grundenberger_token)).json()
+        response = delete(f'{BASE_URL}v1/Account/user/{guardian_id}', headers=auth(citizen2_token)).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_account_delete_grundenberger(self):
+    def test_account_delete_citizen2(self):
         """
-        Testing deleting Grundenberger
+        Testing deleting Citizen2
 
         Endpoint: DELETE:/v1/Account/user/{id}
         """
-        response = delete(f'{BASE_URL}v1/Account/user/{grundenberger_id}', headers=auth(graatand_token)).json()
+        response = delete(f'{BASE_URL}v1/Account/user/{citizen2_id}', headers=auth(guardian_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_account_login_as_deleted_grundenberger(self):
+    def test_account_login_as_deleted_citizen2(self):
         """
-        Testing logging in as Grundenberger after deletion
+        Testing logging in as Citizen2 after deletion
 
         Endpoint: POST:/v1/Account/login
         """
-        data = {'username': grundenberger_username, 'password': 'password'}
+        data = {'username': citizen2_username, 'password': 'password'}
         response = post(f'{BASE_URL}v1/Account/login', json=data).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'InvalidCredentials')
         self.assertIsNone(response['data'])
 
     @order
-    def test_account_deleted_grundenberger_auth(self):
+    def test_account_deleted_citizen2_auth(self):
         """
-        Testing Grundenberger's authorization after deletion
+        Testing Citizen2's authorization after deletion
 
         Endpoint: GET:/v1/User/{id}
         """
-        response = get(f'{BASE_URL}v1/User/{graatand_id}', headers=auth(grundenberger_token)).json()
+        response = get(f'{BASE_URL}v1/User/{guardian_id}', headers=auth(citizen2_token)).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotAuthorized')
         self.assertIsNone(response['data'])
 
     @order
-    def test_account_get_gunnar_reset_token(self):
+    def test_account_get_citizen1_reset_token(self):
         """
-        Testing getting Gunnar's password reset token with Graatand
+        Testing getting Citizen1's password reset token with Guardian
 
         Endpoint: GET:/v1/User/{id}/Account/password-reset-token
         """
-        global gunnar_reset_token
-        response = get(f'{BASE_URL}v1/User/{gunnar_id}/Account/password-reset-token',
-                       headers=auth(graatand_token)).json()
+        global citizen1_reset_token
+        response = get(f'{BASE_URL}v1/User/{citizen1_id}/Account/password-reset-token',
+                       headers=auth(guardian_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
-        gunnar_reset_token = response['data']
+        citizen1_reset_token = response['data']
 
     @order
-    def test_account_reset_gunnar_password(self):
+    def test_account_reset_citizen1_password(self):
         """
-        Testing resetting Gunnar's password with Graatand
+        Testing resetting Citizen1's password with Guardian
 
         Endpoint: POST:/v1/User/{id}/Account/password
         """
-        data = {'password': 'brand-new-password', 'token': gunnar_reset_token}
-        response = post(f'{BASE_URL}v1/User/{gunnar_id}/Account/password', json=data,
-                        headers=auth(graatand_token)).json()
+        data = {'password': 'brand-new-password', 'token': citizen1_reset_token}
+        response = post(f'{BASE_URL}v1/User/{citizen1_id}/Account/password', json=data,
+                        headers=auth(guardian_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_account_reset_grundenberger_password(self):
+    def test_account_reset_citizen2_password(self):
         """
-        Testing resetting Grundenberger's password using Gunnar's token and Graatand's authorization
+        Testing resetting Citizen2's password using Citizen1's token and Guardian's authorization
 
         Endpoint: POST:/v1/User/{id}/Account/password
         """
-        data = {'password': 'brand-new-password', 'token': gunnar_reset_token}
-        response = post(f'{BASE_URL}v1/User/{grundenberger_id}/Account/password', json=data,
-                        headers=auth(graatand_token)).json()
+        data = {'password': 'brand-new-password', 'token': citizen1_reset_token}
+        response = post(f'{BASE_URL}v1/User/{citizen2_id}/Account/password', json=data,
+                        headers=auth(guardian_token)).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'UserNotFound')
 
     @order
-    def test_account_reset_gunnar_password_invalid_token(self):
+    def test_account_reset_citizen1_password_invalid_token(self):
         """
-        Testing resetting Gunnar's password with an invalid token
+        Testing resetting Citizen1's password with an invalid token
 
         Endpoint: POST:/v1/User/{id}/Account/password
         """
         data = {'password': 'brand-new-password', 'token': 'invalid-token'}
-        response = post(f'{BASE_URL}v1/User/{gunnar_id}/Account/password', json=data,
-                        headers=auth(graatand_token)).json()
+        response = post(f'{BASE_URL}v1/User/{citizen1_id}/Account/password', json=data,
+                        headers=auth(guardian_token)).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'InvalidProperties')

@@ -2,9 +2,9 @@ from requests import get, post, put, delete
 import time
 from testlib import order, BASE_URL, auth, GIRAFTestCase
 
-graatand_token = ''
-alice_token = ''
-alice_username = f'Alice{time.time()}'
+guardian_token = ''
+citizen_token = ''
+citizen_username = f'Alice{time.time()}'
 template_id = 0
 
 
@@ -39,46 +39,46 @@ class TestWeekTemplateController(GIRAFTestCase):
         super(TestWeekTemplateController, cls).tearDownClass()
 
     @order
-    def test_week_template_login_as_graatand(self):
+    def test_week_template_login_as_guardian(self):
         """
-        Testing logging in as Graatand
+        Testing logging in as Guardian
 
         Endpoint: POST:/v1/Account/login
         """
-        global graatand_token
+        global guardian_token
         data = {'username': 'Graatand', 'password': 'password'}
         response = post(f'{BASE_URL}v1/Account/login', json=data).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
-        graatand_token = response['data']
+        guardian_token = response['data']
 
     @order
-    def test_week_template_register_alice(self):
+    def test_week_template_register_citizen(self):
         """
-        Testing registering Alice
+        Testing registering Citizen
 
         Endpoint: POST:/v1/Account/register
         """
-        data = {'username': alice_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
-        response = post(f'{BASE_URL}v1/Account/register', headers=auth(graatand_token), json=data).json()
+        data = {'username': citizen_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
+        response = post(f'{BASE_URL}v1/Account/register', headers=auth(guardian_token), json=data).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_week_template_login_as_alice(self):
+    def test_week_template_login_as_citizen(self):
         """
-        Testing logging in as Alice
+        Testing logging in as Citizen
 
         Endpoint: POST:/v1/Account/login
         """
-        global alice_token
-        data = {'username': alice_username, 'password': 'password'}
+        global citizen_token
+        data = {'username': citizen_username, 'password': 'password'}
         response = post(f'{BASE_URL}v1/Account/login', json=data).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
-        alice_token = response['data']
+        citizen_token = response['data']
 
     @order
     def test_week_template_get_all_templates(self):
@@ -87,7 +87,7 @@ class TestWeekTemplateController(GIRAFTestCase):
 
         Endpoint: GET:/v1/WeekTemplate
         """
-        response = get(f'{BASE_URL}v1/WeekTemplate', headers=auth(graatand_token)).json()
+        response = get(f'{BASE_URL}v1/WeekTemplate', headers=auth(guardian_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
@@ -101,7 +101,7 @@ class TestWeekTemplateController(GIRAFTestCase):
 
         Endpoint: GET:/v1/WeekTemplate/{id}
         """
-        response = get(f'{BASE_URL}v1/WeekTemplate/1', headers=auth(graatand_token)).json()
+        response = get(f'{BASE_URL}v1/WeekTemplate/1', headers=auth(guardian_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
@@ -118,7 +118,7 @@ class TestWeekTemplateController(GIRAFTestCase):
 
         Endpoint: GET:/v1/WeekTemplate/{id}
         """
-        response = get(f'{BASE_URL}v1/WeekTemplate/1', headers=auth(alice_token)).json()
+        response = get(f'{BASE_URL}v1/WeekTemplate/1', headers=auth(citizen_token)).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotAuthorized')
 
@@ -130,7 +130,7 @@ class TestWeekTemplateController(GIRAFTestCase):
         Endpoint: POST:/v1/WeekTemplate
         """
         global template_id
-        response = post(f'{BASE_URL}v1/WeekTemplate', headers=auth(graatand_token), json=self.TEMPLATES[0]).json()
+        response = post(f'{BASE_URL}v1/WeekTemplate', headers=auth(guardian_token), json=self.TEMPLATES[0]).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
@@ -143,7 +143,7 @@ class TestWeekTemplateController(GIRAFTestCase):
 
         Endpoint: GET:/v1/WeekTemplate/{id}
         """
-        response = get(f'{BASE_URL}v1/WeekTemplate/{template_id}', headers=auth(graatand_token)).json()
+        response = get(f'{BASE_URL}v1/WeekTemplate/{template_id}', headers=auth(guardian_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
@@ -158,7 +158,7 @@ class TestWeekTemplateController(GIRAFTestCase):
 
         Endpoint: PUT:/v1/WeekTemplate/{id}
         """
-        response = put(f'{BASE_URL}v1/WeekTemplate/{template_id}', headers=auth(graatand_token),
+        response = put(f'{BASE_URL}v1/WeekTemplate/{template_id}', headers=auth(guardian_token),
                        json=self.TEMPLATES[1]).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
@@ -170,7 +170,7 @@ class TestWeekTemplateController(GIRAFTestCase):
 
         Endpoint: GET:/v1/WeekTemplate/{id}
         """
-        response = get(f'{BASE_URL}v1/WeekTemplate/{template_id}', headers=auth(graatand_token)).json()
+        response = get(f'{BASE_URL}v1/WeekTemplate/{template_id}', headers=auth(guardian_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
@@ -185,7 +185,7 @@ class TestWeekTemplateController(GIRAFTestCase):
 
         Endpoint: DELETE:/v1/WeekTemplate/{id}
         """
-        response = delete(f'{BASE_URL}v1/WeekTemplate/{template_id}', headers=auth(graatand_token)).json()
+        response = delete(f'{BASE_URL}v1/WeekTemplate/{template_id}', headers=auth(guardian_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
 
@@ -196,6 +196,6 @@ class TestWeekTemplateController(GIRAFTestCase):
 
         Endpoint: GET:/v1/WeekTemplate/{id}
         """
-        response = get(f'{BASE_URL}v1/WeekTemplate/{template_id}', headers=auth(graatand_token)).json()
+        response = get(f'{BASE_URL}v1/WeekTemplate/{template_id}', headers=auth(guardian_token)).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NoWeekTemplateFound')
