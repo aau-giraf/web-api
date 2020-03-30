@@ -31,7 +31,7 @@ class TestAuthorization(GIRAFTestCase):
     Account endpoints
     """
     @order
-    def test_auth_POST_account_set_password(self):
+    def test_auth_POST_account_set_password_should_fail(self):
         """
         Testing setting password
 
@@ -42,7 +42,7 @@ class TestAuthorization(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_auth_POST_account_change_password(self):
+    def test_auth_POST_account_change_password_should_fail(self):
         """
         Testing changing password
 
@@ -53,7 +53,7 @@ class TestAuthorization(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_auth_GET_account_password_reset_token(self):
+    def test_auth_GET_account_password_reset_token_should_fail(self):
         """
         Testing getting password reset token
 
@@ -67,7 +67,7 @@ class TestAuthorization(GIRAFTestCase):
     Department endpoints
     """
     @order
-    def test_auth_POST_department(self):
+    def test_auth_POST_department_should_fail(self):
         """
         Testing creating new department
 
@@ -78,7 +78,7 @@ class TestAuthorization(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_auth_GET_department_citizens(self):
+    def test_auth_GET_department_citizens_should_fail(self):
         """
         Testing getting department citizens
 
@@ -89,7 +89,7 @@ class TestAuthorization(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_auth_POST_department_user(self):
+    def test_auth_POST_department_user_should_fail(self):
         """
         Testing adding user to department
 
@@ -103,7 +103,7 @@ class TestAuthorization(GIRAFTestCase):
     Error endpoints
     """
     @order
-    def test_auth_GET_error(self):
+    def test_auth_GET_error_should_fail(self):
         """
         Testing GET error
 
@@ -114,7 +114,7 @@ class TestAuthorization(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_auth_POST_error(self):
+    def test_auth_POST_error_should_fail(self):
         """
         Testing POST error
 
@@ -128,7 +128,7 @@ class TestAuthorization(GIRAFTestCase):
     Pictogram endpoints
     """
     @order
-    def test_auth_GET_all_pictograms(self):
+    def test_auth_GET_all_pictograms_should_fail(self):
         """
         Testing getting all pictograms
 
@@ -139,7 +139,7 @@ class TestAuthorization(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_auth_POST_pictogram(self):
+    def test_auth_POST_pictogram_should_fail(self):
         """
         Testing creating new pictogram
 
@@ -150,7 +150,7 @@ class TestAuthorization(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_auth_GET_pictogram_by_id(self):
+    def test_auth_GET_pictogram_by_id_should_fail(self):
         """
         Testing getting pictogram by id with
 
@@ -161,7 +161,7 @@ class TestAuthorization(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_auth_PUT_update_pictogram_info(self):
+    def test_auth_PUT_update_pictogram_info_should_fail(self):
         """
         Testing updating pictogram info
 
@@ -172,7 +172,7 @@ class TestAuthorization(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_auth_DELETE_pictogram_by_id(self):
+    def test_auth_DELETE_pictogram_by_id_should_fail(self):
         """
         Testing deleting pictogram by id
 
@@ -183,7 +183,7 @@ class TestAuthorization(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_auth_GET_pictogram_image_by_id(self):
+    def test_auth_GET_pictogram_image_by_id_should_fail(self):
         """
         Testing getting pictogram image by id
 
@@ -194,7 +194,7 @@ class TestAuthorization(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_auth_PUT_pictogram_image_by_id(self):
+    def test_auth_PUT_pictogram_image_by_id_should_fail(self):
         """
         Testing updating pictogram image by id
 
@@ -205,7 +205,7 @@ class TestAuthorization(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_auth_GET_pictogram_image_raw_by_id(self):
+    def test_auth_GET_pictogram_image_raw_by_id_should_fail(self):
         """
         Testing getting raw pictogram image by id
 
@@ -219,7 +219,7 @@ class TestAuthorization(GIRAFTestCase):
     Status endpoints
     """
     @order
-    def test_auth_GET_status(self):
+    def test_auth_GET_status_should_fail(self):
         """
         Testing getting API status
 
@@ -230,7 +230,7 @@ class TestAuthorization(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_auth_GET_database_status(self):
+    def test_auth_GET_database_status_should_fail(self):
         """
         Testing getting API database status
 
@@ -244,7 +244,7 @@ class TestAuthorization(GIRAFTestCase):
     User endpoints
     """
     @order
-    def test_auth_GET_user(self):
+    def test_auth_GET_user_should_fail(self):
         """
         Testing getting current user
 
@@ -255,7 +255,7 @@ class TestAuthorization(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_auth_PUT_update_user(self):
+    def test_auth_PUT_update_user_should_fail(self):
         """
         Testing updating user
 
@@ -266,7 +266,7 @@ class TestAuthorization(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_auth_GET_user_settings_by_user_id(self):
+    def test_auth_GET_user_settings_by_user_id_should_fail(self):
         """
         Testing getting user settings by user id
 
@@ -277,7 +277,7 @@ class TestAuthorization(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_auth_PUT_update_user_settings_by_user_id(self):
+    def test_auth_PUT_update_user_settings_by_user_id_should_fail(self):
         """
         Testing updating user settings by user id
 
@@ -288,7 +288,7 @@ class TestAuthorization(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_auth_GET_user_icon_by_user_id(self):
+    def test_auth_GET_user_icon_by_user_id_should_fail(self):
         """
         Testing getting user icon by user id
 
@@ -299,7 +299,7 @@ class TestAuthorization(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_auth_PUT_update_user_icon_by_user_id(self):
+    def test_auth_PUT_update_user_icon_by_user_id_should_fail(self):
         """
         Testing updating user icon by user id
 
@@ -310,7 +310,7 @@ class TestAuthorization(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_auth_DELETE_user_icon_by_user_id(self):
+    def test_auth_DELETE_user_icon_by_user_id_should_fail(self):
         """
         Testing deleting user icon by user id
 
@@ -321,7 +321,7 @@ class TestAuthorization(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_auth_GET_user_icon_raw_by_user_id(self):
+    def test_auth_GET_user_icon_raw_by_user_id_should_fail(self):
         """
         Testing getting raw user icon by user id
 
@@ -332,7 +332,7 @@ class TestAuthorization(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_auth_GET_user_citizens_by_user_id(self):
+    def test_auth_GET_user_citizens_by_user_id_should_fail(self):
         """
         Testing getting user citizens by user id
 
@@ -343,7 +343,7 @@ class TestAuthorization(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_auth_GET_user_guardians_by_user_id(self):
+    def test_auth_GET_user_guardians_by_user_id_should_fail(self):
         """
         Testing getting user guardians by user id
 
@@ -357,7 +357,7 @@ class TestAuthorization(GIRAFTestCase):
     Other tests
     """
     @order
-    def test_auth_expired_authorization(self):
+    def test_auth_expired_authorization_should_fail(self):
         """
         Testing arbitrary request with expired token
 
