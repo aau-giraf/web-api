@@ -38,17 +38,6 @@ class TestWeekTemplateController(GIRAFTestCase):
         """
         super(TestWeekTemplateController, cls).tearDownClass()
 
-    def setUp(self) -> None:
-        """
-        Setup necessary data and states before each test
-        """
-
-    def tearDown(self) -> None:
-        """
-        Remove or resolve necessary data and states after each test
-        """
-        pass
-
     @order
     def test_week_template_login_as_graatand(self):
         """

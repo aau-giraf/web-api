@@ -34,7 +34,6 @@ class TestAccountController(GIRAFTestCase):
         """
         super(TestAccountController, cls).tearDownClass()
 
-
     @order
     def test_account_login_as_graatand(self):
         """

@@ -27,18 +27,6 @@ class TestAuthorization(GIRAFTestCase):
         """
         super(TestAuthorization, cls).tearDownClass()
 
-    def setUp(self) -> None:
-        """
-        Setup necessary data and states before each test
-        """
-        pass
-
-    def tearDown(self) -> None:
-        """
-        Remove or resolve necessary data and states after each test
-        """
-        pass
-
     """
     Account endpoints
     """

@@ -39,12 +39,6 @@ class TestWeekController(GIRAFTestCase):
         self.too_many_days_week = self.week([self.day(i) for i in range(1, 8)] + [self.day(3)])
         self.bad_enum_value_week = self.week([self.day(i * 10) for i in range(1, 8)])
 
-    def tearDown(self) -> None:
-        """
-        Remove or resolve necessary data and states after each test
-        """
-        pass
-
     @staticmethod
     def day(day_number: int) -> dict:
         return {'day': day_number, 'activities': [{'pictogram': {'title': 'sig', 'id': 4, 'state': 1,
