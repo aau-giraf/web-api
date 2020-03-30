@@ -24,7 +24,7 @@ namespace GirafRest.Setup
                 ///SampleDataHandler creates a samples.json file by storing current database data in plaintext, in samples.json
                 ///Use only if samples.json does not exist in Data folder and only sample data exists in the database
                 ///</summary>
-                sampleHandler.SerializeDataAsync(context, userManager);
+                //sampleHandler.SerializeDataAsync(context, userManager);
 
                 return;
             }
@@ -148,7 +148,7 @@ namespace GirafRest.Setup
                 }
 
                 Week week = new Week { Name = sampleWeek.Name, Thumbnail = thumbNail };
-                AddDaysToWeekAndContext(sampleUsers, sampleWeekdays, week, context, pictograms);
+                AddDaysToWeekAndContext(sampleWeekdays, week, context, pictograms);
                 context.Weeks.Add(week);
                 weekList.Add(week);
 
@@ -191,7 +191,7 @@ namespace GirafRest.Setup
                     Department = departments.First(d => d.Name == sampleTemplate.DepartmentName)
                 };
 
-                AddDaysToWeekAndContext(sampleUsers, sampleWeekdays, template, context, pictograms);
+                AddDaysToWeekAndContext(sampleWeekdays, template, context, pictograms);
                 context.WeekTemplates.Add(template);
 
                 foreach (GirafUser user in context.Users)
@@ -211,7 +211,7 @@ namespace GirafRest.Setup
         }
 
 
-        private static void AddDaysToWeekAndContext(List<SampleGirafUser> sampleUsers, List<SampleWeekday> sampleDays, WeekBase week, GirafDbContext context, List<Pictogram> pictograms)
+        private static void AddDaysToWeekAndContext(List<SampleWeekday> sampleDays, WeekBase week, GirafDbContext context, List<Pictogram> pictograms)
         {
             foreach (var sampleDay in sampleDays)
             {

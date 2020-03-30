@@ -1,1406 +1,785 @@
 {
-  "$id": "1",
-  "userList": [
+  "UserList": [
     {
-      "$id": "2",
-      "IsDepartment": false,
-      "Guardians": [],
-      "Citizens": [],
-      "DisplayName": null,
-      "UserIcon": null,
-      "DepartmentKey": 1,
-      "Department": {
-        "$id": "3",
-        "Key": 1,
-        "Name": "Tobias' stue for godt humør",
-        "Members": [
-          {
-            "$ref": "2"
-          },
-          {
-            "$id": "4",
-            "IsDepartment": false,
-            "Guardians": [],
-            "Citizens": [],
-            "DisplayName": null,
-            "UserIcon": null,
-            "DepartmentKey": 1,
-            "Department": {
-              "$ref": "3"
-            },
-            "WeekSchedule": [],
-            "Resources": [],
-            "Settings": {
-              "$id": "5",
-              "Key": 0,
-              "Orientation": 1,
-              "CompleteMark": 2,
-              "CancelMark": 2,
-              "DefaultTimer": 2,
-              "TimerSeconds": 900,
-              "ActivitiesCount": null,
-              "Theme": 1,
-              "NrOfDaysToDisplay": 7,
-              "GreyScale": false,
-              "WeekDayColors": null
-            },
-            "Id": "ad73a982-6490-4929-9483-7db112aa7cfe",
-            "UserName": "Tobias",
-            "NormalizedUserName": "TOBIAS",
-            "Email": null,
-            "NormalizedEmail": null,
-            "EmailConfirmed": false,
-            "PasswordHash": "AQAAAAEAACcQAAAAENW0/rM8GyzJxg62rGFVi6ZE+RreeYLdAnzfTrKBFuAcB5Yb+t87jOLfLvcoA8BtJg==",
-            "SecurityStamp": "6BHPUBNI57KMF65JQYZASDMC7Y5M23KD",
-            "ConcurrencyStamp": "171e26bd-b86f-4f39-a2bd-6efb0a493ae8",
-            "PhoneNumber": null,
-            "PhoneNumberConfirmed": false,
-            "TwoFactorEnabled": false,
-            "LockoutEnd": null,
-            "LockoutEnabled": true,
-            "AccessFailedCount": 0
-          },
-          {
-            "$id": "6",
-            "IsDepartment": false,
-            "Guardians": [],
-            "Citizens": [],
-            "DisplayName": null,
-            "UserIcon": null,
-            "DepartmentKey": 1,
-            "Department": {
-              "$ref": "3"
-            },
-            "WeekSchedule": [],
-            "Resources": [],
-            "Settings": {
-              "$id": "7",
-              "Key": 0,
-              "Orientation": 1,
-              "CompleteMark": 2,
-              "CancelMark": 2,
-              "DefaultTimer": 2,
-              "TimerSeconds": 900,
-              "ActivitiesCount": null,
-              "Theme": 1,
-              "NrOfDaysToDisplay": 7,
-              "GreyScale": false,
-              "WeekDayColors": null
-            },
-            "Id": "b31ebc45-f918-4b14-badf-ebb9e86d436e",
-            "UserName": "Kurt",
-            "NormalizedUserName": "KURT",
-            "Email": null,
-            "NormalizedEmail": null,
-            "EmailConfirmed": false,
-            "PasswordHash": "AQAAAAEAACcQAAAAEFZuzD93raukJOasddbSPRgFGx+xAQj1GD9G/h3M6XI4HAKUnBAQ39PAYX0vemeMrQ==",
-            "SecurityStamp": "MSQZSCHW23SQQUAC3V3WFLKPECMHANSK",
-            "ConcurrencyStamp": "54fbbfa3-2d40-498b-808f-79361b10bce5",
-            "PhoneNumber": null,
-            "PhoneNumberConfirmed": false,
-            "TwoFactorEnabled": false,
-            "LockoutEnd": null,
-            "LockoutEnabled": true,
-            "AccessFailedCount": 0
-          },
-          {
-            "$id": "8",
-            "IsDepartment": false,
-            "Guardians": [],
-            "Citizens": [],
-            "DisplayName": null,
-            "UserIcon": null,
-            "DepartmentKey": 1,
-            "Department": {
-              "$ref": "3"
-            },
-            "WeekSchedule": [],
-            "Resources": [],
-            "Settings": {
-              "$id": "9",
-              "Key": 0,
-              "Orientation": 1,
-              "CompleteMark": 2,
-              "CancelMark": 2,
-              "DefaultTimer": 2,
-              "TimerSeconds": 900,
-              "ActivitiesCount": null,
-              "Theme": 1,
-              "NrOfDaysToDisplay": 7,
-              "GreyScale": false,
-              "WeekDayColors": null
-            },
-            "Id": "e3c7e608-2a7a-472b-94cf-4407ee09f6c3",
-            "UserName": "Decker",
-            "NormalizedUserName": "DECKER",
-            "Email": null,
-            "NormalizedEmail": null,
-            "EmailConfirmed": false,
-            "PasswordHash": "AQAAAAEAACcQAAAAEINtbV5JgbA7n0c4BZWjPP3A5x0XacCqBMiVCyjvGis3idVpimAeV43MZ7hi/XBqcw==",
-            "SecurityStamp": "MX6T2OFRW5P5S4QR5IPDQYXWEEJUCWCR",
-            "ConcurrencyStamp": "69080e89-2615-42e5-9806-fdbd809852c7",
-            "PhoneNumber": null,
-            "PhoneNumberConfirmed": false,
-            "TwoFactorEnabled": false,
-            "LockoutEnd": null,
-            "LockoutEnabled": true,
-            "AccessFailedCount": 0
-          }
-        ],
-        "Resources": [],
-        "WeekTemplates": null
-      },
-      "WeekSchedule": [],
-      "Resources": [],
-      "Settings": {
-        "$id": "10",
-        "Key": 0,
-        "Orientation": 1,
-        "CompleteMark": 2,
-        "CancelMark": 2,
-        "DefaultTimer": 2,
-        "TimerSeconds": 900,
-        "ActivitiesCount": null,
-        "Theme": 1,
-        "NrOfDaysToDisplay": 7,
-        "GreyScale": false,
-        "WeekDayColors": null
-      },
-      "Id": "610f3fa0-4527-4581-a71e-94dcbd072f22",
-      "UserName": "Graatand",
-      "NormalizedUserName": "GRAATAND",
-      "Email": null,
-      "NormalizedEmail": null,
-      "EmailConfirmed": false,
-      "PasswordHash": "AQAAAAEAACcQAAAAEMAQPK3hoILXXxICqBM86KaiYwDIHFFy2wGZEJXDv9nc0m/NGdgs9WiSy96hRl3YVg==",
-      "SecurityStamp": "U4OSCH2XUD53W7QM363VTA5VWDTICKB5",
-      "ConcurrencyStamp": "129e32ff-d736-44db-b3d6-eb6da0564e05",
-      "PhoneNumber": null,
-      "PhoneNumberConfirmed": false,
-      "TwoFactorEnabled": false,
-      "LockoutEnd": null,
-      "LockoutEnabled": true,
-      "AccessFailedCount": 0
+      "Name": "Kurt",
+      "DepartmentName": "Tobias' stue for godt humør",
+      "Role": "Citizen",
+      "Weeks": [
+        "Normal Uge"
+      ],
+      "Password": "AQAAAAEAACcQAAAAECjBTGkYH7MZmEfTwbKWCNSjp/Yl+fb0wAS3dfUIjjmx3GDHrpmOBFAZAOuMGx8Y4A=="
     },
     {
-      "$id": "11",
-      "IsDepartment": false,
-      "Guardians": [],
-      "Citizens": [],
-      "DisplayName": null,
-      "UserIcon": null,
-      "DepartmentKey": null,
-      "Department": null,
-      "WeekSchedule": [],
-      "Resources": [],
-      "Settings": {
-        "$id": "12",
-        "Key": 0,
-        "Orientation": 1,
-        "CompleteMark": 2,
-        "CancelMark": 2,
-        "DefaultTimer": 2,
-        "TimerSeconds": 900,
-        "ActivitiesCount": null,
-        "Theme": 1,
-        "NrOfDaysToDisplay": 7,
-        "GreyScale": false,
-        "WeekDayColors": null
-      },
-      "Id": "66dabd32-06b0-40f6-a67b-083c9c407676",
-      "UserName": "Lee",
-      "NormalizedUserName": "LEE",
-      "Email": null,
-      "NormalizedEmail": null,
-      "EmailConfirmed": false,
-      "PasswordHash": "AQAAAAEAACcQAAAAEDIppF0bw9WkCbzohiwO2sjTwexFhsV2KHnqtGC3WRYipuABGK31Zj/AFEmMIVw3IA==",
-      "SecurityStamp": "AVFGIJTAUV6F2E7OKA3REGJEWJCALEWX",
-      "ConcurrencyStamp": "412c3fb6-3d97-4ad9-958a-3913eb5fbae5",
-      "PhoneNumber": null,
-      "PhoneNumberConfirmed": false,
-      "TwoFactorEnabled": false,
-      "LockoutEnd": null,
-      "LockoutEnabled": true,
-      "AccessFailedCount": 0
+      "Name": "Tobias",
+      "DepartmentName": "Tobias' stue for godt humør",
+      "Role": "Department",
+      "Weeks": [],
+      "Password": "AQAAAAEAACcQAAAAEMM3NP+ppEIomZysEjxKMQmGquMahrRDTk61yc96bCkBgKwNZ7mC14MGvsSgvY2nxA=="
     },
     {
-      "$ref": "4"
+      "Name": "Decker",
+      "DepartmentName": "Tobias' stue for godt humør",
+      "Role": "Citizen",
+      "Weeks": [],
+      "Password": "AQAAAAEAACcQAAAAEAhC2IXYGZC2S6NUzqOBjYJNzCe6ULHRIFWUkdRlKa4yhpmRiy1/7FIKttwHVWKylA=="
     },
     {
-      "$ref": "6"
+      "Name": "Graatand",
+      "DepartmentName": "Tobias' stue for godt humør",
+      "Role": "Guardian",
+      "Weeks": [],
+      "Password": "AQAAAAEAACcQAAAAELsn48SXsYsG9mpLTk4JNhzB/HVYom/P0gW2YSqPK/9+iw/wE7NL7HgWCBKiELMSmg=="
     },
     {
-      "$ref": "8"
+      "Name": "Lee",
+      "DepartmentName": "Bajer plejen",
+      "Role": "SuperUser",
+      "Weeks": [],
+      "Password": "AQAAAAEAACcQAAAAEJCvdncZlLrVsRwOYIzgiRinvHyiZSlDlbuIE8nOomqNGAmlybRCi0YThhdfXHQ1bQ=="
     }
   ],
-  "departmentList": [
+  "DepartmentList": [
     {
-      "$id": "13",
-      "Key": 2,
-      "Name": "Bajer plejen",
-      "Members": [],
-      "Resources": [],
-      "WeekTemplates": null
+      "Name": "Bajer plejen"
     },
     {
-      "$ref": "3"
+      "Name": "Tobias' stue for godt humør"
     }
   ],
-  "pictogramList": [
+  "PictogramList": [
     {
-      "$id": "14",
       "Title": "Epik",
-      "Id": 1,
-      "LastEdit": "2020-03-18T13:31:03.4157",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "15",
       "Title": "som",
-      "Id": 2,
-      "LastEdit": "2020-03-18T13:31:03.445714",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "16",
       "Title": "slut",
-      "Id": 3,
-      "LastEdit": "2020-03-18T13:31:03.445695",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "17",
       "Title": "sjovt",
-      "Id": 4,
-      "LastEdit": "2020-03-18T13:31:03.445681",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "18",
       "Title": "simpelt",
-      "Id": 5,
-      "LastEdit": "2020-03-18T13:31:03.445664",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "19",
       "Title": "sig",
-      "Id": 6,
-      "LastEdit": "2020-03-18T13:31:03.44565",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "20",
       "Title": "selv",
-      "Id": 7,
-      "LastEdit": "2020-03-18T13:31:03.445636",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "21",
       "Title": "sejt",
-      "Id": 8,
-      "LastEdit": "2020-03-18T13:31:03.445619",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "22",
       "Title": "sammen",
-      "Id": 9,
-      "LastEdit": "2020-03-18T13:31:03.445606",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "23",
       "Title": "rød",
-      "Id": 10,
-      "LastEdit": "2020-03-18T13:31:03.445592",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "24",
       "Title": "respekt",
-      "Id": 11,
-      "LastEdit": "2020-03-18T13:31:03.445574",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "25",
       "Title": "sort",
-      "Id": 12,
-      "LastEdit": "2020-03-18T13:31:03.445731",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "26",
       "Title": "regnestykke1",
-      "Id": 13,
-      "LastEdit": "2020-03-18T13:31:03.44556",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "27",
       "Title": "q",
-      "Id": 14,
-      "LastEdit": "2020-03-18T13:31:03.445518",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "28",
       "Title": "pink",
-      "Id": 15,
-      "LastEdit": "2020-03-18T13:31:03.445505",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "29",
       "Title": "pege",
-      "Id": 16,
-      "LastEdit": "2020-03-18T13:31:03.445491",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "30",
       "Title": "parentes",
-      "Id": 17,
-      "LastEdit": "2020-03-18T13:31:03.445474",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "31",
       "Title": "parantes",
-      "Id": 18,
-      "LastEdit": "2020-03-18T13:31:03.44546",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "32",
       "Title": "ovenfor",
-      "Id": 19,
-      "LastEdit": "2020-03-18T13:31:03.445446",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "33",
       "Title": "orange",
-      "Id": 20,
-      "LastEdit": "2020-03-18T13:31:03.445426",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "34",
       "Title": "omdømme",
-      "Id": 21,
-      "LastEdit": "2020-03-18T13:31:03.445413",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "35",
       "Title": "ok",
-      "Id": 22,
-      "LastEdit": "2020-03-18T13:31:03.445399",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "36",
       "Title": "også",
-      "Id": 23,
-      "LastEdit": "2020-03-18T13:31:03.445382",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "37",
       "Title": "regnestykke",
-      "Id": 24,
-      "LastEdit": "2020-03-18T13:31:03.445544",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "38",
       "Title": "starte",
-      "Id": 25,
-      "LastEdit": "2020-03-18T13:31:03.445745",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "39",
       "Title": "stjerne",
-      "Id": 26,
-      "LastEdit": "2020-03-18T13:31:03.445759",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "40",
       "Title": "større end",
-      "Id": 27,
-      "LastEdit": "2020-03-18T13:31:03.445777",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "41",
       "Title": "cat15",
-      "Id": 28,
-      "LastEdit": "2020-03-18T13:31:03.446344",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "42",
       "Title": "cat14",
-      "Id": 29,
-      "LastEdit": "2020-03-18T13:31:03.446323",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "43",
       "Title": "cat13",
-      "Id": 30,
-      "LastEdit": "2020-03-18T13:31:03.446309",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "44",
       "Title": "cat12",
-      "Id": 31,
-      "LastEdit": "2020-03-18T13:31:03.446292",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "45",
       "Title": "cat11",
-      "Id": 32,
-      "LastEdit": "2020-03-18T13:31:03.446264",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "46",
       "Title": "cat10",
-      "Id": 33,
-      "LastEdit": "2020-03-18T13:31:03.44625",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "47",
       "Title": "cat9",
-      "Id": 34,
-      "LastEdit": "2020-03-18T13:31:03.446236",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "48",
       "Title": "cat8",
-      "Id": 35,
-      "LastEdit": "2020-03-18T13:31:03.446218",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "49",
       "Title": "cat7",
-      "Id": 36,
-      "LastEdit": "2020-03-18T13:31:03.446204",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "50",
       "Title": "cat6",
-      "Id": 37,
-      "LastEdit": "2020-03-18T13:31:03.44619",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "51",
       "Title": "cat5",
-      "Id": 38,
-      "LastEdit": "2020-03-18T13:31:03.446172",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "52",
       "Title": "cat4",
-      "Id": 39,
-      "LastEdit": "2020-03-18T13:31:03.446157",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "53",
       "Title": "cat3",
-      "Id": 40,
-      "LastEdit": "2020-03-18T13:31:03.446142",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "54",
       "Title": "cat2",
-      "Id": 41,
-      "LastEdit": "2020-03-18T13:31:03.446119",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "55",
       "Title": "cat1",
-      "Id": 42,
-      "LastEdit": "2020-03-18T13:31:03.446088",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "56",
       "Title": "cat0",
-      "Id": 43,
-      "LastEdit": "2020-03-18T13:31:03.445906",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "57",
       "Title": "tiders",
-      "Id": 44,
-      "LastEdit": "2020-03-18T13:31:03.445886",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "58",
       "Title": "terning",
-      "Id": 45,
-      "LastEdit": "2020-03-18T13:31:03.445871",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "59",
       "Title": "tegn",
-      "Id": 46,
-      "LastEdit": "2020-03-18T13:31:03.445854",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "60",
       "Title": "sølv",
-      "Id": 47,
-      "LastEdit": "2020-03-18T13:31:03.44584",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "61",
       "Title": "sætte",
-      "Id": 48,
-      "LastEdit": "2020-03-18T13:31:03.445825",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "62",
       "Title": "synssans",
-      "Id": 49,
-      "LastEdit": "2020-03-18T13:31:03.445805",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "63",
       "Title": "symbol",
-      "Id": 50,
-      "LastEdit": "2020-03-18T13:31:03.445791",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "64",
       "Title": "nærme",
-      "Id": 51,
-      "LastEdit": "2020-03-18T13:31:03.445368",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "65",
       "Title": "cat16",
-      "Id": 52,
-      "LastEdit": "2020-03-18T13:31:03.446359",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "66",
       "Title": "nuværende",
-      "Id": 53,
-      "LastEdit": "2020-03-18T13:31:03.445354",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "67",
       "Title": "nul",
-      "Id": 54,
-      "LastEdit": "2020-03-18T13:31:03.445322",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "68",
       "Title": "godt",
-      "Id": 55,
-      "LastEdit": "2020-03-18T13:31:03.444856",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "69",
       "Title": "geometriske",
-      "Id": 56,
-      "LastEdit": "2020-03-18T13:31:03.444841",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "70",
       "Title": "færdig",
-      "Id": 57,
-      "LastEdit": "2020-03-18T13:31:03.444822",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "71",
       "Title": "frihed",
-      "Id": 58,
-      "LastEdit": "2020-03-18T13:31:03.444808",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "72",
       "Title": "fredsdue",
-      "Id": 59,
-      "LastEdit": "2020-03-18T13:31:03.444792",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "73",
       "Title": "fra",
-      "Id": 60,
-      "LastEdit": "2020-03-18T13:31:03.444774",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "74",
       "Title": "former",
-      "Id": 61,
-      "LastEdit": "2020-03-18T13:31:03.44476",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "75",
       "Title": "fire",
-      "Id": 62,
-      "LastEdit": "2020-03-18T13:31:03.444741",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "76",
       "Title": "figurer",
-      "Id": 63,
-      "LastEdit": "2020-03-18T13:31:03.444726",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "77",
       "Title": "femininum",
-      "Id": 64,
-      "LastEdit": "2020-03-18T13:31:03.44471",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "78",
       "Title": "grå",
-      "Id": 65,
-      "LastEdit": "2020-03-18T13:31:03.444869",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "79",
       "Title": "fem",
-      "Id": 66,
-      "LastEdit": "2020-03-18T13:31:03.444685",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "80",
       "Title": "fantastisk",
-      "Id": 67,
-      "LastEdit": "2020-03-18T13:31:03.444656",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "81",
       "Title": "en",
-      "Id": 68,
-      "LastEdit": "2020-03-18T13:31:03.444636",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "82",
       "Title": "division",
-      "Id": 69,
-      "LastEdit": "2020-03-18T13:31:03.444622",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "83",
       "Title": "delmængde",
-      "Id": 70,
-      "LastEdit": "2020-03-18T13:31:03.444605",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "84",
       "Title": "bogstav",
-      "Id": 71,
-      "LastEdit": "2020-03-18T13:31:03.444572",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "85",
       "Title": "berøre",
-      "Id": 72,
-      "LastEdit": "2020-03-18T13:31:03.444557",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "86",
       "Title": "antal",
-      "Id": 73,
-      "LastEdit": "2020-03-18T13:31:03.444536",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "87",
       "Title": "alting",
-      "Id": 74,
-      "LastEdit": "2020-03-18T13:31:03.44452",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "88",
       "Title": "alle",
-      "Id": 75,
-      "LastEdit": "2020-03-18T13:31:03.444499",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "89",
       "Title": "alfabet",
-      "Id": 76,
-      "LastEdit": "2020-03-18T13:31:03.444411",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "90",
       "Title": "farve",
-      "Id": 77,
-      "LastEdit": "2020-03-18T13:31:03.44467",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "91",
       "Title": "gul",
-      "Id": 78,
-      "LastEdit": "2020-03-18T13:31:03.444887",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "92",
       "Title": "gylden",
-      "Id": 79,
-      "LastEdit": "2020-03-18T13:31:03.444912",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "93",
       "Title": "heldig",
-      "Id": 80,
-      "LastEdit": "2020-03-18T13:31:03.444931",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "94",
       "Title": "nnummer",
-      "Id": 81,
-      "LastEdit": "2020-03-18T13:31:03.445308",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "95",
       "Title": "nederste",
-      "Id": 82,
-      "LastEdit": "2020-03-18T13:31:03.445291",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "96",
       "Title": "mørkegrøn",
-      "Id": 83,
-      "LastEdit": "2020-03-18T13:31:03.445278",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "97",
       "Title": "mørkeblå",
-      "Id": 84,
-      "LastEdit": "2020-03-18T13:31:03.445264",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "98",
       "Title": "multiplikation",
-      "Id": 85,
-      "LastEdit": "2020-03-18T13:31:03.445246",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "99",
       "Title": "mindre arbejde",
-      "Id": 86,
-      "LastEdit": "2020-03-18T13:31:03.445233",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "100",
       "Title": "midterste",
-      "Id": 87,
-      "LastEdit": "2020-03-18T13:31:03.445219",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "101",
       "Title": "mere arbejde",
-      "Id": 88,
-      "LastEdit": "2020-03-18T13:31:03.445201",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "102",
       "Title": "med",
-      "Id": 89,
-      "LastEdit": "2020-03-18T13:31:03.445187",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "103",
       "Title": "maskulin",
-      "Id": 90,
-      "LastEdit": "2020-03-18T13:31:03.445172",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "104",
       "Title": "lægge",
-      "Id": 91,
-      "LastEdit": "2020-03-18T13:31:03.445154",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "105",
       "Title": "lysegrøn",
-      "Id": 92,
-      "LastEdit": "2020-03-18T13:31:03.44514",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "106",
       "Title": "line",
-      "Id": 93,
-      "LastEdit": "2020-03-18T13:31:03.445122",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "107",
       "Title": "lilla",
-      "Id": 94,
-      "LastEdit": "2020-03-18T13:31:03.445108",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "108",
       "Title": "langt",
-      "Id": 95,
-      "LastEdit": "2020-03-18T13:31:03.445086",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "109",
       "Title": "kvinde",
-      "Id": 96,
-      "LastEdit": "2020-03-18T13:31:03.445073",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "110",
       "Title": "komme",
-      "Id": 97,
-      "LastEdit": "2020-03-18T13:31:03.445058",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "111",
       "Title": "j",
-      "Id": 98,
-      "LastEdit": "2020-03-18T13:31:03.445039",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "112",
       "Title": "intet",
-      "Id": 99,
-      "LastEdit": "2020-03-18T13:31:03.445025",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "113",
       "Title": "hørelse",
-      "Id": 100,
-      "LastEdit": "2020-03-18T13:31:03.445011",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "114",
       "Title": "hvilken",
-      "Id": 101,
-      "LastEdit": "2020-03-18T13:31:03.44499",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "115",
       "Title": "hvid",
-      "Id": 102,
-      "LastEdit": "2020-03-18T13:31:03.444977",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "116",
       "Title": "hunkøn",
-      "Id": 103,
-      "LastEdit": "2020-03-18T13:31:03.444961",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "117",
       "Title": "numer",
-      "Id": 104,
-      "LastEdit": "2020-03-18T13:31:03.445337",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
     },
     {
-      "$id": "118",
       "Title": "cat17",
-      "Id": 105,
-      "LastEdit": "2020-03-18T13:31:03.446373",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": "secure hash",
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
+    }
+  ],
+  "WeekdayList": [
+    {
+      "Day": 1,
+      "ActivityIconTitles": [
+        "Epik",
+        "antal",
+        "alting",
+        "alle",
+        "alfabet"
+      ],
+      "ActivityStates": [
+        "Completed",
+        "Completed",
+        "Completed",
+        "Completed",
+        "Completed"
+      ]
+    },
+    {
+      "Day": 2,
+      "ActivityIconTitles": [
+        "division",
+        "delmængde",
+        "bogstav",
+        "berøre"
+      ],
+      "ActivityStates": [
+        "Completed",
+        "Canceled",
+        "Active",
+        "Completed"
+      ]
+    },
+    {
+      "Day": 3,
+      "ActivityIconTitles": [
+        "femininum",
+        "fem",
+        "farve",
+        "fantastisk",
+        "en"
+      ],
+      "ActivityStates": [
+        "Active",
+        "Active",
+        "Active",
+        "Active",
+        "Completed"
+      ]
+    },
+    {
+      "Day": 4,
+      "ActivityIconTitles": [
+        "berøre",
+        "delmængde",
+        "bogstav",
+        "division"
+      ],
+      "ActivityStates": [
+        "Active",
+        "Active",
+        "Canceled",
+        "Active"
+      ]
+    },
+    {
+      "Day": 5,
+      "ActivityIconTitles": [
+        "delmængde",
+        "Epik"
+      ],
+      "ActivityStates": [
+        "Active",
+        "Active"
+      ]
+    },
+    {
+      "Day": 6,
+      "ActivityIconTitles": [
+        "berøre",
+        "division"
+      ],
+      "ActivityStates": [
+        "Canceled",
+        "Canceled"
+      ]
+    },
+    {
+      "Day": 7,
+      "ActivityIconTitles": [
+        "alting",
+        "berøre"
+      ],
+      "ActivityStates": [
+        "Active",
+        "Active"
+      ]
+    },
+    {
+      "Day": 1,
+      "ActivityIconTitles": [
+        "Epik",
+        "antal",
+        "alting",
+        "alle",
+        "alfabet"
+      ],
+      "ActivityStates": [
+        "Active",
+        "Active",
+        "Active",
+        "Active",
+        "Active"
+      ]
+    },
+    {
+      "Day": 2,
+      "ActivityIconTitles": [
+        "division",
+        "delmængde",
+        "bogstav",
+        "berøre"
+      ],
+      "ActivityStates": [
+        "Active",
+        "Active",
+        "Active",
+        "Active"
+      ]
+    },
+    {
+      "Day": 3,
+      "ActivityIconTitles": [
+        "femininum",
+        "fem",
+        "farve",
+        "fantastisk",
+        "en"
+      ],
+      "ActivityStates": [
+        "Active",
+        "Active",
+        "Active",
+        "Active",
+        "Active"
+      ]
+    },
+    {
+      "Day": 4,
+      "ActivityIconTitles": [
+        "berøre",
+        "delmængde",
+        "bogstav",
+        "division"
+      ],
+      "ActivityStates": [
+        "Active",
+        "Active",
+        "Active",
+        "Active"
+      ]
+    },
+    {
+      "Day": 5,
+      "ActivityIconTitles": [
+        "delmængde",
+        "Epik"
+      ],
+      "ActivityStates": [
+        "Active",
+        "Active"
+      ]
+    },
+    {
+      "Day": 6,
+      "ActivityIconTitles": [
+        "berøre",
+        "division"
+      ],
+      "ActivityStates": [
+        "Active",
+        "Active"
+      ]
+    },
+    {
+      "Day": 7,
+      "ActivityIconTitles": [
+        "alting",
+        "berøre"
+      ],
+      "ActivityStates": [
+        "Active",
+        "Active"
+      ]
+    }
+  ],
+  "WeekList": [
+    {
+      "Name": "Normal Uge",
+      "ImageTitle": "Epik"
+    }
+  ],
+  "WeekTemplateList": [
+    {
+      "Name": "SkabelonUge",
+      "ImageTitle": "Epik",
+      "DepartmentName": "Tobias' stue for godt humør"
     }
   ]
 }

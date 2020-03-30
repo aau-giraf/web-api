@@ -1,816 +1,300 @@
 {
   "$id": "1",
-  "userList": [
+  "UserList": [
     {
       "$id": "2",
-      "IsDepartment": false,
-      "Guardians": [],
-      "Citizens": [],
-      "DisplayName": null,
-      "UserIcon": null,
-      "DepartmentKey": 1,
-      "Department": {
-        "$id": "3",
-        "Key": 1,
-        "Name": "Mock Department",
-        "Members": [
-          {
-            "$ref": "2"
-          }
-        ],
-        "Resources": [
-          {
-            "$id": "4",
-            "Key": 0,
-            "OtherKey": 1,
-            "Other": {
-              "$ref": "3"
-            },
-            "PictogramKey": 5,
-            "Pictogram": {
-              "$id": "5",
-              "Title": "Protected for Dep 1",
-              "Id": 5,
-              "LastEdit": "2020-03-19T14:36:44.3210223+01:00",
-              "Users": [],
-              "Departments": [
-                {
-                  "$ref": "4"
-                }
-              ],
-              "AccessLevel": 2,
-              "ImageHash": "epik",
-              "Sound": null
-            }
-          }
-        ],
-        "WeekTemplates": null
-      },
-      "WeekSchedule": [
-        {
-          "$id": "6",
-          "WeekYear": 2018,
-          "WeekNumber": 1,
-          "Id": 0,
-          "Name": "My awesome week",
-          "Weekdays": [
-            {
-              "$id": "7",
-              "Id": 0,
-              "Day": 1,
-              "Activities": []
-            },
-            {
-              "$id": "8",
-              "Id": 0,
-              "Day": 2,
-              "Activities": []
-            },
-            {
-              "$id": "9",
-              "Id": 0,
-              "Day": 3,
-              "Activities": []
-            },
-            {
-              "$id": "10",
-              "Id": 0,
-              "Day": 4,
-              "Activities": []
-            },
-            {
-              "$id": "11",
-              "Id": 0,
-              "Day": 5,
-              "Activities": []
-            },
-            {
-              "$id": "12",
-              "Id": 0,
-              "Day": 6,
-              "Activities": []
-            },
-            {
-              "$id": "13",
-              "Id": 0,
-              "Day": 7,
-              "Activities": []
-            }
-          ],
-          "ThumbnailKey": 0,
-          "Thumbnail": null
-        },
-        {
-          "$id": "14",
-          "WeekYear": 0,
-          "WeekNumber": 0,
-          "Id": 1,
-          "Name": "My not so awesome week",
-          "Weekdays": [
-            {
-              "$id": "15",
-              "Id": 0,
-              "Day": 1,
-              "Activities": []
-            },
-            {
-              "$id": "16",
-              "Id": 0,
-              "Day": 2,
-              "Activities": []
-            },
-            {
-              "$id": "17",
-              "Id": 0,
-              "Day": 3,
-              "Activities": []
-            },
-            {
-              "$id": "18",
-              "Id": 0,
-              "Day": 4,
-              "Activities": []
-            },
-            {
-              "$id": "19",
-              "Id": 0,
-              "Day": 5,
-              "Activities": []
-            },
-            {
-              "$id": "20",
-              "Id": 0,
-              "Day": 6,
-              "Activities": []
-            },
-            {
-              "$id": "21",
-              "Id": 0,
-              "Day": 7,
-              "Activities": []
-            }
-          ],
-          "ThumbnailKey": 0,
-          "Thumbnail": null
-        }
+      "Name": "Admin",
+      "DepartmentName": "Mock Department",
+      "Role": "SuperUser",
+      "Weeks": [
+        "My awesome week",
+        "My not so awesome week"
       ],
-      "Resources": [
-        {
-          "$id": "22",
-          "Key": 0,
-          "OtherKey": "admin",
-          "Other": {
-            "$ref": "2"
-          },
-          "PictogramKey": 3,
-          "Pictogram": {
-            "$id": "23",
-            "Title": "Private for user 0",
-            "Id": 3,
-            "LastEdit": "2020-03-19T14:36:44.3083761+01:00",
-            "Users": [
-              {
-                "$ref": "22"
-              }
-            ],
-            "Departments": [],
-            "AccessLevel": 3,
-            "ImageHash": "en",
-            "Sound": null
-          }
-        }
+      "Password": null
+    },
+    {
+      "$id": "3",
+      "Name": "Guardian in dep 2",
+      "DepartmentName": "Mock Department2",
+      "Role": "Guardian",
+      "Weeks": [
+        "My not so awesome week"
       ],
-      "Settings": {
-        "$id": "24",
-        "Key": 0,
-        "Orientation": 1,
-        "CompleteMark": 2,
-        "CancelMark": 2,
-        "DefaultTimer": 2,
-        "TimerSeconds": 900,
-        "ActivitiesCount": null,
-        "Theme": 1,
-        "NrOfDaysToDisplay": 7,
-        "GreyScale": false,
-        "WeekDayColors": null
-      },
-      "Id": "admin",
-      "UserName": "Admin",
-      "NormalizedUserName": null,
-      "Email": null,
-      "NormalizedEmail": null,
-      "EmailConfirmed": false,
-      "PasswordHash": null,
-      "SecurityStamp": null,
-      "ConcurrencyStamp": "d70ca66a-540d-462d-9745-c145fea1ba10",
-      "PhoneNumber": null,
-      "PhoneNumberConfirmed": false,
-      "TwoFactorEnabled": false,
-      "LockoutEnd": null,
-      "LockoutEnabled": false,
-      "AccessFailedCount": 0
+      "Password": null
+    },
+    {
+      "$id": "4",
+      "Name": "Citizen of dep 2",
+      "DepartmentName": "",
+      "Role": "Citizen",
+      "Weeks": [],
+      "Password": null
+    },
+    {
+      "$id": "5",
+      "Name": "Citizen of dep 3",
+      "DepartmentName": "Mock Department3",
+      "Role": "Citizen",
+      "Weeks": [],
+      "Password": null
+    },
+    {
+      "$id": "6",
+      "Name": "Admin without Department",
+      "DepartmentName": "",
+      "Role": "Citizen",
+      "Weeks": [],
+      "Password": null
+    },
+    {
+      "$id": "7",
+      "Name": "Guardian 2 in dep 2",
+      "DepartmentName": "",
+      "Role": "Guardian",
+      "Weeks": [],
+      "Password": null
+    },
+    {
+      "$id": "8",
+      "Name": "Departmant in dep2",
+      "DepartmentName": "Mock Department2",
+      "Role": "Department",
+      "Weeks": [],
+      "Password": null
+    },
+    {
+      "$id": "9",
+      "Name": "Guardian 3 in dep 1",
+      "DepartmentName": "",
+      "Role": "Citizen",
+      "Weeks": [],
+      "Password": null
+    },
+    {
+      "$id": "10",
+      "Name": "Citizen of dep 1",
+      "DepartmentName": "",
+      "Role": "Citizen",
+      "Weeks": [],
+      "Password": null
+    },
+    {
+      "$id": "11",
+      "Name": "Citizen of no department",
+      "DepartmentName": "",
+      "Role": "Guardian",
+      "Weeks": [],
+      "Password": null
+    },
+    {
+      "$id": "12",
+      "Name": "Guardian in dep 1",
+      "DepartmentName": "",
+      "Role": "Guardian",
+      "Weeks": [],
+      "Password": null
+    }
+  ],
+  "DepartmentList": [
+    {
+      "$id": "13",
+      "Name": "Mock Department"
+    },
+    {
+      "$id": "14",
+      "Name": "Mock Department2"
+    },
+    {
+      "$id": "15",
+      "Name": "Mock Department3"
+    }
+  ],
+  "PictogramList": [
+    {
+      "$id": "16",
+      "Title": "Picto 1",
+      "AccessLevel": "PUBLIC",
+      "ImageHash": null
+    },
+    {
+      "$id": "17",
+      "Title": "Public Picto2",
+      "AccessLevel": "PUBLIC",
+      "ImageHash": null
+    },
+    {
+      "$id": "18",
+      "Title": "No restrictions",
+      "AccessLevel": "PUBLIC",
+      "ImageHash": null
+    },
+    {
+      "$id": "19",
+      "Title": "Private for user 0",
+      "AccessLevel": "PRIVATE",
+      "ImageHash": "en"
+    },
+    {
+      "$id": "20",
+      "Title": "Private for user 1",
+      "AccessLevel": "PRIVATE",
+      "ImageHash": null
+    },
+    {
+      "$id": "21",
+      "Title": "Protected for Dep 1",
+      "AccessLevel": "PROTECTED",
+      "ImageHash": "epik"
+    },
+    {
+      "$id": "22",
+      "Title": "Protected for Dep 2",
+      "AccessLevel": "PROTECTED",
+      "ImageHash": null
+    },
+    {
+      "$id": "23",
+      "Title": "cat",
+      "AccessLevel": "PUBLIC",
+      "ImageHash": null
+    },
+    {
+      "$id": "24",
+      "Title": "cap",
+      "AccessLevel": "PUBLIC",
+      "ImageHash": null
     },
     {
       "$id": "25",
-      "IsDepartment": false,
-      "Guardians": [],
-      "Citizens": [
-        {
-          "$id": "26",
-          "Id": 0,
-          "CitizenId": "citizen2",
-          "GuardianId": "guardian2",
-          "Citizen": {
-            "$id": "27",
-            "IsDepartment": false,
-            "Guardians": [
-              {
-                "$ref": "26"
-              }
-            ],
-            "Citizens": [],
-            "DisplayName": null,
-            "UserIcon": null,
-            "DepartmentKey": 2,
-            "Department": null,
-            "WeekSchedule": [],
-            "Resources": [],
-            "Settings": {
-              "$id": "28",
-              "Key": 0,
-              "Orientation": 1,
-              "CompleteMark": 2,
-              "CancelMark": 2,
-              "DefaultTimer": 2,
-              "TimerSeconds": 900,
-              "ActivitiesCount": null,
-              "Theme": 1,
-              "NrOfDaysToDisplay": 7,
-              "GreyScale": false,
-              "WeekDayColors": null
-            },
-            "Id": "citizen2",
-            "UserName": "Citizen of dep 2",
-            "NormalizedUserName": null,
-            "Email": null,
-            "NormalizedEmail": null,
-            "EmailConfirmed": false,
-            "PasswordHash": null,
-            "SecurityStamp": null,
-            "ConcurrencyStamp": "53f256be-1726-4620-841f-e75648f438c9",
-            "PhoneNumber": null,
-            "PhoneNumberConfirmed": false,
-            "TwoFactorEnabled": false,
-            "LockoutEnd": null,
-            "LockoutEnabled": false,
-            "AccessFailedCount": 0
-          },
-          "Guardian": {
-            "$ref": "25"
-          }
-        }
-      ],
-      "DisplayName": null,
-      "UserIcon": null,
-      "DepartmentKey": 2,
-      "Department": {
-        "$id": "29",
-        "Key": 2,
-        "Name": "Mock Department2",
-        "Members": [
-          {
-            "$ref": "25"
-          },
-          {
-            "$ref": "27"
-          },
-          {
-            "$id": "30",
-            "IsDepartment": false,
-            "Guardians": [],
-            "Citizens": [],
-            "DisplayName": null,
-            "UserIcon": null,
-            "DepartmentKey": 2,
-            "Department": null,
-            "WeekSchedule": [],
-            "Resources": [],
-            "Settings": {
-              "$id": "31",
-              "Key": 0,
-              "Orientation": 1,
-              "CompleteMark": 2,
-              "CancelMark": 2,
-              "DefaultTimer": 2,
-              "TimerSeconds": 900,
-              "ActivitiesCount": null,
-              "Theme": 1,
-              "NrOfDaysToDisplay": 7,
-              "GreyScale": false,
-              "WeekDayColors": null
-            },
-            "Id": "guardian22",
-            "UserName": "Guardian 2 in dep 2",
-            "NormalizedUserName": null,
-            "Email": null,
-            "NormalizedEmail": null,
-            "EmailConfirmed": false,
-            "PasswordHash": null,
-            "SecurityStamp": null,
-            "ConcurrencyStamp": "3cee828e-81ab-485c-b3a7-392e3ca13538",
-            "PhoneNumber": null,
-            "PhoneNumberConfirmed": false,
-            "TwoFactorEnabled": false,
-            "LockoutEnd": null,
-            "LockoutEnabled": false,
-            "AccessFailedCount": 0
-          }
-        ],
-        "Resources": [
-          {
-            "$id": "32",
-            "Key": 0,
-            "OtherKey": 2,
-            "Other": {
-              "$ref": "29"
-            },
-            "PictogramKey": 6,
-            "Pictogram": {
-              "$id": "33",
-              "Title": "Protected for Dep 2",
-              "Id": 6,
-              "LastEdit": "2020-03-19T14:36:44.3211433+01:00",
-              "Users": [],
-              "Departments": [
-                {
-                  "$ref": "32"
-                }
-              ],
-              "AccessLevel": 2,
-              "ImageHash": null,
-              "Sound": null
-            }
-          }
-        ],
-        "WeekTemplates": null
-      },
-      "WeekSchedule": [
-        {
-          "$ref": "14"
-        }
-      ],
-      "Resources": [
-        {
-          "$id": "34",
-          "Key": 0,
-          "OtherKey": "guardian2",
-          "Other": {
-            "$ref": "25"
-          },
-          "PictogramKey": 4,
-          "Pictogram": {
-            "$id": "35",
-            "Title": "Private for user 1",
-            "Id": 4,
-            "LastEdit": "2020-03-19T14:36:44.3084977+01:00",
-            "Users": [
-              {
-                "$ref": "34"
-              }
-            ],
-            "Departments": [],
-            "AccessLevel": 3,
-            "ImageHash": null,
-            "Sound": null
-          }
-        }
-      ],
-      "Settings": {
-        "$id": "36",
-        "Key": 0,
-        "Orientation": 1,
-        "CompleteMark": 2,
-        "CancelMark": 2,
-        "DefaultTimer": 2,
-        "TimerSeconds": 900,
-        "ActivitiesCount": null,
-        "Theme": 1,
-        "NrOfDaysToDisplay": 7,
-        "GreyScale": false,
-        "WeekDayColors": null
-      },
-      "Id": "guardian2",
-      "UserName": "Guardian in dep 2",
-      "NormalizedUserName": null,
-      "Email": null,
-      "NormalizedEmail": null,
-      "EmailConfirmed": false,
-      "PasswordHash": null,
-      "SecurityStamp": null,
-      "ConcurrencyStamp": "70bbc11e-15ed-4906-a84d-dfc82c54bcab",
-      "PhoneNumber": null,
-      "PhoneNumberConfirmed": false,
-      "TwoFactorEnabled": false,
-      "LockoutEnd": null,
-      "LockoutEnabled": false,
-      "AccessFailedCount": 0
-    },
-    {
-      "$ref": "27"
-    },
-    {
-      "$id": "37",
-      "IsDepartment": false,
-      "Guardians": [],
-      "Citizens": [],
-      "DisplayName": null,
-      "UserIcon": null,
-      "DepartmentKey": 3,
-      "Department": {
-        "$id": "38",
-        "Key": 3,
-        "Name": "Mock Department3",
-        "Members": [
-          {
-            "$ref": "37"
-          }
-        ],
-        "Resources": [],
-        "WeekTemplates": null
-      },
-      "WeekSchedule": [],
-      "Resources": [],
-      "Settings": {
-        "$id": "39",
-        "Key": 0,
-        "Orientation": 1,
-        "CompleteMark": 2,
-        "CancelMark": 2,
-        "DefaultTimer": 2,
-        "TimerSeconds": 900,
-        "ActivitiesCount": null,
-        "Theme": 1,
-        "NrOfDaysToDisplay": 7,
-        "GreyScale": false,
-        "WeekDayColors": null
-      },
-      "Id": "citizen3",
-      "UserName": "Citizen of dep 3",
-      "NormalizedUserName": null,
-      "Email": null,
-      "NormalizedEmail": null,
-      "EmailConfirmed": false,
-      "PasswordHash": null,
-      "SecurityStamp": null,
-      "ConcurrencyStamp": "24376e89-35e4-4a18-9943-6637c51d73e1",
-      "PhoneNumber": null,
-      "PhoneNumberConfirmed": false,
-      "TwoFactorEnabled": false,
-      "LockoutEnd": null,
-      "LockoutEnabled": false,
-      "AccessFailedCount": 0
-    },
-    {
-      "$id": "40",
-      "IsDepartment": false,
-      "Guardians": [],
-      "Citizens": [],
-      "DisplayName": null,
-      "UserIcon": null,
-      "DepartmentKey": null,
-      "Department": null,
-      "WeekSchedule": [],
-      "Resources": [],
-      "Settings": {
-        "$id": "41",
-        "Key": 0,
-        "Orientation": 1,
-        "CompleteMark": 2,
-        "CancelMark": 2,
-        "DefaultTimer": 2,
-        "TimerSeconds": 900,
-        "ActivitiesCount": null,
-        "Theme": 1,
-        "NrOfDaysToDisplay": 7,
-        "GreyScale": false,
-        "WeekDayColors": null
-      },
-      "Id": "nimda",
-      "UserName": "Admin without Department",
-      "NormalizedUserName": null,
-      "Email": null,
-      "NormalizedEmail": null,
-      "EmailConfirmed": false,
-      "PasswordHash": null,
-      "SecurityStamp": null,
-      "ConcurrencyStamp": "88bdfefc-cbc4-4b70-94fb-da7f93e96f78",
-      "PhoneNumber": null,
-      "PhoneNumberConfirmed": false,
-      "TwoFactorEnabled": false,
-      "LockoutEnd": null,
-      "LockoutEnabled": false,
-      "AccessFailedCount": 0
-    },
-    {
-      "$ref": "30"
-    },
-    {
-      "$id": "42",
-      "IsDepartment": false,
-      "Guardians": [],
-      "Citizens": [],
-      "DisplayName": null,
-      "UserIcon": null,
-      "DepartmentKey": 2,
-      "Department": {
-        "$ref": "29"
-      },
-      "WeekSchedule": [],
-      "Resources": [],
-      "Settings": {
-        "$id": "43",
-        "Key": 0,
-        "Orientation": 1,
-        "CompleteMark": 2,
-        "CancelMark": 2,
-        "DefaultTimer": 2,
-        "TimerSeconds": 900,
-        "ActivitiesCount": null,
-        "Theme": 1,
-        "NrOfDaysToDisplay": 7,
-        "GreyScale": false,
-        "WeekDayColors": null
-      },
-      "Id": "department2",
-      "UserName": "Departmant in dep2",
-      "NormalizedUserName": null,
-      "Email": null,
-      "NormalizedEmail": null,
-      "EmailConfirmed": false,
-      "PasswordHash": null,
-      "SecurityStamp": null,
-      "ConcurrencyStamp": "e75a33f8-51b1-499c-8587-7a0fa897e063",
-      "PhoneNumber": null,
-      "PhoneNumberConfirmed": false,
-      "TwoFactorEnabled": false,
-      "LockoutEnd": null,
-      "LockoutEnabled": false,
-      "AccessFailedCount": 0
-    },
-    {
-      "$id": "44",
-      "IsDepartment": false,
-      "Guardians": [],
-      "Citizens": [],
-      "DisplayName": null,
-      "UserIcon": null,
-      "DepartmentKey": 1,
-      "Department": null,
-      "WeekSchedule": [],
-      "Resources": [],
-      "Settings": {
-        "$id": "45",
-        "Key": 0,
-        "Orientation": 1,
-        "CompleteMark": 2,
-        "CancelMark": 2,
-        "DefaultTimer": 2,
-        "TimerSeconds": 900,
-        "ActivitiesCount": null,
-        "Theme": 1,
-        "NrOfDaysToDisplay": 7,
-        "GreyScale": false,
-        "WeekDayColors": null
-      },
-      "Id": "guardian3",
-      "UserName": "Guardian 3 in dep 1",
-      "NormalizedUserName": null,
-      "Email": null,
-      "NormalizedEmail": null,
-      "EmailConfirmed": false,
-      "PasswordHash": null,
-      "SecurityStamp": null,
-      "ConcurrencyStamp": "a554d8d8-6d50-4e9c-9bd5-0b996f7f5d31",
-      "PhoneNumber": null,
-      "PhoneNumberConfirmed": false,
-      "TwoFactorEnabled": false,
-      "LockoutEnd": null,
-      "LockoutEnabled": false,
-      "AccessFailedCount": 0
-    },
-    {
-      "$id": "46",
-      "IsDepartment": false,
-      "Guardians": [],
-      "Citizens": [],
-      "DisplayName": null,
-      "UserIcon": null,
-      "DepartmentKey": 1,
-      "Department": null,
-      "WeekSchedule": [],
-      "Resources": [],
-      "Settings": {
-        "$id": "47",
-        "Key": 0,
-        "Orientation": 1,
-        "CompleteMark": 2,
-        "CancelMark": 2,
-        "DefaultTimer": 2,
-        "TimerSeconds": 900,
-        "ActivitiesCount": null,
-        "Theme": 1,
-        "NrOfDaysToDisplay": 7,
-        "GreyScale": false,
-        "WeekDayColors": null
-      },
-      "Id": "citizen4",
-      "UserName": "Citizen of dep 1",
-      "NormalizedUserName": null,
-      "Email": null,
-      "NormalizedEmail": null,
-      "EmailConfirmed": false,
-      "PasswordHash": null,
-      "SecurityStamp": null,
-      "ConcurrencyStamp": "47f3c433-3f10-4f6d-82b0-87804c58aff7",
-      "PhoneNumber": null,
-      "PhoneNumberConfirmed": false,
-      "TwoFactorEnabled": false,
-      "LockoutEnd": null,
-      "LockoutEnabled": false,
-      "AccessFailedCount": 0
-    },
-    {
-      "$id": "48",
-      "IsDepartment": false,
-      "Guardians": [],
-      "Citizens": [],
-      "DisplayName": null,
-      "UserIcon": null,
-      "DepartmentKey": 0,
-      "Department": null,
-      "WeekSchedule": [],
-      "Resources": [],
-      "Settings": {
-        "$id": "49",
-        "Key": 0,
-        "Orientation": 1,
-        "CompleteMark": 2,
-        "CancelMark": 2,
-        "DefaultTimer": 2,
-        "TimerSeconds": 900,
-        "ActivitiesCount": null,
-        "Theme": 1,
-        "NrOfDaysToDisplay": 7,
-        "GreyScale": false,
-        "WeekDayColors": null
-      },
-      "Id": "citizen5NoDepartment",
-      "UserName": "Citizen of no department",
-      "NormalizedUserName": null,
-      "Email": null,
-      "NormalizedEmail": null,
-      "EmailConfirmed": false,
-      "PasswordHash": null,
-      "SecurityStamp": null,
-      "ConcurrencyStamp": "8b95db46-345c-4ff1-967b-319234183a52",
-      "PhoneNumber": null,
-      "PhoneNumberConfirmed": false,
-      "TwoFactorEnabled": false,
-      "LockoutEnd": null,
-      "LockoutEnabled": false,
-      "AccessFailedCount": 0
-    },
-    {
-      "$id": "50",
-      "IsDepartment": false,
-      "Guardians": [],
-      "Citizens": [],
-      "DisplayName": null,
-      "UserIcon": null,
-      "DepartmentKey": 1,
-      "Department": null,
-      "WeekSchedule": [],
-      "Resources": [],
-      "Settings": {
-        "$id": "51",
-        "Key": 0,
-        "Orientation": 1,
-        "CompleteMark": 2,
-        "CancelMark": 2,
-        "DefaultTimer": 2,
-        "TimerSeconds": 900,
-        "ActivitiesCount": null,
-        "Theme": 1,
-        "NrOfDaysToDisplay": 7,
-        "GreyScale": false,
-        "WeekDayColors": null
-      },
-      "Id": "GuardianDepartment1",
-      "UserName": "Guardian in dep 1",
-      "NormalizedUserName": null,
-      "Email": null,
-      "NormalizedEmail": null,
-      "EmailConfirmed": false,
-      "PasswordHash": null,
-      "SecurityStamp": null,
-      "ConcurrencyStamp": "87062c37-b928-4c2c-9fcc-0a97e9dc27f2",
-      "PhoneNumber": null,
-      "PhoneNumberConfirmed": false,
-      "TwoFactorEnabled": false,
-      "LockoutEnd": null,
-      "LockoutEnabled": false,
-      "AccessFailedCount": 0
-    }
-  ],
-  "departmentList": [
-    {
-      "$ref": "3"
-    },
-    {
-      "$ref": "29"
-    },
-    {
-      "$ref": "38"
-    }
-  ],
-  "pictogramList": [
-    {
-      "$id": "52",
-      "Title": "Picto 1",
-      "Id": 0,
-      "LastEdit": "2020-03-19T14:36:44.2574948+01:00",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": null,
-      "Sound": null
-    },
-    {
-      "$id": "53",
-      "Title": "Public Picto2",
-      "Id": 1,
-      "LastEdit": "2020-03-19T14:36:44.2576632+01:00",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": null,
-      "Sound": null
-    },
-    {
-      "$id": "54",
-      "Title": "No restrictions",
-      "Id": 2,
-      "LastEdit": "2020-03-19T14:36:44.2576654+01:00",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": null,
-      "Sound": null
-    },
-    {
-      "$ref": "23"
-    },
-    {
-      "$ref": "35"
-    },
-    {
-      "$ref": "5"
-    },
-    {
-      "$ref": "33"
-    },
-    {
-      "$id": "55",
-      "Title": "cat",
-      "Id": 7,
-      "LastEdit": "2020-03-19T14:36:44.257775+01:00",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": null,
-      "Sound": null
-    },
-    {
-      "$id": "56",
-      "Title": "cap",
-      "Id": 8,
-      "LastEdit": "2020-03-19T14:36:44.2577753+01:00",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": null,
-      "Sound": null
-    },
-    {
-      "$id": "57",
       "Title": "cat1",
-      "Id": 9,
-      "LastEdit": "2020-03-19T14:36:44.2577758+01:00",
-      "Users": [],
-      "Departments": [],
-      "AccessLevel": 1,
-      "ImageHash": null,
-      "Sound": null
+      "AccessLevel": "PUBLIC",
+      "ImageHash": null
+    }
+  ],
+  "WeekdayList": [
+    {
+      "$id": "26",
+      "Day": 1,
+      "ActivityIconTitles": [
+        "Protected for Dep 2",
+        "Protected for Dep 1",
+        "Protected for Dep 2"
+      ],
+      "ActivityStates": [
+        "Canceled",
+        "Active",
+        "Canceled"
+      ]
+    },
+    {
+      "$id": "27",
+      "Day": 2,
+      "ActivityIconTitles": [
+        "Protected for Dep 2",
+        "Protected for Dep 1",
+        "Protected for Dep 2"
+      ],
+      "ActivityStates": [
+        "Canceled",
+        "Active",
+        "Canceled"
+      ]
+    },
+    {
+      "$id": "28",
+      "Day": 3,
+      "ActivityIconTitles": [
+        "Protected for Dep 2",
+        "Protected for Dep 1",
+        "Protected for Dep 2"
+      ],
+      "ActivityStates": [
+        "Canceled",
+        "Active",
+        "Canceled"
+      ]
+    },
+    {
+      "$id": "29",
+      "Day": 4,
+      "ActivityIconTitles": [
+        "Protected for Dep 2",
+        "Protected for Dep 1",
+        "Protected for Dep 2"
+      ],
+      "ActivityStates": [
+        "Canceled",
+        "Active",
+        "Canceled"
+      ]
+    },
+    {
+      "$id": "30",
+      "Day": 5,
+      "ActivityIconTitles": [
+        "Protected for Dep 2",
+        "Protected for Dep 1",
+        "Protected for Dep 2"
+      ],
+      "ActivityStates": [
+        "Canceled",
+        "Active",
+        "Canceled"
+      ]
+    },
+    {
+      "$id": "31",
+      "Day": 6,
+      "ActivityIconTitles": [
+        "Protected for Dep 2",
+        "Protected for Dep 1",
+        "Protected for Dep 2"
+      ],
+      "ActivityStates": [
+        "Canceled",
+        "Active",
+        "Canceled"
+      ]
+    },
+    {
+      "$id": "32",
+      "Day": 7,
+      "ActivityIconTitles": [
+        "Protected for Dep 2",
+        "Protected for Dep 1",
+        "Protected for Dep 2"
+      ],
+      "ActivityStates": [
+        "Canceled",
+        "Active",
+        "Canceled"
+      ]
+    }
+  ],
+  "WeekList": [
+    {
+      "$id": "33",
+      "Name": "My awesome week",
+      "ImageTitle": "Picto 1"
+    },
+    {
+      "$id": "34",
+      "Name": "My not so awesome week",
+      "ImageTitle": "0"
+    }
+  ],
+  "WeekTemplateList": [
+    {
+      "$id": "35",
+      "Name": "Template1",
+      "ImageTitle": "Picto 1",
+      "DepartmentName": "Mock Department"
+    },
+    {
+      "$id": "36",
+      "Name": "Template2",
+      "ImageTitle": "Picto 1",
+      "DepartmentName": "Mock Department"
     }
   ]
 }
