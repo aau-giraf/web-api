@@ -36,6 +36,13 @@
       "Role": "SuperUser",
       "Weeks": [],
       "Password": "AQAAAAEAACcQAAAAEJCvdncZlLrVsRwOYIzgiRinvHyiZSlDlbuIE8nOomqNGAmlybRCi0YThhdfXHQ1bQ=="
+    },
+    {
+      "Name": "Simon",
+      "DepartmentName": "Tobias' stue for godt humør",
+      "Role": "Citizen",
+      "Weeks": [],
+      "Password": "AQAAAAEAACcQAAAAELsn48SXsPsG9mpLTk4JNhzB/HVYom/P0gW2YSqPK/9+iw/wE7NL7HaWCEKiELMSmg=="
     }
   ],
   "DepartmentList": [
