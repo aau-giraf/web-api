@@ -1,10 +1,8 @@
 ﻿using GirafRest.Models;
 using GirafRest.Setup;
 using GirafRest.Test.Mocks;
-using Moq;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using Xunit;
 using Xunit.Abstractions;
@@ -16,6 +14,7 @@ namespace GirafRest.Test
     {
         private readonly ITestOutputHelper _outputHelper;
         private TestContext _testContext;
+        private const string testJson = "..\\netcoreapp2.2\\Data\\samplesTest.json";
 
         public SampleDataHandlerTest(ITestOutputHelper outputHelper)
         {
@@ -23,33 +22,48 @@ namespace GirafRest.Test
         }
         
         [Fact]
-        public void DeserializeDataTest()
+        public async void DeserializeDataTest()
         {
-            SampleDataHandler dataHandler = new SampleDataHandler("..\\netcoreapp2.2\\Data\\samples.json");
+            _testContext = new TestContext();
+            MockDbContext mockDb = _testContext.MockDbContext.Object;
+            SampleDataHandler dataHandler = new SampleDataHandler(testJson);
+
+            if (!File.Exists(testJson))
+            {
+                await dataHandler.SerializeDataAsync(mockDb, _testContext.MockUserManager);
+            }
+
             SampleData data = dataHandler.DeserializeData();
-            
-            List<GirafUser> users = data.userList;
-            Console.WriteLine(data.userList.Count);
-            List<Department> deps = data.departmentList;
-            List<Pictogram> pics = data.pictogramList;
+
+            List<SampleGirafUser> users = data.UserList;
+            List<SampleDepartment> deps = data.DepartmentList;
+            List<SamplePictogram> pics = data.PictogramList;
+            List<SampleWeek> weeks = data.WeekList;
+            List<SampleWeekTemplate> weekTemplates = data.WeekTemplateList;
+            List<SampleWeekday> weekdays = data.WeekdayList;
 
             Assert.NotNull(data);
-            Assert.Equal(users[0].UserName, "Graatand");
-            Assert.Equal(users[1].UserName, "Lee");
-            Assert.Equal(users[2].UserName, "Tobias");
-            Assert.Equal(deps[0].Name, "Bajer plejen");
-            Assert.Equal(deps[1].Name, "Tobias' stue for godt humør");
-            Assert.Equal(pics[0].Title, "Epik");
-            Assert.Equal(pics[1].Title, "som");
-            Assert.Equal(pics[2].Title, "slut");
+            Assert.Equal(users[0].Name, "Admin");
+            Assert.Equal(users[1].Name, "Guardian in dep 2");
+            Assert.Equal(users[2].Name, "Citizen of dep 2");
+            Assert.Equal(deps[0].Name, "Mock Department");
+            Assert.Equal(deps[1].Name, "Mock Department2");
+            Assert.Equal(pics[0].Title, "Picto 1");
+            Assert.Equal(pics[1].Title, "Public Picto2");
+            Assert.Equal(pics[2].Title, "No restrictions");
+            Assert.Equal(weeks[0].Name, "My awesome week");
+            Assert.Equal(weeks[1].Name, "My not so awesome week");
+            Assert.Equal(weekTemplates[0].Name, "Template1");
+            Assert.Equal(weekTemplates[1].Name, "Template2");
+            Assert.Equal(weekdays[0].Day, Days.Monday);
+            Assert.Equal(weekdays[1].Day, Days.Tuesday);
+            Assert.Equal(weekdays[2].Day, Days.Wednesday);
         }
 
         [Fact]
-        public void SerializeDataTest()
+        public async void SerializeDataTest()
         {
             _testContext = new TestContext();
-            string testJson = "..\\netcoreapp2.2\\Data\\samplesTest.json";
-
             SampleDataHandler dataHandler = new SampleDataHandler(testJson);
             MockDbContext mockDb = _testContext.MockDbContext.Object;
 
@@ -58,7 +72,7 @@ namespace GirafRest.Test
             {
                 DateTime oldCreationTime = File.GetLastAccessTime(testJson);
                 File.Delete(testJson);
-                dataHandler.SerializeData(mockDb);
+                await dataHandler.SerializeDataAsync(mockDb, _testContext.MockUserManager);
 
                 DateTime newCreationTime = File.GetLastAccessTime(testJson);
                 _outputHelper.WriteLine("OLD TIME: " + oldCreationTime);
@@ -68,10 +82,9 @@ namespace GirafRest.Test
             }
             else
             {
-                dataHandler.SerializeData(mockDb);
+                await dataHandler.SerializeDataAsync(mockDb, _testContext.MockUserManager);
                 Assert.True(File.Exists(testJson));
             }
         }
-
     }
 }

@@ -1,0 +1,300 @@
+{
+  "$id": "1",
+  "UserList": [
+    {
+      "$id": "2",
+      "Name": "Admin",
+      "DepartmentName": "Mock Department",
+      "Role": "SuperUser",
+      "Weeks": [
+        "My awesome week",
+        "My not so awesome week"
+      ],
+      "Password": null
+    },
+    {
+      "$id": "3",
+      "Name": "Guardian in dep 2",
+      "DepartmentName": "Mock Department2",
+      "Role": "Guardian",
+      "Weeks": [
+        "My not so awesome week"
+      ],
+      "Password": null
+    },
+    {
+      "$id": "4",
+      "Name": "Citizen of dep 2",
+      "DepartmentName": "",
+      "Role": "Citizen",
+      "Weeks": [],
+      "Password": null
+    },
+    {
+      "$id": "5",
+      "Name": "Citizen of dep 3",
+      "DepartmentName": "Mock Department3",
+      "Role": "Citizen",
+      "Weeks": [],
+      "Password": null
+    },
+    {
+      "$id": "6",
+      "Name": "Admin without Department",
+      "DepartmentName": "",
+      "Role": "Citizen",
+      "Weeks": [],
+      "Password": null
+    },
+    {
+      "$id": "7",
+      "Name": "Guardian 2 in dep 2",
+      "DepartmentName": "",
+      "Role": "Guardian",
+      "Weeks": [],
+      "Password": null
+    },
+    {
+      "$id": "8",
+      "Name": "Departmant in dep2",
+      "DepartmentName": "Mock Department2",
+      "Role": "Department",
+      "Weeks": [],
+      "Password": null
+    },
+    {
+      "$id": "9",
+      "Name": "Guardian 3 in dep 1",
+      "DepartmentName": "",
+      "Role": "Citizen",
+      "Weeks": [],
+      "Password": null
+    },
+    {
+      "$id": "10",
+      "Name": "Citizen of dep 1",
+      "DepartmentName": "",
+      "Role": "Citizen",
+      "Weeks": [],
+      "Password": null
+    },
+    {
+      "$id": "11",
+      "Name": "Citizen of no department",
+      "DepartmentName": "",
+      "Role": "Guardian",
+      "Weeks": [],
+      "Password": null
+    },
+    {
+      "$id": "12",
+      "Name": "Guardian in dep 1",
+      "DepartmentName": "",
+      "Role": "Guardian",
+      "Weeks": [],
+      "Password": null
+    }
+  ],
+  "DepartmentList": [
+    {
+      "$id": "13",
+      "Name": "Mock Department"
+    },
+    {
+      "$id": "14",
+      "Name": "Mock Department2"
+    },
+    {
+      "$id": "15",
+      "Name": "Mock Department3"
+    }
+  ],
+  "PictogramList": [
+    {
+      "$id": "16",
+      "Title": "Picto 1",
+      "AccessLevel": "PUBLIC",
+      "ImageHash": null
+    },
+    {
+      "$id": "17",
+      "Title": "Public Picto2",
+      "AccessLevel": "PUBLIC",
+      "ImageHash": null
+    },
+    {
+      "$id": "18",
+      "Title": "No restrictions",
+      "AccessLevel": "PUBLIC",
+      "ImageHash": null
+    },
+    {
+      "$id": "19",
+      "Title": "Private for user 0",
+      "AccessLevel": "PRIVATE",
+      "ImageHash": "en"
+    },
+    {
+      "$id": "20",
+      "Title": "Private for user 1",
+      "AccessLevel": "PRIVATE",
+      "ImageHash": null
+    },
+    {
+      "$id": "21",
+      "Title": "Protected for Dep 1",
+      "AccessLevel": "PROTECTED",
+      "ImageHash": "epik"
+    },
+    {
+      "$id": "22",
+      "Title": "Protected for Dep 2",
+      "AccessLevel": "PROTECTED",
+      "ImageHash": null
+    },
+    {
+      "$id": "23",
+      "Title": "cat",
+      "AccessLevel": "PUBLIC",
+      "ImageHash": null
+    },
+    {
+      "$id": "24",
+      "Title": "cap",
+      "AccessLevel": "PUBLIC",
+      "ImageHash": null
+    },
+    {
+      "$id": "25",
+      "Title": "cat1",
+      "AccessLevel": "PUBLIC",
+      "ImageHash": null
+    }
+  ],
+  "WeekdayList": [
+    {
+      "$id": "26",
+      "Day": 1,
+      "ActivityIconTitles": [
+        "Protected for Dep 2",
+        "Protected for Dep 1",
+        "Protected for Dep 2"
+      ],
+      "ActivityStates": [
+        "Canceled",
+        "Active",
+        "Canceled"
+      ]
+    },
+    {
+      "$id": "27",
+      "Day": 2,
+      "ActivityIconTitles": [
+        "Protected for Dep 2",
+        "Protected for Dep 1",
+        "Protected for Dep 2"
+      ],
+      "ActivityStates": [
+        "Canceled",
+        "Active",
+        "Canceled"
+      ]
+    },
+    {
+      "$id": "28",
+      "Day": 3,
+      "ActivityIconTitles": [
+        "Protected for Dep 2",
+        "Protected for Dep 1",
+        "Protected for Dep 2"
+      ],
+      "ActivityStates": [
+        "Canceled",
+        "Active",
+        "Canceled"
+      ]
+    },
+    {
+      "$id": "29",
+      "Day": 4,
+      "ActivityIconTitles": [
+        "Protected for Dep 2",
+        "Protected for Dep 1",
+        "Protected for Dep 2"
+      ],
+      "ActivityStates": [
+        "Canceled",
+        "Active",
+        "Canceled"
+      ]
+    },
+    {
+      "$id": "30",
+      "Day": 5,
+      "ActivityIconTitles": [
+        "Protected for Dep 2",
+        "Protected for Dep 1",
+        "Protected for Dep 2"
+      ],
+      "ActivityStates": [
+        "Canceled",
+        "Active",
+        "Canceled"
+      ]
+    },
+    {
+      "$id": "31",
+      "Day": 6,
+      "ActivityIconTitles": [
+        "Protected for Dep 2",
+        "Protected for Dep 1",
+        "Protected for Dep 2"
+      ],
+      "ActivityStates": [
+        "Canceled",
+        "Active",
+        "Canceled"
+      ]
+    },
+    {
+      "$id": "32",
+      "Day": 7,
+      "ActivityIconTitles": [
+        "Protected for Dep 2",
+        "Protected for Dep 1",
+        "Protected for Dep 2"
+      ],
+      "ActivityStates": [
+        "Canceled",
+        "Active",
+        "Canceled"
+      ]
+    }
+  ],
+  "WeekList": [
+    {
+      "$id": "33",
+      "Name": "My awesome week",
+      "ImageTitle": "Picto 1"
+    },
+    {
+      "$id": "34",
+      "Name": "My not so awesome week",
+      "ImageTitle": "0"
+    }
+  ],
+  "WeekTemplateList": [
+    {
+      "$id": "35",
+      "Name": "Template1",
+      "ImageTitle": "Picto 1",
+      "DepartmentName": "Mock Department"
+    },
+    {
+      "$id": "36",
+      "Name": "Template2",
+      "ImageTitle": "Picto 1",
+      "DepartmentName": "Mock Department"
+    }
+  ]
+}

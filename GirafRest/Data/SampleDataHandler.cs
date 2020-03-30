@@ -56,7 +56,13 @@ namespace GirafRest.Setup
                     weekStrings.Add(week.Name);
                 }
 
-                var roles = await userManager.GetRolesAsync(user);
+                IList<string> roles = await userManager.GetRolesAsync(user);
+
+                if (!roles.Any())
+                {
+                    roles = new List<string>();
+                    roles.Add(GirafRole.Citizen);
+                }
 
                 if (user.Department == null)
                 {
@@ -104,6 +110,10 @@ namespace GirafRest.Setup
                 string thumbTitle = "0";
                 foreach (Pictogram pic in context.Pictograms)
                 {
+                    if (week.Thumbnail == null)
+                    {
+                        week.Thumbnail = pictogramList[0];
+                    }
                     if (pic.Title == week.Thumbnail.Title)
                     {
                         thumbTitle = pic.Title;
@@ -115,6 +125,14 @@ namespace GirafRest.Setup
 
             foreach (WeekTemplate weekTemp in context.WeekTemplates)
             {
+                if (weekTemp.Thumbnail == null)
+                {
+                    weekTemp.Thumbnail = pictogramList[0];
+                }
+                if (weekTemp.Department == null)
+                {
+                    weekTemp.Department = departmentList[0];
+                }
                 data.WeekTemplateList.Add(new SampleWeekTemplate(weekTemp.Name, weekTemp.Thumbnail.Title, weekTemp.Department.Name));
             }
 
