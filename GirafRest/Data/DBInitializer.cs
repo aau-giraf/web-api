@@ -24,7 +24,7 @@ namespace GirafRest.Setup
                 ///SampleDataHandler creates a samples.json file by storing current database data in plaintext, in samples.json
                 ///Use only if samples.json does not exist in Data folder and only sample data exists in the database
                 ///</summary>
-                //sampleHandler.SerializeDataAsync(context, userManager);
+                sampleHandler.SerializeDataAsync(context, userManager);
 
                 return;
             }
