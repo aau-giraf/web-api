@@ -1,9 +1,12 @@
-using GirafRest.Data;
-using GirafRest.Models;
-using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GirafRest.Data;
+using GirafRest.Models;
+using Microsoft.AspNetCore.Identity;
+using System.Text;
+using GirafRest.Models.DTOs;
+using static GirafRest.Models.ActivityState;
 
 namespace GirafRest.Setup
 {
@@ -12,43 +15,28 @@ namespace GirafRest.Setup
     /// </summary>
     public class DBInitializer
     {
-
-        public static SampleDataHandler sampleHandler = new SampleDataHandler();
-
-        public static void Initialize(GirafDbContext context, UserManager<GirafUser> userManager)
-        {
+		public static void Initialize(GirafDbContext context, UserManager<GirafUser> userManager)
+		{
             // Check if any data is in the database
-            if (context.Departments.Any())
-            {
-                ///<summary>
-                ///SampleDataHandler creates a samples.json file by storing current database data in plaintext, in samples.json
-                ///Use only if samples.json does not exist in Data folder and only sample data exists in the database
-                ///</summary>
-                sampleHandler.SerializeDataAsync(context, userManager);
+            if (context.Users.Any())
+				return;
 
-                return;
-            }
-
-            SampleData sampleData = sampleHandler.DeserializeData();
-            var departments = AddSampleDepartments(context, sampleData.DepartmentList);
-            AddSampleUsers(context, userManager, sampleData.UserList, departments);
-            var pictograms = AddSamplePictograms(context, sampleData.PictogramList);
-            AddSampleWeekAndWeekdays(context, sampleData.WeekList, sampleData.WeekdayList, sampleData.UserList, pictograms);
-
-            AddSampleWeekTemplate(context, sampleData.WeekTemplateList, sampleData.WeekdayList, sampleData.UserList, departments, pictograms);
-
+            var departments = AddSampleDepartments(context);
+            var users = AddSampleUsers(context, userManager, departments);
+            var pictograms = AddSamplePictograms(context);
+            AddSampleWeekAndWeekdays(context, pictograms);
+            AddSampleWeekTemplate(context, pictograms, departments);
             context.SaveChanges();
-
-            //Adding citizens to Guardian
-            foreach (var user in context.Users)
-            {
-                if (userManager.IsInRoleAsync(user, GirafRole.Guardian).Result)
-                {
+			
+			//Adding citizens to Guardian
+			foreach(var user in context.Users)
+			{
+                if(userManager.IsInRoleAsync(user, GirafRole.Guardian).Result){
                     var citizens = user.Department.Members
                     .Where(m => userManager.IsInRoleAsync(m, GirafRole.Citizen).Result).ToList();
                     user.AddCitizens(citizens);
                 }
-            }
+			}
             context.SaveChanges();
         }
 
@@ -78,164 +66,267 @@ namespace GirafRest.Setup
         }
         #endregion
         #region Sample data methods
-        private static List<Department> AddSampleDepartments(GirafDbContext context, List<SampleDepartment> sampleDeps)
+        private static IList<Department> AddSampleDepartments(GirafDbContext context)
         {
+            Console.WriteLine("Adding some sample data to the database.");
             Console.WriteLine("Adding departments.");
-            List<Department> departments = new List<Department>();
-
-            foreach (SampleDepartment sampleDepartment in sampleDeps)
+            var departments = new Department[]
             {
-                Department department = new Department { Name = sampleDepartment.Name };
-                departments.Add(department);
+                new Department { Name = "Tobias' stue for godt humør"},
+                new Department { Name = "Bajer plejen"}
+            };
+            foreach (var department in departments)
+            {
                 context.Departments.Add(department);
             }
             context.SaveChanges();
-            return departments;
-        }
 
-        private static void AddSampleUsers(GirafDbContext context, UserManager<GirafUser> userManager, List<SampleGirafUser> sampleUsers, List<Department> departments123)
+            return departments;
+        } 
+
+        private static IList<GirafUser> AddSampleUsers(GirafDbContext context, UserManager<GirafUser> userManager, IList<Department> departments)
         {
             Console.WriteLine("Adding users.");
-            List<GirafUser> users = new List<GirafUser>();
-            List<Department> departments = (from dep in context.Departments select dep).ToList();
-
-            foreach (var sampleUser in sampleUsers)
+            GirafUser[] users = new[]
             {
-                GirafUser user = new GirafUser
-                {
-                    UserName = sampleUser.Name,
-                    DepartmentKey = departments.FirstOrDefault(d => d.Name == sampleUser.DepartmentName).Key
-                };
+                new GirafUser("Kurt", departments[0], GirafRoles.Citizen),
+                new GirafUser("Graatand", departments[0], GirafRoles.Guardian),
+                new GirafUser{UserName = "Lee"},
+                new GirafUser("Tobias", departments[0], GirafRoles.Department),
+                new GirafUser("Decker", departments[0], GirafRoles.Citizen)
+            };
 
-                var x = userManager.CreateAsync(user, sampleUser.Password).Result;
-
-                users.Add(user);
-            }
-            for (int i = 0; i == users.Count - 1; i++)
+            //users[0].UserIcon = null;
+            //Note that the call to .Result is a dangerous way to run async methods synchonously and thus should not be used elsewhere!
+            foreach (var user in users)
             {
-                var a = userManager.AddToRoleAsync(users[i], sampleUsers[i].Role).Result;
+                var x = userManager.CreateAsync(user, "password").Result;
             }
+
+            // Add users to roles
+            var a = userManager.AddToRoleAsync(users[0], GirafRole.Citizen).Result;
+            a = userManager.AddToRoleAsync(users[1], GirafRole.Guardian).Result;
+            a = userManager.AddToRoleAsync(users[2], GirafRole.SuperUser).Result;
+            a = userManager.AddToRoleAsync(users[3], GirafRole.Department).Result;
+            a = userManager.AddToRoleAsync(users[4], GirafRole.Citizen).Result;
+
+            return users;
         }
-
-        private static List<Pictogram> AddSamplePictograms(GirafDbContext context, List<SamplePictogram> samplePictogramsList)
+        #region base64
+        private static IList<Pictogram> AddSamplePictograms(GirafDbContext context)
         {
             System.Console.WriteLine("Adding pictograms.");
-            List<Pictogram> pictograms = new List<Pictogram>();
-            foreach (var samplePict in samplePictogramsList)
+            var pictograms = new Pictogram[]
             {
-                var pictogram = new Pictogram(samplePict.Title, (AccessLevel)Enum.Parse(typeof(AccessLevel), samplePict.AccessLevel), samplePict.ImageHash);
+                new Pictogram("Epik",           AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("alfabet",        AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("alle",           AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("alting",         AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("antal",          AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("berøre",         AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("bogstav",        AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("delmængde",      AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("division",       AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("en",             AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("fantastisk",     AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("farve",          AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("fem",            AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("femininum",      AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("figurer",        AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("fire",           AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("former",         AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("fra",            AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("fredsdue",       AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("frihed",         AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("færdig",         AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("geometriske",    AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("godt",           AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("grå",            AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("gul",            AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("gylden",         AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("heldig",         AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("hunkøn",         AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("hvid",           AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("hvilken",        AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("hørelse",        AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("intet",          AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("j",              AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("komme",          AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("kvinde",         AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("langt",          AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("lilla",          AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("line",           AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("lysegrøn",       AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("lægge",          AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("maskulin",       AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("med",            AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("mere arbejde",   AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("midterste",      AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("mindre arbejde", AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("multiplikation", AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("mørkeblå",       AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("mørkegrøn",      AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("nederste",       AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("nnummer",        AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("nul",            AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("numer",          AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("nuværende",      AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("nærme",          AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("også",           AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("ok",             AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("omdømme",        AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("orange",         AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("ovenfor",        AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("parantes",       AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("parentes",       AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("pege",           AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("pink",           AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("q",              AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("regnestykke",    AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("regnestykke1",   AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("respekt",        AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("rød",            AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("sammen",         AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("sejt",           AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("selv",           AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("sig",            AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("simpelt",        AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("sjovt",          AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("slut",           AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("som",            AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("sort",           AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("starte",         AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("stjerne",        AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("større end",     AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("symbol",         AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("synssans",       AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("sætte",          AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("sølv",           AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("tegn",           AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("terning",        AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("tiders",         AccessLevel.PUBLIC, "secure hash"),
+                new Pictogram("cat0", AccessLevel.PUBLIC,"secure hash"),
+                new Pictogram("cat1", AccessLevel.PUBLIC,"secure hash"),
+                new Pictogram("cat2", AccessLevel.PUBLIC,"secure hash"),
+                new Pictogram("cat3", AccessLevel.PUBLIC,"secure hash"),
+                new Pictogram("cat4", AccessLevel.PUBLIC,"secure hash"),
+                new Pictogram("cat5", AccessLevel.PUBLIC,"secure hash"),
+                new Pictogram("cat6", AccessLevel.PUBLIC,"secure hash"),
+                new Pictogram("cat7", AccessLevel.PUBLIC,"secure hash"),
+                new Pictogram("cat8", AccessLevel.PUBLIC,"secure hash"),
+                new Pictogram("cat9", AccessLevel.PUBLIC,"secure hash"),
+                new Pictogram("cat10", AccessLevel.PUBLIC,"secure hash"),
+                new Pictogram("cat11", AccessLevel.PUBLIC,"secure hash"),
+                new Pictogram("cat12", AccessLevel.PUBLIC,"secure hash"),
+                new Pictogram("cat13", AccessLevel.PUBLIC,"secure hash"),
+                new Pictogram("cat14", AccessLevel.PUBLIC,"secure hash"),
+                new Pictogram("cat15", AccessLevel.PUBLIC,"secure hash"),
+                new Pictogram("cat16", AccessLevel.PUBLIC,"secure hash"),
+                new Pictogram("cat17", AccessLevel.PUBLIC,"secure hash"),
+            };
+            foreach (var pictogram in pictograms)
+            {
                 pictogram.LastEdit = DateTime.Now;
                 context.Add(pictogram);
-                pictograms.Add(pictogram);
             }
+            context.SaveChanges();
+
             return pictograms;
         }
+        #endregion
 
-        private static void AddSampleWeekAndWeekdays(GirafDbContext context, List<SampleWeek> sampleWeeks, List<SampleWeekday> sampleWeekdays, List<SampleGirafUser> sampleUsers, List<Pictogram> pictograms)
+        private static void AddSampleWeekAndWeekdays(GirafDbContext context, IList<Pictogram> pictograms)
         {
             Console.WriteLine("Adding weekdays to users");
-            Pictogram thumbNail = null;
-            List<Week> weekList = new List<Week>();
-
-            foreach (SampleWeek sampleWeek in sampleWeeks)
+            var weekdays = new Weekday[]
             {
-                foreach (Pictogram pic in pictograms)
-                {
-                    if (pic.Title == sampleWeek.ImageTitle)
-                    {
-                        thumbNail = pic;
-                    }
-                }
+                new Weekday(Days.Monday, 
+                    new List<Pictogram> { pictograms[0], pictograms[1], pictograms[2], pictograms[3], pictograms[4] },
+                    new List<ActivityState>{Completed, Completed, Completed, Completed, Completed}),
+                
+                new Weekday(Days.Tuesday, 
+                    new List<Pictogram> { pictograms[5], pictograms[6], pictograms[7], pictograms[8] },
+                    new List<ActivityState>{Completed, Active, Canceled, Completed}),
+                
+                new Weekday(Days.Wednesday, 
+                    new List<Pictogram> { pictograms[9], pictograms[10], pictograms[11], pictograms[12], pictograms[13] },
+                    new List<ActivityState>{Completed, Active, Active, Active, Active}),
+                
+                new Weekday(Days.Thursday, 
+                    new List<Pictogram> { pictograms[8], pictograms[6], pictograms[7], pictograms[5] },
+                    new List<ActivityState>{Active, Canceled, Active, Active}),
+                
+                new Weekday(Days.Friday, 
+                    new List<Pictogram> { pictograms[0], pictograms[7]},
+                    new List<ActivityState>{Active, Active}),
+                
+                new Weekday(Days.Saturday, 
+                    new List<Pictogram> { pictograms[8], pictograms[5]},
+                    new List<ActivityState>{Canceled, Canceled}),
+                
+                new Weekday(Days.Sunday, 
+                    new List<Pictogram> { pictograms[3], pictograms[5]},
+                    new List<ActivityState>{Active, Active})
+            };
 
-                Week week = new Week { Name = sampleWeek.Name, Thumbnail = thumbNail };
-                AddDaysToWeekAndContext(sampleWeekdays, week, context, pictograms);
-                context.Weeks.Add(week);
-                weekList.Add(week);
-
-                foreach (GirafUser user in context.Users)
-                {
-                    foreach (SampleGirafUser sampleUser in sampleUsers)
-                    {
-                        foreach (string userWeek in sampleUser.Weeks)
-                        {
-                            if ((userWeek == week.Name) && (user.UserName == sampleUser.Name))
-                            {
-                                user.WeekSchedule.Add(weekList.First(w => w.Name == userWeek));
-                            }
-                        }
-                    }
-                }
+            var sampleWeek = new Week(pictograms[0]);
+            foreach (var day in weekdays)
+            {
+                context.Weekdays.Add(day);
+                sampleWeek.UpdateDay(day);
             }
+            sampleWeek.Name = "Normal Uge";
+            var usr = context.Users.First(u => u.UserName == "Kurt");
+            context.Weeks.Add(sampleWeek);
+            usr.WeekSchedule.Add(sampleWeek);
+            context.SaveChanges();
         }
 
-        private static void AddSampleWeekTemplate(GirafDbContext context, List<SampleWeekTemplate> sampleTemplates, List<SampleWeekday> sampleWeekdays,
-            List<SampleGirafUser> sampleUsers, List<Department> departments, List<Pictogram> pictograms)
+        private static void AddSampleWeekTemplate(GirafDbContext context, IList<Pictogram> pictograms, IList<Department> departments)
         {
             Console.WriteLine("Adding templates");
-            Pictogram thumbNail = null;
-
-            foreach (SampleWeekTemplate sampleTemplate in sampleTemplates)
+            var weekdays = new Weekday[]
             {
-                foreach (Pictogram pic in pictograms)
-                {
-                    if (pic.Title == sampleTemplate.ImageTitle)
-                    {
-                        thumbNail = pic;
-                    }
-                }
+                new Weekday(Days.Monday, 
+                    new List<Pictogram> { pictograms[0], pictograms[1], pictograms[2], pictograms[3], pictograms[4] },
+                    new List<ActivityState>{Active, Active, Active, Active, Active, }),
+                
+                new Weekday(Days.Tuesday, 
+                    new List<Pictogram> { pictograms[5], pictograms[6], pictograms[7], pictograms[8] },
+                    new List<ActivityState>{Active, Active, Active, Active, }),
+                
+                new Weekday(Days.Wednesday, 
+                    new List<Pictogram> { pictograms[9], pictograms[10], pictograms[11], pictograms[12], pictograms[13] },
+                    new List<ActivityState>{Active, Active, Active, Active, Active, }),
+                
+                new Weekday(Days.Thursday, 
+                    new List<Pictogram> { pictograms[8], pictograms[6], pictograms[7], pictograms[5] },
+                    new List<ActivityState>{Active, Active, Active, Active, }),
+                
+                new Weekday(Days.Friday, 
+                    new List<Pictogram> { pictograms[0], pictograms[7]},
+                    new List<ActivityState>{Active, Active, }),
+                
+                new Weekday(Days.Saturday, 
+                    new List<Pictogram> { pictograms[8], pictograms[5] },
+                    new List<ActivityState>{Active, Active, }),
+                
+                new Weekday(Days.Sunday, 
+                    new List<Pictogram> { pictograms[3], pictograms[5] },
+                    new List<ActivityState>{Active, Active, })
+            };
 
-                var template = new WeekTemplate
-                {
-                    Name = sampleTemplate.Name,
-                    Thumbnail = thumbNail,
-                    Department = departments.First(d => d.Name == sampleTemplate.DepartmentName)
-                };
-
-                AddDaysToWeekAndContext(sampleWeekdays, template, context, pictograms);
-                context.WeekTemplates.Add(template);
-
-                foreach (GirafUser user in context.Users)
-                {
-                    foreach (SampleGirafUser sampleUser in sampleUsers)
-                    {
-                        foreach (string userWeek in sampleUser.Weeks)
-                        {
-                            if ((userWeek == template.Name) && (user.UserName == sampleUser.Name))
-                            {
-                                user.WeekSchedule.Add(context.Weeks.First(w => w.Name == userWeek));
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-
-        private static void AddDaysToWeekAndContext(List<SampleWeekday> sampleDays, WeekBase week, GirafDbContext context, List<Pictogram> pictograms)
-        {
-            foreach (var sampleDay in sampleDays)
+            var sampleTemplate = new WeekTemplate(departments[0]);
+            sampleTemplate.Name = "SkabelonUge";
+            sampleTemplate.Thumbnail = pictograms[0];
+            foreach (var day in weekdays)
             {
-                Days day = sampleDay.Day;
-                List<Pictogram> picts = new List<Pictogram>();
-                Pictogram pic = null;
-
-                foreach (string actIcon in sampleDay.ActivityIconTitles)
-                {
-                    foreach (Pictogram pict in pictograms)
-                    {
-                        if (pict.Title == actIcon)
-                        {
-                            pic = pict;
-                        }
-                    }
-                    picts.Add(pic);
-                }
-
-                List<ActivityState> activityStates = (from activityState in sampleDay.ActivityStates select (ActivityState)Enum.Parse(typeof(ActivityState), activityState)).ToList<ActivityState>();
-                Weekday weekDay = new Weekday(day, picts, activityStates);
-                context.Weekdays.Add(weekDay);
-                week.UpdateDay(weekDay);
+                context.Weekdays.Add(day);
+                sampleTemplate.UpdateDay(day);
             }
+
+            context.WeekTemplates.Add(sampleTemplate);
+            context.SaveChanges();
         }
         #endregion
     }

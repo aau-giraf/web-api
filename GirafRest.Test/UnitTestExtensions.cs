@@ -558,7 +558,6 @@ namespace GirafRest.Test
                 var mockRoles = CreateMockDbSet(MockRoles);
                 var mockUserRoles = CreateMockDbSet(MockUserRoles);
                 var mockWeeks = CreateMockDbSet(MockWeeks);
-                var mockWeekdays = CreateMockDbSet(MockWeeks[0].Weekdays.ToList());
                 var mockWeekTemplates = CreateMockDbSet(MockWeekTemplates);
                 var mockGuardianRelations = CreateMockDbSet(MockGuardianRelations);
                 var dbMock = new Mock<MockDbContext>();
@@ -568,7 +567,6 @@ namespace GirafRest.Test
                 dbMock.Setup(c => c.Activities).Returns(mockActivities.Object);
                 dbMock.Setup(c => c.Departments).Returns(mockDeps.Object);
                 dbMock.Setup(c => c.Weeks).Returns(mockWeeks.Object);
-                dbMock.Setup(c => c.Weekdays).Returns(mockWeekdays.Object);
                 dbMock.Setup(c => c.WeekTemplates).Returns(mockWeekTemplates.Object);
                 dbMock.Setup(c => c.Users).Returns(mockUsers.Object);
                 dbMock.Setup(c => c.Roles).Returns(mockRoles.Object);
