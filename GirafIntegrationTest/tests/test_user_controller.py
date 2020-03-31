@@ -453,6 +453,17 @@ class TestUserController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'Forbidden')
 
     @order
+    def test_user_can_change_guardian_settings_should_fail(self):
+        """
+        Testing changing Guardian settings
+
+        Endpoint: GET:/v1/User/{id}/settings
+        """
+        response = get(f'{BASE_URL}v1/User/{guardian_id}/settings', headers=auth(guardian_token)).json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'RoleMustBeCitizien')
+
+    @order
     def test_user_can_change_settings_as_citizen_should_fail(self):
         """
         Testing changing settings as citizen
@@ -491,3 +502,15 @@ class TestUserController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
         self.assertEqual(2, response['data']['theme'])
+
+    @order
+    def test_user_can_change_guardian_settings_as_super_user_should_fail(self):
+        """
+        Testing changing Guardian settings as Super User
+
+        Endpoint: PUT:/v1/User/{id}/settings
+        """
+        response = put(f'{BASE_URL}v1/User/{guardian_id}/settings', headers=auth(super_user_token),
+                       json=self.NEW_SETTINGS[1]).json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'RoleMustBeCitizien')
