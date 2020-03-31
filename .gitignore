@@ -25,6 +25,8 @@ artifacts/
 *.userosscache
 *.sln.docstates
 *.userprefs
+GirafRest.Test/bin/*
+GirafRest.Test/obj/*
 
 out
 *.db
