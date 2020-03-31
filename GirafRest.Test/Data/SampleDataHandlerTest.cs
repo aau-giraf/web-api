@@ -15,10 +15,11 @@ namespace GirafRest.Test
         private readonly ITestOutputHelper _outputHelper;
         private TestContext _testContext;
         //"..\\netcoreapp2.2\\Data\\samplesTest.json"
-        private readonly string testJson = $".{Path.DirectorySeparatorChar}" +
+        private readonly string testJson = $"{Directory.GetCurrentDirectory()}" +
+            $"{Path.DirectorySeparatorChar}" +
             $"Data" +
             $"{Path.DirectorySeparatorChar}" +
-            $"samplesTest.json";
+            $"samples.json";
 
         public SampleDataHandlerTest(ITestOutputHelper outputHelper)
         {
