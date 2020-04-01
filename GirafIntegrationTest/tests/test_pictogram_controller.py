@@ -2,13 +2,11 @@ from requests import get, post, put, delete
 import time
 from testlib import order, BASE_URL, auth, GIRAFTestCase, parse_image
 
-
 citizen_token = ''
 new_picto_id = ''
 new_picto_name = f'fish{time.time()}'
 
 LAST_EDIT_TIMESTAMP = '2020-03-26T09:22:28.252106Z'
-
 
 class TestPictogramController(GIRAFTestCase):
     """
