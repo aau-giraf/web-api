@@ -69,7 +69,7 @@ class TestPictogramController(GIRAFTestCase):
 
         collected_pictos = response['data']
 
-        # Setting all recieved pictogram's last edit to 
+        # Setting all recieved pictogram's last edit to LAST_EDIT_TIMESTAMP
         for picto in collected_pictos:
             picto['lastEdit'] = LAST_EDIT_TIMESTAMP
 
