@@ -6,6 +6,7 @@ citizen_token = ''
 new_picto_id = ''
 new_picto_name = f'fish{time.time()}'
 
+LAST_EDIT_TIMESTAMP = '2020-03-26T09:22:28.252106Z'
 
 class TestPictogramController(GIRAFTestCase):
     """
@@ -19,13 +20,13 @@ class TestPictogramController(GIRAFTestCase):
         """
         super(TestPictogramController, cls).setUpClass()
         print(f'file:/{__file__}\n')
-        cls.PICTOGRAMS = [{'id': 1, 'lastEdit': '2020-03-26T09:22:28.252106Z', 'title': 'Epik', 'accessLevel': 1,
+        cls.PICTOGRAMS = [{'id': 1, 'lastEdit': LAST_EDIT_TIMESTAMP, 'title': 'Epik', 'accessLevel': 1,
                            'imageHash': 'secure hash', 'imageUrl': '/v1/pictogram/1/image/raw'},
-                          {'id': 2, 'lastEdit': '2020-03-26T09:22:28.275836Z', 'title': 'som', 'accessLevel': 1,
+                          {'id': 2, 'lastEdit': LAST_EDIT_TIMESTAMP, 'title': 'som', 'accessLevel': 1,
                            'imageHash': 'secure hash', 'imageUrl': '/v1/pictogram/2/image/raw'},
-                          {'id': 5, 'lastEdit': '2020-03-26T09:22:28.275793Z', 'title': 'simpelt', 'accessLevel': 1,
+                          {'id': 5, 'lastEdit': LAST_EDIT_TIMESTAMP, 'title': 'simpelt', 'accessLevel': 1,
                            'imageHash': 'secure hash', 'imageUrl': '/v1/pictogram/5/image/raw'},
-                          {'id': 8, 'lastEdit': '2020-03-26T09:22:28.275735Z', 'title': 'sejt', 'accessLevel': 1,
+                          {'id': 8, 'lastEdit': LAST_EDIT_TIMESTAMP, 'title': 'sejt', 'accessLevel': 1,
                            'imageHash': 'secure hash', 'imageUrl': '/v1/pictogram/8/image/raw'}]
         cls.FISH = {'accessLevel': 0, 'title': new_picto_name, 'id': -1, 'lastEdit': '2099-03-19T10:40:26.587Z'}
         cls.RAW_IMAGE = 'ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñÇÿÿõ×ÿÿñÇÿÿÿÿÿÿÿ' \
@@ -65,6 +66,13 @@ class TestPictogramController(GIRAFTestCase):
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
+
+        collected_pictos = response['data']
+
+        # Setting all recieved pictogram's last edit to LAST_EDIT_TIMESTAMP
+        for picto in collected_pictos:
+            picto['lastEdit'] = LAST_EDIT_TIMESTAMP
+
         for picto in self.PICTOGRAMS:
             self.assertIn(picto, response['data'])
 
@@ -79,6 +87,10 @@ class TestPictogramController(GIRAFTestCase):
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
+
+        collected_picto = response['data']
+        collected_picto['lastEdit'] = LAST_EDIT_TIMESTAMP
+
         self.assertDictEqual(self.PICTOGRAMS[1], response['data'])
 
     @order
