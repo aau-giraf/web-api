@@ -2,22 +2,51 @@
 
 The section on running the tests has been bumped to the top for your convenience. Read on for tips and insights on maintenance and trouble-shooting of the tests.
 
-See also [The wiki page](http://web.giraf.cs.aau.dk/w/rest_api_-_development/integration_test/)
+See also [the wiki page](https://aau-giraf.github.io/wiki/development/rest_api_development/IntegrationTest/)
 
 ## File structure
-`⋯/test.py` is the main executable.
+`test.py` is the main executable.
 
-`⋯/tests` contains the tests themselves, with one file/class for each controller in the backend.
+`tests/` contains the test classes, one class for each controller in the backend.
 
-`⋯/testLib.py` contains methods for frequently used actions such as logging in and ensureing the success of a request.
+`testlib.py` contains frequently used functions and extensions to the `unittest` module.
 
 ## Running the tests
-The main project must be running in order for the integration tests to have a server to communicate with. See `README.md` in root folder for that.
+#### API
+Run the web API locally, confer the setup instructions in the `README.md` in the root folder. This must be running in order for the tests to work.
 
-All tests are run by executing `test.py` which is located in the same folder as this readme.
-From a shell, navigate to this folder, then do `python test.py`. This requires _Python 3.6 or later_ to be installed. See section on installation below.
+#### Python
+Ensure you have installed at least Python 3.8 and that it is your current version. To check, run
+```
+python --version
+```
+If you don't have Python installed, see [installing Python](#installing-python)
 
-### Installing python
+#### Virtual environment and dependencies
+It is common practice to setup a virtual environment and install dependencies there, rather than in your global installation.
+```
+# navigate to the integration tests dir
+cd /path/to/web-api/GirafIntegrationTest
+
+# install virtual environment
+python3.8 -m venv venv
+
+# source the virtual environment
+source venv/bin/activate  # Unix/MacOS
+venv\Scripts\activate.bat  # Windows
+
+# install dependencies
+pip install -r requirements.txt
+```
+
+#### Run
+All tests are run by executing `test.py`.
+
+```
+python test.py
+```
+
+### Installing Python
 You'll want to install your Python IDE of choice. Note that many IDEs are able to handle packages and python installation automatically, so start by installing the IDE itself to see if you need to proceed.
 
 #### Windows
@@ -31,10 +60,7 @@ Download and run installer from [https://www.python.org/downloads/]. Follow the 
 If pip was not properly installed along with python, see [this video](https://www.youtube.com/watch?v=j3yH6FfD_Wk).
 
 #### Linux
-From a shell, do `sudo apt install python3.6`. Then do `sudo apt install python3-pip`.
-
-###Required packages
-Similar on all systems. From a shell, do `python`. From the python prompt do `pip install integrate` then do `pip install requests`.
+Install via your package manager, e.g. for Ubuntu run `sudo apt install python3.8`, then do `sudo apt install python3-pip`.
 
 
 ## Purpose
@@ -43,49 +69,153 @@ The tests within this folder are concerned with how all components of the backen
 This allows testing for things like access rights and correct storage and subsequent retrieval from the database. The flipside is that some tests may depend on others(logging in before checking access rights) and that the reason for the failure of a particular test may lie in multiple different components.
 
 ## Testing framework
-Full documentation such as it is can be found at [@test(skip_if_failed=['loginAsKurt'])]. 
+Full documentation can be seen [here](https://docs.python.org/3/library/unittest.html). 
 
-From `userControllerTest.py`, consider
-        class UserControllerTest(TestCase):
-        'User Controller'
-        
-          kurt = None
-          @test()
-          def loginAsKurt(self, check):
-              'Log in as Kurt'
-              self.kurt = login('Kurt', check)
+### Naming
+Generally all names should both be in `lower_snake_case`. Exceptions are global constants in `UPPER_SNAKE_CASE` and class names in `UpperCamelCase`.
 
-          kurtId = None
-          @test(skip_if_failed=['loginAsKurt'])
-          def GetKurtID(self, check):
-              'Get User info for kurt'
-              response = requests.get(Test.url + 'User', headers=auth(self.kurt)).json()
-              ensureSuccess(response, check)
-              check.equal(response['data']['username'], 'Kurt')
-              self.kurtId = response['data']['id']
+**All** test methods should be prefixed by `test_` (a method is **only** recognized as a test if it has this prefix) and `domain_`, and decorated by the `order` function, e.g. 
 
-This should result in
+```py
+@order
+def test_account_login_or_something(self):
+    # do your tests
+```
 
-        * Running test suite 'User Controller'
-           - Running Log in as Kurt                               : [  OK  ]
-           - Running Get User info for kurt                       : [  OK  ]
+assuming the test is in the `test_account_controller` file. You should also include what your test is doing and which endpoint it is testing in the doc string, e.g.
 
-The test names printed when run come from the docstrings below each method definition. E.g. `'Log in as Kurt'`.
+```py
+@order
+def test_account_login_or_something(self):
+    """
+    Testing <what your method is testing in active tense>  # e.g. "Testing logging in as <user>"
+    
+    Endpoint: <method>:<endpoint>  # e.g. POST:/v1/Account/login
+    """
+    # do your tests
+```
+The first line of the doc string will be printed to terminal when the test is run, everything else is documentation.
 
-The tests are run in undefined order, often on multiple threads. To enforce sequence, tests are marked as either `@test(skip_if_failed=['loginAsKurt'])` or `@test(depends=['loginAsKurt'])`. The `depends` property will make sure that all dependencies are run before the test in question. The `skip_if_failed` does the same thing, and in addition to this, will not run the dependencies if they did not pass.
+### @order
+By default `unittest` runs the test in alphabetical order. To ensure tests are run in the order in which they are written in the code, the default sorter is set to `compare` from `testlib.py`.
+To enforce this, the `@order` decorator **must be appended to all test methods**.
 
-Assertions can either be made directly from the given `check` object, or from common `ensureSomething(response, check)` style functions in `testLib.py`.
+### File/Class setup
+Should you create a new file, you should make sure that it/they follow the same format as the remaining classes, i.e. follow the same naming scheme, `test_domain_....py` for file name and `TestDomain` for the class. 
 
-### Explanation of common but mystifying errors
-`false is false` is caused by a failed `check.is_true`. We assume the first `false` was originally supposed to be the expression checked, but becomes its value due to an error in the framework.
+The class should extend the `GIRAFTestCase` class from `testlib.py`.
+The class should also override the same methods: `setUpClass`, `tearDownClass`. If some data or states should be set up before each test you can override `setUp` and `tearDown` as well.
 
-`JSON decode error` is caused when the `.json()` function which must come after each request is given something that is not valid JSON. This indicates that the response was a `Not Found`, an `Internal Server Error` or anything else which is not a giraf `Response<T>` object.
+For example, a file setup could look like so
 
-`index exception` or `key exception` is thrown when trying to access some field in the `response` which does not exist.
+```py
+# imports
+
+# global vars
+
+
+class TestExampleController(GIRAFTestCase):
+    """
+    Testing API requests on Example endpoints
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        """
+        Setup necessary data when class is loaded
+        """
+        super(TestExampleController, cls).setUpClass()
+        print(f'file:/{__file__}\n')
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        """
+        Remove or resolve necessary data and states after class tests are done
+        """
+        super(TestWeekTemplateController, cls).tearDownClass()
+    
+    # test methods
+```
+
+#### Global variables
+Any variable that is set in an arbitrary test method `T` and should be accessible in all the remaining with the value set in `T` should be defined globally.
+
+To modify a global variable, source it first, then change it.
+```py
+some_var = 0
+
+class TestExampleController(GIRAFTestCase):
+    # setup
+    
+    @order
+    def test_method(self):
+        global some_var
+        some_var = 10
+```
+
+#### setUpClass
+This method should include a call to the super method and print the current file name. This is purely for textual information in the terminal when running the tests.
+
+Any consts should be defined here, e.g. static test data.
+
+#### tearDownClass
+This method should include a call to the super method. This is purely for textual information in the terminal when running the tests.
+
+If any data or states need to be resolved when the class tests are finished running, this should be done here, e.g. closing of files, etc.
+
+#### setUp
+Any data that should be available in each test with the same start state should be defined here.
+
+E.g., if you define `self.some_var = 5` in this method, `some_var` will be available in each test with the value `5`, despite changing it in some arbitrary test method.
+
+#### tearDown
+If any data or states need to be resolved when each test is finished running, this should be done here, e.g. closing of files, etc.
+
+### Assertions
+All classes extend `GIRAFTestCase`, which extends `TestCase`. In the latter are assertion methods that can be called through `self`, e.g. `self.assertEqual` and `self.assertTrue`.
+
+### testlib.py
+This file contains commonly used functions and extensions to the base `unittest` classes. If you want to add more functions that are used often, or make more extensions to base classes, do it here.
+
+### Output
+Output wise each class will be separate, e.g.
+
+```
+(venv) [usr@host GirafIntegrationTest]$ python test.py
+Running integration tests for the GIRAF web API
+----------------------------------------------------------------------
+
+Testing API requests on Example endpoints
+file://path/to/web-api/GirafIntegrationTest/tests/test_example_controller.py
+
+Testing logging in as User ...                                                                                  OK
+Testing getting User's id ...                                                                                   OK
+Testing registering New User ...                                                                                OK
+
+----------------------------------------------------------------------
+
+Testing API requests on Other Example endpoints
+file://path/to/web-api/GirafIntegrationTest/tests/test_other_example_controller.py
+
+...
+
+----------------------------------------------------------------------
+
+Ran 148 tests in 4.231s
+
+148 passed (0 unexpected), 0 errors, 0 failed (0 expected), 0 skipped
+
+OK
+```
+
+### Errors and failures
+On errors and failures, a stacktrace will be printed to the terminal, including any local variables and their values for debugging purposes.
+
+The tests will continue running despite an error or failure.
 
 ## Contributors
 
-SW613f18
+SW613f18 & SW607f20
 
 ## License
 
