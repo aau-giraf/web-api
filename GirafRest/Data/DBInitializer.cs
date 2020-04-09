@@ -5,6 +5,7 @@ using GirafRest.Data;
 using GirafRest.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Text;
+using GirafRest.Models.DTOs;
 using static GirafRest.Models.ActivityState;
 
 namespace GirafRest.Setup
@@ -88,11 +89,11 @@ namespace GirafRest.Setup
             Console.WriteLine("Adding users.");
             GirafUser[] users = new[]
             {
-                new GirafUser("Kurt", departments[0]),
-                new GirafUser("Graatand", departments[0]),
+                new GirafUser("Kurt", departments[0], GirafRoles.Citizen),
+                new GirafUser("Graatand", departments[0], GirafRoles.Guardian),
                 new GirafUser{UserName = "Lee"},
-                new GirafUser("Tobias", departments[0]),
-                new GirafUser("Decker", departments[0])
+                new GirafUser("Tobias", departments[0], GirafRoles.Department),
+                new GirafUser("Decker", departments[0], GirafRoles.Citizen)
             };
 
             //users[0].UserIcon = null;

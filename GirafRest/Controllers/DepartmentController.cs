@@ -197,7 +197,7 @@ namespace GirafRest.Controllers
                 
                 //Create a new user with the supplied information
 
-                var departmentUser = new GirafUser(depDTO.Name, department) {IsDepartment = true};
+                var departmentUser = new GirafUser(depDTO.Name, department, GirafRoles.Department) {IsDepartment = true};
 
                 //department.Members.Add(user);
                 
