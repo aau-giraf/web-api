@@ -1,4 +1,4 @@
-from requests import get, post, put, delete
+from requests import get, post, put, delete, patch
 from testlib import order, BASE_URL, GIRAFTestCase
 
 
@@ -19,6 +19,16 @@ class TestAuthorization(GIRAFTestCase):
                             "y9uYW1laWRlbnRpZmllciI6Ijg0MTJkOTk1LWIzODEtNGY4My1iZDI1LWU5ODY2NzBiNTdkOSIsImV4cCI6MT" \
                             "UyNTMwMzQyNSwiaXNzIjoibm90bWUiLCJhdWQiOiJub3RtZSJ9.8KXRRqF3B5s8tUki7u5j0TqK-189QIpApd" \
                             "OC6aSxOms"
+        cls.user_Id = 'john Doe'
+        cls.weekplan_Name = 'uge 2'
+        cls.week_Year = 2020
+        cls.week_Number = 17
+        cls.week_Day_Number = 4
+        cls.activity_Id = 2  # Might need to be existing activity id. chose 2
+        cls.department_Id = 1  # Might need another number
+        cls.citizen_Id = 'Jane Doe'
+
+
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -63,6 +73,76 @@ class TestAuthorization(GIRAFTestCase):
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
+    @order
+    def test_auth_POST_account_login_should_fail(self):
+        """
+        Testing account login
+
+        Endpoint: POST:/v1/Account/login
+        """
+        response = post(f'{BASE_URL}/v1/Account/login').json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
+
+    @order
+    def test_auth_POST_register_account_should_fail(self):
+        """
+        Testing account registration without authentication token
+
+        Endpoint: POST:/v1/Account/register
+        """
+        response = post(f'{BASE_URL}/v1/Account/register').json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
+
+    @order
+    def test_auth_DELETE_account_should_fail(self):
+        """
+        Testing account DELETION with authentication token
+
+        Endpoint: DELETE:/v1/Account/user/{user_id}
+        """
+        response = delete(f'{BASE_URL}/v1/Account/user/1').json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
+
+
+    """
+    Activity endpoints
+    """
+    @order
+    def test_auth_POST_weekplanner_activity_should_fail(self):
+        """
+        Testing creation of weekplanner activity without authentication token
+
+        Endpoint: POST:/v2/Activity/{user_id}/{weekplan_name}/{week_year}/{week_number}/{week_day_number}
+        """
+        response = post(f'{BASE_URL}/v2/Activity/{self.user_Id}/{self.weekplan_Name}/{self.week_Year}/{self.week_Number}/{self.week_Day_Number}').json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
+
+    @order
+    def test_auth_DELETE_activity_should_fail(self):
+        """
+        Testing DELETION of activity without authentication token
+
+        Endpoint: DELETE:/v2/Activity/{user_id}/delete/{activity_id}
+        """
+        response = delete(f'{BASE_URL}/v2/Activity/{self.user_Id}/delete/{self.activity_Id}').json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
+
+    @order
+    def test_auth_PATCH_update_activity_should_fail(self):
+        """
+        Testing PATCHING of activity or updating it without authentication token
+
+        Endpoint: PATCH:/v2/Activity/{user_id}/update
+        """
+        response = patch(f'{BASE_URL}/v2/Activity/{self.user_Id}/update').json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
+
     """
     Department endpoints
     """
@@ -99,6 +179,50 @@ class TestAuthorization(GIRAFTestCase):
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
+    @order
+    def test_auth_GET_department_should_fail(self):
+        """
+        Testing GET on department
+
+        Endpoint: GET:/v1/Department
+        """
+        response = get(f'{BASE_URL}/v1/Department').json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
+
+    @order
+    def test_auth_GET_department_id_should_fail(self):
+        """
+        Testing GET on department id
+
+        Endpoint: GET:/v1/Department/{id}
+        """
+        response = get(f'{BASE_URL}/v1/Department/{self.department_Id}').json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
+
+    @order
+    def test_auth_PUT_department_id_name_should_fail(self):
+        """
+        Testing PUT on department id name
+
+        Endpoint: PUT:/v1/Department/{id}/name
+        """
+        response = put(f'{BASE_URL}/v1/Department/{self.department_Id}/name').json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
+
+    @order
+    def test_auth_DELETE_department_id_should_fail(self):
+        """
+        Testing DELETE on department id
+
+        Endpoint: DELETE:/v1/Department/{id}
+        """
+        response = delete(f'{BASE_URL}/v1/Department/{self.department_Id}').json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
+
     """
     Error endpoints
     """
@@ -121,6 +245,28 @@ class TestAuthorization(GIRAFTestCase):
         Endpoint: POST:/v1/Error
         """
         response = post(f'{BASE_URL}v1/Error').json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
+
+    @order
+    def test_auth_PUT_error_should_fail(self):
+        """
+        Testing PUT error
+
+        Endpoint: PUT:/v1/Error
+        """
+        response = put(f'{BASE_URL}/v1/Error').json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
+
+    @order
+    def test_auth_DELETE_error_should_fail(self):
+        """
+        Testing DELETE error
+
+        Endpoint: DELETE:/v1/Error
+        """
+        response = delete(f'{BASE_URL}/v1/Error').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -219,7 +365,7 @@ class TestAuthorization(GIRAFTestCase):
     Status endpoints
     """
     @order
-    def test_auth_GET_status_should_fail(self):
+    def test_auth_GET_status(self):
         """
         Testing getting API status
 
@@ -230,7 +376,7 @@ class TestAuthorization(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoError')
 
     @order
-    def test_auth_GET_database_status_should_fail(self):
+    def test_auth_GET_database_status(self):
         """
         Testing getting API database status
 
@@ -239,6 +385,17 @@ class TestAuthorization(GIRAFTestCase):
         response = get(f'{BASE_URL}v1/Status/database').json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
+
+    @order
+    def test_auth_GET_status_version(self):
+        """
+        Testing GET status version
+
+        Endpoint: GET:/v1/Status/version-info
+        """
+        response = get(f'{BASE_URL}/v1/Status/version-info').json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
 
     """
     User endpoints
@@ -350,6 +507,144 @@ class TestAuthorization(GIRAFTestCase):
         Endpoint: GET:/v1/User/{id}/guardians
         """
         response = get(f'{BASE_URL}v1/User/0/guardians').json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
+
+    @order
+    def test_auth_GET_user_id_should_fail(self):
+        """
+        Testing GET user Id
+
+        Endpoint: GET:/v1/User/{id}
+        """
+        response = get(f'{BASE_URL}/v1/User/{self.user_Id}').json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
+
+    @order
+    def test_auth_POST_user_id_citizens_citizenid_should_fail(self):
+        """
+        Testing POST as guardian for citizen
+
+        Endpoint: POST:/v1/User/{id}/citizens/{citizen_id}
+        """
+        response = post(f'{BASE_URL}/v1/User/{self.user_Id}/citizens/{self.citizen_Id}').json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
+
+    """
+    Week endpoints
+    """
+    @order
+    def test_auth_GET_user_id_week_v2_should_fail(self):
+        """
+        Testing GET on user specific week v2
+
+        Endpoint: GET:/v2/User/{id}/week
+        """
+        response = get(f'{BASE_URL}/v2/User/{self.user_Id}/week').json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
+
+    @order
+    def test_auth_GET_user_id_week_v1_should_fail(self):
+        """
+        Testing GET on user specific week v1
+
+        Endpoint: GET:/v2/User/{id}/week
+        """
+        response = get(f'{BASE_URL}/v1/User/{self.user_Id}/week').json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
+
+    @order
+    def test_auth_GET_user_id_weekyear_weeknumber_should_fail(self):
+        """
+        Testing GET on user specific weekyear and number
+
+        Endpoint: GET:/v1/User/{id}/week/{week_year}/{week_number}
+        """
+        response = get(f'{BASE_URL}/v1/User/{self.user_Id}/week/{self.week_Year}/{self.week_Number}').json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
+
+    @order
+    def test_auth_PUT_user_id_weekyear_weeknumber_should_fail(self):
+        """
+        Testing PUT on user specific weekyear and number
+
+        Endpoint: PUT:/v1/User/{id}/week/{week_year}/{week_number}
+        """
+        response = put(f'{BASE_URL}/v1/User/{self.user_Id}/week/{self.week_Year}/{self.week_Number}').json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
+
+    @order
+    def test_auth_DELETE_user_id_weekyear_weeknumber_should_fail(self):
+        """
+        Testing DELETE on user specific weekyear and number
+
+        Endpoint: DELETE:/v1/User/{id}/week/{week_year}/{week_number}
+        """
+        response = delete(f'{BASE_URL}/v1/User/{self.user_Id}/week/{self.week_Year}/{self.week_Number}').json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
+
+    """
+    WeekTemplate endpoints
+    """
+    @order
+    def test_auth_GET_weektemplate_should_fail(self):
+        """
+        Testing GET on weektemplate
+
+        Endpoint: GET:/v1/WeekTemplate
+        """
+        response = get(f'{BASE_URL}/v1/WeekTemplate').json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
+
+    @order
+    def test_auth_POST_weektemplate_should_fail(self):
+        """
+        Testing POST on weektemplate
+
+        Endpoint: POST:/v1/WeekTemplate
+        """
+        response = post(f'{BASE_URL}/v1/WeekTemplate').json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
+
+    @order
+    def test_auth_GET_weektemplate_id_should_fail(self):
+        """
+        Testing GET on weektemplate id
+
+        Endpoint: GET:/v1/WeekTemplate/{id}
+        """
+        response = get(f'{BASE_URL}/v1/WeekTemplate').json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
+
+    @order
+    def test_auth_PUT_weektemplate_id_should_fail(self):
+        """
+        Testing PUT on weektemplate id
+
+        Endpoint: PUT:/v1/WeekTemplate/{id}
+        """
+        response = put(f'{BASE_URL}/v1/WeekTemplate').json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotFound')
+
+    @order
+    def test_auth_DELETE_weektemplate_id_should_fail(self):
+        """
+        Testing DELETE on weektemplate id
+
+        Endpoint: DELETE:/v1/WeekTemplate/{id}
+        """
+        response = delete(f'{BASE_URL}/v1/WeekTemplate').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
