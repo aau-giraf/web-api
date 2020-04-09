@@ -525,7 +525,7 @@ namespace GirafRest.Test
             #endregion
             
             
-            public readonly Mock<MockDbContext> MockDbContext;
+            public readonly Mock<GirafDbContext> MockDbContext;
             public readonly MockUserManager MockUserManager;
             public Mock<HttpContext> MockHttpContext { get; set; }
             public Mock<ILoggerFactory> MockLoggerFactory { get; private set;}
@@ -549,7 +549,7 @@ namespace GirafRest.Test
 ;
             }
 
-            private Mock<MockDbContext> CreateMockDbContext()
+            private Mock<GirafDbContext> CreateMockDbContext()
             {
                 var mockSet = CreateMockDbSet(MockPictograms);
                 var mockRelationSet = CreateMockDbSet(MockUserResources);
@@ -563,7 +563,7 @@ namespace GirafRest.Test
                 var mockWeeks = CreateMockDbSet(MockWeeks);
                 var mockWeekTemplates = CreateMockDbSet(MockWeekTemplates);
                 var mockGuardianRelations = CreateMockDbSet(MockGuardianRelations);
-                var dbMock = new Mock<MockDbContext>();
+                var dbMock = new Mock<GirafDbContext>();
                 dbMock.Setup(c => c.Pictograms).Returns(mockSet.Object);
                 dbMock.Setup(c => c.UserResources).Returns(mockRelationSet.Object);
                 dbMock.Setup(c => c.DepartmentResources).Returns(mockDepRes.Object);

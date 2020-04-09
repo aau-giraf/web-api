@@ -44,7 +44,7 @@ namespace GirafRest.Test
         
         private AccountController InitializeTest()
         {
-            var options = new DbContextOptionsBuilder<MockDbContext>()
+            var options = new DbContextOptionsBuilder<GirafDbContext>()
                 .UseInMemoryDatabase(databaseName: "Add_writes_to_database")
                 .Options;
 
