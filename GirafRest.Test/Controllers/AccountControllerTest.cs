@@ -11,8 +11,6 @@ using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
 using Microsoft.Extensions.Options;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using GirafRest.Data;
 
 namespace GirafRest.Test
 {
@@ -44,11 +42,6 @@ namespace GirafRest.Test
         
         private AccountController InitializeTest()
         {
-            var options = new DbContextOptionsBuilder<GirafDbContext>()
-                .UseInMemoryDatabase(databaseName: "Add_writes_to_database")
-                .Options;
-
-            
             _testContext = new TestContext();
 
 
@@ -82,7 +75,6 @@ namespace GirafRest.Test
             ac.Url = mockUrlHelper.Object;
 
             return ac;
-           
         }
 
         #region Login
