@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using GirafRest.Test.Mocks;
-using static GirafRest.Test.DataGenerator;
+using static GirafRest.Test.UnitTestExtensions;
 using GirafRest.Models.DTOs;
 using Xunit.Abstractions;
 using GirafRest.Models.Responses;
@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Moq;
-using static GirafRest.Test.DataGenerator.TestContext;
+using static GirafRest.Test.UnitTestExtensions.TestContext;
 
 
 namespace GirafRest.Test

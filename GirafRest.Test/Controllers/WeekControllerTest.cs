@@ -4,7 +4,7 @@ using GirafRest.Models;
 using GirafRest.Controllers;
 using System.Collections.Generic;
 using GirafRest.Test.Mocks;
-using static GirafRest.Test.DataGenerator;
+using static GirafRest.Test.UnitTestExtensions;
 using GirafRest.Models.DTOs;
 using Xunit.Abstractions;
 using GirafRest.Models.Responses;

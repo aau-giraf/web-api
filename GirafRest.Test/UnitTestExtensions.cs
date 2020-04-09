@@ -16,7 +16,7 @@ using GirafRest.Data;
 
 namespace GirafRest.Test
 {
-    public static class DataGenerator
+    public static class UnitTestExtensions
     {
 
 

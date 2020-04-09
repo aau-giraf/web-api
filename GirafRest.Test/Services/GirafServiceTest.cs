@@ -1,7 +1,7 @@
 ﻿using GirafRest.Models;
 using GirafRest.Services;
 using Xunit;
-using static GirafRest.Test.DataGenerator;
+using static GirafRest.Test.UnitTestExtensions;
 using System.Linq;
 using System.IO;
 using System;

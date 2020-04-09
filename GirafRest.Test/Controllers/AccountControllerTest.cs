@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;
-using static GirafRest.Test.DataGenerator;
+using static GirafRest.Test.UnitTestExtensions;
 using GirafRest.Services;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
