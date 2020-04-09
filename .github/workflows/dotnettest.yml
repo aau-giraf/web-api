@@ -17,4 +17,4 @@ jobs:
     - name: Build with dotnet
       run: dotnet build --configuration Release
     - name: Test
-      run: dotnet test GirafRest.Test/GirafRest.Test.csproj
+      run: dotnet test
