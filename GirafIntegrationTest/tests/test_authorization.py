@@ -45,7 +45,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing setting password
 
-        Endpoint: POST:/v1/Account/login
+        Endpoint: POST::/v1/User/{id}/Account/password
         """
         response = post(f'{BASE_URL}v1/User/0/Account/password').json()
         self.assertFalse(response['success'])
@@ -100,12 +100,11 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing account DELETION with authentication token
 
-        Endpoint: DELETE:/v1/Account/user/{user_id}
+        Endpoint: DELETE:/v1/Account/user/{id}
         """
         response = delete(f'{BASE_URL}/v1/Account/user/1').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
-
 
     """
     Activity endpoints
@@ -493,7 +492,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing getting user citizens by user id
 
-        Endpoint: GET:/v1/User/{id}/citizens
+        Endpoint: GET:/v1/User/{userId}/citizens
         """
         response = get(f'{BASE_URL}v1/User/0/citizens').json()
         self.assertFalse(response['success'])
@@ -504,7 +503,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing getting user guardians by user id
 
-        Endpoint: GET:/v1/User/{id}/guardians
+        Endpoint: GET:/v1/User/{userId}/guardians
         """
         response = get(f'{BASE_URL}v1/User/0/guardians').json()
         self.assertFalse(response['success'])
@@ -526,7 +525,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing POST as guardian for citizen
 
-        Endpoint: POST:/v1/User/{id}/citizens/{citizen_id}
+        Endpoint: POST:/v1/User/{userId}/citizens/{citizenId}
         """
         response = post(f'{BASE_URL}/v1/User/{self.user_Id}/citizens/{self.citizen_Id}').json()
         self.assertFalse(response['success'])
@@ -540,7 +539,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing GET on user specific week v2
 
-        Endpoint: GET:/v2/User/{id}/week
+        Endpoint: GET:/v2/User/{userId}/week
         """
         response = get(f'{BASE_URL}/v2/User/{self.user_Id}/week').json()
         self.assertFalse(response['success'])
@@ -551,7 +550,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing GET on user specific week v1
 
-        Endpoint: GET:/v2/User/{id}/week
+        Endpoint: GET:/v1/User/{userId}/week
         """
         response = get(f'{BASE_URL}/v1/User/{self.user_Id}/week').json()
         self.assertFalse(response['success'])
@@ -562,7 +561,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing GET on user specific weekyear and number
 
-        Endpoint: GET:/v1/User/{id}/week/{week_year}/{week_number}
+        Endpoint: GET:/v1/User/{userId}/week/{weekYear}/{weekNumber}
         """
         response = get(f'{BASE_URL}/v1/User/{self.user_Id}/week/{self.week_Year}/{self.week_Number}').json()
         self.assertFalse(response['success'])

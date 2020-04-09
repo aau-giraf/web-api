@@ -235,7 +235,7 @@ class TestUserController(GIRAFTestCase):
         """
         Testing getting Citizen3's id with Citizen2
 
-        Endpoint: GET:/v1/User/{userId}
+        Endpoint: GET:/v1/User/{id}
         """
         response = get(f'{BASE_URL}v1/User/{citizen3_id}', headers=auth(citizen2_token)).json()
         self.assertFalse(response['success'])
@@ -246,7 +246,7 @@ class TestUserController(GIRAFTestCase):
         """
         Testing getting citizen info as guardian
 
-        Endpoint: GET:/v1/User/{userId}
+        Endpoint: GET:/v1/User/{id}
         """
         response = get(f'{BASE_URL}v1/User/{citizen2_id}', headers=auth(guardian_token)).json()
         self.assertTrue(response['success'])
@@ -259,7 +259,7 @@ class TestUserController(GIRAFTestCase):
         """
         Testing setting display name
 
-        Endpoint: PUT:/v1/User/{userId}
+        Endpoint: PUT:/v1/User/{id}
         """
         data = {'username': citizen2_username, 'screenName': 'FBI Surveillance Van'}
         response = put(f'{BASE_URL}v1/User/{citizen2_id}', headers=auth(citizen2_token), json=data).json()
@@ -284,7 +284,7 @@ class TestUserController(GIRAFTestCase):
         """
         Testing adding new pictogram as Citizen2
 
-        Endpoint: Post:/v1/Pictogram
+        Endpoint: POST:/v1/Pictogram
         """
         global wednesday_id
         data = {'accessLevel': 3, 'title': 'wednesday', 'id': 5, 'lastEdit': '2018-03-19T10:40:26.587Z'}
@@ -409,7 +409,7 @@ class TestUserController(GIRAFTestCase):
         """
         Testing getting Citizen1's citizens
 
-        Endpoint: GET:/v1/User/{id}/citizens
+        Endpoint: GET:/v1/User/{userId}/citizens
         """
         response = get(f'{BASE_URL}v1/User/{citizen1_id}/citizens', headers=auth(citizen1_token)).json()
         self.assertFalse(response['success'])
@@ -420,7 +420,7 @@ class TestUserController(GIRAFTestCase):
         """
         Testing getting Guardian's citizens
 
-        Endpoint: GET:/v1/User/{id}/citizens
+        Endpoint: GET:/v1/User/{userId}/citizens
         """
         response = get(f'{BASE_URL}v1/User/{guardian_id}/citizens', headers=auth(guardian_token)).json()
         self.assertTrue(response['success'])
@@ -433,7 +433,7 @@ class TestUserController(GIRAFTestCase):
         """
         Testing getting Citizen1's guardians
 
-        Endpoint: GET:/v1/User/{id}/guardians
+        Endpoint: GET:/v1/User/{userId}/guardians
         """
         response = get(f'{BASE_URL}v1/User/{citizen1_id}/guardians', headers=auth(citizen1_token)).json()
         self.assertTrue(response['success'])
@@ -446,7 +446,7 @@ class TestUserController(GIRAFTestCase):
         """
         Testing getting Guardian's guardians
 
-        Endpoint: GET:/v1/User/{id}/guardians
+        Endpoint: GET:/v1/User/{userId}/guardians
         """
         response = get(f'{BASE_URL}v1/User/{guardian_id}/guardians', headers=auth(guardian_token)).json()
         self.assertFalse(response['success'])

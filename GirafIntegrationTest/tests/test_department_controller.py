@@ -15,9 +15,9 @@ department_count = 0
 pictograms = {}
 
 
-class TestAccountController(GIRAFTestCase):
+class TestDepartmentController(GIRAFTestCase):
     """
-    Testing API requests on Account endpoints
+    Testing API requests on Department endpoints
     """
 
     @classmethod
@@ -25,7 +25,7 @@ class TestAccountController(GIRAFTestCase):
         """
         Setup necessary data when class is loaded
         """
-        super(TestAccountController, cls).setUpClass()
+        super(TestDepartmentController, cls).setUpClass()
         print(f'file:/{__file__}\n')
         cls.DEPARTMENT = {'id': 0, 'name': department_username, 'members': [], 'resources': []}
         cls.NEW_PICTOGRAMS = [{'accessLevel': 3, 'title': 'Cyclopean', 'id': -1,
@@ -40,7 +40,7 @@ class TestAccountController(GIRAFTestCase):
         """
         Remove or resolve necessary data and states after class tests are done
         """
-        super(TestAccountController, cls).tearDownClass()
+        super(TestDepartmentController, cls).tearDownClass()
 
     @order
     def test_department_can_login_as_super_user(self):
