@@ -28,9 +28,6 @@ namespace GirafRest.Data
         public virtual DbSet<Timer> Timers { get; set; }
         public virtual DbSet<GuardianRelation> GuardianRelations { get; set; }
         public virtual DbSet<WeekDayColor> WeekDayColors { get; set; }
-        public new virtual DbSet<GirafUser> Users { get { return base.Users; } set { base.Users = value; } }
-        public new virtual DbSet<GirafRole> Roles { get { return base.Roles; } set { base.Roles = value; } }
-        public new virtual DbSet<IdentityUserRole<string>> UserRoles { get { return base.UserRoles; } set { base.UserRoles = value; } }
         protected GirafDbContext() { }
 
         public GirafDbContext(DbContextOptions<GirafDbContext> options)
