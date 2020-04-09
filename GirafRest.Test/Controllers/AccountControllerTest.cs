@@ -5,12 +5,14 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;
-using static GirafRest.Test.UnitTestExtensions;
+using static GirafRest.Test.DataGenerator;
 using GirafRest.Services;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
 using Microsoft.Extensions.Options;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using GirafRest.Data;
 
 namespace GirafRest.Test
 {
@@ -42,6 +44,11 @@ namespace GirafRest.Test
         
         private AccountController InitializeTest()
         {
+            var options = new DbContextOptionsBuilder<MockDbContext>()
+                .UseInMemoryDatabase(databaseName: "Add_writes_to_database")
+                .Options;
+
+            
             _testContext = new TestContext();
 
 
@@ -75,6 +82,7 @@ namespace GirafRest.Test
             ac.Url = mockUrlHelper.Object;
 
             return ac;
+           
         }
 
         #region Login

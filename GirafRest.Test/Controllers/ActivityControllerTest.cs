@@ -6,7 +6,7 @@ using GirafRest.Models.Responses;
 using GirafRest.Services;
 using GirafRest.Test.Mocks;
 using Xunit;
-using static GirafRest.Test.UnitTestExtensions;
+using static GirafRest.Test.DataGenerator;
 
 namespace GirafRest.Test
 {

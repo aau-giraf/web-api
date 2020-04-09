@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static GirafRest.Test.UnitTestExtensions;
+using static GirafRest.Test.DataGenerator;
 
 namespace GirafRest.Test.Mocks
 {

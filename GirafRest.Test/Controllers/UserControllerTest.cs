@@ -10,13 +10,13 @@ using GirafRest.Test.Mocks;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;
-using static GirafRest.Test.UnitTestExtensions.TestContext;
+using static GirafRest.Test.DataGenerator.TestContext;
 
 namespace GirafRest.Test
 {
     public class UserControllerTest
     {
-        private UnitTestExtensions.TestContext _testContext;
+        private DataGenerator.TestContext _testContext;
         private readonly ITestOutputHelper _testLogger;
         private readonly string _pngFilepath;
         private const string CitizenUsername = "Citizen of dep 2";
@@ -44,7 +44,7 @@ namespace GirafRest.Test
 
         private UserController initializeTest()
         {
-            _testContext = new UnitTestExtensions.TestContext();
+            _testContext = new DataGenerator.TestContext();
 
             var usercontroller = new UserController(
                 new MockGirafService(_testContext.MockDbContext.Object,
