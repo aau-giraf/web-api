@@ -1,5 +1,6 @@
 ﻿namespace GirafRest.Models.Responses
 {
+#pragma warning disable 1591
     public enum ErrorCode
     {
         Error = 1,
@@ -68,4 +69,5 @@
         WeekNotFound,
         ActivityNotFound
     }
+#pragma warning restore 1591
 }
