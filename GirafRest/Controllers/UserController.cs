@@ -547,6 +547,10 @@ namespace GirafRest.Controllers
             {
                 return ErrorCode.InvalidProperties;
             }
+            if (options.CompletedActivityOption < 1 || options.CompletedActivityOption > 3)
+            {
+                return ErrorCode.InvalidProperties;
+            }
             if (options.ActivitiesCount.HasValue && options.ActivitiesCount.Value < 1) 
             {
                 return ErrorCode.InvalidProperties;
