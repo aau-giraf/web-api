@@ -247,6 +247,8 @@ namespace GirafRest.Migrations
 
                     b.Property<int?>("TimerSeconds");
 
+                    b.Property<int?>("completedActivityOption");
+
                     b.HasKey("Key");
 
                     b.ToTable("Setting");
