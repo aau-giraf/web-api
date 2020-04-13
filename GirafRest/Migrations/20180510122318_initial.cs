@@ -67,7 +67,8 @@ namespace GirafRest.Migrations
                     NrOfDaysToDisplay = table.Column<int>(nullable: true),
                     Orientation = table.Column<int>(nullable: false),
                     Theme = table.Column<int>(nullable: false),
-                    TimerSeconds = table.Column<int>(nullable: true)
+                    TimerSeconds = table.Column<int>(nullable: true),
+                    CompletedActivityOption = table.Column<int>(nullable: true)
                 },
                 constraints: table =>
                 {
