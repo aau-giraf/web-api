@@ -57,6 +57,11 @@ namespace GirafRest.Models
         public bool GreyScale { get; set; }
 
         /// <summary>
+        /// defines how the user wants a completed activity represented
+        /// </summary>
+        public int? CompletedActivityOpion { get; set; }
+
+        /// <summary>
         /// Each day in a weekschedule has a hexcolor associated
         /// </summary>
         /// <value>The week day colors.</value>
