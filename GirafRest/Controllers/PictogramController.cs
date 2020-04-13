@@ -18,6 +18,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.Net.Mime;
 using System.Security.Cryptography;
+using Microsoft.AspNetCore.Http;
 
 namespace GirafRest.Controllers
 {
@@ -83,7 +84,7 @@ namespace GirafRest.Controllers
         /// Else: PictogramNotFound, UserNotFound, Error, or NotAuthorized
         /// </returns>
         [HttpGet("{id}")]
-        public async Task<Response<WeekPictogramDTO>> ReadPictogram(long id)
+        public async Task<ActionResult<Response<WeekPictogramDTO>>> ReadPictogram(long id)
         {
             try
             {
@@ -92,7 +93,7 @@ namespace GirafRest.Controllers
                     .Where(p => p.Id == id)
                     .FirstOrDefaultAsync();
                 if (pictogram == null) 
-                    return new ErrorResponse<WeekPictogramDTO>(ErrorCode.PictogramNotFound);
+                    return StatusCode(StatusCodes.Status418ImATeapot, new ErrorResponse<WeekPictogramDTO>(ErrorCode.PictogramNotFound));
 
                 //Check if the pictogram is public and return it if so
                 if (pictogram.AccessLevel == AccessLevel.PUBLIC) 
@@ -109,7 +110,7 @@ namespace GirafRest.Controllers
                     ownsResource = await _giraf.CheckProtectedOwnership(pictogram, usr);
 
                 if (ownsResource)
-                    return new Response<WeekPictogramDTO>(new WeekPictogramDTO(pictogram));
+                    return Ok(new Response<WeekPictogramDTO>(new WeekPictogramDTO(pictogram)));
                 else
                     return new ErrorResponse<WeekPictogramDTO>(ErrorCode.NotAuthorized);
             } catch (Exception e)
