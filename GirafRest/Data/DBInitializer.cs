@@ -8,6 +8,7 @@ using System.Text;
 using GirafRest.Models.DTOs;
 using static GirafRest.Models.ActivityState;
 
+#pragma warning disable IDE0051 // Remove unused private members
 namespace GirafRest.Setup
 {
     /// <summary>
@@ -331,3 +332,4 @@ namespace GirafRest.Setup
         #endregion
     }
 }
+#pragma warning restore IDE0051 // Remove unused private members

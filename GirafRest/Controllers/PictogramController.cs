@@ -27,8 +27,6 @@ namespace GirafRest.Controllers
     {
         private const string IMAGE_TYPE_PNG = "image/png";
 
-        private const string IMAGE_TYPE_JPEG = "image/jpeg";
-
         private readonly IGirafService _giraf;
         
         private readonly IHostingEnvironment _hostingEnvironment;
@@ -389,6 +387,8 @@ namespace GirafRest.Controllers
                     break;
                 case AccessLevel.PRIVATE:
                     ownsPictogram = await _giraf.CheckPrivateOwnership(picto, usr);
+                    break;
+                default:
                     break;
             }
 

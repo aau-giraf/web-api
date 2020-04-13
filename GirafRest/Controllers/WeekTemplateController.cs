@@ -25,11 +25,6 @@ namespace GirafRest.Controllers
         private readonly IGirafService _giraf;
         
         /// <summary>
-        /// A reference to the role manager for the project.
-        /// </summary>
-        private readonly RoleManager<GirafRole> _roleManager;
-
-        /// <summary>
         /// reference to the authenticationservice which provides commong authentication checks
         /// </summary>
         private readonly IAuthenticationService _authentication;
@@ -43,12 +38,10 @@ namespace GirafRest.Controllers
         /// <param name="loggerFactory">A reference to an implementation of ILoggerFactory. Used to create a logger.</param>
         /// <param name="authentication"></param>
         public WeekTemplateController(IGirafService giraf, 
-            RoleManager<GirafRole> roleManager, 
             ILoggerFactory loggerFactory, 
             IAuthenticationService authentication)
         {
             _giraf = giraf;
-            _roleManager = roleManager;
             _giraf._logger = loggerFactory.CreateLogger("WeekTemplate");
             _authentication = authentication;
         }

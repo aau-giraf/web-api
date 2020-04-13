@@ -28,8 +28,6 @@ namespace GirafRest.Controllers
 
         private readonly IGirafService _giraf;
 
-        private readonly RoleManager<GirafRole> _roleManager;
-
         private readonly IOptions<JwtConfig> _configuration;
 
         private readonly IAuthenticationService _authentication;
@@ -39,14 +37,12 @@ namespace GirafRest.Controllers
             ILoggerFactory loggerFactory,
             IGirafService giraf,
             IOptions<JwtConfig> configuration,
-            RoleManager<GirafRole> roleManager,
             IAuthenticationService authentication)
         {
             _signInManager = signInManager;
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Account");
             _configuration = configuration;
-            _roleManager = roleManager;
             _authentication = authentication;
         }
 

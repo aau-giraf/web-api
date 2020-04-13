@@ -17,6 +17,7 @@ namespace GirafRest.Test
 {   
     public class PictogramControllerTest
     {
+#pragma warning disable IDE0051 // Remove unused private members
         private const int NEW_PICTOGRAM_ID = 400;
         private const int ADMIN_DEP_ONE = 0;
         private const int GUARDIAN_DEP_TWO = 1;
@@ -29,6 +30,7 @@ namespace GirafRest.Test
         private readonly string JPEG_FILEPATH;
         private const int GUARDIAN_DEP_ONE = 7;
         private const int CITIZEN_DEP_ONE = 8;
+#pragma warning restore IDE0051 // Remove unused private members
 
 
         private HostingEnvironment _hostEnv;
@@ -36,11 +38,8 @@ namespace GirafRest.Test
         private string _pictogramFolderPath;
         private const string _pathToPictogramFolder = "/../pictograms/";
         
-        private readonly ITestOutputHelper _testLogger;
-
-        public PictogramControllerTest(ITestOutputHelper output)
+        public PictogramControllerTest()
         {
-            _testLogger = output;
             PNG_FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Mocks", "MockImage.png");
             JPEG_FILEPATH = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Mocks", "MockImage.jpeg");
             _hostEnv = new HostingEnvironment();
@@ -1167,15 +1166,7 @@ namespace GirafRest.Test
         }
         #endregion
 
-        #region Helpers
-        private List<PictogramDTO> convertToListAndLogTestOutput(OkObjectResult result)
-        {
-            var list = result.Value as List<PictogramDTO>;
-            list.ForEach(p => _testLogger.WriteLine(p.Title));
-
-            return list;
-        }
-        
+        #region Helpers        
         private void _preparePictogramFolder(int publicPictogram)
         {
             using (FileStream fs = new FileStream(

@@ -14,15 +14,14 @@ namespace GirafRest.Migrations
 
             migrationBuilder.CreateTable(
                 name: "Timers",
-                columns: table => new
-                {
-                    Key = table.Column<long>(nullable: false)
+                columns: table => (
+                    Key: table.Column<long>(nullable: false)
                         .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    StartTime = table.Column<long>(nullable: false),
-                    Progress = table.Column<long>(nullable: false),
-                    FullLength = table.Column<long>(nullable: false),
-                    Paused = table.Column<bool>(nullable: false)
-                },
+                    StartTime: table.Column<long>(nullable: false),
+                    Progress: table.Column<long>(nullable: false),
+                    FullLength: table.Column<long>(nullable: false),
+                    Paused: table.Column<bool>(nullable: false)
+                ),
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Timers", x => x.Key);
