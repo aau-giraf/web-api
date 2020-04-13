@@ -59,7 +59,7 @@ namespace GirafRest.Models
         /// <summary>
         /// defines how the user wants a completed activity represented
         /// </summary>
-        public int? CompletedActivityOpion { get; set; }
+        public int? CompletedActivityOption { get; set; }
 
         /// <summary>
         /// Each day in a weekschedule has a hexcolor associated
