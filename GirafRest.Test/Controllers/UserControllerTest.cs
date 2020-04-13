@@ -987,7 +987,7 @@ namespace GirafRest.Test
             Assert.Equal(5, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.ActivitiesCount);
             Assert.Equal(5, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.NrOfDaysToDisplay);
             Assert.True(_testContext.MockUsers[CITIZEN_DEP_TWO].Settings.GreyScale);
-            Assert.True(2, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.CompletedActivityOption);
+            Assert.Equal(2, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.CompletedActivityOption);
         }
 
         [Theory]
