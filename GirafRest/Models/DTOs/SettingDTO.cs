@@ -59,7 +59,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// defines how the user wants a completed activity represented
         /// </summary>
-        public int? CompletedActivityOpion { get; set; }
+        public int? CompletedActivityOption { get; set; }
 
         public List<WeekDayColorDTO>  WeekDayColors {get; set;}
         /// <summary>
