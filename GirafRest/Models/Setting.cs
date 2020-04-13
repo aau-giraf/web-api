@@ -82,6 +82,8 @@ namespace GirafRest.Models
             this.Theme = newOptions?.Theme ?? this.Theme;
             this.NrOfDaysToDisplay = newOptions?.NrOfDaysToDisplay ?? this.NrOfDaysToDisplay;
             this.GreyScale = newOptions?.GreyScale ?? this.GreyScale;
+            this.CompletedActivityOption = newOptions?.CompletedActivityOption ?? this.CompletedActivityOption;
+            
             if(newOptions.WeekDayColors != null)
                 updateWeekDayColors(newOptions.WeekDayColors);
         }
@@ -126,7 +128,7 @@ namespace GirafRest.Models
             NrOfDaysToDisplay = 7;
             TimerSeconds = 900;
             GreyScale = false;
-
+            CompletedActivityOption = 1;
         }
     }
 }
