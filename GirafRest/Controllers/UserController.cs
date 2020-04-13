@@ -44,7 +44,6 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Find information about the currently authenticated user.
         /// </summary>
-        /// <param name="id">Identifier of a <see cref="GirafUser"/></param>
         /// <returns> If success returns Meta-data about the currently authorized user else UserNotFound /</returns>
         [HttpGet("")]
         public async Task<Response<GirafUserDTO>> GetUser()

@@ -32,7 +32,7 @@ namespace GirafRest.Controllers
         /// Gets list of <see cref="WeekDTO"/> for all weeks belonging to the user with the provided id, days not are included
         /// </summary>
         /// <returns>List of <see cref="WeekDTO"/> on success else UserNotFound or NoWeekScheduleFound</returns>
-        /// <param name="userId">User identifier for the <see cref="GirafUser" to get schedules for/></param>
+        /// <param name="userId">User identifier for the <see cref="GirafUser" /> to get schedules for</param>
         [HttpGet("v2/User/{userId}/week")]
         [Authorize]
         public async Task<Response<IEnumerable<WeekDTO>>> ReadFullWeekSchedules(string userId)
@@ -57,7 +57,7 @@ namespace GirafRest.Controllers
         /// Gets list of <see cref="WeekNameDTO"/> for all schedules belonging to the user with the provided id
         /// </summary>
         /// <returns>List of <see cref="WeekNameDTO"/> on success else UserNotFound or NoWeekScheduleFound</returns>
-        /// <param name="userId">User identifier for the <see cref="GirafUser" to get schedules for/></param>
+        /// <param name="userId">User identifier for the <see cref="GirafUser" /> to get schedules for</param>
         [HttpGet("v1/User/{userId}/week")]
         [Authorize]
         public async Task<Response<IEnumerable<WeekNameDTO>>> ReadWeekSchedules(string userId)

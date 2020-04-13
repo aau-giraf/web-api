@@ -167,6 +167,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Update info of a <see cref="Pictogram"/> pictogram.
         /// </summary>
+        /// <param name="id">id in URL for Pictogram to update.</param>
         /// <param name="pictogram">A <see cref="PictogramDTO"/> with all new information to update with.
         /// The Id found in this DTO is the target pictogram.
         /// </param>

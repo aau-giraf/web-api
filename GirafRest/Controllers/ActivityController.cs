@@ -108,7 +108,8 @@ namespace GirafRest.Controllers
         /// Updates an activity with a given id.
         /// </summary>
         /// <param name="activity">a serialized version of the activity that will be updated.</param>
-        /// <returns>Returns <see cref="ActivityDTO"/> for the updated activity on success else MissingProperties or NotFound, 
+        /// <param name="userId">an ID of the user to update activities for.</param>
+        /// <returns>Returns <see cref="ActivityDTO"/> for the updated activity on success else MissingProperties or NotFound</returns>
         [HttpPatch("{userId}/update")]
         [Authorize] 
         public async Task<Response<ActivityDTO>> UpdateActivity([FromBody] ActivityDTO activity, string userId)

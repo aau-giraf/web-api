@@ -77,7 +77,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
 
             var loginUser = _giraf._context.Users.FirstOrDefault(u => u.UserName == model.Username);
-            return new Response<string>(await GenerateJwtToken(loginUser, loginUser.Id));
+            return new Response<string>(await GenerateJwtToken(loginUser));
 
         }
 
@@ -160,6 +160,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Allows the user to change his password if they know their old password.
         /// </summary>
+        /// <param name="id">References the User, changing passwords. <see cref="GirafUser"/></param>
         /// <param name="model">A reference to <see cref="ChangePasswordDTO"/></param>
         /// <returns>
         /// Empty Response on success. Else: Missingproperties, PasswordNotUpdated or UserNotFound
@@ -192,6 +193,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Allows a user to set a new password if they forgot theirs.
         /// </summary>
+        /// <param name="id">References the User, changing passwords. <see cref="GirafUser"/></param>
         /// <param name="model">All information needed to set the password in a ResetPasswordDTO, i.e. password and reset token.</param>
         /// <returns>
         /// Empty Response on success. 
@@ -223,6 +225,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Allows the user to get a password reset token for a given user
         /// </summary>
+        /// <param name="id">References the User, changing passwords. <see cref="GirafUser"/></param>
         /// <returns>
         /// Return the password reset token on success. 
         /// UserNotFound if invalid user id was suplied
@@ -244,6 +247,7 @@ namespace GirafRest.Controllers
             return new Response<string>(result);
         }
 
+        /// <summary>
         /// Deletes the user with the given id
         /// </summary>
         /// <param name="userId">id for identifying the given <see cref="GirafUser"/> to be deleted</param>
@@ -292,7 +296,7 @@ namespace GirafRest.Controllers
         /// <returns>
         /// JWT Token as a string
         /// </returns>
-        private async Task<string> GenerateJwtToken(GirafUser user, string impersonatedBy)
+        private async Task<string> GenerateJwtToken(GirafUser user)
         {
             var claims = new List<Claim>
             {

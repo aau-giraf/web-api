@@ -29,8 +29,7 @@ namespace GirafRest.Models.DTOs
         /// Creates a new department data transfer object from a given department.
         /// </summary>
         /// <param name="department">The department to transfer.</param>
-        /// <param name="roleManager">Used for finding the members' roles.</param>
-        /// <param name="girafService">Used for finding the members' roles.</param>
+        /// <param name="users">Used for finding the members.</param>
         public DepartmentDTO(Department department, IEnumerable<UserNameDTO> users)
         {
             Id = department.Key;

@@ -40,7 +40,7 @@ namespace GirafRest.Models
         /// Creates a new many-to-many relationship between a user and a resource.
         /// </summary>
         /// <param name="user">The involved user.</param>
-        /// <param name="resource">The involved resource.</param>
+        /// <param name="pictogram">The involved pictogram.</param>
         public UserResource(GirafUser user, Pictogram pictogram)
         {
             this.OtherKey = user.Id;

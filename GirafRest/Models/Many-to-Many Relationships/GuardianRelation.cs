@@ -28,12 +28,15 @@ namespace GirafRest
         [Required]
         public string GuardianId { get; set; }
 
+        /// <summary>
         /// A reference to the actual user.
         /// </summary>
         [ForeignKey("CitizenId")]
         public virtual GirafUser Citizen { get; set; }
 
-        //A reference to the actual resource.
+        /// <summary>
+        /// A reference to the actual resource.
+        /// </summary>
         [ForeignKey("GuardianId")]
         public virtual GirafUser Guardian { get; set; }
 

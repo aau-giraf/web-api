@@ -63,7 +63,6 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         /// <param name="user">User.</param>
         /// <param name="userRole">User role.</param>
-        /// <param name="addGuardianRelation">If set to <c>true</c> add guardian relation.</param>
         public GirafUserDTO(GirafUser user, GirafRoles userRole)
         {
             //Add all trivial values
