@@ -78,6 +78,7 @@ namespace GirafRest.Models.DTOs
             this.NrOfDaysToDisplay = options.NrOfDaysToDisplay;
             this.GreyScale = options.GreyScale;
             this.WeekDayColors = SetWeekDayColorsFromModel(options.WeekDayColors);
+            this.CompletedActivityOption = options.CompletedActivityOption;
         }
 
         public SettingDTO()
