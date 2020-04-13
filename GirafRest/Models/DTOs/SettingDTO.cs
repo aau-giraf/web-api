@@ -56,6 +56,10 @@ namespace GirafRest.Models.DTOs
         /// Flag for indicating whether or not greyscale is enabled
         /// </summary>
         public bool GreyScale { get; set; }
+        /// <summary>
+        /// defines how the user wants a completed activity represented
+        /// </summary>
+        public int? CompletedActivityOpion { get; set; }
 
         public List<WeekDayColorDTO>  WeekDayColors {get; set;}
         /// <summary>
