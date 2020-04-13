@@ -22,7 +22,8 @@ INSERT INTO
         7,
         1,
         1,
-        900
+        900,
+        1
     FROM
         giraf_old.LauncherOptions
 ;
