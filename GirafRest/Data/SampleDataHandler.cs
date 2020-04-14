@@ -12,11 +12,10 @@ namespace GirafRest.Setup
 {
     public class SampleDataHandler
     {
-        private char separator = Path.DirectorySeparatorChar;
-        private readonly string jsonFile = $"..{Path.DirectorySeparatorChar}" +
-            $"GirafRest" +
+        private readonly string jsonFile = $"{Directory.GetCurrentDirectory()}" +
             $"{Path.DirectorySeparatorChar}" +
-            $"Data{Path.DirectorySeparatorChar}" +
+            $"Data" +
+            $"{Path.DirectorySeparatorChar}" +
             $"samples.json";
 
         public SampleDataHandler(){}
