@@ -85,10 +85,11 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLogout();
             var res = pc.ReadPictogram(PUBLIC_PICTOGRAM).Result;
 
-            Assert.True(res.Success);
-            Assert.Equal(ErrorCode.NoError,res.ErrorCode);
+            Assert.True(res.Value.Success);
+            Assert.Equal(ErrorCode.NoError, res.Value.ErrorCode);
+            Assert.IsType<OkObjectResult>(res);
             //Check data
-            Assert.True(res.Data.Title == _testContext.MockPictograms.FirstOrDefault(a => a.Id == PUBLIC_PICTOGRAM)?.Title);
+            Assert.True(res.Value.Data.Title == _testContext.MockPictograms.FirstOrDefault(a => a.Id == PUBLIC_PICTOGRAM)?.Title);
         }
 
         [Fact]
@@ -98,10 +99,11 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = pc.ReadPictogram(PUBLIC_PICTOGRAM).Result;
 
-            Assert.True(res.Success);
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            Assert.True(res.Value.Success);
+            Assert.Equal(ErrorCode.NoError, res.Value.ErrorCode);
+            Assert.IsType<OkObjectResult>(res);
             //Check data
-            Assert.True(res.Data.Title == _testContext.MockPictograms.FirstOrDefault(a => a.Id == PUBLIC_PICTOGRAM)?.Title);
+            Assert.True(res.Value.Data.Title == _testContext.MockPictograms.FirstOrDefault(a => a.Id == PUBLIC_PICTOGRAM)?.Title);
         }
 
         [Fact]
@@ -110,8 +112,8 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLogout();
             var res = pc.ReadPictogram(ADMIN_PRIVATE_PICTOGRAM).Result;
 
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
+            Assert.False(res.Value.Success);
+            Assert.Equal(ErrorCode.UserNotFound, res.Value.ErrorCode);
         }
 
         [Fact]
@@ -120,8 +122,8 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLogout();
             var res = pc.ReadPictogram(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
+            Assert.False(res.Value.Success);
+            Assert.Equal(ErrorCode.UserNotFound, res.Value.ErrorCode);
         }
 
         [Fact]
@@ -130,9 +132,9 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = pc.ReadPictogram(ADMIN_PRIVATE_PICTOGRAM).Result;
 
-            Assert.True(res.Success);
+            Assert.True(res.Value.Success);
             // check we got the correct ressource back
-            Assert.True(res.Data.Id == ADMIN_PRIVATE_PICTOGRAM);
+            Assert.True(res.Value.Data.Id == ADMIN_PRIVATE_PICTOGRAM);
         }
 
         [Fact]
@@ -141,9 +143,9 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = pc.ReadPictogram(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
-            Assert.True(res.Success);
+            Assert.True(res.Value.Success);
             // check we got the correct ressource back
-            Assert.True(res.Data.Id == DEP_ONE_PROTECTED_PICTOGRAM);
+            Assert.True(res.Value.Data.Id == DEP_ONE_PROTECTED_PICTOGRAM);
         }
 
         [Fact]
@@ -152,8 +154,8 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             var res = pc.ReadPictogram(DEP_ONE_PROTECTED_PICTOGRAM).Result;
 
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+            Assert.False(res.Value.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.Value.ErrorCode);
         }
 
         [Fact]
@@ -162,8 +164,8 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             var res = pc.ReadPictogram(ADMIN_PRIVATE_PICTOGRAM).Result;
 
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
+            Assert.False(res.Value.Success);
+            Assert.Equal(ErrorCode.NotAuthorized, res.Value.ErrorCode);
         }
 
         [Fact]
@@ -172,8 +174,8 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = pc.ReadPictogram(NONEXISTING_PICTOGRAM).Result;
 
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.PictogramNotFound, res.ErrorCode);
+            Assert.False(res.Value.Success);
+            Assert.Equal(ErrorCode.PictogramNotFound, res.Value.ErrorCode);
         }
 
         [Fact]
@@ -182,8 +184,8 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLogout();
             var res = pc.ReadPictogram(NONEXISTING_PICTOGRAM).Result;
 
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.PictogramNotFound, res.ErrorCode);
+            Assert.False(res.Value.Success);
+            Assert.Equal(ErrorCode.PictogramNotFound, res.Value.ErrorCode);
         }
         #endregion
 

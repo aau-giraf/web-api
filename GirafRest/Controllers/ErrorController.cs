@@ -11,11 +11,11 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns>ErrorCode.NotFound</returns>
         [HttpGet(""), HttpPost(""), HttpPut(""), HttpDelete("")]
-        public Response Index()
+        public ActionResult<Response> Index()
         {
             Response.StatusCode = 200;
 
-            return new ErrorResponse(ErrorCode.NotFound);
+            return NotFound(new ErrorResponse(ErrorCode.NotFound));
         }
     }
 }

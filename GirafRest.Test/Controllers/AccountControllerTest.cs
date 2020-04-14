@@ -11,6 +11,9 @@ using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
 using Microsoft.Extensions.Options;
 using System.Linq;
+using Microsoft.AspNetCore.Mvc;
+using System;
+
 
 namespace GirafRest.Test
 {
@@ -82,21 +85,24 @@ namespace GirafRest.Test
         // Check if possible to login with mock credentials. All passwords are initialised (Data folder, DBInitializer.cs) to be "password"
 
         [Fact]
-        public void Login_CredentialsOk_Success()
+        public async void Login_CredentialsOk_Success()
         {
             var accountController = InitializeTest();
 
-            var res = accountController.Login(new LoginDTO()
+            var _res = await accountController.Login(new LoginDTO()
             {
                 Username = _testContext.MockUsers[ADMIN_DEP_ONE].UserName,
                 Password = "password"
-            }).Result;
+            });
+            var res = _res.Result as OkObjectResult;
 
+            Assert.NotNull(res);
+            Assert.Equal(res.StatusCode, 200);
             // Assert if type is reponse (verfies that it is the exact type and not a derived type (ErrorResponse)). No functionality enforces that we should not have type=ErrorResponse, ErrorCode=NoError OR type=Response, ErrorCode=some actual error
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            Assert.Equal(ErrorCode.NoError, res.Value.ErrorCode);
             // Check that jwt token is not null and atleast contains 40 characters
-            Assert.NotNull(res.Data);
-            Assert.True(res.Data.Length >= 40);
+            Assert.NotNull(res.Value.Data);
+            Assert.True(res.Value.Data.Length >= 40);
         }
 
         // Same user log in twice no problem
@@ -119,11 +125,13 @@ namespace GirafRest.Test
             }).Result;
 
             // accountController.Login returns: new Response<GirafUserDTO>(new GirafUserDTO(loginUser, userRoles)) if login succeded
-            Assert.Equal(ErrorCode.NoError, resB.ErrorCode);
-            Assert.True(resB.Success);
+            Assert.Equal(ErrorCode.NoError, resB.Value.ErrorCode);
+            Assert.True(resB.Value.Success);
+            Assert.IsType<OkObjectResult>(resB);
+
             // Check that jwt token is not null and atleast contains 40 characters
-            Assert.NotNull(resB.Data);
-            Assert.True(resB.Data.Length >= 40);
+            Assert.NotNull(resB.Value.Data);
+            Assert.True(resB.Value.Data.Length >= 40);
         }
 
         [Fact]
@@ -138,8 +146,10 @@ namespace GirafRest.Test
                 Password = "password"
             }).Result;
 
-            Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
-            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.InvalidCredentials, res.Value.ErrorCode);
+            Assert.False(res.Value.Success);
+            Assert.IsType<UnauthorizedObjectResult>(res);
+            
         }
 
         [Fact]
@@ -150,8 +160,10 @@ namespace GirafRest.Test
 
             var res = accountController.Login(null).Result;
 
-            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
-            Assert.False(res.Success);
+            Assert.Equal(ErrorCode.MissingProperties, res.Value.ErrorCode);
+            Assert.False(res.Value.Success);
+            Assert.IsType<BadRequestObjectResult>(res);
+
         }
 
         #endregion
