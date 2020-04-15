@@ -6,10 +6,18 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GirafRest.Controllers
 {
+    /// <summary>
+    /// Status-endpoint; Getting status of HTTP, DB etc, for clients to see status
+    /// </summary>
     [Route("v1/[controller]")]
     public class StatusController : Controller
     {
         private readonly IGirafService _giraf;
+
+        /// <summary>
+        /// Constructor for StatusController
+        /// </summary>
+        /// <param name="giraf">Service Injection</param>
         public StatusController(IGirafService giraf)
         {
             _giraf = giraf;

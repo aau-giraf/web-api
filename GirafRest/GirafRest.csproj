@@ -8,7 +8,7 @@
   <PropertyGroup> <GenerateDocumentationFile>true</GenerateDocumentationFile> </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DocumentationFile>bin\Debug\netcoreapp2.0\GirafRest.xml</DocumentationFile>
-    <NoWarn>1591;1701;1702;1705</NoWarn>
+    <NoWarn>1701;1702;1705</NoWarn>
     <DebugType>full</DebugType>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>

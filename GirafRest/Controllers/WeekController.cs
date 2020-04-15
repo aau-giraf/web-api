@@ -14,6 +14,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GirafRest.Controllers
 {
+    /// <summary>
+    /// Controller for managing Weeks, CRUD-ish
+    /// </summary>
     [Route("")]
     public class WeekController : Controller
     {
@@ -21,6 +24,12 @@ namespace GirafRest.Controllers
 
         private readonly IAuthenticationService _authentication;
 
+        /// <summary>
+        /// Constructor for WeekController
+        /// </summary>
+        /// <param name="giraf">Service Injection</param>
+        /// <param name="loggerFactory">Service Injection</param>
+        /// <param name="authentication">Service Injection</param>
         public WeekController(IGirafService giraf, ILoggerFactory loggerFactory, IAuthenticationService authentication)
         {
             _giraf = giraf;

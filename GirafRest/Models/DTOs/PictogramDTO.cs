@@ -11,6 +11,9 @@ namespace GirafRest.Models.DTOs
     /// </summary>
     public class PictogramDTO
     {
+        /// <summary>
+        /// Primary Key
+        /// </summary>
         public long Id { get; internal set; }
 
         /// <summary>
@@ -28,10 +31,20 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         public AccessLevel? AccessLevel { get; set; }
 
+        /// <summary>
+        /// Hash of DTO
+        /// </summary>
         public string ImageHash { get; set; }
-        
+
+        /// <summary>
+        /// Generated image URL
+        /// </summary>
         public string ImageUrl { get { return $"/v1/pictogram/{Id}/image/raw"; } }
 
+        /// <summary>
+        /// Construcotr given Pictogram
+        /// </summary>
+        /// <param name="pictogram">Pictogram to base DTO of</param>
         public PictogramDTO(Pictogram pictogram)
         {
             if (pictogram != null)

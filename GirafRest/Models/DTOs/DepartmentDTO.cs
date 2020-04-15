@@ -6,20 +6,26 @@ using Microsoft.AspNetCore.Identity;
 
 namespace GirafRest.Models.DTOs
 {
+    /// <summary>
+    /// DTO for <see cref="Department"/>
+    /// </summary>
     public class DepartmentDTO
     {
         /// <summary>
         /// The id of the department.
         /// </summary>
         public long Id { get; internal set; }
+
         /// <summary>
         /// The name of the department.
         /// </summary>
         public string Name { get; set; }
+
         /// <summary>
         /// A list of the usernames of all members of the department.
         /// </summary>
         public ICollection<UserNameDTO> Members { get; set; }
+
         /// <summary>
         /// A list of ids of all resources owned by the department.
         /// </summary>
@@ -39,12 +45,19 @@ namespace GirafRest.Models.DTOs
             Resources = new List<long> (department.Resources.Select(dr => dr.PictogramKey));
         }
 
+        /// <summary>
+        /// Empty constructor for JSON Generation
+        /// </summary>
         public DepartmentDTO ()
         {
             Members = new List<UserNameDTO>();
             Resources = new List<long>();
         }
 
+        /// <summary>
+        /// Find belonging members
+        /// </summary>
+        /// <returns>List of matching users</returns>
         public static List<UserNameDTO> FindMembers(IEnumerable<GirafUser> users, RoleManager<GirafRole> roleManager, IGirafService girafService)
         {
             return new List<UserNameDTO>(

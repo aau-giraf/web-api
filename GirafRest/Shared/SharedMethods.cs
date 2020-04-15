@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GirafRest.Shared
 {
+    /// <summary>
+    /// Shared static class for helper methods
+    /// </summary>
     public static class SharedMethods
     {
         /// <summary>

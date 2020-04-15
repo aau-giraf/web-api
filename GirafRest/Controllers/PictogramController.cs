@@ -21,6 +21,9 @@ using System.Security.Cryptography;
 
 namespace GirafRest.Controllers
 {
+    /// <summary>
+    /// Manages pictograms, CRUD-ish.
+    /// </summary>
     [Route("v1/[controller]")]
     [Authorize]
     public class PictogramController : Controller
@@ -33,6 +36,12 @@ namespace GirafRest.Controllers
         
         private readonly string imagePath;
 
+        /// <summary>
+        /// Constructor for controller
+        /// </summary>
+        /// <param name="girafController">Service Injection</param>
+        /// <param name="lFactory">Service Injection</param>
+        /// <param name="hostingEnvironment">Service Injection</param>
         public PictogramController(IGirafService girafController, ILoggerFactory lFactory, IHostingEnvironment hostingEnvironment) 
         {
             _giraf = girafController;

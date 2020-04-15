@@ -12,6 +12,10 @@ namespace GirafRest.Migrations
     [Migration("20190509194705_AddedTimerTable")]
     partial class AddedTimerTable
     {
+        /// <summary>
+        /// Setup target model
+        /// </summary>
+        /// <param name="modelBuilder">Which ModelBuilder to use</param>
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

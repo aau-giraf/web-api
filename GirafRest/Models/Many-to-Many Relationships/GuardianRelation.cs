@@ -40,15 +40,20 @@ namespace GirafRest
         [ForeignKey("GuardianId")]
         public virtual GirafUser Guardian { get; set; }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public GuardianRelation(GirafUser guardian, GirafUser citizen)
         {
             this.Citizen = citizen;
             this.Guardian = guardian;
         }
 
+        /// <summary>
+        /// Empty constructor for JSON Generation
+        /// </summary>
         public GuardianRelation()
         {
-
         }
     }
 }

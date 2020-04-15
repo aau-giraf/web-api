@@ -20,6 +20,9 @@ using Microsoft.Extensions.Options;
 
 namespace GirafRest.Controllers
 {
+    /// <summary>
+    /// Manages accounts such as login, sign up, etc.
+    /// </summary>
     [Authorize]
     [Route("v1/[controller]")]
     public class AccountController : Controller
@@ -32,6 +35,14 @@ namespace GirafRest.Controllers
 
         private readonly IAuthenticationService _authentication;
 
+        /// <summary>
+        /// Constructor for AccountController
+        /// </summary>
+        /// <param name="signInManager">Service Injection</param>
+        /// <param name="loggerFactory">Service Injection</param>
+        /// <param name="giraf">Service Injection</param>
+        /// <param name="configuration">Service Injection</param>
+        /// <param name="authentication">Service Injection</param>
         public AccountController(
             SignInManager<GirafUser> signInManager,
             ILoggerFactory loggerFactory,
