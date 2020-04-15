@@ -9,11 +9,6 @@ namespace GirafRest.Models.Responses
     /// </summary>
     public class RESTError
     {
-        /// <summary>
-        /// Represents an "empty" error. This is used for non-error responses.
-        /// </summary>
-        public static RESTError EMPTY = new RESTError(ErrorCode.NoError, "", "");
-
         /// <summary> GIRAF error code </summary>
         [JsonIgnore]
         public ErrorCode ErrorCode;
@@ -46,5 +41,15 @@ namespace GirafRest.Models.Responses
             this.Message = message;
             this.Details = details;
         }
+
+        public RESTError(ErrorCode errorCode, string message)
+        {
+            this.ErrorCode = errorCode;
+            this.Message = message;
+            this.Details = "";
+        }
+
     }
+
+
 }

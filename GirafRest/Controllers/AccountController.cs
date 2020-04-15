@@ -64,28 +64,30 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<Response<string>>> Login([FromBody]LoginDTO model)
+        public async Task<ActionResult> Login([FromBody]LoginDTO model)
         {
             if (model == null)
-                return BadRequest(new ErrorResponse<string>(ErrorCode.MissingProperties, "model"));
+                return BadRequest(new RESTError(ErrorCode.MissingProperties, "Missing model"));
 
             //Check that the caller has supplied username in the request
             if (string.IsNullOrEmpty(model.Username))
-                return Unauthorized(new ErrorResponse<string>(ErrorCode.MissingProperties, "username"));
+                return Unauthorized(new RESTError(
+                    ErrorCode.MissingProperties, "Missing username"));
 
             if (string.IsNullOrEmpty(model.Password))
-                return Unauthorized(new ErrorResponse<string>(ErrorCode.MissingProperties, "password"));
+                return Unauthorized(new RESTError(
+                    ErrorCode.MissingProperties, "Missing password"));
 
             if (!(_giraf._context.Users.Any(u => u.UserName == model.Username)))
-                return Unauthorized(new ErrorResponse<string>(ErrorCode.InvalidCredentials));
+                return Unauthorized(new RESTError(ErrorCode.InvalidCredentials, "Invalid credentials" ));
 
             var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, lockoutOnFailure: false);
 
             if (!result.Succeeded)
-                return Unauthorized(new ErrorResponse<string>(ErrorCode.InvalidCredentials));
+                return Unauthorized(new RESTError(ErrorCode.InvalidCredentials, "Invalid Credentials"));
 
             var loginUser = _giraf._context.Users.FirstOrDefault(u => u.UserName == model.Username);
-            return Ok(new Response<string>(await GenerateJwtToken(loginUser, loginUser.Id)));
+            return Ok(new MyResponse(await GenerateJwtToken(loginUser, loginUser.Id)));
         }
 
         /// <summary>
@@ -137,10 +139,12 @@ namespace GirafRest.Controllers
 
             //Create a new user with the supplied information
             var user = new GirafUser(model.Username, department, model.Role);
-            if (model.DisplayName == null) {
+            if (model.DisplayName == null)
+            {
                 user.DisplayName = model.Username;
             }
-            else {
+            else
+            {
                 user.DisplayName = model.DisplayName;
             }
             var result = await _giraf._userManager.CreateAsync(user, model.Password);

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.ComponentModel.DataAnnotations;
@@ -29,7 +30,6 @@ namespace GirafRest.Models.Responses
         /// Used by the json converter to convert the enums to strings
         /// </summary>
         [EnumDataType(typeof(RESTResponseStatus))]
-        [JsonConverter(typeof(StringEnumConverter))]
         public RESTResponseStatus Status
         {
             get
@@ -52,6 +52,10 @@ namespace GirafRest.Models.Responses
             this.Data = data;
             this.Error = error;
         }
+
+        public RESTResponse()
+        {
+        }
     }
 
     /// <summary>
@@ -66,7 +70,16 @@ namespace GirafRest.Models.Responses
         /// </summary>
         /// <param name="data">The response body</param>
         /// <param name="statusCode">The HTTP status code, by default this is <c>200</c> </param>
-        public RESTSuccessResponse(TData data, int statusCode = 200) : base(statusCode, RESTResponseStatus.Success, data, RESTError.EMPTY)
+        public RESTSuccessResponse(int statusCode, TData data) : base(statusCode, RESTResponseStatus.Success, data, null)
+        { }
+
+        /// <summary>
+        /// Creates a new RESTSuccessResponse, used for successful responses.
+        /// Automatically sets the RESTResponseStatus to "success".
+        /// Sets the http status code to 200
+        /// </summary>
+        /// <param name="data">The response body</param>
+        public RESTSuccessResponse(TData data) : base(200, RESTResponseStatus.Success, data, null)
         { }
     }
 
