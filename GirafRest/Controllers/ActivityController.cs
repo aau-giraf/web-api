@@ -67,7 +67,12 @@ namespace GirafRest.Controllers
             int order = dbWeekDay.Activities.Select(act => act.Order).DefaultIfEmpty(0).Max();
             order++;
 
-            Activity dbActivity = new Activity(dbWeekDay, new Pictogram() { Id = newActivity.Pictogram.Id }, order, ActivityState.Normal);
+            Activity dbActivity = new Activity(
+                dbWeekDay, 
+                newActivity.Pictograms,
+                order,
+                ActivityState.Normal
+            );
             _giraf._context.Activities.Add(dbActivity);
             await _giraf._context.SaveChangesAsync();
 

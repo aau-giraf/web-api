@@ -241,31 +241,31 @@ namespace GirafRest.Setup
             var weekdays = new Weekday[]
             {
                 new Weekday(Days.Monday, 
-                    new List<Pictogram> { pictograms[0], pictograms[1], pictograms[2], pictograms[3], pictograms[4] },
+                    new List<List<Pictogram>> { new List<Pictogram> { pictograms[0] }, new List<Pictogram> {pictograms[1]}, new List<Pictogram> {pictograms[2]}, new List<Pictogram> {pictograms[3]}, new List<Pictogram> {pictograms[4]} },
                     new List<ActivityState>{Completed, Completed, Completed, Completed, Completed}),
                 
                 new Weekday(Days.Tuesday, 
-                    new List<Pictogram> { pictograms[5], pictograms[6], pictograms[7], pictograms[8] },
+                    new List<List<Pictogram>> { new List<Pictogram> { pictograms[5] }, new List<Pictogram> {pictograms[6]}, new List<Pictogram> {pictograms[7]}, new List<Pictogram> {pictograms[8]} },
                     new List<ActivityState>{Completed, Active, Canceled, Completed}),
                 
                 new Weekday(Days.Wednesday, 
-                    new List<Pictogram> { pictograms[9], pictograms[10], pictograms[11], pictograms[12], pictograms[13] },
+                    new List<List<Pictogram>> { new List<Pictogram> { pictograms[9] }, new List<Pictogram> {pictograms[10]}, new List<Pictogram> {pictograms[11]}, new List<Pictogram> {pictograms[12]}, new List<Pictogram> {pictograms[13]} },
                     new List<ActivityState>{Completed, Active, Active, Active, Active}),
                 
                 new Weekday(Days.Thursday, 
-                    new List<Pictogram> { pictograms[8], pictograms[6], pictograms[7], pictograms[5] },
+                    new List<List<Pictogram>> { new List<Pictogram> { pictograms[8] }, new List<Pictogram> {pictograms[6]}, new List<Pictogram> {pictograms[7]}, new List<Pictogram> {pictograms[5]} },
                     new List<ActivityState>{Active, Canceled, Active, Active}),
                 
                 new Weekday(Days.Friday, 
-                    new List<Pictogram> { pictograms[0], pictograms[7]},
+                    new List<List<Pictogram>> { new List<Pictogram> { pictograms[0] }, new List<Pictogram> {pictograms[7]}},
                     new List<ActivityState>{Active, Active}),
                 
                 new Weekday(Days.Saturday, 
-                    new List<Pictogram> { pictograms[8], pictograms[5]},
+                    new List<List<Pictogram>> { new List<Pictogram> { pictograms[8] }, new List<Pictogram> {pictograms[5]}},
                     new List<ActivityState>{Canceled, Canceled}),
                 
                 new Weekday(Days.Sunday, 
-                    new List<Pictogram> { pictograms[3], pictograms[5]},
+                    new List<List<Pictogram>> { new List<Pictogram> { pictograms[3] }, new List<Pictogram> {pictograms[5]}},
                     new List<ActivityState>{Active, Active})
             };
 
@@ -288,32 +288,32 @@ namespace GirafRest.Setup
             var weekdays = new Weekday[]
             {
                 new Weekday(Days.Monday, 
-                    new List<Pictogram> { pictograms[0], pictograms[1], pictograms[2], pictograms[3], pictograms[4] },
-                    new List<ActivityState>{Active, Active, Active, Active, Active, }),
+                    new List<List<Pictogram>> { new List<Pictogram> { pictograms[0] }, new List<Pictogram> {pictograms[1]}, new List<Pictogram> {pictograms[2]}, new List<Pictogram> {pictograms[3]}, new List<Pictogram> {pictograms[4]} },
+                    new List<ActivityState>{Active, Active, Active, Active, Active}),
                 
                 new Weekday(Days.Tuesday, 
-                    new List<Pictogram> { pictograms[5], pictograms[6], pictograms[7], pictograms[8] },
-                    new List<ActivityState>{Active, Active, Active, Active, }),
+                    new List<List<Pictogram>> { new List<Pictogram> { pictograms[5] }, new List<Pictogram> {pictograms[6]}, new List<Pictogram> {pictograms[7]}, new List<Pictogram> {pictograms[8]} },
+                    new List<ActivityState>{Active, Active, Active, Active}),
                 
                 new Weekday(Days.Wednesday, 
-                    new List<Pictogram> { pictograms[9], pictograms[10], pictograms[11], pictograms[12], pictograms[13] },
-                    new List<ActivityState>{Active, Active, Active, Active, Active, }),
+                    new List<List<Pictogram>> { new List<Pictogram> { pictograms[9] }, new List<Pictogram> {pictograms[10]}, new List<Pictogram> {pictograms[11]}, new List<Pictogram> {pictograms[12]}, new List<Pictogram> {pictograms[13]} },
+                    new List<ActivityState>{Active, Active, Active, Active, Active}),
                 
                 new Weekday(Days.Thursday, 
-                    new List<Pictogram> { pictograms[8], pictograms[6], pictograms[7], pictograms[5] },
-                    new List<ActivityState>{Active, Active, Active, Active, }),
+                    new List<List<Pictogram>> { new List<Pictogram> { pictograms[8] }, new List<Pictogram> {pictograms[6]}, new List<Pictogram> {pictograms[7]}, new List<Pictogram> {pictograms[5]} },
+                    new List<ActivityState>{Active, Active, Active, Active}),
                 
                 new Weekday(Days.Friday, 
-                    new List<Pictogram> { pictograms[0], pictograms[7]},
-                    new List<ActivityState>{Active, Active, }),
+                    new List<List<Pictogram>> { new List<Pictogram> { pictograms[0] }, new List<Pictogram> {pictograms[7]}},
+                    new List<ActivityState>{Active, Active}),
                 
                 new Weekday(Days.Saturday, 
-                    new List<Pictogram> { pictograms[8], pictograms[5] },
-                    new List<ActivityState>{Active, Active, }),
+                    new List<List<Pictogram>> { new List<Pictogram> { pictograms[8] }, new List<Pictogram> {pictograms[5]}},
+                    new List<ActivityState>{Active, Active}),
                 
                 new Weekday(Days.Sunday, 
-                    new List<Pictogram> { pictograms[3], pictograms[5] },
-                    new List<ActivityState>{Active, Active, })
+                    new List<List<Pictogram>> { new List<Pictogram> { pictograms[3] }, new List<Pictogram> {pictograms[5]}},
+                    new List<ActivityState>{Active, Active})
             };
 
             var sampleTemplate = new WeekTemplate(departments[0]);

@@ -21,19 +21,19 @@ namespace GirafRest.Models
 
         public ICollection<Activity> Activities { get; set; }
 
-        public Weekday(Days day, List<Pictogram> activityIcons, List<ActivityState> activityStates) : this()
+        public Weekday(Days day, List<List<Pictogram>> pictograms, List<ActivityState> activityStates) : this()
         {
-            if (activityIcons.Count != activityStates.Count)
+            if (pictograms.Count != activityStates.Count)
             {
-                throw new ArgumentException($"{activityIcons.Count} elements are in activityicons, " +
+                throw new ArgumentException($"{pictograms.Count} elements are in activityicons, " +
                                             $"but {activityStates.Count} elements are in activityStates. " +
                                             $"The numbers must match.");
             }
             
             this.Day = day;
-            for (int i = 0; i < activityIcons.Count; i++)
+            for (int i = 0; i < pictograms.Count; i++)
             {
-                this.Activities.Add(new Activity(this, activityIcons[i], i, activityStates[i]));
+                this.Activities.Add(new Activity(this, pictograms[i], i, activityStates[i]));
             }
         }
 

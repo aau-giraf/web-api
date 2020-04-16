@@ -217,4 +217,3 @@ class TestPictogramController(GIRAFTestCase):
         response = get(f'{BASE_URL}v1/Pictogram/{new_picto_id}', headers=auth(citizen_token)).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'PictogramNotFound')
-

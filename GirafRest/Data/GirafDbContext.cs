@@ -27,6 +27,7 @@ namespace GirafRest.Data
         public virtual DbSet<Activity> Activities { get; set; }
         public virtual DbSet<Timer> Timers { get; set; }
         public virtual DbSet<GuardianRelation> GuardianRelations { get; set; }
+        public virtual DbSet<PictogramRelation> PictogramRelations { get; set; }
         public virtual DbSet<WeekDayColor> WeekDayColors { get; set; }
         public new virtual DbSet<GirafUser> Users { get { return base.Users; } set { base.Users = value; } }
         public new virtual DbSet<GirafRole> Roles { get { return base.Roles; } set { base.Roles = value; } }
@@ -111,12 +112,6 @@ namespace GirafRest.Data
                    .WithMany(w => w.Activities)
                 .HasForeignKey(wr => wr.OtherKey)
                 .OnDelete(DeleteBehavior.Cascade);
-            
-            builder.Entity<Activity>()
-                .HasOne<Pictogram>(wr => wr.Pictogram)
-                .WithMany()
-                .HasForeignKey(wr => wr.PictogramKey)
-                .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Activity>()
                 .HasOne<Timer>(ac => ac.Timer)
@@ -137,6 +132,14 @@ namespace GirafRest.Data
                    .WithMany(c => c.Guardians)
                    .HasForeignKey(mg => mg.CitizenId)
                    .OnDelete(DeleteBehavior.Cascade);
+
+            // The pivot table for the many-many between an activity and pictograms
+            builder.Entity<PictogramRelation>()
+                    .HasOne(pr => pr.Activity)
+                    .WithMany(ac => ac.Pictograms)
+                    .HasForeignKey(mg => mg.ActivityId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
 
             // Configure a one-to-many relationship setting and weekdaycolors
             builder.Entity<Setting>()

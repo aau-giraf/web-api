@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Collections.Generic;
 
 namespace GirafRest.Models
 {
@@ -29,13 +30,8 @@ namespace GirafRest.Models
         /// <summary>
         /// The key of the involved resource.
         /// </summary>
-        [Required]
-        public long PictogramKey { get; set; }
-        /// <summary>
-        /// A reference to the actual resource.
-        /// </summary>
-        [ForeignKey("PictogramKey")]
-        public virtual Pictogram Pictogram { get; set; }
+
+        public virtual ICollection<PictogramRelation> Pictograms { get; set; }
         
         public long? TimerKey { get; set; }
 
@@ -55,13 +51,34 @@ namespace GirafRest.Models
         /// </summary>
         /// <param name="weekday">The involved weekday.</param>
         /// <param name="resource">The involved resource.</param>
-        public Activity(Weekday weekday, Pictogram pictogram, int order, ActivityState state)
+        public Activity(Weekday weekday, List<Pictogram> pictograms, int order, ActivityState state)
         {
             this.Other = weekday;
-            this.PictogramKey = pictogram.Id;
-            this.Pictogram = pictogram;
             this.Order = order;
             this.State = state;
+            this.Pictograms = new List<PictogramRelation>();
+            AddPictograms(pictograms);
+        }
+        
+        public Activity(Weekday weekday, int order, ActivityState state)
+        {
+            this.Other = weekday;
+            this.Order = order;
+            this.State = state;
+            this.Pictograms = new List<PictogramRelation>();
+        }
+
+        
+
+        public void AddPictogram(Pictogram pictogram) {
+            this.Pictograms.Add(new PictogramRelation(this, pictogram));
+        }
+
+        public void AddPictograms(List<Pictogram> pictograms) {
+            foreach (var pictogram in pictograms) 
+            {
+                AddPictogram(pictogram);
+            }
         }
 
         /// <summary>

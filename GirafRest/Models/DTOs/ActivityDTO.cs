@@ -1,11 +1,13 @@
-﻿namespace GirafRest.Models.DTOs
+﻿using System.Collections.Generic;
+
+namespace GirafRest.Models.DTOs
 {
     public class ActivityDTO
     {
-        public ActivityDTO(long id, WeekPictogramDTO pictogram, int order, ActivityState state)
+        public ActivityDTO(long id, List<WeekPictogramDTO> pictograms, int order, ActivityState state)
         {
             this.Id = id;
-            this.Pictogram = pictogram;
+            this.Pictograms = pictograms;
             this.Order = order;
             this.State = state;
         }
@@ -13,7 +15,7 @@
         public ActivityDTO(Activity weekdayResource)
         {
             this.Id = weekdayResource.Key;
-            this.Pictogram = new WeekPictogramDTO(weekdayResource.Pictogram);
+            this.Pictograms = new List<WeekPictogramDTO>();
             this.Order = weekdayResource.Order;
             this.State = weekdayResource.State;
 
@@ -23,17 +25,17 @@
             }
         }
 
-        public ActivityDTO(Activity weekdayResource, WeekPictogramDTO pictogram)
+        public ActivityDTO(Activity weekdayResource, List<WeekPictogramDTO> pictograms)
         {
             this.Id = weekdayResource.Key;
             this.Order = weekdayResource.Order;
             this.State = weekdayResource.State;
-            this.Pictogram = pictogram;
+            this.Pictograms = pictograms;
         }
 
         public ActivityDTO(){}
 
-        public WeekPictogramDTO Pictogram { get; set; }
+        public ICollection<WeekPictogramDTO> Pictograms { get; set; }
 
         /// <summary>
         /// The order that the activity will appear on in a weekschedule. If two has same order it is a choice

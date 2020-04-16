@@ -25,10 +25,10 @@ namespace GirafRest.Models.DTOs
             this.Day = weekday.Day;
             Activities = new List<ActivityDTO>();
             
-            if(weekday.Activities != null){
+            if(weekday.Activities != null) {
                 foreach (var elem in weekday.Activities.OrderBy(a => a.Order))
                 {
-                    if(elem.Pictogram != null) Activities.Add(new ActivityDTO(elem));
+                    if(elem.Pictograms != null && elem.Pictograms.Any()) Activities.Add(new ActivityDTO(elem));
                 }
             }
         }

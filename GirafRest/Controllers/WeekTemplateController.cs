@@ -98,8 +98,8 @@ namespace GirafRest.Controllers
             var template = await (_giraf._context.WeekTemplates
                 .Include(w => w.Thumbnail)
                 .Include(u => u.Weekdays)
-                    .ThenInclude(wd => wd.Activities)
-                        .ThenInclude(a => a.Pictogram)
+                .ThenInclude(wd => wd.Activities)
+                .ThenInclude(a => a.Pictograms)
                 .Where(t => t.DepartmentKey == user.DepartmentKey)
                 .FirstOrDefaultAsync(w => w.Id == id));
 
@@ -170,8 +170,8 @@ namespace GirafRest.Controllers
             var template = _giraf._context.WeekTemplates
                 .Include(w => w.Thumbnail)
                 .Include(u => u.Weekdays)
-                    .ThenInclude(wd => wd.Activities)
-                        .ThenInclude(e => e.Pictogram)
+                .ThenInclude(wd => wd.Activities)
+                .ThenInclude(e => e.Pictograms)
                 .FirstOrDefault(t => id == t.Id);
 
             if (template == null)
