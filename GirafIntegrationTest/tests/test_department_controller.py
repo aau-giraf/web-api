@@ -194,7 +194,7 @@ class TestDepartmentController(GIRAFTestCase):
     @order
     def test_department_can_register_citizen2_department(self):
         """
-        Testing registering Citizen1 in newly created department
+        Testing registering Citizen2 in newly created department
 
         Endpoint: POST:/v1/Account/register
         """
@@ -374,5 +374,41 @@ class TestDepartmentController(GIRAFTestCase):
         """
         response = delete(f'{BASE_URL}v1/Department/resource/{pictograms["cyclopean"]["id"]}',
                           headers=auth(department_token)).json()
+        self.assertTrue(response['success'])
+        self.assertEqual(response['errorKey'], 'NoError')
+
+    @order
+    def test_department_can_get_citizen_names(self):
+        """
+        Testing if superuser can get names of people in a department by department id
+
+        Endpoint: GET:/v1/Department/{id}/citizens
+        """
+        response = get(f'{BASE_URL}v1/Department/{department_id}/citizens', headers=auth(super_user_token)).json()
+        self.assertTrue(response['success'])
+        self.assertEqual(response['errorKey'], 'NoError')
+
+    @order
+    def test_department_can_change_name_of_department_as_superuser(self):
+        """
+        Testing changing name of department as superuser
+
+        Endpoint: PUT:/v1/Department/{id}/name
+        """
+        x = auth(super_user_token)
+        x['Content-Type'] = 'application/json-patch+json'
+        data = {'id': department_id, 'name': 'DeleteMe'}
+        response = put(f'{BASE_URL}v1/Department/{department_id}/name', json=data, headers=x).json()
+        self.assertTrue(response['success'])
+        self.assertEqual(response['errorKey'], 'NoError')
+
+    @order
+    def test_department_can_delete_department_as_superuser(self):
+        """
+        Testing removing created department by id as superuser
+
+        Endpoint: DELETE:/v1/Department/{id}
+        """
+        response = delete(f'{BASE_URL}v1/Department/{department_id}', headers=auth(super_user_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
