@@ -19,12 +19,12 @@ class TestAuthorization(GIRAFTestCase):
                             "y9uYW1laWRlbnRpZmllciI6Ijg0MTJkOTk1LWIzODEtNGY4My1iZDI1LWU5ODY2NzBiNTdkOSIsImV4cCI6MT" \
                             "UyNTMwMzQyNSwiaXNzIjoibm90bWUiLCJhdWQiOiJub3RtZSJ9.8KXRRqF3B5s8tUki7u5j0TqK-189QIpApd" \
                             "OC6aSxOms"
-        cls.user_Id = 'john Doe'
-        cls.weekplan_Name = 'uge 2'
-        cls.week_Year = 2020
-        cls.week_Number = 17
-        cls.week_Day_Number = 4
-        cls.activity_Id = 2  # Might need to be existing activity id. chose 2
+        cls.user_Id = "683c5e7d-b244-4ac8-bb12-b7295595a0f0"
+        cls.weekplan_Name = 'Normal Uge'
+        cls.week_Year = 0
+        cls.week_Number = 0
+        cls.week_Day_Number = 1
+        cls.activity_Id = 1  # Might need to be existing activity id. chose 2
         cls.department_Id = 1  # Might need another number
         cls.citizen_Id = 'Jane Doe'
 
@@ -45,20 +45,20 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing setting password
 
-        Endpoint: POST::/v1/User/{id}/Account/password
+        Endpoint: POST:/v1/User/{id}/Account/password
         """
-        response = post(f'{BASE_URL}v1/User/0/Account/password').json()
+        response = post(f'{BASE_URL}v1/User/{self.user_Id}/Account/password').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
     @order
-    def test_auth_POST_account_change_password_should_fail(self):
+    def test_auth_PUT_account_change_password_should_fail(self):
         """
         Testing changing password
 
         Endpoint: PUT:/v1/User/{id}/Account/password
         """
-        response = put(f'{BASE_URL}v1/User/0/Account/password').json()
+        response = put(f'{BASE_URL}v1/User/{self.user_Id}/Account/password').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -69,7 +69,7 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: GET:/v1/User/{id}/Account/password-reset-token
         """
-        response = get(f'{BASE_URL}v1/User/0/Account/password-reset-token').json()
+        response = get(f'{BASE_URL}v1/User/{self.user_Id}/Account/password-reset-token').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -102,7 +102,7 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: DELETE:/v1/Account/user/{id}
         """
-        response = delete(f'{BASE_URL}/v1/Account/user/1').json()
+        response = delete(f'{BASE_URL}/v1/Account/user/{self.user_Id}').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -163,7 +163,7 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: GET:/v1/Department/{id}/citizens
         """
-        response = get(f'{BASE_URL}v1/Department/0/citizens').json()
+        response = get(f'{BASE_URL}v1/Department/{self.department_Id}/citizens').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -174,7 +174,7 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: POST:/v1/Department/{departmentId}/user/{userId}
         """
-        response = post(f'{BASE_URL}v1/Department/0/user/0').json()
+        response = post(f'{BASE_URL}v1/Department/{self.department_Id}/user/{self.user_Id}').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -572,7 +572,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing PUT on user specific weekyear and number
 
-        Endpoint: PUT:/v1/User/{id}/week/{week_year}/{week_number}
+        Endpoint: PUT:/v1/User/{userId}/week/{weekYear}/{weekNumber}
         """
         response = put(f'{BASE_URL}/v1/User/{self.user_Id}/week/{self.week_Year}/{self.week_Number}').json()
         self.assertFalse(response['success'])
@@ -583,7 +583,7 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing DELETE on user specific weekyear and number
 
-        Endpoint: DELETE:/v1/User/{id}/week/{week_year}/{week_number}
+        Endpoint: DELETE:/v1/User/{userId}/week/{weekYear}/{weekNumber}
         """
         response = delete(f'{BASE_URL}/v1/User/{self.user_Id}/week/{self.week_Year}/{self.week_Number}').json()
         self.assertFalse(response['success'])
