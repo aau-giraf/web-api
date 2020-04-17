@@ -220,14 +220,15 @@ namespace GirafRest.Test
                 DepartmentId = DEPARTMENT_ONE,
                 Role = GirafRoles.Citizen,
                 DisplayName = displayName
-            }).Result;
+            }).Result as ObjectResult;
 
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            Assert.True(res.Success);
-            Assert.NotNull(res.Data);
+            var body = res.Value as MyResponse<GirafUserDTO>;
+            
+            Assert.Equal(StatusCodes.Status201Created, res.StatusCode);
+
             // check data
-            Assert.Equal(res.Data.Username, userName);
-            Assert.Equal(res.Data.Department, DEPARTMENT_ONE);
+            Assert.Equal(userName, body.Data.Username);
+            Assert.Equal(DEPARTMENT_ONE, body.Data.Department);
         }
 
         [Fact]
@@ -244,12 +245,15 @@ namespace GirafRest.Test
                 DepartmentId = DEPARTMENT_ONE,
                 Role = GirafRoles.Citizen,
                 DisplayName = null
-            }).Result;
+            }).Result as ObjectResult;
 
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            Assert.True(res.Success);
-            Assert.NotNull(res.Data);
-            Assert.Equal(res.Data.ScreenName, userName);
+            var body = res.Value as MyResponse<GirafUserDTO>;
+
+            Assert.Equal(StatusCodes.Status201Created, res.StatusCode);
+
+            // check data
+            Assert.Equal(userName, body.Data.Username);
+            Assert.Equal(DEPARTMENT_ONE, body.Data.Department);
         }
      
         [Fact]
@@ -263,10 +267,12 @@ namespace GirafRest.Test
                 Password = "password",
                 DepartmentId = DEPARTMENT_ONE,
                 Role = GirafRoles.Citizen
-            }).Result;
+            }).Result as ObjectResult;
 
-            Assert.Equal(ErrorCode.UserAlreadyExists, res.ErrorCode);
-            Assert.False(res.Success);
+            var body = res.Value as RESTError;
+
+            Assert.Equal(StatusCodes.Status409Conflict, res.StatusCode);
+            Assert.Equal(ErrorCode.UserAlreadyExists, body.ErrorCode);
         }
 
         [Fact]
@@ -278,10 +284,12 @@ namespace GirafRest.Test
             {
                 Password = "password",
                 DepartmentId = DEPARTMENT_ONE
-            }).Result;
+            }).Result as ObjectResult;
 
-            Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
-            Assert.False(res.Success);
+            var body = res.Value as RESTError;
+
+            Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
+            Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
         }
 
         [Fact]
@@ -296,12 +304,12 @@ namespace GirafRest.Test
                 Username = "NewUser",
                 Password = "password",
                 Role = GirafRoles.Citizen
-            }).Result;
+            }).Result as ObjectResult;
 
-            Assert.True(res.Success);
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            // check data
-            Assert.Equal(null, res.Data.Department);
+            var body = res.Value as MyResponse<GirafUserDTO>;
+
+            Assert.Equal(StatusCodes.Status201Created, res.StatusCode);
+            Assert.Null(body.Data.Department);
         }
         
         [Fact]
@@ -313,21 +321,28 @@ namespace GirafRest.Test
             {
                 Username = "",
                 Password = ""
-            }).Result;
+            }).Result as ObjectResult;
 
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
+            var body = res.Value as RESTError;
+
+            Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
+            Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
         }
 
         [Fact]
         public void Register_GuardianRelation_Success(){
             var accountController = InitializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = accountController.Register(new RegisterDTO() { Username = "JohnDoe", 
-                Password= "iSecretlyLoveMileyCyrus", DepartmentId = 2, Role = GirafRoles.Citizen}).Result;
 
-            Assert.True(res.Success);
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            var res = accountController.Register(new RegisterDTO() { 
+                Username = "JohnDoe", 
+                Password= "iSecretlyLoveMileyCyrus",
+                DepartmentId = 2,
+                Role = GirafRoles.Citizen
+            }).Result as ObjectResult;
+
+            Assert.Equal(StatusCodes.Status201Created, res.StatusCode);
+
             // fetch expected guardian from test data
             var guardian = _testContext.MockUsers.FirstOrDefault(u => u.UserName == "Guardian in dep 2");
             var newUser = _testContext.MockUsers.FirstOrDefault(u => u.UserName == "JohnDoe");
@@ -341,10 +356,11 @@ namespace GirafRest.Test
         {
             var accountController = InitializeTest();
 
-            var res = accountController.Register(null).Result;
+            var res = accountController.Register(null).Result as ObjectResult;
+            var body = res.Value as RESTError;
 
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
+            Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
+            Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
         }
         #endregion
 
@@ -363,10 +379,9 @@ namespace GirafRest.Test
                 NewPassword = "PASSWORD"
             };
 
-            var res = ac.ChangePasswordByOldPassword(mockUser.Id, cpDTO).Result;
+            // var res = ac.ChangePasswordByOldPassword(mockUser.Id, cpDTO).Result as ObjectResult;
 
-            Assert.True(res.Success);
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            // Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
         }
 
         [Fact]
@@ -379,10 +394,11 @@ namespace GirafRest.Test
 
             ChangePasswordDTO cpDTO = null;
 
-            var res = ac.ChangePasswordByOldPassword(mockUser.Id, cpDTO).Result;
+            var res = ac.ChangePasswordByOldPassword(mockUser.Id, cpDTO).Result as ObjectResult;
+            var body = res.Value as RESTError;
 
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
+            Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
+            Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
         }
 
         [Fact]
@@ -399,10 +415,11 @@ namespace GirafRest.Test
                 NewPassword = "PASSWORD",
             };
 
-            var res = ac.ChangePasswordByOldPassword(mockUser.Id, cpDTO).Result;
-
-            Assert.False(res.Success);
-            Assert.Equal(ErrorCode.PasswordNotUpdated, res.ErrorCode);
+            var res = ac.ChangePasswordByOldPassword(mockUser.Id, cpDTO).Result as ObjectResult;
+            var body = res.Value as RESTError;
+            
+            Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
+            Assert.Equal(ErrorCode.PasswordNotUpdated, body.ErrorCode);
         }
 
         #endregion
@@ -413,13 +430,14 @@ namespace GirafRest.Test
         {
             var ac = InitializeTest();
 
-            var result = ac.DeleteUser("7394").Result;
+            var res = ac.DeleteUser("7394").Result as ObjectResult;
+            var body = res.Value as RESTError;
 
             var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
 
-            Assert.False(result.Success);
-            Assert.Equal(ErrorCode.UserNotFound, result.ErrorCode);
+            Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
+            Assert.Equal(ErrorCode.UserNotFound, body.ErrorCode);
         }
 
         [Fact]
@@ -429,10 +447,10 @@ namespace GirafRest.Test
             var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
 
-            var result = ac.DeleteUser(_testContext.MockUsers[CITIZEN_DEP_TWO].Id).Result;
+            var res = ac.DeleteUser(_testContext.MockUsers[CITIZEN_DEP_TWO].Id).Result as ObjectResult;
+            var body = res.Value as MyResponse;
 
-            Assert.True(result.Success);
-            Assert.Equal(ErrorCode.NoError, result.ErrorCode);
+            Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
         }
         #endregion
 
