@@ -1,5 +1,9 @@
-﻿namespace GirafRest.Models.Responses
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
+namespace GirafRest.Models.Responses
 {
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum ErrorCode
     {
         Error = 1,

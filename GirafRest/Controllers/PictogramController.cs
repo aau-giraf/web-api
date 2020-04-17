@@ -8,17 +8,10 @@ using GirafRest.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using GirafRest.Services;
 using GirafRest.Models.Responses;
 using Microsoft.AspNetCore.Hosting;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Net.Mime;
-using System.Security.Cryptography;
-using Microsoft.Extensions.Hosting.Internal;
 
 namespace GirafRest.Controllers
 {
@@ -32,11 +25,11 @@ namespace GirafRest.Controllers
 
         private readonly IGirafService _giraf;
         
-        private readonly HostingEnvironment _hostingEnvironment;
+        private readonly IWebHostEnvironment _hostingEnvironment;
         
         private readonly string imagePath;
 
-        public PictogramController(IGirafService girafController, ILoggerFactory lFactory, HostingEnvironment hostingEnvironment) 
+        public PictogramController(IGirafService girafController, ILoggerFactory lFactory, IWebHostEnvironment hostingEnvironment) 
         {
             _giraf = girafController;
             _giraf._logger = lFactory.CreateLogger("Pictogram");

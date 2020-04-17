@@ -70,7 +70,8 @@ namespace GirafRest.Extensions
         {
             GirafRoles userRole = new GirafRoles();
             var roles = await userManager.GetRolesAsync(user);
-            userRole = (GirafRoles)Enum.Parse(typeof(GirafRoles), roles[0]);
+            if(roles.Count != 0) 
+                userRole = (GirafRoles)Enum.Parse(typeof(GirafRoles), roles[0]);
             return userRole;
         }
 

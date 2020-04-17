@@ -100,15 +100,15 @@ namespace GirafRest.Setup
             //Note that the call to .Result is a dangerous way to run async methods synchonously and thus should not be used elsewhere!
             foreach (var user in users)
             {
-                var x = userManager.CreateAsync(user, "password").Result;
+                userManager.CreateAsync(user, "password").Wait();
             }
 
             // Add users to roles
-            userManager.AddToRoleAsync(users[0], GirafRole.Citizen);
-            userManager.AddToRoleAsync(users[1], GirafRole.Guardian);
-            userManager.AddToRoleAsync(users[2], GirafRole.SuperUser);
-            userManager.AddToRoleAsync(users[3], GirafRole.Department);
-            userManager.AddToRoleAsync(users[4], GirafRole.Citizen);
+            userManager.AddToRoleAsync(users[0], GirafRole.Citizen).Wait();
+            userManager.AddToRoleAsync(users[1], GirafRole.Guardian).Wait();
+            userManager.AddToRoleAsync(users[2], GirafRole.SuperUser).Wait();
+            userManager.AddToRoleAsync(users[3], GirafRole.Department).Wait();
+            userManager.AddToRoleAsync(users[4], GirafRole.Citizen).Wait();
 
             return users;
         }

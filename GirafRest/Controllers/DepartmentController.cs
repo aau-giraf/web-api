@@ -193,7 +193,8 @@ namespace GirafRest.Controllers
                     }
                 }
 
-                await _giraf._context.Departments.AddAsync(department);
+                _giraf._context.Departments.Add(department);
+                _giraf._context.SaveChanges();
                 
                 //Create a new user with the supplied information
 

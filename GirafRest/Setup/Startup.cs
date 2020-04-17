@@ -108,8 +108,8 @@ namespace GirafRest.Setup
                 options.Filters.Add<LogFilter>();
             });
             services.AddControllers().AddNewtonsoftJson(options => {
-                options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
-                options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+                //options.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+                //options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Include;
             });
 
             // Set up Cross-Origin Requests
