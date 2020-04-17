@@ -4,14 +4,12 @@ using GirafRest.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using GirafRest.Controllers;
-using System;
 using Xunit.Abstractions;
 using GirafRest.Test.Mocks;
 using static GirafRest.Test.UnitTestExtensions;
 using GirafRest.Models.DTOs;
 using System.IO;
 using GirafRest.Models.Responses;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting.Internal;
 
 namespace GirafRest.Test

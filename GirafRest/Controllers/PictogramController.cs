@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using GirafRest.Services;
 using GirafRest.Models.Responses;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
 namespace GirafRest.Controllers
 {
@@ -25,11 +25,11 @@ namespace GirafRest.Controllers
 
         private readonly IGirafService _giraf;
         
-        private readonly IWebHostEnvironment _hostingEnvironment;
+        private readonly IHostEnvironment _hostingEnvironment;
         
         private readonly string imagePath;
 
-        public PictogramController(IGirafService girafController, ILoggerFactory lFactory, IWebHostEnvironment hostingEnvironment) 
+        public PictogramController(IGirafService girafController, ILoggerFactory lFactory, IHostEnvironment hostingEnvironment) 
         {
             _giraf = girafController;
             _giraf._logger = lFactory.CreateLogger("Pictogram");
