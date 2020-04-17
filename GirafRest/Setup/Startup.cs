@@ -107,6 +107,7 @@ namespace GirafRest.Setup
                 options.EnableEndpointRouting = false;
                 options.Filters.Add<LogFilter>();
             });
+            services.AddControllers().AddNewtonsoftJson();
 
             // Set up Cross-Origin Requests
             services.AddCors(o => o.AddPolicy("AllowAll", builder =>
