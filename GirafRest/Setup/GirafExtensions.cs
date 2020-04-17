@@ -21,21 +21,21 @@ namespace GirafRest.Extensions
     /// The class for extension-methods for Giraf REST-api.
     /// </summary>
     public static class GirafExtensions {
-    /// <summary>
-    /// An extension-method for configuring the application to use a MySQL database.
-    /// </summary>
-    /// <param name="services">A reference to the services of the application.</param>
-    /// <param name="Configuration">Contains the ConnectionString</param>
-    public static void AddMySql(this IServiceCollection services, IConfigurationRoot Configuration) {
-      //Setup the connection to the sql server
-      services.AddDbContext<GirafDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
-    }
+        /// <summary>
+        /// An extension-method for configuring the application to use a MySQL database.
+        /// </summary>
+        /// <param name="services">A reference to the services of the application.</param>
+        /// <param name="Configuration">Contains the ConnectionString</param>
+        public static void AddMySql(this IServiceCollection services, IConfigurationRoot Configuration) {
+          //Setup the connection to the sql server
+          services.AddDbContext<GirafDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
+        }
 
-    /// <summary>
-    /// An extension-method for setting up roles for use when authorizing users to methods.
-    /// </summary>
-    /// <param name="roleManager">A reference to the role manager for the application.</param>
-    public static void EnsureRoleSetup(this RoleManager<GirafRole> roleManager)
+        /// <summary>
+        /// An extension-method for setting up roles for use when authorizing users to methods.
+        /// </summary>
+        /// <param name="roleManager">A reference to the role manager for the application.</param>
+        public static void EnsureRoleSetup(this RoleManager<GirafRole> roleManager)
         {
             if (roleManager.Roles.AnyAsync().Result)
                 return;
