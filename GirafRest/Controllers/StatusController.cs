@@ -34,7 +34,6 @@ namespace GirafRest.Controllers
         {
             try
             {
-                /// TODO: What is this used for? It is a useless call to FirstOrDefault()
                 _giraf._context.Users.FirstOrDefault();
                 return new Response();
             }

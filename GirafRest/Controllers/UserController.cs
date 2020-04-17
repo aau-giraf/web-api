@@ -228,9 +228,6 @@ namespace GirafRest.Controllers
         public async Task<Response> DeleteUserIcon(string id)
         {
             var user = _giraf._context.Users.Include(u => u.UserIcon).FirstOrDefault(u => u.Id == id);
-            if (user == null)
-                return new ErrorResponse(ErrorCode.UserNotFound);
-
             if (user.UserIcon == null)
                 return new ErrorResponse(ErrorCode.UserHasNoIcon);
 
@@ -368,8 +365,6 @@ namespace GirafRest.Controllers
             if (String.IsNullOrEmpty(id))
                 return new ErrorResponse<List<UserNameDTO>>(ErrorCode.MissingProperties, "id");
             var user = _giraf._context.Users.Include(u => u.Citizens).FirstOrDefault(u => u.Id == id);
-            if (user == null)
-                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.UserNotFound);
 
             var authUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
             var citizens = new List<UserNameDTO>();
@@ -427,8 +422,6 @@ namespace GirafRest.Controllers
             foreach (var guardian in user.Guardians)
             {
                 var girafUser = _giraf._context.Users.FirstOrDefault(u => u.Id == guardian.GuardianId);
-                if (girafUser == null)
-                    return new ErrorResponse<List<UserNameDTO>>(ErrorCode.UserNotFound);
 
                 guardians.Add(new UserNameDTO { UserId = girafUser.Id, UserName = girafUser.UserName });
             }
