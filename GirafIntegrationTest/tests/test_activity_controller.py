@@ -100,7 +100,6 @@ class TestActivityController(GIRAFTestCase):
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
 
-
     @order
     def test_activity_delete_user_activity(self):
         """

@@ -2,7 +2,7 @@ from tests import *
 
 TEST_CLASSES = [TestAccountController, TestAuthorization, TestDepartmentController,
                 TestPictogramController, TestUserController, TestWeekController,
-                TestWeekTemplateController, TestActivityController]
+                TestWeekTemplateController, TestActivityController, TestErrorController, TestStatusController]
 ENDPOINTS = {'Account': {'/v1/Account/login': ['POST'], '/v1/Account/register': ['POST'],
                          '/v1/Account/user/{id}': ['DELETE'],
                          '/v1/User/{id}/Account/password': ['PUT', 'POST'],
