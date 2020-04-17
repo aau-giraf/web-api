@@ -81,8 +81,6 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
 
             var loginUser = _giraf._context.Users.FirstOrDefault(u => u.UserName == model.Username);
-            if (loginUser == null)
-                return new ErrorResponse<string>(ErrorCode.UserNotFound);
 
             return new Response<string>(await GenerateJwtToken(loginUser, loginUser.Id));
 

@@ -100,9 +100,9 @@ namespace GirafRest.Test
         { 
             get { return new TestDbAsyncQueryProvider<T>(this); } 
         } 
-    }
-
-    internal class TestDbAsyncEnumerator<T> : IAsyncEnumerator<T>
+    } 
+ 
+    internal class TestDbAsyncEnumerator<T> : IAsyncEnumerator<T> 
     { 
         private readonly IEnumerator<T> _inner; 
  

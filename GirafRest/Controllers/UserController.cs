@@ -365,7 +365,6 @@ namespace GirafRest.Controllers
             if (String.IsNullOrEmpty(id))
                 return new ErrorResponse<List<UserNameDTO>>(ErrorCode.MissingProperties, "id");
             var user = _giraf._context.Users.Include(u => u.Citizens).FirstOrDefault(u => u.Id == id);
-
             var authUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
             var citizens = new List<UserNameDTO>();
 
@@ -382,9 +381,6 @@ namespace GirafRest.Controllers
             foreach (var citizen in user.Citizens)
             {
                 var girafUser = _giraf._context.Users.FirstOrDefault(u => u.Id == citizen.CitizenId);
-                if (girafUser == null)
-                    return new ErrorResponse<List<UserNameDTO>>(ErrorCode.UserNotFound);
-
                 citizens.Add(new UserNameDTO { UserId = girafUser.Id, UserName = girafUser.UserName });
             }
 
@@ -422,7 +418,6 @@ namespace GirafRest.Controllers
             foreach (var guardian in user.Guardians)
             {
                 var girafUser = _giraf._context.Users.FirstOrDefault(u => u.Id == guardian.GuardianId);
-
                 guardians.Add(new UserNameDTO { UserId = girafUser.Id, UserName = girafUser.UserName });
             }
 

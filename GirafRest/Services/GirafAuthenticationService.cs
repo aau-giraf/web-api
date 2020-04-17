@@ -57,8 +57,6 @@ namespace GirafRest.Services
                     if (authUser.DepartmentKey != userToEdit.DepartmentKey)
                         return false;
                     break;
-                case GirafRoles.SuperUser:
-                    return true;
             }
 
             return true;

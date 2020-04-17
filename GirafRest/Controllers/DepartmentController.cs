@@ -266,6 +266,7 @@ namespace GirafRest.Controllers
             if (dep.Members.Any(u => u.Id == userId))
                 return new ErrorResponse<DepartmentDTO>(ErrorCode.UserNameAlreadyTakenWithinDepartment);
 
+
             var user = await _giraf._context.Users.Where(u => u.Id == userId).Include(u => u.Department)
                                    .FirstOrDefaultAsync();
 
