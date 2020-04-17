@@ -6,6 +6,9 @@ citizen1_token = ''
 citizen1_id = ''
 guardian_token = ''
 guardian_id = ''
+new_guardian_token = ''
+new_guardian_id = ''
+new_guardian_username = ''
 citizen2_token = ''
 citizen2_username = f'Gunnar{time.time()}'
 citizen2_id = ''
@@ -52,6 +55,8 @@ class TestUserController(GIRAFTestCase):
                                       {"hexColor": "#FFFFFF", "day": 7}]}
         cls.NEW_SETTINGS = [{"orientation": 1, "completeMark": 2, "cancelMark": 1, "defaultTimer": 2, "theme": 1},
                             {"orientation": 1, "completeMark": 2, "cancelMark": 1, "defaultTimer": 2, "theme": 2}]
+        cls.RAW_IMAGE = 'ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñÇÿÿõ×ÿÿñÇÿÿÿÿÿÿÿ' \
+                        'ÿÿÿÿÿÿÿøÿÿüÿÿþ?ÿÿü?ÿÿøÿÿøÿÿà?ÿÿÿ'
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -104,6 +109,38 @@ class TestUserController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
         super_user_token = response['data']
+
+    @order
+    def test_user_can_create_new_guardian(self):
+        """
+        Creating a new guardian with no relations to test other endpoints
+
+        Endpoint: POST:/v1/Account/register
+        """
+        global new_guardian_id
+        global new_guardian_username
+        new_guardian_username = f'Testguardian{time.time()}'
+        data = {'username': new_guardian_username, 'password': 'password', 'displayName': 'testG','departmentId': 2, 'role': 'Guardian'}
+        response = post(f'{BASE_URL}v1/Account/register', json=data, headers=auth(super_user_token)).json()
+        self.assertTrue(response['success'])
+        self.assertEqual(response['errorKey'], 'NoError')
+        self.assertIsNotNone(response['data'])
+        new_guardian_id = response['data']['id']
+
+    @order
+    def test_user_can_login_as_new_guardian(self):
+        """
+        Testing logging in as Guardian
+
+        Endpoint: POST:/v1/Account/login
+        """
+        global new_guardian_token
+        data = {'username': new_guardian_username, 'password': 'password'}
+        response = post(f'{BASE_URL}v1/Account/login', json=data).json()
+        self.assertTrue(response['success'])
+        self.assertEqual(response['errorKey'], 'NoError')
+        self.assertIsNotNone(response['data'])
+        new_guardian_token = response['data']
 
     @order
     def test_user_can_login_as_department(self):
@@ -514,3 +551,83 @@ class TestUserController(GIRAFTestCase):
                        json=self.NEW_SETTINGS[1]).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'RoleMustBeCitizien')
+
+    @order
+    def test_user_superuser_can_give_citizen_icon(self):
+        """
+        Testing if a superuser can set a users icon
+
+        Endpoint: PUT:/v1/User/{id}/icon
+        """
+        data = self.RAW_IMAGE
+        response = put(f'{BASE_URL}v1/User/{citizen2_id}/icon', json=data, headers=auth(super_user_token)).json()
+        self.assertTrue(response['success'])
+        self.assertEqual(response['errorKey'], 'NoError')
+
+    @order
+    def test_user_user_can_set_icon_of_another_user_should_fail(self):
+        """
+        Testing if a user can change another users icon
+
+        Endpoint: PUT:/v1/User/{id}/icon
+        """
+        data = self.RAW_IMAGE
+        response = put(f'{BASE_URL}v1/User/{citizen2_id}/icon', data=data, headers=auth(citizen1_token)).json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NotAuthorized')
+
+    @order
+    def test_user_guardian_can_set_icon_of_another_user(self):
+        """
+        Testing if a guardian can change another users icon
+
+        Endpoint: PUT:/v1/User/{id}/icon
+        """
+        data = self.RAW_IMAGE
+        response = put(f'{BASE_URL}v1/User/{citizen2_id}/icon', json=data, headers=auth(guardian_token)).json()
+        self.assertTrue(response['success'])
+        self.assertEqual(response['errorKey'], 'NoError')
+
+    @order
+    def test_user_user_can_get_specific_user_icon(self):
+        """
+        Testing if a user can get the userIcon of another user
+
+        Endpoint: GET:/v1/User/id/icon
+        """
+        response = get(f'{BASE_URL}v1/User/{citizen2_id}/icon', headers=auth(citizen1_token)).json()
+        self.assertTrue(response['success'])
+        self.assertIsNotNone(response['data'])
+
+    @order
+    def test_user_guardian_can_get_specific_user_icon(self):
+        """
+        Testing if a guardian can get the userIcon of another user
+
+        Endpoint: GET:/v1/User/id/icon
+        """
+        response = get(f'{BASE_URL}v1/User/{citizen2_id}/icon', headers=auth(guardian_token)).json()
+        self.assertTrue(response['success'])
+        self.assertIsNotNone(response['data'])
+
+    @order
+    def test_user_superuser_can_get_specific_user_icon(self):
+        """
+        Testing if a user can get the userIcon of another user
+
+        Endpoint: GET:/v1/User/id/icon
+        """
+        response = get(f'{BASE_URL}v1/User/{citizen2_id}/icon', headers=auth(super_user_token)).json()
+        self.assertTrue(response['success'])
+        self.assertIsNotNone(response['data'])
+
+    @order
+    def test_user_delete_new_guardian(self):
+        """
+        deleting newly testing guardian
+
+        Endpoint: DELETE:/v1/Account/user/{userId}
+        """
+        response = delete(f'{BASE_URL}v1/Account/user/{new_guardian_id}', headers=auth(super_user_token)).json()
+        self.assertTrue(response['success'])
+        self.assertEqual(response['errorKey'], 'NoError')
