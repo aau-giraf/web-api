@@ -27,8 +27,8 @@ namespace GirafRest.Extensions
         /// <param name="services">A reference to the services of the application.</param>
         /// <param name="Configuration">Contains the ConnectionString</param>
         public static void AddMySql(this IServiceCollection services, IConfigurationRoot Configuration) {
-          //Setup the connection to the sql server
-          services.AddDbContext<GirafDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
+            //Setup the connection to the sql server
+            services.AddDbContext<GirafDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
         }
 
         /// <summary>
