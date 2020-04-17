@@ -559,7 +559,7 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: PUT:/v1/User/{id}/icon
         """
-        data = self.RAW_IMAGE
+        data = {'userIcon': self.RAW_IMAGE}
         response = put(f'{BASE_URL}v1/User/{citizen2_id}/icon', json=data, headers=auth(super_user_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
@@ -571,7 +571,7 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: PUT:/v1/User/{id}/icon
         """
-        data = self.RAW_IMAGE
+        data = {'userIcon': self.RAW_IMAGE}
         response = put(f'{BASE_URL}v1/User/{citizen2_id}/icon', data=data, headers=auth(citizen1_token)).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotAuthorized')
@@ -583,20 +583,34 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: PUT:/v1/User/{id}/icon
         """
-        data = self.RAW_IMAGE
+        data = {'userIcon': self.RAW_IMAGE}
         response = put(f'{BASE_URL}v1/User/{citizen2_id}/icon', json=data, headers=auth(guardian_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
+
+    @order
+    def test_user_user_can_get_own_icon(self):
+        """
+        Testing if a user can get own userIcon
+
+        Endpoint: GET:/v1/User/{id}/icon
+        """
+        response = get(f'{BASE_URL}v1/User/{citizen2_id}/icon', headers=auth(citizen2_token)).json()
+        self.assertTrue(response['success'])
+        self.assertEqual(response['errorKey'], 'NoError')
+        self.assertIsNotNone(response['data'])
+
 
     @order
     def test_user_user_can_get_specific_user_icon(self):
         """
         Testing if a user can get the userIcon of another user
 
-        Endpoint: GET:/v1/User/id/icon
+        Endpoint: GET:/v1/User/{id}/icon
         """
         response = get(f'{BASE_URL}v1/User/{citizen2_id}/icon', headers=auth(citizen1_token)).json()
         self.assertTrue(response['success'])
+        self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
 
     @order
@@ -604,22 +618,59 @@ class TestUserController(GIRAFTestCase):
         """
         Testing if a guardian can get the userIcon of another user
 
-        Endpoint: GET:/v1/User/id/icon
+        Endpoint: GET:/v1/User/{id}/icon
         """
         response = get(f'{BASE_URL}v1/User/{citizen2_id}/icon', headers=auth(guardian_token)).json()
         self.assertTrue(response['success'])
+        self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
 
     @order
     def test_user_superuser_can_get_specific_user_icon(self):
         """
-        Testing if a user can get the userIcon of another user
+        Testing if a superuser can get the userIcon of another user
 
-        Endpoint: GET:/v1/User/id/icon
+        Endpoint: GET:/v1/User/{id}/icon
         """
         response = get(f'{BASE_URL}v1/User/{citizen2_id}/icon', headers=auth(super_user_token)).json()
         self.assertTrue(response['success'])
+        self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
+
+    @order
+    def test_user_superuser_can_get_specific_user_icon(self):
+        """
+        Testing if a superuser can get the raw userIcon of another user
+
+        Endpoint: GET:/v1/User/{id}/icon/raw
+        """
+        response = get(f'{BASE_URL}v1/User/{citizen2_id}/icon/raw', headers=auth(super_user_token)).json()
+        self.assertTrue(response['success'])
+        self.assertEqual(response['errorKey'], 'NoError')
+        self.assertIsNotNone(response['data'])
+
+    @order
+    def test_user_superuser_can_delete_specific_user_icon(self):
+        """
+        Testing if a superuser can delete the userIcon of another user
+
+        Endpoint: DELETE:/v1/User/{id}/icon
+        """
+        response = delete(f'{BASE_URL}v1/User/{citizen2_id}/icon', headers=auth(super_user_token)).json()
+        self.assertTrue(response['success'])
+        self.assertEqual(response['errorKey'], 'NoError')
+        self.assertIsNotNone(response['data'])
+
+    @order
+    def test_user_guardian_add_relation_to_user(self):
+        """
+        Testing if guardian can add relation to existing citizen
+
+        Endpoint: POST:/v1/User/{userId}/citizens/{citizenId}
+        """
+        response = post(f'{BASE_URL}v1/User/{new_guardian_id}/citizens/{citizen2_id}', headers=auth(new_guardian_token)).json()
+        self.assertTrue(response['success'])
+        self.assertEqual(response['errorKey'], 'NoError')
 
     @order
     def test_user_delete_new_guardian(self):

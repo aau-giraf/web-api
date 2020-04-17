@@ -80,7 +80,7 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: POST:/v1/Account/login
         """
-        response = post(f'{BASE_URL}/v1/Account/login').json()
+        response = post(f'{BASE_URL}v1/Account/login').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -91,7 +91,7 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: POST:/v1/Account/register
         """
-        response = post(f'{BASE_URL}/v1/Account/register').json()
+        response = post(f'{BASE_URL}v1/Account/register').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -102,7 +102,7 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: DELETE:/v1/Account/user/{id}
         """
-        response = delete(f'{BASE_URL}/v1/Account/user/{self.user_Id}').json()
+        response = delete(f'{BASE_URL}v1/Account/user/{self.user_Id}').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -116,7 +116,7 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: POST:/v2/Activity/{user_id}/{weekplan_name}/{week_year}/{week_number}/{week_day_number}
         """
-        response = post(f'{BASE_URL}/v2/Activity/{self.user_Id}/{self.weekplan_Name}/{self.week_Year}/{self.week_Number}/{self.week_Day_Number}').json()
+        response = post(f'{BASE_URL}v2/Activity/{self.user_Id}/{self.weekplan_Name}/{self.week_Year}/{self.week_Number}/{self.week_Day_Number}').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -127,7 +127,7 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: DELETE:/v2/Activity/{user_id}/delete/{activity_id}
         """
-        response = delete(f'{BASE_URL}/v2/Activity/{self.user_Id}/delete/{self.activity_Id}').json()
+        response = delete(f'{BASE_URL}v2/Activity/{self.user_Id}/delete/{self.activity_Id}').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -138,7 +138,8 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: PATCH:/v2/Activity/{user_id}/update
         """
-        response = patch(f'{BASE_URL}/v2/Activity/{self.user_Id}/update').json()
+        data = {'pictogram': {'id': 6}, 'id': 1}
+        response = patch(f'{BASE_URL}v2/Activity/{self.user_Id}/update', json=data).json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -185,9 +186,9 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: GET:/v1/Department
         """
-        response = get(f'{BASE_URL}/v1/Department').json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'NotFound')
+        response = get(f'{BASE_URL}v1/Department').json()
+        self.assertTrue(response['success'])
+        self.assertEqual(response['errorKey'], 'NoError')
 
     @order
     def test_auth_GET_department_id_should_fail(self):
@@ -196,9 +197,9 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: GET:/v1/Department/{id}
         """
-        response = get(f'{BASE_URL}/v1/Department/{self.department_Id}').json()
+        response = get(f'{BASE_URL}v1/Department/{self.department_Id}').json()
         self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'NotFound')
+        self.assertEqual(response['errorKey'], 'UserNotFound')
 
     @order
     def test_auth_PUT_department_id_name_should_fail(self):
@@ -207,7 +208,7 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: PUT:/v1/Department/{id}/name
         """
-        response = put(f'{BASE_URL}/v1/Department/{self.department_Id}/name').json()
+        response = put(f'{BASE_URL}v1/Department/{self.department_Id}/name').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -218,7 +219,7 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: DELETE:/v1/Department/{id}
         """
-        response = delete(f'{BASE_URL}/v1/Department/{self.department_Id}').json()
+        response = delete(f'{BASE_URL}v1/Department/{self.department_Id}').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -254,7 +255,7 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: PUT:/v1/Error
         """
-        response = put(f'{BASE_URL}/v1/Error').json()
+        response = put(f'{BASE_URL}v1/Error').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -265,7 +266,7 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: DELETE:/v1/Error
         """
-        response = delete(f'{BASE_URL}/v1/Error').json()
+        response = delete(f'{BASE_URL}v1/Error').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -392,9 +393,9 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: GET:/v1/Status/version-info
         """
-        response = get(f'{BASE_URL}/v1/Status/version-info').json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'NotFound')
+        response = get(f'{BASE_URL}v1/Status/version-info').json()
+        self.assertTrue(response['success'])
+        self.assertEqual(response['errorKey'], 'NoError')
 
     """
     User endpoints
@@ -516,7 +517,7 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: GET:/v1/User/{id}
         """
-        response = get(f'{BASE_URL}/v1/User/{self.user_Id}').json()
+        response = get(f'{BASE_URL}v1/User/{self.user_Id}').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -527,7 +528,7 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: POST:/v1/User/{userId}/citizens/{citizenId}
         """
-        response = post(f'{BASE_URL}/v1/User/{self.user_Id}/citizens/{self.citizen_Id}').json()
+        response = post(f'{BASE_URL}v1/User/{self.user_Id}/citizens/{self.citizen_Id}').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -541,7 +542,7 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: GET:/v2/User/{userId}/week
         """
-        response = get(f'{BASE_URL}/v2/User/{self.user_Id}/week').json()
+        response = get(f'{BASE_URL}v2/User/{self.user_Id}/week').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -552,7 +553,7 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: GET:/v1/User/{userId}/week
         """
-        response = get(f'{BASE_URL}/v1/User/{self.user_Id}/week').json()
+        response = get(f'{BASE_URL}v1/User/{self.user_Id}/week').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -563,7 +564,7 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: GET:/v1/User/{userId}/week/{weekYear}/{weekNumber}
         """
-        response = get(f'{BASE_URL}/v1/User/{self.user_Id}/week/{self.week_Year}/{self.week_Number}').json()
+        response = get(f'{BASE_URL}v1/User/{self.user_Id}/week/{self.week_Year}/{self.week_Number}').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -574,7 +575,7 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: PUT:/v1/User/{userId}/week/{weekYear}/{weekNumber}
         """
-        response = put(f'{BASE_URL}/v1/User/{self.user_Id}/week/{self.week_Year}/{self.week_Number}').json()
+        response = put(f'{BASE_URL}v1/User/{self.user_Id}/week/{self.week_Year}/{self.week_Number}').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -585,7 +586,7 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: DELETE:/v1/User/{userId}/week/{weekYear}/{weekNumber}
         """
-        response = delete(f'{BASE_URL}/v1/User/{self.user_Id}/week/{self.week_Year}/{self.week_Number}').json()
+        response = delete(f'{BASE_URL}v1/User/{self.user_Id}/week/{self.week_Year}/{self.week_Number}').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -599,7 +600,7 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: GET:/v1/WeekTemplate
         """
-        response = get(f'{BASE_URL}/v1/WeekTemplate').json()
+        response = get(f'{BASE_URL}v1/WeekTemplate').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -610,7 +611,7 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: POST:/v1/WeekTemplate
         """
-        response = post(f'{BASE_URL}/v1/WeekTemplate').json()
+        response = post(f'{BASE_URL}v1/WeekTemplate').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -621,7 +622,7 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: GET:/v1/WeekTemplate/{id}
         """
-        response = get(f'{BASE_URL}/v1/WeekTemplate').json()
+        response = get(f'{BASE_URL}v1/WeekTemplate').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -632,7 +633,7 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: PUT:/v1/WeekTemplate/{id}
         """
-        response = put(f'{BASE_URL}/v1/WeekTemplate').json()
+        response = put(f'{BASE_URL}v1/WeekTemplate').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -643,7 +644,7 @@ class TestAuthorization(GIRAFTestCase):
 
         Endpoint: DELETE:/v1/WeekTemplate/{id}
         """
-        response = delete(f'{BASE_URL}/v1/WeekTemplate').json()
+        response = delete(f'{BASE_URL}v1/WeekTemplate').json()
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'NotFound')
 

@@ -94,8 +94,8 @@ class TestActivityController(GIRAFTestCase):
 
         Endpoint: PATCH:/v2/Activity/{user_id}/update
         """
-        data = {'pictogram': {'title': 'sandbox'}}
-        response = patch(f'{BASE_URL}v2/Activity/{user_id}/update', data=data,
+        data = {'pictogram': {'id': 6}, 'id': activity_id}
+        response = patch(f'{BASE_URL}v2/Activity/{user_id}/update', json=data,
                          headers=auth(guardian_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
