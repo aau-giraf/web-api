@@ -12,10 +12,10 @@ namespace GirafRest
         public long Id { get; set; }
 
         [Required]
-        public string ActivityId { get; set; }
+        public long ActivityId { get; set; }
 
         [Required]
-        public string PictogramId { get; set; }
+        public long PictogramId { get; set; }
 
         [ForeignKey("ActivityId")]
         public virtual Activity Activity { get; set; }

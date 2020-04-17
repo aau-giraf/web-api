@@ -96,7 +96,7 @@ namespace GirafRest.Services
                 .Include(u => u.WeekSchedule)
                 .ThenInclude(w => w.Weekdays)
                 .ThenInclude(wd => wd.Activities)
-                .ThenInclude(e => e.Pictogram)
+                .ThenInclude(e => e.Pictograms)
                 //And return it
                 .FirstOrDefaultAsync();
 

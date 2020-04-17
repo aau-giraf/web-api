@@ -15,9 +15,14 @@ namespace GirafRest.Models.DTOs
         public ActivityDTO(Activity weekdayResource)
         {
             this.Id = weekdayResource.Key;
-            this.Pictograms = new List<WeekPictogramDTO>();
             this.Order = weekdayResource.Order;
             this.State = weekdayResource.State;
+            this.Pictograms = new List<WeekPictogramDTO>();
+
+            foreach (var relation in weekdayResource.Pictograms)
+            {
+                this.Pictograms.Add(new WeekPictogramDTO(relation.Pictogram));
+            }
 
             if (weekdayResource.Timer != null)
             {

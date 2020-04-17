@@ -234,7 +234,7 @@ namespace GirafRest.Controllers
             _giraf._context.DepartmentResources.RemoveRange(depRessourceRelations);
 
             var pictogramRelations = _giraf._context.PictogramRelations
-                                                .Where(relation => relation.Id == pict.Id);
+                                                .Where(relation => relation.PictogramId == pict.Id);
 
             _giraf._context.PictogramRelations.RemoveRange(pictogramRelations);
 

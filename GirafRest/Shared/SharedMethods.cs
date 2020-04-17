@@ -5,6 +5,7 @@ using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
 using GirafRest.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 
 namespace GirafRest.Shared
 {
@@ -68,11 +69,20 @@ namespace GirafRest.Shared
             {
                 foreach (var activityDTO in from.Activities)
                 {
-                    var picto = await _giraf._context.Pictograms
-                        .Where(p => p.Id == activityDTO.Pictogram.Id).FirstOrDefaultAsync();
                     
-                    if (picto != null)
-                        to.Activities.Add(new Activity(to, picto, activityDTO.Order, activityDTO.State));
+                    List<Pictogram> pictograms = new List<Pictogram>();
+
+                    foreach (var pictogram in activityDTO.Pictograms)
+                    {
+                        var picto = await _giraf._context.Pictograms
+                            .Where(p => p.Id == pictogram.Id).FirstOrDefaultAsync();
+                        
+                        pictograms.Add(picto);
+
+                    }
+                    
+                    if (pictograms.Any())
+                        to.Activities.Add(new Activity(to, pictograms, activityDTO.Order, activityDTO.State));
                 }
             }
             return true;

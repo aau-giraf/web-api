@@ -7,6 +7,7 @@ using GirafRest.Services;
 using GirafRest.Test.Mocks;
 using Xunit;
 using static GirafRest.Test.UnitTestExtensions;
+using System.Collections.Generic;
 
 namespace GirafRest.Test
 {
@@ -41,19 +42,46 @@ namespace GirafRest.Test
 
         #region CreateActivity
         [Fact]
-        public void PostActivity_ValidDayValidDTO_Succes()
+        public void PostActivity_ValidDayValidDTOWithOnePictogram_Succes()
         {
             ActivityController ac = InitializeTest();
             GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             Week week = mockUser.WeekSchedule.First();
 
-            ActivityDTO newActivity = new ActivityDTO() { Pictogram = new WeekPictogramDTO(_testContext.MockPictograms.First()) };
+            ActivityDTO newActivity = new ActivityDTO() { Pictograms = new List<WeekPictogramDTO> { new WeekPictogramDTO(_testContext.MockPictograms.First()) }};
 
             var res = ac.PostActivity(newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Monday).Result;
 
+            List<long> expectedPictogramIds = newActivity.Pictograms.Select(pictogram => pictogram.Id).ToList();
+            List<long> actualPictogramIds = res.Data.Pictograms.Select(pictogram => pictogram.Id).ToList();
+
             Assert.True(res.Success);
-            Assert.Equal(newActivity.Pictogram.Id, res.Data.Pictogram.Id);
+            Assert.Equal(expectedPictogramIds, actualPictogramIds);
+        }
+
+        [Fact]
+        public void PostActivity_ValidDayValidDTOWithMultiplePictograms_Success()
+        {
+            ActivityController ac = InitializeTest();
+            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+            Week week = mockUser.WeekSchedule.First();
+
+            ActivityDTO newActivity = new ActivityDTO() { 
+                Pictograms = new List<WeekPictogramDTO> { 
+                    new WeekPictogramDTO(_testContext.MockPictograms.First()),
+                    new WeekPictogramDTO(_testContext.MockPictograms.Last()),
+                }
+            };
+
+            var res = ac.PostActivity(newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Monday).Result;
+
+            List<long> expectedPictogramIds = newActivity.Pictograms.Select(pictogram => pictogram.Id).ToList();
+            List<long> actualPictogramIds = res.Data.Pictograms.Select(pictogram => pictogram.Id).ToList();
+
+            Assert.True(res.Success);
+            Assert.Equal(expectedPictogramIds, actualPictogramIds);
         }
 
         [Fact]
@@ -64,12 +92,15 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             Week week = mockUser.WeekSchedule.First();
 
-            ActivityDTO newActivity = new ActivityDTO() { Pictogram = new WeekPictogramDTO(_testContext.MockPictograms.First()) };
+            ActivityDTO newActivity = new ActivityDTO() { Pictograms = new List<WeekPictogramDTO> { new WeekPictogramDTO(_testContext.MockPictograms.First()) }};
 
             var res = ac.PostActivity(newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Saturday).Result;
 
+            List<long> expectedPictogramIds = newActivity.Pictograms.Select(pictogram => pictogram.Id).ToList();
+            List<long> actualPictogramIds = res.Data.Pictograms.Select(pictogram => pictogram.Id).ToList();
+
             Assert.True(res.Success);
-            Assert.Equal(newActivity.Pictogram.Id, res.Data.Pictogram.Id);
+            Assert.Equal(expectedPictogramIds, actualPictogramIds);
         }
 
         [Fact]
@@ -96,7 +127,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             Week week = mockUser.WeekSchedule.First();
 
-            ActivityDTO newActivity = new ActivityDTO() { Pictogram = new WeekPictogramDTO(_testContext.MockPictograms.First()) };
+            ActivityDTO newActivity = new ActivityDTO() { Pictograms = new List<WeekPictogramDTO> { new WeekPictogramDTO(_testContext.MockPictograms.First()) }};
 
             var res = ac.PostActivity(newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Sunday + 1).Result;
 
@@ -112,7 +143,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             Week week = mockUser.WeekSchedule.First();
 
-            ActivityDTO newActivity = new ActivityDTO() { Pictogram = new WeekPictogramDTO(_testContext.MockPictograms.First()) };
+            ActivityDTO newActivity = new ActivityDTO() { Pictograms = new List<WeekPictogramDTO> { new WeekPictogramDTO(_testContext.MockPictograms.First()) }};
 
             var res = ac.PostActivity(newActivity, mockUser.Id, week.Name, 9000, week.WeekNumber, (int)Days.Sunday).Result;
 
@@ -128,7 +159,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             Week week = mockUser.WeekSchedule.First();
 
-            ActivityDTO newActivity = new ActivityDTO() { Pictogram = new WeekPictogramDTO(_testContext.MockPictograms.First()) };
+            ActivityDTO newActivity = new ActivityDTO() { Pictograms = new List<WeekPictogramDTO> { new WeekPictogramDTO(_testContext.MockPictograms.First()) }};
 
             var res = ac.PostActivity(newActivity, mockUser.Id, week.Name, week.WeekYear, 54, (int)Days.Sunday).Result;
 
@@ -144,7 +175,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             Week week = mockUser.WeekSchedule.First();
 
-            ActivityDTO newActivity = new ActivityDTO() { Pictogram = new WeekPictogramDTO(_testContext.MockPictograms.First()) };
+            ActivityDTO newActivity = new ActivityDTO() { Pictograms = new List<WeekPictogramDTO> { new WeekPictogramDTO(_testContext.MockPictograms.First()) }};
 
             var res = ac.PostActivity(newActivity, mockUser.Id, "WrongName", week.WeekYear, week.WeekYear, (int)Days.Sunday).Result;
 
@@ -160,7 +191,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             Week week = mockUser.WeekSchedule.First();
 
-            ActivityDTO newActivity = new ActivityDTO() { Pictogram = new WeekPictogramDTO(_testContext.MockPictograms.First()) };
+            ActivityDTO newActivity = new ActivityDTO() { Pictograms = new List<WeekPictogramDTO> { new WeekPictogramDTO(_testContext.MockPictograms.First()) }};
 
             var res = ac.PostActivity(newActivity, "NonExistingUserId", week.Name, week.WeekYear, week.WeekNumber, (int)Days.Sunday).Result;
 
@@ -177,7 +208,7 @@ namespace GirafRest.Test
             GirafUser differentMockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
             Week week = differentMockUser.WeekSchedule.First();
 
-            ActivityDTO newActivity = new ActivityDTO() { Pictogram = new WeekPictogramDTO(_testContext.MockPictograms.First()) };
+            ActivityDTO newActivity = new ActivityDTO() { Pictograms = new List<WeekPictogramDTO> { new WeekPictogramDTO(_testContext.MockPictograms.First()) }};
 
             var res = ac.PostActivity(newActivity, differentMockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Sunday).Result;
 
@@ -194,7 +225,7 @@ namespace GirafRest.Test
             GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
 
-            //There exist an acitivity with the id
+            // There exist an acitivity with the id
             Assert.True(_testContext.MockActivities.Any(a => a.Key == _existingId));
 
             Response res = activityController.DeleteActivity(mockUser.Id, _existingId).Result;
@@ -295,7 +326,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             GirafUser differentMockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
 
-            ActivityDTO newActivity = new ActivityDTO() { Pictogram = new WeekPictogramDTO(_testContext.MockPictograms.First()) };
+            ActivityDTO newActivity = new ActivityDTO() { Pictograms = new List<WeekPictogramDTO> { new WeekPictogramDTO(_testContext.MockPictograms.First()) }};
 
             var res = ac.UpdateActivity(newActivity, differentMockUser.Id).Result;
 
@@ -310,12 +341,42 @@ namespace GirafRest.Test
             GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE]; 
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
 
-            ActivityDTO newActivity = new ActivityDTO() { Id = _testContext.MockActivities.First().Key, Pictogram = new WeekPictogramDTO(_testContext.MockPictograms.First()) };
+            ActivityDTO newActivity = new ActivityDTO() { 
+                Id = _testContext.MockActivities.First().Key, 
+                Pictograms = new List<WeekPictogramDTO> { new WeekPictogramDTO(_testContext.MockPictograms.First()) }
+            };
 
             var res = ac.UpdateActivity(newActivity, mockUser.Id).Result;
 
+            List<long> expectedPictogramIds = newActivity.Pictograms.Select(pictogram => pictogram.Id).ToList();
+            List<long> actualPictogramIds = res.Data.Pictograms.Select(pictogram => pictogram.Id).ToList();
+
             Assert.True(res.Success);
-            Assert.Equal(newActivity.Pictogram.Id, res.Data.Pictogram.Id);
+            Assert.Equal(expectedPictogramIds, actualPictogramIds);
+        }
+
+        [Fact]
+        public void UpdateActivity_ValidActivityValidDTOWithMulitplePictograms_Success()
+        {
+            ActivityController ac = InitializeTest();
+            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE]; 
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+
+            ActivityDTO newActivity = new ActivityDTO() { 
+                Id = _testContext.MockActivities.First().Key, 
+                Pictograms = new List<WeekPictogramDTO> { 
+                    new WeekPictogramDTO(_testContext.MockPictograms.First()),
+                    new WeekPictogramDTO(_testContext.MockPictograms.Last())
+                }
+            };
+
+            var res = ac.UpdateActivity(newActivity, mockUser.Id).Result;
+
+            List<long> expectedPictogramIds = newActivity.Pictograms.Select(pictogram => pictogram.Id).ToList();
+            List<long> actualPictogramIds = res.Data.Pictograms.Select(pictogram => pictogram.Id).ToList();
+
+            Assert.True(res.Success);
+            Assert.Equal(expectedPictogramIds, actualPictogramIds);
         }
         #endregion
     }

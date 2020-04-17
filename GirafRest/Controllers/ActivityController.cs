@@ -67,9 +67,15 @@ namespace GirafRest.Controllers
             int order = dbWeekDay.Activities.Select(act => act.Order).DefaultIfEmpty(0).Max();
             order++;
 
+            List<Pictogram> pictograms = new List<Pictogram>();
+            foreach (var pictogram in newActivity.Pictograms)
+            {
+                pictograms.Add(new Pictogram() {Id = pictogram.Id});
+            }
+
             Activity dbActivity = new Activity(
                 dbWeekDay, 
-                newActivity.Pictograms,
+                pictograms,
                 order,
                 ActivityState.Normal
             );
@@ -102,6 +108,12 @@ namespace GirafRest.Controllers
                 return new ErrorResponse(ErrorCode.ActivityNotFound);
 
             Activity targetActivity = _giraf._context.Activities.First(act => act.Key == activityId);
+
+            // deletion of pictogram relations
+            var pictogramRelations = _giraf._context.PictogramRelations
+                                                .Where(relation => relation.ActivityId == targetActivity.Key);
+
+            _giraf._context.PictogramRelations.RemoveRange(pictogramRelations);
 
             _giraf._context.Activities.Remove(targetActivity);
             await _giraf._context.SaveChangesAsync();
@@ -142,7 +154,16 @@ namespace GirafRest.Controllers
 
             updateActivity.Order = activity.Order;
             updateActivity.State = activity.State;
-            updateActivity.PictogramKey = activity.Pictogram.Id;
+
+            List<Pictogram> newPictogramList = new List<Pictogram>();
+
+            foreach (var pictogram in activity.Pictograms) 
+            {
+                newPictogramList.Add(new Pictogram() {Id = pictogram.Id});
+            }
+
+            updateActivity.Pictograms.Clear();
+            updateActivity.AddPictograms(newPictogramList);
 
             if (activity.Timer != null)
             {
@@ -188,7 +209,7 @@ namespace GirafRest.Controllers
 
             await _giraf._context.SaveChangesAsync();
 
-            return new Response<ActivityDTO>(new ActivityDTO(updateActivity, activity.Pictogram));
+            return new Response<ActivityDTO>(new ActivityDTO(updateActivity, activity.Pictograms.ToList()));
         }
     }
 }

@@ -1,0 +1,19 @@
+{
+  "data": {
+    "departmentKey": 1,
+    "id": 1,
+    "thumbnail": {
+      "id": 1,
+      "lastEdit": "2020-04-15T11:41:46.34003Z",
+      "title": "Epik",
+      "accessLevel": 1,
+      "imageHash": "secure hash",
+      "imageUrl": "/v1/pictogram/1/image/raw"
+    },
+    "name": "SkabelonUge",
+    "days": []
+  },
+  "success": true,
+  "errorProperties": [],
+  "errorKey": "NoError"
+}

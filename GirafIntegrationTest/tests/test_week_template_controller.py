@@ -21,15 +21,15 @@ class TestWeekTemplateController(GIRAFTestCase):
         super(TestWeekTemplateController, cls).setUpClass()
         print(f'file:/{__file__}\n')
         cls.TEMPLATES = [{'thumbnail': {'id': 28}, 'name': 'Template1', 'days':
-                         [{'day': 'Monday', 'activities': [{'pictogram': {'id': 1}, 'order': 0, 'state': 'Active'},
-                                                           {'pictogram': {'id': 6}, 'order': 0, 'state': 'Active'}]},
-                         {'day': 'Friday', 'activities': [{'pictogram': {'id': 2}, 'order': 0, 'state': 'Active'},
-                                                          {'pictogram': {'id': 7}, 'order': 0, 'state': 'Active'}]}]},
+                         [{'day': 'Monday', 'activities': [{'pictograms': [{'id': 1}], 'order': 0, 'state': 'Active'},
+                                                           {'pictograms': [{'id': 6}], 'order': 0, 'state': 'Active'}]},
+                         {'day': 'Friday', 'activities': [{'pictograms': [{'id': 2}], 'order': 0, 'state': 'Active'},
+                                                          {'pictograms': [{'id': 7}], 'order': 0, 'state': 'Active'}]}]},
                          {'thumbnail': {'id': 29}, 'name': 'Template2', 'days':
-                         [{'day': 'Monday', 'activities': [{'pictogram': {'id': 2}, 'order': 1, 'state': 'Active'},
-                                                           {'pictogram': {'id': 7}, 'order': 2, 'state': 'Active'}]},
-                          {'day': 'Friday', 'activities': [{'pictogram': {'id': 3}, 'order': 1, 'state': 'Active'},
-                                                           {'pictogram': {'id': 8}, 'order': 2, 'state': 'Active'}]}]}]
+                         [{'day': 'Monday', 'activities': [{'pictograms': [{'id': 2}], 'order': 1, 'state': 'Active'},
+                                                           {'pictograms': [{'id': 7}], 'order': 2, 'state': 'Active'}]},
+                          {'day': 'Friday', 'activities': [{'pictograms': [{'id': 3}], 'order': 1, 'state': 'Active'},
+                                                           {'pictograms': [{'id': 8}], 'order': 2, 'state': 'Active'}]}]}]
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -109,7 +109,7 @@ class TestWeekTemplateController(GIRAFTestCase):
         self.assertEqual(1, response['data']['thumbnail']['id'])
         self.assertEqual(1, response['data']['days'][0]['day'])
         self.assertEqual(6, response['data']['days'][5]['day'])
-        self.assertEqual(70, response['data']['days'][4]['activities'][1]['pictogram']['id'])
+        self.assertEqual(70, response['data']['days'][4]['activities'][1]['pictograms'][0]['id'])
 
     @order
     def test_week_template_can_get_template_outside_department_should_fail(self):
@@ -148,8 +148,8 @@ class TestWeekTemplateController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
         self.assertEqual(28, response['data']['thumbnail']['id'])
-        self.assertEqual(6, response['data']['days'][0]['activities'][1]['pictogram']['id'])
-        self.assertEqual(7, response['data']['days'][1]['activities'][1]['pictogram']['id'])
+        self.assertEqual(6, response['data']['days'][0]['activities'][1]['pictograms'][0]['id'])
+        self.assertEqual(7, response['data']['days'][1]['activities'][1]['pictograms'][0]['id'])
 
     @order
     def test_week_template_can_update_template(self):
@@ -175,8 +175,8 @@ class TestWeekTemplateController(GIRAFTestCase):
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
         self.assertEqual(29, response['data']['thumbnail']['id'])
-        self.assertEqual(7, response['data']['days'][0]['activities'][1]['pictogram']['id'])
-        self.assertEqual(8, response['data']['days'][1]['activities'][1]['pictogram']['id'])
+        self.assertEqual(7, response['data']['days'][0]['activities'][1]['pictograms'][0]['id'])
+        self.assertEqual(8, response['data']['days'][1]['activities'][1]['pictograms'][0]['id'])
 
     @order
     def test_week_template_can_delete_template(self):
