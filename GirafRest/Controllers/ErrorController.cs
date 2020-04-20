@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace GirafRest.Controllers
 {
+    /// <summary>
+    /// Handles errors
+    /// </summary>
     [Route("v1/[controller]")]
     public class ErrorController : Controller
     {

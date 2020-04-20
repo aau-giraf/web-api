@@ -7,21 +7,66 @@ using Newtonsoft.Json;
 
 namespace GirafRest.Models
 {
+    /// <summary>
+    /// Possible days; 1 for Monday
+    /// </summary>
+    public enum Days {
+        /// <summary>
+        /// Monday as 1
+        /// </summary>
+        Monday = 1,
+        /// <summary>
+        /// Tuesday as 2
+        /// </summary>
+        Tuesday = 2,
+        /// <summary>
+        /// Wednesday as 3
+        /// </summary>
+        Wednesday = 3,
+        /// <summary>
+        /// Thursday as 4
+        /// </summary>
+        Thursday = 4,
+        /// <summary>
+        /// Friday as 5
+        /// </summary>
+        Friday = 5,
+        /// <summary>
+        /// Saturday as 6
+        /// </summary>
+        Saturday = 6,
+        /// <summary>
+        /// Sunday as 7
+        /// </summary>
+        Sunday = 7
+    };
 
-    public enum Days { Monday = 1, Tuesday = 2, Wednesday = 3, Thursday = 4, Friday = 5, Saturday = 6, Sunday = 7};
-
+    /// <summary>
+    /// Weekday Model as concrete day for a weekplan, with activities
+    /// </summary>
     public class Weekday
     {
-
+        /// <summary>
+        /// Primary key
+        /// </summary>
         [Column("id")]
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
 
+        /// <summary>
+        /// Day of the week Enum
+        /// </summary>
         public Days Day { get; set; }
 
+        /// <summary>
+        /// List of activities in the given weekday
+        /// </summary>
         public ICollection<Activity> Activities { get; set; }
 
+        /// <summary>
+        /// Constructor with including activities
+        /// </summary>
         public Weekday(Days day, List<Pictogram> activityIcons, List<ActivityState> activityStates) : this()
         {
             if (activityIcons.Count != activityStates.Count)
@@ -38,6 +83,10 @@ namespace GirafRest.Models
             }
         }
 
+        /// <summary>
+        /// Constructor for specific WeekdayDTO
+        /// </summary>
+        /// <param name="day"></param>
         public Weekday(WeekdayDTO day) : this()
         {
             Day = day.Day;
@@ -45,7 +94,7 @@ namespace GirafRest.Models
         }
 
         /// <summary>
-        /// DO NOT DELETE
+        /// Used for JSON Generation
         /// </summary>
         public Weekday()
         {

@@ -4,8 +4,15 @@ using System.Collections.Generic;
 
 namespace GirafRest.Migrations
 {
+    /// <summary>
+    /// Removes Image column from Pictograms, and adds a ImageHash.
+    /// </summary>
     public partial class RemoveImageColumn : Migration
     {
+        /// <summary>
+        /// Run migration here
+        /// </summary>
+        /// <param name="migrationBuilder">Which MigrationBuilder to use</param>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
@@ -18,6 +25,10 @@ namespace GirafRest.Migrations
                 nullable: true);
         }
 
+        /// <summary>
+        /// Rollback migration here
+        /// </summary>
+        /// <param name="migrationBuilder">Which MigrationBuilder to use</param>
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(

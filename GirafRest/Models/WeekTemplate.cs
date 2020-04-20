@@ -8,8 +8,14 @@ using System.Threading.Tasks;
 
 namespace GirafRest.Models
 {
+    /// <summary>
+    /// Week template for a week in a given department
+    /// </summary>
     public class WeekTemplate : WeekBase
     {
+        /// <summary>
+        /// Reference to the owning department
+        /// </summary>
         [ForeignKey("Department")]
         public long DepartmentKey { get; set; }
         
@@ -19,7 +25,7 @@ namespace GirafRest.Models
         public virtual Department Department { get; set; }
 
         /// <summary>
-        /// DO NOT DELETE
+        /// Empty contructor is used for NewtonSoft JSON generation.
         /// </summary>
         public WeekTemplate()
         {

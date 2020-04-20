@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace GirafRest.Models.DTOs.AccountDTOs
 {
+    /// <summary>
+    /// DTO Used for changing password
+    /// </summary>
     public class ChangePasswordDTO
     {
         /// <summary>
