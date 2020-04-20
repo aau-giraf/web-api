@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design.Serialization;
 using System.Linq;
@@ -326,6 +327,12 @@ namespace GirafRest.Test
             {
                 get
                 {
+                    Weekday monday = new Weekday() {
+                        Day = Days.Monday,
+                    };
+                    Activity activity = new Activity(monday, 0, ActivityState.Active);
+                    monday.Activities = new List<Activity>() {activity};
+                    
                     if (_mockWeekTemplates == null) {
                         _mockWeekTemplates = new List<WeekTemplate>()
                         {
@@ -335,12 +342,7 @@ namespace GirafRest.Test
                                 Id = 1,
                                 Name = "Template1",
                                 Weekdays = new List<Weekday>(){
-                                    new Weekday(){
-                                        Day = Days.Monday,
-                                        Activities = new List<Activity>(){
-                                            new Activity()
-                                        }
-                                    },
+                                    monday,
                                     new Weekday(){
                                         Day = Days.Tuesday
                                     },
