@@ -12,6 +12,7 @@ using GirafRest.Services;
 using Microsoft.AspNetCore.Identity;
 using GirafRest.Extensions;
 using System;
+using Microsoft.AspNetCore.Http;
 
 namespace GirafRest.Controllers
 {
@@ -48,17 +49,18 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Get request for getting all the department names.
         /// </summary>
-        /// <returns>A list of department names, returns NotFound if no departments in the system</returns>
+        /// <returns> A list of department names, returns NotFound if no departments in the system</returns>
         [HttpGet("")]
-        public async Task<Response<List<DepartmentNameDTO>>> Get()
+        [ProducesResponseType(typeof(MyResponse<List<DepartmentNameDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> Get()
         {
-
             var departmentNameDTOs = await _giraf._context.Departments.Select(d => new DepartmentNameDTO(d.Key, d.Name)).ToListAsync();
 
             if (departmentNameDTOs.Count == 0)
-                return new ErrorResponse<List<DepartmentNameDTO>>(ErrorCode.NotFound);
+                return NotFound(new RESTError(ErrorCode.NotFound, "No departments found"));
 
-            return new Response<List<DepartmentNameDTO>>(departmentNameDTOs);
+            return Ok(new MyResponse<List<DepartmentNameDTO>>(departmentNameDTOs));
         }
 
         /// <summary>
@@ -67,17 +69,20 @@ namespace GirafRest.Controllers
         /// <param name="id">The id of the <see cref="Department"/> to retrieve.</param>
         /// <returns>The department as a DepartmentDTO if success else UserNotfound, NotAuthorised or NotFound</returns>
         [HttpGet("{id}")]
-        public async Task<Response<DepartmentDTO>> Get(long id)
+        [ProducesResponseType(typeof(MyResponse<DepartmentDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> Get(long id)
         {
             var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
 
             if (currentUser == null)
-                return new ErrorResponse<DepartmentDTO>(ErrorCode.UserNotFound);
+                return NotFound(new RESTError(ErrorCode.UserNotFound, "User not found"));
                   
             var isSuperUser = await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser);
 
             if (currentUser?.DepartmentKey != id && !isSuperUser)
-                return new ErrorResponse<DepartmentDTO>(ErrorCode.NotAuthorized);
+                return StatusCode(StatusCodes.Status403Forbidden, new RESTError(ErrorCode.NotAuthorized, "User does not have permission"));
             
             //.Include is used to get information on members aswell when getting the Department
             var department = _giraf._context.Departments
@@ -89,10 +94,10 @@ namespace GirafRest.Controllers
                 .FirstOrDefaultAsync();
 
             if (depa == null)
-                return new ErrorResponse<DepartmentDTO>(ErrorCode.NotFound);
+                return NotFound(new RESTError(ErrorCode.NotFound, "Department not found"));
 
             var members = DepartmentDTO.FindMembers(depa.Members, _roleManager, _giraf);
-            return new Response<DepartmentDTO>(new DepartmentDTO(depa, members));
+            return Ok(new MyResponse<DepartmentDTO>(new DepartmentDTO(depa, members)));
         }
 
         /// <summary>

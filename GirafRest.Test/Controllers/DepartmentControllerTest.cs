@@ -11,6 +11,8 @@ using Xunit.Abstractions;
 using System.Linq;
 using GirafRest.Services;
 using static GirafRest.Test.UnitTestExtensions.TestContext;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
 namespace GirafRest.Test
 {
@@ -90,16 +92,16 @@ namespace GirafRest.Test
         public void Get_AllDepartmentNames_Success()
         {
             var dc = initializeTest();
-            var res = dc.Get().Result;
+            var res = dc.Get().Result as ObjectResult;
+            var body = res.Value as MyResponse<List<DepartmentNameDTO>>;
 
-            Assert.True(res.Success);
-            Assert.Equal(res.ErrorCode, ErrorCode.NoError);
+            Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             // check data
-            Assert.Equal(_testContext.MockDepartments.Count(), res.Data.Count());
-            for (int i = 0; i < res.Data.Count; i++)
+            Assert.Equal(_testContext.MockDepartments.Count(), body.Data.Count());
+            for (int i = 0; i < body.Data.Count; i++)
             {
-                Assert.Equal(_testContext.MockDepartments[i].Name, res.Data[i].Name);
-                Assert.Equal(_testContext.MockDepartments[i].Key, res.Data[i].ID);
+                Assert.Equal(_testContext.MockDepartments[i].Name, body.Data[i].Name);
+                Assert.Equal(_testContext.MockDepartments[i].Key, body.Data[i].ID);
             }
         }
 
@@ -108,10 +110,11 @@ namespace GirafRest.Test
         {
             var dc = initializeTest();
             AddEmptyDepartmentList();
-            var res = dc.Get().Result;
+            var res = dc.Get().Result as ObjectResult;
+            var body = res.Value as RESTError;
 
-            Assert.False(res.Success);
-            Assert.Equal(res.ErrorCode, ErrorCode.NotFound);
+            Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
+            Assert.Equal(ErrorCode.NotFound, body.ErrorCode);
         }
 
         #endregion
