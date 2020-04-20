@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GirafRest.Shared
 {
+    /// <summary>
+    /// Shared static class for helper methods
+    /// </summary>
     public static class SharedMethods
     {
         /// <summary>
@@ -47,7 +50,7 @@ namespace GirafRest.Shared
                 week.UpdateDay(wkDay);
             }
 
-            //All week days that were not specified in the new schedule, but existed before
+            // All week days that were not specified in the new schedule, but existed before
             var toBeDeleted = week.Weekdays.Where(wd => !weekDTO.Days.Any(d => d.Day == wd.Day)).ToList();
             foreach (var deletedDay in toBeDeleted)
             {
@@ -56,13 +59,14 @@ namespace GirafRest.Shared
 
             return null;
         }
-        
+
         /// <summary>
         /// Take pictograms and choices from DTO and add them to weekday object.
         /// </summary>
         /// <returns>True if all pictograms and choices were found and added, and false otherwise.</returns>
         /// <param name="to">Pictograms and choices will be added to this object.</param>
         /// <param name="from">Pictograms and choices will be read from this object.</param>
+        /// <param name="_giraf">IGirafService for injection.</param>
         private static async Task<bool> AddPictogramsToWeekday(Weekday to, WeekdayDTO from, IGirafService _giraf){
             if(from.Activities != null) 
             {

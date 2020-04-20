@@ -11,10 +11,19 @@ namespace GirafRest
     /// </summary>
     public interface IAuthenticationService
     {
+        /// <summary>
+        /// Database context
+        /// </summary>
         GirafDbContext _context { get; }
 
+        /// <summary>
+        /// Role Manager to be used
+        /// </summary>
         RoleManager<GirafRole> _roleManager { get; }
 
+        /// <summary>
+        /// User manager to be used.
+        /// </summary>
         UserManager<GirafUser> _userManager { get; }
 
         /// <summary>
