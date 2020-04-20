@@ -11,7 +11,36 @@
       "imageUrl": "/v1/pictogram/1/image/raw"
     },
     "name": "SkabelonUge",
-    "days": []
+    "days": [
+      {
+        "day": 1,
+        "activities": []
+      },
+      {
+        "day": 2,
+        "activities": []
+      },
+      {
+        "day": 3,
+        "activities": []
+      },
+      {
+        "day": 4,
+        "activities": []
+      },
+      {
+        "day": 5,
+        "activities": []
+      },
+      {
+        "day": 6,
+        "activities": []
+      },
+      {
+        "day": 7,
+        "activities": []
+      }
+    ]
   },
   "success": true,
   "errorProperties": [],

@@ -336,7 +336,10 @@ namespace GirafRest.Test
                                 Name = "Template1",
                                 Weekdays = new List<Weekday>(){
                                     new Weekday(){
-                                        Day = Days.Monday
+                                        Day = Days.Monday,
+                                        Activities = new List<Activity>(){
+                                            new Activity()
+                                        }
                                     },
                                     new Weekday(){
                                         Day = Days.Tuesday

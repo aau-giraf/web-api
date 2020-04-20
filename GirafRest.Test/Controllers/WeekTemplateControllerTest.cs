@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Moq;
 using static GirafRest.Test.UnitTestExtensions.TestContext;
+using Newtonsoft.Json;
 
 
 namespace GirafRest.Test
@@ -136,6 +137,8 @@ namespace GirafRest.Test
             Assert.Equal("Template1", result.Data.Name);
             Assert.Contains(Days.Wednesday, result.Data.Days.Select(d => d.Day));
             Assert.DoesNotContain(Days.Friday, result.Data.Days.Select(d => d.Day));
+            string json = JsonConvert.SerializeObject(result.Data);
+            System.Console.WriteLine(json);
         }
 
         #endregion
