@@ -1,3 +1,5 @@
+import json
+
 from requests import get, post, put, delete
 import time
 from testlib import order, BASE_URL, auth, GIRAFTestCase

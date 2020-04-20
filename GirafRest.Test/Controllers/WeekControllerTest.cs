@@ -116,7 +116,6 @@ namespace GirafRest.Test
             Assert.Equal(adminDepOneWeekZeroSchedule?.Name, res.Data.Name);
             Assert.Equal(adminDepOneWeekZeroSchedule?.WeekYear, res.Data.WeekYear);
             Assert.Equal(adminDepOneWeekZeroSchedule?.WeekNumber, res.Data.WeekNumber);
-            System.Console.WriteLine(JsonConvert.SerializeObject(res.Data));
         }
 
         [Fact]
