@@ -43,6 +43,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// The display name of the user.
         /// </summary>
+        //TODO: Might need to be Required
         public string ScreenName { get; set; }
 
         /// <summary>
