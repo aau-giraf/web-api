@@ -21,6 +21,7 @@ namespace GirafRest.Models.DTOs.AccountDTOs
         /// The users DisplayName
         /// </summary>
         //TODO: Add required
+        [Required]
         public string DisplayName { get; set; }
 
         /// <summary>

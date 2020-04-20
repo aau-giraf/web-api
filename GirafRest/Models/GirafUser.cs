@@ -92,9 +92,10 @@ namespace GirafRest.Models
         }
 
         //TODO: Add Display name to Contructor maybe?
-        public GirafUser(string userName, Department department, GirafRoles role) : base(userName)
+        public GirafUser(string userName, string displayName, Department department, GirafRoles role) : base(userName)
         {
             InitialiseData(role);
+            DisplayName = displayName;
             DepartmentKey = department?.Key ?? -1;
         }
 
