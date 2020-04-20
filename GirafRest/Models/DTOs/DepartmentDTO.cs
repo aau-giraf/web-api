@@ -50,7 +50,7 @@ namespace GirafRest.Models.DTOs
         {
             return new List<UserNameDTO>(
                 users.Select(m => new UserNameDTO(
-                        m.UserName,
+                        m.DisplayName,
                         roleManager.findUserRole(girafService._userManager, m).Result,
                         m.Id
                     )

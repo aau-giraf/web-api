@@ -381,7 +381,7 @@ namespace GirafRest.Controllers
             foreach (var citizen in user.Citizens)
             {
                 var girafUser = _giraf._context.Users.FirstOrDefault(u => u.Id == citizen.CitizenId);
-                citizens.Add(new UserNameDTO { UserId = girafUser.Id, UserName = girafUser.UserName });
+                citizens.Add(new UserNameDTO { UserId = girafUser.Id, UserName = girafUser.DisplayName });
             }
 
             if (!citizens.Any())
@@ -418,7 +418,7 @@ namespace GirafRest.Controllers
             foreach (var guardian in user.Guardians)
             {
                 var girafUser = _giraf._context.Users.FirstOrDefault(u => u.Id == guardian.GuardianId);
-                guardians.Add(new UserNameDTO { UserId = girafUser.Id, UserName = girafUser.UserName });
+                guardians.Add(new UserNameDTO { UserId = girafUser.Id, UserName = girafUser.DisplayName });
             }
 
             if (!guardians.Any())

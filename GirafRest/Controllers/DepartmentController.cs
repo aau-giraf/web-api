@@ -124,7 +124,7 @@ namespace GirafRest.Controllers
             var usersNamesInDepartment = _giraf._context.Users
                 .Where(u => userIds.Any(ui => ui == u.Id) && u.DepartmentKey == department.Key)
                 .Select(u =>
-                    new UserNameDTO(u.UserName, GirafRoles.Citizen, u.Id)
+                    new UserNameDTO(u.DisplayName, GirafRoles.Citizen, u.Id)
                 ).ToList();
 
             return new Response<List<UserNameDTO>>(usersNamesInDepartment);
