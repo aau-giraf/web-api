@@ -72,7 +72,7 @@ namespace GirafRest.Test
                 ActivitiesCount = 5,
                 NrOfDaysToDisplay = 5,
                 GreyScale = true,
-                ShowTimerBtns = true}
+                LockTimerControl = true}
             };
 
             return usercontroller;
@@ -987,7 +987,7 @@ namespace GirafRest.Test
             Assert.Equal(5, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.ActivitiesCount);
             Assert.Equal(5, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.NrOfDaysToDisplay);
             Assert.True(_testContext.MockUsers[CITIZEN_DEP_TWO].Settings.GreyScale);
-            Assert.True(_testContext.MockUsers[CITIZEN_DEP_TWO].Settings.ShowTimerBtns);
+            Assert.True(_testContext.MockUsers[CITIZEN_DEP_TWO].Settings.LockTimerControl);
         }
 
         [Theory]

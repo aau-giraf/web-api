@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GirafRest.Migrations
 {
     [DbContext(typeof(GirafDbContext))]
-    [Migration("20200420110612_AddedShowTimerBtnsVariable")]
-    partial class AddedShowTimerBtnsVariable
+    [Migration("20200420122927_LockTimerControl")]
+    partial class LockTimerControl
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -233,6 +233,8 @@ namespace GirafRest.Migrations
                     b.Property<int>("DefaultTimer");
 
                     b.Property<bool>("GreyScale");
+
+                    b.Property<bool>("LockTimerControl");
 
                     b.Property<int?>("NrOfDaysToDisplay");
 

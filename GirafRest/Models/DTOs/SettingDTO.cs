@@ -59,7 +59,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// Flag for indicating wether or not timer buttons is enabled
         /// </summary>
-        public bool ShowTimerBtns { get; set; }
+        public bool LockTimerControl { get; set; }
 
         public List<WeekDayColorDTO>  WeekDayColors {get; set;}
         /// <summary>
@@ -77,7 +77,7 @@ namespace GirafRest.Models.DTOs
             this.Theme = options.Theme;
             this.NrOfDaysToDisplay = options.NrOfDaysToDisplay;
             this.GreyScale = options.GreyScale;
-            this.ShowTimerBtns = options.ShowTimerBtns;
+            this.LockTimerControl = options.LockTimerControl;
             this.WeekDayColors = SetWeekDayColorsFromModel(options.WeekDayColors);
         }
 

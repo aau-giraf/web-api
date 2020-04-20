@@ -232,6 +232,8 @@ namespace GirafRest.Migrations
 
                     b.Property<bool>("GreyScale");
 
+                    b.Property<bool>("LockTimerControl");
+
                     b.Property<int?>("NrOfDaysToDisplay");
 
                     b.Property<int>("Orientation");

@@ -31,21 +31,21 @@ class TestUserController(GIRAFTestCase):
         print(f'file:/{__file__}\n')
         cls.GRAYSCALE_THEME = {'orientation': 1, 'completeMark': 2, 'cancelMark': 2, 'defaultTimer': 2,
                                'timerSeconds': 900, 'activitiesCount': None, 'theme': 2, 'nrOfDaysToDisplay': 7,
-                               'greyScale': True, 'ShowTimerBtns': True, 'weekDayColors':
+                               'greyScale': True, 'LockTimerControl': True, 'weekDayColors':
                                    [{"hexColor": "#067700", "day": 1}, {"hexColor": "#8c1086", "day": 2},
                                     {"hexColor": "#ff7f00", "day": 3}, {"hexColor": "#0017ff", "day": 4},
                                     {"hexColor": "#ffdd00", "day": 5}, {"hexColor": "#ff0102", "day": 6},
                                     {"hexColor": "#ffffff", "day": 7}]}
         cls.TIMER_ONE_HOUR = {"orientation": 1, "completeMark": 2, "cancelMark": 2, "defaultTimer": 2,
                               "timerSeconds": 3600, "activitiesCount": None, "theme": 1, "colorThemeWeekSchedules": 1,
-                              "nrOfDaysToDisplay": 4, "greyScale": True, "ShowTimerBtns": True, "weekDayColors":
+                              "nrOfDaysToDisplay": 4, "greyScale": True, "LockTimerControl": True, "weekDayColors":
                                   [{"hexColor": "#067700", "day": 1}, {"hexColor": "#8C1086", "day": 2},
                                    {"hexColor": "#FF7F00", "day": 3}, {"hexColor": "#0017FF", "day": 4},
                                    {"hexColor": "#FFDD00", "day": 5}, {"hexColor": "#FF0102", "day": 6},
                                    {"hexColor": "#FFFFFF", "day": 7}]}
         cls.MULTIPLE_SETTINGS = {"orientation": 2, "completeMark": 2, "cancelMark": 1, "defaultTimer": 2,
                                  "timerSeconds": 60, "activitiesCount": 3, "theme": 3, "nrOfDaysToDisplay": 2,
-                                 "greyScale": True, "ShowTimerBtns" True, "weekDayColors":
+                                 "greyScale": True, "LockTimerControl" True, "weekDayColors":
                                      [{"hexColor": "#FF00FF", "day": 1}, {"hexColor": "#8C1086", "day": 2},
                                       {"hexColor": "#FF7F00", "day": 3}, {"hexColor": "#0017FF", "day": 4},
                                       {"hexColor": "#FFDD00", "day": 5}, {"hexColor": "#FF0102", "day": 6},
@@ -401,7 +401,7 @@ class TestUserController(GIRAFTestCase):
         self.assertEqual(3, response['data']['theme'])
         self.assertEqual(2, response['data']['nrOfDaysToDisplay'])
         self.assertTrue(True, response['data']['greyScale'])
-        self.assertTrue(True, response['data']['ShowTimerBtns'])
+        self.assertTrue(True, response['data']['LockTimerControl'])
         self.assertEqual("#FF00FF", response['data']['weekDayColors'][0]['hexColor'])
         self.assertEqual(1, response['data']['weekDayColors'][0]['day'])
 

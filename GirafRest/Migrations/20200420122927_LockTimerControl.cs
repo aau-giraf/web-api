@@ -2,23 +2,22 @@
 
 namespace GirafRest.Migrations
 {
-    public partial class AddedShowTimerBtnsVariable : Migration
+    public partial class LockTimerControl : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<bool>(
-                name: "ShowTimerBtns",
+                name: "LockTimerControl",
                 table: "Setting",
-                nullable: true
-            );
+                nullable: false,
+                defaultValue: false);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "ShowTimerBtns",
-                table: "Setting"
-            );
+                name: "LockTimerControl",
+                table: "Setting");
         }
     }
 }
