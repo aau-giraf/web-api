@@ -1,7 +1,13 @@
 ﻿namespace GirafRest.Models.DTOs
 {
+    /// <summary>
+    /// DTO for <see cref="Timer"/>
+    /// </summary>
     public class TimerDTO
     {
+        /// <summary>
+        /// Constructor for DTO
+        /// </summary>
         public TimerDTO(long startTime, long progress, long fullLength, bool paused)
         {
             StartTime = startTime;
@@ -10,6 +16,9 @@
             Paused = paused;
         }
 
+        /// <summary>
+        /// Constructor given a Timer
+        /// </summary>
         public TimerDTO(Timer timer) { 
             StartTime = timer.StartTime;
             Progress = timer.Progress;
@@ -17,6 +26,9 @@
             Paused = timer.Paused;
         }
 
+        /// <summary>
+        /// Empty constructor for JSON Generation
+        /// </summary>
         public TimerDTO() { }
 
         /// <summary>
@@ -39,6 +51,9 @@
         /// </summary>
         public bool Paused {get; set;}
 
+        /// <summary>
+        /// Key for Timer
+        /// </summary>
         public long? Key { get; set; }
     }
 }

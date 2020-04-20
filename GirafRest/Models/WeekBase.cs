@@ -8,20 +8,38 @@ using System.Threading.Tasks;
 
 namespace GirafRest.Models
 {
+    /// <summary>
+    /// Base model for defining a Week
+    /// </summary>
     public class WeekBase
     {
+        /// <summary>
+        /// Primary key
+        /// </summary>
         [Column("id")]
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
 
+        /// <summary>
+        /// Name of the week
+        /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        /// List of weekdays
+        /// </summary>
         public IList<Weekday> Weekdays { get; set; }
 
-        public long ThumbnailKey { get; set; }
+        /// <summary>
+        /// Thumbnail key for week
+        /// </summary>
         [ForeignKey("ThumbnailKey")]
+        public long ThumbnailKey { get; set; }
 
+        /// <summary>
+        /// Thumbnail
+        /// </summary>
         public virtual Pictogram Thumbnail { get; set; }
 
         /// <summary>
@@ -45,6 +63,9 @@ namespace GirafRest.Models
             this.Weekdays = new List<Weekday>();
         }
 
+        /// <summary>
+        /// Constructor for WeekBase
+        /// </summary>
         public WeekBase(Pictogram thumbnail) : this()
         {
             this.Thumbnail = thumbnail;

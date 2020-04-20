@@ -23,7 +23,9 @@ namespace GirafRest.Test
 {
     public class WeekTemplateControllerTest
     {
-        ITestOutputHelper _testLogger;
+#pragma warning disable IDE0052 // Remove unread private members
+        private readonly ITestOutputHelper _testLogger;
+#pragma warning restore IDE0052 // Remove unread private members
         TestContext _testContext;
 
         public WeekTemplateControllerTest(ITestOutputHelper output)
@@ -40,7 +42,6 @@ namespace GirafRest.Test
                     _testContext.MockDbContext.Object,
                     _testContext.MockUserManager
                     ),
-                _testContext.MockRoleManager.Object,
                 _testContext.MockLoggerFactory.Object,
                 new GirafAuthenticationService(_testContext.MockDbContext.Object,
                     _testContext.MockRoleManager.Object,

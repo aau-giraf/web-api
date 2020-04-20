@@ -20,6 +20,9 @@ using Microsoft.Extensions.Options;
 
 namespace GirafRest.Controllers
 {
+    /// <summary>
+    /// Manages accounts such as login, sign up, etc.
+    /// </summary>
     [Authorize]
     [Route("v1/[controller]")]
     public class AccountController : Controller
@@ -28,25 +31,29 @@ namespace GirafRest.Controllers
 
         private readonly IGirafService _giraf;
 
-        private readonly RoleManager<GirafRole> _roleManager;
-
         private readonly IOptions<JwtConfig> _configuration;
 
         private readonly IAuthenticationService _authentication;
 
+        /// <summary>
+        /// Constructor for AccountController
+        /// </summary>
+        /// <param name="signInManager">Service Injection</param>
+        /// <param name="loggerFactory">Service Injection</param>
+        /// <param name="giraf">Service Injection</param>
+        /// <param name="configuration">Service Injection</param>
+        /// <param name="authentication">Service Injection</param>
         public AccountController(
             SignInManager<GirafUser> signInManager,
             ILoggerFactory loggerFactory,
             IGirafService giraf,
             IOptions<JwtConfig> configuration,
-            RoleManager<GirafRole> roleManager,
             IAuthenticationService authentication)
         {
             _signInManager = signInManager;
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Account");
             _configuration = configuration;
-            _roleManager = roleManager;
             _authentication = authentication;
         }
 
@@ -81,7 +88,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<string>(ErrorCode.InvalidCredentials);
 
             var loginUser = _giraf._context.Users.FirstOrDefault(u => u.UserName == model.Username);
-            return new Response<string>(await GenerateJwtToken(loginUser, loginUser.Id));
+            return new Response<string>(await GenerateJwtToken(loginUser));
 
         }
 
@@ -164,6 +171,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Allows the user to change his password if they know their old password.
         /// </summary>
+        /// <param name="id">References the User, changing passwords. <see cref="GirafUser"/></param>
         /// <param name="model">A reference to <see cref="ChangePasswordDTO"/></param>
         /// <returns>
         /// Empty Response on success. Else: Missingproperties, PasswordNotUpdated or UserNotFound
@@ -196,6 +204,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Allows a user to set a new password if they forgot theirs.
         /// </summary>
+        /// <param name="id">References the User, changing passwords. <see cref="GirafUser"/></param>
         /// <param name="model">All information needed to set the password in a ResetPasswordDTO, i.e. password and reset token.</param>
         /// <returns>
         /// Empty Response on success. 
@@ -227,6 +236,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Allows the user to get a password reset token for a given user
         /// </summary>
+        /// <param name="id">References the User, changing passwords. <see cref="GirafUser"/></param>
         /// <returns>
         /// Return the password reset token on success. 
         /// UserNotFound if invalid user id was suplied
@@ -248,6 +258,7 @@ namespace GirafRest.Controllers
             return new Response<string>(result);
         }
 
+        /// <summary>
         /// Deletes the user with the given id
         /// </summary>
         /// <param name="userId">id for identifying the given <see cref="GirafUser"/> to be deleted</param>
@@ -296,7 +307,7 @@ namespace GirafRest.Controllers
         /// <returns>
         /// JWT Token as a string
         /// </returns>
-        private async Task<string> GenerateJwtToken(GirafUser user, string impersonatedBy)
+        private async Task<string> GenerateJwtToken(GirafUser user)
         {
             var claims = new List<Claim>
             {

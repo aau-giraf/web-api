@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,6 +16,9 @@ using static GirafRest.Shared.SharedMethods;
 
 namespace GirafRest.Controllers
 {
+    /// <summary>
+    /// WeekTemplateController for CRUD og WeekTemplate
+    /// </summary>
     [Route("v1/[controller]")]
     public class WeekTemplateController : Controller
     {
@@ -23,11 +26,6 @@ namespace GirafRest.Controllers
         /// A reference to GirafService, that contains common functionality for all controllers.
         /// </summary>
         private readonly IGirafService _giraf;
-        
-        /// <summary>
-        /// A reference to the role manager for the project.
-        /// </summary>
-        private readonly RoleManager<GirafRole> _roleManager;
 
         /// <summary>
         /// reference to the authenticationservice which provides commong authentication checks
@@ -39,16 +37,13 @@ namespace GirafRest.Controllers
         /// Constructor is called by the asp.net runtime.
         /// </summary>
         /// <param name="giraf">A reference to the GirafService.</param>
-        /// <param name="roleManager">A reference to the... no, wait, just take a guess, eh?</param>
         /// <param name="loggerFactory">A reference to an implementation of ILoggerFactory. Used to create a logger.</param>
         /// <param name="authentication"></param>
-        public WeekTemplateController(IGirafService giraf, 
-            RoleManager<GirafRole> roleManager, 
+        public WeekTemplateController(IGirafService giraf,
             ILoggerFactory loggerFactory, 
             IAuthenticationService authentication)
         {
             _giraf = giraf;
-            _roleManager = roleManager;
             _giraf._logger = loggerFactory.CreateLogger("WeekTemplate");
             _authentication = authentication;
         }

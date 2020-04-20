@@ -32,25 +32,36 @@ namespace GirafRest.Models
         /// </summary>
 
         public virtual ICollection<PictogramRelation> Pictograms { get; set; }
-        
+
+        /// <summary>
+        /// Nullable key for TimerKey
+        /// </summary>
         public long? TimerKey { get; set; }
 
         /// <summary>
         /// A reference to the actual timer.
-        /// </summary
+        /// </summary>
         [ForeignKey("TimerKey")]
         public virtual Timer Timer { get; set; }
 
+        /// <summary>
+        /// State of the Activity.
+        /// </summary>
         [Required]
         public ActivityState State { get; set; }
 
+        /// <summary>
+        /// Ordering
+        /// </summary>
         public int Order { get; set; }
 
         /// <summary>
         /// Creates a new many-to-many relationship between a weekday and a resource.
         /// </summary>
         /// <param name="weekday">The involved weekday.</param>
-        /// <param name="resource">The involved resource.</param>
+        /// <param name="pictogram">The activity's pictogram.</param>
+        /// <param name="order">The activity's order.</param>
+        /// <param name="state">The activity's current state.</param>
         public Activity(Weekday weekday, List<Pictogram> pictograms, int order, ActivityState state)
         {
             this.Other = weekday;
@@ -59,7 +70,7 @@ namespace GirafRest.Models
             this.Pictograms = new List<PictogramRelation>();
             AddPictograms(pictograms);
         }
-        
+
         public Activity(Weekday weekday, int order, ActivityState state)
         {
             this.Other = weekday;
@@ -68,21 +79,21 @@ namespace GirafRest.Models
             this.Pictograms = new List<PictogramRelation>();
         }
 
-        
+
 
         public void AddPictogram(Pictogram pictogram) {
             this.Pictograms.Add(new PictogramRelation(this, pictogram));
         }
 
         public void AddPictograms(List<Pictogram> pictograms) {
-            foreach (var pictogram in pictograms) 
+            foreach (var pictogram in pictograms)
             {
                 AddPictogram(pictogram);
             }
         }
 
         /// <summary>
-        /// DO NOT DELETE THIS.
+        /// Newtonsoft (JSON Generation) needs empty constructor. Don't delete.
         /// </summary>
         public Activity(){}
     }

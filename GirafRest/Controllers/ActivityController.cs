@@ -15,6 +15,9 @@ using GirafRest.Models.Responses;
 
 namespace GirafRest.Controllers
 {
+    /// <summary>
+    /// Manages activities
+    /// </summary>
     [Authorize]
     [Route("v2/[controller]")]
     public class ActivityController : Controller
@@ -22,6 +25,12 @@ namespace GirafRest.Controllers
         private readonly IAuthenticationService _authentication;
         private readonly IGirafService _giraf;
 
+        /// <summary>
+        /// Constructor for Controller
+        /// </summary>
+        /// <param name="giraf">Service Injection</param>
+        /// <param name="loggerFactory">Service Injection</param>
+        /// <param name="authentication">Service Injection</param>
         public ActivityController(IGirafService giraf, ILoggerFactory loggerFactory, IAuthenticationService authentication)
         {
             _giraf = giraf;
@@ -74,7 +83,7 @@ namespace GirafRest.Controllers
             }
 
             Activity dbActivity = new Activity(
-                dbWeekDay, 
+                dbWeekDay,
                 pictograms,
                 order,
                 ActivityState.Normal
@@ -125,7 +134,8 @@ namespace GirafRest.Controllers
         /// Updates an activity with a given id.
         /// </summary>
         /// <param name="activity">a serialized version of the activity that will be updated.</param>
-        /// <returns>Returns <see cref="ActivityDTO"/> for the updated activity on success else MissingProperties or NotFound, 
+        /// <param name="userId">an ID of the user to update activities for.</param>
+        /// <returns>Returns <see cref="ActivityDTO"/> for the updated activity on success else MissingProperties or NotFound</returns>
         [HttpPatch("{userId}/update")]
         [Authorize] 
         public async Task<Response<ActivityDTO>> UpdateActivity([FromBody] ActivityDTO activity, string userId)
@@ -157,7 +167,7 @@ namespace GirafRest.Controllers
 
             List<Pictogram> newPictogramList = new List<Pictogram>();
 
-            foreach (var pictogram in activity.Pictograms) 
+            foreach (var pictogram in activity.Pictograms)
             {
                 newPictogramList.Add(new Pictogram() {Id = pictogram.Id});
             }

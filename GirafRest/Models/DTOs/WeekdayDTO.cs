@@ -5,6 +5,9 @@ using System.Linq;
 
 namespace GirafRest.Models.DTOs
 {
+    /// <summary>
+    /// DTO for <see cref="Weekday"/>
+    /// </summary>
     public class WeekdayDTO
     {
         /// <summary>

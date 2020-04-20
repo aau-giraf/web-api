@@ -14,7 +14,10 @@ namespace GirafRest.Test
 {
     public class WeekControllerTest
     {
+#pragma warning disable IDE0051 // Remove unused private members
+#pragma warning disable IDE0052 // Remove unread private members
         private readonly ITestOutputHelper _testLogger;
+#pragma warning restore IDE0052 // Remove unread private members
         private TestContext _testContext;
 
         private const int ADMIN_DEP_ONE = 0;
@@ -25,6 +28,7 @@ namespace GirafRest.Test
         private const int WEEK_ZERO = 0;
         private const int DAY_ZERO = 0;
         private const int NONEXISTING = 999;
+#pragma warning restore IDE0051 // Remove unused private members
 
         public List<GirafUser> users;
         public WeekControllerTest(ITestOutputHelper output)
