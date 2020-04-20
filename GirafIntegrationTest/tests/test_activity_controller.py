@@ -24,9 +24,9 @@ class TestActivity(GIRAFTestCase):
         """
         Testing getting specific template
 
-        Endpoint: GET:/v1/WeekTemplate/{id}
+        Endpoint: GET:/v2/User/{userId}/week/
         """
-        response = get(f'{BASE_URL}v1/WeekTemplate/1', headers=auth(guardian_token)).json()
+        response = get(f'{BASE_URL}v2/User/1/week', headers=auth(guardian_token)).json()
         with open('response.json', 'w') as f:
             f.write(json.dumps(response))
 

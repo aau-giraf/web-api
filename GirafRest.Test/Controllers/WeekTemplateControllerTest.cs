@@ -133,13 +133,11 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(user);
 
             var result = wtc.GetWeekTemplate(_testContext.MockWeekTemplates[Template1].Id).Result;
-
+            
             Assert.True(result.Success);
             Assert.Equal("Template1", result.Data.Name);
             Assert.Contains(Days.Wednesday, result.Data.Days.Select(d => d.Day));
             Assert.DoesNotContain(Days.Friday, result.Data.Days.Select(d => d.Day));
-            string json = JsonConvert.SerializeObject(result.Data);
-            System.Console.WriteLine(json);
         }
 
         #endregion
