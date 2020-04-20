@@ -103,65 +103,76 @@ namespace GirafRest.Test
                             new GirafUser()
                             {
                                 UserName = "Admin",
+                                DisplayName = "Admin",
                                 Id = "admin",
                                 DepartmentKey = 1,
                             },
                             new GirafUser()
                             {
                                 UserName = "Guardian in dep 2",
+                                DisplayName = "Guardian 2", 
                                 Id = "guardian2",
                                 DepartmentKey = 2,
                             },
                             new GirafUser()
                             {
                                 UserName = "Citizen of dep 2",
+                                DisplayName = "Citizen 2",
                                 Id = "citizen2",
                                 DepartmentKey = 2
                             },
                             new GirafUser()
                             {
                                 UserName = "Citizen of dep 3",
+                                DisplayName = "Citizen 3",
                                 Id = "citizen3",
                                 DepartmentKey = 3
                             },
                             new GirafUser()
                             {
                                 UserName = "Admin without Department",
+                                DisplayName = "Admin null",
                                 Id = "nimda"
                             },
                             new GirafUser()
                             {
                                 UserName = "Guardian 2 in dep 2",
+                                DisplayName = "Guardian 22",
                                 Id = "guardian22",
                                 DepartmentKey = 2
                             },
                             new GirafUser()
                             {
                                 UserName = "Departmant in dep2",
+                                DisplayName = "Department 2",
                                 Id = "department2",
                                 DepartmentKey = 2,
                             },
                             new GirafUser()
                             {
                                 UserName = "Guardian 3 in dep 1",
+                                DisplayName = "Guardian 3",
                                 Id = "guardian3",
                                 DepartmentKey = 1
                             },
                             new GirafUser()
                             {
                                 UserName = "Citizen of dep 1",
+                                DisplayName = "Citizen 4",
                                 Id = "citizen4",
                                 DepartmentKey = 1
                             },
                             new GirafUser()
                             {
                                 UserName = "Citizen of no department",
+                                DisplayName = "Citizen null",
                                 Id = "citizen5NoDepartment",
                                 DepartmentKey = 0
                             },
                             new GirafUser()
                             {
                                 UserName = "Guardian in dep 1",
+                                DisplayName = "Guardian 1",
                                 Id = "GuardianDepartment1",
                                 DepartmentKey = 1
                             }
