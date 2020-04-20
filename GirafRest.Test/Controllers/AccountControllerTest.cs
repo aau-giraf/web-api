@@ -208,6 +208,23 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = accountController.Register(new RegisterDTO()
             {
+                DisplayName = "GenericDisplayName",
+                Password = "password",
+                DepartmentId = DEPARTMENT_ONE
+            }).Result;
+
+            Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
+            Assert.False(res.Success);
+        }
+        
+        [Fact]
+        public void Register_NoDisplayName_InvalidCredentials()
+        {
+            var accountController = InitializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var res = accountController.Register(new RegisterDTO()
+            {
+                Username = "GenericName",
                 Password = "password",
                 DepartmentId = DEPARTMENT_ONE
             }).Result;
