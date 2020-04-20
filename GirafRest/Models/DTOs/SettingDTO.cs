@@ -133,6 +133,11 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         public bool GreyScale { get; set; }
 
+       /// <summary>
+        /// Flag for indicating whether or not greyscale is enabled
+        /// </summary>
+        public bool PictogramText { get; set; }
+
         /// <summary>
         /// List of weekday colors
         /// </summary>
@@ -153,6 +158,7 @@ namespace GirafRest.Models.DTOs
             this.NrOfDaysToDisplay = options.NrOfDaysToDisplay;
             this.GreyScale = options.GreyScale;
             this.WeekDayColors = SetWeekDayColorsFromModel(options.WeekDayColors);
+            this.PictogramText = options.PictogramText;
         }
 
         /// <summary>
