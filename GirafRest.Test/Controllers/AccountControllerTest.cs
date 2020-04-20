@@ -22,6 +22,7 @@ namespace GirafRest.Test
     {
 #pragma warning disable IDE0051 // Remove unused private members
         private TestContext _testContext;
+        private readonly ITestOutputHelper _testLogger;
 
         private const int ADMIN_DEP_ONE = 0;
         private const int DEPARTMENT_ONE = 1;
@@ -34,8 +35,9 @@ namespace GirafRest.Test
 #pragma warning restore IDE0051 // Remove unused private members
 
 
-        public AccountControllerTest()
+        public AccountControllerTest(ITestOutputHelper output)
         {
+            _testLogger = output;
         }
         
         private AccountController InitializeTest()
@@ -409,7 +411,7 @@ namespace GirafRest.Test
             var res = ac.ChangePasswordByOldPassword(mockUser.Id, cpDTO).Result as ObjectResult;
             var body = res.Value as RESTError;
             
-            Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
+            Assert.Equal(StatusCodes.Status500InternalServerError, res.StatusCode);
             Assert.Equal(ErrorCode.PasswordNotUpdated, body.ErrorCode);
         }
 
