@@ -105,6 +105,7 @@ namespace GirafRest.Controllers
             if (!ModelState.IsValid)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties);
 
+            //TODO: Include Display name
             if (String.IsNullOrEmpty(model.Username) || String.IsNullOrEmpty(model.Password))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidCredentials);
 
@@ -132,6 +133,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.DepartmentNotFound);
 
             //Create a new user with the supplied information
+            //TODO: Display name is now required
             var user = new GirafUser (model.Username, department, model.Role);
             if (model.DisplayName == null){
                 user.DisplayName = model.Username;

@@ -91,6 +91,7 @@ namespace GirafRest.Models
             this.Guardians.Add(new GuardianRelation(guardian, this));
         }
 
+        //TODO: Add Display name to Contructor maybe?
         public GirafUser(string userName, Department department, GirafRoles role) : base(userName)
         {
             InitialiseData(role);
