@@ -592,6 +592,7 @@ namespace GirafRest.Test
                 return rlMock;
             }
 
+#pragma warning disable IDE0051 // Remove unused private members
             private Mock<ILoggerFactory> CreateMockLoggerFactory()
             {
                 var logs = new List<string>();
@@ -602,6 +603,7 @@ namespace GirafRest.Test
 
                 return lfMock;
             }
+#pragma warning restore IDE0051 // Remove unused private members
         }
 
         public static Mock<HttpContext> MockHttpContext(this Controller controller)

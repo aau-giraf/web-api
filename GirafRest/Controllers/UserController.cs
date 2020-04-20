@@ -16,6 +16,9 @@ using System.Text.RegularExpressions;
 
 namespace GirafRest.Controllers
 {
+    /// <summary>
+    /// Manages Users, settings etc.
+    /// </summary>
     [Authorize]
     [Route("v1/[controller]")]
     public class UserController : Controller
@@ -28,10 +31,17 @@ namespace GirafRest.Controllers
 
         private readonly IAuthenticationService _authentication;
 
+        /// <summary>
+        /// Constructor for UserController
+        /// </summary>
+        /// <param name="giraf">Service Injection</param>
+        /// <param name="loggerFactory">Service Injection</param>
+        /// <param name="roleManager">Service Injection</param>
+        /// <param name="authentication">Service Injection</param>
         public UserController(
             IGirafService giraf,
-          ILoggerFactory loggerFactory,
-          RoleManager<GirafRole> roleManager, 
+            ILoggerFactory loggerFactory,
+            RoleManager<GirafRole> roleManager, 
             IAuthenticationService authentication)
         {
             _giraf = giraf;
@@ -44,7 +54,6 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Find information about the currently authenticated user.
         /// </summary>
-        /// <param name="id">Identifier of a <see cref="GirafUser"/></param>
         /// <returns> If success returns Meta-data about the currently authorized user else UserNotFound /</returns>
         [HttpGet("")]
         public async Task<Response<GirafUserDTO>> GetUser()

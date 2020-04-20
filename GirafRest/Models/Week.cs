@@ -25,12 +25,13 @@ namespace GirafRest.Models
         /// </summary>
         public Week() : base()
         {
-
         }
 
+        /// <summary>
+        /// Implements WeekBase constructor
+        /// </summary>
         public Week(Pictogram thumbnail) : base(thumbnail)
         {
-            
         }
     }
 }

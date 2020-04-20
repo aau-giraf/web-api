@@ -8,10 +8,10 @@ namespace GirafRest.Models.DTOs
     /// </summary>
     public class ImageDTO
     {
-        [Required]
         /// <summary>
         /// An array of bytes containing the pictogram's image.
         /// </summary>
+        [Required]
         public byte[] Image { get; set; }
 
         /// <summary>

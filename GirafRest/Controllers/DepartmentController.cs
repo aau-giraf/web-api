@@ -15,6 +15,9 @@ using System;
 
 namespace GirafRest.Controllers
 {
+    /// <summary>
+    /// Handles Department endpoints
+    /// </summary>
     [Route("v1/[controller]")]
     public class DepartmentController : Controller
     {
@@ -24,6 +27,13 @@ namespace GirafRest.Controllers
 
         private readonly IAuthenticationService _authentication;
 
+        /// <summary>
+        /// Initializes new DepartmentController, injecting services
+        /// </summary>
+        /// <param name="giraf">Injection of GirafService</param>
+        /// <param name="loggerFactory">Injection of logger</param>
+        /// <param name="roleManager">Injection of RoleManager</param>
+        /// <param name="authentication">Injection of Authentication</param>
         public DepartmentController(IGirafService giraf, 
             ILoggerFactory loggerFactory, 
             RoleManager<GirafRole> roleManager, 
@@ -357,6 +367,12 @@ namespace GirafRest.Controllers
             return new Response<DepartmentDTO>(new DepartmentDTO(usr.Department, members));
         }
 
+        /// <summary>
+        /// Handles changing name of a Department.
+        /// </summary>
+        /// <param name="departmentId">id of department to change</param>
+        /// <param name="nameDTO">Object handling new name.</param>
+        /// <returns>Returns empty ok response.</returns>
         [HttpPut("{departmentId}/name")]
         [Authorize]
         public async Task<Response> ChangeDepartmentName(long departmentId, [FromBody] DepartmentNameDTO nameDTO)

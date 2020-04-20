@@ -8,6 +8,7 @@ using System.Text;
 using GirafRest.Models.DTOs;
 using static GirafRest.Models.ActivityState;
 
+#pragma warning disable IDE0051 // Remove unused private members
 namespace GirafRest.Setup
 {
     /// <summary>
@@ -15,7 +16,12 @@ namespace GirafRest.Setup
     /// </summary>
     public class DBInitializer
     {
-		public static void Initialize(GirafDbContext context, UserManager<GirafUser> userManager)
+		/// <summary>
+        /// Initializes the DB Serializer, adding Department, User and Pictograms
+        /// </summary>
+        /// <param name="context">DB Context to connect to</param>
+        /// <param name="userManager">User Manager for GirafUser</param>
+        public static void Initialize(GirafDbContext context, UserManager<GirafUser> userManager)
 		{
             // Check if any data is in the database
             if (context.Users.Any())
@@ -331,3 +337,4 @@ namespace GirafRest.Setup
         #endregion
     }
 }
+#pragma warning restore IDE0051 // Remove unused private members

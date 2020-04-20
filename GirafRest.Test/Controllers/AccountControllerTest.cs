@@ -20,8 +20,7 @@ namespace GirafRest.Test
 {
     public class AccountControllerTest
     {
-        //NOTE: We do not test the logout method as it is merely an almost invisble abstraction on top of SignInManager.SignOut.
-        private readonly ITestOutputHelper _outputHelper;
+#pragma warning disable IDE0051 // Remove unused private members
         private TestContext _testContext;
 
         private const int ADMIN_DEP_ONE = 0;
@@ -32,16 +31,11 @@ namespace GirafRest.Test
         private const int CITIZEN_DEP_THREE = 3;
         private const int ADMIN_NO_DEP = 4;
         private const int DEPARTMENT_DEP_TWO = 6;
+#pragma warning restore IDE0051 // Remove unused private members
 
 
-        public AccountControllerTest(ITestOutputHelper outputHelper)
+        public AccountControllerTest()
         {
-            _outputHelper = outputHelper;
-        }
-
-        private void OutputEmail(string r, string s, string m)
-        {
-            _outputHelper.WriteLine($"Email sent:\nReceiver: {r}\nSubject: {s}\n\n{m}");
         }
         
         private AccountController InitializeTest()
@@ -52,8 +46,6 @@ namespace GirafRest.Test
             var mockSignInManager = new MockSignInManager(_testContext.MockUserManager, _testContext);
             var mockGirafService = new MockGirafService(_testContext.MockDbContext.Object, _testContext.MockUserManager);
 
-            //TODO: Error here. Unsucessful attempt at mocking., TRYING OUT NEW ASGER WAY OF LIFE
-            var roleManager = _testContext.MockRoleManager.Object;
             //var roleManager = new RoleManager<GirafRole>(new Mock<IRoleStore<GirafRole>>().Object, null, null, null, null, null);
             
             AccountController ac = new AccountController(
@@ -66,7 +58,6 @@ namespace GirafRest.Test
                     JwtIssuer = "example.com",
                     JwtExpireDays = 30
                 }),
-                roleManager,
                 new GirafAuthenticationService(_testContext.MockDbContext.Object, _testContext.MockRoleManager.Object,
                                                _testContext.MockUserManager));
 
