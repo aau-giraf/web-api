@@ -14,9 +14,12 @@ namespace GirafRest.Test
     {
         private readonly ITestOutputHelper _outputHelper;
         private TestContext _testContext;
-        private readonly string testJson = $"{Directory.GetCurrentDirectory()}" +
+
+        private static readonly string dataDir = $"{Directory.GetCurrentDirectory()}" +
             $"{Path.DirectorySeparatorChar}" +
-            $"Data" +
+            $"Data";
+
+        private readonly string testJson = dataDir +
             $"{Path.DirectorySeparatorChar}" +
             $"samplesTest.json";
 
@@ -32,6 +35,10 @@ namespace GirafRest.Test
             MockDbContext mockDb = _testContext.MockDbContext.Object;
             SampleDataHandler dataHandler = new SampleDataHandler(testJson);
 
+            if (!Directory.Exists(dataDir))
+            {
+                Directory.CreateDirectory(dataDir);
+            }
             if (!File.Exists(testJson))
             {
                 await dataHandler.SerializeDataAsync(mockDb, _testContext.MockUserManager);
