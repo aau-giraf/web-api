@@ -56,6 +56,10 @@ namespace GirafRest.Models.DTOs
         /// Flag for indicating whether or not greyscale is enabled
         /// </summary>
         public bool GreyScale { get; set; }
+        /// <summary>
+        /// Flag for indicating wether or not timer buttons is enabled
+        /// </summary>
+        public bool ShowTimerBtns { get; set; }
 
         public List<WeekDayColorDTO>  WeekDayColors {get; set;}
         /// <summary>
@@ -73,6 +77,7 @@ namespace GirafRest.Models.DTOs
             this.Theme = options.Theme;
             this.NrOfDaysToDisplay = options.NrOfDaysToDisplay;
             this.GreyScale = options.GreyScale;
+            this.ShowTimerBtns = options.ShowTimerBtns;
             this.WeekDayColors = SetWeekDayColorsFromModel(options.WeekDayColors);
         }
 

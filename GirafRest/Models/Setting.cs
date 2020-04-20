@@ -57,6 +57,11 @@ namespace GirafRest.Models
         public bool GreyScale { get; set; }
 
         /// <summary>
+        /// Flag for indicating wether or not to show timer buttons
+        /// </summary>
+        public bool ShowTimerBtns { get; set; }
+
+        /// <summary>
         /// Each day in a weekschedule has a hexcolor associated
         /// </summary>
         /// <value>The week day colors.</value>
@@ -77,6 +82,7 @@ namespace GirafRest.Models
             this.Theme = newOptions?.Theme ?? this.Theme;
             this.NrOfDaysToDisplay = newOptions?.NrOfDaysToDisplay ?? this.NrOfDaysToDisplay;
             this.GreyScale = newOptions?.GreyScale ?? this.GreyScale;
+            this.ShowTimerBtns = newOptions?.ShowTimerBtns ?? this.ShowTimerBtns;
             if(newOptions.WeekDayColors != null)
                 updateWeekDayColors(newOptions.WeekDayColors);
         }
@@ -121,6 +127,7 @@ namespace GirafRest.Models
             NrOfDaysToDisplay = 7;
             TimerSeconds = 900;
             GreyScale = false;
+            ShowTimerBtns = true;
 
         }
     }
