@@ -1,4 +1,5 @@
 ﻿using GirafRest.Models.Responses;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GirafRest.Controllers
@@ -13,12 +14,11 @@ namespace GirafRest.Controllers
         /// All Error requests will redirect to this endpoint
         /// </summary>
         /// <returns>ErrorCode.NotFound</returns>
-        [HttpGet(""), HttpPost(""), HttpPut(""), HttpDelete("")]
-        public ActionResult<Response> Index()
+        [HttpGet(""), HttpPost(""), HttpPut(""), HttpDelete(""), HttpPatch("")]
+        [ProducesResponseType(typeof(RESTError), StatusCodes.Status404NotFound)]
+        public ActionResult Index()
         {
-            Response.StatusCode = 200;
-
-            return NotFound(new ErrorResponse(ErrorCode.NotFound));
+            return NotFound(new RESTError(ErrorCode.NotFound, "The endpoint could not be found"));
         }
     }
 }

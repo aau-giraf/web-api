@@ -19,6 +19,10 @@ namespace GirafRest.Models.Responses
         /// <summary> Error details </summary>
         public string Details;
 
+        /// <summary>
+        /// GIRAF Error code, this property is used by the serializer
+        /// </summary>
+        /// <value></value>
         [EnumDataType(typeof(ErrorCode))]
         [JsonConverter(typeof(StringEnumConverter))]
         public ErrorCode ErrorKey
@@ -42,6 +46,11 @@ namespace GirafRest.Models.Responses
             this.Details = details;
         }
 
+        /// <summary>
+        /// Creates a new REST error object without details
+        /// </summary>
+        /// <param name="errorCode">GIRAF error code</param>
+        /// <param name="message">Error message</param>
         public RESTError(ErrorCode errorCode, string message)
         {
             this.ErrorCode = errorCode;
