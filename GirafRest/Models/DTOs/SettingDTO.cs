@@ -4,11 +4,87 @@ using GirafRest.Models;
 
 namespace GirafRest.Models.DTOs
 {
-    public enum Orientation { portrait = 1, landscape = 2}
-    public enum CompleteMark { Removed = 1, Checkmark = 2, MovedRight = 3}
-    public enum CancelMark { Removed = 1, Cross = 2}
-    public enum DefaultTimer { hourglass = 1, analogClock = 2 }
-    public enum Theme { girafYellow = 1, girafGreen = 2, girafRed = 3, androidBlue = 4}
+    /// <summary>
+    /// Screen orientation
+    /// </summary>
+    public enum Orientation {
+        /// <summary>
+        /// Portrait mode
+        /// </summary>
+        portrait = 1,
+
+        /// <summary>
+        /// Landscape mode
+        /// </summary>
+        landscape = 2
+    }
+    /// <summary>
+    /// Mark used for "Complete"
+    /// </summary>
+    public enum CompleteMark {
+        /// <summary>
+        /// Removed X
+        /// </summary>
+        Removed = 1,
+        /// <summary>
+        /// Checkmark
+        /// </summary>
+        Checkmark = 2,
+        /// <summary>
+        /// Moved right
+        /// </summary>
+        MovedRight = 3
+    }
+
+    /// <summary>
+    /// Mark used for Cancel
+    /// </summary>
+    public enum CancelMark {
+        /// <summary>
+        /// Removed when cancelled
+        /// </summary>
+        Removed = 1,
+        /// <summary>
+        /// X when cancelled
+        /// </summary>
+        Cross = 2
+    }
+
+    /// <summary>
+    /// Default timer type
+    /// </summary>
+    public enum DefaultTimer {
+        /// <summary>
+        /// Hourglass model
+        /// </summary>
+        hourglass = 1,
+        /// <summary>
+        /// Analog Clock counting down
+        /// </summary>
+        analogClock = 2
+    }
+
+    /// <summary>
+    /// Timer Theme
+    /// </summary>
+    public enum Theme {
+        /// <summary>
+        /// Yellow as Giraf Theme
+        /// </summary>
+        girafYellow = 1,
+        /// <summary>
+        /// The theme Green
+        /// </summary>
+        girafGreen = 2,
+        /// <summary>
+        /// The Giraf Red Color
+        /// </summary>
+        girafRed = 3,
+        /// <summary>
+        /// Generic blue Android
+        /// </summary>
+        androidBlue = 4
+    }
 
     /// <summary>
     /// A Data Transfer Object for the user settings used by the launcher
@@ -57,7 +133,10 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         public bool GreyScale { get; set; }
 
-        public List<WeekDayColorDTO>  WeekDayColors {get; set;}
+        /// <summary>
+        /// List of weekday colors
+        /// </summary>
+        public List<WeekDayColorDTO> WeekDayColors {get; set;}
         /// <summary>
         /// Constructor to create a DTO based on the actual object
         /// </summary>
@@ -76,6 +155,9 @@ namespace GirafRest.Models.DTOs
             this.WeekDayColors = SetWeekDayColorsFromModel(options.WeekDayColors);
         }
 
+        /// <summary>
+        /// Empty Constructor used for JSON Generation
+        /// </summary>
         public SettingDTO()
         {
             Orientation = Orientation.portrait;
@@ -100,6 +182,7 @@ namespace GirafRest.Models.DTOs
 
                 return WeekDayColorDTOs;
             }
+
             return null;
         }
     }

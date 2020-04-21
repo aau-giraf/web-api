@@ -16,6 +16,10 @@ namespace GirafRest.Migrations
     [Migration("20180510202914_RemoveUnusedFKs")]
     partial class RemoveUnusedFKs
     {
+        /// <summary>
+        /// Setup target model
+        /// </summary>
+        /// <param name="modelBuilder">Which ModelBuilder to use</param>
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

@@ -10,10 +10,20 @@ using Microsoft.Extensions.Logging;
 
 namespace GirafRest
 {
+    /// <summary>
+    /// Base program class
+    /// </summary>
     public class Program
     {
+        /// <summary>
+        /// Program configuration.
+        /// </summary>
         public static IConfiguration Configuration { get; set; }
 
+        /// <summary>
+        /// Initialization method for running program
+        /// </summary>
+        /// <param name="args">program arguments</param>
         public static void Main(string[] args)
         {
             Console.WriteLine("Welcome to Giraf REST Server.");
@@ -40,7 +50,6 @@ namespace GirafRest
         /// <see cref="Startup"/> sets the general environment (authentication, logging i.e)
         /// </summary>
         /// <returns>A <see cref="IWebHost"/> host fit for running the server.</returns>
-
         public static IWebHost BuildWebHost(string[] args) =>
         WebHost.CreateDefaultBuilder()
                .UseKestrel()

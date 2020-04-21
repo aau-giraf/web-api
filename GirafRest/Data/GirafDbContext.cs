@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +8,7 @@ using GirafRest.Models;
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations.Schema;
 
+#pragma warning disable 1591
 namespace GirafRest.Data
 {
     /// <summary>
@@ -150,3 +151,4 @@ namespace GirafRest.Data
         }
     }
 }
+#pragma warning restore 1591

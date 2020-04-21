@@ -559,6 +559,7 @@ namespace GirafRest.Test
                 var mockRoles = CreateMockDbSet(MockRoles);
                 var mockUserRoles = CreateMockDbSet(MockUserRoles);
                 var mockWeeks = CreateMockDbSet(MockWeeks);
+                var mockWeekdays = CreateMockDbSet(MockWeeks[0].Weekdays.ToList());
                 var mockWeekTemplates = CreateMockDbSet(MockWeekTemplates);
                 var mockGuardianRelations = CreateMockDbSet(MockGuardianRelations);
                 var dbMock = new Mock<GirafDbContext>();
@@ -568,6 +569,7 @@ namespace GirafRest.Test
                 dbMock.Setup(c => c.Activities).Returns(mockActivities.Object);
                 dbMock.Setup(c => c.Departments).Returns(mockDeps.Object);
                 dbMock.Setup(c => c.Weeks).Returns(mockWeeks.Object);
+                dbMock.Setup(c => c.Weekdays).Returns(mockWeekdays.Object);
                 dbMock.Setup(c => c.WeekTemplates).Returns(mockWeekTemplates.Object);
                 dbMock.Setup(c => c.Users).Returns(mockUsers.Object);
                 dbMock.Setup(c => c.Roles).Returns(mockRoles.Object);
@@ -593,6 +595,7 @@ namespace GirafRest.Test
                 return rlMock;
             }
 
+#pragma warning disable IDE0051 // Remove unused private members
             private Mock<ILoggerFactory> CreateMockLoggerFactory()
             {
                 var logs = new List<string>();
@@ -603,6 +606,7 @@ namespace GirafRest.Test
 
                 return lfMock;
             }
+#pragma warning restore IDE0051 // Remove unused private members
         }
 
         public static Mock<HttpContext> MockHttpContext(this Controller controller)

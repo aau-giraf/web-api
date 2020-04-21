@@ -33,6 +33,10 @@ namespace GirafRest.Setup
     /// </summary>
     public class Startup
     {
+        /// <summary>
+        /// Startup Application, and set appsettings
+        /// </summary>
+        /// <param name="env">Hosting environment to start up into</param>
         public Startup(IWebHostEnvironment env)
         {
             HostingEnvironment = env;
@@ -59,7 +63,12 @@ namespace GirafRest.Setup
             }
         }
 
+
+        /// <summary>
+        /// Hosting Environment to be initialized with
+        /// </summary>
         public IWebHostEnvironment HostingEnvironment { get; }
+
         /// <summary>
         /// The configuration, contains information regarding connecting to the database
         /// </summary>

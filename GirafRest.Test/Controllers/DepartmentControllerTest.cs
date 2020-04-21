@@ -16,8 +16,9 @@ namespace GirafRest.Test
 {
     public class DepartmentControllerTest
     {
+#pragma warning disable IDE0051 // Remove unused private members
         private TestContext _testContext;
-        private readonly ITestOutputHelper _testLogger;
+
         private const int DEPARTMENT_ONE = 1;
         private const int DEPARTMENT_TWO = 2;
         private const int DEPARTMENT_TEN = 10;
@@ -30,11 +31,9 @@ namespace GirafRest.Test
         private const int DEPARTMENT_TWO_OBJECT = 1;
         private const int CITIZEN_NO_DEPARTMENT = 9;
         private const int CITIZEN_DEP_THREE = 3;
+#pragma warning restore IDE0051 // Remove unused private members
 
-        public DepartmentControllerTest(ITestOutputHelper testLogger)
-        {
-            _testLogger = testLogger;
-        }
+        public DepartmentControllerTest() {}
 
         private DepartmentController initializeTest()
         {
@@ -209,6 +208,7 @@ namespace GirafRest.Test
         #region AddResource
 
         [Fact]
+        [System.Obsolete]
         public void AddResource_ValidDepartmentValidResource_Success()
         {
             var dc = initializeTest();
@@ -221,6 +221,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
+        [System.Obsolete]
         public void AddResource_InvalidDepartmentValidResource_DepartmentNotFound()
         {
             var dc = initializeTest();
@@ -232,6 +233,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
+        [System.Obsolete]
         public void AddResource_ValidDepartmentNonExistingResourceInDTO_ResourceNotFound()
         {
             var dc = initializeTest();
@@ -243,6 +245,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
+        [System.Obsolete]
         public void AddResource_ValidDepartmentValidDTONoLogin_Unauthorized()
         {
             var dc = initializeTest();
@@ -257,6 +260,7 @@ namespace GirafRest.Test
         #region RemoveResource
 
         [Fact]
+        [System.Obsolete]
         public void RemoveResource_RemoveExistingResource_Success()
         {
             var dc = initializeTest();
@@ -264,11 +268,12 @@ namespace GirafRest.Test
             var res = dc.RemoveResource(RESOURCE_FIVE).Result;
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            //Check that ressource no longer exist
+            // Check that ressource no longer exist
             Assert.True(!(res.Data.Resources.Any(r => r == RESOURCE_FIVE)));
         }
 
         [Fact]
+        [System.Obsolete]
         public void RemoveResource_RemoveResourceWrongDepartment_NotAuthorized()
         {
             var dc = initializeTest();

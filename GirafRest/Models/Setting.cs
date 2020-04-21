@@ -13,11 +13,18 @@ namespace GirafRest.Models
     /// </summary>
     public class Setting
     {
+        /// <summary>
+        /// Settingskey
+        /// </summary>
         [Key]
         public long Key { get; private set; }
 
+        /// <summary>
+        /// Preferred appearence of phone; Portrait or Landscape mode.
+        /// </summary>
         [Required]
         public Orientation Orientation { get; set; }
+
         /// <summary>
         /// Preferred appearence of checked resources
         /// </summary>
@@ -95,6 +102,9 @@ namespace GirafRest.Models
             }
         }
 
+        /// <summary>
+        /// Initializes WeekDayColors.
+        /// </summary>
         public void InitialiseWeekDayColors(){
             this.WeekDayColors = new List<WeekDayColor>(){
                 new WeekDayColor(){Day = Days.Monday, HexColor = "#067700", SettingId = Key},

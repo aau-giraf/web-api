@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace GirafRest.Models.DTOs
 {
+    /// <summary>
+    /// DTO for <see cref="WeekBase"/>
+    /// </summary>
     public class WeekBaseDTO
     {
         /// <summary>

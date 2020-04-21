@@ -8,9 +8,16 @@ using System.Threading.Tasks;
 
 namespace GirafRest.Models.DTOs
 {
+    /// <summary>
+    /// DTO for <see cref="Pictogram"/>
+    /// </summary>
     public class WeekPictogramDTO
     {
+        /// <summary>
+        /// Primary key 
+        /// </summary>
         public long Id { get; set; }
+
         /// <summary>
         /// The last time the pictogram was edited.
         /// </summary>
@@ -26,9 +33,20 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         public AccessLevel? AccessLevel { get; set; }
 
+        /// <summary>
+        /// Hash of image
+        /// </summary>
         public string ImageHash { get; set; }
+
+        /// <summary>
+        /// Generated URL from ID
+        /// </summary>
         public string ImageUrl { get { return $"/v1/pictogram/{Id}/image/raw"; } }
-        
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="pictogram">Pictogram used as base</param>
         public WeekPictogramDTO(Pictogram pictogram)
         {
             if (pictogram != null)
