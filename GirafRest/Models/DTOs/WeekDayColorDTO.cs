@@ -3,8 +3,14 @@ using GirafRest.Models;
 
 namespace GirafRest
 {
+    /// <summary>
+    /// Color of a weekday DTO
+    /// </summary>
     public class WeekDayColorDTO
     {
+        /// <summary>
+        /// Empty constructor used by JSON Generation
+        /// </summary>
         public WeekDayColorDTO()
         {
         }

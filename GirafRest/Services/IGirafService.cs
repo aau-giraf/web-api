@@ -63,7 +63,7 @@ namespace GirafRest.Services
         /// Loads the user with resources.
         /// </summary>
         /// <returns>The user with resources.</returns>
-        /// <param name="principal">The security claim - i.e. the information about the currently authenticated user.</param>
+        /// <param name="id">The security claim - i.e. the information about the currently authenticated user's ID.</param>
         Task<GirafUser> LoadUserWithResources(ClaimsPrincipal id);
 
         /// <summary>

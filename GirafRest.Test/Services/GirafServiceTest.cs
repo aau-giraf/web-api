@@ -69,7 +69,7 @@ namespace GirafRest.Test.Services
             var gs = initializeTest();
             var user = _testContext.MockUsers[ADMIN_DEP_ONE];
 
-            var res = gs.CheckPrivateOwnership((Pictogram)_testContext.MockUsers[ADMIN_DEP_ONE].Resources.First().Pictogram, user);
+            var res = gs.CheckPrivateOwnership(_testContext.MockUsers[ADMIN_DEP_ONE].Resources.First().Pictogram, user);
 
             Assert.True(res.Result);
         }
@@ -80,7 +80,7 @@ namespace GirafRest.Test.Services
             var gs = initializeTest();
             var user = _testContext.MockUsers[ADMIN_DEP_ONE];
 
-            var res = gs.CheckPrivateOwnership((Pictogram)_testContext.MockUsers[GUARDIAN_DEP_TWO].Resources.First().Pictogram, user);
+            var res = gs.CheckPrivateOwnership(_testContext.MockUsers[GUARDIAN_DEP_TWO].Resources.First().Pictogram, user);
 
             Assert.False(res.Result);
         }
@@ -93,7 +93,7 @@ namespace GirafRest.Test.Services
             var user = _testContext.MockUsers[ADMIN_DEP_ONE];
             var userDepartment = _testContext.MockDepartments.Where(d => d.Key == user.DepartmentKey).First();
 
-            var res = gs.CheckProtectedOwnership((Pictogram)userDepartment.Resources.First().Pictogram, user);
+            var res = gs.CheckProtectedOwnership(userDepartment.Resources.First().Pictogram, user);
 
             Assert.True(res.Result);
         }
@@ -105,7 +105,7 @@ namespace GirafRest.Test.Services
             var user = _testContext.MockUsers[ADMIN_DEP_ONE];
             var notUserDepartment = _testContext.MockDepartments.Where(d => d.Key != user.DepartmentKey).First();
 
-            var res = gs.CheckProtectedOwnership((Pictogram)notUserDepartment.Resources.First().Pictogram, user);
+            var res = gs.CheckProtectedOwnership(notUserDepartment.Resources.First().Pictogram, user);
 
             Assert.False(res.Result);
         }

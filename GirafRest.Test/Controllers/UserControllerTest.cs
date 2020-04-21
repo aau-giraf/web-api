@@ -17,11 +17,14 @@ namespace GirafRest.Test
     public class UserControllerTest
     {
         private UnitTestExtensions.TestContext _testContext;
+#pragma warning disable IDE0052 // Remove unread private members
         private readonly ITestOutputHelper _testLogger;
-        private readonly string _pngFilepath;
-        private const string CitizenUsername = "Citizen of dep 2";
+#pragma warning restore IDE0052 // Remove unread private members
 
-        private const int NewApplicationId = 1;
+        private readonly string _pngFilepath;
+
+#pragma warning disable IDE0051 // Remove unused private members
+                private const int NewApplicationId = 1;
         private const int ADMIN_DEP_ONE = 0;
         private const int GUARDIAN_DEP_TWO = 1;
         private const int CITIZEN_DEP_TWO = 2;
@@ -33,6 +36,7 @@ namespace GirafRest.Test
         private const int AdminProtectedPictogram = PictogramDepartment1;
         private const int GuardianProtectedPictogram = PictogramDepartment2;
         private const int CitizenPrivatePictogram = PictogramPrivateUser0;
+#pragma warning restore IDE0051 // Remove unused private members
 
         public List<SettingDTO> UserSettings { get; set; }
 
@@ -623,6 +627,7 @@ namespace GirafRest.Test
 
         #region AddUserResource
         [Fact]
+        [System.Obsolete]
         public void AddUserResource_OwnPrivateValidUser_Success()
         {
             var usercontroller = initializeTest();
@@ -641,6 +646,7 @@ namespace GirafRest.Test
 
 
         [Fact]
+        [System.Obsolete]
         public void AddUserResource_OwnPrivateInvalidUser_UserNotFound()
         {
             var usercontroller = initializeTest();
@@ -656,6 +662,7 @@ namespace GirafRest.Test
 
 
         [Fact]
+        [System.Obsolete]
         public void AddUserResource_OwnProtectedValidUser_ResourceMustBePrivate()
         {
             var usercontroller = initializeTest();
@@ -671,6 +678,7 @@ namespace GirafRest.Test
 
 
         [Fact]
+        [System.Obsolete]
         public void AddUserResource_OwnProtectedInvalidUser_UserNotFound()
         {
             var usercontroller = initializeTest();
@@ -685,6 +693,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
+        [System.Obsolete]
         public void AddUserResource_AnotherProtectedValidUser_NotAuthorized() 
         {
             var usercontroller = initializeTest();
@@ -699,6 +708,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
+        [System.Obsolete]
         public void AddUserResource_AnotherProtectedInvalidUser_UserNotFound()
         {
             var usercontroller = initializeTest();
@@ -713,6 +723,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
+        [System.Obsolete]
         public void AddUserResource_PublicValidUser_NotAuthorized()
         {
             var usercontroller = initializeTest();
@@ -727,6 +738,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
+        [System.Obsolete]
         public void AddUserResource_PublicInvalidUser_UserNotFound()
         {
             var usercontroller = initializeTest();
@@ -741,6 +753,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
+        [System.Obsolete]
         public void AddUserResource_AnotherPrivateValidUser_NotAuthorized()
         {
             var usercontroller = initializeTest();
@@ -755,6 +768,7 @@ namespace GirafRest.Test
        }
 
         [Fact]
+        [System.Obsolete]
         public void AddUserResource_AnotherPrivateInvalidUser_UserNotFound()
         {
             var usercontroller = initializeTest();
@@ -771,6 +785,7 @@ namespace GirafRest.Test
         #endregion
         #region DeleteResource
         [Fact]
+        [System.Obsolete]
         public void DeleteResource_OwnPrivateValidUser_Success()
         {
             var usercontroller = initializeTest();
@@ -787,6 +802,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
+        [System.Obsolete]
         public void DeleteResource_PrivateNoUser_Error()
         {
             var usercontroller = initializeTest();
@@ -799,6 +815,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
+        [System.Obsolete]
         public void DeleteResource_OwnProtectedValidUser_UserDoesNotOwnResource()
         {
             var usercontroller = initializeTest();
@@ -813,6 +830,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
+        [System.Obsolete]
         public void DeleteResource_OwnProtectedInvalidUser_UserDoesNotOwnResource()
         {
             var usercontroller = initializeTest();
@@ -827,6 +845,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
+        [System.Obsolete]
         public void DeleteResource_PublicValidUser_UserDoesNotOwnResource()
         {
             var usercontroller = initializeTest();
@@ -842,6 +861,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
+        [System.Obsolete]
         public void DeleteResource_PublicInvalidUser_UserNotFound()
         {
             var usercontroller = initializeTest();

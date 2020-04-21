@@ -11,15 +11,26 @@ using System.Threading.Tasks;
 
 namespace GirafRest.Filters
 {
+    /// <summary>
+    /// Implementation of IActionFilter, for filtering based on Claim for current User
+    /// </summary>
     public class LogFilter : IActionFilter
     {
         IGirafService _giraf;
 
+        /// <summary>
+        /// Initialize for LogFilter
+        /// </summary>
+        /// <param name="giraf">Giraf Service</param>
         public LogFilter(IGirafService giraf)
         {
             _giraf = giraf;
         }
 
+        /// <summary>
+        /// On executing hook
+        /// </summary>
+        /// <param name="context">Context in which is executed</param>
         public void OnActionExecuting(ActionExecutingContext context)
         {
 
@@ -27,6 +38,10 @@ namespace GirafRest.Filters
 
         private static readonly object filelock = new object();
 
+        /// <summary>
+        /// Post-execution hook, writing to log file
+        /// </summary>
+        /// <param name="context">Context in which is executed</param>
         public void OnActionExecuted(ActionExecutedContext context)
         {
             string path = "Logs/log-" + DateTime.Now.Year + DateTime.Now.Month.ToString().PadLeft(2, '0') + DateTime.Now.Day.ToString().PadLeft(2, '0') + ".txt";
@@ -39,7 +54,7 @@ namespace GirafRest.Filters
             var error = ((context.Result as ObjectResult)?.Value as Response)?.ErrorCode.ToString();
             string[] lines = new string[]
             {
-                $"{DateTime.UtcNow.ToString("o")}; {user}; {userId}; {verb}; {p}; {error}"
+                $"{DateTime.UtcNow:o}; {user}; {userId}; {verb}; {p}; {error}"
             };
             lock (filelock)
             {

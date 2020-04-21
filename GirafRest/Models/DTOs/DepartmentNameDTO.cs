@@ -1,6 +1,9 @@
 ﻿using System;
 namespace GirafRest
 {
+    /// <summary>
+    /// DTO for Department Name
+    /// </summary>
     public class DepartmentNameDTO
     {
         /// <summary>
@@ -12,12 +15,18 @@ namespace GirafRest
         /// </summary>
         public string Name { get; set; }
 
+        /// <summary>
+        /// Constructor for ID and Name
+        /// </summary>
         public DepartmentNameDTO(long id, string name)
         {
             this.ID = id;
             this.Name = name;
         }
 
+        /// <summary>
+        /// Empty constructor for JSON Generation
+        /// </summary>
         public DepartmentNameDTO() {}
     }
 }

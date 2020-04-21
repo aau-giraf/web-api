@@ -1,6 +1,9 @@
 ﻿using System;
 namespace GirafRest
 {
+    /// <summary>
+    /// DTO for weekname, holding year, number and name
+    /// </summary>
     public class WeekNameDTO
     {
         /// <summary>
@@ -18,11 +21,16 @@ namespace GirafRest
         /// </summary>
         public int WeekNumber { get; internal set; }
 
+        /// <summary>
+        /// Empty constructor for JSON Generation
+        /// </summary>
         public WeekNameDTO()
         {
-
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public WeekNameDTO(int weekYear, int weekNumber, string name)
         {
             this.Name = name;
