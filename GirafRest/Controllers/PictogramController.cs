@@ -151,25 +151,28 @@ namespace GirafRest.Controllers
         /// <returns>The new pictogram with all database-generated information.
         /// Else: Notfound, MissingProperties or InvalidProperties </returns>
         [HttpPost("")]
-        public async Task<Response<WeekPictogramDTO>> CreatePictogram([FromBody]PictogramDTO pictogram)
+        [ProducesResponseType(typeof(MyResponse<WeekPictogramDTO>), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> CreatePictogram([FromBody]PictogramDTO pictogram)
         {
             var user = await _giraf.LoadUserWithResources(HttpContext.User);
 
             if (user == null)
-                return new ErrorResponse<WeekPictogramDTO>(ErrorCode.NotFound);
+                return NotFound(new RESTError(ErrorCode.NotFound, "User not found"));
 
             if (pictogram == null)
-                return new ErrorResponse<WeekPictogramDTO>(ErrorCode.MissingProperties,
+                return BadRequest(new RESTError(ErrorCode.MissingProperties,
                     "Could not read pictogram DTO. Please make sure not to include image data in this request. " +
-                    "Use POST localhost/v1/pictogram/{id}/image instead.");
+                    "Use POST localhost/v1/pictogram/{id}/image instead."));
 
             if (!ModelState.IsValid)
-                return new ErrorResponse<WeekPictogramDTO>(ErrorCode.InvalidProperties);
+                return BadRequest(new RESTError(ErrorCode.InvalidProperties, "Model is not valid"));
 
             //Create the actual pictogram instance
             // if access level is not specified, missing properties
             if (pictogram.AccessLevel == null || !Enum.IsDefined(typeof(AccessLevel), pictogram.AccessLevel))
-                return new ErrorResponse<WeekPictogramDTO>(ErrorCode.MissingProperties, "access level, pictogram");
+                return BadRequest(new RESTError(ErrorCode.MissingProperties, "Missing access level"));
 
             Pictogram pict =
                 new Pictogram(pictogram.Title, (AccessLevel)pictogram.AccessLevel);
@@ -188,7 +191,10 @@ namespace GirafRest.Controllers
             await _giraf._context.Pictograms.AddAsync(pict);
             await _giraf._context.SaveChangesAsync();
 
-            return new Response<WeekPictogramDTO>(new WeekPictogramDTO(pict));
+            return CreatedAtRoute(
+                "GetPictogram", 
+                new { id = pict.Id }, 
+                new MyResponse<WeekPictogramDTO>(new WeekPictogramDTO(pict)));
         }
 
         /// <summary>
@@ -201,26 +207,36 @@ namespace GirafRest.Controllers
         /// <returns> The updated Pictogram else: MissingProperties, InvalidProperties, NotFound, PictogramNotFound, or
         /// NotAuthorized </returns>
         [HttpPut("{id}")]
-        public async Task<Response<WeekPictogramDTO>> UpdatePictogramInfo(long id, [FromBody] PictogramDTO pictogram)
+        [ProducesResponseType(typeof(WeekPictogramDTO), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> UpdatePictogramInfo(long id, [FromBody] PictogramDTO pictogram)
         {
             if (pictogram == null)
-                return new ErrorResponse<WeekPictogramDTO>(ErrorCode.MissingProperties, "Could not read pictogram DTO. Please make sure not to include image data in this request. " + "Use POST localhost/v1/pictogram/{id}/image instead.");
+                return BadRequest(
+                    new RESTError(ErrorCode.MissingProperties, 
+                    "Could not read pictogram DTO.", "Please make sure not to include image data in this request. " + 
+                    "Use POST localhost/v1/pictogram/{id}/image instead."));
             if (pictogram.AccessLevel == null)
-                return new ErrorResponse<WeekPictogramDTO>(ErrorCode.MissingProperties, "missing access level");
+                return BadRequest(new RESTError(ErrorCode.MissingProperties, "Missing access level"));
             if (!ModelState.IsValid)
-                return new ErrorResponse<WeekPictogramDTO>(ErrorCode.InvalidProperties);
+                return BadRequest(new RESTError(ErrorCode.InvalidProperties, "Invalid model"));
 
             var usr = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
-            if (usr == null) return new ErrorResponse<WeekPictogramDTO>(ErrorCode.NotFound);
+            if (usr == null) 
+                return Unauthorized(new RESTError(ErrorCode.UserNotFound, "User not found"));
             //Fetch the pictogram from the database and check that it exists
             var pict = await _giraf._context.Pictograms
                 .Where(pic => pic.Id == id)
                 .FirstOrDefaultAsync();
             if (pict == null)
-                return new ErrorResponse<WeekPictogramDTO>(ErrorCode.PictogramNotFound);
+                return NotFound(new RESTError(ErrorCode.PictogramNotFound, "Pictogram not found"));
 
             if (!CheckOwnership(pict, usr).Result)
-                return new ErrorResponse<WeekPictogramDTO>(ErrorCode.NotAuthorized);
+                return StatusCode(StatusCodes.Status403Forbidden, 
+                    new RESTError(ErrorCode.NotAuthorized, "User does not have permission"));
             //Ensure that Id is not changed.
             pictogram.Id = id;
             //Update the existing database entry and save the changes.
@@ -228,7 +244,7 @@ namespace GirafRest.Controllers
             _giraf._context.Pictograms.Update(pict);
             await _giraf._context.SaveChangesAsync();
 
-            return new Response<WeekPictogramDTO>(new WeekPictogramDTO(pict));
+            return Ok(new MyResponse<WeekPictogramDTO>(new WeekPictogramDTO(pict)));
         }
 
         /// <summary>
@@ -238,18 +254,23 @@ namespace GirafRest.Controllers
         /// <returns>Ok if the pictogram was deleted,
         /// Else: UserNotFound,PictogramNotFound or NotAuthorized </returns>
         [HttpDelete("{id}")]
-        public async Task<Response> DeletePictogram(int id)
+        [ProducesResponseType(typeof(MyResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> DeletePictogram(int id)
         {
             var usr = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
             if (usr == null)
-                return new ErrorResponse(ErrorCode.UserNotFound);
+                return Unauthorized(new RESTError(ErrorCode.UserNotFound, "User not found"));
             //Fetch the pictogram from the database and check that it exists
             var pict = await _giraf._context.Pictograms.Where(pic => pic.Id == id).FirstOrDefaultAsync();
             if (pict == null)
-                return new ErrorResponse(ErrorCode.PictogramNotFound);
+                return NotFound(new RESTError(ErrorCode.PictogramNotFound, "Pictogram not found"));
 
             if (!CheckOwnership(pict, usr).Result)
-                return new ErrorResponse(ErrorCode.NotAuthorized);
+                return StatusCode(StatusCodes.Status403Forbidden, 
+                    new RESTError(ErrorCode.NotAuthorized, "User does not have permission"));
 
             // Before we can remove a pictogram we must delete all its relations
             var userRessourceRelations = _giraf._context.UserResources.Where(ur => ur.PictogramKey == pict.Id);
@@ -268,7 +289,7 @@ namespace GirafRest.Controllers
             // Now we can safely delete the pictogram
             _giraf._context.Pictograms.Remove(pict);
             await _giraf._context.SaveChangesAsync();
-            return new Response();
+            return Ok(new MyResponse("Pictogram deleted"));
         }
         #endregion
         #region ImageHandling
@@ -281,12 +302,16 @@ namespace GirafRest.Controllers
         /// Else: UserNotFound, PictogramNotFound or NotAuthorized</returns>
 
         [HttpPut("{id}/image")]
-        public async Task<Response<WeekPictogramDTO>> SetPictogramImage(long id)
+        [ProducesResponseType(typeof(MyResponse<WeekPictogramDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> SetPictogramImage(long id)
         {
             GirafUser user = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
 
             if (user == null)
-                return new ErrorResponse<WeekPictogramDTO>(ErrorCode.UserNotFound);
+                return Unauthorized(new RESTError(ErrorCode.UserNotFound, "User not found"));
 
             //Attempt to fetch the pictogram from the database.
             Pictogram pictogram = await _giraf._context
@@ -295,10 +320,11 @@ namespace GirafRest.Controllers
                 .FirstOrDefaultAsync();
 
             if (pictogram == null)
-                return new ErrorResponse<WeekPictogramDTO>(ErrorCode.PictogramNotFound);
+                return NotFound(new RESTError(ErrorCode.PictogramNotFound, "Pictogram not found"));
 
             if (!CheckOwnership(pictogram, user).Result)
-                return new ErrorResponse<WeekPictogramDTO>(ErrorCode.NotAuthorized);
+                return StatusCode(StatusCodes.Status403Forbidden, 
+                    new RESTError(ErrorCode.NotAuthorized, "User does not have permission"));
 
             //Update the image
             byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body);
@@ -319,9 +345,8 @@ namespace GirafRest.Controllers
                 pictogram.ImageHash = image.GetHashCode().ToString();
             }
 
-
             await _giraf._context.SaveChangesAsync();
-            return new Response<WeekPictogramDTO>(new WeekPictogramDTO(pictogram));
+            return Ok(new MyResponse<WeekPictogramDTO>(new WeekPictogramDTO(pictogram)));
         }
 
         /// <summary>
@@ -331,7 +356,11 @@ namespace GirafRest.Controllers
         /// <returns>A The image else: PictogramNotFound, NotAuthorized, PictogramHasNoImage, 
         /// or NotAuthorized </returns>
         [HttpGet("{id}/image")]
-        public async Task<Response<byte[]>> ReadPictogramImage(long id)
+        [ProducesResponseType(typeof(MyResponse<byte[]>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> ReadPictogramImage(long id)
         {
             //Fetch the pictogram and check that it actually exists and has an image.
             var picto = await _giraf._context
@@ -339,19 +368,20 @@ namespace GirafRest.Controllers
                 .Where(pictogram => pictogram.Id == id)
                 .FirstOrDefaultAsync();
             if (picto == null)
-                return new ErrorResponse<byte[]>(ErrorCode.PictogramNotFound);
+                return NotFound(new RESTError(ErrorCode.PictogramNotFound, "Pictogram not found"));
 
             var usr = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
-            if (usr == null)
-                return new ErrorResponse<byte[]>(ErrorCode.NotAuthorized);
+            if (usr == null) 
+                return Unauthorized(new RESTError(ErrorCode.NotAuthorized, "User not authorized"));
 
             if (picto.ImageHash == null)
-                return new ErrorResponse<byte[]>(ErrorCode.PictogramHasNoImage);
+                return NotFound(new RESTError(ErrorCode.PictogramHasNoImage, "Pictogram has no image"));
 
             if (!CheckOwnership(picto, usr).Result)
-                return new ErrorResponse<byte[]>(ErrorCode.NotAuthorized);
+                return StatusCode(StatusCodes.Status403Forbidden, 
+                    new RESTError(ErrorCode.NotAuthorized, "User does not have permission"));
 
-            return new Response<byte[]>(System.IO.File.ReadAllBytes(imagePath + picto.Id + ".png"));
+            return Ok(new MyResponse<byte[]>(System.IO.File.ReadAllBytes(imagePath + picto.Id + ".png")));
         }
 
         /// <summary>
@@ -362,20 +392,28 @@ namespace GirafRest.Controllers
         /// <returns>The raw pictogram image.</returns>
         /// <param name="id">Identifier.</param>
         [HttpGet("{id}/image/raw")]
-        public async Task<IActionResult> ReadRawPictogramImage(long id)
+        [Produces(IMAGE_TYPE_PNG)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> ReadRawPictogramImage(long id)
         {
             // fetch current authenticated user
             var usr = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
             if (usr == null)
-                return NotFound();
+                return Unauthorized(new RESTError(ErrorCode.UserNotFound, "User not found"));
 
             var picto = await _giraf._context
                 .Pictograms
                 .Where(pictogram => pictogram.Id == id)
                 .FirstOrDefaultAsync();
 
-            if (picto == null || picto.ImageHash == null)
-                return NotFound();
+            if (picto == null)
+                return NotFound(new RESTError(ErrorCode.PictogramNotFound, "Pictogram not found"));
+
+            if (picto.ImageHash == null)
+                return NotFound(new RESTError(ErrorCode.PictogramHasNoImage, "Pictogram has no image"));
 
             // you can get all public pictograms
             if (CheckOwnership(picto, usr).Result)
@@ -386,13 +424,15 @@ namespace GirafRest.Controllers
 
             // you can only get a protected picogram if it is owned by your department
             if (picto.AccessLevel == AccessLevel.PROTECTED && !picto.Departments.Any(d => d.OtherKey == usr.DepartmentKey))
-                return NotFound();
+                return StatusCode(StatusCodes.Status403Forbidden, 
+                    new RESTError(ErrorCode.NotAuthorized, "User does not have permission"));
 
             // you can only get a private pictogram if you are among the owners of the pictogram
             if (picto.AccessLevel == AccessLevel.PRIVATE && !picto.Users.Any(d => d.OtherKey == usr.Id))
-                return NotFound();
+                return StatusCode(StatusCodes.Status403Forbidden,
+                    new RESTError(ErrorCode.NotAuthorized, "User does not have permission"));
 
-            return NotFound();
+            return NotFound(new RESTError(ErrorCode.PictogramNotFound, "Pictogram image not found"));
         }
 
         #endregion
