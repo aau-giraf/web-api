@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GirafRest.Models.Responses;
 using GirafRest.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GirafRest.Controllers
@@ -29,6 +30,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns>Success Reponse.</returns>
         [HttpGet("")]
+        [ProducesResponseType(typeof(MyResponse), StatusCodes.Status200OK)]
         public ActionResult Status()
         {
             return Ok(new MyResponse("GIRAF API is running!"));
@@ -39,6 +41,8 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns>Success response if connection to database else ErrorResponse</returns>
         [HttpGet("database")]
+        [ProducesResponseType(typeof(MyResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
         public ActionResult DatabaseStatus()
         {
             try
@@ -48,7 +52,7 @@ namespace GirafRest.Controllers
             }
             catch (System.Exception e)
             {
-                return StatusCode(503, new RESTError(ErrorCode.Error, "Error when connecting to database", e.Message));
+                return StatusCode(StatusCodes.Status503ServiceUnavailable, new RESTError(ErrorCode.Error, "Error when connecting to database", e.Message));
             }
         }
 
@@ -57,6 +61,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns>branch and commit hash for this API instance</returns>
         [HttpGet("version-info")]
+        [ProducesResponseType(typeof(MyResponse), StatusCodes.Status200OK)]
         public ActionResult GetVersionInfo()
         {
             var gitpath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName + "/.git/";
