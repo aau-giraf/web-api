@@ -343,7 +343,7 @@ namespace GirafRest.Test
             var guardians = new List<UserNameDTO>();
             foreach (var guardian in user.Guardians)
             {
-                guardians.Add(new UserNameDTO { UserId = guardian.Guardian.Id, UserName = guardian.Guardian.UserName });
+                guardians.Add(new UserNameDTO { UserId = guardian.Guardian.Id, UserName = guardian.Guardian.DisplayName });
             }
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
@@ -411,7 +411,7 @@ namespace GirafRest.Test
 
             var citizens = new List<UserNameDTO>();
             var citizenUser = _testContext.MockUsers[CITIZEN_DEP_TWO];
-            citizens.Add(new UserNameDTO { UserId = citizenUser.Id, UserName = citizenUser.UserName });
+            citizens.Add(new UserNameDTO { UserId = citizenUser.Id, UserName = citizenUser.DisplayName });
 
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
 
