@@ -102,11 +102,11 @@ namespace GirafRest.Controllers
         /// <param name="id">Id of <see cref="Department"/> to get citizens for</param>
         [HttpGet("{id}/citizens")]
         [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
-        public async Task<Response<List<UserNameDTO>>> GetCitizenNamesAsync(long id)
+        public async Task<Response<List<ScreenNameDTO>>> GetCitizenNamesAsync(long id)
         {
             var department = _giraf._context.Departments.FirstOrDefault(dep => dep.Key == id);
 
-            if (department == null) return new ErrorResponse<List<UserNameDTO>>(ErrorCode.DepartmentNotFound);
+            if (department == null) return new ErrorResponse<List<ScreenNameDTO>>(ErrorCode.DepartmentNotFound);
 
             var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
 
@@ -116,28 +116,28 @@ namespace GirafRest.Controllers
             var isSuperUser = await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser);
 
             if (currentUser?.DepartmentKey != department?.Key && !isSuperUser)
-                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.NotAuthorized);
+                return new ErrorResponse<List<ScreenNameDTO>>(ErrorCode.NotAuthorized);
 
             // Get all citizens
             var roleCitizenId = _giraf._context.Roles.Where(r => r.Name == GirafRole.Citizen)
                                                      .Select(c => c.Id).FirstOrDefault();
 
-            if (roleCitizenId == null) return new ErrorResponse<List<UserNameDTO>>(ErrorCode.DepartmentHasNoCitizens);
+            if (roleCitizenId == null) return new ErrorResponse<List<ScreenNameDTO>>(ErrorCode.DepartmentHasNoCitizens);
 
             // get all users where id of role is in roleCitizenId
             var userIds = _giraf._context.UserRoles.Where(u => u.RoleId == roleCitizenId)
                                 .Select(r => r.UserId).Distinct();
 
-            if (!userIds.Any()) return new ErrorResponse<List<UserNameDTO>>(ErrorCode.DepartmentHasNoCitizens);
+            if (!userIds.Any()) return new ErrorResponse<List<ScreenNameDTO>>(ErrorCode.DepartmentHasNoCitizens);
 
             // get a list of the name of all citizens in the department
             var usersNamesInDepartment = _giraf._context.Users
                 .Where(u => userIds.Any(ui => ui == u.Id) && u.DepartmentKey == department.Key)
                 .Select(u =>
-                    new UserNameDTO(u.DisplayName, GirafRoles.Citizen, u.Id)
+                    new ScreenNameDTO(u.DisplayName, GirafRoles.Citizen, u.Id)
                 ).ToList();
 
-            return new Response<List<UserNameDTO>>(usersNamesInDepartment);
+            return new Response<List<ScreenNameDTO>>(usersNamesInDepartment);
         }
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace GirafRest.Controllers
                     foreach (var mem in depDTO.Members)
                     {
                         var usr = await _giraf._context.Users
-                            .Where(u => u.UserName == mem.UserName || u.Id == mem.UserId)
+                            .Where(u => u.UserName == mem.ScreenName || u.Id == mem.UserId)
                             .FirstOrDefaultAsync();
                         if (usr == null)
                             return new ErrorResponse<DepartmentDTO>(ErrorCode.InvalidProperties,

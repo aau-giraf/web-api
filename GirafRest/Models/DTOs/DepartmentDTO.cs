@@ -24,7 +24,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// A list of the usernames of all members of the department.
         /// </summary>
-        public ICollection<UserNameDTO> Members { get; set; }
+        public ICollection<ScreenNameDTO> Members { get; set; }
 
         /// <summary>
         /// A list of ids of all resources owned by the department.
@@ -36,7 +36,7 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         /// <param name="department">The department to transfer.</param>
         /// <param name="users">Used for finding the members.</param>
-        public DepartmentDTO(Department department, IEnumerable<UserNameDTO> users)
+        public DepartmentDTO(Department department, IEnumerable<ScreenNameDTO> users)
         {
             Id = department.Key;
             Members = users.ToList();
@@ -50,7 +50,7 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         public DepartmentDTO ()
         {
-            Members = new List<UserNameDTO>();
+            Members = new List<ScreenNameDTO>();
             Resources = new List<long>();
         }
 
@@ -58,10 +58,10 @@ namespace GirafRest.Models.DTOs
         /// Find belonging members
         /// </summary>
         /// <returns>List of matching users</returns>
-        public static List<UserNameDTO> FindMembers(IEnumerable<GirafUser> users, RoleManager<GirafRole> roleManager, IGirafService girafService)
+        public static List<ScreenNameDTO> FindMembers(IEnumerable<GirafUser> users, RoleManager<GirafRole> roleManager, IGirafService girafService)
         {
-            return new List<UserNameDTO>(
-                users.Select(m => new UserNameDTO(
+            return new List<ScreenNameDTO>(
+                users.Select(m => new ScreenNameDTO(
                         m.DisplayName,
                         roleManager.findUserRole(girafService._userManager, m).Result,
                         m.Id
