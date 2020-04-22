@@ -11,7 +11,6 @@ using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
 using Microsoft.Extensions.Options;
 using System.Linq;
-using Microsoft.AspNetCore.Mvc;
 using System;
 using Microsoft.AspNetCore.Http; 
 
