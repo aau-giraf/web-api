@@ -57,7 +57,7 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         public bool GreyScale { get; set; }
         /// <summary>
-        /// Flag for indicating wether or not timer buttons is enabled
+        /// Flag for indicating whether or not timer buttons are enabled
         /// </summary>
         public bool LockTimerControl { get; set; }
 
