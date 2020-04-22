@@ -13,6 +13,7 @@ using System;
 using GirafRest.Extensions;
 using GirafRest.Models.Responses;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Http;
 
 namespace GirafRest.Controllers
 {
@@ -24,6 +25,8 @@ namespace GirafRest.Controllers
     public class UserController : Controller
     {
         private const int IMAGE_CONTENT_TYPE_DEFINITION = 25;
+        private const string IMAGE_TYPE_PNG = "image/png";
+
 
         private readonly IGirafService _giraf;
 
@@ -56,36 +59,42 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns> If success returns Meta-data about the currently authorized user else UserNotFound /</returns>
         [HttpGet("")]
-        public async Task<Response<GirafUserDTO>> GetUser()
+        [ProducesResponseType(typeof(MyResponse<GirafUserDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> GetUser()
         {
             //First attempt to fetch the user and check that he exists
             var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
             if (user == null)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
+                return NotFound(new RESTError(ErrorCode.UserNotFound, "User not found"));
 
-            return new Response<GirafUserDTO>(new GirafUserDTO(user, await _roleManager.findUserRole(_giraf._userManager, user)));
+            return Ok(new MyResponse<GirafUserDTO>(new GirafUserDTO(user, await _roleManager.findUserRole(_giraf._userManager, user))));
         }
 
         /// <summary>
         /// Find information on the user with the username supplied as a url query parameter or the current user.
         /// </summary>
         /// <returns>  Data about the user if success else MissingProperties, UserNotFound or NotAuthorized </returns>
-        [HttpGet("{id}")]
-        public async Task<Response<GirafUserDTO>> GetUser(string id)
+        [HttpGet("{id}", Name="GetUserById")]
+        [ProducesResponseType(typeof(MyResponse<GirafUserDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> GetUser(string id)
         {
             if (string.IsNullOrEmpty(id))
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "id");
+                return BadRequest(new RESTError(ErrorCode.MissingProperties, "User id not found"));
 
             //First attempt to fetch the user and check that he exists
             var user =  _giraf._context.Users.FirstOrDefault(u => u.Id == id);
             if (user == null)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
+                return NotFound(new RESTError(ErrorCode.UserNotFound, "User not found"));
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
+                return StatusCode(StatusCodes.Status403Forbidden, new RESTError(ErrorCode.NotAuthorized, "User does not have permission"));
 
-            return new Response<GirafUserDTO>(new GirafUserDTO(user, await _roleManager.findUserRole(_giraf._userManager, user)));
+            return Ok(new MyResponse<GirafUserDTO>(new GirafUserDTO(user, await _roleManager.findUserRole(_giraf._userManager, user))));
         }
 
         /// <summary>
@@ -93,29 +102,33 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="id">Identifier of the <see cref="GirafUser"/> to get settings for </param>
         /// <returns> UserSettings for the user if success else MissingProperties, UserNotFound, NotAuthorized or RoleMustBeCitizien</returns>
-        [HttpGet("{id}/settings")]
-        public async Task<Response<SettingDTO>> GetSettings(string id)
+        [HttpGet("{id}/settings", Name="GetUserSettings")]
+        [ProducesResponseType(typeof(MyResponse<GirafUserDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> GetSettings(string id)
         {
             if (string.IsNullOrEmpty(id))
-                return new ErrorResponse<SettingDTO>(ErrorCode.MissingProperties, "id");
+                return BadRequest(new RESTError(ErrorCode.MissingProperties, "User id not found"));
 
             //First attempt to fetch the user and check that he exists
             var user = _giraf._context.Users.Include(u => u.Settings).ThenInclude(w => w.WeekDayColors).FirstOrDefault(u => u.Id == id);
             if (user == null)
-                return new ErrorResponse<SettingDTO>(ErrorCode.UserNotFound);
+                return NotFound(new RESTError(ErrorCode.UserNotFound, "User not found"));
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return new ErrorResponse<SettingDTO>(ErrorCode.NotAuthorized);
+                return StatusCode(StatusCodes.Status403Forbidden, new RESTError(ErrorCode.NotAuthorized, "User does not have permission"));
 
             // Get the role the user is associated with
             var userRole = await _roleManager.findUserRole(_giraf._userManager, user);
             
             //Returns the user settings if the user is a citizen otherwise returns an error (only citizens has settings). 
             if (userRole == GirafRoles.Citizen)
-                return new Response<SettingDTO>(new SettingDTO(user.Settings));
+                return Ok(new MyResponse<SettingDTO>(new SettingDTO(user.Settings)));
             else
-                return new ErrorResponse<SettingDTO>(ErrorCode.RoleMustBeCitizien);
+                return BadRequest(new RESTError(ErrorCode.RoleMustBeCitizien, "User role must be a citizen"));
         }
 
         /// <summary>
@@ -126,24 +139,29 @@ namespace GirafRest.Controllers
         /// <returns>DTO for the updated user on success else MissingProperties, UserNotFound, NotAuthorized,
         /// or UserAlreadyExists</returns>
         [HttpPut("{id}")]
-        public async Task<Response<GirafUserDTO>> UpdateUser(string id, [FromBody] GirafUserDTO newUser)
+        [ProducesResponseType(typeof(MyResponse<GirafUserDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        public async Task<ActionResult> UpdateUser(string id, [FromBody] GirafUserDTO newUser)
         {
             if (newUser == null || newUser.Username == null || newUser.ScreenName == null)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties);
+                return BadRequest(new RESTError(ErrorCode.MissingProperties, "Model is missing properties"));
 
             var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
             // Get the roles the user is associated with
             var userRole = await _roleManager.findUserRole(_giraf._userManager, user);
             if (user == null)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
+                return NotFound(new RESTError(ErrorCode.UserNotFound, "User not found"));
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
+                return StatusCode(StatusCodes.Status403Forbidden, new RESTError(ErrorCode.NotAuthorized, "User does not have permission"));
             
-            // check whether user with that username already exist that does dot have the same id
+            // check whether user with that username already exist that does not have the same id
             if (_giraf._context.Users.Any(u => u.UserName == newUser.Username && u.Id != user.Id))
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserAlreadyExists);
+                return Conflict(new RESTError(ErrorCode.UserAlreadyExists, "Username already exists"));
 
 
             // update fields if they are not null
@@ -156,7 +174,7 @@ namespace GirafRest.Controllers
             // save and return 
             _giraf._context.Users.Update(user);
             await _giraf._context.SaveChangesAsync();
-            return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));
+            return Ok(new MyResponse<GirafUserDTO>(new GirafUserDTO(user, userRole)));
         }
 
         #region UserIcon
@@ -165,18 +183,22 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns>The requested image as a <see cref="ImageDTO"/></returns>
         /// <param name="id">Identifier of the <see cref="GirafUser"/>to get UserIcon for</param>
-        [HttpGet("{id}/icon")]
-        public Task<Response<ImageDTO>> GetUserIcon(string id)
+        [HttpGet("{id}/icon", Name="GetUserIcon")]
+        [ProducesResponseType(typeof(MyResponse<ImageDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public Task<ActionResult> GetUserIcon(string id)
         {
             var user = _giraf._context.Users.Include(u => u.UserIcon).FirstOrDefault(u => u.Id == id);
             if (user == null)
-                return Task.FromResult<Response<ImageDTO>>(new ErrorResponse<ImageDTO>(ErrorCode.UserNotFound));
+                return Task.FromResult<ActionResult>(
+                    NotFound(new RESTError(ErrorCode.UserNotFound, "User not found")));
                 
 
             if (user.UserIcon == null)
-                return Task.FromResult<Response<ImageDTO>>(new ErrorResponse<ImageDTO>(ErrorCode.UserHasNoIcon));
+                return Task.FromResult<ActionResult>(
+                    NotFound(new RESTError(ErrorCode.UserHasNoIcon, "User has no icon")));
 
-            return Task.FromResult(new Response<ImageDTO>(new ImageDTO(user.UserIcon)));
+            return Task.FromResult<ActionResult>(Ok(new MyResponse<ImageDTO>(new ImageDTO(user.UserIcon))));
         }
 
         /// <summary>
@@ -185,18 +207,21 @@ namespace GirafRest.Controllers
         /// <returns>The user icon as a png</returns>
         /// <param name="id">Identifier of the <see cref="GirafUser"/> to get icon for</param>
         [HttpGet("{id}/icon/raw")]
-        public Task<IActionResult> GetRawUserIcon(string id)
+        [Produces(IMAGE_TYPE_PNG)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public Task<ActionResult> GetRawUserIcon(string id)
         {
             var user = _giraf._context.Users.Include(u => u.UserIcon).FirstOrDefault(u => u.Id == id);
 
             if (user == null)
-                return Task.FromResult<IActionResult>(NotFound());
+                return Task.FromResult<ActionResult>(NotFound(new RESTError(ErrorCode.UserNotFound, "User not found")));
 
             if (user.UserIcon == null)
-                return Task.FromResult<IActionResult>(NotFound());
+                return Task.FromResult<ActionResult>(NotFound(new RESTError(ErrorCode.UserHasNoIcon, "User has no icon")));
 
 
-            return Task.FromResult<IActionResult>(File(Convert.FromBase64String(System.Text.Encoding.UTF8.GetString(user.UserIcon)), "image/png"));
+            return Task.FromResult<ActionResult>(File(Convert.FromBase64String(System.Text.Encoding.UTF8.GetString(user.UserIcon)), IMAGE_TYPE_PNG));
         }
 
         /// <summary>
