@@ -400,8 +400,8 @@ class TestUserController(GIRAFTestCase):
         self.assertEqual(3, response['data']['activitiesCount'])
         self.assertEqual(3, response['data']['theme'])
         self.assertEqual(2, response['data']['nrOfDaysToDisplay'])
-        self.assertTrue(True, response['data']['greyScale'])
-        self.assertTrue(True, response['data']['LockTimerControl'])
+        self.assertTrue(response['data']['greyScale'])
+        self.assertTrue(response['data']['LockTimerControl'])
         self.assertEqual("#FF00FF", response['data']['weekDayColors'][0]['hexColor'])
         self.assertEqual(1, response['data']['weekDayColors'][0]['day'])
 
