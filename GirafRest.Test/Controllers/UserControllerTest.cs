@@ -627,8 +627,6 @@ namespace GirafRest.Test
 
 
         #region AddUserResource
-        [Fact]
-        [System.Obsolete]
         public void AddUserResource_OwnPrivateValidUser_Success()
         {
             var usercontroller = initializeTest();
@@ -644,10 +642,6 @@ namespace GirafRest.Test
             Assert.True(_testContext.MockUsers[CITIZEN_DEP_TWO].Resources
                         .FirstOrDefault(r => r.PictogramKey == GuardianPrivatePictogram) != null);
         }
-
-
-        [Fact]
-        [System.Obsolete]
         public void AddUserResource_OwnPrivateInvalidUser_UserNotFound()
         {
             var usercontroller = initializeTest();
@@ -661,9 +655,7 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
 
-
-        [Fact]
-        [System.Obsolete]
+        
         public void AddUserResource_OwnProtectedValidUser_ResourceMustBePrivate()
         {
             var usercontroller = initializeTest();
@@ -677,9 +669,7 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.ResourceMustBePrivate, res.ErrorCode);
         }
 
-
-        [Fact]
-        [System.Obsolete]
+        
         public void AddUserResource_OwnProtectedInvalidUser_UserNotFound()
         {
             var usercontroller = initializeTest();
@@ -692,9 +682,8 @@ namespace GirafRest.Test
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
-
-        [Fact]
-        [System.Obsolete]
+        
+        
         public void AddUserResource_AnotherProtectedValidUser_NotAuthorized() 
         {
             var usercontroller = initializeTest();
@@ -707,9 +696,8 @@ namespace GirafRest.Test
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
-
-        [Fact]
-        [System.Obsolete]
+        
+        
         public void AddUserResource_AnotherProtectedInvalidUser_UserNotFound()
         {
             var usercontroller = initializeTest();
@@ -723,8 +711,7 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
 
-        [Fact]
-        [System.Obsolete]
+
         public void AddUserResource_PublicValidUser_NotAuthorized()
         {
             var usercontroller = initializeTest();
@@ -738,8 +725,7 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
         }
 
-        [Fact]
-        [System.Obsolete]
+
         public void AddUserResource_PublicInvalidUser_UserNotFound()
         {
             var usercontroller = initializeTest();
@@ -753,8 +739,7 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
 
-        [Fact]
-        [System.Obsolete]
+
         public void AddUserResource_AnotherPrivateValidUser_NotAuthorized()
         {
             var usercontroller = initializeTest();
@@ -768,8 +753,7 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
        }
 
-        [Fact]
-        [System.Obsolete]
+
         public void AddUserResource_AnotherPrivateInvalidUser_UserNotFound()
         {
             var usercontroller = initializeTest();
@@ -785,8 +769,6 @@ namespace GirafRest.Test
         }
         #endregion
         #region DeleteResource
-        [Fact]
-        [System.Obsolete]
         public void DeleteResource_OwnPrivateValidUser_Success()
         {
             var usercontroller = initializeTest();
@@ -802,8 +784,7 @@ namespace GirafRest.Test
             Assert.True(_testContext.MockUsers[GUARDIAN_DEP_TWO].Resources.FirstOrDefault(r => r.PictogramKey == GuardianPrivatePictogram) == null);
         }
 
-        [Fact]
-        [System.Obsolete]
+
         public void DeleteResource_PrivateNoUser_Error()
         {
             var usercontroller = initializeTest();
@@ -814,9 +795,7 @@ namespace GirafRest.Test
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
-
-        [Fact]
-        [System.Obsolete]
+        
         public void DeleteResource_OwnProtectedValidUser_UserDoesNotOwnResource()
         {
             var usercontroller = initializeTest();
@@ -829,9 +808,7 @@ namespace GirafRest.Test
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserDoesNotOwnResource, res.ErrorCode);
         }
-
-        [Fact]
-        [System.Obsolete]
+        
         public void DeleteResource_OwnProtectedInvalidUser_UserDoesNotOwnResource()
         {
             var usercontroller = initializeTest();
@@ -844,9 +821,7 @@ namespace GirafRest.Test
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserDoesNotOwnResource, res.ErrorCode);
         }
-
-        [Fact]
-        [System.Obsolete]
+        
         public void DeleteResource_PublicValidUser_UserDoesNotOwnResource()
         {
             var usercontroller = initializeTest();
@@ -860,9 +835,7 @@ namespace GirafRest.Test
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserDoesNotOwnResource, res.ErrorCode);
         }
-
-        [Fact]
-        [System.Obsolete]
+        
         public void DeleteResource_PublicInvalidUser_UserNotFound()
         {
             var usercontroller = initializeTest();
