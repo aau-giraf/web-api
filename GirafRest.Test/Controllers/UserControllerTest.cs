@@ -627,8 +627,6 @@ namespace GirafRest.Test
 
 
         #region AddUserResource
-        [Fact]
-        [System.Obsolete]
         public void AddUserResource_OwnPrivateValidUser_Success()
         {
             var usercontroller = initializeTest();
