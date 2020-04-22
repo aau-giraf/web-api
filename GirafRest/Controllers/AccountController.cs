@@ -94,7 +94,7 @@ namespace GirafRest.Controllers
                 return Unauthorized(new RESTError(ErrorCode.InvalidCredentials, "Invalid Credentials"));
 
             var loginUser = _giraf._context.Users.FirstOrDefault(u => u.UserName == model.Username);
-            return Ok(new MyResponse(await GenerateJwtToken(loginUser)));
+            return Ok(new SuccessResponse(await GenerateJwtToken(loginUser)));
         }
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace GirafRest.Controllers
                 await _signInManager.SignInAsync(user, isPersistent: true);
                 _giraf._logger.LogInformation("User created a new account with password.");
 
-                return Created(Request.Host + "/v1/user/" + user.Id, new MyResponse<GirafUserDTO>(new GirafUserDTO(user, model.Role)));
+                return Created(Request.Host + "/v1/user/" + user.Id, new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, model.Role)));
             }
 
             return StatusCode(StatusCodes.Status500InternalServerError, new RESTError(ErrorCode.Error, "Something went wrong when creating user"));
@@ -220,7 +220,7 @@ namespace GirafRest.Controllers
 
             await _signInManager.SignInAsync(user, isPersistent: false);
             _giraf._logger.LogInformation("User changed their password successfully.");
-            return Ok(new MyResponse("Password was updated"));
+            return Ok(new SuccessResponse("Password was updated"));
         }
 
         /// <summary>
@@ -255,7 +255,7 @@ namespace GirafRest.Controllers
 
             await _signInManager.SignInAsync(user, isPersistent: false);
             _giraf._logger.LogInformation("User changed their password successfully.");
-            return Ok(new MyResponse("User password changed succesfully"));
+            return Ok(new SuccessResponse("User password changed succesfully"));
         }
 
         /// <summary>
@@ -283,7 +283,7 @@ namespace GirafRest.Controllers
                 return Unauthorized(new RESTError(ErrorCode.NotAuthorized, "Unauthorized"));
 
             var result = await _giraf._userManager.GeneratePasswordResetTokenAsync(user);
-            return Ok(new MyResponse(result));
+            return Ok(new SuccessResponse(result));
         }
 
         /// <summary>
@@ -315,7 +315,7 @@ namespace GirafRest.Controllers
             var result = _giraf._context.Users.Remove(user);
             _giraf._context.SaveChanges();
 
-            return Ok(new MyResponse("User deleted"));
+            return Ok(new SuccessResponse("User deleted"));
         }
 
         /// <summary>

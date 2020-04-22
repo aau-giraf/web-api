@@ -30,10 +30,10 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns>Success Reponse.</returns>
         [HttpGet("")]
-        [ProducesResponseType(typeof(MyResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         public ActionResult Status()
         {
-            return Ok(new MyResponse("GIRAF API is running!"));
+            return Ok(new SuccessResponse("GIRAF API is running!"));
         }
 
         /// <summary>
@@ -41,14 +41,14 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns>Success response if connection to database else ErrorResponse</returns>
         [HttpGet("database")]
-        [ProducesResponseType(typeof(MyResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
         public ActionResult DatabaseStatus()
         {
             try
             {
                 _giraf._context.Users.FirstOrDefault();
-                return Ok(new MyResponse("Connection to database"));
+                return Ok(new SuccessResponse("Connection to database"));
             }
             catch (System.Exception e)
             {
@@ -61,7 +61,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns>branch and commit hash for this API instance</returns>
         [HttpGet("version-info")]
-        [ProducesResponseType(typeof(MyResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         public ActionResult GetVersionInfo()
         {
             var gitpath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName + "/.git/";
@@ -70,7 +70,7 @@ namespace GirafRest.Controllers
             var hash = System.IO.File.ReadLines(gitpath + pathToHead).First();
             // this assumes that branches are not named with / however this should be enforced anyways
             var branch = pathToHead.Split("/").Last();
-            return Ok(new MyResponse($"Branch: {branch} CommitHash: {hash}"));
+            return Ok(new SuccessResponse($"Branch: {branch} CommitHash: {hash}"));
         }
     }
 }

@@ -135,7 +135,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
             var res = userController.SetUserIcon(_testContext.MockUsers[userToEdit].Id).Result as ObjectResult;
-            var body = res.Value as MyResponse;
+            var body = res.Value as SuccessResponse;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.NotNull(body.Data);
@@ -156,7 +156,7 @@ namespace GirafRest.Test
 
             // Get icon to be sure it is set
             var res2 = usercontroller.GetUserIcon(_testContext.MockUsers[0].Id).Result as ObjectResult;
-            var body = res2.Value as MyResponse<ImageDTO>;
+            var body = res2.Value as SuccessResponse<ImageDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res2.StatusCode);
             Assert.True(body.Data.Image != null);
@@ -273,7 +273,7 @@ namespace GirafRest.Test
             var mockUser = _testContext.MockUsers[CITIZEN_DEP_TWO];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             var res = usercontroller.GetUser(mockUser.Id).Result as ObjectResult;
-            var body = res.Value as MyResponse<GirafUserDTO> ;
+            var body = res.Value as SuccessResponse<GirafUserDTO> ;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             // check that we are logged in as the correct user
@@ -288,7 +288,7 @@ namespace GirafRest.Test
             var mockUser = _testContext.MockUsers[GUARDIAN_DEP_TWO];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             var res = usercontroller.GetUser(mockUser.Id).Result as ObjectResult;
-            var body = res.Value as MyResponse<GirafUserDTO>;
+            var body = res.Value as SuccessResponse<GirafUserDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.Equal(mockUser.UserName, body.Data.Username);
@@ -303,7 +303,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
 
             var res = usercontroller.GetUser(mockUser.Id).Result as ObjectResult;
-            var body = res.Value as MyResponse<GirafUserDTO>;
+            var body = res.Value as SuccessResponse<GirafUserDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.Equal(_testContext.MockUsers[GUARDIAN_DEP_TWO].UserName, body.Data.Username);
@@ -328,7 +328,7 @@ namespace GirafRest.Test
             var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             var res = usercontroller.GetUser(mockUser.Id).Result as ObjectResult;
-            var body = res.Value as MyResponse<GirafUserDTO>;
+            var body = res.Value as SuccessResponse<GirafUserDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.Equal(_testContext.MockUsers[ADMIN_DEP_ONE].UserName, body.Data.Username);
@@ -384,7 +384,7 @@ namespace GirafRest.Test
             var user = _testContext.MockUsers[CITIZEN_DEP_TWO];
             _testContext.MockUserManager.MockLoginAsUser(user);
             var res = usercontroller.GetGuardians(user.Id).Result as ObjectResult;
-            var body = res.Value as MyResponse<List<UserNameDTO>>;
+            var body = res.Value as SuccessResponse<List<UserNameDTO>>;
 
             var guardians = new List<UserNameDTO>();
             foreach (var guardian in user.Guardians)
@@ -460,7 +460,7 @@ namespace GirafRest.Test
             var user = _testContext.MockUsers[GUARDIAN_DEP_TWO];
             _testContext.MockUserManager.MockLoginAsUser(user);
             var res = usercontroller.GetCitizens(user.Id).Result as ObjectResult;
-            var body = res.Value as MyResponse<List<UserNameDTO>>;
+            var body = res.Value as SuccessResponse<List<UserNameDTO>>;
 
             var citizens = new List<UserNameDTO>();
             var citizenUser = _testContext.MockUsers[CITIZEN_DEP_TWO];
@@ -535,7 +535,7 @@ namespace GirafRest.Test
                 ScreenName = newScreenName,
                 Username = newUserName
             }).Result as ObjectResult;
-            var body = res.Value as MyResponse<GirafUserDTO>;
+            var body = res.Value as SuccessResponse<GirafUserDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             // check that the updated data is correct
@@ -597,7 +597,7 @@ namespace GirafRest.Test
                 Username = "Charles",
                 ScreenName = "Junior"
             }).Result as ObjectResult;
-            var body = res.Value as MyResponse<GirafUserDTO>;
+            var body = res.Value as SuccessResponse<GirafUserDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             // check data
@@ -615,7 +615,7 @@ namespace GirafRest.Test
                 Username = user.UserName,
                 ScreenName = "Gunnar"
             }).Result as ObjectResult;
-            var body = res.Value as MyResponse<GirafUserDTO>;
+            var body = res.Value as SuccessResponse<GirafUserDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             // check data
@@ -667,7 +667,7 @@ namespace GirafRest.Test
                 ScreenName = screenName,
                 Username = userName
             }).Result as ObjectResult;
-            var body = res.Value as MyResponse<GirafUserDTO>;
+            var body = res.Value as SuccessResponse<GirafUserDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.NotNull(body.Data);
@@ -884,7 +884,7 @@ namespace GirafRest.Test
             var res = usercontroller
                 .DeleteResource(mockuser.Id,new ResourceIdDTO() { Id = GuardianPrivatePictogram })
                 .Result as ObjectResult;
-            var body = res.Value as MyResponse<GirafUserDTO>;
+            var body = res.Value as SuccessResponse<GirafUserDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             // check that ressource no longer exist

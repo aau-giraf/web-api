@@ -84,7 +84,7 @@ namespace GirafRest.Controllers
             _giraf._context.Activities.Add(dbActivity);
             await _giraf._context.SaveChangesAsync();
 
-            return StatusCode(StatusCodes.Status201Created, new MyResponse<ActivityDTO>(new ActivityDTO(dbActivity)));
+            return StatusCode(StatusCodes.Status201Created, new SuccessResponse<ActivityDTO>(new ActivityDTO(dbActivity)));
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace GirafRest.Controllers
             _giraf._context.Activities.Remove(targetActivity);
             await _giraf._context.SaveChangesAsync();
 
-            return Ok(new MyResponse("Activity deleted"));
+            return Ok(new SuccessResponse("Activity deleted"));
         }
 
         /// <summary>
@@ -203,7 +203,7 @@ namespace GirafRest.Controllers
 
             await _giraf._context.SaveChangesAsync();
 
-            return Ok(new MyResponse<ActivityDTO>(new ActivityDTO(updateActivity, activity.Pictogram)));
+            return Ok(new SuccessResponse<ActivityDTO>(new ActivityDTO(updateActivity, activity.Pictogram)));
         }
     }
 }

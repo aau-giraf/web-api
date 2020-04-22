@@ -62,7 +62,7 @@ namespace GirafRest.Test
                 newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Monday
             ).Result as ObjectResult;
 
-            var body = res.Value as MyResponse<ActivityDTO>;
+            var body = res.Value as SuccessResponse<ActivityDTO>;
 
             Assert.Equal(StatusCodes.Status201Created, res.StatusCode);
             Assert.Equal(newActivity.Pictogram.Id, body.Data.Pictogram.Id);
@@ -84,7 +84,7 @@ namespace GirafRest.Test
                 newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Saturday
             ).Result as ObjectResult;
 
-            var body = res.Value as MyResponse<ActivityDTO>;
+            var body = res.Value as SuccessResponse<ActivityDTO>;
 
             Assert.Equal(StatusCodes.Status201Created, res.StatusCode);
             Assert.Equal(newActivity.Pictogram.Id, body.Data.Pictogram.Id);
@@ -391,7 +391,7 @@ namespace GirafRest.Test
             };
 
             var res = ac.UpdateActivity(newActivity, mockUser.Id).Result as ObjectResult;
-            var body = res.Value as MyResponse<ActivityDTO>;
+            var body = res.Value as SuccessResponse<ActivityDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.Equal(newActivity.Pictogram.Id, body.Data.Pictogram.Id);

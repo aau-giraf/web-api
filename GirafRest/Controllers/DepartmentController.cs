@@ -51,7 +51,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns> A list of department names, returns NotFound if no departments in the system</returns>
         [HttpGet("")]
-        [ProducesResponseType(typeof(MyResponse<List<DepartmentNameDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<List<DepartmentNameDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> Get()
         {
@@ -60,7 +60,7 @@ namespace GirafRest.Controllers
             if (departmentNameDTOs.Count == 0)
                 return NotFound(new RESTError(ErrorCode.NotFound, "No departments found"));
 
-            return Ok(new MyResponse<List<DepartmentNameDTO>>(departmentNameDTOs));
+            return Ok(new SuccessResponse<List<DepartmentNameDTO>>(departmentNameDTOs));
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace GirafRest.Controllers
         /// <param name="id">The id of the <see cref="Department"/> to retrieve.</param>
         /// <returns>The department as a DepartmentDTO if success else UserNotfound, NotAuthorised or NotFound</returns>
         [HttpGet("{id}", Name="GetDepartment")]
-        [ProducesResponseType(typeof(MyResponse<DepartmentDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<DepartmentDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> Get(long id)
@@ -97,7 +97,7 @@ namespace GirafRest.Controllers
                 return NotFound(new RESTError(ErrorCode.NotFound, "Department not found"));
 
             var members = DepartmentDTO.FindMembers(depa.Members, _roleManager, _giraf);
-            return Ok(new MyResponse<DepartmentDTO>(new DepartmentDTO(depa, members)));
+            return Ok(new SuccessResponse<DepartmentDTO>(new DepartmentDTO(depa, members)));
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace GirafRest.Controllers
         /// <param name="id">Id of <see cref="Department"/> to get citizens for</param>
         [HttpGet("{id}/citizens")]
         [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
-        [ProducesResponseType(typeof(MyResponse<List<UserNameDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<List<UserNameDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> GetCitizenNamesAsync(long id)
@@ -148,7 +148,7 @@ namespace GirafRest.Controllers
                     new UserNameDTO(u.UserName, GirafRoles.Citizen, u.Id)
                 ).ToList();
 
-            return Ok(new MyResponse<List<UserNameDTO>>(usersNamesInDepartment));
+            return Ok(new SuccessResponse<List<UserNameDTO>>(usersNamesInDepartment));
         }
 
         /// <summary>
@@ -161,7 +161,7 @@ namespace GirafRest.Controllers
         /// </returns>
         [HttpPost("")]
         [Authorize]
-        [ProducesResponseType(typeof(MyResponse<DepartmentDTO>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(SuccessResponse<DepartmentDTO>), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -241,7 +241,7 @@ namespace GirafRest.Controllers
                 return CreatedAtRoute(
                     "GetDepartment",
                     new { id = department.Key },
-                    new MyResponse<DepartmentDTO>(new DepartmentDTO(department, members)));
+                    new SuccessResponse<DepartmentDTO>(new DepartmentDTO(department, members)));
             }
             catch (System.Exception e)
             {
@@ -261,7 +261,7 @@ namespace GirafRest.Controllers
         /// UserNameAlreadyTakenWithinDepartment, UserAlreadyHasDepartment, or Forbidden </returns>
         [HttpPost("{departmentId}/user/{userId}")]
         [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
-        [ProducesResponseType(typeof(MyResponse<DepartmentDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<DepartmentDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -323,7 +323,7 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
 
             var members = DepartmentDTO.FindMembers(dep.Members, _roleManager, _giraf);
-            return Ok(new MyResponse<DepartmentDTO>(new DepartmentDTO(dep, members)));
+            return Ok(new SuccessResponse<DepartmentDTO>(new DepartmentDTO(dep, members)));
         }
 
         /// <summary>
@@ -337,7 +337,7 @@ namespace GirafRest.Controllers
         [HttpPost("{departmentId}/resource/{resourceId}")]
         [Authorize]
         [Obsolete("Not used by the new WeekPlanner and might need to be changed or deleted (see future works)")]
-        [ProducesResponseType(typeof(MyResponse<DepartmentDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<DepartmentDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -391,7 +391,7 @@ namespace GirafRest.Controllers
 
             //Return Ok and the department - the resource is now visible in deparment.Resources
             var members = DepartmentDTO.FindMembers(department.Members, _roleManager, _giraf);
-            return Ok(new MyResponse<DepartmentDTO>(new DepartmentDTO(usr.Department, members)));
+            return Ok(new SuccessResponse<DepartmentDTO>(new DepartmentDTO(usr.Department, members)));
         }
 
         /// <summary>
@@ -402,7 +402,7 @@ namespace GirafRest.Controllers
         /// <returns>Returns empty ok response.</returns>
         [HttpPut("{departmentId}/name")]
         [Authorize]
-        [ProducesResponseType(typeof(MyResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -424,7 +424,7 @@ namespace GirafRest.Controllers
 
             _giraf._context.SaveChanges();
 
-            return Ok(new MyResponse("Name of department changed"));
+            return Ok(new SuccessResponse("Name of department changed"));
         }
 
         /// <summary>
@@ -434,7 +434,7 @@ namespace GirafRest.Controllers
         /// <param name="departmentId">Identifier of <see cref="Department"/> to delete</param>
         [HttpDelete("{departmentId}")]
         [Authorize]
-        [ProducesResponseType(typeof(MyResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeleteDepartment(long departmentId)
@@ -451,7 +451,7 @@ namespace GirafRest.Controllers
             _giraf._context.Remove(department);
             _giraf._context.SaveChanges();
 
-            return Ok(new MyResponse("Department deleted"));
+            return Ok(new SuccessResponse("Department deleted"));
         }
 
         /// <summary>
@@ -464,7 +464,7 @@ namespace GirafRest.Controllers
         [HttpDelete("resource/{resourceId}")]
         [Authorize]
         [Obsolete("Not used by the new WeekPlanner and might need to be changed or deleted (see future works)")]
-        [ProducesResponseType(typeof(MyResponse<DepartmentDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<DepartmentDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> RemoveResource(long resourceId)
@@ -504,7 +504,7 @@ namespace GirafRest.Controllers
 
             //Return Ok and the department - the resource is now visible in deparment.Resources
             var members = DepartmentDTO.FindMembers(department.Members, _roleManager, _giraf);
-            return Ok(new MyResponse<DepartmentDTO>(new DepartmentDTO(usr.Department, members)));
+            return Ok(new SuccessResponse<DepartmentDTO>(new DepartmentDTO(usr.Department, members)));
         }
     }
 }

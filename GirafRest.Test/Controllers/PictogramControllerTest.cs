@@ -84,7 +84,7 @@ namespace GirafRest.Test
             var pc = initializeTest();
             _testContext.MockUserManager.MockLogout();
             var res = pc.ReadPictogram(PUBLIC_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekPictogramDTO>;
+            var body = res.Value as SuccessResponse<WeekPictogramDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.IsType<OkObjectResult>(res);
@@ -98,7 +98,7 @@ namespace GirafRest.Test
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = pc.ReadPictogram(PUBLIC_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekPictogramDTO>;
+            var body = res.Value as SuccessResponse<WeekPictogramDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.IsType<OkObjectResult>(res);
@@ -133,7 +133,7 @@ namespace GirafRest.Test
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = pc.ReadPictogram(ADMIN_PRIVATE_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekPictogramDTO>;
+            var body = res.Value as SuccessResponse<WeekPictogramDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             // check we got the correct ressource back
@@ -145,7 +145,7 @@ namespace GirafRest.Test
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = pc.ReadPictogram(DEP_ONE_PROTECTED_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekPictogramDTO>;
+            var body = res.Value as SuccessResponse<WeekPictogramDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             // check we got the correct ressource back
@@ -205,7 +205,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLogout();
             _testContext.MockHttpContext.MockClearQueries();
             var res = pc.ReadPictograms(null, 1, 10).Result as ObjectResult;
-            var body = res.Value as MyResponse<List<WeekPictogramDTO>>;
+            var body = res.Value as SuccessResponse<List<WeekPictogramDTO>>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             // Do we get the expected amount?
@@ -219,7 +219,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             _testContext.MockHttpContext.MockClearQueries();
             var res = pc.ReadPictograms("", 1, 5).Result as ObjectResult;
-            var body = res.Value as MyResponse<List<WeekPictogramDTO>>;
+            var body = res.Value as SuccessResponse<List<WeekPictogramDTO>>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             // Check that we get exactly five pictograms back
@@ -234,7 +234,7 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockClearQueries();
             // Check that the algorithm works on long queries
             var res = pc.ReadPictograms("NoTestWithoutHorsePleaseDontRaiseAnException", 1, 100).Result as ObjectResult;
-            var body = res.Value as MyResponse<List<WeekPictogramDTO>>;
+            var body = res.Value as SuccessResponse<List<WeekPictogramDTO>>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
         }
@@ -246,7 +246,7 @@ namespace GirafRest.Test
             var pictTitle = "picto1";
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = pc.ReadPictograms(pictTitle,1,1).Result as ObjectResult;
-            var body = res.Value as MyResponse<List<WeekPictogramDTO>>;
+            var body = res.Value as SuccessResponse<List<WeekPictogramDTO>>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.True(1 == body.Data.Count);
@@ -261,7 +261,7 @@ namespace GirafRest.Test
             var pc = initializeTest();
             var pictTitle = "cat";
             var res = pc.ReadPictograms(pictTitle, 1, 2).Result as ObjectResult;
-            var body = res.Value as MyResponse<List<WeekPictogramDTO>>;
+            var body = res.Value as SuccessResponse<List<WeekPictogramDTO>>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.True(2 == body.Data.Count);
@@ -288,7 +288,7 @@ namespace GirafRest.Test
                 Title = "Public " + pictogramName,
             };
             var res = pc.CreatePictogram(dto).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekPictogramDTO>;
+            var body = res.Value as SuccessResponse<WeekPictogramDTO>;
 
             Assert.Equal(StatusCodes.Status201Created, res.StatusCode);
             // check that title is set correctly
@@ -309,7 +309,7 @@ namespace GirafRest.Test
                 Title = "Private " + pictogramName,
             };
             var res = pc.CreatePictogram(dto).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekPictogramDTO>;
+            var body = res.Value as SuccessResponse<WeekPictogramDTO>;
 
             Assert.Equal(StatusCodes.Status201Created, res.StatusCode);
             // check that title is set correctly
@@ -330,7 +330,7 @@ namespace GirafRest.Test
                 Title = "Protected " + pictogramName
             };
             var res = pc.CreatePictogram(dto).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekPictogramDTO>;
+            var body = res.Value as SuccessResponse<WeekPictogramDTO>;
 
             Assert.Equal(StatusCodes.Status201Created, res.StatusCode);
             // check that title is set correctly
@@ -422,7 +422,7 @@ namespace GirafRest.Test
                 AccessLevel = AccessLevel.PUBLIC,
             };
             var res = pc.UpdatePictogramInfo(dto.Id, dto).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekPictogramDTO>;
+            var body = res.Value as SuccessResponse<WeekPictogramDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             // check that pictogram was updated correctly
@@ -445,7 +445,7 @@ namespace GirafRest.Test
                 AccessLevel = AccessLevel.PROTECTED,
             };
             var res = pc.UpdatePictogramInfo(dto.Id, dto).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekPictogramDTO>;
+            var body = res.Value as SuccessResponse<WeekPictogramDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             // check data
@@ -466,7 +466,7 @@ namespace GirafRest.Test
                 AccessLevel = AccessLevel.PRIVATE,
             };
             var res = pc.UpdatePictogramInfo(dto.Id, dto).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekPictogramDTO>;
+            var body = res.Value as SuccessResponse<WeekPictogramDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             // check data
@@ -553,7 +553,7 @@ namespace GirafRest.Test
                 AccessLevel = AccessLevel.PUBLIC
             };
             var res = pc.UpdatePictogramInfo(ADMIN_PRIVATE_PICTOGRAM, dto).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekPictogramDTO>;
+            var body = res.Value as SuccessResponse<WeekPictogramDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             // check that acess level is changed correctly
@@ -593,7 +593,7 @@ namespace GirafRest.Test
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = pc.DeletePictogram(PUBLIC_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as MyResponse;
+            var body = res.Value as SuccessResponse;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
         }
@@ -604,7 +604,7 @@ namespace GirafRest.Test
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = pc.DeletePictogram(DEP_ONE_PROTECTED_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as MyResponse;
+            var body = res.Value as SuccessResponse;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
         }
@@ -615,7 +615,7 @@ namespace GirafRest.Test
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = pc.DeletePictogram(ADMIN_PRIVATE_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as MyResponse;
+            var body = res.Value as SuccessResponse;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
         }
@@ -693,7 +693,7 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
             
             var res = pc.SetPictogramImage(PUBLIC_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekPictogramDTO>;
+            var body = res.Value as SuccessResponse<WeekPictogramDTO>;
             
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.NotNull(body.Data);
@@ -712,7 +712,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
             var res = pc.SetPictogramImage(ADMIN_PRIVATE_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekPictogramDTO>; 
+            var body = res.Value as SuccessResponse<WeekPictogramDTO>; 
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.NotNull(body.Data);
@@ -731,7 +731,7 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
 
             var res = pc.SetPictogramImage(DEP_ONE_PROTECTED_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekPictogramDTO>;
+            var body = res.Value as SuccessResponse<WeekPictogramDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.NotNull(body.Data);
@@ -789,7 +789,7 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockRequestImage(JPEG_FILEPATH);
 
             var res = pc.SetPictogramImage(PUBLIC_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekPictogramDTO>;
+            var body = res.Value as SuccessResponse<WeekPictogramDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.NotNull(body.Data);
@@ -847,7 +847,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
             var res = pc.SetPictogramImage(PUBLIC_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekPictogramDTO>;
+            var body = res.Value as SuccessResponse<WeekPictogramDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.NotNull(body.Data);
@@ -866,7 +866,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
             var res = pc.SetPictogramImage(ADMIN_PRIVATE_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekPictogramDTO>;
+            var body = res.Value as SuccessResponse<WeekPictogramDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.NotNull(body.Data);
@@ -885,7 +885,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
             var res = pc.SetPictogramImage(ADMIN_PRIVATE_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekPictogramDTO>;
+            var body = res.Value as SuccessResponse<WeekPictogramDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.NotNull(body.Data);
@@ -939,7 +939,7 @@ namespace GirafRest.Test
             var img = pc.SetPictogramImage(PUBLIC_PICTOGRAM);
             _testContext.MockHttpContext.MockRequestNoImage();
             var res = pc.SetPictogramImage(PUBLIC_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekPictogramDTO>;
+            var body = res.Value as SuccessResponse<WeekPictogramDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
         }
@@ -971,7 +971,7 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockRequestImage(JPEG_FILEPATH);
 
             var res = pc.SetPictogramImage(PUBLIC_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekPictogramDTO>;
+            var body = res.Value as SuccessResponse<WeekPictogramDTO>;
             
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
 
@@ -1000,7 +1000,7 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockRequestImage(JPEG_FILEPATH);
 
             var res = pc.SetPictogramImage(PUBLIC_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekPictogramDTO>;
+            var body = res.Value as SuccessResponse<WeekPictogramDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
 
@@ -1054,7 +1054,7 @@ namespace GirafRest.Test
             var img = pc.SetPictogramImage(PUBLIC_PICTOGRAM).Result;
             
             var res = pc.ReadPictogramImage(PUBLIC_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as MyResponse<byte[]>;
+            var body = res.Value as SuccessResponse<byte[]>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.NotNull(body.Data);
@@ -1072,7 +1072,7 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
             var img = pc.SetPictogramImage(DEP_ONE_PROTECTED_PICTOGRAM);
             var res = pc.ReadPictogramImage(DEP_ONE_PROTECTED_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as MyResponse<byte[]>;
+            var body = res.Value as SuccessResponse<byte[]>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.True(body.Data != null);

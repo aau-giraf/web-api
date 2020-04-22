@@ -63,7 +63,7 @@ namespace GirafRest.Controllers
         /// <returns> All the user's <see cref="Pictogram"/> pictograms on success else InvalidProperties or 
         /// PictogramNotFound </returns>
         [HttpGet("", Name="GetPictograms")]
-        [ProducesResponseType(typeof(MyResponse<List<WeekPictogramDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<List<WeekPictogramDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> ReadPictograms([FromQuery]string query, [FromQuery]int page = 1, [FromQuery]int pageSize = 10)
@@ -81,7 +81,7 @@ namespace GirafRest.Controllers
             if (!String.IsNullOrEmpty(query))
                 userPictograms = userPictograms.OrderBy((Pictogram _p) => IbsenDistance(query, _p.Title));
 
-            return Ok(new MyResponse<List<WeekPictogramDTO>>(
+            return Ok(new SuccessResponse<List<WeekPictogramDTO>>(
                 await userPictograms.OfType<Pictogram>()
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
@@ -99,7 +99,7 @@ namespace GirafRest.Controllers
         /// Else: PictogramNotFound, UserNotFound, Error, or NotAuthorized
         /// </returns>
         [HttpGet("{id}", Name="GetPictogram")]
-        [ProducesResponseType(typeof(MyResponse<WeekPictogramDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<WeekPictogramDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -117,7 +117,7 @@ namespace GirafRest.Controllers
 
                 //Check if the pictogram is public and return it if so
                 if (pictogram.AccessLevel == AccessLevel.PUBLIC)
-                    return Ok(new MyResponse<WeekPictogramDTO>(new WeekPictogramDTO(pictogram)));
+                    return Ok(new SuccessResponse<WeekPictogramDTO>(new WeekPictogramDTO(pictogram)));
 
                 var usr = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
                 if (usr == null)
@@ -130,7 +130,7 @@ namespace GirafRest.Controllers
                     ownsResource = await _giraf.CheckProtectedOwnership(pictogram, usr);
 
                 if (ownsResource)
-                    return Ok(new MyResponse<WeekPictogramDTO>(new WeekPictogramDTO(pictogram)));
+                    return Ok(new SuccessResponse<WeekPictogramDTO>(new WeekPictogramDTO(pictogram)));
                 else
                     return StatusCode(StatusCodes.Status403Forbidden, 
                         new RESTError(ErrorCode.NotAuthorized, "User does not have rights to resource"));
@@ -151,7 +151,7 @@ namespace GirafRest.Controllers
         /// <returns>The new pictogram with all database-generated information.
         /// Else: Notfound, MissingProperties or InvalidProperties </returns>
         [HttpPost("")]
-        [ProducesResponseType(typeof(MyResponse<WeekPictogramDTO>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(SuccessResponse<WeekPictogramDTO>), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> CreatePictogram([FromBody]PictogramDTO pictogram)
@@ -194,7 +194,7 @@ namespace GirafRest.Controllers
             return CreatedAtRoute(
                 "GetPictogram", 
                 new { id = pict.Id }, 
-                new MyResponse<WeekPictogramDTO>(new WeekPictogramDTO(pict)));
+                new SuccessResponse<WeekPictogramDTO>(new WeekPictogramDTO(pict)));
         }
 
         /// <summary>
@@ -244,7 +244,7 @@ namespace GirafRest.Controllers
             _giraf._context.Pictograms.Update(pict);
             await _giraf._context.SaveChangesAsync();
 
-            return Ok(new MyResponse<WeekPictogramDTO>(new WeekPictogramDTO(pict)));
+            return Ok(new SuccessResponse<WeekPictogramDTO>(new WeekPictogramDTO(pict)));
         }
 
         /// <summary>
@@ -254,7 +254,7 @@ namespace GirafRest.Controllers
         /// <returns>Ok if the pictogram was deleted,
         /// Else: UserNotFound,PictogramNotFound or NotAuthorized </returns>
         [HttpDelete("{id}")]
-        [ProducesResponseType(typeof(MyResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -289,7 +289,7 @@ namespace GirafRest.Controllers
             // Now we can safely delete the pictogram
             _giraf._context.Pictograms.Remove(pict);
             await _giraf._context.SaveChangesAsync();
-            return Ok(new MyResponse("Pictogram deleted"));
+            return Ok(new SuccessResponse("Pictogram deleted"));
         }
         #endregion
         #region ImageHandling
@@ -302,7 +302,7 @@ namespace GirafRest.Controllers
         /// Else: UserNotFound, PictogramNotFound or NotAuthorized</returns>
 
         [HttpPut("{id}/image")]
-        [ProducesResponseType(typeof(MyResponse<WeekPictogramDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<WeekPictogramDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -346,7 +346,7 @@ namespace GirafRest.Controllers
             }
 
             await _giraf._context.SaveChangesAsync();
-            return Ok(new MyResponse<WeekPictogramDTO>(new WeekPictogramDTO(pictogram)));
+            return Ok(new SuccessResponse<WeekPictogramDTO>(new WeekPictogramDTO(pictogram)));
         }
 
         /// <summary>
@@ -356,7 +356,7 @@ namespace GirafRest.Controllers
         /// <returns>A The image else: PictogramNotFound, NotAuthorized, PictogramHasNoImage, 
         /// or NotAuthorized </returns>
         [HttpGet("{id}/image")]
-        [ProducesResponseType(typeof(MyResponse<byte[]>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<byte[]>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -381,7 +381,7 @@ namespace GirafRest.Controllers
                 return StatusCode(StatusCodes.Status403Forbidden, 
                     new RESTError(ErrorCode.NotAuthorized, "User does not have permission"));
 
-            return Ok(new MyResponse<byte[]>(System.IO.File.ReadAllBytes(imagePath + picto.Id + ".png")));
+            return Ok(new SuccessResponse<byte[]>(System.IO.File.ReadAllBytes(imagePath + picto.Id + ".png")));
         }
 
         /// <summary>

@@ -84,7 +84,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(user);
 
             var res = wtc.GetWeekTemplates().Result as ObjectResult;
-            var body = res.Value as MyResponse<IEnumerable<WeekTemplateNameDTO>>;
+            var body = res.Value as SuccessResponse<IEnumerable<WeekTemplateNameDTO>>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.Contains("Template1", body.Data.Select(x => x.Name));
@@ -138,7 +138,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(user);
 
             var res = wtc.GetWeekTemplate(_testContext.MockWeekTemplates[Template1].Id).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekTemplateDTO>;
+            var body = res.Value as SuccessResponse<WeekTemplateDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.Equal("Template1", body.Data.Name);
@@ -166,7 +166,7 @@ namespace GirafRest.Test
             };
 
             var res = wtc.CreateWeekTemplate(templateDTO).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekTemplateDTO>;
+            var body = res.Value as SuccessResponse<WeekTemplateDTO>;
 
             Assert.Equal(StatusCodes.Status201Created, res.StatusCode);
             Assert.Equal("Test Week", body.Data.Name);
@@ -228,7 +228,7 @@ namespace GirafRest.Test
 
             var res = wtc.UpdateWeekTemplate(_testContext.MockWeekTemplates[Template1].Id, templateDTO)
                 .Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekTemplateDTO>;
+            var body = res.Value as SuccessResponse<WeekTemplateDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.Equal("Test Week", body.Data.Name);

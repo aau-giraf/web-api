@@ -88,7 +88,7 @@ namespace GirafRest.Test
                 Password = "password"
             }).Result as ObjectResult;
 
-            var body = res.Value as MyResponse;
+            var body = res.Value as SuccessResponse;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
 
@@ -116,7 +116,7 @@ namespace GirafRest.Test
                 Password = "password"
             }).Result as ObjectResult;
 
-            var bodyB = resB.Value as MyResponse;
+            var bodyB = resB.Value as SuccessResponse;
 
             // Check that both requests are successful
             Assert.Equal(StatusCodes.Status200OK, resA.StatusCode);
@@ -214,7 +214,7 @@ namespace GirafRest.Test
                 DisplayName = displayName
             }).Result as ObjectResult;
 
-            var body = res.Value as MyResponse<GirafUserDTO>;
+            var body = res.Value as SuccessResponse<GirafUserDTO>;
             
             Assert.Equal(StatusCodes.Status201Created, res.StatusCode);
 
@@ -239,7 +239,7 @@ namespace GirafRest.Test
                 DisplayName = null
             }).Result as ObjectResult;
 
-            var body = res.Value as MyResponse<GirafUserDTO>;
+            var body = res.Value as SuccessResponse<GirafUserDTO>;
 
             Assert.Equal(StatusCodes.Status201Created, res.StatusCode);
 
@@ -298,7 +298,7 @@ namespace GirafRest.Test
                 Role = GirafRoles.Citizen
             }).Result as ObjectResult;
 
-            var body = res.Value as MyResponse<GirafUserDTO>;
+            var body = res.Value as SuccessResponse<GirafUserDTO>;
 
             Assert.Equal(StatusCodes.Status201Created, res.StatusCode);
             Assert.Null(body.Data.Department);
@@ -440,7 +440,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
 
             var res = ac.DeleteUser(_testContext.MockUsers[CITIZEN_DEP_TWO].Id).Result as ObjectResult;
-            var body = res.Value as MyResponse;
+            var body = res.Value as SuccessResponse;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
         }

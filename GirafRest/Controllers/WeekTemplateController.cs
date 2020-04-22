@@ -57,7 +57,7 @@ namespace GirafRest.Controllers
         /// OK otherwise.</returns>
         [HttpGet("")]
         [Authorize]
-        [ProducesResponseType(typeof(MyResponse<IEnumerable<WeekTemplateNameDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<IEnumerable<WeekTemplateNameDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)] 
         public async Task<ActionResult> GetWeekTemplates()
@@ -77,7 +77,7 @@ namespace GirafRest.Controllers
             }
             else
             {
-                return Ok(new MyResponse<IEnumerable<WeekTemplateNameDTO>>(result));
+                return Ok(new SuccessResponse<IEnumerable<WeekTemplateNameDTO>>(result));
             }
         }
 
@@ -90,7 +90,7 @@ namespace GirafRest.Controllers
         /// <b>or</b> if user does not have the proper authorisation for the template.</returns>
         [HttpGet("{id}", Name="GetWeekTemplate")]
         [Authorize]
-        [ProducesResponseType(typeof(MyResponse<WeekTemplateDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<WeekTemplateDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> GetWeekTemplate(long id)
@@ -111,7 +111,7 @@ namespace GirafRest.Controllers
             if (! await _authentication.HasTemplateAccess(user, template?.DepartmentKey) )
                 return StatusCode(StatusCodes.Status403Forbidden, new RESTError(ErrorCode.NotAuthorized, "User does not have permission"));
             
-            return Ok(new MyResponse<WeekTemplateDTO>(new WeekTemplateDTO(template)));
+            return Ok(new SuccessResponse<WeekTemplateDTO>(new WeekTemplateDTO(template)));
         }
 
         /// <summary>
@@ -125,7 +125,7 @@ namespace GirafRest.Controllers
         /// A DTO containing the full information on the created template otherwise.</returns>
         [HttpPost("")]
         [Authorize (Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
-        [ProducesResponseType(typeof(MyResponse<WeekTemplateDTO>), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(SuccessResponse<WeekTemplateDTO>), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -154,7 +154,7 @@ namespace GirafRest.Controllers
             return CreatedAtRoute(
                 "GetWeekTemplate",
                 new {id = newTemplate.Id}, 
-                new MyResponse<WeekTemplateDTO>(new WeekTemplateDTO(newTemplate))
+                new SuccessResponse<WeekTemplateDTO>(new WeekTemplateDTO(newTemplate))
             );
         }
 
@@ -171,7 +171,7 @@ namespace GirafRest.Controllers
         /// A DTO containing the full information on the created template otherwise.</returns>
         [HttpPut("{id}")]
         [Authorize (Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
-        [ProducesResponseType(typeof(MyResponse<WeekTemplateDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<WeekTemplateDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -204,7 +204,7 @@ namespace GirafRest.Controllers
 
             _giraf._context.WeekTemplates.Update(template);
             await _giraf._context.SaveChangesAsync();
-            return Ok(new MyResponse<WeekTemplateDTO>(new WeekTemplateDTO(template)));
+            return Ok(new SuccessResponse<WeekTemplateDTO>(new WeekTemplateDTO(template)));
         }
 
         /// <summary>
@@ -216,7 +216,7 @@ namespace GirafRest.Controllers
         /// NotAuthorized if not available to authenticated user(see summary).
         /// OK otherwise. </returns>
         [HttpDelete("{id}")]
-        [ProducesResponseType(typeof(MyResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -238,7 +238,7 @@ namespace GirafRest.Controllers
 
             _giraf._context.WeekTemplates.Remove(template);
             await _giraf._context.SaveChangesAsync();
-            return Ok(new MyResponse("Deleted week template"));
+            return Ok(new SuccessResponse("Deleted week template"));
         }
     }
 }

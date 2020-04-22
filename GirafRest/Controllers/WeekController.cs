@@ -45,7 +45,7 @@ namespace GirafRest.Controllers
         /// <param name="userId">User identifier for the <see cref="GirafUser" /> to get schedules for</param>
         [HttpGet("v2/User/{userId}/week", Name="GetListOfWeeksExclDaysOfUser")]
         [Authorize]
-        [ProducesResponseType(typeof(MyResponse<IEnumerable<WeekDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<IEnumerable<WeekDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> ReadFullWeekSchedules(string userId)
@@ -60,7 +60,7 @@ namespace GirafRest.Controllers
             if (!user.WeekSchedule.Any())
                 return NotFound(new RESTError(ErrorCode.NoWeekScheduleFound, "No week schedule found"));
              
-            return Ok(new MyResponse<IEnumerable<WeekDTO>>(user.WeekSchedule.Select(w => new WeekDTO(w){
+            return Ok(new SuccessResponse<IEnumerable<WeekDTO>>(user.WeekSchedule.Select(w => new WeekDTO(w){
                 Days = null
             })));
         }
@@ -73,7 +73,7 @@ namespace GirafRest.Controllers
         /// <param name="userId">User identifier for the <see cref="GirafUser" /> to get schedules for</param>
         [HttpGet("v1/User/{userId}/week", Name="GetListOfWeekNamesOfUser")]
         [Authorize]
-        [ProducesResponseType(typeof(MyResponse<IEnumerable<WeekNameDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<IEnumerable<WeekNameDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> ReadWeekSchedules(string userId)
@@ -89,7 +89,7 @@ namespace GirafRest.Controllers
             if (!user.WeekSchedule.Any())
                 return NotFound(new RESTError(ErrorCode.NoWeekScheduleFound, "No week schedule"));
             
-            return Ok(new MyResponse<IEnumerable<WeekNameDTO>>(user.WeekSchedule.Select(w => new WeekNameDTO(w.WeekYear, w.WeekNumber, w.Name))));
+            return Ok(new SuccessResponse<IEnumerable<WeekNameDTO>>(user.WeekSchedule.Select(w => new WeekNameDTO(w.WeekYear, w.WeekNumber, w.Name))));
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace GirafRest.Controllers
         /// <param name="userId">Identifier of the <see cref="GirafUser"/> to request schedule for</param>
         [HttpGet("v1/User/{userId}/week/{weekYear}/{weekNumber}", Name="GetWeekByWeekNrAndYearOfUser")]
         [Authorize]
-        [ProducesResponseType(typeof(MyResponse<WeekDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<WeekDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> ReadUsersWeekSchedule(string userId, int weekYear, int weekNumber)
@@ -130,7 +130,7 @@ namespace GirafRest.Controllers
                     }
                 }
                 
-                return Ok(new MyResponse<WeekDTO>(new WeekDTO(week)));
+                return Ok(new SuccessResponse<WeekDTO>(new WeekDTO(week)));
             }
 
             //Create default thumbnail
@@ -142,7 +142,7 @@ namespace GirafRest.Controllers
                 await _giraf._context.SaveChangesAsync();
                 emptyThumbnail = _giraf._context.Pictograms.FirstOrDefault(r => r.Title == "default");
 
-                return Ok(new MyResponse<WeekDTO>(new WeekDTO() {
+                return Ok(new SuccessResponse<WeekDTO>(new WeekDTO() {
                     WeekYear = weekYear, 
                     Name = $"{weekYear} - {weekNumber}", 
                     WeekNumber = weekNumber, 
@@ -156,7 +156,7 @@ namespace GirafRest.Controllers
             }
             emptyThumbnail = _giraf._context.Pictograms.FirstOrDefault(r => r.Title == "default");
 
-            return Ok(new MyResponse<WeekDTO>(new WeekDTO()
+            return Ok(new SuccessResponse<WeekDTO>(new WeekDTO()
             {
                 WeekYear = weekYear, 
                 Name = $"{weekYear} - {weekNumber}", 
@@ -181,7 +181,7 @@ namespace GirafRest.Controllers
         /// or NotAuthorized</returns>
         [HttpPut("v1/User/{userId}/week/{weekYear}/{weekNumber}")]
         [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
-        [ProducesResponseType(typeof(MyResponse<WeekDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<WeekDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -210,7 +210,7 @@ namespace GirafRest.Controllers
 
             _giraf._context.Weeks.Update(week);
             await _giraf._context.SaveChangesAsync();
-            return Ok(new MyResponse<WeekDTO>(new WeekDTO(week)));
+            return Ok(new SuccessResponse<WeekDTO>(new WeekDTO(week)));
         }
 
         /// <summary>
@@ -223,7 +223,7 @@ namespace GirafRest.Controllers
         /// or NoWeekScheduleFound </returns>
         [HttpDelete("v1/User/{userId}/week/{weekYear}/{weekNumber}")]
         [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
-        [ProducesResponseType(typeof(MyResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -245,7 +245,7 @@ namespace GirafRest.Controllers
                 user.WeekSchedule.Remove(week);
                 
                 await _giraf._context.SaveChangesAsync();
-                return Ok(new MyResponse("Deleted info for entire week"));
+                return Ok(new SuccessResponse("Deleted info for entire week"));
             }
             else
                 return NotFound(new RESTError(ErrorCode.NoWeekScheduleFound, "No week schedule found"));

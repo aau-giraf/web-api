@@ -61,7 +61,7 @@ namespace GirafRest.Test
             var weekschedule = _testContext.MockWeeks[0];
 
             var res = wc.ReadWeekSchedules(mockUser.Id).Result as ObjectResult;
-            var body = res.Value as MyResponse<IEnumerable<WeekNameDTO>>;
+            var body = res.Value as SuccessResponse<IEnumerable<WeekNameDTO>>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             // check we got the right amount back
@@ -110,7 +110,7 @@ namespace GirafRest.Test
             var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = wc.ReadUsersWeekSchedule(mockUser.Id, 2018, 1).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekDTO>;
+            var body = res.Value as SuccessResponse<WeekDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
 
@@ -127,7 +127,7 @@ namespace GirafRest.Test
             var mockUser = _testContext.MockUsers[CITIZEN_DEP_THREE];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             var res = wc.ReadUsersWeekSchedule(mockUser.Id, 999, 999).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekDTO>;
+            var body = res.Value as SuccessResponse<WeekDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
         }
@@ -175,7 +175,7 @@ namespace GirafRest.Test
             var week = _testContext.MockUsers[GUARDIAN_DEP_TWO].WeekSchedule.First();
             var tempWeek = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule;
             var res = wc.UpdateWeek(mockUser.Id, 2018, WEEK_ZERO, new WeekDTO(week)).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekDTO>;
+            var body = res.Value as SuccessResponse<WeekDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.Equal(week.Name, body.Data.Name);
@@ -252,7 +252,7 @@ namespace GirafRest.Test
                 WEEK_ZERO, 
                 new WeekDTO(week)
             ).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekDTO>;
+            var body = res.Value as SuccessResponse<WeekDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
 
@@ -273,7 +273,7 @@ namespace GirafRest.Test
                 Name = "new name"
             };
             var res = wc.UpdateWeek(mockUser.Id, 2018, 20, newWeek).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekDTO>;
+            var body = res.Value as SuccessResponse<WeekDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.Equal("new name", body.Data.Name);
@@ -295,7 +295,7 @@ namespace GirafRest.Test
             
             week.Weekdays[0].Activities = activities;
             var res = wc.UpdateWeek(mockUser.Id, 2018, 20, new WeekDTO(week)).Result as ObjectResult;
-            var body = res.Value as MyResponse<WeekDTO>;
+            var body = res.Value as SuccessResponse<WeekDTO>;
 
             //Assert.IsType<Response<WeekDTO>>(res);
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
@@ -303,7 +303,7 @@ namespace GirafRest.Test
             Assert.Equal(state, body.Data.Days.ToList()[0].Activities.ToList()[0].State);
 
             var getResult = wc.ReadUsersWeekSchedule(mockUser.Id, 2018, 20).Result as ObjectResult;
-            var getBody = getResult.Value as MyResponse<WeekDTO>;
+            var getBody = getResult.Value as SuccessResponse<WeekDTO>;
             
             Assert.Equal(StatusCodes.Status200OK, getResult.StatusCode);
             Assert.Equal(orderNumber, getBody.Data.Days.ToList()[0].Activities.ToList()[0].Order);

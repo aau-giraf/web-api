@@ -59,7 +59,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns> If success returns Meta-data about the currently authorized user else UserNotFound /</returns>
         [HttpGet("")]
-        [ProducesResponseType(typeof(MyResponse<GirafUserDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<GirafUserDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> GetUser()
         {
@@ -68,7 +68,7 @@ namespace GirafRest.Controllers
             if (user == null)
                 return NotFound(new RESTError(ErrorCode.UserNotFound, "User not found"));
 
-            return Ok(new MyResponse<GirafUserDTO>(new GirafUserDTO(user, await _roleManager.findUserRole(_giraf._userManager, user))));
+            return Ok(new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, await _roleManager.findUserRole(_giraf._userManager, user))));
         }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns>  Data about the user if success else MissingProperties, UserNotFound or NotAuthorized </returns>
         [HttpGet("{id}", Name="GetUserById")]
-        [ProducesResponseType(typeof(MyResponse<GirafUserDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<GirafUserDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -94,7 +94,7 @@ namespace GirafRest.Controllers
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return StatusCode(StatusCodes.Status403Forbidden, new RESTError(ErrorCode.NotAuthorized, "User does not have permission"));
 
-            return Ok(new MyResponse<GirafUserDTO>(new GirafUserDTO(user, await _roleManager.findUserRole(_giraf._userManager, user))));
+            return Ok(new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, await _roleManager.findUserRole(_giraf._userManager, user))));
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace GirafRest.Controllers
         /// <param name="id">Identifier of the <see cref="GirafUser"/> to get settings for </param>
         /// <returns> UserSettings for the user if success else MissingProperties, UserNotFound, NotAuthorized or RoleMustBeCitizien</returns>
         [HttpGet("{id}/settings", Name="GetUserSettings")]
-        [ProducesResponseType(typeof(MyResponse<GirafUserDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<GirafUserDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -126,7 +126,7 @@ namespace GirafRest.Controllers
             
             //Returns the user settings if the user is a citizen otherwise returns an error (only citizens has settings). 
             if (userRole == GirafRoles.Citizen)
-                return Ok(new MyResponse<SettingDTO>(new SettingDTO(user.Settings)));
+                return Ok(new SuccessResponse<SettingDTO>(new SettingDTO(user.Settings)));
             else
                 return BadRequest(new RESTError(ErrorCode.RoleMustBeCitizien, "User role must be a citizen"));
         }
@@ -139,7 +139,7 @@ namespace GirafRest.Controllers
         /// <returns>DTO for the updated user on success else MissingProperties, UserNotFound, NotAuthorized,
         /// or UserAlreadyExists</returns>
         [HttpPut("{id}")]
-        [ProducesResponseType(typeof(MyResponse<GirafUserDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<GirafUserDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -174,7 +174,7 @@ namespace GirafRest.Controllers
             // save and return 
             _giraf._context.Users.Update(user);
             await _giraf._context.SaveChangesAsync();
-            return Ok(new MyResponse<GirafUserDTO>(new GirafUserDTO(user, userRole)));
+            return Ok(new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, userRole)));
         }
 
         #region UserIcon
@@ -184,7 +184,7 @@ namespace GirafRest.Controllers
         /// <returns>The requested image as a <see cref="ImageDTO"/></returns>
         /// <param name="id">Identifier of the <see cref="GirafUser"/>to get UserIcon for</param>
         [HttpGet("{id}/icon", Name="GetUserIcon")]
-        [ProducesResponseType(typeof(MyResponse<ImageDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<ImageDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public Task<ActionResult> GetUserIcon(string id)
         {
@@ -198,7 +198,7 @@ namespace GirafRest.Controllers
                 return Task.FromResult<ActionResult>(
                     NotFound(new RESTError(ErrorCode.UserHasNoIcon, "User has no icon")));
 
-            return Task.FromResult<ActionResult>(Ok(new MyResponse<ImageDTO>(new ImageDTO(user.UserIcon))));
+            return Task.FromResult<ActionResult>(Ok(new SuccessResponse<ImageDTO>(new ImageDTO(user.UserIcon))));
         }
 
         /// <summary>
@@ -230,7 +230,7 @@ namespace GirafRest.Controllers
         /// <returns>The success response on success else UserNotFound, NotAuthorized, or MissingProperties.</returns>
         /// <param name="id">Identifier of the <see cref="GirafUser"/> to set icon for</param>
         [HttpPut("{id}/icon")]
-        [ProducesResponseType(typeof(MyResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -254,7 +254,7 @@ namespace GirafRest.Controllers
             user.UserIcon = image;
             await _giraf._context.SaveChangesAsync();
 
-            return Ok(new MyResponse("User icon set"));
+            return Ok(new SuccessResponse("User icon set"));
         }
 
         /// <summary>
@@ -263,7 +263,7 @@ namespace GirafRest.Controllers
         /// <returns>Success response on success else UserHasNoIcon or NotAuthorized </returns>
         /// <param name="id">Identifier.</param>
         [HttpDelete("{id}/icon")]
-        [ProducesResponseType(typeof(MyResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -281,7 +281,7 @@ namespace GirafRest.Controllers
             user.UserIcon = null;
             await _giraf._context.SaveChangesAsync();
 
-            return Ok(new MyResponse("Icon deleted"));
+            return Ok(new SuccessResponse("Icon deleted"));
         }
         #endregion
 
@@ -295,7 +295,7 @@ namespace GirafRest.Controllers
         /// <param name="resourceIdDTO">reference to a  <see cref="ResourceIdDTO"/></param>
         [Obsolete("Not used by the new WeekPlanner and might need to be changed or deleted (see future works)")]
         [HttpPost("{id}/resource")]
-        [ProducesResponseType(typeof(MyResponse<GirafUserDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<GirafUserDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -348,7 +348,7 @@ namespace GirafRest.Controllers
             // Get the roles the user is associated with
             GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
-            return Ok(new MyResponse<GirafUserDTO>(new GirafUserDTO(user, userRole)));
+            return Ok(new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, userRole)));
         }
 
         /// <summary>
@@ -360,7 +360,7 @@ namespace GirafRest.Controllers
         /// <param name="resourceIdDTO">Reference to <see cref="ResourceIdDTO"/></param>
         [Obsolete("Not used by the new WeekPlanner and might need to be changed or deleted (see future works)")]
         [HttpDelete("{id}/resource")]
-        [ProducesResponseType(typeof(MyResponse<GirafUserDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<GirafUserDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -407,7 +407,7 @@ namespace GirafRest.Controllers
             var userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
             //Return Ok and the user - the resource is now visible in user.Resources
-            return Ok(new MyResponse<GirafUserDTO>(new GirafUserDTO(user, userRole)));
+            return Ok(new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, userRole)));
         }
 
         /// <summary>
@@ -418,7 +418,7 @@ namespace GirafRest.Controllers
         /// <param name="id">Identifier of the <see cref="GirafUser"/> to get citizens for</param>
         [HttpGet("{id}/citizens", Name="GetCitizensOfUser")]
         [Authorize (Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
-        [ProducesResponseType(typeof(MyResponse<List<UserNameDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<List<UserNameDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -453,7 +453,7 @@ namespace GirafRest.Controllers
                 return NotFound(new RESTError(ErrorCode.UserHasNoCitizens, "User does not have any citizens"));
             }   
 
-            return Ok(new MyResponse<List<UserNameDTO>>(citizens.ToList<UserNameDTO>()));
+            return Ok(new SuccessResponse<List<UserNameDTO>>(citizens.ToList<UserNameDTO>()));
         }
 
         /// <summary>
@@ -464,7 +464,7 @@ namespace GirafRest.Controllers
         /// <param name="id">Identifier for the citizen to get guardians for</param>
         [HttpGet("{id}/guardians", Name="GetGuardiansOfUser")]
         [Authorize]
-        [ProducesResponseType(typeof(MyResponse<List<UserNameDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<List<UserNameDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -494,7 +494,7 @@ namespace GirafRest.Controllers
                 return NotFound(new RESTError(ErrorCode.UserHasNoGuardians, "User has no guardians"));
             }
 
-            return Ok(new MyResponse<List<UserNameDTO>>(guardians));
+            return Ok(new SuccessResponse<List<UserNameDTO>>(guardians));
         }
 
         /// <summary>
@@ -506,7 +506,7 @@ namespace GirafRest.Controllers
         /// or forbidden </returns>
         [HttpPost("{id}/citizens/{citizenId}")]
         [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
-        [ProducesResponseType(typeof(MyResponse<List<UserNameDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<List<UserNameDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> AddGuardianCitizenRelationship(string id, string citizenId)
@@ -530,7 +530,7 @@ namespace GirafRest.Controllers
 
             citizen.AddGuardian(guardian);
 
-            return Ok(new MyResponse("Added relation between guardian and citizen"));
+            return Ok(new SuccessResponse("Added relation between guardian and citizen"));
         }
 
         /// <summary>
@@ -543,7 +543,7 @@ namespace GirafRest.Controllers
         /// <param name="options">reference to a <see cref="SettingDTO"/> containing the new settings</param>
         [HttpPut("{id}/settings")]
         [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
-        [ProducesResponseType(typeof(MyResponse<SettingDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<SettingDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -601,7 +601,7 @@ namespace GirafRest.Controllers
 
             await _giraf._context.SaveChangesAsync();
 
-            return Ok(new MyResponse<SettingDTO>(new SettingDTO(user.Settings)));
+            return Ok(new SuccessResponse<SettingDTO>(new SettingDTO(user.Settings)));
         }
 
         #endregion
