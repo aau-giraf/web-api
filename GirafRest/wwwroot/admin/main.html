@@ -655,7 +655,7 @@
                 },
                 updateUser(users, oldUser, newUser) {
                     var self = this;
-                    newUser.screenName = newUser.userName;
+                    newUser.displayName = newUser.userName;
                     $.ajax({
                         url: "../v1/User/" + oldUser.userId,
                         type: 'PUT',

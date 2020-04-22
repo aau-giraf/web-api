@@ -2,7 +2,7 @@
 
 namespace GirafRest.Migrations
 {
-    public partial class MakeScreenNameInAspnetusersRequired : Migration
+    public partial class MakeDisplayNameInAspnetusersRequired : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

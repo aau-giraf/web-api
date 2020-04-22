@@ -61,7 +61,7 @@ namespace GirafRest.Models.DTOs
         /// The display name of the user.
         /// </summary>
         [Required]
-        public string ScreenName { get; set; }
+        public string DisplayName { get; set; }
 
         /// <summary>
         /// The key of the user's department.
@@ -86,7 +86,7 @@ namespace GirafRest.Models.DTOs
             //Add all trivial values
             Id = user.Id;
             Username = user.UserName;
-            ScreenName = user.DisplayName;
+            DisplayName = user.DisplayName;
             RoleName = userRole.ToString();
             Role = userRole;
 

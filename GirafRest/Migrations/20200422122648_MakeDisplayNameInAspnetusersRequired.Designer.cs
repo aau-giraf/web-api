@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GirafRest.Migrations
 {
     [DbContext(typeof(GirafDbContext))]
-    [Migration("20200422122648_MakeScreenNameInAspnetusersRequired")]
-    partial class MakeScreenNameInAspnetusersRequired
+    [Migration("20200422122648_MakeDisplayNameInAspnetusersRequired")]
+    partial class MakeDisplayNameInAspnetusersRequired
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

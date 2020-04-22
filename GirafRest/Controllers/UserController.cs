@@ -128,7 +128,7 @@ namespace GirafRest.Controllers
         [HttpPut("{id}")]
         public async Task<Response<GirafUserDTO>> UpdateUser(string id, [FromBody] GirafUserDTO newUser)
         {
-            if (newUser == null || newUser.Username == null || newUser.ScreenName == null)
+            if (newUser == null || newUser.Username == null || newUser.DisplayName == null)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties);
 
             var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
@@ -150,8 +150,8 @@ namespace GirafRest.Controllers
             if (!String.IsNullOrEmpty(newUser.Username))
                 await _giraf._userManager.SetUserNameAsync(user, newUser.Username);
 
-            if (!String.IsNullOrEmpty(newUser.ScreenName))
-                user.DisplayName = newUser.ScreenName;
+            if (!String.IsNullOrEmpty(newUser.DisplayName))
+                user.DisplayName = newUser.DisplayName;
 
             // save and return 
             _giraf._context.Users.Update(user);
@@ -364,41 +364,41 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Gets the citizens of the user with the provided id. The provided user must be a guardian
         /// </summary>
-        /// <returns>List of <see cref="ScreenNameDTO"/> on success else MissingProperties, NotAuthorized, Forbidden,
+        /// <returns>List of <see cref="DisplayNameDTO"/> on success else MissingProperties, NotAuthorized, Forbidden,
         /// or UserNasNoCitizens</returns>
         /// <param name="id">Identifier of the <see cref="GirafUser"/> to get citizens for</param>
         [HttpGet("{id}/citizens")]
         [Authorize (Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
-        public async Task<Response<List<ScreenNameDTO>>> GetCitizens(string id)
+        public async Task<Response<List<DisplayNameDTO>>> GetCitizens(string id)
         {
             if (String.IsNullOrEmpty(id))
-                return new ErrorResponse<List<ScreenNameDTO>>(ErrorCode.MissingProperties, "id");
+                return new ErrorResponse<List<DisplayNameDTO>>(ErrorCode.MissingProperties, "id");
             var user = _giraf._context.Users.Include(u => u.Citizens).FirstOrDefault(u => u.Id == id);
             var authUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
-            var citizens = new List<ScreenNameDTO>();
+            var citizens = new List<DisplayNameDTO>();
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(authUser, user)))
             {
-                return new ErrorResponse<List<ScreenNameDTO>>(ErrorCode.NotAuthorized);
+                return new ErrorResponse<List<DisplayNameDTO>>(ErrorCode.NotAuthorized);
             }
 
             var userRole = (await _roleManager.findUserRole(_giraf._userManager, user));
             if (userRole != GirafRoles.Guardian)
-                return new ErrorResponse<List<ScreenNameDTO>>(ErrorCode.Forbidden);;
+                return new ErrorResponse<List<DisplayNameDTO>>(ErrorCode.Forbidden);;
 
             foreach (var citizen in user.Citizens)
             {
                 var girafUser = _giraf._context.Users.FirstOrDefault(u => u.Id == citizen.CitizenId);
-                citizens.Add(new ScreenNameDTO { UserId = girafUser.Id, ScreenName = girafUser.DisplayName });
+                citizens.Add(new DisplayNameDTO { UserId = girafUser.Id, DisplayName = girafUser.DisplayName });
             }
 
             if (!citizens.Any())
             {
-                return new ErrorResponse<List<ScreenNameDTO>>(ErrorCode.UserHasNoCitizens);
+                return new ErrorResponse<List<DisplayNameDTO>>(ErrorCode.UserHasNoCitizens);
             }   
 
-            return new Response<List<ScreenNameDTO>>(citizens.ToList<ScreenNameDTO>());
+            return new Response<List<DisplayNameDTO>>(citizens.ToList<DisplayNameDTO>());
         }
 
         /// <summary>
@@ -409,33 +409,33 @@ namespace GirafRest.Controllers
         /// <param name="id">Identifier for the citizen to get guardians for</param>
         [HttpGet("{id}/guardians")]
         [Authorize]
-        public async Task<Response<List<ScreenNameDTO>>> GetGuardians(string id)
+        public async Task<Response<List<DisplayNameDTO>>> GetGuardians(string id)
         {
             var user = _giraf._context.Users.Include(u => u.Guardians).FirstOrDefault(u => u.Id == id);
             if (user == null)
-                return new ErrorResponse<List<ScreenNameDTO>>(ErrorCode.InvalidProperties, "id");
+                return new ErrorResponse<List<DisplayNameDTO>>(ErrorCode.InvalidProperties, "id");
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return new ErrorResponse<List<ScreenNameDTO>>(ErrorCode.NotAuthorized);
+                return new ErrorResponse<List<DisplayNameDTO>>(ErrorCode.NotAuthorized);
 
             var userRole = (await _roleManager.findUserRole(_giraf._userManager, user));
             if (userRole != GirafRoles.Citizen)
-                return new ErrorResponse<List<ScreenNameDTO>>(ErrorCode.Forbidden); ;
+                return new ErrorResponse<List<DisplayNameDTO>>(ErrorCode.Forbidden); ;
 
-            var guardians = new List<ScreenNameDTO>();
+            var guardians = new List<DisplayNameDTO>();
             foreach (var guardian in user.Guardians)
             {
                 var girafUser = _giraf._context.Users.FirstOrDefault(u => u.Id == guardian.GuardianId);
-                guardians.Add(new ScreenNameDTO { UserId = girafUser.Id, ScreenName = girafUser.DisplayName });
+                guardians.Add(new DisplayNameDTO { UserId = girafUser.Id, DisplayName = girafUser.DisplayName });
             }
 
             if (!guardians.Any())
             {
-                return new ErrorResponse<List<ScreenNameDTO>>(ErrorCode.UserHasNoGuardians);
+                return new ErrorResponse<List<DisplayNameDTO>>(ErrorCode.UserHasNoGuardians);
             }
 
-            return new Response<List<ScreenNameDTO>>(guardians);
+            return new Response<List<DisplayNameDTO>>(guardians);
         }
 
         /// <summary>
