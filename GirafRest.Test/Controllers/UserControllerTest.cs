@@ -92,40 +92,53 @@ namespace GirafRest.Test
             var mockUser = _testContext.MockUsers[0];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
-            var res = userController.SetUserIcon(mockUser.Id).Result;
+            var res = userController.SetUserIcon(mockUser.Id).Result as ObjectResult;
 
-            Assert.True(res.Success);
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
         }
 
         [Theory]
-        [InlineData(ADMIN_DEP_ONE, DEPARTMENT_USER_DEP_TWO, ErrorCode.NoError)]
-        [InlineData(ADMIN_DEP_ONE, GUARDIAN_DEP_TWO, ErrorCode.NoError)]
-        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_THREE, ErrorCode.NoError)]
-        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_TWO, ErrorCode.NoError)]
-        [InlineData(DEPARTMENT_USER_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NoError)]
-        [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
         [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
         [InlineData(DEPARTMENT_USER_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
-        [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
         [InlineData(GUARDIAN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
         [InlineData(GUARDIAN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
-        [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
         [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
         [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
-        public void CreateUserIncon_AuthenticationChecks(int authUser,
-                  int userToEdit, ErrorCode expectedError)
+        public void CreateUserIncon_AuthenticationChecks_Errors(int authUser, int userToEdit, ErrorCode expectedError)
         {
             var userController = initializeTest();
             var mockUser = _testContext.MockUsers[authUser];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
-            var res = userController.SetUserIcon(_testContext.MockUsers[userToEdit].Id).Result;
+            var res = userController.SetUserIcon(_testContext.MockUsers[userToEdit].Id).Result as ObjectResult;
+            var body = res.Value as RESTError;
+            
+            Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
+            Assert.Equal(expectedError, body.ErrorCode);
+        }
 
-            Assert.Equal(expectedError, res.ErrorCode);
+
+        [Theory]
+        [InlineData(ADMIN_DEP_ONE, DEPARTMENT_USER_DEP_TWO)]
+        [InlineData(ADMIN_DEP_ONE, GUARDIAN_DEP_TWO)]
+        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_THREE)]
+        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_TWO)]
+        [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_TWO)]
+        [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_TWO)]
+        public void CreateUserIncon_AuthenticationChecks_NoErrors(int authUser, int userToEdit)
+        {
+            var userController = initializeTest();
+            var mockUser = _testContext.MockUsers[authUser];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+            _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
+            var res = userController.SetUserIcon(_testContext.MockUsers[userToEdit].Id).Result as ObjectResult;
+            var body = res.Value as MyResponse;
+
+            Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
+            Assert.NotNull(body.Data);
         }
 
 
@@ -137,10 +150,9 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
             usercontroller.SetUserIcon(_testContext.MockUsers[0].Id).Wait();
             _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
-            var res = usercontroller.SetUserIcon(_testContext.MockUsers[0].Id).Result;
+            var res = usercontroller.SetUserIcon(_testContext.MockUsers[0].Id).Result as ObjectResult;
 
-            Assert.True(res.Success);
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
+            Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
 
             // Get icon to be sure it is set
             var res2 = usercontroller.GetUserIcon(_testContext.MockUsers[0].Id).Result as ObjectResult;
@@ -151,34 +163,48 @@ namespace GirafRest.Test
         }
 
         [Theory]
-        [InlineData(ADMIN_DEP_ONE, DEPARTMENT_USER_DEP_TWO, ErrorCode.NoError)]
-        [InlineData(ADMIN_DEP_ONE, GUARDIAN_DEP_TWO, ErrorCode.NoError)]
-        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_THREE, ErrorCode.NoError)]
-        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_TWO, ErrorCode.NoError)]
-        [InlineData(DEPARTMENT_USER_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NoError)]
-        [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
         [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
         [InlineData(DEPARTMENT_USER_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
-        [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
         [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
-        [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
         [InlineData(GUARDIAN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
         [InlineData(GUARDIAN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
-        public void UpdateUserIcon_AuthenticationChecks(int authUser,
-          int userToEdit, ErrorCode expectedError)
+        public void UpdateUserIcon_AuthenticationChecks_Errors(int authUser, int userToEdit, ErrorCode expectedError)
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[authUser]);
             _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
             usercontroller.SetUserIcon(_testContext.MockUsers[authUser].Id).Wait();
             _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
-            var res = usercontroller.SetUserIcon(_testContext.MockUsers[userToEdit].Id).Result;
+            var res = usercontroller.SetUserIcon(_testContext.MockUsers[userToEdit].Id).Result as ObjectResult;
+            var body = res.Value as RESTError;
 
-            Assert.Equal(expectedError, res.ErrorCode);
+            Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
+            Assert.Equal(expectedError, body.ErrorCode);
+        }
+
+        [Theory]
+        [InlineData(ADMIN_DEP_ONE, DEPARTMENT_USER_DEP_TWO)]
+        [InlineData(ADMIN_DEP_ONE, GUARDIAN_DEP_TWO)]
+        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_THREE)]
+        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_TWO)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, GUARDIAN_DEP_TWO)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_TWO)]
+        [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_TWO)]
+        [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_TWO)]
+        public void UpdateUserIcon_AuthenticationChecks_NoError(int authUser, int userToEdit)
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[authUser]);
+            _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
+            usercontroller.SetUserIcon(_testContext.MockUsers[authUser].Id).Wait();
+            _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
+            var res = usercontroller.SetUserIcon(_testContext.MockUsers[userToEdit].Id).Result as ObjectResult;
+
+            Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
         }
 
         [Fact]
@@ -188,9 +214,9 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
             _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
             usercontroller.SetUserIcon(_testContext.MockUsers[0].Id).Wait();
-            var res = usercontroller.DeleteUserIcon(_testContext.MockUsers[0].Id).Result;
+            var res = usercontroller.DeleteUserIcon(_testContext.MockUsers[0].Id).Result as ObjectResult;
 
-            Assert.True(res.Success);
+            Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
 
             // Get icon to be sure it is deleted
             var res2 = usercontroller.GetUserIcon(_testContext.MockUsers[0].Id).Result as ObjectResult;
@@ -227,9 +253,15 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
             usercontroller.SetUserIcon(_testContext.MockUsers[userToEdit].Id).Wait();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[authUser]);
-            var res = usercontroller.DeleteUserIcon(_testContext.MockUsers[userToEdit].Id).Result;
+            var res = usercontroller.DeleteUserIcon(_testContext.MockUsers[userToEdit].Id).Result as ObjectResult;
 
-            Assert.Equal(expectedError, res.ErrorCode);
+            if (expectedError != ErrorCode.NoError) {
+                var body = res.Value as RESTError;
+                Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
+                Assert.Equal(expectedError, body.ErrorCode);
+            } else {
+                Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
+            }
         }
 
 

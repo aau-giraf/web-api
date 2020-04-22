@@ -230,27 +230,31 @@ namespace GirafRest.Controllers
         /// <returns>The success response on success else UserNotFound, NotAuthorized, or MissingProperties.</returns>
         /// <param name="id">Identifier of the <see cref="GirafUser"/> to set icon for</param>
         [HttpPut("{id}/icon")]
-        public async Task<Response> SetUserIcon(string id)
+        [ProducesResponseType(typeof(MyResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> SetUserIcon(string id)
         {
             var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
 
             if (user == null)
-                return new ErrorResponse(ErrorCode.UserNotFound);
+                return NotFound(new RESTError(ErrorCode.UserNotFound, "User not found"));
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
+                return StatusCode(StatusCodes.Status403Forbidden, new RESTError(ErrorCode.NotAuthorized, "User does not have permission"));
             
 
             byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body);
 
             if (image.Length < IMAGE_CONTENT_TYPE_DEFINITION)
-                return new ErrorResponse(ErrorCode.MissingProperties, "Image");
+                return BadRequest(new RESTError(ErrorCode.MissingProperties, "Image is corrupt"));
 
             user.UserIcon = image;
             await _giraf._context.SaveChangesAsync();
 
-            return new Response();
+            return Ok(new MyResponse("User icon set"));
         }
 
         /// <summary>
@@ -259,20 +263,25 @@ namespace GirafRest.Controllers
         /// <returns>Success response on success else UserHasNoIcon or NotAuthorized </returns>
         /// <param name="id">Identifier.</param>
         [HttpDelete("{id}/icon")]
-        public async Task<Response> DeleteUserIcon(string id)
+        [ProducesResponseType(typeof(MyResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> DeleteUserIcon(string id)
         {
             var user = _giraf._context.Users.Include(u => u.UserIcon).FirstOrDefault(u => u.Id == id);
             if (user.UserIcon == null)
-                return new ErrorResponse(ErrorCode.UserHasNoIcon);
+                return NotFound(new RESTError(ErrorCode.UserHasNoIcon, "User has no icon"));
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
+                return StatusCode(StatusCodes.Status403Forbidden, 
+                    new RESTError(ErrorCode.NotAuthorized, "User does not have permission"));
 
             user.UserIcon = null;
             await _giraf._context.SaveChangesAsync();
 
-            return new Response();
+            return Ok(new MyResponse("Icon deleted"));
         }
         #endregion
 
