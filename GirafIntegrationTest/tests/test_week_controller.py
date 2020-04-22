@@ -113,15 +113,16 @@ class TestWeekController(GIRAFTestCase):
         citizen_id = response['data']['id']
 
     @order
-    def test_week_can_get_no_weeks_should_fail(self):
+    def test_week_can_get_no_weeks(self):
         """
         Testing getting empty list of weeks
 
         Endpoint: GET:/v1/User/{userId}/week
         """
         response = get(f'{BASE_URL}v1/User/{citizen_id}/week', headers=auth(citizen_token)).json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'NoWeekScheduleFound')
+        self.assertTrue(response['success'])
+        self.assertEqual(response['errorKey'], 'NoError')
+        self.assertFalse(response['data'])
 
     @order
     def test_week_can_add_week(self):
@@ -252,5 +253,6 @@ class TestWeekController(GIRAFTestCase):
         Endpoint: GET:/v1/User/{userId}/week
         """
         response = get(f'{BASE_URL}v1/User/{citizen_id}/week', headers=auth(citizen_token)).json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'NoWeekScheduleFound')
+        self.assertTrue(response['success'])
+        self.assertEqual(response['errorKey'], 'NoError')
+        self.assertFalse(response['data'])
