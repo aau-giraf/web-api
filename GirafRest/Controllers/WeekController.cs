@@ -72,7 +72,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<IEnumerable<WeekNameDTO>>(ErrorCode.NotAuthorized);
             
             if (!user.WeekSchedule.Any())
-                return new ErrorResponse<IEnumerable<WeekNameDTO>>(ErrorCode.NoWeekScheduleFound);
+                return new Response<IEnumerable<WeekNameDTO>>(Enumerable.Empty<WeekNameDTO>());
             
             return new Response<IEnumerable<WeekNameDTO>>(user.WeekSchedule.Select(w => new WeekNameDTO(w.WeekYear, w.WeekNumber, w.Name)));
         }
