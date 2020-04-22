@@ -275,13 +275,23 @@ namespace GirafRest.Controllers
             string path = imagePath+ pictogram.Id + ".png";
 
             if (image.Length > 0){
-                using (FileStream fs =
+                try
+                {
+                    using (FileStream fs =
                     new FileStream(path,
                         FileMode.Create))
-                {
-                    
-                    fs.Write(image);
+                    {
+                        
+                        fs.Write(image);
+                    }
                 }
+                catch(System.UnauthorizedAccessException uaex)
+                {
+                    //Consider if the errorcode is the most appropriate one here
+                    return new ErrorResponse<WeekPictogramDTO>(ErrorCode.NotAuthorized);
+                }
+                
+
 
                 pictogram.ImageHash = image.GetHashCode().ToString();
             }
