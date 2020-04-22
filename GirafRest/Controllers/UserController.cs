@@ -295,24 +295,27 @@ namespace GirafRest.Controllers
         /// <param name="resourceIdDTO">reference to a  <see cref="ResourceIdDTO"/></param>
         [Obsolete("Not used by the new WeekPlanner and might need to be changed or deleted (see future works)")]
         [HttpPost("{id}/resource")]
-        public async Task<Response<GirafUserDTO>> AddUserResource(string id, [FromBody] ResourceIdDTO resourceIdDTO)
+        [ProducesResponseType(typeof(MyResponse<GirafUserDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> AddUserResource(string id, [FromBody] ResourceIdDTO resourceIdDTO)
         {
             //Check if valid parameters have been specified in the call
             if (string.IsNullOrEmpty(id))
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "username");
+                return BadRequest(new RESTError(ErrorCode.MissingProperties, "Missing username"));
 
             if (resourceIdDTO == null)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "resourceIdDTO");
+                return BadRequest(new RESTError(ErrorCode.MissingProperties, "Missing resourceIdDTO"));
 
             //Attempt to find the target user and check that he exists
             var user = _giraf._context.Users.Include(u => u.Resources).ThenInclude(dr => dr.Pictogram).FirstOrDefault(u => u.Id == id);
-
             if (user == null)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
+                return NotFound(new RESTError(ErrorCode.UserNotFound, "User not found"));
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
+                return StatusCode(StatusCodes.Status403Forbidden, new RESTError(ErrorCode.NotAuthorized, "User does not have permission"));
 
             //Find the resource and check that it actually does exist - also verify that the resource is private
             var resource = await _giraf._context.Pictograms
@@ -320,21 +323,22 @@ namespace GirafRest.Controllers
                 .FirstOrDefaultAsync();
 
             if (resource == null)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.ResourceNotFound);
+                return NotFound(new RESTError(ErrorCode.ResourceNotFound, "Resource not found"));
 
             if (resource.AccessLevel != AccessLevel.PRIVATE)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.ResourceMustBePrivate);
+                return BadRequest(new RESTError(ErrorCode.ResourceMustBePrivate, "Resource must be private"));
 
 
             //Check that the currently authenticated user owns the resource
             var curUsr = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
             var resourceOwnedByCaller = await _giraf.CheckPrivateOwnership(resource, curUsr);
             if (!resourceOwnedByCaller)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
+                return StatusCode(StatusCodes.Status403Forbidden, 
+                    new RESTError(ErrorCode.NotAuthorized, "User does not own resource"));
 
             //Check if the target user already owns the resource
             if (user.Resources.Any(ur => ur.PictogramKey == resourceIdDTO.Id))
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserAlreadyOwnsResource);
+                return BadRequest(new RESTError(ErrorCode.UserAlreadyOwnsResource, "User already owns resource"));
 
             //Create the relation and save changes.
             var userResource = new UserResource(user, resource);
@@ -344,7 +348,7 @@ namespace GirafRest.Controllers
             // Get the roles the user is associated with
             GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
-            return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));
+            return Ok(new MyResponse<GirafUserDTO>(new GirafUserDTO(user, userRole)));
         }
 
         /// <summary>
@@ -356,32 +360,43 @@ namespace GirafRest.Controllers
         /// <param name="resourceIdDTO">Reference to <see cref="ResourceIdDTO"/></param>
         [Obsolete("Not used by the new WeekPlanner and might need to be changed or deleted (see future works)")]
         [HttpDelete("{id}/resource")]
-        public async Task<Response<GirafUserDTO>> DeleteResource(string id, [FromBody] ResourceIdDTO resourceIdDTO)
+        [ProducesResponseType(typeof(MyResponse<GirafUserDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> DeleteResource(string id, [FromBody] ResourceIdDTO resourceIdDTO)
         {
             //Check if the caller owns the resource
-            var user = _giraf._context.Users.Include(r => r.Resources).ThenInclude(dr => dr.Pictogram).FirstOrDefault(u => u.Id == id);
+            var user = _giraf._context.Users
+                .Include(r => r.Resources)
+                .ThenInclude(dr => dr.Pictogram)
+                .FirstOrDefault(u => u.Id == id);
+
             if (user == null)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.UserNotFound);
+                return NotFound(new RESTError(ErrorCode.UserNotFound, "User not found"));
             
             //Check that valid parameters have been specified in the call
             if (resourceIdDTO == null)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties, "resourceIdDTO");
+                return BadRequest(new RESTError(ErrorCode.MissingProperties, "Missing resourceIdDTO"));
 
             //Fetch the resource with the given id, check that it exists.
             var resource = await _giraf._context.Pictograms
                 .Where(f => f.Id == resourceIdDTO.Id)
                 .FirstOrDefaultAsync();
-            if (resource == null) return new ErrorResponse<GirafUserDTO>(ErrorCode.ResourceNotFound);
+            if (resource == null) return NotFound(new RESTError(ErrorCode.ResourceNotFound, "Resource not found"));
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.NotAuthorized);
+                return StatusCode(StatusCodes.Status403Forbidden, 
+                    new RESTError(ErrorCode.NotAuthorized, "User does not have permission"));
 
             //Fetch the relationship from the database and check that it exists
             var relationship = await _giraf._context.UserResources
                  .Where(ur => ur.PictogramKey == resource.Id && ur.OtherKey == user.Id)
                 .FirstOrDefaultAsync();
-            if (relationship == null) return new ErrorResponse<GirafUserDTO>(ErrorCode.UserDoesNotOwnResource);
+            if (relationship == null) 
+                return StatusCode(StatusCodes.Status403Forbidden, 
+                    new RESTError(ErrorCode.UserDoesNotOwnResource, "Resource is not owned by user"));
 
             //Remove the resource - both from the user's list and the database
             user.Resources.Remove(relationship);
@@ -392,7 +407,7 @@ namespace GirafRest.Controllers
             var userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
             //Return Ok and the user - the resource is now visible in user.Resources
-            return new Response<GirafUserDTO>(new GirafUserDTO(user, userRole));
+            return Ok(new MyResponse<GirafUserDTO>(new GirafUserDTO(user, userRole)));
         }
 
         /// <summary>
@@ -401,12 +416,16 @@ namespace GirafRest.Controllers
         /// <returns>List of <see cref="UserNameDTO"/> on success else MissingProperties, NotAuthorized, Forbidden,
         /// or UserNasNoCitizens</returns>
         /// <param name="id">Identifier of the <see cref="GirafUser"/> to get citizens for</param>
-        [HttpGet("{id}/citizens")]
+        [HttpGet("{id}/citizens", Name="GetCitizensOfUser")]
         [Authorize (Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
-        public async Task<Response<List<UserNameDTO>>> GetCitizens(string id)
+        [ProducesResponseType(typeof(MyResponse<List<UserNameDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> GetCitizens(string id)
         {
             if (String.IsNullOrEmpty(id))
-                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.MissingProperties, "id");
+                return BadRequest(new RESTError(ErrorCode.MissingProperties, "Missing id"));
             var user = _giraf._context.Users.Include(u => u.Citizens).FirstOrDefault(u => u.Id == id);
             var authUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
             var citizens = new List<UserNameDTO>();
@@ -414,12 +433,14 @@ namespace GirafRest.Controllers
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(authUser, user)))
             {
-                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.NotAuthorized);
+                return StatusCode(StatusCodes.Status403Forbidden, 
+                    new RESTError(ErrorCode.NotAuthorized, "User does not have permission"));
             }
 
             var userRole = (await _roleManager.findUserRole(_giraf._userManager, user));
             if (userRole != GirafRoles.Guardian)
-                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.Forbidden);;
+                return StatusCode(StatusCodes.Status403Forbidden, 
+                    new RESTError(ErrorCode.Forbidden, "User does not have permission"));
 
             foreach (var citizen in user.Citizens)
             {
@@ -429,10 +450,10 @@ namespace GirafRest.Controllers
 
             if (!citizens.Any())
             {
-                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.UserHasNoCitizens);
+                return NotFound(new RESTError(ErrorCode.UserHasNoCitizens, "User does not have any citizens"));
             }   
 
-            return new Response<List<UserNameDTO>>(citizens.ToList<UserNameDTO>());
+            return Ok(new MyResponse<List<UserNameDTO>>(citizens.ToList<UserNameDTO>()));
         }
 
         /// <summary>
@@ -441,21 +462,25 @@ namespace GirafRest.Controllers
         /// <returns>List of Guardians on success else InvalidProperties, NotAuthorized, Forbidden,
         /// or UserHasNoGuardians </returns>
         /// <param name="id">Identifier for the citizen to get guardians for</param>
-        [HttpGet("{id}/guardians")]
+        [HttpGet("{id}/guardians", Name="GetGuardiansOfUser")]
         [Authorize]
-        public async Task<Response<List<UserNameDTO>>> GetGuardians(string id)
+        [ProducesResponseType(typeof(MyResponse<List<UserNameDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> GetGuardians(string id)
         {
             var user = _giraf._context.Users.Include(u => u.Guardians).FirstOrDefault(u => u.Id == id);
             if (user == null)
-                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.InvalidProperties, "id");
+                return BadRequest(new RESTError(ErrorCode.InvalidProperties, "Missing id"));
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.NotAuthorized);
+                return StatusCode(StatusCodes.Status403Forbidden, new RESTError(ErrorCode.NotAuthorized, "User does not have permission"));
 
             var userRole = (await _roleManager.findUserRole(_giraf._userManager, user));
             if (userRole != GirafRoles.Citizen)
-                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.Forbidden); ;
+                return StatusCode(StatusCodes.Status403Forbidden, new RESTError(ErrorCode.Forbidden, "User does not have permission"));
 
             var guardians = new List<UserNameDTO>();
             foreach (var guardian in user.Guardians)
@@ -466,10 +491,10 @@ namespace GirafRest.Controllers
 
             if (!guardians.Any())
             {
-                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.UserHasNoGuardians);
+                return NotFound(new RESTError(ErrorCode.UserHasNoGuardians, "User has no guardians"));
             }
 
-            return new Response<List<UserNameDTO>>(guardians);
+            return Ok(new MyResponse<List<UserNameDTO>>(guardians));
         }
 
         /// <summary>
@@ -481,27 +506,31 @@ namespace GirafRest.Controllers
         /// or forbidden </returns>
         [HttpPost("{id}/citizens/{citizenId}")]
         [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
-        public async Task<Response> AddGuardianCitizenRelationship(string id, string citizenId)
+        [ProducesResponseType(typeof(MyResponse<List<UserNameDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> AddGuardianCitizenRelationship(string id, string citizenId)
         {
             var citizen = _giraf._context.Users.Include(u => u.Guardians).FirstOrDefault(u => u.Id == citizenId);
             var guardian = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
 
             if (guardian == null || citizen == null)
-                return new ErrorResponse(ErrorCode.UserNotFound);
+                return NotFound(new RESTError(ErrorCode.UserNotFound, "User not found"));
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), guardian)))
-                return new ErrorResponse(ErrorCode.NotAuthorized);
+                return StatusCode(StatusCodes.Status403Forbidden, new RESTError(ErrorCode.NotAuthorized, "User does not have permission"));
+                
 
             var citRole = _roleManager.findUserRole(_giraf._userManager, citizen).Result;
             var guaRole = _roleManager.findUserRole(_giraf._userManager, guardian).Result;
 
             if (citRole != GirafRoles.Citizen || guaRole != GirafRoles.Guardian)
-                return new ErrorResponse(ErrorCode.Forbidden);
+                return StatusCode(StatusCodes.Status403Forbidden, new RESTError(ErrorCode.Forbidden, "User does not have permission"));
 
             citizen.AddGuardian(guardian);
 
-            return new Response();
+            return Ok(new MyResponse("Added relation between guardian and citizen"));
         }
 
         /// <summary>
@@ -514,50 +543,57 @@ namespace GirafRest.Controllers
         /// <param name="options">reference to a <see cref="SettingDTO"/> containing the new settings</param>
         [HttpPut("{id}/settings")]
         [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
-        public async Task<Response<SettingDTO>> UpdateUserSettings(string id, [FromBody] SettingDTO options)
+        [ProducesResponseType(typeof(MyResponse<SettingDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> UpdateUserSettings(string id, [FromBody] SettingDTO options)
         {
             var user = _giraf._context.Users.Include(u => u.Settings).ThenInclude(w => w.WeekDayColors).FirstOrDefault(u => u.Id == id);
             if (user == null)
-                return new ErrorResponse<SettingDTO>(ErrorCode.UserNotFound);
+                return NotFound(new RESTError(ErrorCode.UserNotFound, "User not found"));
 
             var userRole = await _roleManager.findUserRole(_giraf._userManager, user);
             if (userRole != GirafRoles.Citizen)
-                return new ErrorResponse<SettingDTO>(ErrorCode.RoleMustBeCitizien);
+                return BadRequest(new RESTError(ErrorCode.RoleMustBeCitizien, "User role is not citizen"));
 
             if (user.Settings == null)
-                return new ErrorResponse<SettingDTO>(ErrorCode.MissingSettings);
+                return NotFound(new RESTError(ErrorCode.MissingSettings, "User settings not found"));
             
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return new ErrorResponse<SettingDTO>(ErrorCode.NotAuthorized);
+                return StatusCode(StatusCodes.Status403Forbidden, new RESTError(ErrorCode.NotAuthorized, "User does not have permission"));
 
             if (!ModelState.IsValid)
-                return new ErrorResponse<SettingDTO>(ErrorCode.MissingProperties, ModelState.Values.Where(E => E.Errors.Count > 0)
-                                  .SelectMany(e => e.Errors)
-                                  .Select(e => e.ErrorMessage)
-                                  .ToArray());
+                return BadRequest(new RESTError(
+                    ErrorCode.MissingProperties, 
+                    "Missing properties in model", 
+                    "Errors: " + String.Join(", ",ModelState.Values.Where(E => E.Errors.Count > 0)
+                        .SelectMany(e => e.Errors)
+                        .Select(e => e.ErrorMessage)
+                        .ToArray())));
             
             if (options == null)
-                return new ErrorResponse<SettingDTO>(ErrorCode.MissingProperties, "Settings");
+                return BadRequest(new RESTError(ErrorCode.MissingProperties, "Missing settings"));
 
             var error = ValidateOptions(options);
             if (error.HasValue)
-                return new ErrorResponse<SettingDTO>(ErrorCode.InvalidProperties, "Settings");
+                return BadRequest(new RESTError(ErrorCode.InvalidProperties, "Invalid settings"));
 
             if(options.WeekDayColors != null) {
                 // Validate Correct format of WeekDayColorDTOs. A color must be set for each day
                 if (options.WeekDayColors.GroupBy(d => d.Day).Any(g => g.Count() != 1))
-                    return new ErrorResponse<SettingDTO>(ErrorCode.ColorMustHaveUniqueDay);
+                    return BadRequest(new RESTError(ErrorCode.ColorMustHaveUniqueDay, "Colors are not set"));
 
 
                 // check if all days in weekdaycolours is valid
                 if (options.WeekDayColors.Any(w => !Enum.IsDefined(typeof(Days), w.Day)))
-                    return new ErrorResponse<SettingDTO>(ErrorCode.InvalidDay);
+                    return BadRequest(new RESTError(ErrorCode.InvalidDay, "Invalid day"));
 
                 // check that Colors are in correct format
                 var isCorrectHexValues = IsWeekDayColorsCorrectHexFormat(options);
                 if (!isCorrectHexValues)
-                    return new ErrorResponse<SettingDTO>(ErrorCode.InvalidHexValues);
+                    return BadRequest(new RESTError(ErrorCode.InvalidHexValues, "Invalid hex values"));
             }
 
             user.Settings.UpdateFrom(options);
@@ -565,7 +601,7 @@ namespace GirafRest.Controllers
 
             await _giraf._context.SaveChangesAsync();
 
-            return new Response<SettingDTO>(new SettingDTO(user.Settings));
+            return Ok(new MyResponse<SettingDTO>(new SettingDTO(user.Settings)));
         }
 
         #endregion
