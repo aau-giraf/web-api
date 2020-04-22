@@ -57,7 +57,7 @@ namespace GirafRest.Models
         public bool GreyScale { get; set; }
 
         /// <summary>
-        /// Flag for indicating wether or not to show timer buttons
+        /// Flag for indicating whether or not to show timer buttons
         /// </summary>
         public bool LockTimerControl { get; set; }
 
