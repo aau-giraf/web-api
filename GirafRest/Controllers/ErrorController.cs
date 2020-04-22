@@ -15,10 +15,10 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns>ErrorCode.NotFound</returns>
         [HttpGet(""), HttpPost(""), HttpPut(""), HttpDelete(""), HttpPatch("")]
-        [ProducesResponseType(typeof(RESTError), StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
         public ActionResult Index()
         {
-            return NotFound(new RESTError(ErrorCode.NotFound, "The endpoint could not be found"));
+            return NotFound(new ErrorResponse(ErrorCode.NotFound, "The endpoint could not be found"));
         }
     }
 }

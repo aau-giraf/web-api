@@ -22,12 +22,12 @@ namespace GirafRest.Shared
         /// <returns>MissingProperties if thumbnail is missing.
         /// ResourceNotFound if any pictogram id is invalid.
         /// null otherwise.</returns>
-        public static async Task<RESTError> SetWeekFromDTO(WeekBaseDTO weekDTO, WeekBase week, IGirafService _giraf)
+        public static async Task<ErrorResponse> SetWeekFromDTO(WeekBaseDTO weekDTO, WeekBase week, IGirafService _giraf)
         {
             var modelErrorCode = weekDTO.ValidateModel();
             if (modelErrorCode.HasValue)
             {
-                return new RESTError(modelErrorCode.Value, "Invalid model");
+                return new ErrorResponse(modelErrorCode.Value, "Invalid model");
             }
             
             week.Name = weekDTO.Name;
@@ -35,7 +35,7 @@ namespace GirafRest.Shared
             Pictogram thumbnail = _giraf._context.Pictograms
                 .FirstOrDefault(p => p.Id == weekDTO.Thumbnail.Id);
             if(thumbnail == null)
-                return new RESTError(ErrorCode.MissingProperties, "Missing thumbnail");
+                return new ErrorResponse(ErrorCode.MissingProperties, "Missing thumbnail");
 
             week.Thumbnail = thumbnail;
 
@@ -44,7 +44,7 @@ namespace GirafRest.Shared
                 var wkDay = new Weekday(day);
                 if (!(await AddPictogramsToWeekday(wkDay, day, _giraf)))
                 {
-                    return new RESTError(ErrorCode.ResourceNotFound, "Missing pictogram");
+                    return new ErrorResponse(ErrorCode.ResourceNotFound, "Missing pictogram");
                 }
 
                 week.UpdateDay(wkDay);

@@ -104,7 +104,7 @@ namespace GirafRest.Test
                 newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Monday
             ).Result as ObjectResult;
 
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
@@ -126,7 +126,7 @@ namespace GirafRest.Test
                 newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Sunday + 1
             ).Result as ObjectResult;
 
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.InvalidDay, body.ErrorCode);
@@ -146,7 +146,7 @@ namespace GirafRest.Test
                 newActivity, mockUser.Id, week.Name, 9000, week.WeekNumber, (int)Days.Sunday
             ).Result as ObjectResult;
 
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.WeekNotFound, body.ErrorCode);
@@ -166,7 +166,7 @@ namespace GirafRest.Test
                 newActivity, mockUser.Id, week.Name, week.WeekYear, 54, (int)Days.Sunday
             ).Result as ObjectResult;
 
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
             
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.WeekNotFound, body.ErrorCode);
@@ -187,7 +187,7 @@ namespace GirafRest.Test
                 newActivity, mockUser.Id, "WrongName", week.WeekYear, week.WeekYear, (int)Days.Sunday
             ).Result as ObjectResult;
 
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.WeekNotFound, body.ErrorCode);
@@ -207,7 +207,7 @@ namespace GirafRest.Test
                 newActivity, "NonExistingUserId", week.Name, week.WeekYear, week.WeekNumber, (int)Days.Sunday
             ).Result as ObjectResult;
             
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
             
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.UserNotFound, body.ErrorCode);
@@ -231,7 +231,7 @@ namespace GirafRest.Test
                 newActivity, differentMockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Sunday
             ).Result as ObjectResult;
 
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
@@ -267,7 +267,7 @@ namespace GirafRest.Test
                 mockUser.Id, _nonExistingId
             ).Result as ObjectResult;
 
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
             
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.ActivityNotFound , body.ErrorCode);
@@ -283,7 +283,7 @@ namespace GirafRest.Test
                 "NonExistingUserId", _existingId
             ).Result as ObjectResult;
 
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
             
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.UserNotFound, body.ErrorCode);
@@ -302,7 +302,7 @@ namespace GirafRest.Test
                 activityOwnerUser.Id, _existingId
             ).Result as ObjectResult;
             
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
@@ -317,7 +317,7 @@ namespace GirafRest.Test
 
             // logged in as GUARDIAN_DEP_TWO and trying to delete one of ADMIN_DEP_ONES activities
             var res = activityController.DeleteActivity(loggedInUser.Id, _existingId).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.ActivityNotFound, body.ErrorCode);
@@ -336,7 +336,7 @@ namespace GirafRest.Test
 
             var res = ac.UpdateActivity(newActivity, mockUser.Id).Result as ObjectResult;
 
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
@@ -353,7 +353,7 @@ namespace GirafRest.Test
 
             var res = ac.UpdateActivity(newActivity, mockUser.Id).Result as ObjectResult;
 
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.ActivityNotFound, body.ErrorCode);
@@ -372,7 +372,7 @@ namespace GirafRest.Test
             };
 
             var res = ac.UpdateActivity(newActivity, differentMockUser.Id).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);

@@ -93,7 +93,7 @@ namespace GirafRest.Test
             var res = wc.ReadWeekSchedules(_testContext.MockUsers[userToEdit].Id).Result as ObjectResult;
 
             if (expectedError != ErrorCode.NoError) {
-                var body = res.Value as RESTError;
+                var body = res.Value as ErrorResponse;
                 Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
                 Assert.Equal(expectedError, body.ErrorCode);
             } else {
@@ -155,7 +155,7 @@ namespace GirafRest.Test
             var res = wc.ReadUsersWeekSchedule(_testContext.MockUsers[userToEdit].Id, 999, 999).Result as ObjectResult;
 
             if (expectedError != ErrorCode.NoError) {
-                var body = res.Value as RESTError;
+                var body = res.Value as ErrorResponse;
                 Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
                 Assert.Equal(expectedError, body.ErrorCode);
             } else {
@@ -193,7 +193,7 @@ namespace GirafRest.Test
             var res = wc.UpdateWeek(mockUser.Id, 2018, 10, new WeekDTO() { 
                 Thumbnail = new Models.DTOs.WeekPictogramDTO(_testContext.MockPictograms[0]) 
             }).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
             
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.InvalidAmountOfWeekdays, body.ErrorCode);
@@ -206,7 +206,7 @@ namespace GirafRest.Test
             var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             var res = wc.UpdateWeek(mockUser.Id, 2018, 10, null).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
@@ -227,7 +227,7 @@ namespace GirafRest.Test
                 WEEK_ZERO, 
                 new WeekDTO(week)
             ).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
@@ -319,7 +319,7 @@ namespace GirafRest.Test
             var res = wc.UpdateWeek(mockUser.Id, 2018, 20, new WeekDTO() { 
                 Thumbnail = new Models.DTOs.WeekPictogramDTO(_testContext.MockPictograms[0]) 
             }).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.InvalidAmountOfWeekdays, body.ErrorCode);
@@ -332,7 +332,7 @@ namespace GirafRest.Test
             var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             var res = wc.UpdateWeek(mockUser.Id, 2018, 10, null).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
@@ -367,7 +367,7 @@ namespace GirafRest.Test
             ).Result as ObjectResult;
 
             if (expectedError != ErrorCode.NoError) {
-                var body = res.Value as RESTError;
+                var body = res.Value as ErrorResponse;
                 Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
                 Assert.Equal(expectedError, body.ErrorCode);
             } else {

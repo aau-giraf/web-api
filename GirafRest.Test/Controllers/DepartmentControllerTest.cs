@@ -86,7 +86,7 @@ namespace GirafRest.Test
 
             var res = dc.Get(DEPARTMENT_ONE).Result as ObjectResult;
 
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.NotFound, body.ErrorCode);
@@ -115,7 +115,7 @@ namespace GirafRest.Test
             var dc = initializeTest();
             AddEmptyDepartmentList();
             var res = dc.Get().Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.NotFound, body.ErrorCode);
@@ -154,7 +154,7 @@ namespace GirafRest.Test
             }, new List<UserNameDTO>());
 
             var res = dc.Post(depDTO).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
@@ -188,7 +188,7 @@ namespace GirafRest.Test
             var user = _testContext.MockUsers[CITIZEN_DEP_THREE];
 
             var res = dc.AddUser(DEPARTMENT_TWO, user.Id).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.UserAlreadyHasDepartment, body.ErrorCode);
@@ -203,7 +203,7 @@ namespace GirafRest.Test
             var user = _testContext.MockUsers[DEPARTMENT_TWO_USER];
 
             var res = dc.AddUser(DEPARTMENT_TEN, user.Id).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.DepartmentNotFound, body.ErrorCode);
@@ -215,7 +215,7 @@ namespace GirafRest.Test
             var dc = initializeTest();
             var user = new GirafUserDTO() { };
             var res = dc.AddUser(DEPARTMENT_ONE, user.Id).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
@@ -245,7 +245,7 @@ namespace GirafRest.Test
             var dc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = dc.AddResource(DEPARTMENT_TEN, RESOURCE_THREE).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.DepartmentNotFound, body.ErrorCode);
@@ -258,7 +258,7 @@ namespace GirafRest.Test
             var dc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = dc.AddResource(DEPARTMENT_ONE, NONEXISTING).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.ResourceNotFound, body.ErrorCode);
@@ -270,7 +270,7 @@ namespace GirafRest.Test
         {
             var dc = initializeTest();
             var res = dc.AddResource(DEPARTMENT_ONE, RESOURCE_ONE).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
@@ -301,7 +301,7 @@ namespace GirafRest.Test
             var dc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[3]);
             var res = dc.RemoveResource(RESOURCE_FIVE).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
             
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);

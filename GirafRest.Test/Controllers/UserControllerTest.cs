@@ -114,7 +114,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
             var res = userController.SetUserIcon(_testContext.MockUsers[userToEdit].Id).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
             
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(expectedError, body.ErrorCode);
@@ -180,7 +180,7 @@ namespace GirafRest.Test
             usercontroller.SetUserIcon(_testContext.MockUsers[authUser].Id).Wait();
             _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
             var res = usercontroller.SetUserIcon(_testContext.MockUsers[userToEdit].Id).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(expectedError, body.ErrorCode);
@@ -220,7 +220,7 @@ namespace GirafRest.Test
 
             // Get icon to be sure it is deleted
             var res2 = usercontroller.GetUserIcon(_testContext.MockUsers[0].Id).Result as ObjectResult;
-            var body = res2.Value as RESTError;
+            var body = res2.Value as ErrorResponse;
 
 
             Assert.Equal(StatusCodes.Status404NotFound, res2.StatusCode);
@@ -256,7 +256,7 @@ namespace GirafRest.Test
             var res = usercontroller.DeleteUserIcon(_testContext.MockUsers[userToEdit].Id).Result as ObjectResult;
 
             if (expectedError != ErrorCode.NoError) {
-                var body = res.Value as RESTError;
+                var body = res.Value as ErrorResponse;
                 Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
                 Assert.Equal(expectedError, body.ErrorCode);
             } else {
@@ -315,7 +315,7 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             var res = usercontroller.GetUser("invalid").Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.UserNotFound, body.ErrorCode);
@@ -341,7 +341,7 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = usercontroller.GetUser("invalidId").Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.UserNotFound, body.ErrorCode);
@@ -353,7 +353,7 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_THREE]);
             var res = usercontroller.GetUser(_testContext.MockUsers[CITIZEN_DEP_TWO].Id).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
@@ -371,7 +371,7 @@ namespace GirafRest.Test
             var user = _testContext.MockUsers[GUARDIAN_DEP_TWO];
             _testContext.MockUserManager.MockLoginAsUser(user);
             var res = usercontroller.GetGuardians(user.Id).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.Forbidden, body.ErrorCode);
@@ -405,7 +405,7 @@ namespace GirafRest.Test
             var user = _testContext.MockUsers[CITIZEN_DEP_TWO];
             _testContext.MockUserManager.MockLoginAsUser(user);
             var res = usercontroller.GetGuardians("").Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.InvalidProperties, body.ErrorCode);
@@ -440,7 +440,7 @@ namespace GirafRest.Test
             var res = usercontroller.GetGuardians(_testContext.MockUsers[userToEdit].Id).Result as ObjectResult;
 
             if (expectedError != ErrorCode.NoError) {
-                var body = res.Value as RESTError;
+                var body = res.Value as ErrorResponse;
                 Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
                 Assert.Equal(expectedError, body.ErrorCode);
             } else {
@@ -479,7 +479,7 @@ namespace GirafRest.Test
             var user = _testContext.MockUsers[GUARDIAN_DEP_TWO];
             _testContext.MockUserManager.MockLoginAsUser(user);
             var res = usercontroller.GetCitizens("").Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
@@ -509,7 +509,7 @@ namespace GirafRest.Test
             var res = usercontroller.GetCitizens(_testContext.MockUsers[userToEdit].Id).Result as ObjectResult;
 
             if (expectedError != ErrorCode.NoError) {
-                var body = res.Value as RESTError;
+                var body = res.Value as ErrorResponse;
                 Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
                 Assert.Equal(expectedError, body.ErrorCode);
             } else {
@@ -549,7 +549,7 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = usercontroller.UpdateUser(null, null).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
@@ -565,7 +565,7 @@ namespace GirafRest.Test
                 ScreenName = null,
                 Username = "Henning"
             }).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
@@ -581,7 +581,7 @@ namespace GirafRest.Test
                 Username = "Charles Junior",
                 ScreenName = "Charles Junior"
             }).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
@@ -642,7 +642,7 @@ namespace GirafRest.Test
                 ScreenName = screenName,
                 Username = userName
             }).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(expectedError, body.ErrorCode);
@@ -697,7 +697,7 @@ namespace GirafRest.Test
             var res = usercontroller.AddGuardianCitizenRelationship(
                 "", _testContext.MockUsers[2].Id
             ).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.UserNotFound, body.ErrorCode);
@@ -736,7 +736,7 @@ namespace GirafRest.Test
             var res = usercontroller
                 .AddUserResource(targetUserId, new ResourceIdDTO() { Id = GuardianPrivatePictogram })
                 .Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.UserNotFound, body.ErrorCode);
@@ -753,7 +753,7 @@ namespace GirafRest.Test
             var res = usercontroller
                 .AddUserResource(targetUserId, new ResourceIdDTO() { Id = GuardianProtectedPictogram })
                 .Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.ResourceMustBePrivate, body.ErrorCode);
@@ -770,7 +770,7 @@ namespace GirafRest.Test
             var res = usercontroller
                 .AddUserResource(targetUserId, new ResourceIdDTO() { Id = PublicPictogram })
                 .Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.UserNotFound, body.ErrorCode);
@@ -786,7 +786,7 @@ namespace GirafRest.Test
             var res = usercontroller
                 .AddUserResource(targetUserId, new ResourceIdDTO() { Id = CitizenPrivatePictogram })
                 .Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
@@ -802,7 +802,7 @@ namespace GirafRest.Test
             var res = usercontroller
                 .AddUserResource(targetUserId, new ResourceIdDTO() { Id = PublicPictogram })
                 .Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.UserNotFound, body.ErrorCode);
@@ -818,7 +818,7 @@ namespace GirafRest.Test
             var res = usercontroller
                 .AddUserResource(targetUserId, new ResourceIdDTO() { Id = CitizenPrivatePictogram })
                 .Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
@@ -834,7 +834,7 @@ namespace GirafRest.Test
             var res = usercontroller
                 .AddUserResource(targetUserId, new ResourceIdDTO() { Id = PublicPictogram })
                 .Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.UserNotFound, body.ErrorCode);
@@ -850,7 +850,7 @@ namespace GirafRest.Test
             var res = usercontroller
                 .AddUserResource(targetUserId, new ResourceIdDTO() { Id = GuardianPrivatePictogram })
                 .Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
             
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
@@ -867,7 +867,7 @@ namespace GirafRest.Test
             var res = usercontroller
                 .AddUserResource(targetUserId, new ResourceIdDTO() { Id = PublicPictogram })
                 .Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
             
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.UserNotFound, body.ErrorCode);
@@ -899,7 +899,7 @@ namespace GirafRest.Test
             var res = usercontroller
                 .DeleteResource("INVALID",new ResourceIdDTO() { Id = GuardianPrivatePictogram })
                 .Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.UserNotFound, body.ErrorCode);
@@ -915,7 +915,7 @@ namespace GirafRest.Test
             var res = usercontroller
                 .DeleteResource(mockUser.Id, new ResourceIdDTO() { Id = GuardianProtectedPictogram })
                 .Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.UserDoesNotOwnResource, body.ErrorCode);
@@ -931,7 +931,7 @@ namespace GirafRest.Test
             var res = usercontroller
                 .DeleteResource(mockUser.Id, new ResourceIdDTO() { Id = GuardianProtectedPictogram })
                 .Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.UserDoesNotOwnResource, body.ErrorCode);
@@ -948,7 +948,7 @@ namespace GirafRest.Test
             var res = usercontroller
                 .DeleteResource(mockUser.Id, new ResourceIdDTO() { Id = PublicPictogram })
                 .Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.UserDoesNotOwnResource, body.ErrorCode);
@@ -963,7 +963,7 @@ namespace GirafRest.Test
             var res = usercontroller
                 .DeleteResource("Invalid", new ResourceIdDTO() { Id = PublicPictogram })
                 .Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.UserNotFound, body.ErrorCode);
@@ -1011,7 +1011,7 @@ namespace GirafRest.Test
             var dto = UserSettings[0];
             dto.CompleteMark = CompleteMark.MovedRight;
             var res = usercontroller.UpdateUserSettings(_testContext.MockUsers[CITIZEN_DEP_THREE].Id, dto).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
@@ -1122,7 +1122,7 @@ namespace GirafRest.Test
             var res = usercontroller.UpdateUserSettings(_testContext.MockUsers[userToEdit].Id, dto).Result as ObjectResult;
 
             if (expectedError != ErrorCode.NoError) {
-                var body = res.Value as RESTError;
+                var body = res.Value as ErrorResponse;
                 Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
                 Assert.Equal(expectedError, body.ErrorCode);
             } else {
@@ -1151,7 +1151,7 @@ namespace GirafRest.Test
             var res = usercontroller.UpdateUserSettings(_testContext.MockUsers[userToEdit].Id, dto).Result as ObjectResult;
 
             if (expectedError != ErrorCode.NoError) {
-                var body = res.Value as RESTError;
+                var body = res.Value as ErrorResponse;
                 Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
                 Assert.Equal(expectedError, body.ErrorCode);
             } else {

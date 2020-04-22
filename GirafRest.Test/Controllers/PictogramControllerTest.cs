@@ -111,7 +111,7 @@ namespace GirafRest.Test
             var pc = initializeTest();
             _testContext.MockUserManager.MockLogout();
             var res = pc.ReadPictogram(ADMIN_PRIVATE_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status401Unauthorized, res.StatusCode);
             Assert.Equal(ErrorCode.UserNotFound, body.ErrorCode);
@@ -122,7 +122,7 @@ namespace GirafRest.Test
             var pc = initializeTest();
             _testContext.MockUserManager.MockLogout();
             var res = pc.ReadPictogram(DEP_ONE_PROTECTED_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status401Unauthorized, res.StatusCode);
             Assert.Equal(ErrorCode.UserNotFound, body.ErrorCode);
@@ -157,7 +157,7 @@ namespace GirafRest.Test
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             var res = pc.ReadPictogram(DEP_ONE_PROTECTED_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
@@ -168,7 +168,7 @@ namespace GirafRest.Test
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             var res = pc.ReadPictogram(ADMIN_PRIVATE_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
@@ -179,7 +179,7 @@ namespace GirafRest.Test
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = pc.ReadPictogram(NONEXISTING_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.PictogramNotFound, body.ErrorCode);
@@ -190,7 +190,7 @@ namespace GirafRest.Test
             var pc = initializeTest();
             _testContext.MockUserManager.MockLogout();
             var res = pc.ReadPictogram(NONEXISTING_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.PictogramNotFound, body.ErrorCode);
@@ -346,7 +346,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             PictogramDTO dto = null;
             var res = pc.CreatePictogram(dto).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
@@ -363,7 +363,7 @@ namespace GirafRest.Test
                 Title = "newpictogram"
             };
             var res = pc.CreatePictogram(dto).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
@@ -384,7 +384,7 @@ namespace GirafRest.Test
                 AccessLevel = AccessLevel.PRIVATE
             };
             var res = pc.UpdatePictogramInfo(ADMIN_PRIVATE_PICTOGRAM, dto).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status401Unauthorized, res.StatusCode);
             Assert.Equal(ErrorCode.UserNotFound, body.ErrorCode);
@@ -402,7 +402,7 @@ namespace GirafRest.Test
                 AccessLevel = AccessLevel.PROTECTED
             };
             var res = pc.UpdatePictogramInfo(DEP_ONE_PROTECTED_PICTOGRAM, dto).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
 
             Assert.Equal(StatusCodes.Status401Unauthorized, res.StatusCode);
@@ -486,7 +486,7 @@ namespace GirafRest.Test
                 AccessLevel = AccessLevel.PRIVATE
             };
             var res = pc.UpdatePictogramInfo(ADMIN_PRIVATE_PICTOGRAM, dto).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
@@ -504,7 +504,7 @@ namespace GirafRest.Test
                 AccessLevel = AccessLevel.PRIVATE
             };
             var res = pc.UpdatePictogramInfo(DEP_ONE_PROTECTED_PICTOGRAM, dto).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
@@ -522,7 +522,7 @@ namespace GirafRest.Test
                 AccessLevel = AccessLevel.PRIVATE
             };
             var res = pc.UpdatePictogramInfo(NONEXISTING_PICTOGRAM, dto).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.PictogramNotFound, body.ErrorCode);
@@ -535,7 +535,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             PictogramDTO dto = null;
             var res = pc.UpdatePictogramInfo(PUBLIC_PICTOGRAM, dto).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
@@ -569,7 +569,7 @@ namespace GirafRest.Test
             var pc = initializeTest();
             _testContext.MockUserManager.MockLogout();
             var res = pc.DeletePictogram(DEP_ONE_PROTECTED_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError ;
+            var body = res.Value as ErrorResponse ;
 
             Assert.Equal(StatusCodes.Status401Unauthorized, res.StatusCode);
             Assert.Equal(ErrorCode.UserNotFound, body.ErrorCode);
@@ -581,7 +581,7 @@ namespace GirafRest.Test
             var pc = initializeTest();
             _testContext.MockUserManager.MockLogout();
             var res = pc.DeletePictogram(ADMIN_PRIVATE_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status401Unauthorized, res.StatusCode);
             Assert.Equal(ErrorCode.UserNotFound, body.ErrorCode);
@@ -626,7 +626,7 @@ namespace GirafRest.Test
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             var res = pc.DeletePictogram(DEP_ONE_PROTECTED_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
@@ -638,7 +638,7 @@ namespace GirafRest.Test
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             var res = pc.DeletePictogram(ADMIN_PRIVATE_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
@@ -650,7 +650,7 @@ namespace GirafRest.Test
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = pc.DeletePictogram(NONEXISTING_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.PictogramNotFound, body.ErrorCode);
@@ -665,7 +665,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLogout();
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
             var res = pc.SetPictogramImage(DEP_ONE_PROTECTED_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status401Unauthorized, res.StatusCode);
             Assert.Equal(ErrorCode.UserNotFound, body.ErrorCode);
@@ -678,7 +678,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLogout();
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
             var res = pc.SetPictogramImage(ADMIN_PRIVATE_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status401Unauthorized, res.StatusCode);
             Assert.Equal(ErrorCode.UserNotFound, body.ErrorCode);
@@ -749,7 +749,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
             var res = pc.SetPictogramImage(DEP_ONE_PROTECTED_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
@@ -762,7 +762,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
             var res = pc.SetPictogramImage(ADMIN_PRIVATE_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
@@ -775,7 +775,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);
             var res = pc.SetPictogramImage(NONEXISTING_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.PictogramNotFound, body.ErrorCode);
@@ -817,7 +817,7 @@ namespace GirafRest.Test
 
             _testContext.MockUserManager.MockLogout();
             var res = pc.SetPictogramImage(DEP_ONE_PROTECTED_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status401Unauthorized, res.StatusCode);
             Assert.Equal(ErrorCode.UserNotFound, body.ErrorCode);
@@ -834,7 +834,7 @@ namespace GirafRest.Test
 
             _testContext.MockUserManager.MockLogout();
             var res = pc.SetPictogramImage(ADMIN_PRIVATE_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
             
             Assert.Equal(StatusCodes.Status401Unauthorized, res.StatusCode);
             Assert.Equal(ErrorCode.UserNotFound, body.ErrorCode);
@@ -907,7 +907,7 @@ namespace GirafRest.Test
 
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             var res = pc.SetPictogramImage(ADMIN_PRIVATE_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
@@ -923,7 +923,7 @@ namespace GirafRest.Test
             var img = pc.SetPictogramImage(DEP_ONE_PROTECTED_PICTOGRAM);
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             var res = pc.SetPictogramImage(DEP_ONE_PROTECTED_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
@@ -953,7 +953,7 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockRequestImage(PNG_FILEPATH);           
             
             var res = pc.SetPictogramImage(NONEXISTING_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
             
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.PictogramNotFound, body.ErrorCode);
@@ -1023,7 +1023,7 @@ namespace GirafRest.Test
 
             _testContext.MockUserManager.MockLogout();
             var res = pc.ReadPictogramImage(DEP_ONE_PROTECTED_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status401Unauthorized, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
@@ -1039,7 +1039,7 @@ namespace GirafRest.Test
 
             _testContext.MockUserManager.MockLogout();
             var res = pc.ReadPictogramImage(ADMIN_PRIVATE_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status401Unauthorized, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
@@ -1091,7 +1091,7 @@ namespace GirafRest.Test
             var img = pc.SetPictogramImage(ADMIN_PRIVATE_PICTOGRAM);
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             var res = pc.ReadPictogramImage(ADMIN_PRIVATE_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
@@ -1106,7 +1106,7 @@ namespace GirafRest.Test
             var img = pc.SetPictogramImage(DEP_ONE_PROTECTED_PICTOGRAM);
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             var res = pc.ReadPictogramImage(DEP_ONE_PROTECTED_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
@@ -1118,7 +1118,7 @@ namespace GirafRest.Test
             var pc = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = pc.ReadPictogramImage(PUBLIC_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.PictogramHasNoImage, body.ErrorCode);
@@ -1131,7 +1131,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var img = pc.SetPictogramImage(NONEXISTING_PICTOGRAM);
             var res = pc.ReadPictogramImage(NONEXISTING_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.PictogramNotFound, body.ErrorCode);
@@ -1146,7 +1146,7 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockRequestImage(JPEG_FILEPATH);
             var img = pc.SetPictogramImage(PUBLIC_PICTOGRAM);
             var res = pc.ReadPictogramImage(PUBLIC_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
 
             Assert.Equal(StatusCodes.Status401Unauthorized, res.StatusCode);
@@ -1199,7 +1199,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             _testContext.MockUserManager.MockLogout();
             var res = pc.ReadRawPictogramImage(ADMIN_PRIVATE_PICTOGRAM).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status401Unauthorized, res.StatusCode);
             Assert.Equal(ErrorCode.UserNotFound, body.ErrorCode);

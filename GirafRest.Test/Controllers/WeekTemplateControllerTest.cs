@@ -68,7 +68,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(user);
 
             var res = wtc.GetWeekTemplates().Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.NoWeekTemplateFound, body.ErrorCode);
@@ -106,7 +106,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(user);
 
             var res = wtc.GetWeekTemplate(int.MaxValue).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.NoWeekTemplateFound, body.ErrorCode);
@@ -122,7 +122,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(user);
 
             var res = wtc.GetWeekTemplate(Template1).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
             Assert.Equal(ErrorCode.NoWeekTemplateFound, body.ErrorCode);
@@ -186,7 +186,7 @@ namespace GirafRest.Test
             };
 
             var res = wtc.CreateWeekTemplate(templateDTO).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
             
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.InvalidAmountOfWeekdays, body.ErrorCode);
@@ -199,7 +199,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserGuardian2Department2]);
             
             var res = wtc.CreateWeekTemplate(null).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
@@ -245,7 +245,7 @@ namespace GirafRest.Test
             var templateDTO = new WeekTemplateDTO(template){Name = "Test hest"};
 
             var res = wtc.UpdateWeekTemplate(_testContext.MockWeekTemplates[Template1].Id, templateDTO).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
             
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
@@ -258,7 +258,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserGuardian2Department2]);
             
             var res = wtc.UpdateWeekTemplate(_testContext.MockWeekTemplates[Template1].Id, null).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);

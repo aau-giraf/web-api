@@ -138,7 +138,7 @@ namespace GirafRest.Test
                 Username = "INVALID",
                 Password = "password"
             }).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status401Unauthorized, res.StatusCode);
             Assert.Equal(ErrorCode.InvalidCredentials, body.ErrorCode);                        
@@ -152,7 +152,7 @@ namespace GirafRest.Test
 
             var res = accountController.Login(null).Result as ObjectResult;
 
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
@@ -170,7 +170,7 @@ namespace GirafRest.Test
                 Username = username
             }).Result as ObjectResult;
 
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status401Unauthorized, res.StatusCode);
             Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
@@ -188,7 +188,7 @@ namespace GirafRest.Test
                 Password = "password"
             }).Result as ObjectResult;
 
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status401Unauthorized, res.StatusCode);
             Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
@@ -261,7 +261,7 @@ namespace GirafRest.Test
                 Role = GirafRoles.Citizen
             }).Result as ObjectResult;
 
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status409Conflict, res.StatusCode);
             Assert.Equal(ErrorCode.UserAlreadyExists, body.ErrorCode);
@@ -278,7 +278,7 @@ namespace GirafRest.Test
                 DepartmentId = DEPARTMENT_ONE
             }).Result as ObjectResult;
 
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
@@ -315,7 +315,7 @@ namespace GirafRest.Test
                 Password = ""
             }).Result as ObjectResult;
 
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
@@ -349,7 +349,7 @@ namespace GirafRest.Test
             var accountController = InitializeTest();
 
             var res = accountController.Register(null).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
@@ -387,7 +387,7 @@ namespace GirafRest.Test
             ChangePasswordDTO cpDTO = null;
 
             var res = ac.ChangePasswordByOldPassword(mockUser.Id, cpDTO).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
@@ -408,7 +408,7 @@ namespace GirafRest.Test
             };
 
             var res = ac.ChangePasswordByOldPassword(mockUser.Id, cpDTO).Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
             
             Assert.Equal(StatusCodes.Status500InternalServerError, res.StatusCode);
             Assert.Equal(ErrorCode.PasswordNotUpdated, body.ErrorCode);
@@ -423,7 +423,7 @@ namespace GirafRest.Test
             var ac = InitializeTest();
 
             var res = ac.DeleteUser("7394").Result as ObjectResult;
-            var body = res.Value as RESTError;
+            var body = res.Value as ErrorResponse;
 
             var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);

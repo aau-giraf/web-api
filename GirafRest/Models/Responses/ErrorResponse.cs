@@ -7,7 +7,7 @@ namespace GirafRest.Models.Responses
     /// <summary>
     /// Represents an error in the GIRAF backend
     /// </summary>
-    public class RESTError
+    public class ErrorResponse
     {
         /// <summary> GIRAF error code </summary>
         [JsonIgnore]
@@ -39,7 +39,7 @@ namespace GirafRest.Models.Responses
         /// <param name="errorCode">GIRAF error code</param>
         /// <param name="message">Error message</param>
         /// <param name="details">Error details</param>
-        public RESTError(ErrorCode errorCode, string message, string details)
+        public ErrorResponse(ErrorCode errorCode, string message, string details)
         {
             this.ErrorCode = errorCode;
             this.Message = message;
@@ -51,7 +51,7 @@ namespace GirafRest.Models.Responses
         /// </summary>
         /// <param name="errorCode">GIRAF error code</param>
         /// <param name="message">Error message</param>
-        public RESTError(ErrorCode errorCode, string message)
+        public ErrorResponse(ErrorCode errorCode, string message)
         {
             this.ErrorCode = errorCode;
             this.Message = message;
