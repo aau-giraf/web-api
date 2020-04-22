@@ -142,7 +142,7 @@ namespace GirafRest.Controllers
                 await _giraf._context.SaveChangesAsync();
                 emptyThumbnail = _giraf._context.Pictograms.FirstOrDefault(r => r.Title == "default");
 
-                return Ok(new Response<WeekDTO>(new WeekDTO() {
+                return Ok(new MyResponse<WeekDTO>(new WeekDTO() {
                     WeekYear = weekYear, 
                     Name = $"{weekYear} - {weekNumber}", 
                     WeekNumber = weekNumber, 
@@ -156,7 +156,7 @@ namespace GirafRest.Controllers
             }
             emptyThumbnail = _giraf._context.Pictograms.FirstOrDefault(r => r.Title == "default");
 
-            return Ok(new Response<WeekDTO>(new WeekDTO()
+            return Ok(new MyResponse<WeekDTO>(new WeekDTO()
             {
                 WeekYear = weekYear, 
                 Name = $"{weekYear} - {weekNumber}", 

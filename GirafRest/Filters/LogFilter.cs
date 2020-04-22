@@ -51,7 +51,7 @@ namespace GirafRest.Filters
             string p = context.HttpContext.Request.Path;
             string verb = context.HttpContext.Request.Method;
             var action = context.ActionDescriptor.DisplayName;
-            var error = ((context.Result as ObjectResult)?.Value as Response)?.ErrorCode.ToString();
+            var error = ((context.Result as ObjectResult)?.Value as RESTError)?.ErrorCode.ToString();
             string[] lines = new string[]
             {
                 $"{DateTime.UtcNow:o}; {user}; {userId}; {verb}; {p}; {error}"
