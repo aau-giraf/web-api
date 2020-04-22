@@ -15,13 +15,14 @@ using Microsoft.Extensions.Hosting;
 
 namespace GirafRest.Controllers
 {
+    /// <summary>
+    /// Manages pictograms, CRUD-ish.
+    /// </summary>
     [Route("v1/[controller]")]
     [Authorize]
     public class PictogramController : Controller
     {
         private const string IMAGE_TYPE_PNG = "image/png";
-
-        private const string IMAGE_TYPE_JPEG = "image/jpeg";
 
         private readonly IGirafService _giraf;
         
@@ -29,8 +30,14 @@ namespace GirafRest.Controllers
         
         private readonly string imagePath;
 
+        /// <summary>
+        /// Constructor for controller
+        /// </summary>
+        /// <param name="girafController">Service Injection</param>
+        /// <param name="lFactory">Service Injection</param>
+        /// <param name="hostingEnvironment">Service Injection</param>
         public PictogramController(IGirafService girafController, ILoggerFactory lFactory, IHostEnvironment hostingEnvironment) 
-        {
+    {
             _giraf = girafController;
             _giraf._logger = lFactory.CreateLogger("Pictogram");
             _hostingEnvironment = hostingEnvironment;
@@ -163,6 +170,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Update info of a <see cref="Pictogram"/> pictogram.
         /// </summary>
+        /// <param name="id">id in URL for Pictogram to update.</param>
         /// <param name="pictogram">A <see cref="PictogramDTO"/> with all new information to update with.
         /// The Id found in this DTO is the target pictogram.
         /// </param>
@@ -421,6 +429,8 @@ namespace GirafRest.Controllers
                     break;
                 case AccessLevel.PRIVATE:
                     ownsPictogram = await _giraf.CheckPrivateOwnership(picto, usr);
+                    break;
+                default:
                     break;
             }
 

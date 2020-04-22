@@ -12,14 +12,18 @@ namespace GirafRest.Test
 {
     public class ActivityControllerTest
     {
+#pragma warning disable IDE0051 // Remove unused private members
         private const int ADMIN_DEP_ONE = 0;
         private const int GUARDIAN_DEP_TWO = 1;
         private const int CITIZEN_NO_DEP = 9;
+
 
         private const int PICTO_DEP_TWO = 6;
 
         private const int _existingId = 1;
         private const int _nonExistingId = 404;
+#pragma warning restore IDE0051 // Remove unused private members
+
         private TestContext _testContext;
 
         private ActivityController InitializeTest()

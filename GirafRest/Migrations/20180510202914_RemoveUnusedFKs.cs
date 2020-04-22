@@ -4,8 +4,15 @@ using System.Collections.Generic;
 
 namespace GirafRest.Migrations
 {
+    /// <summary>
+    /// Remove unused FK's
+    /// </summary>
     public partial class RemoveUnusedFKs : Migration
     {
+        /// <summary>
+        /// Run migration here
+        /// </summary>
+        /// <param name="migrationBuilder">Which MigrationBuilder to use</param>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
@@ -17,6 +24,10 @@ namespace GirafRest.Migrations
                 table: "Activities");
         }
 
+        /// <summary>
+        /// Rollback migration here
+        /// </summary>
+        /// <param name="migrationBuilder">Which MigrationBuilder to use</param>
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<long>(

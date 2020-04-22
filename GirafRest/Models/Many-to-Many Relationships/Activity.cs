@@ -36,25 +36,36 @@ namespace GirafRest.Models
         /// </summary>
         [ForeignKey("PictogramKey")]
         public virtual Pictogram Pictogram { get; set; }
-        
+
+        /// <summary>
+        /// Nullable key for TimerKey
+        /// </summary>
         public long? TimerKey { get; set; }
 
         /// <summary>
         /// A reference to the actual timer.
-        /// </summary
+        /// </summary>
         [ForeignKey("TimerKey")]
         public virtual Timer Timer { get; set; }
 
+        /// <summary>
+        /// State of the Activity.
+        /// </summary>
         [Required]
         public ActivityState State { get; set; }
 
+        /// <summary>
+        /// Ordering
+        /// </summary>
         public int Order { get; set; }
 
         /// <summary>
         /// Creates a new many-to-many relationship between a weekday and a resource.
         /// </summary>
         /// <param name="weekday">The involved weekday.</param>
-        /// <param name="resource">The involved resource.</param>
+        /// <param name="pictogram">The activity's pictogram.</param>
+        /// <param name="order">The activity's order.</param>
+        /// <param name="state">The activity's current state.</param>
         public Activity(Weekday weekday, Pictogram pictogram, int order, ActivityState state)
         {
             this.Other = weekday;
@@ -65,7 +76,7 @@ namespace GirafRest.Models
         }
 
         /// <summary>
-        /// DO NOT DELETE THIS.
+        /// Newtonsoft (JSON Generation) needs empty constructor. Don't delete.
         /// </summary>
         public Activity(){}
     }

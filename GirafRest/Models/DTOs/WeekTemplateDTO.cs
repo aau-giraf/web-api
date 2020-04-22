@@ -5,13 +5,22 @@ using System.Threading.Tasks;
 
 namespace GirafRest.Models.DTOs
 {
+    /// <summary>
+    /// Data Transfer Object for <see cref="WeekTemplate"/>
+    /// </summary>
     public class WeekTemplateDTO : WeekBaseDTO
     {
+        /// <summary>
+        /// JSON Generation requires empty constructor
+        /// </summary>
         public WeekTemplateDTO() : base()
         {
-
         }
 
+        /// <summary>
+        /// Constructor for WeekTemplate DTO
+        /// </summary>
+        /// <param name="weekTemplate">WeekTemplate used as base for DTO</param>
         public WeekTemplateDTO(WeekTemplate weekTemplate) : base(weekTemplate)
         {
             this.DepartmentKey = weekTemplate.DepartmentKey;

@@ -1,7 +1,13 @@
 ﻿namespace GirafRest.Models.DTOs
 {
+    /// <summary>
+    /// DTO for <see cref="Activity"/>
+    /// </summary>
     public class ActivityDTO
     {
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public ActivityDTO(long id, WeekPictogramDTO pictogram, int order, ActivityState state)
         {
             this.Id = id;
@@ -10,6 +16,10 @@
             this.State = state;
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="weekdayResource">Given Activity</param>
         public ActivityDTO(Activity weekdayResource)
         {
             this.Id = weekdayResource.Key;
@@ -23,6 +33,9 @@
             }
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public ActivityDTO(Activity weekdayResource, WeekPictogramDTO pictogram)
         {
             this.Id = weekdayResource.Key;
@@ -31,8 +44,14 @@
             this.Pictogram = pictogram;
         }
 
+        /// <summary>
+        /// Empty constructor for JSON Generation
+        /// </summary>
         public ActivityDTO(){}
 
+        /// <summary>
+        /// Belonging pictogram
+        /// </summary>
         public WeekPictogramDTO Pictogram { get; set; }
 
         /// <summary>
@@ -45,6 +64,9 @@
         /// </summary>
         public ActivityState State { get; set; }
 
+        /// <summary>
+        /// Primary key
+        /// </summary>
         public long Id { get; set; }
 
         /// <summary>
@@ -52,6 +74,9 @@
         /// </summary>
         public bool IsChoiceBoard { get; set; }
 
+        /// <summary>
+        /// Timer object for Activity
+        /// </summary>
         public TimerDTO Timer { get; set; } 
     }
 }

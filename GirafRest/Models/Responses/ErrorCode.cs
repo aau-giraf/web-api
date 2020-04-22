@@ -3,6 +3,7 @@ using Newtonsoft.Json.Converters;
 
 namespace GirafRest.Models.Responses
 {
+#pragma warning disable 1591
     [JsonConverter(typeof(StringEnumConverter))]
     public enum ErrorCode
     {
@@ -72,4 +73,5 @@ namespace GirafRest.Models.Responses
         WeekNotFound,
         ActivityNotFound
     }
+#pragma warning restore 1591
 }
