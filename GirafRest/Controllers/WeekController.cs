@@ -44,10 +44,11 @@ namespace GirafRest.Controllers
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.NotAuthorized);
-            
+
             if (!user.WeekSchedule.Any())
-                return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.NoWeekScheduleFound);
-             return new Response<IEnumerable<WeekDTO>>(user.WeekSchedule.Select(w => new WeekDTO(w) {
+                return new Response<IEnumerable<WeekDTO>>(Enumerable.Empty<WeekDTO>());
+
+            return new Response<IEnumerable<WeekDTO>>(user.WeekSchedule.Select(w => new WeekDTO(w) {
                 Days = null
             }));
         }
