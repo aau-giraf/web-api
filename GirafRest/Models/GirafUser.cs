@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using GirafRest.Models.DTOs;
@@ -31,6 +32,7 @@ namespace GirafRest.Models
         /// <summary>
         /// Display name used for showing
         /// </summary>
+        [Required]
         public string DisplayName { get; set; }
 
         /// <summary>
