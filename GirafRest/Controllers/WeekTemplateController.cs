@@ -135,7 +135,7 @@ namespace GirafRest.Controllers
 
             var errorCode = await SetWeekFromDTO(templateDto, newTemplate, _giraf);
             if (errorCode != null)
-                return new ErrorResponse<WeekTemplateDTO>(errorCode.ErrorCode, errorCode.ErrorProperties);
+                return new ErrorResponse<WeekTemplateDTO>(errorCode.ErrorCode/* , errorCode.ErrorProperties */);
 
             _giraf._context.WeekTemplates.Add(newTemplate);
             await _giraf._context.SaveChangesAsync();
@@ -177,7 +177,7 @@ namespace GirafRest.Controllers
             
             var errorCode = await SetWeekFromDTO(newValuesDto, template, _giraf);
             if (errorCode != null)
-                return new ErrorResponse<WeekTemplateDTO>(errorCode.ErrorCode, errorCode.ErrorProperties);
+                return new ErrorResponse<WeekTemplateDTO>(errorCode.ErrorCode/* , errorCode.ErrorProperties */);
 
             _giraf._context.WeekTemplates.Update(template);
             await _giraf._context.SaveChangesAsync();
