@@ -2,6 +2,7 @@ import unittest
 from requests import get
 from requests.exceptions import ConnectionError
 from testlib import GIRAFTestResults, GIRAFTestRunner, compare, BASE_URL
+from tests.test_activity_controller import TestActivityController
 
 try:
     result = get(f'{BASE_URL}v1/Error').json()
@@ -16,7 +17,8 @@ runner = GIRAFTestRunner(verbosity=5, tb_locals=True, resultclass=GIRAFTestResul
 unittest.defaultTestLoader.sortTestMethodsUsing = compare
 
 # load tests
-suite = unittest.defaultTestLoader.discover(start_dir='tests')
+#suite = unittest.defaultTestLoader.discover(start_dir='tests')
+suite = unittest.defaultTestLoader.loadTestsFromTestCase(TestActivityController)
 
 # run
 if __name__ == '__main__':

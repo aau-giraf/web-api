@@ -221,6 +221,40 @@ namespace GirafRest.Test
         }
         #endregion
 
+        #region GetActivity
+
+        [Fact]
+        public void GetActivity_ValidId_success()
+        {
+            ActivityController activityController = InitializeTest();
+            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+            
+            Assert.True(_testContext.MockActivities.Any(a => a.Key == _existingId));
+
+            var response = activityController.GetActivity(mockUser.Id, _existingId);
+            Assert.NotNull(response);
+            Assert.NotNull(response.Result);
+            Assert.True(response.Result.Success);
+
+            var actual = response.Result.Data;
+            ActivityDTO expected = new ActivityDTO(_testContext.MockActivities.First());
+            
+            Assert.Equal(expected.Id, actual.Id);
+            Assert.Equal(expected.IsChoiceBoard, actual.IsChoiceBoard);
+            Assert.Equal(expected.Order, actual.Order);
+            Assert.Equal(expected.State, actual.State);
+            Assert.Equal(expected.Timer, actual.Timer);
+            Assert.Equal(expected.Pictograms.Count, actual.Pictograms.Count);
+
+            var expectedPictogram = expected.Pictograms.First();
+            var actualPictogram = actual.Pictograms.First();
+            
+            Assert.Equal(expectedPictogram.Id, actualPictogram.Id);
+        }
+
+        #endregion
+
         #region DeleteActivity
         [Fact]
         public void DeleteActivity_ExistingActivity_Success()

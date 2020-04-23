@@ -131,6 +131,25 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="activityId"></param>
+        /// <returns></returns>
+        [HttpGet("{userId}/{activityId}")]
+        [Authorize]
+        public async Task<Response<ActivityDTO>> GetActivity(string userId, int activityId)
+        {
+            var res = await _giraf._context
+                .Activities
+                .Include(a => a.Pictograms)
+                .Where(a => a.Key == activityId)
+                .FirstOrDefaultAsync();
+            
+            return new Response<ActivityDTO>(new ActivityDTO(res));
+        }
+
+        /// <summary>
         /// Updates an activity with a given id.
         /// </summary>
         /// <param name="activity">a serialized version of the activity that will be updated.</param>
