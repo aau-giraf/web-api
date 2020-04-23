@@ -355,16 +355,11 @@ namespace GirafRest.Migrations
 
             modelBuilder.Entity("GirafRest.PictogramRelation", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
-
                     b.Property<long>("ActivityId");
 
                     b.Property<long>("PictogramId");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("ActivityId");
+                    b.HasKey("ActivityId", "PictogramId");
 
                     b.HasIndex("PictogramId");
 

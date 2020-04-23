@@ -110,7 +110,7 @@ namespace GirafRest.Data
             //Configure a many-to-many relationship between Weekday and Resource(Pictogram)
             builder.Entity<Activity>()
                 .HasOne<Weekday>(wr => wr.Other)
-                   .WithMany(w => w.Activities)
+                .WithMany(w => w.Activities)
                 .HasForeignKey(wr => wr.OtherKey)
                 .OnDelete(DeleteBehavior.Cascade);
 
@@ -135,6 +135,9 @@ namespace GirafRest.Data
                    .OnDelete(DeleteBehavior.Cascade);
 
             // The pivot table for the many-many between an activity and pictograms
+            builder.Entity<PictogramRelation>()
+                .HasKey(x => new {x.ActivityId, x.PictogramId});
+                
             builder.Entity<PictogramRelation>()
                     .HasOne(pr => pr.Activity)
                     .WithMany(ac => ac.Pictograms)

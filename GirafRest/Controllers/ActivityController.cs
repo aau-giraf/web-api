@@ -176,7 +176,9 @@ namespace GirafRest.Controllers
             if (!user.WeekSchedule.Any(w => w.Weekdays.Any(wd => wd.Activities.Any(act => act.Key == activity.Id))))
                 return new ErrorResponse<ActivityDTO>(ErrorCode.ActivityNotFound);
 
-            Activity updateActivity = _giraf._context.Activities.FirstOrDefault(a => a.Key == activity.Id);
+            Activity updateActivity = _giraf._context
+                .Activities
+                .FirstOrDefault(a => a.Key == activity.Id);
 
             if (updateActivity == null)
                 return new ErrorResponse<ActivityDTO>(ErrorCode.ActivityNotFound);

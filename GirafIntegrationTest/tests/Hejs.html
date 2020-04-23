@@ -3,40 +3,33 @@
 <head>
     <meta charset="utf-8"/>
     <title>Internal Server Error</title>
-    <style> body {
+    <style>            body {
         font-family: \'Segoe UI\', Tahoma, Arial, Helvetica, sans-serif;
         font-size: .813em;
         color: #222;
         background-color: #fff;
-
     }
 
-    h1, h2, h3, h4, h5 {
-        /*font-family: \'Segoe UI\',Tahoma,Arial,Helvetica,sans-serif;*/
+    h1, h2, h3, h4, h5 { /*font-family: \'Segoe UI\',Tahoma,Arial,Helvetica,sans-serif;*/
         font-weight: 100;
-
     }
 
     h1 {
         color: #44525e;
         margin: 15px 0 15px 0;
-
     }
 
     h2 {
         margin: 10px 5px 0 0;
-
     }
 
     h3 {
         color: #363636;
         margin: 5px 5px 0 0;
-
     }
 
     code {
         font-family: Consolas, "Courier New", courier, monospace;
-
     }
 
     body .titleerror {
@@ -44,12 +37,10 @@
         display: block;
         font-size: 1.5em;
         font-weight: 100;
-
     }
 
     body .location {
         margin: 3px 0 10px 30px;
-
     }
 
     #header {
@@ -58,7 +49,6 @@
         border-top: 1px #ddd solid;
         border-bottom: 1px #ddd solid;
         margin-bottom: 0;
-
     }
 
     #header li {
@@ -67,79 +57,66 @@
         padding: 5px;
         color: #a0a0a0;
         cursor: pointer;
-
     }
 
     #header .selected {
         background: #44c5f2;
         color: #fff;
-
     }
 
     #stackpage ul {
         list-style: none;
         padding-left: 0;
-        margin: 0;
-        /*border-bottom: 1px #ddd solid;*/
+        margin: 0; /*border-bottom: 1px #ddd solid;*/
     }
 
     #stackpage .details {
         font-size: 1.2em;
         padding: 3px;
         color: #000;
-
     }
 
     #stackpage .stackerror {
         padding: 5px;
         border-bottom: 1px #ddd solid;
-
     }
 
     #stackpage .frame {
         padding: 0;
         margin: 0 0 0 30px;
-
     }
 
     #stackpage .frame h3 {
         padding: 2px;
         margin: 0;
-
     }
 
     #stackpage .source {
         padding: 0 0 0 30px;
-
     }
 
     #stackpage .source ol li {
         font-family: Consolas, "Courier New", courier, monospace;
         white-space: pre;
         background-color: #fbfbfb;
-
     }
 
     #stackpage .frame .source .highlight li span {
         color: #FF0000;
-
     }
 
     #stackpage .source ol.collapsible li {
         color: #888;
-
     }
 
     #stackpage .source ol.collapsible li span {
         color: #606060;
-
     }
 
     .page table {
         border-collapse: separate;
         border-spacing: 0;
         margin: 0 0 20px;
-
     }
 
     .page th {
@@ -148,12 +125,10 @@
         font-weight: 400;
         color: #a0a0a0;
         text-align: left;
-
     }
 
     .page td {
         padding: 3px 10px;
-
     }
 
     .page th, .page td {
@@ -162,29 +137,24 @@
         border-left: 1px transparent solid;
         border-top: 1px transparent solid;
         box-sizing: border-box;
-
     }
 
     .page th:last-child, .page td:last-child {
         border-right: 1px transparent solid;
-
     }
 
     .page .length {
         text-align: right;
-
     }
 
     a {
         color: #1ba1e2;
         text-decoration: none;
-
     }
 
     a:hover {
         color: #13709e;
         text-decoration: underline;
-
     }
 
     .showRawException {
@@ -197,24 +167,20 @@
         display: inline-block;
         border: 0;
         padding: 0;
-
     }
 
     .rawExceptionStackTrace {
         font-size: 1.2em;
-
     }
 
     .rawExceptionBlock {
         border-top: 1px #ddd solid;
         border-bottom: 1px #ddd solid;
-
     }
 
     .showRawExceptionContainer {
         margin-top: 10px;
         margin-bottom: 10px;
-
     }
 
     .expandCollapseButton {
@@ -229,17 +195,12 @@
         padding: 0;
         border: 0;
         margin: 0;
-
-    }
-
-    </style>
-
+    }        </style>
 </head>
-
 <body><h1>An unhandled exception occurred while processing the request.</h1>
 <div class="titleerror">MySqlException: Column &#x27;Title&#x27; cannot be null</div>
-<p class="location">MySqlConnector.Core.ServerSession.TryAsyncContinuation(Task&lt;ArraySegment&lt;byte&gt;&gt;
-    task) in <code title="C:\\projects\\mysqlconnector\\src\\MySqlConnector\\Core\\ServerSession.cs">C:\\projects\\mysqlconnector\\src\\MySqlConnector\\Core\\ServerSession.cs</code>,
+<p class="location">MySqlConnector.Core.ServerSession.TryAsyncContinuation(Task&lt;ArraySegment&lt;byte&gt;&gt; task) in
+    <code title="C:\\projects\\mysqlconnector\\src\\MySqlConnector\\Core\\ServerSession.cs">C:\\projects\\mysqlconnector\\src\\MySqlConnector\\Core\\ServerSession.cs</code>,
     line 1252</p>
 <div class="titleerror">MySqlException: Column &#x27;Title&#x27; cannot be null</div>
 <p class="location">MySql.Data.MySqlClient.MySqlDataReader.ActivateResultSet(ResultSet resultSet) in <code
@@ -253,387 +214,230 @@
     CancellationToken cancellationToken)</p>
 <ul id="header">
     <li id="stack" tabindex="1" class="selected"> Stack</li>
-
     <li id="query" tabindex="2"> Query</li>
-
     <li id="cookies" tabindex="3"> Cookies</li>
-
     <li id="headers" tabindex="4"> Headers</li>
-
 </ul>
-
 <div id="stackpage" class="page">
     <ul>
         <li><h2 class="stackerror">MySqlException: Column &#x27;Title&#x27; cannot be null</h2>
             <ul>
                 <li class="frame" id="frame1"><h3>MySqlConnector.Core.ServerSession.TryAsyncContinuation(Task&lt;ArraySegment&lt;byte&gt;&gt;
                     task) in <code title="C:\\projects\\mysqlconnector\\src\\MySqlConnector\\Core\\ServerSession.cs">C:\\projects\\mysqlconnector\\src\\MySqlConnector\\Core\\ServerSession.cs</code>
-                </h3>
-                </li>
-
+                </h3></li>
                 <li class="frame" id="frame2"><h3>System.Threading.Tasks.ContinuationResultTaskFromResultTask&lt;TAntecedentResult,
-                    TResult&gt;.InnerInvoke()</h3>
-                </li>
-
+                    TResult&gt;.InnerInvoke()</h3></li>
                 <li class="frame" id="frame3"><h3>System.Threading.ExecutionContext.RunInternal(ExecutionContext
-                    executionContext, ContextCallback callback, object state)</h3>
-                </li>
-
+                    executionContext, ContextCallback callback, object state)</h3></li>
                 <li class="frame" id="frame4"><h3>System.Threading.Tasks.Task.ExecuteWithThreadLocal(ref Task
-                    currentTaskSlot)</h3>
-                </li>
-
+                    currentTaskSlot)</h3></li>
                 <li class="frame" id="frame5"><h3>MySqlConnector.Core.ResultSet.ReadResultSetHeaderAsync(IOBehavior
                     ioBehavior) in <code title="C:\\projects\\mysqlconnector\\src\\MySqlConnector\\Core\\ResultSet.cs">C:\\projects\\mysqlconnector\\src\\MySqlConnector\\Core\\ResultSet.cs</code>
-                </h3>
-                </li>
-
+                </h3></li>
             </ul>
-
         </li>
-
         <li><br/>
             <div class="rawExceptionBlock">
                 <div class="showRawExceptionContainer">
                     <button class="showRawException" data-exceptionDetailId="exceptionDetail1">Show raw exception
                         details
                     </button>
-
                 </div>
-
                 <div id="exceptionDetail1" class="rawExceptionDetails">
                     <pre class="rawExceptionStackTrace">MySql.Data.MySqlClient.MySqlException (0x80004005): Column &#x27;Title&#x27; cannot be null&#xA;   at MySqlConnector.Core.ServerSession.TryAsyncContinuation(Task`1 task) in C:\\projects\\mysqlconnector\\src\\MySqlConnector\\Core\\ServerSession.cs:line 1252&#xA;   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()&#xA;   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xA;--- End of stack trace from previous location where exception was thrown ---&#xA;   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task&amp; currentTaskSlot)&#xA;--- End of stack trace from previous location where exception was thrown ---&#xA;   at MySqlConnector.Core.ResultSet.ReadResultSetHeaderAsync(IOBehavior ioBehavior) in C:\\projects\\mysqlconnector\\src\\MySqlConnector\\Core\\ResultSet.cs:line 43</pre>
-
                 </div>
-
             </div>
-
         </li>
-
         <li><h2 class="stackerror">MySqlException: Column &#x27;Title&#x27; cannot be null</h2>
             <ul>
-                <li class="frame" id="frame6"><h3>
-                    MySql.Data.MySqlClient.MySqlDataReader.ActivateResultSet(ResultSet resultSet) in <code
-                        title="C:\\projects\\mysqlconnector\\src\\MySqlConnector\\MySql.Data.MySqlClient\\MySqlDataReader.cs">C:\\projects\\mysqlconnector\\src\\MySqlConnector\\MySql.Data.MySqlClient\\MySqlDataReader.cs</code>
-                </h3>
-                </li>
-
+                <li class="frame" id="frame6"><h3>MySql.Data.MySqlClient.MySqlDataReader.ActivateResultSet(ResultSet
+                    resultSet) in <code
+                            title="C:\\projects\\mysqlconnector\\src\\MySqlConnector\\MySql.Data.MySqlClient\\MySqlDataReader.cs">C:\\projects\\mysqlconnector\\src\\MySqlConnector\\MySql.Data.MySqlClient\\MySqlDataReader.cs</code>
+                </h3></li>
                 <li class="frame" id="frame7"><h3>
                     MySql.Data.MySqlClient.MySqlDataReader.ReadFirstResultSetAsync(IOBehavior ioBehavior) in <code
                         title="C:\\projects\\mysqlconnector\\src\\MySqlConnector\\MySql.Data.MySqlClient\\MySqlDataReader.cs">C:\\projects\\mysqlconnector\\src\\MySqlConnector\\MySql.Data.MySqlClient\\MySqlDataReader.cs</code>
-                </h3>
-                </li>
-
+                </h3></li>
                 <li class="frame" id="frame8"><h3>MySql.Data.MySqlClient.MySqlDataReader.CreateAsync(MySqlCommand
                     command, CommandBehavior behavior, ResultSetProtocol resultSetProtocol, IOBehavior ioBehavior) in
                     <code title="C:\\projects\\mysqlconnector\\src\\MySqlConnector\\MySql.Data.MySqlClient\\MySqlDataReader.cs">C:\\projects\\mysqlconnector\\src\\MySqlConnector\\MySql.Data.MySqlClient\\MySqlDataReader.cs</code>
-                </h3>
-                </li>
-
+                </h3></li>
                 <li class="frame" id="frame9"><h3>MySqlConnector.Core.TextCommandExecutor.ExecuteReaderAsync(string
                     commandText, MySqlParameterCollection parameterCollection, CommandBehavior behavior, IOBehavior
                     ioBehavior, CancellationToken cancellationToken) in <code
                             title="C:\\projects\\mysqlconnector\\src\\MySqlConnector\\Core\\TextCommandExecutor.cs">C:\\projects\\mysqlconnector\\src\\MySqlConnector\\Core\\TextCommandExecutor.cs</code>
-                </h3>
-                </li>
-
+                </h3></li>
                 <li class="frame" id="frame10"><h3>
                     Microsoft.EntityFrameworkCore.Storage.Internal.RelationalCommand.ExecuteAsync(IRelationalConnection
                     connection, DbCommandMethod executeMethod, IReadOnlyDictionary&lt;string, object&gt;
-                    parameterValues, CancellationToken cancellationToken)</h3>
-                </li>
-
+                    parameterValues, CancellationToken cancellationToken)</h3></li>
                 <li class="frame" id="frame11"><h3>
                     Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection
-                    connection, CancellationToken cancellationToken)</h3>
-                </li>
-
+                    connection, CancellationToken cancellationToken)</h3></li>
             </ul>
-
         </li>
-
         <li><br/>
             <div class="rawExceptionBlock">
                 <div class="showRawExceptionContainer">
                     <button class="showRawException" data-exceptionDetailId="exceptionDetail2">Show raw exception
                         details
                     </button>
-
                 </div>
-
                 <div id="exceptionDetail2" class="rawExceptionDetails">
                     <pre class="rawExceptionStackTrace">MySql.Data.MySqlClient.MySqlException (0x80004005): Column &#x27;Title&#x27; cannot be null ---&gt; MySql.Data.MySqlClient.MySqlException (0x80004005): Column &#x27;Title&#x27; cannot be null&#xA;   at MySqlConnector.Core.ServerSession.TryAsyncContinuation(Task`1 task) in C:\\projects\\mysqlconnector\\src\\MySqlConnector\\Core\\ServerSession.cs:line 1252&#xA;   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()&#xA;   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xA;--- End of stack trace from previous location where exception was thrown ---&#xA;   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task&amp; currentTaskSlot)&#xA;--- End of stack trace from previous location where exception was thrown ---&#xA;   at MySqlConnector.Core.ResultSet.ReadResultSetHeaderAsync(IOBehavior ioBehavior) in C:\\projects\\mysqlconnector\\src\\MySqlConnector\\Core\\ResultSet.cs:line 43&#xA;   at MySql.Data.MySqlClient.MySqlDataReader.ActivateResultSet(ResultSet resultSet) in C:\\projects\\mysqlconnector\\src\\MySqlConnector\\MySql.Data.MySqlClient\\MySqlDataReader.cs:line 81&#xA;   at MySql.Data.MySqlClient.MySqlDataReader.ReadFirstResultSetAsync(IOBehavior ioBehavior) in C:\\projects\\mysqlconnector\\src\\MySqlConnector\\MySql.Data.MySqlClient\\MySqlDataReader.cs:line 307&#xA;   at MySql.Data.MySqlClient.MySqlDataReader.CreateAsync(MySqlCommand command, CommandBehavior behavior, ResultSetProtocol resultSetProtocol, IOBehavior ioBehavior) in C:\\projects\\mysqlconnector\\src\\MySqlConnector\\MySql.Data.MySqlClient\\MySqlDataReader.cs:line 292&#xA;   at MySqlConnector.Core.TextCommandExecutor.ExecuteReaderAsync(String commandText, MySqlParameterCollection parameterCollection, CommandBehavior behavior, IOBehavior ioBehavior, CancellationToken cancellationToken) in C:\\projects\\mysqlconnector\\src\\MySqlConnector\\Core\\TextCommandExecutor.cs:line 37&#xA;   at Microsoft.EntityFrameworkCore.Storage.Internal.RelationalCommand.ExecuteAsync(IRelationalConnection connection, DbCommandMethod executeMethod, IReadOnlyDictionary`2 parameterValues, CancellationToken cancellationToken)&#xA;   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)</pre>
-
                 </div>
-
             </div>
-
         </li>
-
         <li><h2 class="stackerror">DbUpdateException: An error occurred while updating the entries. See the inner
             exception for details.</h2>
             <ul>
                 <li class="frame" id="frame12"><h3>
                     Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection
-                    connection, CancellationToken cancellationToken)</h3>
-                </li>
-
+                    connection, CancellationToken cancellationToken)</h3></li>
                 <li class="frame" id="frame13"><h3>
                     Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(DbContext _, ValueTuple&lt;IEnumerable&lt;ModificationCommandBatch&gt;,
-                    IRelationalConnection&gt; parameters, CancellationToken cancellationToken)</h3>
-                </li>
-
+                    IRelationalConnection&gt; parameters, CancellationToken cancellationToken)</h3></li>
                 <li class="frame" id="frame14"><h3>
                     Pomelo.EntityFrameworkCore.MySql.Storage.Internal.MySqlExecutionStrategy.ExecuteAsync&lt;TState,
                     TResult&gt;(TState state, Func&lt;DbContext, TState, CancellationToken, Task&lt;TResult&gt;&gt;
                     operation, Func&lt;DbContext, TState, CancellationToken, Task&lt;ExecutionResult&lt;TResult&gt;&gt;&gt;
-                    verifySucceeded, CancellationToken cancellationToken)</h3>
-                </li>
-
+                    verifySucceeded, CancellationToken cancellationToken)</h3></li>
                 <li class="frame" id="frame15"><h3>
                     Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IReadOnlyList&lt;InternalEntityEntry&gt;
-                    entriesToSave, CancellationToken cancellationToken)</h3>
-                </li>
-
+                    entriesToSave, CancellationToken cancellationToken)</h3></li>
                 <li class="frame" id="frame16"><h3>
                     Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(bool
-                    acceptAllChangesOnSuccess, CancellationToken cancellationToken)</h3>
-                </li>
-
+                    acceptAllChangesOnSuccess, CancellationToken cancellationToken)</h3></li>
                 <li class="frame" id="frame17"><h3>Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(bool
-                    acceptAllChangesOnSuccess, CancellationToken cancellationToken)</h3>
-                </li>
-
-                <li class="frame" id="frame18"><h3>
-                    GirafRest.Controllers.ActivityController.UpdateActivity(ActivityDTO activity, string userId) in
-                    <code title="/Users/tobiasdybdahl/VisualStudioCodeProjects/web-api/GirafRest/Controllers/ActivityController.cs">ActivityController.cs</code>
+                    acceptAllChangesOnSuccess, CancellationToken cancellationToken)</h3></li>
+                <li class="frame" id="frame18"><h3>GirafRest.Controllers.ActivityController.UpdateActivity(ActivityDTO
+                    activity, string userId) in <code
+                            title="/Users/tobiasdybdahl/VisualStudioCodeProjects/web-api/GirafRest/Controllers/ActivityController.cs">ActivityController.cs</code>
                 </h3>
                     <button class="expandCollapseButton" data-frameId="frame18">+</button>
-
                     <div class="source">
-                        <ol start="233" class="collapsible">
+                        <ol start="236" class="collapsible">
                             <li><span>                        _giraf._context.Timers.Remove(placeTimer);</span></li>
-
                             <li><span>                    }</span></li>
-
                             <li><span>                    updateActivity.TimerKey = null;</span></li>
-
                             <li><span>                }</span></li>
-
                             <li><span>            }</span></li>
-
                             <li><span></span></li>
-
                         </ol>
-
-                        <ol start="239" class="highlight">
+                        <ol start="242" class="highlight">
                             <li><span>            await _giraf._context.SaveChangesAsync();</span></li>
-
                         </ol>
-
-                        <ol start=\'240\' class="collapsible">
+                        <ol start=\'243\' class="collapsible">
                             <li><span></span></li>
-
                             <li><span>            return new Response&lt;ActivityDTO&gt;(new ActivityDTO(updateActivity, activity.Pictograms.ToList()));</span>
                             </li>
-
                             <li><span>        }</span></li>
-
                             <li><span>    }</span></li>
-
                             <li><span>}</span></li>
-
                         </ol>
-
                     </div>
-
                 </li>
-
                 <li class="frame" id="frame19"><h3>lambda_method(Closure , object )</h3></li>
-
                 <li class="frame" id="frame20"><h3>Microsoft.AspNetCore.Mvc.Internal.ActionMethodExecutor&#x2B;AwaitableObjectResultExecutor.Execute(IActionResultTypeMapper
-                    mapper, ObjectMethodExecutor executor, object controller, object[] arguments)</h3>
-                </li>
-
+                    mapper, ObjectMethodExecutor executor, object controller, object[] arguments)</h3></li>
                 <li class="frame" id="frame21"><h3>
-                    Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeActionMethodAsync()</h3>
-                </li>
-
+                    Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeActionMethodAsync()</h3></li>
                 <li class="frame" id="frame22"><h3>
-                    Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeNextActionFilterAsync()</h3>
-                </li>
-
+                    Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeNextActionFilterAsync()</h3></li>
                 <li class="frame" id="frame23"><h3>
                     Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Rethrow(ActionExecutedContext
-                    context)</h3>
-                </li>
-
-                <li class="frame" id="frame24"><h3>
-                    Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Next(ref State next, ref Scope scope, ref
-                    object state, ref bool isCompleted)</h3>
-                </li>
-
+                    context)</h3></li>
+                <li class="frame" id="frame24"><h3>Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Next(ref
+                    State next, ref Scope scope, ref object state, ref bool isCompleted)</h3></li>
                 <li class="frame" id="frame25"><h3>
-                    Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeInnerFilterAsync()</h3>
-                </li>
-
+                    Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeInnerFilterAsync()</h3></li>
                 <li class="frame" id="frame26"><h3>
-                    Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeNextResourceFilter()</h3>
-                </li>
-
+                    Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeNextResourceFilter()</h3></li>
                 <li class="frame" id="frame27"><h3>
-                    Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.Rethrow(ResourceExecutedContext context)</h3>
-
-                </li>
-
+                    Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.Rethrow(ResourceExecutedContext context)</h3></li>
                 <li class="frame" id="frame28"><h3>Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.Next(ref State
-                    next, ref Scope scope, ref object state, ref bool isCompleted)</h3>
-                </li>
-
+                    next, ref Scope scope, ref object state, ref bool isCompleted)</h3></li>
                 <li class="frame" id="frame29"><h3>
-                    Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeFilterPipelineAsync()</h3>
+                    Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeFilterPipelineAsync()</h3></li>
+                <li class="frame" id="frame30"><h3>Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeAsync()</h3>
                 </li>
-
-                <li class="frame" id="frame30"><h3>
-                    Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeAsync()</h3>
-                </li>
-
                 <li class="frame" id="frame31"><h3>Microsoft.AspNetCore.Builder.RouterMiddleware.Invoke(HttpContext
-                    httpContext)</h3>
-                </li>
-
+                    httpContext)</h3></li>
                 <li class="frame" id="frame32"><h3>
-                    Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)</h3>
-
-                </li>
-
+                    Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)</h3></li>
                 <li class="frame" id="frame33"><h3>
-                    Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware.Invoke(HttpContext context)</h3>
-                </li>
-
+                    Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware.Invoke(HttpContext context)</h3></li>
                 <li class="frame" id="frame34"><h3>
-                    Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)</h3>
-                </li>
-
-                <li class="frame" id="frame35"><h3>
-                    Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider
-                    swaggerProvider)</h3>
-                </li>
-
+                    Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)</h3></li>
+                <li class="frame" id="frame35"><h3>Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext
+                    httpContext, ISwaggerProvider swaggerProvider)</h3></li>
                 <li class="frame" id="frame36"><h3>
                     Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.Invoke(HttpContext context)</h3>
-
                 </li>
-
             </ul>
-
         </li>
-
         <li><br/>
             <div class="rawExceptionBlock">
                 <div class="showRawExceptionContainer">
                     <button class="showRawException" data-exceptionDetailId="exceptionDetail3">Show raw exception
                         details
                     </button>
-
                 </div>
-
                 <div id="exceptionDetail3" class="rawExceptionDetails">
-                    <pre class="rawExceptionStackTrace">Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while updating the entries. See the inner exception for details. ---&gt; MySql.Data.MySqlClient.MySqlException: Column &#x27;Title&#x27; cannot be null ---&gt; MySql.Data.MySqlClient.MySqlException: Column &#x27;Title&#x27; cannot be null&#xA;   at MySqlConnector.Core.ServerSession.TryAsyncContinuation(Task`1 task) in C:\\projects\\mysqlconnector\\src\\MySqlConnector\\Core\\ServerSession.cs:line 1252&#xA;   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()&#xA;   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xA;--- End of stack trace from previous location where exception was thrown ---&#xA;   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task&amp; currentTaskSlot)&#xA;--- End of stack trace from previous location where exception was thrown ---&#xA;   at MySqlConnector.Core.ResultSet.ReadResultSetHeaderAsync(IOBehavior ioBehavior) in C:\\projects\\mysqlconnector\\src\\MySqlConnector\\Core\\ResultSet.cs:line 43&#xA;   --- End of inner exception stack trace ---&#xA;   at MySql.Data.MySqlClient.MySqlDataReader.ActivateResultSet(ResultSet resultSet) in C:\\projects\\mysqlconnector\\src\\MySqlConnector\\MySql.Data.MySqlClient\\MySqlDataReader.cs:line 81&#xA;   at MySql.Data.MySqlClient.MySqlDataReader.ReadFirstResultSetAsync(IOBehavior ioBehavior) in C:\\projects\\mysqlconnector\\src\\MySqlConnector\\MySql.Data.MySqlClient\\MySqlDataReader.cs:line 307&#xA;   at MySql.Data.MySqlClient.MySqlDataReader.CreateAsync(MySqlCommand command, CommandBehavior behavior, ResultSetProtocol resultSetProtocol, IOBehavior ioBehavior) in C:\\projects\\mysqlconnector\\src\\MySqlConnector\\MySql.Data.MySqlClient\\MySqlDataReader.cs:line 292&#xA;   at MySqlConnector.Core.TextCommandExecutor.ExecuteReaderAsync(String commandText, MySqlParameterCollection parameterCollection, CommandBehavior behavior, IOBehavior ioBehavior, CancellationToken cancellationToken) in C:\\projects\\mysqlconnector\\src\\MySqlConnector\\Core\\TextCommandExecutor.cs:line 37&#xA;   at Microsoft.EntityFrameworkCore.Storage.Internal.RelationalCommand.ExecuteAsync(IRelationalConnection connection, DbCommandMethod executeMethod, IReadOnlyDictionary`2 parameterValues, CancellationToken cancellationToken)&#xA;   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)&#xA;   --- End of inner exception stack trace ---&#xA;   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)&#xA;   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(DbContext _, ValueTuple`2 parameters, CancellationToken cancellationToken)&#xA;   at Pomelo.EntityFrameworkCore.MySql.Storage.Internal.MySqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)&#xA;   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IReadOnlyList`1 entriesToSave, CancellationToken cancellationToken)&#xA;   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)&#xA;   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)&#xA;   at GirafRest.Controllers.ActivityController.UpdateActivity(ActivityDTO activity, String userId) in /Users/tobiasdybdahl/VisualStudioCodeProjects/web-api/GirafRest/Controllers/ActivityController.cs:line 239&#xA;   at lambda_method(Closure , Object )&#xA;   at Microsoft.AspNetCore.Mvc.Internal.ActionMethodExecutor.AwaitableObjectResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)&#xA;   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeActionMethodAsync()&#xA;   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeNextActionFilterAsync()&#xA;   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Rethrow(ActionExecutedContext context)&#xA;   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Next(State&amp; next, Scope&amp; scope, Object&amp; state, Boolean&amp; isCompleted)&#xA;   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeInnerFilterAsync()&#xA;   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeNextResourceFilter()&#xA;   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.Rethrow(ResourceExecutedContext context)&#xA;   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.Next(State&amp; next, Scope&amp; scope, Object&amp; state, Boolean&amp; isCompleted)&#xA;   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeFilterPipelineAsync()&#xA;   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeAsync()&#xA;   at Microsoft.AspNetCore.Builder.RouterMiddleware.Invoke(HttpContext httpContext)&#xA;   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)&#xA;   at Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware.Invoke(HttpContext context)&#xA;   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)&#xA;   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)&#xA;   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.Invoke(HttpContext context)</pre>
-
+                    <pre class="rawExceptionStackTrace">Microsoft.EntityFrameworkCore.DbUpdateException: An error occurred while updating the entries. See the inner exception for details. ---&gt; MySql.Data.MySqlClient.MySqlException: Column &#x27;Title&#x27; cannot be null ---&gt; MySql.Data.MySqlClient.MySqlException: Column &#x27;Title&#x27; cannot be null&#xA;   at MySqlConnector.Core.ServerSession.TryAsyncContinuation(Task`1 task) in C:\\projects\\mysqlconnector\\src\\MySqlConnector\\Core\\ServerSession.cs:line 1252&#xA;   at System.Threading.Tasks.ContinuationResultTaskFromResultTask`2.InnerInvoke()&#xA;   at System.Threading.ExecutionContext.RunInternal(ExecutionContext executionContext, ContextCallback callback, Object state)&#xA;--- End of stack trace from previous location where exception was thrown ---&#xA;   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task&amp; currentTaskSlot)&#xA;--- End of stack trace from previous location where exception was thrown ---&#xA;   at MySqlConnector.Core.ResultSet.ReadResultSetHeaderAsync(IOBehavior ioBehavior) in C:\\projects\\mysqlconnector\\src\\MySqlConnector\\Core\\ResultSet.cs:line 43&#xA;   --- End of inner exception stack trace ---&#xA;   at MySql.Data.MySqlClient.MySqlDataReader.ActivateResultSet(ResultSet resultSet) in C:\\projects\\mysqlconnector\\src\\MySqlConnector\\MySql.Data.MySqlClient\\MySqlDataReader.cs:line 81&#xA;   at MySql.Data.MySqlClient.MySqlDataReader.ReadFirstResultSetAsync(IOBehavior ioBehavior) in C:\\projects\\mysqlconnector\\src\\MySqlConnector\\MySql.Data.MySqlClient\\MySqlDataReader.cs:line 307&#xA;   at MySql.Data.MySqlClient.MySqlDataReader.CreateAsync(MySqlCommand command, CommandBehavior behavior, ResultSetProtocol resultSetProtocol, IOBehavior ioBehavior) in C:\\projects\\mysqlconnector\\src\\MySqlConnector\\MySql.Data.MySqlClient\\MySqlDataReader.cs:line 292&#xA;   at MySqlConnector.Core.TextCommandExecutor.ExecuteReaderAsync(String commandText, MySqlParameterCollection parameterCollection, CommandBehavior behavior, IOBehavior ioBehavior, CancellationToken cancellationToken) in C:\\projects\\mysqlconnector\\src\\MySqlConnector\\Core\\TextCommandExecutor.cs:line 37&#xA;   at Microsoft.EntityFrameworkCore.Storage.Internal.RelationalCommand.ExecuteAsync(IRelationalConnection connection, DbCommandMethod executeMethod, IReadOnlyDictionary`2 parameterValues, CancellationToken cancellationToken)&#xA;   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)&#xA;   --- End of inner exception stack trace ---&#xA;   at Microsoft.EntityFrameworkCore.Update.ReaderModificationCommandBatch.ExecuteAsync(IRelationalConnection connection, CancellationToken cancellationToken)&#xA;   at Microsoft.EntityFrameworkCore.Update.Internal.BatchExecutor.ExecuteAsync(DbContext _, ValueTuple`2 parameters, CancellationToken cancellationToken)&#xA;   at Pomelo.EntityFrameworkCore.MySql.Storage.Internal.MySqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)&#xA;   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(IReadOnlyList`1 entriesToSave, CancellationToken cancellationToken)&#xA;   at Microsoft.EntityFrameworkCore.ChangeTracking.Internal.StateManager.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)&#xA;   at Microsoft.EntityFrameworkCore.DbContext.SaveChangesAsync(Boolean acceptAllChangesOnSuccess, CancellationToken cancellationToken)&#xA;   at GirafRest.Controllers.ActivityController.UpdateActivity(ActivityDTO activity, String userId) in /Users/tobiasdybdahl/VisualStudioCodeProjects/web-api/GirafRest/Controllers/ActivityController.cs:line 242&#xA;   at lambda_method(Closure , Object )&#xA;   at Microsoft.AspNetCore.Mvc.Internal.ActionMethodExecutor.AwaitableObjectResultExecutor.Execute(IActionResultTypeMapper mapper, ObjectMethodExecutor executor, Object controller, Object[] arguments)&#xA;   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeActionMethodAsync()&#xA;   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeNextActionFilterAsync()&#xA;   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Rethrow(ActionExecutedContext context)&#xA;   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.Next(State&amp; next, Scope&amp; scope, Object&amp; state, Boolean&amp; isCompleted)&#xA;   at Microsoft.AspNetCore.Mvc.Internal.ControllerActionInvoker.InvokeInnerFilterAsync()&#xA;   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeNextResourceFilter()&#xA;   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.Rethrow(ResourceExecutedContext context)&#xA;   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.Next(State&amp; next, Scope&amp; scope, Object&amp; state, Boolean&amp; isCompleted)&#xA;   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeFilterPipelineAsync()&#xA;   at Microsoft.AspNetCore.Mvc.Internal.ResourceInvoker.InvokeAsync()&#xA;   at Microsoft.AspNetCore.Builder.RouterMiddleware.Invoke(HttpContext httpContext)&#xA;   at Microsoft.AspNetCore.Authentication.AuthenticationMiddleware.Invoke(HttpContext context)&#xA;   at Microsoft.AspNetCore.StaticFiles.StaticFileMiddleware.Invoke(HttpContext context)&#xA;   at Swashbuckle.AspNetCore.SwaggerUI.SwaggerUIMiddleware.Invoke(HttpContext httpContext)&#xA;   at Swashbuckle.AspNetCore.Swagger.SwaggerMiddleware.Invoke(HttpContext httpContext, ISwaggerProvider swaggerProvider)&#xA;   at Microsoft.AspNetCore.Diagnostics.DeveloperExceptionPageMiddleware.Invoke(HttpContext context)</pre>
                 </div>
-
             </div>
-
         </li>
-
     </ul>
-
 </div>
-
 <div id="querypage" class="page"><p>No QueryString data.</p></div>
-
 <div id="cookiespage" class="page"><p>No cookie data.</p></div>
-
 <div id="headerspage" class="page">
     <table>
         <thead>
         <tr>
             <th>Variable</th>
-
             <th>Value</th>
-
         </tr>
-
         </thead>
-
         <tbody>
         <tr>
             <td>Accept</td>
-
             <td>*/*</td>
-
         </tr>
-
         <tr>
             <td>Accept-Encoding</td>
-
             <td>gzip, deflate</td>
-
         </tr>
-
         <tr>
             <td>Authorization</td>
-
             <td>Bearer
-                eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJjNmUxZGM2MS05ZGU5LTQxZmItOTUxMS1jNTgwMmFmM2FhNTEiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImVjNTM5ZGQ0LTRkNGYtNDNmMC04NGUyLWIyMmRlMDRlMTcwZCIsImRlcGFydG1lbnRJZCI6IjEiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJHdWFyZGlhbiIsImV4cCI6MTU5MDIyNjg1MiwiaXNzIjoiQWFsYm9yZyBVbml2ZXJzaXR5IiwiYXVkIjoiQWFsYm9yZyBVbml2ZXJzaXR5In0.TVxq21T41s968D2iGhZcd2vEr1sPt7BCL2l9y6MwMSo
+                eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIwMmY3ODYxNy1kMjNkLTQwN2EtYWFlNi1lYTJiYzEwMjcwMDUiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6ImVjNTM5ZGQ0LTRkNGYtNDNmMC04NGUyLWIyMmRlMDRlMTcwZCIsImRlcGFydG1lbnRJZCI6IjEiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJHdWFyZGlhbiIsImV4cCI6MTU5MDIyODIyMiwiaXNzIjoiQWFsYm9yZyBVbml2ZXJzaXR5IiwiYXVkIjoiQWFsYm9yZyBVbml2ZXJzaXR5In0.22Qt2c2U_CSyP3WVZ9pq-eps0_UaAkDB-hIlkFuGrac
             </td>
-
         </tr>
-
         <tr>
             <td>Connection</td>
-
             <td>keep-alive</td>
-
         </tr>
-
         <tr>
             <td>Content-Length</td>
-
             <td>37</td>
-
         </tr>
-
         <tr>
             <td>Content-Type</td>
-
             <td>application/json</td>
-
         </tr>
-
         <tr>
             <td>Host</td>
-
             <td>127.0.0.1:5000</td>
-
         </tr>
-
         <tr>
             <td>User-Agent</td>
-
             <td>python-requests/2.23.0</td>
-
         </tr>
-
         </tbody>
-
     </table>
-
 </div>
-
 <script>            //<!--            (function (window, undefined) {    "use strict";    function ns(selector, element) {        return new NodeCollection(selector, element);    }    function NodeCollection(selector, element) {        this.items = [];        element = element || window.document;        var nodeList;        if (typeof (selector) === "string") {            nodeList = element.querySelectorAll(selector);            for (var i = 0, l = nodeList.length; i < l; i++) {                this.items.push(nodeList.item(i));            }        }    }    NodeCollection.prototype = {        each: function (callback) {            for (var i = 0, l = this.items.length; i < l; i++) {                callback(this.items[i], i);            }            return this;        },        children: function (selector) {            var children = [];            this.each(function (el) {                children = children.concat(ns(selector, el).items);            });            return ns(children);        },        hide: function () {            this.each(function (el) {                el.style.display = "none";            });            return this;        },        toggle: function () {            this.each(function (el) {                el.style.display = el.style.display === "none" ? "" : "none";            });            return this;        },        show: function () {            this.each(function (el) {                el.style.display = "";            });            return this;        },        addClass: function (className) {            this.each(function (el) {                var existingClassName = el.className,                    classNames;                if (!existingClassName) {                    el.className = className;                } else {                    classNames = existingClassName.split(" ");                    if (classNames.indexOf(className) < 0) {                        el.className = existingClassName + " " + className;                    }                }            });            return this;        },        removeClass: function (className) {            this.each(function (el) {                var existingClassName = el.className,                    classNames, index;                if (existingClassName === className) {                    el.className = "";                } else if (existingClassName) {                    classNames = existingClassName.split(" ");                    index = classNames.indexOf(className);                    if (index > 0) {                        classNames.splice(index, 1);                        el.className = classNames.join(" ");                    }                }            });            return this;        },        attr: function (name) {            if (this.items.length === 0) {                return null;            }            return this.items[0].getAttribute(name);        },        on: function (eventName, handler) {            this.each(function (el, idx) {                var callback = function (e) {                    e = e || window.event;                    if (!e.which && e.keyCode) {                        e.which = e.keyCode; // Normalize IE8 key events                    }                    handler.apply(el, [e]);                };                if (el.addEventListener) { // DOM Events                    el.addEventListener(eventName, callback, false);                } else if (el.attachEvent) { // IE8 events                    el.attachEvent("on" + eventName, callback);                } else {                    el["on" + type] = callback;                }            });            return this;        },        click: function (handler) {            return this.on("click", handler);        },        keypress: function (handler) {            return this.on("keypress", handler);        }    };    function frame(el) {        ns(".source .collapsible", el).toggle();    }    function expandCollapseButton(el) {        var frameId = el.getAttribute("data-frameId");        frame(document.getElementById(frameId));        if (el.innerText === "+") {            el.innerText = "-";        }        else {            el.innerText = "+";        }    }    function tab(el) {        var unselected = ns("#header .selected").removeClass("selected").attr("id");        var selected = ns("#" + el.id).addClass("selected").attr("id");        ns("#" + unselected + "page").hide();        ns("#" + selected + "page").show();    }    ns(".rawExceptionDetails").hide();    ns(".collapsible").hide();    ns(".page").hide();    ns("#stackpage").show();    ns(".expandCollapseButton")        .click(function () {            expandCollapseButton(this);        })        .keypress(function (e) {            if (e.which === 13) {                expandCollapseButton(this);            }        });    ns("#header li")        .click(function () {            tab(this);        })        .keypress(function (e) {            if (e.which === 13) {                tab(this);            }        });    ns(".showRawException")        .click(function () {            var exceptionDetailId = this.getAttribute("data-exceptionDetailId");            ns("#" + exceptionDetailId).toggle();        });})(window);            //-->        </script>
-
 </body>
-
 </html>'
