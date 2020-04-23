@@ -7,6 +7,14 @@ namespace GirafRest
 {
     public class PictogramRelation
     {
+        
+        /// <summary>
+        /// The key of the relationship entity.
+        /// </summary>
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public long Id { get; set; }
+        
         [Required]
         public long ActivityId { get; set; }
 

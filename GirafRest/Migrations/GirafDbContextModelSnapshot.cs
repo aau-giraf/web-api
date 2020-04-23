@@ -359,7 +359,12 @@ namespace GirafRest.Migrations
 
                     b.Property<long>("PictogramId");
 
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd();
+
                     b.HasKey("ActivityId", "PictogramId");
+
+                    b.HasAlternateKey("Id");
 
                     b.HasIndex("PictogramId");
 
