@@ -83,7 +83,7 @@ class TestActivityController(GIRAFTestCase):
         Endpoint: POST:/v2/Activity/{user_id}/{weekplan_name}/{week_year}/{week_number}/{week_day_number}
         """
         global activity_id
-        data = {"pictogram": {"id": 1}}
+        data = {"pictograms": [{"id": 1}]}
         response = post(f'{BASE_URL}v2/Activity/{user_id}/{self.weekplan_name}/{self.week_year}/{self.week_number}/{self.week_day_number}', headers=auth(guardian_token), json=data,).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
@@ -96,7 +96,7 @@ class TestActivityController(GIRAFTestCase):
 
         Endpoint: PATCH:/v2/Activity/{user_id}/update
         """
-        data = {'pictogram': {'id': 6}, 'id': activity_id}
+        data = {'pictograms': [{'id': 6}], 'id': activity_id, 'title': 'h'}
         response = patch(f'{BASE_URL}v2/Activity/{user_id}/update', json=data,
                          headers=auth(guardian_token)).json()
         self.assertTrue(response['success'])
