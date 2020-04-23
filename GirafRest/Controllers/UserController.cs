@@ -168,7 +168,7 @@ namespace GirafRest.Controllers
         [HttpGet("{id}/icon")]
         public Task<Response<ImageDTO>> GetUserIcon(string id)
         {
-            var user = _giraf._context.Users.Include(u => u.UserIcon).FirstOrDefault(u => u.Id == id);
+            var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
             if (user == null)
                 return Task.FromResult<Response<ImageDTO>>(new ErrorResponse<ImageDTO>(ErrorCode.UserNotFound));
                 
@@ -187,7 +187,7 @@ namespace GirafRest.Controllers
         [HttpGet("{id}/icon/raw")]
         public Task<IActionResult> GetRawUserIcon(string id)
         {
-            var user = _giraf._context.Users.Include(u => u.UserIcon).FirstOrDefault(u => u.Id == id);
+            var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
 
             if (user == null)
                 return Task.FromResult<IActionResult>(NotFound());
@@ -236,7 +236,7 @@ namespace GirafRest.Controllers
         [HttpDelete("{id}/icon")]
         public async Task<Response> DeleteUserIcon(string id)
         {
-            var user = _giraf._context.Users.Include(u => u.UserIcon).FirstOrDefault(u => u.Id == id);
+            var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
             if (user.UserIcon == null)
                 return new ErrorResponse(ErrorCode.UserHasNoIcon);
 
