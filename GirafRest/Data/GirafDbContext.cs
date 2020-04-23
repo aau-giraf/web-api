@@ -144,6 +144,12 @@ namespace GirafRest.Data
                     .HasForeignKey(mg => mg.ActivityId)
                     .OnDelete(DeleteBehavior.Cascade);
 
+            builder.Entity<PictogramRelation>()
+                .HasOne(pr => pr.Pictogram)
+                .WithMany(p => p.Activities)
+                .HasForeignKey(p => p.PictogramId)
+                .OnDelete(DeleteBehavior.Cascade);
+
 
             // Configure a one-to-many relationship setting and weekdaycolors
             builder.Entity<Setting>()
