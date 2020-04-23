@@ -35,6 +35,7 @@ class TestActivityController(GIRAFTestCase):
     def test_activity_can_login_as_guardian(self):
         """
         Testing logging in as Guardian
+
         Endpoint: POST:/v1/Account/login
         """
         global guardian_token
@@ -49,6 +50,7 @@ class TestActivityController(GIRAFTestCase):
     def test_activity_can_login_as_citizen1(self):
         """
         Testing logging in as Citizen1
+
         Endpoint: POST:/v1/Account/login
         """
         global user_token
@@ -63,6 +65,7 @@ class TestActivityController(GIRAFTestCase):
     def test_activity_can_get_citizen1_id(self):
         """
         Testing getting Citizen1's id
+
         Endpoint: GET:/v1/User
         """
         global user_id
@@ -76,6 +79,7 @@ class TestActivityController(GIRAFTestCase):
     def test_activity_set_new_user_activity(self):
         """
         Testing creation of user specific activity
+
         Endpoint: POST:/v2/Activity/{user_id}/{weekplan_name}/{week_year}/{week_number}/{week_day_number}
         """
         global activity_id
@@ -89,6 +93,7 @@ class TestActivityController(GIRAFTestCase):
     def test_activity_update_user_activity(self):
         """
         Testing PATCH update to activity for a specific user
+
         Endpoint: PATCH:/v2/Activity/{user_id}/update
         """
         data = {'pictogram': {'id': 6}, 'id': activity_id}
@@ -101,6 +106,7 @@ class TestActivityController(GIRAFTestCase):
     def test_activity_delete_user_activity(self):
         """
         Testing DELETE on user specific activity
+
         Endpoint: DELETE:/v2/Activity/{user_id}/delete/{activity_id}
         """
         response = delete(f'{BASE_URL}v2/Activity/{user_id}/delete/{activity_id}', headers=auth(guardian_token)).json()
