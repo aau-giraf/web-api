@@ -336,11 +336,6 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<byte[]>(ErrorCode.NotAuthorized);
 
             var pictoPath = $"{imagePath}{picto.Id}.png";
-
-            //Check if the actual, physical file exists on the drive
-            if(! System.IO.File.Exists(pictoPath))
-                return new ErrorResponse<byte[]>(ErrorCode.NotFound);
-            
             
             
             //At this time, there is no '.NET native' way to check file permissions on Linux, so instead we catch an exception, if current (OS) user does not have read permission
@@ -352,6 +347,10 @@ namespace GirafRest.Controllers
             catch(UnauthorizedAccessException uAEx)
             {
                 return new ErrorResponse<byte[]>(ErrorCode.NotAuthorized);
+            }
+            catch(FileNotFoundException fNFex)
+            {
+                return new ErrorResponse<byte[]>(ErrorCode.NotFound);
             }
 
 
@@ -387,22 +386,10 @@ namespace GirafRest.Controllers
 
             string pictoPath = $"{imagePath}{picto.Id}.png";
 
-            //Check if there actually is a file, as specified in the database
-            if(! System.IO.File.Exists(pictoPath))
-                return NotFound();
 
-            //At this time, there is no '.NET native' way to check file permissions on Linux, so instead we catch an exception, if current (OS) user does not have read permission
-            try
-            {
-                _giraf._logger.LogInformation(imagePath);
-                return PhysicalFile(imagePath + picto.Id + ".png", IMAGE_TYPE_PNG);
-            }
-            catch(UnauthorizedAccessException uAEx)
-            {
-                //This exception occurs if the current (OS) user, under which the api is running does not have read access to the file
-                //If this is the case, return HTTP code 403, Forbidden
-                return new StatusCodeResult(403); 
-            }
+            //Try catch is irrelevant around 'PhysicalFile' as it it places the stack trace into the body of HTTP if it cant read the specified file            
+            _giraf._logger.LogInformation(imagePath);
+            var result = PhysicalFile(imagePath + picto.Id + ".png", IMAGE_TYPE_PNG);
             
         }
 
