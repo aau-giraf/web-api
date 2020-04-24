@@ -69,9 +69,9 @@ namespace GirafRest.Extensions
             GirafUser user)
         {
             GirafRoles userRole = new GirafRoles();
-            foreach (var role in roleManager.Roles)
-                if (await userManager.IsInRoleAsync(user, role.Name))
-                    userRole = (GirafRoles)Enum.Parse(typeof(GirafRoles), role.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            if(roles.Count != 0) 
+                userRole = (GirafRoles)Enum.Parse(typeof(GirafRoles), roles[0]);
             return userRole;
         }
 

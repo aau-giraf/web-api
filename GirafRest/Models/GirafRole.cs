@@ -10,7 +10,7 @@ namespace GirafRest.Models
     /// <summary>
     /// All the roles available in the system
     /// </summary>
-    public class GirafRole : IdentityRole<string>
+    public class GirafRole : IdentityRole
     {
         #region Roles
         /// <summary>
