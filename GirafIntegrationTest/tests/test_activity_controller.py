@@ -1,6 +1,6 @@
 from requests import get, post, put, delete, patch
 import time
-from testlib import order, BASE_URL, auth, GIRAFTestCase
+from testlib import order, BASE_URL, auth, GIRAFTestCase, HTTPStatus
 
 guardian_token = ""
 user_id = ""
@@ -38,11 +38,13 @@ class TestActivityController(GIRAFTestCase):
         """
         global guardian_token
         data = {'username': 'graatand', 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        guardian_token = response['data']
+        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response_body = response.json()
+
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        guardian_token = response_body['data']
 
     @order
     def test_activity_can_login_as_citizen1(self):
@@ -53,11 +55,12 @@ class TestActivityController(GIRAFTestCase):
         """
         global user_token
         data = {'username': 'Kurt', 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        user_token = response['data']
+        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        user_token = response_body['data']
 
     @order
     def test_activity_can_get_citizen1_id(self):
@@ -67,11 +70,12 @@ class TestActivityController(GIRAFTestCase):
         Endpoint: GET:/v1/User
         """
         global user_id
-        response = get(f'{BASE_URL}v1/User', headers=auth(user_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        user_id = response['data']['id']
+        response = get(f'{BASE_URL}v1/User', headers=auth(user_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        user_id = response_body['data']['id']
 
     @order
     def test_activity_set_new_user_activity(self):
@@ -82,10 +86,11 @@ class TestActivityController(GIRAFTestCase):
         """
         global activity_id
         data = {"pictogram": {"id": 1}}
-        response = post(f'{BASE_URL}v2/Activity/{user_id}/{self.weekplan_name}/{self.week_year}/{self.week_number}/{self.week_day_number}', headers=auth(guardian_token), json=data,).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        activity_id = response['data']['id']
+        response = post(f'{BASE_URL}v2/Activity/{user_id}/{self.weekplan_name}/{self.week_year}/{self.week_number}/{self.week_day_number}', headers=auth(guardian_token), json=data,)
+        response_body = response.json()
+
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
+        activity_id = response_body['data']['id']
 
     @order
     def test_activity_update_user_activity(self):
@@ -96,9 +101,10 @@ class TestActivityController(GIRAFTestCase):
         """
         data = {'pictogram': {'id': 6}, 'id': activity_id}
         response = patch(f'{BASE_URL}v2/Activity/{user_id}/update', json=data,
-                         headers=auth(guardian_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
+                         headers=auth(guardian_token))
+        
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
 
     @order
     def test_activity_delete_user_activity(self):
@@ -107,6 +113,6 @@ class TestActivityController(GIRAFTestCase):
 
         Endpoint: DELETE:/v2/Activity/{user_id}/delete/{activity_id}
         """
-        response = delete(f'{BASE_URL}v2/Activity/{user_id}/delete/{activity_id}', headers=auth(guardian_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
+        response = delete(f'{BASE_URL}v2/Activity/{user_id}/delete/{activity_id}', headers=auth(guardian_token))
+        
+        self.assertEqual(response.status_code, HTTPStatus.OK)
