@@ -171,7 +171,7 @@ namespace GirafRest.Test
             // check data
             Assert.Equal(res.Data.Username, userName);
             Assert.Equal(res.Data.Department, DEPARTMENT_ONE);
-            Assert.Equal(res.Data.ScreenName, displayName);
+            Assert.Equal(res.Data.DisplayName, displayName);
         }
         
         [Fact]
