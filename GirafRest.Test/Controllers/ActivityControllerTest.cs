@@ -247,8 +247,8 @@ namespace GirafRest.Test
             Assert.Equal(expected.Timer, actual.Timer);
             Assert.Equal(expected.Pictograms.Count, actual.Pictograms.Count);
 
-            var expectedPictogram = expected.Pictograms.First();
             var actualPictogram = actual.Pictograms.First();
+            var expectedPictogram = _testContext.MockPictograms[0];
             
             Assert.Equal(expectedPictogram.Id, actualPictogram.Id);
         }

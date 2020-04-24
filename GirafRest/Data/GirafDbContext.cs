@@ -141,13 +141,13 @@ namespace GirafRest.Data
             builder.Entity<PictogramRelation>()
                     .HasOne(pr => pr.Activity)
                     .WithMany(ac => ac.Pictograms)
-                    .HasForeignKey(mg => mg.ActivityId)
+                    .HasForeignKey(pr => pr.ActivityId)
                     .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<PictogramRelation>()
                 .HasOne(pr => pr.Pictogram)
                 .WithMany(p => p.Activities)
-                .HasForeignKey(p => p.PictogramId)
+                .HasForeignKey(pr => pr.PictogramId)
                 .OnDelete(DeleteBehavior.Cascade);
 
 

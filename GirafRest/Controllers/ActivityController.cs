@@ -140,13 +140,19 @@ namespace GirafRest.Controllers
         [Authorize]
         public async Task<Response<ActivityDTO>> GetActivity(string userId, int activityId)
         {
-            var res = await _giraf._context
+            var activity = await _giraf._context
                 .Activities
-                .Include(a => a.Pictograms)
                 .Where(a => a.Key == activityId)
                 .FirstOrDefaultAsync();
+
+            var pictograms = _giraf._context
+                .PictogramRelations
+                .Where(pr => pr.ActivityId == activityId)
+                .ToList();
+
+            activity.Pictograms = pictograms;
             
-            return new Response<ActivityDTO>(new ActivityDTO(res));
+            return new Response<ActivityDTO>(new ActivityDTO(activity));
         }
 
         /// <summary>

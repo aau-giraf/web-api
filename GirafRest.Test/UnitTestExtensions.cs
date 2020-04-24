@@ -205,7 +205,7 @@ namespace GirafRest.Test
                     if (_mockActivities == null)
                         _mockActivities = new List<Activity>()
                         {
-                            new Activity(MockWeeks[0].Weekdays[0], new List<Pictogram>() { MockPictograms[5] }, 0, ActivityState.Active){
+                            new Activity(MockWeeks[0].Weekdays[0], 0, ActivityState.Active){
                                 Key = 1,
                                 Order = 1,
                                 OtherKey = 1,
@@ -235,6 +235,10 @@ namespace GirafRest.Test
                         mockPictogramRelations = new List<PictogramRelation>
                         {
                             new PictogramRelation(MockActivities[0], MockPictograms[0])
+                            {
+                                ActivityId = MockActivities[0].Key,
+                                PictogramId = MockPictograms[0].Id
+                            }
                         };
                     }
                     return mockPictogramRelations;
