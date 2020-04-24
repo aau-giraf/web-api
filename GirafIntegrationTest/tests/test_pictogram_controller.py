@@ -218,3 +218,15 @@ class TestPictogramController(GIRAFTestCase):
         self.assertFalse(response['success'])
         self.assertEqual(response['errorKey'], 'PictogramNotFound')
 
+    @order
+    def test_pictogram_query_(self):
+        """
+        Testing querying for a pictogram
+
+        Endpoint: GET:/v1/Pictogram?query=Epik
+        """
+        params = {'query': 'Epik', 'page': 1, 'pageSize': 10}
+        response = get(f'{BASE_URL}v1/Pictogram?query=Epik', headers=auth(citizen_token), params=params).json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'NoError')
+
