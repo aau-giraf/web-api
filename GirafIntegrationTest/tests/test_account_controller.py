@@ -426,10 +426,32 @@ class TestAccountController(GIRAFTestCase):
         """
         data = {'password': 'brand-new-password', 'token': 'invalid-token'}
         response = post(f'{BASE_URL}v1/User/{citizen1_id}/Account/password', json=data,
-                        headers=auth(guardian_token))
-        response_body = response.json()
-        
-        self.assertEqual(response.status_code, 400) #403, 404
-        self.assertIsNotNone(response_body['data'])
-        #self.assertFalse(response['success'])
-        #self.assertEqual(response['errorKey'], 'InvalidProperties')
+                        headers=auth(guardian_token)).json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'InvalidProperties')
+
+    @order
+    def test_account_can_set_citizen1_password_invalid_token_should_fail(self):
+        """
+        Testing setting Citizen1's password with an invalid token
+
+        Endpoint: PUT:/v1/User/{id}/Account/password
+        """
+        data = {'password': 'brand-new-password', 'token': 'invalid-token'}
+        response = put(f'{BASE_URL}v1/User/{citizen1_id}/Account/password', json=data,
+                       headers=auth(guardian_token)).json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'MissingProperties')
+
+    @order
+    def test_account_can_set_citizen1_password_valid_token(self):
+        """
+        Testing setting Citizen1's password with an invalid token
+
+        Endpoint: PUT:/v1/User/{id}/Account/password
+        """
+        data = {'oldPassword': 'brand-new-password', 'newPassword': citizen1_reset_token}
+        response = put(f'{BASE_URL}v1/User/{citizen1_id}/Account/password', json=data,
+                       headers=auth(department_token)).json()
+        self.assertTrue(response['success'])
+        self.assertEqual(response['errorKey'], 'NoError')

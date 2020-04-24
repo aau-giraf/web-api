@@ -34,12 +34,12 @@ namespace GirafRest.Models
         /// <summary>
         /// Thumbnail key for week
         /// </summary>
-        [ForeignKey("ThumbnailKey")]
         public long ThumbnailKey { get; set; }
 
         /// <summary>
         /// Thumbnail
         /// </summary>
+        [ForeignKey("ThumbnailKey")]
         public virtual Pictogram Thumbnail { get; set; }
 
         /// <summary>
