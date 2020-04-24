@@ -64,6 +64,32 @@ class TestAccountController(GIRAFTestCase):
         guardian_id = response['data']['id']
 
     @order
+    def test_account_cannot_register_citizen_without_displayName(self):
+        """
+        Testing registering a citizen fails without displayName
+
+        Endpoint: POST:/v1/Account/register
+        """
+        data = {'username': 'myUsername', 'password': 'password',
+                'role': 'Citizen', 'departmentId': 1}
+        response = post(f'{BASE_URL}v1/Account/register', json=data, headers=auth(guardian_token)).json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'MissingProperties')
+
+    @order
+    def test_account_cannot_register_citizen_with_empty_displayName(self):
+        """
+        Testing registering a citizen fails with empty displayName
+
+        Endpoint: POST:/v1/Account/register
+        """
+        data = {'username': 'myUsername', 'displayName': '', 'password': 'password',
+                'role': 'Citizen', 'departmentId': 1}
+        response = post(f'{BASE_URL}v1/Account/register', json=data, headers=auth(guardian_token)).json()
+        self.assertFalse(response['success'])
+        self.assertEqual(response['errorKey'], 'MissingProperties')
+
+    @order
     def test_account_can_register_citizen2(self):
         """
         Testing registering Citizen2
