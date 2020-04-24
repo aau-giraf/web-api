@@ -223,6 +223,27 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
             Assert.False(res.Success);
         }
+        
+        
+        [Fact]
+        // Tries to register a new account with an empty displayName
+        public void Register_user_empty_displayName()
+        {
+            var accountController = InitializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            
+            var res = accountController.Register(new RegisterDTO()
+            {
+                Username = "GenericName2",
+                DisplayName = "",
+                Password = "GenericPassword",
+                DepartmentId = DEPARTMENT_ONE,
+                Role = GirafRoles.Citizen
+            }).Result;
+
+            Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
+            Assert.False(res.Success);
+        }
 
         [Fact]
         // Account may exist without department
