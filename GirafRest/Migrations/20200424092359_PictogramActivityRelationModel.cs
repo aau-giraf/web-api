@@ -2,18 +2,10 @@
 
 namespace GirafRest.Migrations
 {
-    public partial class pictogramActivityRelation : Migration
+    public partial class PictogramActivityRelationModel : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_Activities_Pictograms_PictogramKey",
-                table: "Activities");
-
-            migrationBuilder.DropIndex(
-                name: "IX_Activities_PictogramKey",
-                table: "Activities");
-
             migrationBuilder.DropColumn(
                 name: "PictogramKey",
                 table: "Activities");
