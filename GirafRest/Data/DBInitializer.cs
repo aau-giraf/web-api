@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ComponentModel;
 
 namespace GirafRest.Setup
 {
@@ -22,7 +23,9 @@ namespace GirafRest.Setup
             {
                 ///<summary>
                 ///SampleDataHandler creates a samples.json file by storing current database data in plaintext, in samples.json
-                ///Use only if samples.json does not exist in Data folder and only sample data exists in the database
+                ///Use only if samples.json does not exist in Data folder and only sample data exists in the database.
+                ///Passwords for users are written to the samples.json directly from the db, meaning they will be hashes. 
+                ///If you want more writeable passwords, manually set them in the samples.json.
                 ///</summary>
                 sampleHandler.SerializeDataAsync(context, userManager);
 
@@ -107,13 +110,20 @@ namespace GirafRest.Setup
                     DepartmentKey = departments.FirstOrDefault(d => d.Name == sampleUser.DepartmentName).Key
                 };
 
-                var x = userManager.CreateAsync(user, sampleUser.Password).Result;
-
+                var x = userManager.CreateAsync(user, sampleUser.Password).Result.Succeeded;
+                if(x)
+                {
+                    var a = userManager.AddToRoleAsync(user, sampleUser.Role).Result.Succeeded;
+                    if (!a)
+                    {
+                        throw new Exception("Failed to add role " + sampleUser.Role + " to user " + user.UserName);
+                    }
+                }
+                else
+                {
+                    throw new WarningException("Failed to create user " + user.UserName + " in usermanager");
+                }
                 users.Add(user);
-            }
-            for (int i = 0; i == users.Count - 1; i++)
-            {
-                var a = userManager.AddToRoleAsync(users[i], sampleUsers[i].Role).Result;
             }
         }
 
