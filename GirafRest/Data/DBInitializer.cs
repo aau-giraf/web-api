@@ -107,6 +107,7 @@ namespace GirafRest.Setup
                 GirafUser user = new GirafUser
                 {
                     UserName = sampleUser.Name,
+                    DisplayName = sampleUser.DisplayName,
                     DepartmentKey = departments.FirstOrDefault(d => d.Name == sampleUser.DepartmentName).Key
                 };
 
