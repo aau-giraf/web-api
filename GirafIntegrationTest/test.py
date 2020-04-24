@@ -35,8 +35,8 @@ runner = GIRAFTestRunner(verbosity=5, tb_locals=True, resultclass=GIRAFTestResul
 unittest.defaultTestLoader.sortTestMethodsUsing = compare
 
 # load tests
-#suite = unittest.defaultTestLoader.discover(start_dir='tests')
-suite = unittest.defaultTestLoader.loadTestsFromTestCase(TestActivityController)
+suite = unittest.defaultTestLoader.discover(start_dir='tests')
+#suite = unittest.defaultTestLoader.loadTestsFromTestCase(TestActivityController)
 
 # run
 if __name__ == '__main__':

@@ -134,7 +134,7 @@ namespace GirafRest.Data
                    .HasForeignKey(mg => mg.CitizenId)
                    .OnDelete(DeleteBehavior.Cascade);
 
-            // The pivot table for the many-many between an activity and pictograms
+            // The pivot tables for the many-many between an activity and pictograms
             builder.Entity<PictogramRelation>()
                 .HasKey(x => new {x.ActivityId, x.PictogramId});
                 
