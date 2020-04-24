@@ -128,7 +128,7 @@ namespace GirafRest.Controllers
         [HttpPut("{id}")]
         public async Task<Response<GirafUserDTO>> UpdateUser(string id, [FromBody] GirafUserDTO newUser)
         {
-            if (newUser == null || newUser.Username == null || newUser.DisplayName == null)
+            if (newUser == null || newUser.Username == null || newUser.ScreenName == null)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties);
 
             var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
@@ -150,8 +150,8 @@ namespace GirafRest.Controllers
             if (!String.IsNullOrEmpty(newUser.Username))
                 await _giraf._userManager.SetUserNameAsync(user, newUser.Username);
 
-            if (!String.IsNullOrEmpty(newUser.DisplayName))
-                user.DisplayName = newUser.DisplayName;
+            if (!String.IsNullOrEmpty(newUser.ScreenName))
+                user.DisplayName = newUser.ScreenName;
 
             // save and return 
             _giraf._context.Users.Update(user);
@@ -168,7 +168,7 @@ namespace GirafRest.Controllers
         [HttpGet("{id}/icon")]
         public Task<Response<ImageDTO>> GetUserIcon(string id)
         {
-            var user = _giraf._context.Users.Include(u => u.UserIcon).FirstOrDefault(u => u.Id == id);
+            var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
             if (user == null)
                 return Task.FromResult<Response<ImageDTO>>(new ErrorResponse<ImageDTO>(ErrorCode.UserNotFound));
                 
@@ -187,7 +187,7 @@ namespace GirafRest.Controllers
         [HttpGet("{id}/icon/raw")]
         public Task<IActionResult> GetRawUserIcon(string id)
         {
-            var user = _giraf._context.Users.Include(u => u.UserIcon).FirstOrDefault(u => u.Id == id);
+            var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
 
             if (user == null)
                 return Task.FromResult<IActionResult>(NotFound());
@@ -236,7 +236,7 @@ namespace GirafRest.Controllers
         [HttpDelete("{id}/icon")]
         public async Task<Response> DeleteUserIcon(string id)
         {
-            var user = _giraf._context.Users.Include(u => u.UserIcon).FirstOrDefault(u => u.Id == id);
+            var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
             if (user.UserIcon == null)
                 return new ErrorResponse(ErrorCode.UserHasNoIcon);
 
@@ -364,41 +364,41 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Gets the citizens of the user with the provided id. The provided user must be a guardian
         /// </summary>
-        /// <returns>List of <see cref="DisplayNameDTO"/> on success else MissingProperties, NotAuthorized, Forbidden,
+        /// <returns>List of <see cref="UserNameDTO"/> on success else MissingProperties, NotAuthorized, Forbidden,
         /// or UserNasNoCitizens</returns>
         /// <param name="id">Identifier of the <see cref="GirafUser"/> to get citizens for</param>
         [HttpGet("{id}/citizens")]
         [Authorize (Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
-        public async Task<Response<List<DisplayNameDTO>>> GetCitizens(string id)
+        public async Task<Response<List<UserNameDTO>>> GetCitizens(string id)
         {
             if (String.IsNullOrEmpty(id))
-                return new ErrorResponse<List<DisplayNameDTO>>(ErrorCode.MissingProperties, "id");
+                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.MissingProperties, "id");
             var user = _giraf._context.Users.Include(u => u.Citizens).FirstOrDefault(u => u.Id == id);
             var authUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
-            var citizens = new List<DisplayNameDTO>();
+            var citizens = new List<UserNameDTO>();
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(authUser, user)))
             {
-                return new ErrorResponse<List<DisplayNameDTO>>(ErrorCode.NotAuthorized);
+                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.NotAuthorized);
             }
 
             var userRole = (await _roleManager.findUserRole(_giraf._userManager, user));
             if (userRole != GirafRoles.Guardian)
-                return new ErrorResponse<List<DisplayNameDTO>>(ErrorCode.Forbidden);;
+                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.Forbidden);;
 
             foreach (var citizen in user.Citizens)
             {
                 var girafUser = _giraf._context.Users.FirstOrDefault(u => u.Id == citizen.CitizenId);
-                citizens.Add(new DisplayNameDTO { UserId = girafUser.Id, DisplayName = girafUser.DisplayName });
+                citizens.Add(new UserNameDTO { UserId = girafUser.Id, UserName = girafUser.UserName });
             }
 
             if (!citizens.Any())
             {
-                return new ErrorResponse<List<DisplayNameDTO>>(ErrorCode.UserHasNoCitizens);
+                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.UserHasNoCitizens);
             }   
 
-            return new Response<List<DisplayNameDTO>>(citizens.ToList<DisplayNameDTO>());
+            return new Response<List<UserNameDTO>>(citizens.ToList<UserNameDTO>());
         }
 
         /// <summary>
@@ -409,33 +409,33 @@ namespace GirafRest.Controllers
         /// <param name="id">Identifier for the citizen to get guardians for</param>
         [HttpGet("{id}/guardians")]
         [Authorize]
-        public async Task<Response<List<DisplayNameDTO>>> GetGuardians(string id)
+        public async Task<Response<List<UserNameDTO>>> GetGuardians(string id)
         {
             var user = _giraf._context.Users.Include(u => u.Guardians).FirstOrDefault(u => u.Id == id);
             if (user == null)
-                return new ErrorResponse<List<DisplayNameDTO>>(ErrorCode.InvalidProperties, "id");
+                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.InvalidProperties, "id");
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return new ErrorResponse<List<DisplayNameDTO>>(ErrorCode.NotAuthorized);
+                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.NotAuthorized);
 
             var userRole = (await _roleManager.findUserRole(_giraf._userManager, user));
             if (userRole != GirafRoles.Citizen)
-                return new ErrorResponse<List<DisplayNameDTO>>(ErrorCode.Forbidden); ;
+                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.Forbidden); ;
 
-            var guardians = new List<DisplayNameDTO>();
+            var guardians = new List<UserNameDTO>();
             foreach (var guardian in user.Guardians)
             {
                 var girafUser = _giraf._context.Users.FirstOrDefault(u => u.Id == guardian.GuardianId);
-                guardians.Add(new DisplayNameDTO { UserId = girafUser.Id, DisplayName = girafUser.DisplayName });
+                guardians.Add(new UserNameDTO { UserId = girafUser.Id, UserName = girafUser.UserName });
             }
 
             if (!guardians.Any())
             {
-                return new ErrorResponse<List<DisplayNameDTO>>(ErrorCode.UserHasNoGuardians);
+                return new ErrorResponse<List<UserNameDTO>>(ErrorCode.UserHasNoGuardians);
             }
 
-            return new Response<List<DisplayNameDTO>>(guardians);
+            return new Response<List<UserNameDTO>>(guardians);
         }
 
         /// <summary>

@@ -12,7 +12,7 @@ namespace GirafRest.Models
     /// GirafUser defines all relavant data for the user's of Giraf.
     /// </summary>
     [Table("User")]
-    public class GirafUser : IdentityUser<string>
+    public class GirafUser : IdentityUser
     {       
         /// <summary>
         /// Whether or not the current user is a DepartmentUser
