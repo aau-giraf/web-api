@@ -2,37 +2,37 @@
   "UserList": [
     {
       "Name": "Kurt",
-      "DisplayName": "Kurt Andersen",
+      "DisplayName" : "Kurt Andersen",
       "DepartmentName": "Tobias' stue for godt humør",
       "Role": "Citizen",
       "Weeks": [
         "Normal Uge"
       ],
-      "Password": "AQAAAAEAACcQAAAAECjBTGkYH7MZmEfTwbKWCNSjp/Yl+fb0wAS3dfUIjjmx3GDHrpmOBFAZAOuMGx8Y4A=="
+      "Password": "password"
     },
     {
       "Name": "Tobias",
-      "DisplayName": "Tobiasssssssssssss",
+      "DisplayName" : "Tobias Tobiassss",
       "DepartmentName": "Tobias' stue for godt humør",
       "Role": "Department",
       "Weeks": [],
-      "Password": "AQAAAAEAACcQAAAAEMM3NP+ppEIomZysEjxKMQmGquMahrRDTk61yc96bCkBgKwNZ7mC14MGvsSgvY2nxA=="
+      "Password": "password"
     },
     {
       "Name": "Decker",
-      "DisplayName": "Deck",
+      "DisplayName" : "Deck",
       "DepartmentName": "Tobias' stue for godt humør",
       "Role": "Citizen",
       "Weeks": [],
-      "Password": "AQAAAAEAACcQAAAAEAhC2IXYGZC2S6NUzqOBjYJNzCe6ULHRIFWUkdRlKa4yhpmRiy1/7FIKttwHVWKylA=="
+      "Password": "password"
     },
     {
       "Name": "Graatand",
-      "DisplayName": "Graa Tand",
+      "Display": "Harald Graatand",
       "DepartmentName": "Tobias' stue for godt humør",
       "Role": "Guardian",
       "Weeks": [],
-      "Password": "AQAAAAEAACcQAAAAELsn48SXsYsG9mpLTk4JNhzB/HVYom/P0gW2YSqPK/9+iw/wE7NL7HgWCBKiELMSmg=="
+      "Password": "password"
     },
     {
       "Name": "Lee",
@@ -40,15 +40,15 @@
       "DepartmentName": "Bajer plejen",
       "Role": "SuperUser",
       "Weeks": [],
-      "Password": "AQAAAAEAACcQAAAAEJCvdncZlLrVsRwOYIzgiRinvHyiZSlDlbuIE8nOomqNGAmlybRCi0YThhdfXHQ1bQ=="
+      "Password": "password"
     },
     {
       "Name": "Simon",
-      "DisplayName": "Simon Simon Simsen",
+      "DisplayName": "Simon Sim",
       "DepartmentName": "Tobias' stue for godt humør",
       "Role": "Citizen",
       "Weeks": [],
-      "Password": "AQAAAAEAACcQAAAAELsn48SXsPsG9mpLTk4JNhzB/HVYom/P0gW2YSqPK/9+iw/wE7NL7HaWCEKiELMSmg=="
+      "Password": "password"
     }
   ],
   "DepartmentList": [
