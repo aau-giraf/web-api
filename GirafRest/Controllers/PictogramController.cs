@@ -389,7 +389,7 @@ namespace GirafRest.Controllers
 
             //Try catch is irrelevant around 'PhysicalFile' as it it places the stack trace into the body of HTTP if it cant read the specified file            
             _giraf._logger.LogInformation(imagePath);
-            var result = PhysicalFile(imagePath + picto.Id + ".png", IMAGE_TYPE_PNG);
+            PhysicalFile(imagePath + picto.Id + ".png", IMAGE_TYPE_PNG);
             
         }
 
