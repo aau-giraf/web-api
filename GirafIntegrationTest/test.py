@@ -4,7 +4,7 @@ from requests.exceptions import ConnectionError
 from testlib import GIRAFTestResults, GIRAFTestRunner, compare, BASE_URL
 
 try:
-    result = get(f'{BASE_URL}v1/Error').json()
+    result = get(f'{BASE_URL}v1/Status').json()
 except ConnectionError:
     print('\033[91m' + 'Error:' + '\033[0m' + ' could not get response from server.\nExiting...')
     exit(1)

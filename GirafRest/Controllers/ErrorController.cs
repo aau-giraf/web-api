@@ -1,4 +1,6 @@
 ﻿using GirafRest.Models.Responses;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,14 +13,33 @@ namespace GirafRest.Controllers
     public class ErrorController : Controller
     {
         /// <summary>
-        /// All Error requests will redirect to this endpoint
+        /// This endpoint is reached when an error happens in the routing
         /// </summary>
-        /// <returns>ErrorCode.NotFound</returns>
-        [HttpGet(""), HttpPost(""), HttpPut(""), HttpDelete(""), HttpPatch("")]
-        [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status404NotFound)]
-        public ActionResult Index()
+        /// <param name="statusCode">The statuscode gotten when the error happened</param>
+        [AllowAnonymous]
+        public ActionResult StatusCodeEndpoint([FromQuery] int statusCode)
         {
-            return NotFound(new ErrorResponse(ErrorCode.NotFound, "The endpoint could not be found"));
+            var statusCodeReExecuteFeature = HttpContext.Features.Get<IStatusCodeReExecuteFeature>();
+
+            var OriginalURL = "";
+
+            if (statusCodeReExecuteFeature != null)
+            {
+                OriginalURL =
+                    statusCodeReExecuteFeature.OriginalPathBase
+                    + statusCodeReExecuteFeature.OriginalPath
+                    + statusCodeReExecuteFeature.OriginalQueryString;
+            }
+
+            if (statusCode == StatusCodes.Status401Unauthorized)
+                return Unauthorized(new ErrorResponse(ErrorCode.NotAuthorized, "Unauthorized"));
+            if (statusCode == StatusCodes.Status404NotFound)
+                return NotFound(new ErrorResponse(ErrorCode.NotFound, "Not found", "You tried to reach " + OriginalURL));
+            if (statusCode == 0)
+                return BadRequest(new ErrorResponse(ErrorCode.UnknownError, "Bad Request"));
+
+            return StatusCode(statusCode, new ErrorResponse(ErrorCode.UnknownError, "Statuscode: " + statusCode));
+
         }
     }
 }

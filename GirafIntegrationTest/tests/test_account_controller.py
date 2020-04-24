@@ -1,6 +1,6 @@
 from requests import get, post, put, delete
 import time
-from testlib import order, BASE_URL, auth, GIRAFTestCase
+from testlib import order, BASE_URL, auth, GIRAFTestCase, HTTPStatus
 
 guardian_token = ''
 guardian_id = ''
@@ -46,7 +46,7 @@ class TestAccountController(GIRAFTestCase):
         response = post(f'{BASE_URL}v1/Account/login', json=data)
         response_body = response.json()
         
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
         
         guardian_token = response_body['data']
@@ -62,7 +62,7 @@ class TestAccountController(GIRAFTestCase):
         response = get(f'{BASE_URL}v1/User/', headers=auth(guardian_token))
         response_body = response.json()
         
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
 
         #self.assertTrue(response['success'])
@@ -83,7 +83,7 @@ class TestAccountController(GIRAFTestCase):
         response = post(f'{BASE_URL}v1/Account/register', json=data, headers=auth(guardian_token))
         response_body = response.json()
         
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
         self.assertIsNotNone(response_body['data'])
         #self.assertTrue(response['success'])
         #self.assertEqual(response['errorKey'], 'NoError')
@@ -100,7 +100,7 @@ class TestAccountController(GIRAFTestCase):
         response = post(f'{BASE_URL}v1/Account/login', json=data)
         response_body = response.json()
         
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
         #self.assertTrue(response['success'])
         #self.assertEqual(response['errorKey'], 'NoError')
@@ -118,7 +118,7 @@ class TestAccountController(GIRAFTestCase):
         response = get(f'{BASE_URL}v1/User', headers=auth(citizen2_token))
         response_body = response.json()
         
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
         #self.assertTrue(response['success'])
         #self.assertEqual(response['errorKey'], 'NoError')
@@ -135,7 +135,7 @@ class TestAccountController(GIRAFTestCase):
         response = get(f'{BASE_URL}v1/User', headers=auth(guardian_token))
         response_body = response.json()
         
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
         ##elf.assertTrue(response['success'])
         #elf.assertEqual(response['errorKey'], 'NoError')
@@ -153,7 +153,7 @@ class TestAccountController(GIRAFTestCase):
         response = post(f'{BASE_URL}v1/Account/login', json=data)
         response_body = response.json()
    
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
         #print(response_body['data'])
         self.assertEqual(response_body['message'], 'Invalid Credentials')
         #self.assertFalse(response['success'])
@@ -171,11 +171,12 @@ class TestAccountController(GIRAFTestCase):
         response = post(f'{BASE_URL}v1/Account/login', json=data)
         response_body = response.json()
         
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
         self.assertEqual(response_body['message'], 'Invalid credentials')
         #self.assertFalse(response['success'])
         #self.assertEqual(response['errorKey'], 'InvalidCredentials')
-        #self.assertIsNon#e(response['data'])
+        #self.assertIsNone(response['data'])
+        
 
     @order
     def test_account_can_register_citizen1_should_fail(self):
@@ -186,14 +187,12 @@ class TestAccountController(GIRAFTestCase):
         """
         global citizen1_username
         citizen1_username = f'Gunnar{time.time()}'
-        data = {'username': citizen1_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
+        data = {'username': citizen1_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1, 'displayName': "Hellodingus"}
         response = post(f'{BASE_URL}v1/Account/register', json=data)
         response_body = response.json()
         
-        self.assertEqual(response.status_code, 401)
-        self.assertEqual(response_body['message'], 'Invalid credentials')
-        #self.assertFalse(response['success'])
-        #self.assertEqual(response['errorKey'], 'NotFound')
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
 
     @order
     def test_account_can_register_citizen1(self):
@@ -206,7 +205,7 @@ class TestAccountController(GIRAFTestCase):
         response = post(f'{BASE_URL}v1/Account/register', json=data, headers=auth(guardian_token))
         response_body = response.json()
         
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
         self.assertIsNotNone(response_body['data'])
         #self.assertTrue(response['success'])
         #self.assertEqual(response['errorKey'], 'NoError')
@@ -223,7 +222,7 @@ class TestAccountController(GIRAFTestCase):
         response = post(f'{BASE_URL}v1/Account/login', json=data)
         response_body = response.json()
         
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
         #self.assertTrue(response['success'])
         #self.assertEqual(response['errorKey'], 'NoError')
@@ -241,7 +240,7 @@ class TestAccountController(GIRAFTestCase):
         response = get(f'{BASE_URL}v1/User', headers=auth(citizen1_token))
         response_body = response.json()
         
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
         #self.assertTrue(response['success'])
         #self.assertEqual(response['errorKey'], 'NoError')
@@ -258,7 +257,7 @@ class TestAccountController(GIRAFTestCase):
         response = get(f'{BASE_URL}v1/User', headers=auth(citizen1_token))
         response_body = response.json()
         
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
         #self.assertTrue(response['success'])
         #self.assertEqual(response['errorKey'], 'NoError')
@@ -275,7 +274,7 @@ class TestAccountController(GIRAFTestCase):
         response = get(f'{BASE_URL}v1/User', headers=auth(citizen1_token))
         response_body = response.json()
         
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
         #self.assertTrue(response['success'])
         #self.assertEqual(response['errorKey'], 'NoError')
@@ -294,7 +293,7 @@ class TestAccountController(GIRAFTestCase):
         response = post(f'{BASE_URL}v1/Account/login', json=data)
         response_body = response.json()
         
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
         #self.assertTrue(response['success'])
         #self.assertEqual(response['errorKey'], 'NoError')
@@ -311,8 +310,9 @@ class TestAccountController(GIRAFTestCase):
         response = delete(f'{BASE_URL}v1/Account/user/{guardian_id}', headers=auth(citizen2_token))
         response_body = response.json()
         
-        self.assertEqual(response.status_code, 403)
-        self.assertIsNotNone(response_body['data'])
+        #RETURNS 404, TEST MAY BE FAULTY
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        self.assertIsNone(response_body['data'])
         #self.assertFalse(response['success'])
         #self.assertEqual(response['errorKey'], 'NotFound')
 
@@ -324,10 +324,8 @@ class TestAccountController(GIRAFTestCase):
         Endpoint: DELETE:/v1/Account/user/{id}
         """
         response = delete(f'{BASE_URL}v1/Account/user/{citizen2_id}', headers=auth(guardian_token))
-        response_body = response.json()
         
-        self.assertEqual(response.status_code, 200)
-        self.assertIsNotNone(response_body['data'])
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         #self.assertTrue(response['success'])
         #self.assertEqual(response['errorKey'], 'NoError')
 
@@ -342,8 +340,8 @@ class TestAccountController(GIRAFTestCase):
         response = post(f'{BASE_URL}v1/Account/login', json=data)
         response_body = response.json()
         
-        self.assertEqual(response.status_code, 400) #404
-        self.assertIsNotNone(response_body['data'])
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED) 
+        self.assertEqual(response_body['errorKey'], 'InvalidCredentials')
         #self.assertFalse(response['success'])
         #self.assertEqual(response['errorKey'], 'InvalidCredentials')
         #self.assertIsNone(response['data'])
@@ -358,8 +356,8 @@ class TestAccountController(GIRAFTestCase):
         response = get(f'{BASE_URL}v1/User/{guardian_id}', headers=auth(citizen2_token))
         response_body = response.json()
         
-        self.assertEqual(response.status_code, 400) #404
-        self.assertIsNotNone(response_body['data'])
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
         #self.assertFalse(response['success'])
         #self.assertEqual(response['errorKey'], 'NotAuthorized')
         #self.assertIsNone(response['data'])
@@ -376,7 +374,7 @@ class TestAccountController(GIRAFTestCase):
                        headers=auth(guardian_token))
         response_body = response.json()
         
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
         #self.assertTrue(response['success'])
         #self.assertEqual(response['errorKey'], 'NoError')
@@ -395,7 +393,7 @@ class TestAccountController(GIRAFTestCase):
                         headers=auth(guardian_token))
         response_body = response.json()
         
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
         #self.assertTrue(response['success'])
         #self.assertEqual(response['errorKey'], 'NoError')
@@ -412,8 +410,8 @@ class TestAccountController(GIRAFTestCase):
                         headers=auth(guardian_token))
         response_body = response.json()
         
-        self.assertEqual(response.status_code, 403)
-        self.assertIsNotNone(response_body['data'])
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+        self.assertEqual(response_body['errorKey'], 'UserNotFound')
         #self.assertFalse(response['success'])
         #self.assertEqual(response['errorKey'], 'UserNotFound')
 
@@ -428,8 +426,8 @@ class TestAccountController(GIRAFTestCase):
         response = post(f'{BASE_URL}v1/User/{citizen1_id}/Account/password', json=data,
                         headers=auth(guardian_token))
         response_body = response.json()
-        
-        self.assertEqual(response.status_code, 400) #403, 404
-        self.assertIsNotNone(response_body['data'])
+
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED) #HTTPStatus.FORBIDDEN, 404
+        self.assertEqual(response_body['errorKey'], 'InvalidProperties')
         #self.assertFalse(response['success'])
         #self.assertEqual(response['errorKey'], 'InvalidProperties')
