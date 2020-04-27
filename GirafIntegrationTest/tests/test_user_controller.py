@@ -1,6 +1,6 @@
 from requests import get, post, put, delete
 import time
-from testlib import order, BASE_URL, auth, GIRAFTestCase
+from testlib import order, BASE_URL, auth, GIRAFTestCase, HTTPStatus
 
 citizen1_token = ''
 citizen1_id = ''
@@ -74,11 +74,12 @@ class TestUserController(GIRAFTestCase):
         """
         global citizen1_token
         data = {'username': 'Kurt', 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        citizen1_token = response['data']
+        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        citizen1_token = response_body['data']
 
     @order
     def test_user_can_login_as_guardian(self):
@@ -89,11 +90,12 @@ class TestUserController(GIRAFTestCase):
         """
         global guardian_token
         data = {'username': 'Graatand', 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        guardian_token = response['data']
+        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        guardian_token = response_body['data']
 
     @order
     def test_user_can_login_as_super_user(self):
@@ -104,11 +106,12 @@ class TestUserController(GIRAFTestCase):
         """
         global super_user_token
         data = {'username': 'Lee', 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        super_user_token = response['data']
+        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        super_user_token = response_body['data']
 
     @order
     def test_user_can_create_new_guardian(self):
@@ -121,11 +124,12 @@ class TestUserController(GIRAFTestCase):
         global new_guardian_username
         new_guardian_username = f'Testguardian{time.time()}'
         data = {'username': new_guardian_username, 'password': 'password', 'displayName': 'testG','departmentId': 2, 'role': 'Guardian'}
-        response = post(f'{BASE_URL}v1/Account/register', json=data, headers=auth(super_user_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        new_guardian_id = response['data']['id']
+        response = post(f'{BASE_URL}v1/Account/register', json=data, headers=auth(super_user_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
+
+        self.assertIsNotNone(response_body['data'])
+        new_guardian_id = response_body['data']['id']
 
     @order
     def test_user_can_login_as_new_guardian(self):
@@ -136,11 +140,12 @@ class TestUserController(GIRAFTestCase):
         """
         global new_guardian_token
         data = {'username': new_guardian_username, 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        new_guardian_token = response['data']
+        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        new_guardian_token = response_body['data']
 
     @order
     def test_user_can_login_as_department(self):
@@ -151,11 +156,12 @@ class TestUserController(GIRAFTestCase):
         """
         global department_token
         data = {'username': 'Tobias', 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        department_token = response['data']
+        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        department_token = response_body['data']
 
     @order
     def test_user_can_get_citizen1_id(self):
@@ -165,11 +171,12 @@ class TestUserController(GIRAFTestCase):
         Endpoint: GET:/v1/User
         """
         global citizen1_id
-        response = get(f'{BASE_URL}v1/User', headers=auth(citizen1_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data']['id'])
-        citizen1_id = response['data']['id']
+        response = get(f'{BASE_URL}v1/User', headers=auth(citizen1_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data']['id'])
+        citizen1_id = response_body['data']['id']
 
     @order
     def test_user_can_get_guardian_id(self):
@@ -179,11 +186,12 @@ class TestUserController(GIRAFTestCase):
         Endpoint: GET:/v1/User
         """
         global guardian_id
-        response = get(f'{BASE_URL}v1/User', headers=auth(guardian_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data']['id'])
-        guardian_id = response['data']['id']
+        response = get(f'{BASE_URL}v1/User', headers=auth(guardian_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data']['id'])
+        guardian_id = response_body['data']['id']
 
     @order
     def test_user_can_register_citizen2(self):
@@ -192,10 +200,10 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: POST:/v1/Account/register
         """
-        data = {'username': citizen2_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
-        response = post(f'{BASE_URL}v1/Account/register', headers=auth(super_user_token), json=data).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
+        data = {'username': citizen2_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 2}
+        response = post(f'{BASE_URL}v1/Account/register', headers=auth(super_user_token), json=data)
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
+
 
     @order
     def test_user_can_login_as_citizen2(self):
@@ -206,11 +214,12 @@ class TestUserController(GIRAFTestCase):
         """
         global citizen2_token
         data = {'username': citizen2_username, 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        citizen2_token = response['data']
+        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        citizen2_token = response_body['data']
 
     @order
     def test_user_can_get_citizen2_id(self):
@@ -220,11 +229,12 @@ class TestUserController(GIRAFTestCase):
         Endpoint: GET:/v1/User
         """
         global citizen2_id
-        response = get(f'{BASE_URL}v1/User', headers=auth(citizen2_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data']['id'])
-        citizen2_id = response['data']['id']
+        response = get(f'{BASE_URL}v1/User', headers=auth(citizen2_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data']['id'])
+        citizen2_id = response_body['data']['id']
 
     @order
     def test_user_can_register_citizen3(self):
@@ -233,10 +243,10 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: POST:/v1/Account/register
         """
-        data = {'username': citizen3_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
-        response = post(f'{BASE_URL}v1/Account/register', headers=auth(super_user_token), json=data).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
+        data = {'username': citizen3_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 2}
+        response = post(f'{BASE_URL}v1/Account/register', headers=auth(super_user_token), json=data)
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
+
 
     @order
     def test_user_can_login_as_citizen3(self):
@@ -247,11 +257,12 @@ class TestUserController(GIRAFTestCase):
         """
         global citizen3_token
         data = {'username': citizen3_username, 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        citizen3_token = response['data']
+        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        citizen3_token = response_body['data']
 
     @order
     def test_user_can_get_citizen3_id(self):
@@ -261,11 +272,12 @@ class TestUserController(GIRAFTestCase):
         Endpoint: GET:/v1/User
         """
         global citizen3_id
-        response = get(f'{BASE_URL}v1/User', headers=auth(citizen3_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data']['id'])
-        citizen3_id = response['data']['id']
+        response = get(f'{BASE_URL}v1/User', headers=auth(citizen3_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data']['id'])
+        citizen3_id = response_body['data']['id']
 
     @order
     def test_user_can_get_citizen3_id_with_citizen2_should_fail(self):
@@ -274,9 +286,10 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: GET:/v1/User/{id}
         """
-        response = get(f'{BASE_URL}v1/User/{citizen3_id}', headers=auth(citizen2_token)).json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'NotAuthorized')
+        response = get(f'{BASE_URL}v1/User/{citizen3_id}', headers=auth(citizen2_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
 
     @order
     def test_user_can_get_citizen_info_as_guardian(self):
@@ -285,11 +298,12 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: GET:/v1/User/{id}
         """
-        response = get(f'{BASE_URL}v1/User/{citizen2_id}', headers=auth(guardian_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        self.assertEqual(response['data']['username'], citizen2_username)
+        response = get(f'{BASE_URL}v1/User/{citizen2_id}', headers=auth(guardian_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        
+        self.assertIsNotNone(response_body['data'])
+        self.assertEqual(response_body['data']['username'], citizen2_username)
 
     @order
     def test_user_can_set_display_name(self):
@@ -299,9 +313,10 @@ class TestUserController(GIRAFTestCase):
         Endpoint: PUT:/v1/User/{id}
         """
         data = {'username': citizen2_username, 'screenName': 'FBI Surveillance Van'}
-        response = put(f'{BASE_URL}v1/User/{citizen2_id}', headers=auth(citizen2_token), json=data).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
+        response = put(f'{BASE_URL}v1/User/{citizen2_id}', headers=auth(citizen2_token), json=data)
+        
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
 
     @order
     def test_user_can_get_display_name(self):
@@ -310,11 +325,12 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: GET:/v1/User
         """
-        response = get(f'{BASE_URL}v1/User', headers=auth(citizen2_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        self.assertEqual(response['data']['screenName'], 'FBI Surveillance Van')
+        response = get(f'{BASE_URL}v1/User', headers=auth(citizen2_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        self.assertEqual(response_body['data']['screenName'], 'FBI Surveillance Van')
 
     @order
     def test_user_can_add_new_pictogram_as_citizen2(self):
@@ -325,11 +341,12 @@ class TestUserController(GIRAFTestCase):
         """
         global wednesday_id
         data = {'accessLevel': 3, 'title': 'wednesday', 'id': 5, 'lastEdit': '2018-03-19T10:40:26.587Z'}
-        response = post(f'{BASE_URL}v1/Pictogram', headers=auth(citizen2_token), json=data).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data']['id'])
-        wednesday_id = response['data']['id']
+        response = post(f'{BASE_URL}v1/Pictogram', headers=auth(citizen2_token), json=data)
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
+
+        self.assertIsNotNone(response_body['data']['id'])
+        wednesday_id = response_body['data']['id']
 
     @order
     def test_user_can_add_pictogram_to_citizen3_as_citizen2(self):
@@ -339,9 +356,10 @@ class TestUserController(GIRAFTestCase):
         Endpoint: POST:/v1/User/{id}/resource
         """
         data = {'id': wednesday_id}
-        response = post(f'{BASE_URL}v1/User/{citizen3_id}/resource', headers=auth(citizen2_token), json=data).json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'NotAuthorized')
+        response = post(f'{BASE_URL}v1/User/{citizen3_id}/resource', headers=auth(citizen2_token), json=data)
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        self.assertEqual(response_body['errorKey'], 'NotAuthorized')    
 
     @order
     def test_user_can_get_settings(self):
@@ -350,10 +368,11 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: GET:/v1/User/{id}/settings
         """
-        response = get(f'{BASE_URL}v1/User/{citizen2_id}/settings', headers=auth(citizen2_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
+        response = get(f'{BASE_URL}v1/User/{citizen2_id}/settings', headers=auth(citizen2_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
 
     @order
     def test_user_can_enable_grayscale_theme(self):
@@ -363,9 +382,10 @@ class TestUserController(GIRAFTestCase):
         Endpoint: PUT:/v1/User/{id}/settings
         """
         response = put(f'{BASE_URL}v1/User/{citizen2_id}/settings', headers=auth(guardian_token),
-                       json=self.GRAYSCALE_THEME).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
+                       json=self.GRAYSCALE_THEME)
+        
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
 
     @order
     def test_user_can_check_theme(self):
@@ -375,11 +395,12 @@ class TestUserController(GIRAFTestCase):
         Endpoint: GET:/v1/User/{id}/settings
         """
         response = get(f'{BASE_URL}v1/User/{citizen2_id}/settings', headers=auth(guardian_token),
-                       json=self.GRAYSCALE_THEME).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        self.assertEqual(response['data']['theme'], self.GRAYSCALE_THEME['theme'])
+                       json=self.GRAYSCALE_THEME)
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        self.assertEqual(response_body['data']['theme'], self.GRAYSCALE_THEME['theme'])
 
     @order
     def test_user_can_set_default_countdown_time(self):
@@ -389,9 +410,10 @@ class TestUserController(GIRAFTestCase):
         Endpoint: PUT:/v1/User/{id}/settings
         """
         response = put(f'{BASE_URL}v1/User/{citizen2_id}/settings', headers=auth(guardian_token),
-                       json=self.TIMER_ONE_HOUR).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
+                       json=self.TIMER_ONE_HOUR)
+        
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
 
     @order
     def test_user_can_check_countdown_timer(self):
@@ -400,11 +422,12 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: GET:/v1/User/{id}/settings
         """
-        response = get(f'{BASE_URL}v1/User/{citizen2_id}/settings', headers=auth(guardian_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        self.assertEqual(response['data']['timerSeconds'], self.TIMER_ONE_HOUR['timerSeconds'])
+        response = get(f'{BASE_URL}v1/User/{citizen2_id}/settings', headers=auth(guardian_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        self.assertEqual(response_body['data']['timerSeconds'], self.TIMER_ONE_HOUR['timerSeconds'])
 
     @order
     def test_user_can_set_multiple_settings(self):
@@ -414,9 +437,10 @@ class TestUserController(GIRAFTestCase):
         Endpoint: PUT:/v1/User/{id}/settings
         """
         response = put(f'{BASE_URL}v1/User/{citizen2_id}/settings', headers=auth(guardian_token),
-                       json=self.MULTIPLE_SETTINGS).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
+                       json=self.MULTIPLE_SETTINGS)
+        
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
 
     @order
     def test_user_can_check_multiple_settings(self):
@@ -425,22 +449,23 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: GET:/v1/User/{id}/settings
         """
-        response = get(f'{BASE_URL}v1/User/{citizen2_id}/settings', headers=auth(guardian_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        self.assertEqual(2, response['data']['orientation'])
-        self.assertEqual(2, response['data']['completeMark'])
-        self.assertEqual(1, response['data']['cancelMark'])
-        self.assertEqual(2, response['data']['defaultTimer'])
-        self.assertEqual(60, response['data']['timerSeconds'])
-        self.assertEqual(3, response['data']['activitiesCount'])
-        self.assertEqual(3, response['data']['theme'])
-        self.assertEqual(2, response['data']['nrOfDaysToDisplay'])
-        self.assertTrue(response['data']['greyScale'])
-        self.assertTrue(response['data']['lockTimerControl'])
-        self.assertEqual("#FF00FF", response['data']['weekDayColors'][0]['hexColor'])
-        self.assertEqual(1, response['data']['weekDayColors'][0]['day'])
+        response = get(f'{BASE_URL}v1/User/{citizen2_id}/settings', headers=auth(guardian_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        self.assertEqual(2, response_body['data']['orientation'])
+        self.assertEqual(2, response_body['data']['completeMark'])
+        self.assertEqual(1, response_body['data']['cancelMark'])
+        self.assertEqual(2, response_body['data']['defaultTimer'])
+        self.assertEqual(60, response_body['data']['timerSeconds'])
+        self.assertEqual(3, response_body['data']['activitiesCount'])
+        self.assertEqual(3, response_body['data']['theme'])
+        self.assertEqual(2, response_body['data']['nrOfDaysToDisplay'])
+        self.assertTrue(response_body['data']['greyScale'])
+        self.assertTrue(response_body['data']['lockTimerControl'])
+        self.assertEqual("#FF00FF", response_body['data']['weekDayColors'][0]['hexColor'])
+        self.assertEqual(1, response_body['data']['weekDayColors'][0]['day'])
 
     @order
     def test_user_can_get_citizen1_citizens_should_fail(self):
@@ -449,9 +474,13 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: GET:/v1/User/{userId}/citizens
         """
-        response = get(f'{BASE_URL}v1/User/{citizen1_id}/citizens', headers=auth(citizen1_token)).json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'NotFound')
+        response = get(f'{BASE_URL}v1/User/{citizen1_id}/citizens', headers=auth(citizen1_token))
+        response_body = response.json()
+        
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        self.assertEqual(response_body['errorKey'], 'Forbidden')    
+
+
 
     @order
     def test_user_can_get_guardian_citizens(self):
@@ -460,11 +489,12 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: GET:/v1/User/{userId}/citizens
         """
-        response = get(f'{BASE_URL}v1/User/{guardian_id}/citizens', headers=auth(guardian_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        self.assertTrue(any(x['userName'] == 'Kurt' for x in response['data']))
+        response = get(f'{BASE_URL}v1/User/{guardian_id}/citizens', headers=auth(guardian_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        self.assertTrue(any(x['userName'] == 'Kurt' for x in response_body['data']))
 
     @order
     def test_user_can_get_citizen1_guardians(self):
@@ -473,11 +503,12 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: GET:/v1/User/{userId}/guardians
         """
-        response = get(f'{BASE_URL}v1/User/{citizen1_id}/guardians', headers=auth(citizen1_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        self.assertTrue(any(x['userName'] == 'Graatand' for x in response['data']))
+        response = get(f'{BASE_URL}v1/User/{citizen1_id}/guardians', headers=auth(citizen1_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        self.assertTrue(any(x['userName'] == 'Graatand' for x in response_body['data']))
 
     @order
     def test_user_can_get_guardian_guardians_should_fail(self):
@@ -486,9 +517,11 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: GET:/v1/User/{userId}/guardians
         """
-        response = get(f'{BASE_URL}v1/User/{guardian_id}/guardians', headers=auth(guardian_token)).json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'Forbidden')
+        response = get(f'{BASE_URL}v1/User/{guardian_id}/guardians', headers=auth(guardian_token))
+        response_body = response.json()
+
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        self.assertEqual(response_body['errorKey'], 'Forbidden')
 
     @order
     def test_user_can_change_guardian_settings_should_fail(self):
@@ -497,9 +530,11 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: GET:/v1/User/{id}/settings
         """
-        response = get(f'{BASE_URL}v1/User/{guardian_id}/settings', headers=auth(guardian_token)).json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'RoleMustBeCitizien')
+        response = get(f'{BASE_URL}v1/User/{guardian_id}/settings', headers=auth(guardian_token))
+        response_body = response.json()
+
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response_body['errorKey'], 'RoleMustBeCitizien')
 
     @order
     def test_user_can_change_settings_as_citizen_should_fail(self):
@@ -509,9 +544,12 @@ class TestUserController(GIRAFTestCase):
         Endpoint: PUT:/v1/User/{id}/settings
         """
         response = put(f'{BASE_URL}v1/User/{citizen1_id}/settings', headers=auth(citizen1_token),
-                       json=self.MULTIPLE_SETTINGS).json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'NotFound')
+                       json=self.MULTIPLE_SETTINGS)
+        response_body = response.json()
+
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        self.assertEqual(response_body['errorKey'], 'Forbidden')
+
 
     @order
     def test_user_can_change_settings_as_super_user(self):
@@ -521,11 +559,12 @@ class TestUserController(GIRAFTestCase):
         Endpoint: PUT:/v1/User/{id}/settings
         """
         response = put(f'{BASE_URL}v1/User/{citizen2_id}/settings', headers=auth(super_user_token),
-                       json=self.NEW_SETTINGS[0]).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        self.assertEqual(1, response['data']['theme'])
+                       json=self.NEW_SETTINGS[0])
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        self.assertEqual(1, response_body['data']['theme'])
 
     @order
     def test_user_can_change_settings_as_department(self):
@@ -535,11 +574,12 @@ class TestUserController(GIRAFTestCase):
         Endpoint: PUT:/v1/User/{id}/settings
         """
         response = put(f'{BASE_URL}v1/User/{citizen2_id}/settings', headers=auth(department_token),
-                       json=self.NEW_SETTINGS[1]).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        self.assertEqual(2, response['data']['theme'])
+                       json=self.NEW_SETTINGS[1])
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        self.assertEqual(2, response_body['data']['theme'])
 
     @order
     def test_user_can_change_guardian_settings_as_super_user_should_fail(self):
@@ -549,9 +589,10 @@ class TestUserController(GIRAFTestCase):
         Endpoint: PUT:/v1/User/{id}/settings
         """
         response = put(f'{BASE_URL}v1/User/{guardian_id}/settings', headers=auth(super_user_token),
-                       json=self.NEW_SETTINGS[1]).json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'RoleMustBeCitizien')
+                       json=self.NEW_SETTINGS[1])
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response_body['errorKey'], 'RoleMustBeCitizien')
 
     @order
     def test_user_superuser_can_give_citizen_icon(self):
@@ -561,9 +602,9 @@ class TestUserController(GIRAFTestCase):
         Endpoint: PUT:/v1/User/{id}/icon
         """
         data = {'userIcon': self.RAW_IMAGE}
-        response = put(f'{BASE_URL}v1/User/{citizen2_id}/icon', json=data, headers=auth(super_user_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
+        response = put(f'{BASE_URL}v1/User/{citizen2_id}/icon', json=data, headers=auth(super_user_token))
+        
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
     @order
     def test_user_user_can_set_icon_of_another_user_should_fail(self):
@@ -573,9 +614,10 @@ class TestUserController(GIRAFTestCase):
         Endpoint: PUT:/v1/User/{id}/icon
         """
         data = {'userIcon': self.RAW_IMAGE}
-        response = put(f'{BASE_URL}v1/User/{citizen2_id}/icon', data=data, headers=auth(citizen1_token)).json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'NotAuthorized')
+        response = put(f'{BASE_URL}v1/User/{citizen2_id}/icon', data=data, headers=auth(citizen1_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
 
     @order
     def test_user_guardian_can_set_icon_of_another_user(self):
@@ -585,9 +627,10 @@ class TestUserController(GIRAFTestCase):
         Endpoint: PUT:/v1/User/{id}/icon
         """
         data = {'userIcon': self.RAW_IMAGE}
-        response = put(f'{BASE_URL}v1/User/{citizen2_id}/icon', json=data, headers=auth(guardian_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
+        response = put(f'{BASE_URL}v1/User/{citizen2_id}/icon', json=data, headers=auth(guardian_token))
+        
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
 
     @order
     def test_user_user_can_get_own_icon(self):
@@ -596,10 +639,11 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: GET:/v1/User/{id}/icon
         """
-        response = get(f'{BASE_URL}v1/User/{citizen2_id}/icon', headers=auth(citizen2_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
+        response = get(f'{BASE_URL}v1/User/{citizen2_id}/icon', headers=auth(citizen2_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
 
 
     @order
@@ -609,10 +653,11 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: GET:/v1/User/{id}/icon
         """
-        response = get(f'{BASE_URL}v1/User/{citizen2_id}/icon', headers=auth(citizen1_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
+        response = get(f'{BASE_URL}v1/User/{citizen2_id}/icon', headers=auth(citizen1_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
 
     @order
     def test_user_guardian_can_get_specific_user_icon(self):
@@ -621,10 +666,11 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: GET:/v1/User/{id}/icon
         """
-        response = get(f'{BASE_URL}v1/User/{citizen2_id}/icon', headers=auth(guardian_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
+        response = get(f'{BASE_URL}v1/User/{citizen2_id}/icon', headers=auth(guardian_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
 
     @order
     def test_user_superuser_can_get_specific_user_icon(self):
@@ -633,22 +679,24 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: GET:/v1/User/{id}/icon
         """
-        response = get(f'{BASE_URL}v1/User/{citizen2_id}/icon', headers=auth(super_user_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
+        response = get(f'{BASE_URL}v1/User/{citizen2_id}/icon', headers=auth(super_user_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
 
     @order
-    def test_user_superuser_can_get_specific_user_icon(self):
+    def test_user_superuser_can_get_specific_user_icon_raw(self):
         """
         Testing if a superuser can get the raw userIcon of another user
 
         Endpoint: GET:/v1/User/{id}/icon/raw
         """
-        response = get(f'{BASE_URL}v1/User/{citizen2_id}/icon/raw', headers=auth(super_user_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
+        response = get(f'{BASE_URL}v1/User/{citizen2_id}/icon/raw', headers=auth(super_user_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
 
     @order
     def test_user_superuser_can_delete_specific_user_icon(self):
@@ -657,10 +705,11 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: DELETE:/v1/User/{id}/icon
         """
-        response = delete(f'{BASE_URL}v1/User/{citizen2_id}/icon', headers=auth(super_user_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
+        response = delete(f'{BASE_URL}v1/User/{citizen2_id}/icon', headers=auth(super_user_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
 
     @order
     def test_user_guardian_add_relation_to_user(self):
@@ -669,9 +718,10 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: POST:/v1/User/{userId}/citizens/{citizenId}
         """
-        response = post(f'{BASE_URL}v1/User/{new_guardian_id}/citizens/{citizen2_id}', headers=auth(new_guardian_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
+        response = post(f'{BASE_URL}v1/User/{new_guardian_id}/citizens/{citizen2_id}', headers=auth(new_guardian_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
 
     @order
     def test_user_delete_new_guardian(self):
@@ -680,6 +730,6 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: DELETE:/v1/Account/user/{userId}
         """
-        response = delete(f'{BASE_URL}v1/Account/user/{new_guardian_id}', headers=auth(super_user_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
+        response = delete(f'{BASE_URL}v1/Account/user/{new_guardian_id}', headers=auth(super_user_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
