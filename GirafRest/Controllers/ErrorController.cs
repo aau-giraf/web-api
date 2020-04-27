@@ -17,6 +17,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="statusCode">The statuscode gotten when the error happened</param>
         [AllowAnonymous]
+        [AcceptVerbs("POST", "GET", "PUT", "DELETE", "PATCH")]
         public ActionResult StatusCodeEndpoint([FromQuery] int statusCode)
         {
             var statusCodeReExecuteFeature = HttpContext.Features.Get<IStatusCodeReExecuteFeature>();
