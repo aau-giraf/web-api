@@ -1,6 +1,7 @@
 from requests import get, post, put, delete
 import time
 from testlib import order, BASE_URL, auth, is_sequence, GIRAFTestCase
+from typing import Sequence
 
 citizen_username = f'Gunnar{time.time()}'
 citizen_id = ''
@@ -271,4 +272,4 @@ class TestWeekController(GIRAFTestCase):
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertFalse(response['data'])
-        self.assertTrue(is_sequence(response['data']))
+        self.assertTrue(isinstance(response['data'], Sequence))
