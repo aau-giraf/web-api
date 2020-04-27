@@ -24,7 +24,7 @@ namespace GirafRest.Test
         private readonly string _pngFilepath;
 
 #pragma warning disable IDE0051 // Remove unused private members
-                private const int NewApplicationId = 1;
+        private const int NewApplicationId = 1;
         private const int ADMIN_DEP_ONE = 0;
         private const int GUARDIAN_DEP_TWO = 1;
         private const int CITIZEN_DEP_TWO = 2;
@@ -55,9 +55,9 @@ namespace GirafRest.Test
                 _testContext.MockUserManager),
                 _testContext.MockLoggerFactory.Object,
                 _testContext.MockRoleManager.Object,
-                new GirafAuthenticationService(_testContext.MockDbContext.Object,_testContext.MockRoleManager.Object,
+                new GirafAuthenticationService(_testContext.MockDbContext.Object, _testContext.MockRoleManager.Object,
                                                _testContext.MockUserManager));
-            
+
             _testContext.MockHttpContext = usercontroller.MockHttpContext();
             _testContext.MockHttpContext.MockQuery("username", null);
 
@@ -72,7 +72,7 @@ namespace GirafRest.Test
                 new WeekDayColorDTO() { Day = Days.Sunday, HexColor = "#ffffff"}},
                 Theme = Theme.girafGreen,
                 TimerSeconds = 120,
-                DefaultTimer = DefaultTimer.analogClock,
+                DefaultTimer = DefaultTimer.pieChart,
                 ActivitiesCount = 5,
                 NrOfDaysToDisplay = 5,
                 GreyScale = true,
@@ -245,7 +245,7 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
         }
 
-        [Fact] 
+        [Fact]
         public void GetUser_GuardianLogin_Success()
         {
             var usercontroller = initializeTest();
@@ -469,7 +469,7 @@ namespace GirafRest.Test
 
         #region UpdateUser
 
-        [Fact] 
+        [Fact]
         public void UpdateUser_ValidUserValidRequest_Success()
         {
             var usercontroller = initializeTest();
@@ -477,7 +477,8 @@ namespace GirafRest.Test
             var newUserName = "John";
             var newScreenName = "Sir John";
 
-            var res = usercontroller.UpdateUser(_testContext.MockUsers[ADMIN_DEP_ONE].Id, new GirafUserDTO(){
+            var res = usercontroller.UpdateUser(_testContext.MockUsers[ADMIN_DEP_ONE].Id, new GirafUserDTO()
+            {
                 ScreenName = newScreenName,
                 Username = newUserName
             })
@@ -503,11 +504,13 @@ namespace GirafRest.Test
 
 
         [Fact]
-        public void UpdateUser_ScreenNameNull_MissingProperties(){
+        public void UpdateUser_ScreenNameNull_MissingProperties()
+        {
             var usercontroller = initializeTest();
             var mockUser = _testContext.MockUsers[UserCitizenDepartment1];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
-            var res = usercontroller.UpdateUser(mockUser.Id, new GirafUserDTO(){
+            var res = usercontroller.UpdateUser(mockUser.Id, new GirafUserDTO()
+            {
                 ScreenName = null,
                 Username = "Henning"
             }).Result;
@@ -522,7 +525,8 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserDepartment2]);
             var user = _testContext.MockUsers[UserCitizenDepartment1];
-            var res = usercontroller.UpdateUser(user.Id, new GirafUserDTO(){
+            var res = usercontroller.UpdateUser(user.Id, new GirafUserDTO()
+            {
                 Username = "Charles Junior",
                 ScreenName = "Charles Junior"
             }).Result;
@@ -537,7 +541,8 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserDepartment2]);
             var user = _testContext.MockUsers[UserCitizenDepartment2];
-            var res = usercontroller.UpdateUser(user.Id, new GirafUserDTO(){
+            var res = usercontroller.UpdateUser(user.Id, new GirafUserDTO()
+            {
                 Username = "Charles",
                 ScreenName = "Junior"
             }).Result;
@@ -555,7 +560,8 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserDepartment2]);
             var user = _testContext.MockUsers[UserCitizenDepartment2];
-            var res = usercontroller.UpdateUser(user.Id, new GirafUserDTO(){
+            var res = usercontroller.UpdateUser(user.Id, new GirafUserDTO()
+            {
                 Username = user.UserName,
                 ScreenName = "Gunnar"
             }).Result;
@@ -590,7 +596,8 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[authUser]);
             var userName = "Henning";
             var screenName = "Heavy Henning";
-            var res = usercontroller.UpdateUser(_testContext.MockUsers[userToEdit].Id, new GirafUserDTO(){
+            var res = usercontroller.UpdateUser(_testContext.MockUsers[userToEdit].Id, new GirafUserDTO()
+            {
                 ScreenName = screenName,
                 Username = userName
             }).Result;
@@ -635,7 +642,7 @@ namespace GirafRest.Test
             string targetUserId = _testContext.MockUsers[CITIZEN_DEP_TWO].Id;
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
             var res = usercontroller
-                .AddUserResource(targetUserId, new ResourceIdDTO() {Id = GuardianPrivatePictogram})
+                .AddUserResource(targetUserId, new ResourceIdDTO() { Id = GuardianPrivatePictogram })
                 .Result;
 
             Assert.True(res.Success);
@@ -695,7 +702,7 @@ namespace GirafRest.Test
 
         [Fact]
         [System.Obsolete]
-        public void AddUserResource_AnotherProtectedValidUser_NotAuthorized() 
+        public void AddUserResource_AnotherProtectedValidUser_NotAuthorized()
         {
             var usercontroller = initializeTest();
             string targetUserId = _testContext.MockUsers[CITIZEN_DEP_TWO].Id;
@@ -763,10 +770,10 @@ namespace GirafRest.Test
             var res = usercontroller
                 .AddUserResource(targetUserId, new ResourceIdDTO() { Id = GuardianPrivatePictogram })
                 .Result;
-            
+
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);
-       }
+        }
 
         [Fact]
         [System.Obsolete]
@@ -779,7 +786,7 @@ namespace GirafRest.Test
             var res = usercontroller
                 .AddUserResource(targetUserId, new ResourceIdDTO() { Id = PublicPictogram })
                 .Result;
-            
+
             Assert.False(res.Success);
             Assert.Equal(ErrorCode.UserNotFound, res.ErrorCode);
         }
@@ -793,7 +800,7 @@ namespace GirafRest.Test
             var mockuser = _testContext.MockUsers[GUARDIAN_DEP_TWO];
             _testContext.MockUserManager.MockLoginAsUser(mockuser);
             var res = usercontroller
-                .DeleteResource(mockuser.Id,new ResourceIdDTO() { Id = GuardianPrivatePictogram })
+                .DeleteResource(mockuser.Id, new ResourceIdDTO() { Id = GuardianPrivatePictogram })
                 .Result;
 
             Assert.True(res.Success);
@@ -808,7 +815,7 @@ namespace GirafRest.Test
         {
             var usercontroller = initializeTest();
             var res = usercontroller
-                .DeleteResource("INVALID",new ResourceIdDTO() { Id = GuardianPrivatePictogram })
+                .DeleteResource("INVALID", new ResourceIdDTO() { Id = GuardianPrivatePictogram })
                 .Result;
 
             Assert.False(res.Success);
@@ -884,12 +891,12 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             var mockUser = _testContext.MockUsers[CITIZEN_DEP_TWO];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
-            
+
             var dto = UserSettings[0];
             dto.Orientation = Orientation.landscape;
             usercontroller.UpdateUserSettings(mockUser.Id, dto).Wait();
             Assert.Equal(Orientation.landscape, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.Orientation);
-        }  
+        }
 
         [Fact]
         public void UpdateUserSettings_checkedResourceAppearenceMovedToRight_Success()
@@ -897,7 +904,7 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             var mockUser = _testContext.MockUsers[CITIZEN_DEP_TWO];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
-            
+
             var dto = UserSettings[0];
             dto.CompleteMark = CompleteMark.MovedRight;
             usercontroller.UpdateUserSettings(mockUser.Id, dto).Wait();
@@ -927,13 +934,13 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             var mockUser = _testContext.MockUsers[CITIZEN_DEP_TWO];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
-            
+
             var dto = UserSettings[0];
             dto.Orientation = Orientation.landscape;
             usercontroller.UpdateUserSettings(mockUser.Id, dto).Wait();
 
             Assert.Equal(Orientation.landscape, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.Orientation);
-        }        
+        }
 
         [Fact]
         public void UpdateUserSettings_analogClock_defaultTimer_Success()
@@ -941,13 +948,13 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             var mockUser = _testContext.MockUsers[CITIZEN_DEP_TWO];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
-            
+
             var dto = UserSettings[0];
-            dto.DefaultTimer = DefaultTimer.analogClock;
+            dto.DefaultTimer = DefaultTimer.pieChart;
             usercontroller.UpdateUserSettings(mockUser.Id, dto).Wait();
 
-            Assert.Equal(DefaultTimer.analogClock, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.DefaultTimer);
-        }    
+            Assert.Equal(DefaultTimer.pieChart, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.DefaultTimer);
+        }
 
         [Fact]
         public void UpdateUserSettings_timerSeconds_Success()
@@ -955,7 +962,7 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             var mockUser = _testContext.MockUsers[CITIZEN_DEP_TWO];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
-            
+
             var dto = UserSettings[0];
             dto.TimerSeconds = 25;
             usercontroller.UpdateUserSettings(mockUser.Id, dto).Wait();
@@ -969,7 +976,7 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             var mockUser = _testContext.MockUsers[CITIZEN_DEP_TWO];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
-            
+
             var dto = UserSettings[0];
             dto.ActivitiesCount = 30;
             usercontroller.UpdateUserSettings(mockUser.Id, dto).Wait();
@@ -983,7 +990,7 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             var mockUser = _testContext.MockUsers[CITIZEN_DEP_TWO];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
-            
+
             var dto = UserSettings[0];
             dto.Theme = Theme.girafGreen;
             usercontroller.UpdateUserSettings(mockUser.Id, dto).Wait();
@@ -992,7 +999,8 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void UpdateUserSettings_UpdateSameUserSettings_Success(){
+        public void UpdateUserSettings_UpdateSameUserSettings_Success()
+        {
             var usercontroller = initializeTest();
             var user = _testContext.MockUsers[CITIZEN_DEP_TWO];
             _testContext.MockUserManager.MockLoginAsUser(user);
@@ -1003,7 +1011,7 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);
             Assert.Equal(Theme.girafGreen, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.Theme);
             Assert.Equal(120, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.TimerSeconds);
-            Assert.Equal(DefaultTimer.analogClock, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.DefaultTimer);
+            Assert.Equal(DefaultTimer.pieChart, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.DefaultTimer);
             Assert.Equal(5, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.ActivitiesCount);
             Assert.Equal(5, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.NrOfDaysToDisplay);
             Assert.True(_testContext.MockUsers[CITIZEN_DEP_TWO].Settings.GreyScale);
@@ -1051,7 +1059,7 @@ namespace GirafRest.Test
 
             Assert.Equal(expectedError, res.ErrorCode);
         }
-        
+
         #endregion
 
     }
