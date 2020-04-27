@@ -188,7 +188,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public Task<ActionResult> GetUserIcon(string id)
         {
-            var user = _giraf._context.Users.Include(u => u.UserIcon).FirstOrDefault(u => u.Id == id);
+            var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
             if (user == null)
                 return Task.FromResult<ActionResult>(
                     NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found")));
@@ -212,7 +212,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public Task<ActionResult> GetRawUserIcon(string id)
         {
-            var user = _giraf._context.Users.Include(u => u.UserIcon).FirstOrDefault(u => u.Id == id);
+            var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
 
             if (user == null)
                 return Task.FromResult<ActionResult>(NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found")));
@@ -269,7 +269,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeleteUserIcon(string id)
         {
-            var user = _giraf._context.Users.Include(u => u.UserIcon).FirstOrDefault(u => u.Id == id);
+            var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
             if (user.UserIcon == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserHasNoIcon, "User has no icon"));
 

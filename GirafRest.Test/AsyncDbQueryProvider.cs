@@ -55,6 +55,25 @@ namespace GirafRest.Test
             Task<TResult> task = Task.FromResult(Execute<TResult>(expression));
             return task;
         }
+
+        // Appeared from the update to .NET Core 3.1.
+        // Reference: https://stackoverflow.com/questions/57314896/iasyncqueryprovider-mock-issue-when-migrated-to-net-core-3-adding-tresult-iasyn
+        // That leads to -> https://github.com/romantitov/MockQueryable/blob/master/src/MockQueryable/MockQueryable/TestAsyncEnumerable.cs
+        TResult IAsyncQueryProvider.ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
+        {
+            var expectedResultType = typeof(TResult).GetGenericArguments()[0];
+            var executionResult = typeof(IQueryProvider)
+                                 .GetMethod(
+                                      name: nameof(IQueryProvider.Execute),
+                                      genericParameterCount: 1,
+                                      types: new[] { typeof(Expression) })
+                                 .MakeGenericMethod(expectedResultType)
+                                 .Invoke(this, new[] { expression });
+
+            return (TResult)typeof(Task).GetMethod(nameof(Task.FromResult))
+                                        ?.MakeGenericMethod(expectedResultType)
+                                         .Invoke(null, new[] { executionResult });
+        }
     } 
  
     internal class TestDbAsyncEnumerable<T> : EnumerableQuery<T>, IAsyncEnumerable<T>, IQueryable<T> 
@@ -72,7 +91,7 @@ namespace GirafRest.Test
             return new TestDbAsyncEnumerator<T>(this.AsEnumerable().GetEnumerator()) as IAsyncEnumerator<T>; 
         }
 
-        IAsyncEnumerator<T> IAsyncEnumerable<T>.GetEnumerator()
+        public IAsyncEnumerator<T> GetAsyncEnumerator(CancellationToken cancellationToken = default)
         {
             return new TestDbAsyncEnumerator<T>(this.AsEnumerable().GetEnumerator()) as IAsyncEnumerator<T>;
         }
@@ -92,14 +111,23 @@ namespace GirafRest.Test
             _inner = inner; 
         } 
 
-        Task<bool> IAsyncEnumerator<T>.MoveNext(CancellationToken cancellationToken)
+        public ValueTask<bool> MoveNextAsync()
         {
-            return Task.FromResult(_inner.MoveNext()); 
+            return new ValueTask<bool>(_inner.MoveNext());
         }
 
-        void IDisposable.Dispose()
+        public ValueTask DisposeAsync()
         {
-            _inner.Dispose(); 
+            // Attempt to dispose, throw on failure
+            try
+            {
+                _inner.Dispose();
+                return default;
+            }
+            catch (Exception exception)
+            {
+                return new ValueTask(Task.FromException(exception));
+            }
         }
 
         T IAsyncEnumerator<T>.Current => _inner.Current;

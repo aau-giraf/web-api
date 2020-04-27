@@ -4,7 +4,6 @@ using GirafRest.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using GirafRest.Controllers;
-using System;
 using Xunit.Abstractions;
 using GirafRest.Test.Mocks;
 using static GirafRest.Test.UnitTestExtensions;

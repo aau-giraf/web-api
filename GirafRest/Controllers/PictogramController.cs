@@ -8,7 +8,6 @@ using GirafRest.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Authorization;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using GirafRest.Services;
 using GirafRest.Models.Responses;
@@ -19,6 +18,7 @@ using System.Drawing.Imaging;
 using System.Net.Mime;
 using System.Security.Cryptography;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Hosting;
 
 namespace GirafRest.Controllers
 {
@@ -32,9 +32,9 @@ namespace GirafRest.Controllers
         private const string IMAGE_TYPE_PNG = "image/png";
 
         private readonly IGirafService _giraf;
-
-        private readonly IHostingEnvironment _hostingEnvironment;
-
+        
+        private readonly IHostEnvironment _hostingEnvironment;
+        
         private readonly string imagePath;
 
         /// <summary>
@@ -43,8 +43,8 @@ namespace GirafRest.Controllers
         /// <param name="girafController">Service Injection</param>
         /// <param name="lFactory">Service Injection</param>
         /// <param name="hostingEnvironment">Service Injection</param>
-        public PictogramController(IGirafService girafController, ILoggerFactory lFactory, IHostingEnvironment hostingEnvironment) 
-        {
+        public PictogramController(IGirafService girafController, ILoggerFactory lFactory, IHostEnvironment hostingEnvironment) 
+    {
             _giraf = girafController;
             _giraf._logger = lFactory.CreateLogger("Pictogram");
             _hostingEnvironment = hostingEnvironment;
@@ -73,7 +73,7 @@ namespace GirafRest.Controllers
             if (page < 1)
                 return BadRequest(new ErrorResponse(ErrorCode.InvalidProperties, "Missing page"));
             //Produce a list of all pictograms available to the user
-            var userPictograms = await ReadAllPictograms();
+            var userPictograms = (await ReadAllPictograms()).AsEnumerable();
             if (userPictograms == null)
                 return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, "User has no pictograms"));
 
@@ -82,11 +82,11 @@ namespace GirafRest.Controllers
                 userPictograms = userPictograms.OrderBy((Pictogram _p) => IbsenDistance(query, _p.Title));
 
             return Ok(new SuccessResponse<List<WeekPictogramDTO>>(
-                await userPictograms.OfType<Pictogram>()
-                .Skip((page - 1) * pageSize)
+                userPictograms.OfType<Pictogram>()
+                .Skip((page-1)*pageSize)
                 .Take(pageSize)
                 .Select(_p => new WeekPictogramDTO(_p))
-                .ToListAsync()));
+                .ToList()));
         }
 
         /// <summary>

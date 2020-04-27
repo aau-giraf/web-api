@@ -59,7 +59,7 @@ namespace GirafRest.Test.Services
         {
             var gs = initializeTest();
 
-            Assert.ThrowsAsync(typeof(ArgumentNullException), () => gs.ReadRequestImage(null));
+            Assert.ThrowsAsync<ArgumentNullException>(() => gs.ReadRequestImage(null));
         }
         #endregion
         #region CheckPrivateOwnership

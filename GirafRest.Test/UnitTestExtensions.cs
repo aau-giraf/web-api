@@ -9,9 +9,10 @@ using Moq;
 using GirafRest.Test.Mocks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
 using System.IO;
 using System.Text;
+using GirafRest.Data;
+using System.Threading;
 
 namespace GirafRest.Test
 {
@@ -522,7 +523,7 @@ namespace GirafRest.Test
             #endregion
             
             
-            public readonly Mock<MockDbContext> MockDbContext;
+            public readonly Mock<GirafDbContext> MockDbContext;
             public readonly MockUserManager MockUserManager;
             public Mock<HttpContext> MockHttpContext { get; set; }
             public Mock<ILoggerFactory> MockLoggerFactory { get; private set;}
@@ -546,7 +547,7 @@ namespace GirafRest.Test
 ;
             }
 
-            private Mock<MockDbContext> CreateMockDbContext()
+            private Mock<GirafDbContext> CreateMockDbContext()
             {
                 var mockSet = CreateMockDbSet(MockPictograms);
                 var mockRelationSet = CreateMockDbSet(MockUserResources);
@@ -561,7 +562,7 @@ namespace GirafRest.Test
                 var mockWeekdays = CreateMockDbSet(MockWeeks[0].Weekdays.ToList());
                 var mockWeekTemplates = CreateMockDbSet(MockWeekTemplates);
                 var mockGuardianRelations = CreateMockDbSet(MockGuardianRelations);
-                var dbMock = new Mock<MockDbContext>();
+                var dbMock = new Mock<GirafDbContext>();
                 dbMock.Setup(c => c.Pictograms).Returns(mockSet.Object);
                 dbMock.Setup(c => c.UserResources).Returns(mockRelationSet.Object);
                 dbMock.Setup(c => c.DepartmentResources).Returns(mockDepRes.Object);
@@ -665,7 +666,7 @@ namespace GirafRest.Test
 
             var mockSet = new Mock<DbSet<T>>();
             mockSet.As<IAsyncEnumerable<T>>()
-                .Setup(m => m.GetEnumerator())
+                .Setup(m => m.GetAsyncEnumerator(It.IsAny<CancellationToken>()))
                 .Returns(new TestDbAsyncEnumerator<T>(data.GetEnumerator()));
             
 
