@@ -51,7 +51,7 @@ class TestPictogramController(GIRAFTestCase):
         response = post(f'{BASE_URL}v1/Account/login', json=data)
         response_body = response.json()
         
-        self.assertEqual(response.status_code, HTTPStatus.OK)
+            self.assertEqual(response.status_code, HTTPStatus.OK)
 
         self.assertIsNotNone(response_body['data'])
         citizen_token = response_body['data']
@@ -203,7 +203,6 @@ class TestPictogramController(GIRAFTestCase):
         Endpoint: PUT:/v1/Pictogram/{id}/image
         """
         response = put(f'{BASE_URL}v1/Pictogram/{new_picto_id}/image', headers=auth(citizen_token), data=self.RAW_IMAGE)
-        response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
