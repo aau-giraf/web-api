@@ -31,7 +31,7 @@ namespace GirafRest.Test.Mocks
             private set;
         }
 
-        public MockGirafService(MockDbContext context, MockUserManager userManager)
+        public MockGirafService(GirafDbContext context, MockUserManager userManager)
         {
             _context = context;
             _userManager = userManager;

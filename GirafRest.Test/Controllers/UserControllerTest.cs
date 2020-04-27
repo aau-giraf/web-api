@@ -76,6 +76,7 @@ namespace GirafRest.Test
                 ActivitiesCount = 5,
                 NrOfDaysToDisplay = 5,
                 GreyScale = true,
+                LockTimerControl = true,
                 PictogramText = true}
             };
 
@@ -1007,6 +1008,7 @@ namespace GirafRest.Test
             Assert.Equal(5, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.ActivitiesCount);
             Assert.Equal(5, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.NrOfDaysToDisplay);
             Assert.True(_testContext.MockUsers[CITIZEN_DEP_TWO].Settings.GreyScale);
+            Assert.True(_testContext.MockUsers[CITIZEN_DEP_TWO].Settings.LockTimerControl);
             Assert.True(_testContext.MockUsers[CITIZEN_DEP_TWO].Settings.PictogramText);
         }
 

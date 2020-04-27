@@ -132,7 +132,10 @@ namespace GirafRest.Models.DTOs
         /// Flag for indicating whether or not greyscale is enabled
         /// </summary>
         public bool GreyScale { get; set; }
-
+        /// <summary>
+        /// Flag for indicating whether or not timer buttons are enabled
+        /// </summary>
+        public bool LockTimerControl { get; set; }
        /// <summary>
         /// Flag for indicating whether or not pictogram text is enabled
         /// </summary>
@@ -157,6 +160,7 @@ namespace GirafRest.Models.DTOs
             this.Theme = options.Theme;
             this.NrOfDaysToDisplay = options.NrOfDaysToDisplay;
             this.GreyScale = options.GreyScale;
+            this.LockTimerControl = options.LockTimerControl;
             this.PictogramText = options.PictogramText;
             this.WeekDayColors = SetWeekDayColorsFromModel(options.WeekDayColors);
         }
