@@ -156,6 +156,20 @@ class TestWeekController(GIRAFTestCase):
         self.assertEqual(11, response['data'][0]['weekNumber'])
 
     @order
+    def test_week_can_get_new_weeks_new_v2_endpoint(self):
+        """
+        Testing getting list containing new week v2 endpoint
+
+        Endpoint: GET:/v2/User/{userId}/week
+        """
+        response = get(f'{BASE_URL}v2/User/{citizen_id}/week', headers=auth(citizen_token)).json()
+        self.assertTrue(response['success'])
+        self.assertEqual(response['errorKey'], 'NoError')
+        self.assertIsNotNone(response['data'])
+        self.assertEqual(2018, response['data'][0]['weekYear'])
+        self.assertEqual(11, response['data'][0]['weekNumber'])
+
+    @order
     def test_week_can_add_week_with_too_many_days_should_fail(self):
         """
         Testing adding week containing too many days

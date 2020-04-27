@@ -64,6 +64,11 @@ namespace GirafRest.Models
         public bool GreyScale { get; set; }
 
         /// <summary>
+        /// Flag for indicating whether or not to show timer buttons
+        /// </summary>
+        public bool LockTimerControl { get; set; }
+
+        /// <summary>
         /// Each day in a weekschedule has a hexcolor associated
         /// </summary>
         /// <value>The week day colors.</value>
@@ -84,6 +89,7 @@ namespace GirafRest.Models
             this.Theme = newOptions?.Theme ?? this.Theme;
             this.NrOfDaysToDisplay = newOptions?.NrOfDaysToDisplay ?? this.NrOfDaysToDisplay;
             this.GreyScale = newOptions?.GreyScale ?? this.GreyScale;
+            this.LockTimerControl = newOptions?.LockTimerControl ?? this.LockTimerControl;
             if(newOptions.WeekDayColors != null)
                 updateWeekDayColors(newOptions.WeekDayColors);
         }
@@ -131,6 +137,7 @@ namespace GirafRest.Models
             NrOfDaysToDisplay = 7;
             TimerSeconds = 900;
             GreyScale = false;
+            LockTimerControl = false;
 
         }
     }

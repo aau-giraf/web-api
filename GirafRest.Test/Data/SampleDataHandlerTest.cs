@@ -1,6 +1,6 @@
-﻿using GirafRest.Models;
+﻿using GirafRest.Data;
+using GirafRest.Models;
 using GirafRest.Setup;
-using GirafRest.Test.Mocks;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -32,7 +32,7 @@ namespace GirafRest.Test
         public async void DeserializeDataTest()
         {
             _testContext = new TestContext();
-            MockDbContext mockDb = _testContext.MockDbContext.Object;
+            GirafDbContext mockDb = _testContext.MockDbContext.Object;
             SampleDataHandler dataHandler = new SampleDataHandler(testJson);
 
             if (!Directory.Exists(dataDir))
@@ -76,7 +76,7 @@ namespace GirafRest.Test
         {
             _testContext = new TestContext();
             SampleDataHandler dataHandler = new SampleDataHandler(testJson);
-            MockDbContext mockDb = _testContext.MockDbContext.Object;
+            GirafDbContext mockDb = _testContext.MockDbContext.Object;
 
 
             if (File.Exists(testJson))
