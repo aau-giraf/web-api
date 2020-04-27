@@ -62,7 +62,7 @@ namespace GirafRest.Controllers
 
             return Ok(new SuccessResponse<IEnumerable<WeekDTO>>(user.WeekSchedule.Select(w => new WeekDTO(w) {
                 Days = null
-            }))));
+            })));
         }
 
 

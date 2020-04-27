@@ -10,8 +10,8 @@ using static GirafRest.Test.UnitTestExtensions;
 using GirafRest.Models.DTOs;
 using System.IO;
 using GirafRest.Models.Responses;
-using Microsoft.AspNetCore.Hosting.Internal;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Hosting.Internal;
 
 namespace GirafRest.Test
 {   
