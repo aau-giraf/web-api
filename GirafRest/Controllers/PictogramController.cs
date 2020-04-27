@@ -63,7 +63,7 @@ namespace GirafRest.Controllers
             if(page < 1)
                 return new ErrorResponse<List<WeekPictogramDTO>>(ErrorCode.InvalidProperties, "page");
             //Produce a list of all pictograms available to the user
-            var userPictograms = await ReadAllPictograms();
+            var userPictograms = (await ReadAllPictograms()).AsEnumerable();
             if (userPictograms == null)
                 return new ErrorResponse<List<WeekPictogramDTO>>(ErrorCode.PictogramNotFound);
 
@@ -71,7 +71,7 @@ namespace GirafRest.Controllers
             if(!String.IsNullOrEmpty(query)) 
                 userPictograms = userPictograms.OrderBy((Pictogram _p) => IbsenDistance(query, _p.Title));
 
-            return new Response<List<WeekPictogramDTO>>(await userPictograms.OfType<Pictogram>().Skip((page-1)*pageSize).Take(pageSize).Select(_p => new WeekPictogramDTO(_p)).ToListAsync());
+            return new Response<List<WeekPictogramDTO>>(userPictograms.OfType<Pictogram>().Skip((page-1)*pageSize).Take(pageSize).Select(_p => new WeekPictogramDTO(_p)).ToList());
         }
 
         /// <summary>
