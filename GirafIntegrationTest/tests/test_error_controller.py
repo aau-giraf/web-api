@@ -1,6 +1,6 @@
 from requests import get, post, put, delete
 import time
-from testlib import order, BASE_URL, auth, GIRAFTestCase
+from testlib import order, BASE_URL, auth, GIRAFTestCase, HTTPStatus
 
 class TestErrorController(GIRAFTestCase):
     """
@@ -29,9 +29,10 @@ class TestErrorController(GIRAFTestCase):
 
         Endpoint: GET:/v1/Error
         """
-        response = get(f'{BASE_URL}v1/Error').json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'NotFound')
+        response = get(f'{BASE_URL}v1/Error')
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response_body['errorKey'], 'UnknownError')
 
     @order
     def test_ERROR_can_put_error(self):
@@ -40,9 +41,10 @@ class TestErrorController(GIRAFTestCase):
 
         Endpoint: PUT:/v1/Error
         """
-        response = put(f'{BASE_URL}v1/Error').json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'NotFound')
+        response = put(f'{BASE_URL}v1/Error')
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response_body['errorKey'], 'UnknownError')
 
     @order
     def test_ERROR_can_post_error(self):
@@ -51,9 +53,10 @@ class TestErrorController(GIRAFTestCase):
 
         Endpoint: POST:/v1/Error
         """
-        response = post(f'{BASE_URL}v1/Error').json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'NotFound')
+        response = post(f'{BASE_URL}v1/Error')
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response_body['errorKey'], 'UnknownError')
 
     @order
     def test_ERROR_can_delete_error(self):
@@ -62,9 +65,10 @@ class TestErrorController(GIRAFTestCase):
 
         Endpoint: DELETE:/v1/Error
         """
-        response = delete(f'{BASE_URL}v1/Error').json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'NotFound')
+        response = delete(f'{BASE_URL}v1/Error')
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response_body['errorKey'], 'UnknownError')
 
     @order
     def test_error_lul(self):
@@ -74,8 +78,55 @@ class TestErrorController(GIRAFTestCase):
         Endpoint: DELETE:/v1/Error
         """
         response = delete(f'{BASE_URL}hahahaha/')
-        x = response.url
-        response = response.json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'NotFound')
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+        self.assertEqual(response_body['errorKey'], 'NotFound')
 
+    @order
+    def test_status_code_401(self):
+        """
+        Testing statuscode 401.
+
+        Endpoint: DELETE:/v1/Error
+        """
+        response = get(f'{BASE_URL}v1/Error?statusCode=401')
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
+
+    @order
+    def test_status_code_403(self):
+        """
+        Testing statuscode 403.
+
+        Endpoint: DELETE:/v1/Error
+        """
+        response = get(f'{BASE_URL}v1/Error?statusCode=401')
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
+
+    @order
+    def test_status_code_404(self):
+        """
+        Testing statuscode 404.
+
+        Endpoint: DELETE:/v1/Error
+        """
+        response = get(f'{BASE_URL}v1/Error?statusCode=401')
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
+        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
+
+    @order
+    def test_status_code_im_a_teapot(self):
+        """
+        Testing whether the endpoint can brew coffee.
+        (Testing the fallback in the error controller)
+
+        Endpoint: DELETE:/v1/Error
+        """
+        response = get(f'{BASE_URL}v1/Error?statusCode=418')
+        response_body = response.json()
+        self.assertEqual(response.status_code, 418)
+        self.assertEqual(response_body['errorKey'], 'UnknownError')
