@@ -22,7 +22,7 @@ namespace GirafRest.Models.DTOs
         public string Name { get; set; }
 
         /// <summary>
-        /// A list of the usernames of all members of the department.
+        /// A list of the displaynames of all members of the department.
         /// </summary>
         public ICollection<DisplayNameDTO> Members { get; set; }
 
