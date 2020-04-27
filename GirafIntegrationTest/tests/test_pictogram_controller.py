@@ -51,7 +51,7 @@ class TestPictogramController(GIRAFTestCase):
         response = post(f'{BASE_URL}v1/Account/login', json=data)
         response_body = response.json()
         
-            self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
         self.assertIsNotNone(response_body['data'])
         citizen_token = response_body['data']
@@ -228,4 +228,3 @@ class TestPictogramController(GIRAFTestCase):
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
         self.assertEqual(response_body['errorKey'], 'PictogramNotFound')
-
