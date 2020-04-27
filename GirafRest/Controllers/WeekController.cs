@@ -31,7 +31,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Gets list of <see cref="WeekDTO"/> for all weeks belonging to the user with the provided id, days not are included
         /// </summary>
-        /// <returns>List of <see cref="WeekDTO"/> on success else UserNotFound or NoWeekScheduleFound</returns>
+        /// <returns>List of <see cref="WeekDTO"/> on success else UserNotFound</returns>
         /// <param name="userId">User identifier for the <see cref="GirafUser" to get schedules for/></param>
         [HttpGet("v2/User/{userId}/week")]
         [Authorize]
@@ -44,10 +44,11 @@ namespace GirafRest.Controllers
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.NotAuthorized);
-            
+
             if (!user.WeekSchedule.Any())
-                return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.NoWeekScheduleFound);
-             return new Response<IEnumerable<WeekDTO>>(user.WeekSchedule.Select(w => new WeekDTO(w) {
+                return new Response<IEnumerable<WeekDTO>>(Enumerable.Empty<WeekDTO>());
+
+            return new Response<IEnumerable<WeekDTO>>(user.WeekSchedule.Select(w => new WeekDTO(w) {
                 Days = null
             }));
         }
@@ -56,7 +57,7 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Gets list of <see cref="WeekNameDTO"/> for all schedules belonging to the user with the provided id
         /// </summary>
-        /// <returns>List of <see cref="WeekNameDTO"/> on success else UserNotFound or NoWeekScheduleFound</returns>
+        /// <returns>List of <see cref="WeekNameDTO"/> on success else UserNotFound</returns>
         /// <param name="userId">User identifier for the <see cref="GirafUser" to get schedules for/></param>
         [HttpGet("v1/User/{userId}/week")]
         [Authorize]
@@ -71,7 +72,7 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<IEnumerable<WeekNameDTO>>(ErrorCode.NotAuthorized);
             
             if (!user.WeekSchedule.Any())
-                return new ErrorResponse<IEnumerable<WeekNameDTO>>(ErrorCode.NoWeekScheduleFound);
+                return new Response<IEnumerable<WeekNameDTO>>(Enumerable.Empty<WeekNameDTO>());
             
             return new Response<IEnumerable<WeekNameDTO>>(user.WeekSchedule.Select(w => new WeekNameDTO(w.WeekYear, w.WeekNumber, w.Name)));
         }
