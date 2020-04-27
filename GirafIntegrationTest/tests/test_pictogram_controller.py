@@ -20,7 +20,7 @@ class TestPictogramController(GIRAFTestCase):
         """
         super(TestPictogramController, cls).setUpClass()
         print(f'file:/{__file__}\n')
-        cls.PICTOGRAMS = [{'id': 1, 'lastEdit': LAST_EDIT_TIMESTAMP, 'title': 'Epik', 'accessLevel': 1,
+        cls.PICTOGRAMS = [{'id': 1, 'lastEdit': LAST_EDIT_TIMESTAMP, 'title': 'som', 'accessLevel': 1,
                            'imageHash': 'secure hash', 'imageUrl': '/v1/pictogram/1/image/raw'},
                           {'id': 2, 'lastEdit': LAST_EDIT_TIMESTAMP, 'title': 'gul', 'accessLevel': 1,
                            'imageHash': 'secure hash', 'imageUrl': '/v1/pictogram/2/image/raw'},
@@ -238,7 +238,8 @@ class TestPictogramController(GIRAFTestCase):
         Endpoint: GET:/v1/Pictogram?query=Epik
         """
         params = {'query': 'Epik', 'page': 1, 'pageSize': 10}
-        response = get(f'{BASE_URL}v1/Pictogram?query=Epik', headers=auth(citizen_token), params=params).json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
+        response = get(f'{BASE_URL}v1/Pictogram?query=Epik', headers=auth(citizen_token), params=params)
+
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertIsNotNone(response.json()['data'])
 
