@@ -56,6 +56,15 @@ def order_handler():
     return ordered_handler, compare_handler
 
 
+def is_sequence(obj):
+    try:
+        len(obj)
+        obj[0:0]
+        return True
+    except TypeError:
+        return False
+
+
 # instances of ordering and comparison functions for external import
 order, compare = order_handler()
 
