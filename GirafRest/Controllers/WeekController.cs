@@ -40,8 +40,8 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Gets list of <see cref="WeekDTO"/> for all weeks belonging to the user with the provided id, days not are included
         /// </summary>
-        /// <returns>List of <see cref="WeekDTO"/> on success else UserNotFound or NoWeekScheduleFound</returns>
-        /// <param name="userId">User identifier for the <see cref="GirafUser" /> to get schedules for</param>
+        /// <returns>List of <see cref="WeekDTO"/> on success else UserNotFound</returns>
+        /// <param name="userId">User identifier for the <see cref="GirafUser" to get schedules for/></param>
         [HttpGet("v2/User/{userId}/week")]
         [Authorize]
         public async Task<Response<IEnumerable<WeekDTO>>> ReadFullWeekSchedules(string userId)
@@ -53,10 +53,11 @@ namespace GirafRest.Controllers
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.NotAuthorized);
-            
+
             if (!user.WeekSchedule.Any())
-                return new ErrorResponse<IEnumerable<WeekDTO>>(ErrorCode.NoWeekScheduleFound);
-             return new Response<IEnumerable<WeekDTO>>(user.WeekSchedule.Select(w => new WeekDTO(w) {
+                return new Response<IEnumerable<WeekDTO>>(Enumerable.Empty<WeekDTO>());
+
+            return new Response<IEnumerable<WeekDTO>>(user.WeekSchedule.Select(w => new WeekDTO(w) {
                 Days = null
             }));
         }
@@ -65,8 +66,8 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Gets list of <see cref="WeekNameDTO"/> for all schedules belonging to the user with the provided id
         /// </summary>
-        /// <returns>List of <see cref="WeekNameDTO"/> on success else UserNotFound or NoWeekScheduleFound</returns>
-        /// <param name="userId">User identifier for the <see cref="GirafUser" /> to get schedules for</param>
+        /// <returns>List of <see cref="WeekNameDTO"/> on success else UserNotFound</returns>
+        /// <param name="userId">User identifier for the <see cref="GirafUser" to get schedules for/></param>
         [HttpGet("v1/User/{userId}/week")]
         [Authorize]
         public async Task<Response<IEnumerable<WeekNameDTO>>> ReadWeekSchedules(string userId)
@@ -78,10 +79,10 @@ namespace GirafRest.Controllers
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse<IEnumerable<WeekNameDTO>>(ErrorCode.NotAuthorized);
-            
+
             if (!user.WeekSchedule.Any())
-                return new ErrorResponse<IEnumerable<WeekNameDTO>>(ErrorCode.NoWeekScheduleFound);
-            
+                return new Response<IEnumerable<WeekNameDTO>>(Enumerable.Empty<WeekNameDTO>());
+
             return new Response<IEnumerable<WeekNameDTO>>(user.WeekSchedule.Select(w => new WeekNameDTO(w.WeekYear, w.WeekNumber, w.Name)));
         }
 
@@ -103,7 +104,7 @@ namespace GirafRest.Controllers
             // check access rightss
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse<WeekDTO>(ErrorCode.NotAuthorized);
-            
+
             var week = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber);
 
             if (week != null)
@@ -119,7 +120,7 @@ namespace GirafRest.Controllers
                         }
                     }
                 }
-                
+
                 return new Response<WeekDTO>(new WeekDTO(week));
             }
 
@@ -138,14 +139,14 @@ namespace GirafRest.Controllers
 
             return new Response<WeekDTO>(new WeekDTO()
             {
-                WeekYear = weekYear, 
-                Name = $"{weekYear} - {weekNumber}", 
-                WeekNumber = weekNumber, 
-                Thumbnail = new Models.DTOs.WeekPictogramDTO(emptyThumbnail), 
+                WeekYear = weekYear,
+                Name = $"{weekYear} - {weekNumber}",
+                WeekNumber = weekNumber,
+                Thumbnail = new Models.DTOs.WeekPictogramDTO(emptyThumbnail),
                 Days = new[] { 1, 2, 3, 4, 5, 6, 7 }
                     .Select(d => new WeekdayDTO() { Activities = new List<ActivityDTO>(), Day = (Days)d }).ToArray()
             });
-            
+
         }
 
         /// <summary>
@@ -155,7 +156,7 @@ namespace GirafRest.Controllers
         /// <param name="weekYear">year of the week you want to update</param>
         /// <param name="weekNumber">weeknr of week you want to update.</param>
         /// <param name="newWeek">A serialized Week with new information.</param>
-        /// <returns><see cref="WeekDTO"/> for the requested week on success else MissingProperties, UserNotFound 
+        /// <returns><see cref="WeekDTO"/> for the requested week on success else MissingProperties, UserNotFound
         /// or NotAuthorized</returns>
         [HttpPut("v1/User/{userId}/week/{weekYear}/{weekNumber}")]
         [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
@@ -177,7 +178,7 @@ namespace GirafRest.Controllers
                 week = new Week() { WeekYear = weekYear, WeekNumber = weekNumber };
                 user.WeekSchedule.Add(week);
             }
-            
+
             var errorCode = await SetWeekFromDTO(newWeek, week, _giraf);
             if (errorCode != null)
                 return new ErrorResponse<WeekDTO>(errorCode.ErrorCode, errorCode.ErrorProperties);
@@ -204,7 +205,7 @@ namespace GirafRest.Controllers
             // check access rightss
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ErrorResponse(ErrorCode.NotAuthorized);
-            
+
             if (user.WeekSchedule.Any(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber))
             {
                 var week = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber);
