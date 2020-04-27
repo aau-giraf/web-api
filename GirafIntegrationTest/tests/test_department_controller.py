@@ -1,6 +1,6 @@
 from requests import get, post, put, delete
 import time
-from testlib import order, BASE_URL, auth, GIRAFTestCase
+from testlib import order, BASE_URL, auth, GIRAFTestCase, HTTPStatus
 
 super_user_token = ''
 guardian_token = ''
@@ -51,11 +51,11 @@ class TestDepartmentController(GIRAFTestCase):
         """
         global super_user_token
         data = {'username': 'Lee', 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        super_user_token = response['data']
+        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertIsNotNone(response_body['data'])
+        super_user_token = response_body['data']
 
     @order
     def test_department_can_login_as_guardian(self):
@@ -66,11 +66,12 @@ class TestDepartmentController(GIRAFTestCase):
         """
         global guardian_token
         data = {'username': 'Graatand', 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        guardian_token = response['data']
+        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        guardian_token = response_body['data']
 
     @order
     def test_department_can_login_as_citizen1(self):
@@ -81,11 +82,12 @@ class TestDepartmentController(GIRAFTestCase):
         """
         global citizen1_token
         data = {'username': 'Kurt', 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        citizen1_token = response['data']
+        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        citizen1_token = response_body['data']
 
     @order
     def test_department_can_get_department_list(self):
@@ -95,11 +97,12 @@ class TestDepartmentController(GIRAFTestCase):
         Endpoint: GET:/v1/Department
         """
         global department_count
-        response = get(f'{BASE_URL}v1/Department').json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        department_count = len(response['data'])
+        response = get(f'{BASE_URL}v1/Department')
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        department_count = len(response_body['data'])
 
     @order
     def test_department_can_create_department_as_guardian_should_fail(self):
@@ -108,9 +111,10 @@ class TestDepartmentController(GIRAFTestCase):
 
         Endpoint: POST:/v1/Department
         """
-        response = post(f'{BASE_URL}v1/Department', json=self.DEPARTMENT, headers=auth(guardian_token)).json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'NotAuthorized')
+        response = post(f'{BASE_URL}v1/Department', json=self.DEPARTMENT, headers=auth(guardian_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
 
     @order
     def test_department_can_create_department_as_citizen1_should_fail(self):
@@ -119,9 +123,10 @@ class TestDepartmentController(GIRAFTestCase):
 
         Endpoint: POST:/v1/Department
         """
-        response = post(f'{BASE_URL}v1/Department', json=self.DEPARTMENT, headers=auth(citizen1_token)).json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'NotAuthorized')
+        response = post(f'{BASE_URL}v1/Department', json=self.DEPARTMENT, headers=auth(citizen1_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
 
     @order
     def test_department_can_get_department_count(self):
@@ -130,11 +135,12 @@ class TestDepartmentController(GIRAFTestCase):
 
         Endpoint: GET:/v1/Department
         """
-        response = get(f'{BASE_URL}v1/Department').json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        self.assertEqual(department_count, len(response['data']))
+        response = get(f'{BASE_URL}v1/Department')
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        self.assertEqual(department_count, len(response_body['data']))
 
     @order
     def test_department_can_create_department_as_super_user(self):
@@ -144,12 +150,12 @@ class TestDepartmentController(GIRAFTestCase):
         Endpoint: POST:/v1/Department
         """
         global department_id
-        response = post(f'{BASE_URL}v1/Department', json=self.DEPARTMENT, headers=auth(super_user_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        self.assertIsNotNone(response['data']['id'])
-        department_id = response['data']['id']
+        response = post(f'{BASE_URL}v1/Department', json=self.DEPARTMENT, headers=auth(super_user_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
+
+        self.assertIsNotNone(response_body['data']['id'])
+        department_id = response_body['data']['id']
 
     @order
     def test_department_can_login_as_department(self):
@@ -160,11 +166,12 @@ class TestDepartmentController(GIRAFTestCase):
         """
         global department_token
         data = {'username': department_username, 'password': '0000'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        department_token = response['data']
+        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        department_token = response_body['data']
 
     @order
     def test_department_can_get_new_department(self):
@@ -173,12 +180,13 @@ class TestDepartmentController(GIRAFTestCase):
 
         Endpoint: GET:/v1/Department/{id}
         """
-        response = get(f'{BASE_URL}v1/Department/{department_id}', headers=auth(super_user_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        self.assertIsNotNone(response['data']['name'])
-        self.assertEqual(response['data']['name'], department_username)
+        response = get(f'{BASE_URL}v1/Department/{department_id}', headers=auth(super_user_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        self.assertIsNotNone(response_body['data']['name'])
+        self.assertEqual(response_body['data']['name'], department_username)
 
     @order
     def test_department_can_get_nonexistent_department_should_fail(self):
@@ -187,9 +195,10 @@ class TestDepartmentController(GIRAFTestCase):
 
         Endpoint: GET:/v1/Department/{id}
         """
-        response = get(f'{BASE_URL}v1/Department/-2').json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'UserNotFound')
+        response = get(f'{BASE_URL}v1/Department/-2')
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+        self.assertEqual(response_body['errorKey'], 'UserNotFound')
 
     @order
     def test_department_can_register_citizen2_department(self):
@@ -199,9 +208,9 @@ class TestDepartmentController(GIRAFTestCase):
         Endpoint: POST:/v1/Account/register
         """
         data = {'username': citizen2_username, 'password': 'password', 'role': 'Citizen', 'departmentId': department_id}
-        response = post(f'{BASE_URL}v1/Account/register', json=data, headers=auth(super_user_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
+        response = post(f'{BASE_URL}v1/Account/register', json=data, headers=auth(super_user_token))
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
+
 
     @order
     def test_department_can_login_as_citizen2(self):
@@ -212,11 +221,12 @@ class TestDepartmentController(GIRAFTestCase):
         """
         global citizen2_token
         data = {'username': citizen2_username, 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        citizen2_token = response['data']
+        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        citizen2_token = response_body['data']
 
     @order
     def test_department_can_get_citizen2_id(self):
@@ -226,12 +236,13 @@ class TestDepartmentController(GIRAFTestCase):
         Endpoint: GET:/v1/User
         """
         global citizen2_id
-        response = get(f'{BASE_URL}v1/User', headers=auth(citizen2_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        self.assertIsNotNone(response['data']['id'])
-        citizen2_id = response['data']['id']
+        response = get(f'{BASE_URL}v1/User', headers=auth(citizen2_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        self.assertIsNotNone(response_body['data']['id'])
+        citizen2_id = response_body['data']['id']
 
     @order
     def test_department_ensure_citizen2_is_in_department(self):
@@ -240,12 +251,13 @@ class TestDepartmentController(GIRAFTestCase):
 
         Endpoint: GET:/v1/Department/{id}
         """
-        response = get(f'{BASE_URL}v1/Department/{department_id}', headers=auth(super_user_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        self.assertTrue(any(x['userName'] == citizen2_username for x in response['data']['members']))
-        self.assertTrue(any(x['userId'] == citizen2_id for x in response['data']['members']))
+        response = get(f'{BASE_URL}v1/Department/{department_id}', headers=auth(super_user_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        self.assertTrue(any(x['userName'] == citizen2_username for x in response_body['data']['members']))
+        self.assertTrue(any(x['userId'] == citizen2_id for x in response_body['data']['members']))
 
     @order
     def test_department_can_department_add_pictogram(self):
@@ -255,11 +267,12 @@ class TestDepartmentController(GIRAFTestCase):
         Endpoint: POST:/v1/Pictogram
         """
         global pictograms
-        response = post(f'{BASE_URL}v1/Pictogram', json=self.NEW_PICTOGRAMS[0], headers=auth(department_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        pictograms['cyclopean'] = response['data']
+        response = post(f'{BASE_URL}v1/Pictogram', json=self.NEW_PICTOGRAMS[0], headers=auth(department_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
+
+        self.assertIsNotNone(response_body['data'])
+        pictograms['cyclopean'] = response_body['data']
 
     @order
     def test_department_can_add_pictogram_to_department_with_citizen1_should_fail(self):
@@ -270,9 +283,10 @@ class TestDepartmentController(GIRAFTestCase):
         NOTE: this endpoint is deprecated
         """
         response = post(f'{BASE_URL}v1/Department/{department_id}/resource/{pictograms["cyclopean"]["id"]}',
-                        headers=auth(citizen1_token)).json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'NotAuthorized')
+                        headers=auth(citizen1_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
 
     @order
     def test_department_can_add_pictogram_to_department_with_citizen2_should_fail(self):
@@ -283,9 +297,10 @@ class TestDepartmentController(GIRAFTestCase):
         NOTE: this endpoint is deprecated
         """
         response = post(f'{BASE_URL}v1/Department/{department_id}/resource/{pictograms["cyclopean"]["id"]}',
-                        headers=auth(citizen2_token)).json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'NotAuthorized')
+                        headers=auth(citizen2_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
 
     @order
     def test_department_can_add_new_pictogram_to_department_with_citizen1(self):
@@ -295,15 +310,17 @@ class TestDepartmentController(GIRAFTestCase):
         Endpoint: POST:/v1/Pictogram
         """
         global pictograms
-        response = post(f'{BASE_URL}v1/Pictogram', json=self.NEW_PICTOGRAMS[1], headers=auth(citizen1_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        pictograms['rm'] = response['data']
+        response = post(f'{BASE_URL}v1/Pictogram', json=self.NEW_PICTOGRAMS[1], headers=auth(citizen1_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
+
+        self.assertIsNotNone(response_body['data'])
+        pictograms['rm'] = response_body['data']
         response = post(f'{BASE_URL}v1/Department/{department_id}/resource/{pictograms["rm"]["id"]}',
-                        headers=auth(citizen1_token)).json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'NotAuthorized')
+                        headers=auth(citizen1_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
 
     @order
     def test_department_can_add_new_pictogram_to_department_with_citizen2(self):
@@ -313,15 +330,18 @@ class TestDepartmentController(GIRAFTestCase):
         Endpoint: POST:/v1/Pictogram
         """
         global pictograms
-        response = post(f'{BASE_URL}v1/Pictogram', json=self.NEW_PICTOGRAMS[2], headers=auth(citizen2_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        pictograms['telnet'] = response['data']
+        response = post(f'{BASE_URL}v1/Pictogram', json=self.NEW_PICTOGRAMS[2], headers=auth(citizen2_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
+        self.assertIsNotNone(response_body['data'])
+        pictograms['telnet'] = response_body['data']
+
         response = post(f'{BASE_URL}v1/Department/{department_id}/resource/{pictograms["telnet"]["id"]}',
-                        headers=auth(citizen1_token)).json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'NotAuthorized')
+                        headers=auth(citizen1_token))
+
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
 
     @order
     def test_department_ensure_no_pictograms_added_to_department(self):
@@ -331,11 +351,12 @@ class TestDepartmentController(GIRAFTestCase):
         Endpoint: GET:/v1/Department/{id}
         NOTE: this endpoint is deprecated
         """
-        response = get(f'{BASE_URL}v1/Department/{department_id}', headers=auth(super_user_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        self.assertFalse(any(x['id'] in response['data']['resources'] for x in pictograms.values()))
+        response = get(f'{BASE_URL}v1/Department/{department_id}', headers=auth(super_user_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        self.assertFalse(any(x['id'] in response_body['data']['resources'] for x in pictograms.values()))
 
     @order
     def test_department_can_add_pictogram_to_department(self):
@@ -346,9 +367,10 @@ class TestDepartmentController(GIRAFTestCase):
         NOTE: this endpoint is deprecated
         """
         response = post(f'{BASE_URL}v1/Department/{department_id}/resource/{pictograms["cyclopean"]["id"]}',
-                        headers=auth(department_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
+                        headers=auth(department_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
 
     @order
     def test_department_ensure_pictogram_added_to_department(self):
@@ -358,11 +380,12 @@ class TestDepartmentController(GIRAFTestCase):
         Endpoint: GET:/v1/Department/{id}
         NOTE: this endpoint is deprecated
         """
-        response = get(f'{BASE_URL}v1/Department/{department_id}', headers=auth(super_user_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        self.assertTrue(any(x == pictograms['cyclopean']['id'] for x in response['data']['resources']))
+        response = get(f'{BASE_URL}v1/Department/{department_id}', headers=auth(super_user_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        self.assertTrue(any(x == pictograms['cyclopean']['id'] for x in response_body['data']['resources']))
 
     @order
     def test_department_can_remove_pictogram_from_department_with_department(self):
@@ -373,9 +396,10 @@ class TestDepartmentController(GIRAFTestCase):
         NOTE: this endpoint is deprecated
         """
         response = delete(f'{BASE_URL}v1/Department/resource/{pictograms["cyclopean"]["id"]}',
-                          headers=auth(department_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
+                          headers=auth(department_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
 
     @order
     def test_department_can_get_citizen_names(self):
@@ -384,9 +408,10 @@ class TestDepartmentController(GIRAFTestCase):
 
         Endpoint: GET:/v1/Department/{id}/citizens
         """
-        response = get(f'{BASE_URL}v1/Department/{department_id}/citizens', headers=auth(super_user_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
+        response = get(f'{BASE_URL}v1/Department/{department_id}/citizens', headers=auth(super_user_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
 
     @order
     def test_department_can_change_name_of_department_as_superuser(self):
@@ -398,9 +423,10 @@ class TestDepartmentController(GIRAFTestCase):
         x = auth(super_user_token)
         x['Content-Type'] = 'application/json-patch+json'
         data = {'id': department_id, 'name': 'DeleteMe'}
-        response = put(f'{BASE_URL}v1/Department/{department_id}/name', json=data, headers=x).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
+        response = put(f'{BASE_URL}v1/Department/{department_id}/name', json=data, headers=x)
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
 
     @order
     def test_department_can_delete_department_as_superuser(self):
@@ -409,6 +435,6 @@ class TestDepartmentController(GIRAFTestCase):
 
         Endpoint: DELETE:/v1/Department/{id}
         """
-        response = delete(f'{BASE_URL}v1/Department/{department_id}', headers=auth(super_user_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
+        response = delete(f'{BASE_URL}v1/Department/{department_id}', headers=auth(super_user_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
