@@ -19,7 +19,7 @@ class TestAuthorization(GIRAFTestCase):
                             "y9uYW1laWRlbnRpZmllciI6Ijg0MTJkOTk1LWIzODEtNGY4My1iZDI1LWU5ODY2NzBiNTdkOSIsImV4cCI6MT" \
                             "UyNTMwMzQyNSwiaXNzIjoibm90bWUiLCJhdWQiOiJub3RtZSJ9.8KXRRqF3B5s8tUki7u5j0TqK-189QIpApd" \
                             "OC6aSxOms"
-        cls.user_Id = "1d5bd9fd-adb8-4d62-8ab9-016a96c5902c"
+        cls.user_Id = "1a42fbde-89d0-4041-809e-2b28af54c7d2"
         cls.weekplan_Name = 'Normal Uge'
         cls.week_Year = 0
         cls.week_Number = 0

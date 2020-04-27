@@ -89,6 +89,8 @@ class TestActivityController(GIRAFTestCase):
         response = post(f'{BASE_URL}v2/Activity/{user_id}/{self.weekplan_name}/{self.week_year}/{self.week_number}/{self.week_day_number}', headers=auth(guardian_token), json=data,)
         response_body = response.json()
 
+        print(response, "-------", response.json())
+
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
         activity_id = response_body['data']['id']
 
