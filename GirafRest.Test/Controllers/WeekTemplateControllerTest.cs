@@ -16,7 +16,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Moq;
 using static GirafRest.Test.UnitTestExtensions.TestContext;
-
+using Microsoft.AspNetCore.Mvc;
 
 namespace GirafRest.Test
 {
@@ -67,9 +67,11 @@ namespace GirafRest.Test
             var user = _testContext.MockUsers[UserGuardianDepartment2];
             _testContext.MockUserManager.MockLoginAsUser(user);
 
-            var result = wtc.GetWeekTemplates().Result;
+            var res = wtc.GetWeekTemplates().Result as ObjectResult;
+            var body = res.Value as ErrorResponse;
 
-            Assert.Equal(ErrorCode.NoWeekTemplateFound, result.ErrorCode);
+            Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
+            Assert.Equal(ErrorCode.NoWeekTemplateFound, body.ErrorCode);
         }
         
         [Fact]
@@ -81,12 +83,12 @@ namespace GirafRest.Test
             var user = _testContext.MockUsers[UserGuardianDepartment1];
             _testContext.MockUserManager.MockLoginAsUser(user);
 
-            var result = wtc.GetWeekTemplates().Result;
+            var res = wtc.GetWeekTemplates().Result as ObjectResult;
+            var body = res.Value as SuccessResponse<IEnumerable<WeekTemplateNameDTO>>;
 
-            Assert.IsType<Response<IEnumerable<WeekTemplateNameDTO>>>(result);
-            Assert.True(result.Success);
-            Assert.Contains("Template1", result.Data.Select(x => x.Name));
-            Assert.Contains("Template2", result.Data.Select(x => x.Name));
+            Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
+            Assert.Contains("Template1", body.Data.Select(x => x.Name));
+            Assert.Contains("Template2", body.Data.Select(x => x.Name));
         }
 
         #endregion
@@ -103,9 +105,11 @@ namespace GirafRest.Test
             var user = _testContext.MockUsers[UserCitizenDepartment1];
             _testContext.MockUserManager.MockLoginAsUser(user);
 
-            var result = wtc.GetWeekTemplate(int.MaxValue).Result;
+            var res = wtc.GetWeekTemplate(int.MaxValue).Result as ObjectResult;
+            var body = res.Value as ErrorResponse;
 
-            Assert.Equal(ErrorCode.NoWeekTemplateFound, result.ErrorCode);
+            Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
+            Assert.Equal(ErrorCode.NoWeekTemplateFound, body.ErrorCode);
         }
 
         [Fact]
@@ -117,9 +121,11 @@ namespace GirafRest.Test
             var user = _testContext.MockUsers[UserDepartment2];
             _testContext.MockUserManager.MockLoginAsUser(user);
 
-            var result = wtc.GetWeekTemplate(Template1).Result;
+            var res = wtc.GetWeekTemplate(Template1).Result as ObjectResult;
+            var body = res.Value as ErrorResponse;
 
-            Assert.Equal(ErrorCode.NoWeekTemplateFound, result.ErrorCode);
+            Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
+            Assert.Equal(ErrorCode.NoWeekTemplateFound, body.ErrorCode);
         }
         
         [Fact]
@@ -131,12 +137,13 @@ namespace GirafRest.Test
             var user = _testContext.MockUsers[UserGuardianDepartment1];
             _testContext.MockUserManager.MockLoginAsUser(user);
 
-            var result = wtc.GetWeekTemplate(_testContext.MockWeekTemplates[Template1].Id).Result;
+            var res = wtc.GetWeekTemplate(_testContext.MockWeekTemplates[Template1].Id).Result as ObjectResult;
+            var body = res.Value as SuccessResponse<WeekTemplateDTO>;
 
-            Assert.True(result.Success);
-            Assert.Equal("Template1", result.Data.Name);
-            Assert.Contains(Days.Wednesday, result.Data.Days.Select(d => d.Day));
-            Assert.DoesNotContain(Days.Friday, result.Data.Days.Select(d => d.Day));
+            Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
+            Assert.Equal("Template1", body.Data.Name);
+            Assert.Contains(Days.Wednesday, body.Data.Days.Select(d => d.Day));
+            Assert.DoesNotContain(Days.Friday, body.Data.Days.Select(d => d.Day));
         }
 
         #endregion
@@ -158,10 +165,11 @@ namespace GirafRest.Test
                 Days = _testContext.MockWeekTemplates[Template1].Weekdays.Select(d => new WeekdayDTO(d)).ToList()
             };
 
-            var res = wtc.CreateWeekTemplate(templateDTO).Result;
+            var res = wtc.CreateWeekTemplate(templateDTO).Result as ObjectResult;
+            var body = res.Value as SuccessResponse<WeekTemplateDTO>;
 
-            Assert.True(res.Success);
-            Assert.Equal("Test Week", res.Data.Name);
+            Assert.Equal(StatusCodes.Status201Created, res.StatusCode);
+            Assert.Equal("Test Week", body.Data.Name);
         }
         
         [Fact]
@@ -177,9 +185,11 @@ namespace GirafRest.Test
                 Name = "Test Week"
             };
 
-            var res = wtc.CreateWeekTemplate(templateDTO).Result;
+            var res = wtc.CreateWeekTemplate(templateDTO).Result as ObjectResult;
+            var body = res.Value as ErrorResponse;
             
-            Assert.Equal(ErrorCode.InvalidAmountOfWeekdays, res.ErrorCode);
+            Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
+            Assert.Equal(ErrorCode.InvalidAmountOfWeekdays, body.ErrorCode);
         }
 
         [Fact]
@@ -188,9 +198,11 @@ namespace GirafRest.Test
             var wtc = InitializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserGuardian2Department2]);
             
-            var res = wtc.CreateWeekTemplate(null).Result;
+            var res = wtc.CreateWeekTemplate(null).Result as ObjectResult;
+            var body = res.Value as ErrorResponse;
 
-            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode);
+            Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
+            Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
         }
 
 
@@ -214,10 +226,12 @@ namespace GirafRest.Test
                 Days = _testContext.MockWeekTemplates[Template2].Weekdays.Select(d => new WeekdayDTO(d)).ToList()
             };
 
-            var res = wtc.UpdateWeekTemplate(_testContext.MockWeekTemplates[Template1].Id, templateDTO).Result;
+            var res = wtc.UpdateWeekTemplate(_testContext.MockWeekTemplates[Template1].Id, templateDTO)
+                .Result as ObjectResult;
+            var body = res.Value as SuccessResponse<WeekTemplateDTO>;
 
-            Assert.True(res.Success);
-            Assert.Equal("Test Week", res.Data.Name);
+            Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
+            Assert.Equal("Test Week", body.Data.Name);
         }
         
         [Fact]
@@ -230,9 +244,11 @@ namespace GirafRest.Test
             // modify name
             var templateDTO = new WeekTemplateDTO(template){Name = "Test hest"};
 
-            var res = wtc.UpdateWeekTemplate(_testContext.MockWeekTemplates[Template1].Id, templateDTO).Result;
+            var res = wtc.UpdateWeekTemplate(_testContext.MockWeekTemplates[Template1].Id, templateDTO).Result as ObjectResult;
+            var body = res.Value as ErrorResponse;
             
-            Assert.Equal(ErrorCode.NotAuthorized, res.ErrorCode);;
+            Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
+            Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
         }
 
         [Fact]
@@ -241,13 +257,12 @@ namespace GirafRest.Test
             var wtc = InitializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserGuardian2Department2]);
             
-            var res = wtc.UpdateWeekTemplate(_testContext.MockWeekTemplates[Template1].Id, null).Result;
+            var res = wtc.UpdateWeekTemplate(_testContext.MockWeekTemplates[Template1].Id, null).Result as ObjectResult;
+            var body = res.Value as ErrorResponse;
 
-            Assert.Equal(ErrorCode.MissingProperties, res.ErrorCode); ;
+            Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
+            Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
         }
-
-
-
         #endregion
     }
 }

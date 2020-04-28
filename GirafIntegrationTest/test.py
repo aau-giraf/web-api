@@ -6,6 +6,7 @@ from argparse import ArgumentParser
 from testlib import GIRAFTestResults, GIRAFTestRunner, compare, BASE_URL
 
 parser = ArgumentParser()
+parser.add_argument('--pattern', type=str, help='custom search pattern',)
 parser.add_argument('--missing', action='store_true', help='print untested endpoints')
 parser.add_argument('--tested', action='store_true', help='print tested endpoints')
 
@@ -22,7 +23,7 @@ if args.tested:
     sys.exit(0)
 
 try:
-    result = get(f'{BASE_URL}v1/Error').json()
+    result = get(f'{BASE_URL}v1/Status').json()
 except ConnectionError:
     print('\033[91m' + 'Error:' + '\033[0m' + ' could not get response from server.\nExiting...')
     sys.exit(1)
@@ -34,7 +35,8 @@ runner = GIRAFTestRunner(verbosity=5, tb_locals=True, resultclass=GIRAFTestResul
 unittest.defaultTestLoader.sortTestMethodsUsing = compare
 
 # load tests
-suite = unittest.defaultTestLoader.discover(start_dir='tests')
+test_pattern = args.pattern if args.pattern else 'test*.py'
+suite = unittest.defaultTestLoader.discover(start_dir='tests', pattern=test_pattern)
 
 # run
 if __name__ == '__main__':
