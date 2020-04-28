@@ -102,6 +102,7 @@ namespace GirafRest.Test
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             // check data
             Assert.Equal(_testContext.MockDepartments.Count(), body.Data.Count());
+
             for (int i = 0; i < body.Data.Count; i++)
             {
                 Assert.Equal(_testContext.MockDepartments[i].Name, body.Data[i].Name);

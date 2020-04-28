@@ -684,7 +684,6 @@ class TestAuthorization(GIRAFTestCase):
         """
         response = put(f'{BASE_URL}v1/WeekTemplate/123')
         response_body = response.json()
-
         
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
         self.assertEqual(response_body['errorKey'], 'NotAuthorized')

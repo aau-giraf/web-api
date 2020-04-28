@@ -229,24 +229,16 @@ namespace GirafRest.Test
         }
 
         [Theory]
-        [InlineData(ADMIN_DEP_ONE, DEPARTMENT_USER_DEP_TWO, ErrorCode.NoError)]
-        [InlineData(ADMIN_DEP_ONE, GUARDIAN_DEP_TWO, ErrorCode.NoError)]
-        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_THREE, ErrorCode.NoError)]
-        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_TWO, ErrorCode.NoError)]
-        [InlineData(DEPARTMENT_USER_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NoError)]
-        [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
         [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
         [InlineData(DEPARTMENT_USER_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
-        [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
         [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
-        [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
         [InlineData(GUARDIAN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
         [InlineData(GUARDIAN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
-        public void DeleteUserIcon_AuthenticationChecks(int authUser,
+        public void DeleteUserIcon_AuthenticationChecks_Errors(int authUser,
                                                         int userToEdit, ErrorCode expectedError)
         {
             var usercontroller = initializeTest();
@@ -256,15 +248,32 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[authUser]);
             var res = usercontroller.DeleteUserIcon(_testContext.MockUsers[userToEdit].Id).Result as ObjectResult;
 
-            if (expectedError != ErrorCode.NoError) {
-                var body = res.Value as ErrorResponse;
-                Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
-                Assert.Equal(expectedError, body.ErrorCode);
-            } else {
-                Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
-            }
+            var body = res.Value as ErrorResponse;
+            Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
+            Assert.Equal(expectedError, body.ErrorCode);
         }
 
+        [Theory]
+        [InlineData(ADMIN_DEP_ONE, DEPARTMENT_USER_DEP_TWO)]
+        [InlineData(ADMIN_DEP_ONE, GUARDIAN_DEP_TWO)]
+        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_THREE)]
+        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_TWO)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, GUARDIAN_DEP_TWO)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_TWO)]
+        [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_TWO)]
+        [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_TWO)]
+        public void DeleteUserIcon_AuthenticationChecks_Success(int authUser,
+                                                        int userToEdit)
+        {
+            var usercontroller = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[userToEdit]);
+            _testContext.MockHttpContext.MockRequestImage(_pngFilepath);
+            usercontroller.SetUserIcon(_testContext.MockUsers[userToEdit].Id).Wait();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[authUser]);
+            var res = usercontroller.DeleteUserIcon(_testContext.MockUsers[userToEdit].Id).Result as ObjectResult;
+
+            Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
+        }
 
         #endregion
         #region GetUser
@@ -415,22 +424,17 @@ namespace GirafRest.Test
         [Theory]
         [InlineData(ADMIN_DEP_ONE, DEPARTMENT_USER_DEP_TWO, ErrorCode.Forbidden)]
         [InlineData(ADMIN_DEP_ONE, GUARDIAN_DEP_TWO, ErrorCode.Forbidden)]
-        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_THREE, ErrorCode.NoError)]
-        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_TWO, ErrorCode.NoError)]
         [InlineData(DEPARTMENT_USER_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.Forbidden)]
-        [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
         [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
         [InlineData(DEPARTMENT_USER_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
-        [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
         [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
-        [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
         [InlineData(GUARDIAN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
         [InlineData(GUARDIAN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
-        public void GetGuardians_AuthenticationChecks(int authUser, int userToEdit, ErrorCode expectedError)
+        public void GetGuardians_AuthenticationChecks_Errors(int authUser, int userToEdit, ErrorCode expectedError)
         {
             var usercontroller = initializeTest();
             var user = _testContext.MockUsers[authUser];
@@ -440,20 +444,33 @@ namespace GirafRest.Test
             _testContext.MockUsers[userToEdit].Guardians = _testContext.MockUsers[CITIZEN_DEP_TWO].Guardians;
             var res = usercontroller.GetGuardians(_testContext.MockUsers[userToEdit].Id).Result as ObjectResult;
 
-            if (expectedError != ErrorCode.NoError) {
-                var body = res.Value as ErrorResponse;
-                Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
-                Assert.Equal(expectedError, body.ErrorCode);
-            } else {
-                Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
-            }
+            var body = res.Value as ErrorResponse;
+            Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
+            Assert.Equal(expectedError, body.ErrorCode);
+        }
+
+        [Theory]
+        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_THREE)]
+        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_TWO)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_TWO)]
+        [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_TWO)]
+        [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_TWO)]
+        public void GetGuardians_AuthenticationChecks_Success(int authUser, int userToEdit)
+        {
+            var usercontroller = initializeTest();
+            var user = _testContext.MockUsers[authUser];
+            _testContext.MockUserManager.MockLoginAsUser(user);
+
+            // add some test guardians to the user we are trying to edit as we just want to check authentication
+            _testContext.MockUsers[userToEdit].Guardians = _testContext.MockUsers[CITIZEN_DEP_TWO].Guardians;
+            var res = usercontroller.GetGuardians(_testContext.MockUsers[userToEdit].Id).Result as ObjectResult;
+
+            Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
         }
 
         #endregion
 
         #region GetCitizens
-
-
         [Fact]
         public void GetUser_GetCitizensAsGuardian_Success()
         {
@@ -488,10 +505,8 @@ namespace GirafRest.Test
 
         [Theory]
         [InlineData(ADMIN_DEP_ONE, DEPARTMENT_USER_DEP_TWO, ErrorCode.Forbidden)]
-        [InlineData(ADMIN_DEP_ONE, GUARDIAN_DEP_TWO, ErrorCode.NoError)]
         [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_THREE, ErrorCode.Forbidden)]
         [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_TWO, ErrorCode.Forbidden)]
-        [InlineData(DEPARTMENT_USER_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NoError)]
         [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.Forbidden)]
         [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
         [InlineData(DEPARTMENT_USER_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
@@ -502,21 +517,29 @@ namespace GirafRest.Test
         [InlineData(CITIZEN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
         [InlineData(GUARDIAN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
         [InlineData(GUARDIAN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
-        public void GetCitizens_AuthenticationChecks(int authUser, int userToEdit, ErrorCode expectedError)
+        public void GetCitizens_AuthenticationChecks_NotAuthorized(int authUser, int userToEdit, ErrorCode expectedError)
         {
             var usercontroller = initializeTest();
             var user = _testContext.MockUsers[authUser];
             _testContext.MockUserManager.MockLoginAsUser(user);
             var res = usercontroller.GetCitizens(_testContext.MockUsers[userToEdit].Id).Result as ObjectResult;
 
-            if (expectedError != ErrorCode.NoError) {
-                var body = res.Value as ErrorResponse;
-                Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
-                Assert.Equal(expectedError, body.ErrorCode);
-            } else {
-                Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
-            }
+            var body = res.Value as ErrorResponse;
+            Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
+            Assert.Equal(expectedError, body.ErrorCode);
+        }
 
+        [Theory]
+        [InlineData(ADMIN_DEP_ONE, GUARDIAN_DEP_TWO)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, GUARDIAN_DEP_TWO)]
+        public void GetCitizens_AuthenticationChecks_Success(int authUser, int userToEdit)
+        {
+            var usercontroller = initializeTest();
+            var user = _testContext.MockUsers[authUser];
+            _testContext.MockUserManager.MockLoginAsUser(user);
+            var res = usercontroller.GetCitizens(_testContext.MockUsers[userToEdit].Id).Result as ObjectResult;
+
+            Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
         }
 
         #endregion
@@ -1108,13 +1131,9 @@ namespace GirafRest.Test
         }
 
         [Theory]
-        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_THREE, ErrorCode.NoError)]
-        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_TWO, ErrorCode.NoError)]
-        [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
         [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
-        [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
         [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_THREE, ErrorCode.NotAuthorized)]
-        public void UpdateUserSettings__AuthenticationChecks(int authUser, int userToEdit, ErrorCode expectedError)
+        public void UpdateUserSettings__AuthenticationChecks_Errors(int authUser, int userToEdit, ErrorCode expectedError)
         {
             var usercontroller = initializeTest();
             var user = _testContext.MockUsers[authUser];
@@ -1123,27 +1142,36 @@ namespace GirafRest.Test
 
             var res = usercontroller.UpdateUserSettings(_testContext.MockUsers[userToEdit].Id, dto).Result as ObjectResult;
 
-            if (expectedError != ErrorCode.NoError) {
-                var body = res.Value as ErrorResponse;
-                Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
-                Assert.Equal(expectedError, body.ErrorCode);
-            } else {
-                Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
-            }
+            var body = res.Value as ErrorResponse;
+            Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
+            Assert.Equal(expectedError, body.ErrorCode);
+        }
+
+
+        [Theory]
+        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_THREE)]
+        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_TWO)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_TWO)]
+        [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_TWO)]
+        public void UpdateUserSettings__AuthenticationChecks_Success(int authUser, int userToEdit)
+        {
+            var usercontroller = initializeTest();
+            var user = _testContext.MockUsers[authUser];
+            _testContext.MockUserManager.MockLoginAsUser(user);
+            var dto = UserSettings[0];
+
+            var res = usercontroller.UpdateUserSettings(_testContext.MockUsers[userToEdit].Id, dto).Result as ObjectResult;
+            Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
         }
 
         [Theory]
-        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_THREE, ErrorCode.NoError)]
-        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_TWO, ErrorCode.NoError)]
         [InlineData(ADMIN_DEP_ONE, DEPARTMENT_USER_DEP_TWO, ErrorCode.RoleMustBeCitizien)]
         [InlineData(ADMIN_DEP_ONE, GUARDIAN_DEP_TWO, ErrorCode.RoleMustBeCitizien)]
-        [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
         [InlineData(DEPARTMENT_USER_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.RoleMustBeCitizien)]
         [InlineData(DEPARTMENT_USER_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.RoleMustBeCitizien)]
         [InlineData(GUARDIAN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.RoleMustBeCitizien)]
         [InlineData(GUARDIAN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.RoleMustBeCitizien)]
-        [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_TWO, ErrorCode.NoError)]
-        public void UpdateUserSettings__RoleChecks(int authUser, int userToEdit, ErrorCode expectedError)
+        public void UpdateUserSettings__RoleChecks_Errors(int authUser, int userToEdit, ErrorCode expectedError)
         {
             var usercontroller = initializeTest();
             var user = _testContext.MockUsers[authUser];
@@ -1152,16 +1180,26 @@ namespace GirafRest.Test
 
             var res = usercontroller.UpdateUserSettings(_testContext.MockUsers[userToEdit].Id, dto).Result as ObjectResult;
 
-            if (expectedError != ErrorCode.NoError) {
-                var body = res.Value as ErrorResponse;
-                Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
-                Assert.Equal(expectedError, body.ErrorCode);
-            } else {
-                Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
-            }
+            var body = res.Value as ErrorResponse;
+            Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
+            Assert.Equal(expectedError, body.ErrorCode);
         }
-        
-        #endregion
 
+        [Theory]
+        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_THREE)]
+        [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_TWO)]
+        [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_TWO)]
+        [InlineData(GUARDIAN_DEP_TWO, CITIZEN_DEP_TWO)]
+        public void UpdateUserSettings__RoleChecks_Success(int authUser, int userToEdit)
+        {
+            var usercontroller = initializeTest();
+            var user = _testContext.MockUsers[authUser];
+            _testContext.MockUserManager.MockLoginAsUser(user);
+            var dto = UserSettings[0];
+
+            var res = usercontroller.UpdateUserSettings(_testContext.MockUsers[userToEdit].Id, dto).Result as ObjectResult;
+            Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
+        }
+        #endregion
     }
 }
