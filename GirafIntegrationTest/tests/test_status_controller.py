@@ -1,6 +1,7 @@
 from requests import get, post, put, delete
 import time
 from testlib import order, BASE_URL, auth, GIRAFTestCase
+from http import HTTPStatus
 
 class TestStatusController(GIRAFTestCase):
     """
@@ -28,9 +29,10 @@ class TestStatusController(GIRAFTestCase):
 
         Endpoint: GET:/v1/Status
         """
-        response = get(f'{BASE_URL}v1/status').json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
+        response = get(f'{BASE_URL}v1/status')
+        
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
 
     @order
     def test_status_webapi_database_connection_is_online(self):
@@ -39,9 +41,9 @@ class TestStatusController(GIRAFTestCase):
 
         Endpoint: GET:/v1/Status/database
         """
-        response = get(f'{BASE_URL}v1/status/database').json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
+        response = get(f'{BASE_URL}v1/status/database')
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
 
     @order
     def test_status_versioninfo_is_online(self):
@@ -50,7 +52,7 @@ class TestStatusController(GIRAFTestCase):
 
         Endpoint: GET:/v1/Status/version-info
         """
-        response = get(f'{BASE_URL}v1/status/version-info').json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
+        response = get(f'{BASE_URL}v1/status/version-info')
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertIsNotNone(response_body['data'])

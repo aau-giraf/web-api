@@ -213,7 +213,7 @@ namespace GirafRest.Setup
             //Configure logging for the application
             appLifetime.ApplicationStopped.Register(Log.CloseAndFlush);
 
-            app.UseStatusCodePagesWithReExecute("/v1/Error", "?status={0}");
+            app.UseStatusCodePagesWithReExecute("/v1/Error", "?statusCode={0}");
             app.UseStaticFiles();
             // Enable Cors, see configuration in ConfigureServices
             app.UseCors("AllowAll");
