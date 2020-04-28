@@ -53,5 +53,6 @@ class TestStatusController(GIRAFTestCase):
         Endpoint: GET:/v1/Status/version-info
         """
         response = get(f'{BASE_URL}v1/status/version-info')
+        response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertIsNotNone(response.json()['data'])
+        self.assertIsNotNone(response_body['data'])

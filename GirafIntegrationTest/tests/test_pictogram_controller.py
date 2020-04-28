@@ -239,8 +239,9 @@ class TestPictogramController(GIRAFTestCase):
         Endpoint: GET:/v1/Pictogram?query=Epik
         """
         params = {'query': 'Epik', 'page': 1, 'pageSize': 10}
-        response = get(f'{BASE_URL}v1/Pictogram?query=Epik', headers=auth(citizen_token), params=params)
+        response = get(f'{BASE_URL}v1/Pictogram', headers=auth(citizen_token), params=params)
+        response_body = response.json()
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertIsNotNone(response.json()['data'])
+        self.assertIsNotNone(response_body['data'])
 
