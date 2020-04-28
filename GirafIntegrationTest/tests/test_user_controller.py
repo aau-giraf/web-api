@@ -120,7 +120,7 @@ class TestUserController(GIRAFTestCase):
         global new_guardian_id
         global new_guardian_username
         new_guardian_username = f'Testguardian{time.time()}'
-        data = {'username': new_guardian_username, 'password': 'password', 'displayName': 'testG','departmentId': 2, 'role': 'Guardian'}
+        data = {'username': new_guardian_username, 'username': new_guardian_username, 'password': 'password', 'displayName': 'testG','departmentId': 2, 'role': 'Guardian'}
         response = post(f'{BASE_URL}v1/Account/register', json=data, headers=auth(super_user_token)).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
@@ -192,7 +192,7 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: POST:/v1/Account/register
         """
-        data = {'username': citizen2_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
+        data = {'username': citizen2_username, 'displayname': citizen2_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
         response = post(f'{BASE_URL}v1/Account/register', headers=auth(super_user_token), json=data).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
@@ -233,7 +233,7 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: POST:/v1/Account/register
         """
-        data = {'username': citizen3_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
+        data = {'username': citizen3_username, 'displayname': citizen3_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
         response = post(f'{BASE_URL}v1/Account/register', headers=auth(super_user_token), json=data).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
@@ -298,7 +298,7 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: PUT:/v1/User/{id}
         """
-        data = {'username': citizen2_username, 'screenName': 'FBI Surveillance Van'}
+        data = {'username': citizen2_username, 'displayName': 'FBI Surveillance Van'}
         response = put(f'{BASE_URL}v1/User/{citizen2_id}', headers=auth(citizen2_token), json=data).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
@@ -314,7 +314,7 @@ class TestUserController(GIRAFTestCase):
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
-        self.assertEqual(response['data']['screenName'], 'FBI Surveillance Van')
+        self.assertEqual(response['data']['displayName'], 'FBI Surveillance Van')
 
     @order
     def test_user_can_add_new_pictogram_as_citizen2(self):
@@ -464,7 +464,7 @@ class TestUserController(GIRAFTestCase):
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
-        self.assertTrue(any(x['userName'] == 'Kurt' for x in response['data']))
+        self.assertTrue(any(x['displayName'] == 'Kurt Andersen' for x in response['data']))
 
     @order
     def test_user_can_get_citizen1_guardians(self):
@@ -477,7 +477,7 @@ class TestUserController(GIRAFTestCase):
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertIsNotNone(response['data'])
-        self.assertTrue(any(x['userName'] == 'Graatand' for x in response['data']))
+        self.assertTrue(any(x['displayName'] == 'Harald Graatand' for x in response['data']))
 
     @order
     def test_user_can_get_guardian_guardians_should_fail(self):

@@ -108,11 +108,12 @@ namespace GirafRest.Controllers
         {
             if(model == null)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties);
+            
             //Check that all the necesarry data has been supplied
             if (!ModelState.IsValid)
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties);
-
-            if (String.IsNullOrEmpty(model.Username) || String.IsNullOrEmpty(model.Password))
+            
+            if (String.IsNullOrEmpty(model.Username) || String.IsNullOrEmpty(model.Password) || String.IsNullOrEmpty(model.DisplayName))
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.InvalidCredentials);
 
             var UserRoleStr = GirafRoleFromEnumToString(model.Role);
@@ -139,13 +140,8 @@ namespace GirafRest.Controllers
                 return new ErrorResponse<GirafUserDTO>(ErrorCode.DepartmentNotFound);
 
             //Create a new user with the supplied information
-            var user = new GirafUser (model.Username, department, model.Role);
-            if (model.DisplayName == null){
-                user.DisplayName = model.Username;
-            }
-            else{
-                user.DisplayName = model.DisplayName;
-            }
+            var user = new GirafUser (model.Username, model.DisplayName, department, model.Role);
+
             var result = await _giraf._userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {

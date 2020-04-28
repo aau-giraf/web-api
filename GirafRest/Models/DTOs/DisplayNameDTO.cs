@@ -1,14 +1,14 @@
 ﻿namespace GirafRest.Models.DTOs
 {
     /// <summary>
-    /// DTO for Username
+    /// DTO for DisplayName, used to avoid sending entire GirafUserDTO to avoid sending unnecessary information
     /// </summary>
-    public class UserNameDTO
+    public class DisplayNameDTO
     {
         /// <summary>
-        /// Username
+        /// DisplayName
         /// </summary>
-        public string UserName { get; set; }
+        public string DisplayName { get; set; }
 
         /// <summary>
         /// Role for user
@@ -24,9 +24,9 @@
         /// <summary>
         /// Constructor
         /// </summary>
-        public UserNameDTO(string username, GirafRoles userRole, string userId)
+        public DisplayNameDTO(string displayName, GirafRoles userRole, string userId)
         {
-            UserName = username;
+            DisplayName = displayName;
             UserRole = userRole.ToString();
             UserId = userId;
         }
@@ -34,7 +34,7 @@
         /// <summary>
         /// Empty constructor for JSON
         /// </summary>
-        public UserNameDTO()
+        public DisplayNameDTO()
         {
         }
     }
