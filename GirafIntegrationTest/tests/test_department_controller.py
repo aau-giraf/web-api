@@ -257,6 +257,7 @@ class TestDepartmentController(GIRAFTestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
         self.assertIsNotNone(response_body['data'])
+        self.assertIsNotNone(response_body['data']['members'])
         self.assertTrue(any(x['userName'] == citizen2_username for x in response_body['data']['members']))
         self.assertTrue(any(x['userId'] == citizen2_id for x in response_body['data']['members']))
 
@@ -357,6 +358,7 @@ class TestDepartmentController(GIRAFTestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
         self.assertIsNotNone(response_body['data'])
+        self.assertIsNotNone(response_body['data']['resources'])
         self.assertFalse(any(x['id'] in response_body['data']['resources'] for x in pictograms.values()))
 
     @order
@@ -369,7 +371,7 @@ class TestDepartmentController(GIRAFTestCase):
         """
         response = post(f'{BASE_URL}v1/Department/{department_id}/resource/{pictograms["cyclopean"]["id"]}',
                         headers=auth(department_token))
-        response_body = response.json()
+        
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
@@ -386,6 +388,7 @@ class TestDepartmentController(GIRAFTestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
         self.assertIsNotNone(response_body['data'])
+        self.assertIsNotNone(response_body['data']['resources'])
         self.assertTrue(any(x == pictograms['cyclopean']['id'] for x in response_body['data']['resources']))
 
     @order
@@ -398,7 +401,7 @@ class TestDepartmentController(GIRAFTestCase):
         """
         response = delete(f'{BASE_URL}v1/Department/resource/{pictograms["cyclopean"]["id"]}',
                           headers=auth(department_token))
-        response_body = response.json()
+        
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
@@ -410,7 +413,7 @@ class TestDepartmentController(GIRAFTestCase):
         Endpoint: GET:/v1/Department/{id}/citizens
         """
         response = get(f'{BASE_URL}v1/Department/{department_id}/citizens', headers=auth(super_user_token))
-        response_body = response.json()
+        
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
@@ -425,7 +428,7 @@ class TestDepartmentController(GIRAFTestCase):
         x['Content-Type'] = 'application/json-patch+json'
         data = {'id': department_id, 'name': 'DeleteMe'}
         response = put(f'{BASE_URL}v1/Department/{department_id}/name', json=data, headers=x)
-        response_body = response.json()
+        
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
@@ -437,5 +440,5 @@ class TestDepartmentController(GIRAFTestCase):
         Endpoint: DELETE:/v1/Department/{id}
         """
         response = delete(f'{BASE_URL}v1/Department/{department_id}', headers=auth(super_user_token))
-        response_body = response.json()
+        
         self.assertEqual(response.status_code, HTTPStatus.OK)

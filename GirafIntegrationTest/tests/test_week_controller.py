@@ -110,6 +110,7 @@ class TestWeekController(GIRAFTestCase):
         response = get(f'{BASE_URL}v1/User', headers=auth(citizen_token))
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertIsNotNone(response_body['data'])
         self.assertIsNotNone(response_body['data']['id'])
         citizen_id = response_body['data']['id']
 

@@ -144,6 +144,7 @@ class TestWeekTemplateController(GIRAFTestCase):
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
         
         self.assertIsNotNone(response_body['data'])
+        self.assertIsNotNone(response_body['data']['id'])
         template_id = response_body['data']['id']
 
     @order

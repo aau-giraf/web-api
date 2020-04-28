@@ -192,6 +192,7 @@ class TestUserController(GIRAFTestCase):
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
+        self.assertIsNotNone(response_body['data'])
         self.assertIsNotNone(response_body['data']['id'])
         guardian_id = response_body['data']['id']
 
@@ -235,6 +236,7 @@ class TestUserController(GIRAFTestCase):
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
+        self.assertIsNotNone(response_body['data'])
         self.assertIsNotNone(response_body['data']['id'])
         citizen2_id = response_body['data']['id']
 
@@ -278,6 +280,7 @@ class TestUserController(GIRAFTestCase):
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
+        self.assertIsNotNone(response_body['data'])
         self.assertIsNotNone(response_body['data']['id'])
         citizen3_id = response_body['data']['id']
 
@@ -347,6 +350,7 @@ class TestUserController(GIRAFTestCase):
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
 
+        self.assertIsNotNone(response_body['data'])
         self.assertIsNotNone(response_body['data']['id'])
         wednesday_id = response_body['data']['id']
 

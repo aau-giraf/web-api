@@ -65,6 +65,7 @@ class TestAccountController(GIRAFTestCase):
         
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
+        self.assertIsNotNone(response_body['data']['id'])
 
         guardian_id = response_body['data']['id']
 
@@ -113,6 +114,8 @@ class TestAccountController(GIRAFTestCase):
         
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
+        self.assertIsNotNone(response_body['data']['id'])
+
         citizen2_id = response_body['data']['id']
 
     @order
@@ -216,6 +219,7 @@ class TestAccountController(GIRAFTestCase):
         
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
+        self.assertIsNotNone(response_body['data']['id'])
         citizen1_id = response_body['data']['id']
 
     @order

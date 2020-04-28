@@ -77,6 +77,7 @@ class TestActivityController(GIRAFTestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
         self.assertIsNotNone(response_body['data'])
+        self.assertIsNotNone(response_body['data']['id'])
         user_id = response_body['data']['id']
 
     @order
@@ -94,6 +95,7 @@ class TestActivityController(GIRAFTestCase):
 
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
         self.assertIsNotNone(response_body['data'])
+        self.assertIsNotNone(response_body['data']['id'])
         activity_id = response_body['data']['id']
 
 
