@@ -78,9 +78,11 @@ class TestAccountController(GIRAFTestCase):
         """
         data = {'username': 'myUsername', 'password': 'password',
                 'role': 'Citizen', 'departmentId': 1}
-        response = post(f'{BASE_URL}v1/Account/register', json=data, headers=auth(guardian_token)).json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'MissingProperties')
+        response = post(f'{BASE_URL}v1/Account/register', json=data, headers=auth(guardian_token))
+        response_body = response.json()
+
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response_body['errorKey'], 'MissingProperties')
 
     @order
     def test_account_cannot_register_citizen_with_empty_displayName(self):
@@ -91,9 +93,10 @@ class TestAccountController(GIRAFTestCase):
         """
         data = {'username': 'myUsername', 'displayName': '', 'password': 'password',
                 'role': 'Citizen', 'departmentId': 1}
-        response = post(f'{BASE_URL}v1/Account/register', json=data, headers=auth(guardian_token)).json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'MissingProperties')
+        response = post(f'{BASE_URL}v1/Account/register', json=data, headers=auth(guardian_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response_body['errorKey'], 'MissingProperties')
 
     @order
     def test_account_can_register_citizen2(self):
@@ -104,7 +107,7 @@ class TestAccountController(GIRAFTestCase):
         """
         global citizen2_username
         citizen2_username = f'Grundenberger{time.time()}'
-        data = {'username': citizen2_username, 'displayName': citizen2_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
+        data = {'username': citizen2_username, 'displayName': citizen2_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 2}
         response = post(f'{BASE_URL}v1/Account/register', json=data, headers=auth(guardian_token))
         response_body = response.json()
         
@@ -195,7 +198,7 @@ class TestAccountController(GIRAFTestCase):
         """
         global citizen1_username
         citizen1_username = f'Gunnar{time.time()}'
-        data = {'username': citizen1_username, 'displayname': citizen1_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
+        data = {'username': citizen1_username, 'displayname': citizen1_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 2}
         response = post(f'{BASE_URL}v1/Account/register', json=data)
         response_body = response.json()
         
@@ -209,7 +212,7 @@ class TestAccountController(GIRAFTestCase):
 
         Endpoint: POST:/v1/Account/register
         """
-        data = {'username': citizen1_username, 'displayname': citizen1_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
+        data = {'username': citizen1_username, 'displayname': citizen1_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 2}
         response = post(f'{BASE_URL}v1/Account/register', json=data, headers=auth(guardian_token))
         response_body = response.json()
         

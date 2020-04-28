@@ -203,7 +203,7 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: POST:/v1/Account/register
         """
-        data = {'username': citizen2_username, 'displayname': citizen2_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
+        data = {'username': citizen2_username, 'displayname': citizen2_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 2}
         response = post(f'{BASE_URL}v1/Account/register', headers=auth(super_user_token), json=data)
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
 
@@ -247,7 +247,7 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: POST:/v1/Account/register
         """
-        data = {'username': citizen3_username, 'displayname': citizen3_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
+        data = {'username': citizen3_username, 'displayname': citizen3_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 2}
         response = post(f'{BASE_URL}v1/Account/register', headers=auth(super_user_token), json=data)
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
 
