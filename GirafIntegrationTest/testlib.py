@@ -59,6 +59,7 @@ def order_handler():
 
 
 def is_sequence(obj: Any) -> bool:
+    """Return true if object is instance of list or tuple."""
     if isinstance(obj, (str, bytes)):
         return False
     return isinstance(obj, collections.abc.Sequence)
