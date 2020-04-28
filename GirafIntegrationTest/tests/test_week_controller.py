@@ -1,7 +1,6 @@
 from requests import get, post, put, delete
 import time
 from testlib import order, BASE_URL, auth, is_sequence, GIRAFTestCase
-from typing import Sequence
 
 citizen_username = f'Gunnar{time.time()}'
 citizen_id = ''
