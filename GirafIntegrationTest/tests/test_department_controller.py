@@ -208,10 +208,9 @@ class TestDepartmentController(GIRAFTestCase):
 
         Endpoint: POST:/v1/Account/register
         """
-        data = {'username': citizen2_username, 'password': 'password', 'role': 'Citizen', 'departmentId': department_id}
+        data = {'username': citizen2_username, 'displayname': citizen2_username, 'password': 'password', 'role': 'Citizen', 'departmentId': department_id}
         response = post(f'{BASE_URL}v1/Account/register', json=data, headers=auth(super_user_token))
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
-
 
     @order
     def test_department_can_login_as_citizen2(self):
@@ -228,7 +227,7 @@ class TestDepartmentController(GIRAFTestCase):
 
         self.assertIsNotNone(response_body['data'])
         citizen2_token = response_body['data']
-
+        
     @order
     def test_department_can_get_citizen2_id(self):
         """
@@ -258,7 +257,7 @@ class TestDepartmentController(GIRAFTestCase):
 
         self.assertIsNotNone(response_body['data'])
         self.assertIsNotNone(response_body['data']['members'])
-        self.assertTrue(any(x['userName'] == citizen2_username for x in response_body['data']['members']))
+        self.assertTrue(any(x['displayName'] == citizen2_username for x in response_body['data']['members']))
         self.assertTrue(any(x['userId'] == citizen2_id for x in response_body['data']['members']))
 
     @order

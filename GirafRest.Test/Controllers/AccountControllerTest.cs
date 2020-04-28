@@ -221,33 +221,9 @@ namespace GirafRest.Test
             // check data
             Assert.Equal(userName, body.Data.Username);
             Assert.Equal(DEPARTMENT_ONE, body.Data.Department);
+            Assert.Equal(displayName, body.Data.DisplayName);
         }
-
-        [Fact]
-        public void Register_NoDisplayNameSetAsUsername_Success()
-        {
-            var accountController = InitializeTest();
-
-            var userName = "GenericName";
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = accountController.Register(new RegisterDTO()
-            {
-                Username = userName,
-                Password = "GenericPassword",
-                DepartmentId = DEPARTMENT_ONE,
-                Role = GirafRoles.Citizen,
-                DisplayName = null
-            }).Result as ObjectResult;
-
-            var body = res.Value as SuccessResponse<GirafUserDTO>;
-
-            Assert.Equal(StatusCodes.Status201Created, res.StatusCode);
-
-            // check data
-            Assert.Equal(userName, body.Data.Username);
-            Assert.Equal(DEPARTMENT_ONE, body.Data.Department);
-        }
-     
+        
         [Fact]
         public void Register_ExistingUsername_UserAlreadyExists()
         {
@@ -256,14 +232,17 @@ namespace GirafRest.Test
             var res = accountController.Register(new RegisterDTO()
             {
                 Username = _testContext.MockUsers[ADMIN_DEP_ONE].UserName,
+                DisplayName = _testContext.MockUsers[ADMIN_DEP_ONE].DisplayName,
                 Password = "password",
                 DepartmentId = DEPARTMENT_ONE,
-                Role = GirafRoles.Citizen
+                Role = GirafRoles.Citizen,
             }).Result as ObjectResult;
 
             var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status409Conflict, res.StatusCode);
+
+            // check data
             Assert.Equal(ErrorCode.UserAlreadyExists, body.ErrorCode);
         }
 
@@ -274,6 +253,25 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = accountController.Register(new RegisterDTO()
             {
+                DisplayName = "GenericDisplayName",
+                Password = "password",
+                DepartmentId = DEPARTMENT_ONE,
+            }).Result as ObjectResult;
+
+            var body = res.Value as ErrorResponse;
+
+            Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
+            Assert.Equal(ErrorCode.InvalidCredentials, body.ErrorCode);
+        }
+        
+        [Fact]
+        public void Register_NoDisplayName_InvalidCredentials()
+        {
+            var accountController = InitializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var res = accountController.Register(new RegisterDTO()
+            {
+                Username = "GenericName",
                 Password = "password",
                 DepartmentId = DEPARTMENT_ONE
             }).Result as ObjectResult;
@@ -282,6 +280,29 @@ namespace GirafRest.Test
 
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
+        }
+        
+        
+        [Fact]
+        // Tries to register a new account with an empty displayName
+        public void Register_user_empty_displayName()
+        {
+            var accountController = InitializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            
+            var res = accountController.Register(new RegisterDTO()
+            {
+                Username = "GenericName2",
+                DisplayName = "",
+                Password = "GenericPassword",
+                DepartmentId = DEPARTMENT_ONE,
+                Role = GirafRoles.Citizen
+            }).Result as ObjectResult;
+
+            var body = res.Value as ErrorResponse;
+
+            Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
+            Assert.Equal(ErrorCode.InvalidCredentials, body.ErrorCode);
         }
 
         [Fact]
@@ -295,6 +316,7 @@ namespace GirafRest.Test
             {
                 Username = "NewUser",
                 Password = "password",
+                DisplayName = "DisplayName",
                 Role = GirafRoles.Citizen
             }).Result as ObjectResult;
 
@@ -328,8 +350,9 @@ namespace GirafRest.Test
 
             var res = accountController.Register(new RegisterDTO() { 
                 Username = "JohnDoe", 
-                Password= "iSecretlyLoveMileyCyrus",
-                DepartmentId = 2,
+                DisplayName = "JustAnotherDisplayName",
+                Password= "iSecretlyLoveMileyCyrus", 
+                DepartmentId = 2, 
                 Role = GirafRoles.Citizen
             }).Result as ObjectResult;
 

@@ -394,17 +394,17 @@ namespace GirafRest.Test
             var user = _testContext.MockUsers[CITIZEN_DEP_TWO];
             _testContext.MockUserManager.MockLoginAsUser(user);
             var res = usercontroller.GetGuardians(user.Id).Result as ObjectResult;
-            var body = res.Value as SuccessResponse<List<UserNameDTO>>;
+            var body = res.Value as SuccessResponse<List<DisplayNameDTO>>;
 
-            var guardians = new List<UserNameDTO>();
+            var guardians = new List<DisplayNameDTO>();
             foreach (var guardian in user.Guardians)
             {
-                guardians.Add(new UserNameDTO { UserId = guardian.Guardian.Id, UserName = guardian.Guardian.UserName });
+                guardians.Add(new DisplayNameDTO() { UserId = guardian.Guardian.Id, DisplayName = guardian.Guardian.DisplayName });
             }
             
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
 
-            Assert.Equal(body.Data.FirstOrDefault().UserName, guardians.FirstOrDefault().UserName);
+            Assert.Equal(body.Data.FirstOrDefault().DisplayName, guardians.FirstOrDefault().DisplayName);
             Assert.Equal(body.Data.Count(), guardians.Count());
         }
 
@@ -478,15 +478,15 @@ namespace GirafRest.Test
             var user = _testContext.MockUsers[GUARDIAN_DEP_TWO];
             _testContext.MockUserManager.MockLoginAsUser(user);
             var res = usercontroller.GetCitizens(user.Id).Result as ObjectResult;
-            var body = res.Value as SuccessResponse<List<UserNameDTO>>;
+            var body = res.Value as SuccessResponse<List<DisplayNameDTO>>;
 
-            var citizens = new List<UserNameDTO>();
+            var citizens = new List<DisplayNameDTO>();
             var citizenUser = _testContext.MockUsers[CITIZEN_DEP_TWO];
-            citizens.Add(new UserNameDTO { UserId = citizenUser.Id, UserName = citizenUser.UserName });
+            citizens.Add(new DisplayNameDTO() { UserId = citizenUser.Id, DisplayName = citizenUser.DisplayName });
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
 
-            Assert.Equal(body.Data.FirstOrDefault().UserName, citizens.FirstOrDefault().UserName);
+            Assert.Equal(body.Data.FirstOrDefault().DisplayName, citizens.FirstOrDefault().DisplayName);
             Assert.Equal(body.Data.Count(), citizens.Count());
         }
 
@@ -553,10 +553,10 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var newUserName = "John";
-            var newScreenName = "Sir John";
+            var newDisplayName = "Sir John";
 
             var res = usercontroller.UpdateUser(_testContext.MockUsers[ADMIN_DEP_ONE].Id, new GirafUserDTO(){
-                ScreenName = newScreenName,
+                DisplayName = newDisplayName,
                 Username = newUserName
             }).Result as ObjectResult;
             var body = res.Value as SuccessResponse<GirafUserDTO>;
@@ -564,7 +564,7 @@ namespace GirafRest.Test
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             // check that the updated data is correct
             Assert.Equal(newUserName, body.Data.Username);
-            Assert.Equal(newScreenName, body.Data.ScreenName);
+            Assert.Equal(newDisplayName, body.Data.DisplayName);
         }
 
         [Fact]
@@ -581,12 +581,12 @@ namespace GirafRest.Test
 
 
         [Fact]
-        public void UpdateUser_ScreenNameNull_MissingProperties(){
+        public void UpdateUser_DisplayNameNull_MissingProperties(){
             var usercontroller = initializeTest();
             var mockUser = _testContext.MockUsers[UserCitizenDepartment1];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             var res = usercontroller.UpdateUser(mockUser.Id, new GirafUserDTO(){
-                ScreenName = null,
+                DisplayName = null,
                 Username = "Henning"
             }).Result as ObjectResult;
             var body = res.Value as ErrorResponse;
@@ -603,7 +603,7 @@ namespace GirafRest.Test
             var user = _testContext.MockUsers[UserCitizenDepartment1];
             var res = usercontroller.UpdateUser(user.Id, new GirafUserDTO(){
                 Username = "Charles Junior",
-                ScreenName = "Charles Junior"
+                DisplayName = "Charles Junior"
             }).Result as ObjectResult;
             var body = res.Value as ErrorResponse;
 
@@ -619,14 +619,14 @@ namespace GirafRest.Test
             var user = _testContext.MockUsers[UserCitizenDepartment2];
             var res = usercontroller.UpdateUser(user.Id, new GirafUserDTO(){
                 Username = "Charles",
-                ScreenName = "Junior"
+                DisplayName = "Junior"
             }).Result as ObjectResult;
             var body = res.Value as SuccessResponse<GirafUserDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             // check data
             Assert.Equal("Charles", body.Data.Username);
-            Assert.Equal("Junior", body.Data.ScreenName);
+            Assert.Equal("Junior", body.Data.DisplayName);
         }
 
         [Fact]
@@ -637,14 +637,14 @@ namespace GirafRest.Test
             var user = _testContext.MockUsers[UserCitizenDepartment2];
             var res = usercontroller.UpdateUser(user.Id, new GirafUserDTO(){
                 Username = user.UserName,
-                ScreenName = "Gunnar"
+                DisplayName = "Gunnar"
             }).Result as ObjectResult;
             var body = res.Value as SuccessResponse<GirafUserDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             // check data
             Assert.Equal(user.UserName, body.Data.Username);
-            Assert.Equal("Gunnar", body.Data.ScreenName);
+            Assert.Equal("Gunnar", body.Data.DisplayName);
         }
 
         [Theory]
@@ -661,9 +661,9 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[authUser]);
             var userName = "Henning";
-            var screenName = "Heavy Henning";
+            var displayName = "Heavy Henning";
             var res = usercontroller.UpdateUser(_testContext.MockUsers[userToEdit].Id, new GirafUserDTO(){
-                ScreenName = screenName,
+                DisplayName = displayName,
                 Username = userName
             }).Result as ObjectResult;
             var body = res.Value as ErrorResponse;
@@ -686,9 +686,9 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[authUser]);
             var userName = "Henning";
-            var screenName = "Heavy Henning";
+            var displayName = "Heavy Henning";
             var res = usercontroller.UpdateUser(_testContext.MockUsers[userToEdit].Id, new GirafUserDTO(){
-                ScreenName = screenName,
+                DisplayName = displayName,
                 Username = userName
             }).Result as ObjectResult;
             var body = res.Value as SuccessResponse<GirafUserDTO>;

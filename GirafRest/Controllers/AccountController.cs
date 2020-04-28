@@ -122,8 +122,8 @@ namespace GirafRest.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Model is invalid"));
 
-            if (String.IsNullOrEmpty(model.Username) || String.IsNullOrEmpty(model.Password))
-                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing username or password"));
+            if (String.IsNullOrEmpty(model.Username) || String.IsNullOrEmpty(model.Password) || String.IsNullOrEmpty(model.DisplayName))
+                return BadRequest(new ErrorResponse(ErrorCode.InvalidCredentials, "Missing username, password or displayName"));
 
             var UserRoleStr = GirafRoleFromEnumToString(model.Role);
             if (UserRoleStr == null)
@@ -140,8 +140,6 @@ namespace GirafRest.Controllers
             }
 
             var doesUserAlreadyExist = (_giraf._context.Users.FirstOrDefault(u => u.UserName == model.Username) != null);
-
-
             if (doesUserAlreadyExist)
                 return Conflict(new ErrorResponse(ErrorCode.UserAlreadyExists, "User already exists", "A user with the given username already exists"));
 
@@ -152,15 +150,8 @@ namespace GirafRest.Controllers
                 return BadRequest(new ErrorResponse(ErrorCode.DepartmentNotFound, "Department not found", "A department with the given id could not be found"));
 
             //Create a new user with the supplied information
-            var user = new GirafUser(model.Username, department, model.Role);
-            if (model.DisplayName == null)
-            {
-                user.DisplayName = model.Username;
-            }
-            else
-            {
-                user.DisplayName = model.DisplayName;
-            }
+            var user = new GirafUser (model.Username, model.DisplayName, department, model.Role);
+
             var result = await _giraf._userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {

@@ -125,7 +125,7 @@ class TestUserController(GIRAFTestCase):
         global new_guardian_id
         global new_guardian_username
         new_guardian_username = f'Testguardian{time.time()}'
-        data = {'username': new_guardian_username, 'password': 'password', 'displayName': 'testG','departmentId': 2, 'role': 'Guardian'}
+        data = {'username': new_guardian_username, 'username': new_guardian_username, 'password': 'password', 'displayName': 'testG','departmentId': 2, 'role': 'Guardian'}
         response = post(f'{BASE_URL}v1/Account/register', json=data, headers=auth(super_user_token))
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
@@ -203,7 +203,7 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: POST:/v1/Account/register
         """
-        data = {'username': citizen2_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 2}
+        data = {'username': citizen2_username, 'displayname': citizen2_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
         response = post(f'{BASE_URL}v1/Account/register', headers=auth(super_user_token), json=data)
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
 
@@ -247,7 +247,7 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: POST:/v1/Account/register
         """
-        data = {'username': citizen3_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 2}
+        data = {'username': citizen3_username, 'displayname': citizen3_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
         response = post(f'{BASE_URL}v1/Account/register', headers=auth(super_user_token), json=data)
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
 
@@ -317,7 +317,7 @@ class TestUserController(GIRAFTestCase):
 
         Endpoint: PUT:/v1/User/{id}
         """
-        data = {'username': citizen2_username, 'screenName': 'FBI Surveillance Van'}
+        data = {'username': citizen2_username, 'displayName': 'FBI Surveillance Van'}
         response = put(f'{BASE_URL}v1/User/{citizen2_id}', headers=auth(citizen2_token), json=data)
         
         self.assertEqual(response.status_code, HTTPStatus.OK)
@@ -335,7 +335,7 @@ class TestUserController(GIRAFTestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
         self.assertIsNotNone(response_body['data'])
-        self.assertEqual(response_body['data']['screenName'], 'FBI Surveillance Van')
+        self.assertEqual(response_body['data']['displayName'], 'FBI Surveillance Van')
 
     @order
     def test_user_can_add_new_pictogram_as_citizen2(self):
@@ -500,7 +500,7 @@ class TestUserController(GIRAFTestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
         self.assertIsNotNone(response_body['data'])
-        self.assertTrue(any(x['userName'] == 'Kurt' for x in response_body['data']))
+        self.assertTrue(any(x['displayName'] == 'Kurt Andersen' for x in response_body['data']))
 
     @order
     def test_user_can_get_citizen1_guardians(self):
@@ -514,9 +514,8 @@ class TestUserController(GIRAFTestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
         self.assertIsNotNone(response_body['data'])
-        self.assertTrue(any(x['userName'] == 'Graatand' for x in response_body['data']))
+        self.assertTrue(any(x['displayName'] == 'Harald Graatand' for x in response_body['data']))
 
-    @order
     def test_user_can_get_guardian_guardians_should_fail(self):
         """
         Testing getting Guardian's guardians

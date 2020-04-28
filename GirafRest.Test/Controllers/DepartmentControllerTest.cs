@@ -136,7 +136,7 @@ namespace GirafRest.Test
             var depDTO = new DepartmentDTO(new Department()
             {
                 Name = name
-            }, new List<UserNameDTO>());
+            }, new List<DisplayNameDTO>());
 
             var res = dc.Post(depDTO).Result as ObjectResult;
             var body = res.Value as SuccessResponse<DepartmentDTO>;
@@ -152,7 +152,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var depDTO = new DepartmentDTO(new Department()
             {
-            }, new List<UserNameDTO>());
+            }, new List<DisplayNameDTO>());
 
             var res = dc.Post(depDTO).Result as ObjectResult;
             var body = res.Value as ErrorResponse;

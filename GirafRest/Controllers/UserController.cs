@@ -146,8 +146,8 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<ActionResult> UpdateUser(string id, [FromBody] GirafUserDTO newUser)
         {
-            if (newUser == null || newUser.Username == null || newUser.ScreenName == null)
-                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Model is missing properties"));
+            if (newUser == null || newUser.Username == null || newUser.DisplayName == null)
+                return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties);
 
             var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
             // Get the roles the user is associated with
@@ -168,8 +168,8 @@ namespace GirafRest.Controllers
             if (!String.IsNullOrEmpty(newUser.Username))
                 await _giraf._userManager.SetUserNameAsync(user, newUser.Username);
 
-            if (!String.IsNullOrEmpty(newUser.ScreenName))
-                user.DisplayName = newUser.ScreenName;
+            if (!String.IsNullOrEmpty(newUser.DisplayName))
+                user.DisplayName = newUser.DisplayName;
 
             // save and return 
             _giraf._context.Users.Update(user);
@@ -413,12 +413,12 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Gets the citizens of the user with the provided id. The provided user must be a guardian
         /// </summary>
-        /// <returns>List of <see cref="UserNameDTO"/> on success else MissingProperties, NotAuthorized, Forbidden,
+        /// <returns>List of <see cref="DisplayNameDTO"/> on success else MissingProperties, NotAuthorized, Forbidden,
         /// or UserNasNoCitizens</returns>
         /// <param name="id">Identifier of the <see cref="GirafUser"/> to get citizens for</param>
         [HttpGet("{id}/citizens", Name="GetCitizensOfUser")]
         [Authorize (Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
-        [ProducesResponseType(typeof(SuccessResponse<List<UserNameDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<List<DisplayNameDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -428,7 +428,7 @@ namespace GirafRest.Controllers
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing id"));
             var user = _giraf._context.Users.Include(u => u.Citizens).FirstOrDefault(u => u.Id == id);
             var authUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
-            var citizens = new List<UserNameDTO>();
+            var citizens = new List<DisplayNameDTO>();
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(authUser, user)))
@@ -445,7 +445,7 @@ namespace GirafRest.Controllers
             foreach (var citizen in user.Citizens)
             {
                 var girafUser = _giraf._context.Users.FirstOrDefault(u => u.Id == citizen.CitizenId);
-                citizens.Add(new UserNameDTO { UserId = girafUser.Id, UserName = girafUser.UserName });
+                citizens.Add(new DisplayNameDTO { UserId = girafUser.Id, DisplayName = girafUser.DisplayName });
             }
 
             if (!citizens.Any())
@@ -453,7 +453,7 @@ namespace GirafRest.Controllers
                 return NotFound(new ErrorResponse(ErrorCode.UserHasNoCitizens, "User does not have any citizens"));
             }   
 
-            return Ok(new SuccessResponse<List<UserNameDTO>>(citizens.ToList<UserNameDTO>()));
+            return Ok(new SuccessResponse<List<DisplayNameDTO>>(citizens.ToList<DisplayNameDTO>()));
         }
 
         /// <summary>
@@ -464,7 +464,7 @@ namespace GirafRest.Controllers
         /// <param name="id">Identifier for the citizen to get guardians for</param>
         [HttpGet("{id}/guardians", Name="GetGuardiansOfUser")]
         [Authorize]
-        [ProducesResponseType(typeof(SuccessResponse<List<UserNameDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<List<DisplayNameDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -482,11 +482,11 @@ namespace GirafRest.Controllers
             if (userRole != GirafRoles.Citizen)
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.Forbidden, "User does not have permission"));
 
-            var guardians = new List<UserNameDTO>();
+            var guardians = new List<DisplayNameDTO>();
             foreach (var guardian in user.Guardians)
             {
                 var girafUser = _giraf._context.Users.FirstOrDefault(u => u.Id == guardian.GuardianId);
-                guardians.Add(new UserNameDTO { UserId = girafUser.Id, UserName = girafUser.UserName });
+                guardians.Add(new DisplayNameDTO { UserId = girafUser.Id, DisplayName = girafUser.DisplayName });
             }
 
             if (!guardians.Any())
@@ -494,7 +494,7 @@ namespace GirafRest.Controllers
                 return NotFound(new ErrorResponse(ErrorCode.UserHasNoGuardians, "User has no guardians"));
             }
 
-            return Ok(new SuccessResponse<List<UserNameDTO>>(guardians));
+            return Ok(new SuccessResponse<List<DisplayNameDTO>>(guardians));
         }
 
         /// <summary>

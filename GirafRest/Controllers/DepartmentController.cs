@@ -107,7 +107,7 @@ namespace GirafRest.Controllers
         /// <param name="id">Id of <see cref="Department"/> to get citizens for</param>
         [HttpGet("{id}/citizens")]
         [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
-        [ProducesResponseType(typeof(SuccessResponse<List<UserNameDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<List<DisplayNameDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> GetCitizenNamesAsync(long id)
@@ -145,10 +145,10 @@ namespace GirafRest.Controllers
             var usersNamesInDepartment = _giraf._context.Users
                 .Where(u => userIds.Any(ui => ui == u.Id) && u.DepartmentKey == department.Key)
                 .Select(u =>
-                    new UserNameDTO(u.UserName, GirafRoles.Citizen, u.Id)
+                    new DisplayNameDTO(u.DisplayName, GirafRoles.Citizen, u.Id)
                 ).ToList();
 
-            return Ok(new SuccessResponse<List<UserNameDTO>>(usersNamesInDepartment));
+            return Ok(new SuccessResponse<List<DisplayNameDTO>>(usersNamesInDepartment));
         }
 
         /// <summary>
@@ -192,7 +192,7 @@ namespace GirafRest.Controllers
                     foreach (var mem in depDTO.Members)
                     {
                         var usr = await _giraf._context.Users
-                            .Where(u => u.UserName == mem.UserName || u.Id == mem.UserId)
+                            .Where(u => u.UserName == mem.DisplayName || u.Id == mem.UserId)
                             .FirstOrDefaultAsync();
                         if (usr == null)
                             return BadRequest(new ErrorResponse(
@@ -225,9 +225,8 @@ namespace GirafRest.Controllers
                 
                 //Create a new user with the supplied information
 
-                //Create a new user with the supplied information
-                var departmentUser = new GirafUser(depDTO.Name, department, GirafRoles.Department) {IsDepartment = true};
-
+                var departmentUser = new GirafUser(depDTO.Name, depDTO.Name, department, GirafRoles.Department) {IsDepartment = true};
+                
                 //department.Members.Add(user);
 
                 var identityUser = await _giraf._userManager.CreateAsync(departmentUser, "0000");

@@ -62,7 +62,7 @@ class TestWeekTemplateController(GIRAFTestCase):
 
         Endpoint: POST:/v1/Account/register
         """
-        data = {'username': citizen_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
+        data = {'username': citizen_username, 'displayname': citizen_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
         response = post(f'{BASE_URL}v1/Account/register', headers=auth(guardian_token), json=data)
         
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
