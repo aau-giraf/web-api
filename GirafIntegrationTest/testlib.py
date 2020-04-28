@@ -5,7 +5,6 @@ from unittest.case import TestCase
 import time
 import warnings
 import io
-
 from PIL import Image
 
 # base API url
