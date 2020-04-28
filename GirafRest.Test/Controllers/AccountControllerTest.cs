@@ -171,30 +171,9 @@ namespace GirafRest.Test
             // check data
             Assert.Equal(res.Data.Username, userName);
             Assert.Equal(res.Data.Department, DEPARTMENT_ONE);
+            Assert.Equal(res.Data.DisplayName, displayName);
         }
-
-        [Fact]
-        public void Register_NoDisplayNameSetAsUsername_Success()
-        {
-            var accountController = InitializeTest();
-
-            var userName = "GenericName";
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = accountController.Register(new RegisterDTO()
-            {
-                Username = userName,
-                Password = "GenericPassword",
-                DepartmentId = DEPARTMENT_ONE,
-                Role = GirafRoles.Citizen,
-                DisplayName = null
-            }).Result;
-
-            Assert.Equal(ErrorCode.NoError, res.ErrorCode);
-            Assert.True(res.Success);
-            Assert.NotNull(res.Data);
-            Assert.Equal(res.Data.ScreenName, userName);
-        }
-     
+        
         [Fact]
         public void Register_ExistingUsername_UserAlreadyExists()
         {
@@ -203,6 +182,7 @@ namespace GirafRest.Test
             var res = accountController.Register(new RegisterDTO()
             {
                 Username = _testContext.MockUsers[ADMIN_DEP_ONE].UserName,
+                DisplayName = _testContext.MockUsers[ADMIN_DEP_ONE].DisplayName,
                 Password = "password",
                 DepartmentId = DEPARTMENT_ONE,
                 Role = GirafRoles.Citizen
@@ -219,8 +199,46 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
             var res = accountController.Register(new RegisterDTO()
             {
+                DisplayName = "GenericDisplayName",
                 Password = "password",
                 DepartmentId = DEPARTMENT_ONE
+            }).Result;
+
+            Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
+            Assert.False(res.Success);
+        }
+        
+        [Fact]
+        public void Register_NoDisplayName_InvalidCredentials()
+        {
+            var accountController = InitializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var res = accountController.Register(new RegisterDTO()
+            {
+                Username = "GenericName",
+                Password = "password",
+                DepartmentId = DEPARTMENT_ONE
+            }).Result;
+
+            Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
+            Assert.False(res.Success);
+        }
+        
+        
+        [Fact]
+        // Tries to register a new account with an empty displayName
+        public void Register_user_empty_displayName()
+        {
+            var accountController = InitializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            
+            var res = accountController.Register(new RegisterDTO()
+            {
+                Username = "GenericName2",
+                DisplayName = "",
+                Password = "GenericPassword",
+                DepartmentId = DEPARTMENT_ONE,
+                Role = GirafRoles.Citizen
             }).Result;
 
             Assert.Equal(ErrorCode.InvalidCredentials, res.ErrorCode);
@@ -238,6 +256,7 @@ namespace GirafRest.Test
             {
                 Username = "NewUser",
                 Password = "password",
+                DisplayName = "DisplayName",
                 Role = GirafRoles.Citizen
             }).Result;
 
@@ -266,8 +285,14 @@ namespace GirafRest.Test
         public void Register_GuardianRelation_Success(){
             var accountController = InitializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = accountController.Register(new RegisterDTO() { Username = "JohnDoe", 
-                Password= "iSecretlyLoveMileyCyrus", DepartmentId = 2, Role = GirafRoles.Citizen}).Result;
+            var res = accountController.Register(new RegisterDTO() 
+            { 
+                Username = "JohnDoe", 
+                DisplayName = "JustAnotherDisplayName",
+                Password= "iSecretlyLoveMileyCyrus", 
+                DepartmentId = 2, 
+                Role = GirafRoles.Citizen
+            }).Result;
 
             Assert.True(res.Success);
             Assert.Equal(ErrorCode.NoError, res.ErrorCode);

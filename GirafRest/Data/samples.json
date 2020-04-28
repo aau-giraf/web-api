@@ -2,6 +2,7 @@
   "UserList": [
     {
       "Name": "Kurt",
+      "DisplayName" : "Kurt Andersen",
       "DepartmentName": "Tobias' stue for godt humør",
       "Role": "Citizen",
       "Weeks": [
@@ -11,6 +12,7 @@
     },
     {
       "Name": "Tobias",
+      "DisplayName" : "Tobias Tobiassss",
       "DepartmentName": "Tobias' stue for godt humør",
       "Role": "Department",
       "Weeks": [],
@@ -18,6 +20,7 @@
     },
     {
       "Name": "Decker",
+      "DisplayName" : "Deck",
       "DepartmentName": "Tobias' stue for godt humør",
       "Role": "Citizen",
       "Weeks": [],
@@ -25,6 +28,7 @@
     },
     {
       "Name": "Graatand",
+      "DisplayName": "Harald Graatand",
       "DepartmentName": "Tobias' stue for godt humør",
       "Role": "Guardian",
       "Weeks": [],
@@ -32,6 +36,7 @@
     },
     {
       "Name": "Lee",
+      "DisplayName": "Mr. Lee",
       "DepartmentName": "Bajer plejen",
       "Role": "SuperUser",
       "Weeks": [],
@@ -39,6 +44,7 @@
     },
     {
       "Name": "Simon",
+      "DisplayName": "Simon Sim",
       "DepartmentName": "Tobias' stue for godt humør",
       "Role": "Citizen",
       "Weeks": [],

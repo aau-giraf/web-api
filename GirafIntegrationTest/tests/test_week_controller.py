@@ -1,6 +1,6 @@
 from requests import get, post, put, delete
 import time
-from testlib import order, BASE_URL, auth, GIRAFTestCase
+from testlib import order, BASE_URL, auth, is_sequence, GIRAFTestCase
 
 citizen_username = f'Gunnar{time.time()}'
 citizen_id = ''
@@ -78,7 +78,7 @@ class TestWeekController(GIRAFTestCase):
 
         Endpoint: POST:/v1/Account/register
         """
-        data = {'username': citizen_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
+        data = {'username': citizen_username, 'displayname': citizen_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
         response = post(f'{BASE_URL}v1/Account/register', headers=auth(super_user_token), json=data).json()
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
@@ -123,6 +123,7 @@ class TestWeekController(GIRAFTestCase):
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertFalse(response['data'])
+        self.assertTrue(is_sequence(response['data']))
 
     @order
     def test_week_can_add_week(self):
@@ -270,3 +271,4 @@ class TestWeekController(GIRAFTestCase):
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertFalse(response['data'])
+        self.assertTrue(is_sequence(response['data']))
