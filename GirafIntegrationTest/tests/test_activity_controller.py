@@ -1,6 +1,8 @@
 from requests import get, post, put, delete, patch
 import time
-from testlib import order, BASE_URL, auth, GIRAFTestCase, HTTPStatus
+from testlib import order, BASE_URL, auth, GIRAFTestCase
+from unittest import skip
+from http import HTTPStatus
 
 guardian_token = ""
 user_id = ""
@@ -78,50 +80,46 @@ class TestActivityController(GIRAFTestCase):
         user_id = response_body['data']['id']
 
     @order
+    @skip("Skipping since endpoint is broken")
     def test_activity_set_new_user_activity(self):
         """
         Testing creation of user specific activity
 
         Endpoint: POST:/v2/Activity/{user_id}/{weekplan_name}/{week_year}/{week_number}/{week_day_number}
         """
-        self.skipTest("Skipping since endpoint is broken")
         global activity_id
         data = {"pictogram": {"id": 1}}
         response = post(f'{BASE_URL}v2/Activity/{user_id}/{self.weekplan_name}/{self.week_year}/{self.week_number}/{self.week_day_number}', headers=auth(guardian_token), json=data,)
         response_body = response.json()
 
-        print(response, "-------", response.json())
-
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
+        self.assertIsNotNone(response_body['data'])
         activity_id = response_body['data']['id']
 
+
     @order
+    @skip("Skipping since test is broken")
     def test_activity_update_user_activity(self):
         """
         Testing PATCH update to activity for a specific user
 
         Endpoint: PATCH:/v2/Activity/{user_id}/update
         """
-        self.skipTest("Skipping since test is broken")
 
         data = {'pictogram': {'id': 6}, 'id': activity_id}
         response = patch(f'{BASE_URL}v2/Activity/{user_id}/update', json=data,
                          headers=auth(guardian_token))
-
-        print(response, "-------", response.json())
-
         
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
-
     @order
+    @skip("Skipping since test is broken")
     def test_activity_delete_user_activity(self):
         """
         Testing DELETE on user specific activity
 
         Endpoint: DELETE:/v2/Activity/{user_id}/delete/{activity_id}
         """
-        self.skipTest("Skipping since test is broken")
 
         response = delete(f'{BASE_URL}v2/Activity/{user_id}/delete/{activity_id}', headers=auth(guardian_token))
         

@@ -1,6 +1,7 @@
 from requests import get, post, put, delete
 import time
-from testlib import order, BASE_URL, auth, GIRAFTestCase, HTTPStatus
+from testlib import order, BASE_URL, auth, GIRAFTestCase
+from http import HTTPStatus
 
 guardian_token = ''
 guardian_id = ''
@@ -65,9 +66,6 @@ class TestAccountController(GIRAFTestCase):
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
 
-        #self.assertTrue(response['success'])
-        #self.assertEqual(response['errorKey'], 'NoError')
-        #self.assertIsNotNone(response['data']['id'])
         guardian_id = response_body['data']['id']
 
     @order
@@ -85,8 +83,6 @@ class TestAccountController(GIRAFTestCase):
         
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
         self.assertIsNotNone(response_body['data'])
-        #self.assertTrue(response['success'])
-        #self.assertEqual(response['errorKey'], 'NoError')
 
     @order
     def test_account_can_login_as_citizen2(self):
@@ -102,9 +98,6 @@ class TestAccountController(GIRAFTestCase):
         
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
-        #self.assertTrue(response['success'])
-        #self.assertEqual(response['errorKey'], 'NoError')
-        #self.assertIsNotNone(response['data'])
         citizen2_token = response_body['data']
 
     @order
@@ -120,9 +113,6 @@ class TestAccountController(GIRAFTestCase):
         
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
-        #self.assertTrue(response['success'])
-        #self.assertEqual(response['errorKey'], 'NoError')
-        #self.assertIsNotNone(response['data']['id'])
         citizen2_id = response_body['data']['id']
 
     @order
@@ -137,10 +127,6 @@ class TestAccountController(GIRAFTestCase):
         
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
-        ##elf.assertTrue(response['success'])
-        #elf.assertEqual(response['errorKey'], 'NoError')
-        #elf.assertIsNotNone(response['data']['username'])
-        #self.assertEqual(response['data']['username'], 'Graatand')
 
     @order
     def test_account_can_login_invalid_password_should_fail(self):
@@ -154,11 +140,7 @@ class TestAccountController(GIRAFTestCase):
         response_body = response.json()
    
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-        #print(response_body['data'])
         self.assertEqual(response_body['message'], 'Invalid Credentials')
-        #self.assertFalse(response['success'])
-        #self.assertEqual(response['errorKey'], 'InvalidCredentials')
-        #self.assertIsNone(response['data'])
 
     @order
     def test_account_can_login_invalid_username_should_fail(self):
@@ -173,9 +155,6 @@ class TestAccountController(GIRAFTestCase):
         
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
         self.assertEqual(response_body['message'], 'Invalid credentials')
-        #self.assertFalse(response['success'])
-        #self.assertEqual(response['errorKey'], 'InvalidCredentials')
-        #self.assertIsNone(response['data'])
         
 
     @order
@@ -207,8 +186,6 @@ class TestAccountController(GIRAFTestCase):
         
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
         self.assertIsNotNone(response_body['data'])
-        #self.assertTrue(response['success'])
-        #self.assertEqual(response['errorKey'], 'NoError')
 
     @order
     def test_account_can_login_as_citizen1(self):
@@ -224,9 +201,6 @@ class TestAccountController(GIRAFTestCase):
         
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
-        #self.assertTrue(response['success'])
-        #self.assertEqual(response['errorKey'], 'NoError')
-        #self.assertIsNotNone(response['data'])
         citizen1_token = response_body['data']
 
     @order
@@ -242,9 +216,6 @@ class TestAccountController(GIRAFTestCase):
         
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
-        #self.assertTrue(response['success'])
-        #self.assertEqual(response['errorKey'], 'NoError')
-        #self.assertIsNotNone(response['data'])
         citizen1_id = response_body['data']['id']
 
     @order
@@ -259,10 +230,6 @@ class TestAccountController(GIRAFTestCase):
         
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
-        #self.assertTrue(response['success'])
-        #self.assertEqual(response['errorKey'], 'NoError')
-        #self.assertIsNotNone(response['data'])
-        #self.assertEqual(response['data']['username'], citizen1_username)
 
     @order
     def test_account_can_get_citizen1_role(self):
@@ -276,10 +243,6 @@ class TestAccountController(GIRAFTestCase):
         
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
-        #self.assertTrue(response['success'])
-        #self.assertEqual(response['errorKey'], 'NoError')
-        #self.assertIsNotNone(response['data'])
-        #self.assertEqual(response['data']['roleName'], 'Citizen')
 
     @order
     def test_account_can_login_as_department(self):
@@ -295,9 +258,6 @@ class TestAccountController(GIRAFTestCase):
         
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
-        #self.assertTrue(response['success'])
-        #self.assertEqual(response['errorKey'], 'NoError')
-        #self.assertIsNotNone(response['data'])
         department_token = response_body['data']
 
     @order

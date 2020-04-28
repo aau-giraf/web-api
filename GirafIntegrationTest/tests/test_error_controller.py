@@ -1,6 +1,7 @@
 from requests import get, post, put, delete
 import time
-from testlib import order, BASE_URL, auth, GIRAFTestCase, HTTPStatus
+from testlib import order, BASE_URL, auth, GIRAFTestCase
+from http import HTTPStatus
 
 class TestErrorController(GIRAFTestCase):
     """
@@ -89,7 +90,8 @@ class TestErrorController(GIRAFTestCase):
 
         Endpoint: DELETE:/v1/Error
         """
-        response = get(f'{BASE_URL}v1/Error?statusCode=401')
+        params = {'statusCode': 401}
+        response = get(f'{BASE_URL}v1/Error', params=params)
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
         self.assertEqual(response_body['errorKey'], 'NotAuthorized')
@@ -101,10 +103,11 @@ class TestErrorController(GIRAFTestCase):
 
         Endpoint: DELETE:/v1/Error
         """
-        response = get(f'{BASE_URL}v1/Error?statusCode=401')
+        params = {'statusCode': 403}
+        response = get(f'{BASE_URL}v1/Error', params=params)
         response_body = response.json()
-        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
+        self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
+        self.assertEqual(response_body['errorKey'], 'Forbidden')
 
     @order
     def test_status_code_404(self):
@@ -113,10 +116,11 @@ class TestErrorController(GIRAFTestCase):
 
         Endpoint: DELETE:/v1/Error
         """
-        response = get(f'{BASE_URL}v1/Error?statusCode=401')
+        params = {'statusCode': 404}
+        response = get(f'{BASE_URL}v1/Error', params=params)
         response_body = response.json()
-        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+        self.assertEqual(response_body['errorKey'], 'NotFound')
 
     @order
     def test_status_code_im_a_teapot(self):
@@ -126,7 +130,8 @@ class TestErrorController(GIRAFTestCase):
 
         Endpoint: DELETE:/v1/Error
         """
-        response = get(f'{BASE_URL}v1/Error?statusCode=418')
+        params = {'statusCode': 418}
+        response = get(f'{BASE_URL}v1/Error', params=params)
         response_body = response.json()
         self.assertEqual(response.status_code, 418)
         self.assertEqual(response_body['errorKey'], 'UnknownError')

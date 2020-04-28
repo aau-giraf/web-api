@@ -1,6 +1,7 @@
 from requests import get, post, put, delete
 import time
-from testlib import order, BASE_URL, auth, GIRAFTestCase, parse_image, HTTPStatus
+from testlib import order, BASE_URL, auth, GIRAFTestCase, parse_image
+from http import HTTPStatus
 
 citizen_token = ''
 new_picto_id = ''

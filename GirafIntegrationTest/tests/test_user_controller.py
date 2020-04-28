@@ -1,6 +1,8 @@
 from requests import get, post, put, delete
 import time
-from testlib import order, BASE_URL, auth, GIRAFTestCase, HTTPStatus
+from testlib import order, BASE_URL, auth, GIRAFTestCase
+from unittest import skip
+from http import HTTPStatus
 
 citizen1_token = ''
 citizen1_id = ''
@@ -686,13 +688,13 @@ class TestUserController(GIRAFTestCase):
         self.assertIsNotNone(response_body['data'])
 
     @order
+    @skip("Skipping since its broken")
     def test_user_superuser_can_get_specific_user_icon_raw(self):
         """
         Testing if a superuser can get the raw userIcon of another user
 
         Endpoint: GET:/v1/User/{id}/icon/raw
         """
-        self.skipTest("Skipping since its broken")
         response = get(f'{BASE_URL}v1/User/{citizen2_id}/icon/raw', headers=auth(super_user_token))
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
@@ -720,7 +722,6 @@ class TestUserController(GIRAFTestCase):
         Endpoint: POST:/v1/User/{userId}/citizens/{citizenId}
         """
         response = post(f'{BASE_URL}v1/User/{new_guardian_id}/citizens/{citizen2_id}', headers=auth(new_guardian_token))
-        response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
@@ -732,5 +733,4 @@ class TestUserController(GIRAFTestCase):
         Endpoint: DELETE:/v1/Account/user/{userId}
         """
         response = delete(f'{BASE_URL}v1/Account/user/{new_guardian_id}', headers=auth(super_user_token))
-        response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)

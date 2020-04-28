@@ -1,6 +1,7 @@
 from requests import get, post, put, delete
 import time
-from testlib import order, BASE_URL, auth, GIRAFTestCase, HTTPStatus
+from testlib import order, BASE_URL, auth, GIRAFTestCase
+from http import HTTPStatus
 
 guardian_token = ''
 citizen_token = ''

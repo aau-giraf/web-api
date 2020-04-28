@@ -5,7 +5,6 @@ import time
 import warnings
 import io
 from PIL import Image
-from http import HTTPStatus
 
 # base API url
 BASE_URL = 'http://127.0.0.1:5000/'
