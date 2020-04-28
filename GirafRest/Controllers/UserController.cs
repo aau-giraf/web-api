@@ -147,7 +147,7 @@ namespace GirafRest.Controllers
         public async Task<ActionResult> UpdateUser(string id, [FromBody] GirafUserDTO newUser)
         {
             if (newUser == null || newUser.Username == null || newUser.DisplayName == null)
-                return new ErrorResponse<GirafUserDTO>(ErrorCode.MissingProperties);
+                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing user, userName or displayName"));
 
             var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
             // Get the roles the user is associated with
@@ -506,7 +506,7 @@ namespace GirafRest.Controllers
         /// or forbidden </returns>
         [HttpPost("{id}/citizens/{citizenId}")]
         [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
-        [ProducesResponseType(typeof(SuccessResponse<List<UserNameDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(SuccessResponse<List<DisplayNameDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> AddGuardianCitizenRelationship(string id, string citizenId)

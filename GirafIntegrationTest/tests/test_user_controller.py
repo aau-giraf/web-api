@@ -516,6 +516,7 @@ class TestUserController(GIRAFTestCase):
         self.assertIsNotNone(response_body['data'])
         self.assertTrue(any(x['displayName'] == 'Harald Graatand' for x in response_body['data']))
 
+    @order
     def test_user_can_get_guardian_guardians_should_fail(self):
         """
         Testing getting Guardian's guardians

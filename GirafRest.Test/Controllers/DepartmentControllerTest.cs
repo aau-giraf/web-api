@@ -329,7 +329,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[DEPARTMENT_TWO_USER]);
             var departmentTwoId = _testContext.MockDepartments[DEPARTMENT_TWO_OBJECT].Key;
             var res = dc.GetCitizenNamesAsync(departmentTwoId).Result as ObjectResult;
-            var body = res.Value as SuccessResponse<List<UserNameDTO>>;
+            var body = res.Value as SuccessResponse<List<DisplayNameDTO>>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             // Check that we found all citizens in department

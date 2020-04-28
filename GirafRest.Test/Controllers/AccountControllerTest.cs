@@ -279,7 +279,7 @@ namespace GirafRest.Test
             var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
-            Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
+            Assert.Equal(ErrorCode.InvalidCredentials, body.ErrorCode);
         }
         
         
@@ -340,7 +340,7 @@ namespace GirafRest.Test
             var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
-            Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
+            Assert.Equal(ErrorCode.InvalidCredentials, body.ErrorCode);
         }
 
         [Fact]
