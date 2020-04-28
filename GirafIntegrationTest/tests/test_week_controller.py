@@ -272,4 +272,4 @@ class TestWeekController(GIRAFTestCase):
         self.assertTrue(response['success'])
         self.assertEqual(response['errorKey'], 'NoError')
         self.assertFalse(response['data'])
-        self.assertTrue(isinstance(response['data'], Sequence))
+        self.assertTrue(is_sequence(response['data']))

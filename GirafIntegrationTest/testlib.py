@@ -1,9 +1,11 @@
+import collections
 import unittest
 from unittest.runner import TextTestResult, TextTestRunner
 from unittest.case import TestCase
 import time
 import warnings
 import io
+
 from PIL import Image
 
 # base API url
@@ -57,12 +59,9 @@ def order_handler():
 
 
 def is_sequence(obj):
-    try:
-        len(obj)
-        obj[0:0]
-        return True
-    except TypeError:
+    if isinstance(obj, (str, bytes)):
         return False
+    return isinstance(obj, collections.abc.Sequence)
 
 
 # instances of ordering and comparison functions for external import
