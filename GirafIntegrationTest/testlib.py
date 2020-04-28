@@ -5,6 +5,7 @@ from unittest.case import TestCase
 import time
 import warnings
 import io
+from typing import Any
 from PIL import Image
 
 # base API url
@@ -57,7 +58,7 @@ def order_handler():
     return ordered_handler, compare_handler
 
 
-def is_sequence(obj):
+def is_sequence(obj: Any) -> bool:
     if isinstance(obj, (str, bytes)):
         return False
     return isinstance(obj, collections.abc.Sequence)
