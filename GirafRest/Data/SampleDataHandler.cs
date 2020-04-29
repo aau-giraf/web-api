@@ -70,11 +70,11 @@ namespace GirafRest.Setup
 
                 if (user.Department == null)
                 {
-                    data.UserList.Add(new SampleGirafUser(user.UserName, "", roles[0], weekStrings, user.PasswordHash));
+                    data.UserList.Add(new SampleGirafUser(user.UserName, user.DisplayName, "", roles[0], weekStrings, user.PasswordHash));
                 }
                 else
                 {
-                    data.UserList.Add(new SampleGirafUser(user.UserName, user.Department.Name, roles[0], weekStrings, user.PasswordHash));
+                    data.UserList.Add(new SampleGirafUser(user.UserName, user.DisplayName, user.Department.Name, roles[0], weekStrings, user.PasswordHash));
                 }
             }
 

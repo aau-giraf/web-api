@@ -21,9 +21,7 @@ namespace GirafRest.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "GirafUserId",
                 table: "Weeks",
-                nullable: false,
-                maxLength: 127,
-                type: "varchar(127)"
+                nullable: false
             );
 
             migrationBuilder.AddForeignKey(name: "FK_Weeks_AspNetUsers_GirafUserId",
@@ -43,9 +41,7 @@ namespace GirafRest.Migrations
             migrationBuilder.AlterColumn<string>(
                 name: "GirafUserId",
                 table: "Weeks",
-                nullable: true,
-                maxLength: 127,
-                type: "varchar(127)"
+                nullable: true
             );
         }
     }

@@ -27,7 +27,7 @@ namespace GirafRest.Shared
             var modelErrorCode = weekDTO.ValidateModel();
             if (modelErrorCode.HasValue)
             {
-                return new ErrorResponse(modelErrorCode.Value);
+                return new ErrorResponse(modelErrorCode.Value, "Invalid model");
             }
             
             week.Name = weekDTO.Name;
@@ -35,7 +35,7 @@ namespace GirafRest.Shared
             Pictogram thumbnail = _giraf._context.Pictograms
                 .FirstOrDefault(p => p.Id == weekDTO.Thumbnail.Id);
             if(thumbnail == null)
-                return new ErrorResponse(ErrorCode.MissingProperties, "thumbnail");
+                return new ErrorResponse(ErrorCode.MissingProperties, "Missing thumbnail");
 
             week.Thumbnail = thumbnail;
 
@@ -44,7 +44,7 @@ namespace GirafRest.Shared
                 var wkDay = new Weekday(day);
                 if (!(await AddPictogramsToWeekday(wkDay, day, _giraf)))
                 {
-                    return new ErrorResponse(ErrorCode.ResourceNotFound, "pictogram");
+                    return new ErrorResponse(ErrorCode.ResourceNotFound, "Missing pictogram");
                 }
 
                 week.UpdateDay(wkDay);

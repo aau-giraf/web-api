@@ -1,6 +1,7 @@
 from requests import get, post, put, delete
 import time
 from testlib import order, BASE_URL, auth, GIRAFTestCase, parse_image
+from http import HTTPStatus
 
 citizen_token = ''
 new_picto_id = ''
@@ -20,13 +21,13 @@ class TestPictogramController(GIRAFTestCase):
         """
         super(TestPictogramController, cls).setUpClass()
         print(f'file:/{__file__}\n')
-        cls.PICTOGRAMS = [{'id': 1, 'lastEdit': LAST_EDIT_TIMESTAMP, 'title': 'Epik', 'accessLevel': 1,
+        cls.PICTOGRAMS = [{'id': 1, 'lastEdit': LAST_EDIT_TIMESTAMP, 'title': 'som', 'accessLevel': 1,
                            'imageHash': 'secure hash', 'imageUrl': '/v1/pictogram/1/image/raw'},
-                          {'id': 2, 'lastEdit': LAST_EDIT_TIMESTAMP, 'title': 'som', 'accessLevel': 1,
+                          {'id': 2, 'lastEdit': LAST_EDIT_TIMESTAMP, 'title': 'gul', 'accessLevel': 1,
                            'imageHash': 'secure hash', 'imageUrl': '/v1/pictogram/2/image/raw'},
-                          {'id': 5, 'lastEdit': LAST_EDIT_TIMESTAMP, 'title': 'simpelt', 'accessLevel': 1,
+                          {'id': 5, 'lastEdit': LAST_EDIT_TIMESTAMP, 'title': 'alle', 'accessLevel': 1,
                            'imageHash': 'secure hash', 'imageUrl': '/v1/pictogram/5/image/raw'},
-                          {'id': 8, 'lastEdit': LAST_EDIT_TIMESTAMP, 'title': 'sejt', 'accessLevel': 1,
+                          {'id': 8, 'lastEdit': LAST_EDIT_TIMESTAMP, 'title': 'berøre', 'accessLevel': 1,
                            'imageHash': 'secure hash', 'imageUrl': '/v1/pictogram/8/image/raw'}]
         cls.FISH = {'accessLevel': 0, 'title': new_picto_name, 'id': -1, 'lastEdit': '2099-03-19T10:40:26.587Z'}
         cls.RAW_IMAGE = 'ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñÇÿÿõ×ÿÿñÇÿÿÿÿÿÿÿ' \
@@ -48,11 +49,13 @@ class TestPictogramController(GIRAFTestCase):
         """
         global citizen_token
         data = {'username': 'Kurt', 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        citizen_token = response['data']
+        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response_body = response.json()
+        
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        citizen_token = response_body['data']
 
     @order
     def test_pictogram_can_get_all_pictograms(self):
@@ -62,19 +65,20 @@ class TestPictogramController(GIRAFTestCase):
         Endpoint: GET:/v1/Pictogram
         """
         params = {'page': 1, 'pageSize': 10}
-        response = get(f'{BASE_URL}v1/Pictogram', headers=auth(citizen_token), params=params).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
+        response = get(f'{BASE_URL}v1/Pictogram', headers=auth(citizen_token), params=params)
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
-        collected_pictos = response['data']
+        self.assertIsNotNone(response_body['data'])
+
+        collected_pictos = response_body['data']
 
         # Setting all recieved pictogram's last edit to LAST_EDIT_TIMESTAMP
         for picto in collected_pictos:
             picto['lastEdit'] = LAST_EDIT_TIMESTAMP
 
         for picto in self.PICTOGRAMS:
-            self.assertIn(picto, response['data'])
+            self.assertIn(picto, response_body['data'])
 
     @order
     def test_pictogram_can_get_single_public_pictogram(self):
@@ -83,15 +87,16 @@ class TestPictogramController(GIRAFTestCase):
 
         Endpoint: GET:/v1/Pictogram/{id}
         """
-        response = get(f'{BASE_URL}v1/Pictogram/2', headers=auth(citizen_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
+        response = get(f'{BASE_URL}v1/Pictogram/2', headers=auth(citizen_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
 
-        collected_picto = response['data']
+        self.assertIsNotNone(response_body['data'])
+
+        collected_picto = response_body['data']
         collected_picto['lastEdit'] = LAST_EDIT_TIMESTAMP
 
-        self.assertDictEqual(self.PICTOGRAMS[1], response['data'])
+        self.assertDictEqual(self.PICTOGRAMS[1], response_body['data'])
 
     @order
     def test_pictogram_can_add_pictogram_invalid_access_level_should_fail(self):
@@ -100,9 +105,10 @@ class TestPictogramController(GIRAFTestCase):
 
         Endpoint: POST:/v1/Pictogram
         """
-        response = post(f'{BASE_URL}v1/Pictogram', json=self.FISH, headers=auth(citizen_token)).json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'MissingProperties')
+        response = post(f'{BASE_URL}v1/Pictogram', json=self.FISH, headers=auth(citizen_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
+        self.assertEqual(response_body['errorKey'], 'MissingProperties')
 
     @order
     def test_pictogram_can_add_private_pictogram(self):
@@ -113,13 +119,14 @@ class TestPictogramController(GIRAFTestCase):
         """
         global new_picto_id
         self.FISH['accessLevel'] = 3
-        response = post(f'{BASE_URL}v1/Pictogram', json=self.FISH, headers=auth(citizen_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        self.assertNotEqual(self.FISH['lastEdit'], response['data']['lastEdit'])
-        self.assertNotEqual(self.FISH['id'], response['data']['id'])
-        new_picto_id = response['data']['id']
+        response = post(f'{BASE_URL}v1/Pictogram', json=self.FISH, headers=auth(citizen_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.CREATED)
+
+        self.assertIsNotNone(response_body['data'])
+        self.assertNotEqual(self.FISH['lastEdit'], response_body['data']['lastEdit'])
+        self.assertNotEqual(self.FISH['id'], response_body['data']['id'])
+        new_picto_id = response_body['data']['id']
 
     @order
     def test_pictogram_can_get_new_pictogram(self):
@@ -128,11 +135,12 @@ class TestPictogramController(GIRAFTestCase):
 
         Endpoint: GET:/v1/Pictogram/{id}
         """
-        response = get(f'{BASE_URL}v1/Pictogram/{new_picto_id}', headers=auth(citizen_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        self.assertEqual(new_picto_name, response['data']['title'])
+        response = get(f'{BASE_URL}v1/Pictogram/{new_picto_id}', headers=auth(citizen_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        self.assertEqual(new_picto_name, response_body['data']['title'])
 
     @order
     def test_pictogram_can_update_new_pictogram(self):
@@ -144,9 +152,10 @@ class TestPictogramController(GIRAFTestCase):
         global new_picto_name
         new_picto_name = f'cursed_{new_picto_name}'
         self.FISH['title'] = new_picto_name
-        response = put(f'{BASE_URL}v1/Pictogram/{new_picto_id}', headers=auth(citizen_token), json=self.FISH).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
+        response = put(f'{BASE_URL}v1/Pictogram/{new_picto_id}', headers=auth(citizen_token), json=self.FISH)
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
 
     @order
     def test_pictogram_check_updated_new_pictogram(self):
@@ -155,11 +164,12 @@ class TestPictogramController(GIRAFTestCase):
 
         Endpoint: GET:/v1/Pictogram/{id}
         """
-        response = get(f'{BASE_URL}v1/Pictogram/{new_picto_id}', headers=auth(citizen_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
-        self.assertEqual(new_picto_name, response['data']['title'])
+        response = get(f'{BASE_URL}v1/Pictogram/{new_picto_id}', headers=auth(citizen_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
+        self.assertEqual(new_picto_name, response_body['data']['title'])
 
     @order
     def test_pictogram_can_get_public_pictogram_image(self):
@@ -168,10 +178,11 @@ class TestPictogramController(GIRAFTestCase):
 
         Endpoint: GET:/v1/Pictogram/{id}/image
         """
-        response = get(f'{BASE_URL}v1/Pictogram/2/image', headers=auth(citizen_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
-        self.assertIsNotNone(response['data'])
+        response = get(f'{BASE_URL}v1/Pictogram/2/image', headers=auth(citizen_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
+        self.assertIsNotNone(response_body['data'])
 
     @order
     def test_pictogram_can_get_raw_public_pictogram_image(self):
@@ -192,9 +203,9 @@ class TestPictogramController(GIRAFTestCase):
 
         Endpoint: PUT:/v1/Pictogram/{id}/image
         """
-        response = put(f'{BASE_URL}v1/Pictogram/{new_picto_id}/image', headers=auth(citizen_token), data=self.RAW_IMAGE).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
+        response = put(f'{BASE_URL}v1/Pictogram/{new_picto_id}/image', headers=auth(citizen_token), data=self.RAW_IMAGE)
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
 
     @order
     def test_pictogram_can_delete_new_pictogram(self):
@@ -203,9 +214,9 @@ class TestPictogramController(GIRAFTestCase):
 
         Endpoint: DELETE:/v1/Pictogram/{id}
         """
-        response = delete(f'{BASE_URL}v1/Pictogram/{new_picto_id}', headers=auth(citizen_token)).json()
-        self.assertTrue(response['success'])
-        self.assertEqual(response['errorKey'], 'NoError')
+        response = delete(f'{BASE_URL}v1/Pictogram/{new_picto_id}', headers=auth(citizen_token))
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+
 
     @order
     def test_pictogram_ensure_new_pictogram_deleted(self):
@@ -214,7 +225,23 @@ class TestPictogramController(GIRAFTestCase):
 
         Endpoint: GET:/v1/Pictogram/{id}
         """
-        response = get(f'{BASE_URL}v1/Pictogram/{new_picto_id}', headers=auth(citizen_token)).json()
-        self.assertFalse(response['success'])
-        self.assertEqual(response['errorKey'], 'PictogramNotFound')
+        response = get(f'{BASE_URL}v1/Pictogram/{new_picto_id}', headers=auth(citizen_token))
+        response_body = response.json()
+        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
+        self.assertEqual(response_body['errorKey'], 'PictogramNotFound')
+
+
+    @order
+    def test_pictogram_query_(self):
+        """
+        Testing querying for a pictogram
+
+        Endpoint: GET:/v1/Pictogram?query=Epik
+        """
+        params = {'query': 'Epik', 'page': 1, 'pageSize': 10}
+        response = get(f'{BASE_URL}v1/Pictogram', headers=auth(citizen_token), params=params)
+        response_body = response.json()
+
+        self.assertEqual(response.status_code, HTTPStatus.OK)
+        self.assertIsNotNone(response_body['data'])
 
