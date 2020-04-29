@@ -457,7 +457,7 @@ namespace GirafRest.Controllers
                 return StatusCode(StatusCodes.Status403Forbidden,
                     new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
-            return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, "Pictogram image not found"));
+            return PhysicalFile($"{imagePath}{picto.Id}.png", IMAGE_TYPE_PNG);
         }
 
         #endregion
