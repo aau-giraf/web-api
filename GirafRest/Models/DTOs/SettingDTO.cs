@@ -7,7 +7,8 @@ namespace GirafRest.Models.DTOs
     /// <summary>
     /// Screen orientation
     /// </summary>
-    public enum Orientation {
+    public enum Orientation
+    {
         /// <summary>
         /// Portrait mode
         /// </summary>
@@ -21,7 +22,8 @@ namespace GirafRest.Models.DTOs
     /// <summary>
     /// Mark used for "Complete"
     /// </summary>
-    public enum CompleteMark {
+    public enum CompleteMark
+    {
         /// <summary>
         /// Removed X
         /// </summary>
@@ -39,7 +41,8 @@ namespace GirafRest.Models.DTOs
     /// <summary>
     /// Mark used for Cancel
     /// </summary>
-    public enum CancelMark {
+    public enum CancelMark
+    {
         /// <summary>
         /// Removed when cancelled
         /// </summary>
@@ -53,21 +56,27 @@ namespace GirafRest.Models.DTOs
     /// <summary>
     /// Default timer type
     /// </summary>
-    public enum DefaultTimer {
+    public enum DefaultTimer
+    {
         /// <summary>
         /// Hourglass model
         /// </summary>
         hourglass = 1,
         /// <summary>
-        /// Analog Clock counting down
+        /// Piechart counting down
         /// </summary>
-        analogClock = 2
+        pieChart = 2,
+        /// <summary>
+        /// Numeric Clock counting down
+        /// </summary>
+        numeric = 3
     }
 
     /// <summary>
     /// Timer Theme
     /// </summary>
-    public enum Theme {
+    public enum Theme
+    {
         /// <summary>
         /// Yellow as Giraf Theme
         /// </summary>
@@ -140,7 +149,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// List of weekday colors
         /// </summary>
-        public List<WeekDayColorDTO> WeekDayColors {get; set;}
+        public List<WeekDayColorDTO> WeekDayColors { get; set; }
         /// <summary>
         /// Constructor to create a DTO based on the actual object
         /// </summary>
@@ -168,11 +177,12 @@ namespace GirafRest.Models.DTOs
             Orientation = Orientation.portrait;
             CompleteMark = CompleteMark.Checkmark;
             CancelMark = CancelMark.Cross;
-            DefaultTimer = DefaultTimer.analogClock;
+            DefaultTimer = DefaultTimer.pieChart;
             Theme = Theme.girafYellow;
         }
 
-        private List<WeekDayColorDTO> SetWeekDayColorsFromModel(List<WeekDayColor> weekDayColors){
+        private List<WeekDayColorDTO> SetWeekDayColorsFromModel(List<WeekDayColor> weekDayColors)
+        {
             if (weekDayColors != null)
             {
                 var WeekDayColorDTOs = new List<WeekDayColorDTO>();
