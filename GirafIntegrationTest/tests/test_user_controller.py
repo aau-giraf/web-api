@@ -36,21 +36,21 @@ class TestUserController(GIRAFTestCase):
         print(f'file:/{__file__}\n')
         cls.GRAYSCALE_THEME = {'orientation': 1, 'completeMark': 2, 'cancelMark': 2, 'defaultTimer': 2,
                                'timerSeconds': 900, 'activitiesCount': None, 'theme': 2, 'nrOfDaysToDisplay': 7,
-                               'greyScale': True, 'lockTimerControl': True, 'weekDayColors':
+                               'greyScale': True, 'lockTimerControl': True, 'pictogramText': True, 'weekDayColors':
                                    [{"hexColor": "#067700", "day": 1}, {"hexColor": "#8c1086", "day": 2},
                                     {"hexColor": "#ff7f00", "day": 3}, {"hexColor": "#0017ff", "day": 4},
                                     {"hexColor": "#ffdd00", "day": 5}, {"hexColor": "#ff0102", "day": 6},
                                     {"hexColor": "#ffffff", "day": 7}]}
         cls.TIMER_ONE_HOUR = {"orientation": 1, "completeMark": 2, "cancelMark": 2, "defaultTimer": 2,
                               "timerSeconds": 3600, "activitiesCount": None, "theme": 1, "colorThemeWeekSchedules": 1,
-                              "nrOfDaysToDisplay": 4, "greyScale": True, "lockTimerControl": True, "weekDayColors":
+                              "nrOfDaysToDisplay": 4, "greyScale": True, "lockTimerControl": True, 'pictogramText': True, "weekDayColors":
                                   [{"hexColor": "#067700", "day": 1}, {"hexColor": "#8C1086", "day": 2},
                                    {"hexColor": "#FF7F00", "day": 3}, {"hexColor": "#0017FF", "day": 4},
                                    {"hexColor": "#FFDD00", "day": 5}, {"hexColor": "#FF0102", "day": 6},
                                    {"hexColor": "#FFFFFF", "day": 7}]}
         cls.MULTIPLE_SETTINGS = {"orientation": 2, "completeMark": 2, "cancelMark": 1, "defaultTimer": 2,
                                  "timerSeconds": 60, "activitiesCount": 3, "theme": 3, "nrOfDaysToDisplay": 2,
-                                 "greyScale": True, "lockTimerControl": True, "weekDayColors":
+                                 "greyScale": True, "lockTimerControl": True, 'pictogramText': True, "weekDayColors":
                                      [{"hexColor": "#FF00FF", "day": 1}, {"hexColor": "#8C1086", "day": 2},
                                       {"hexColor": "#FF7F00", "day": 3}, {"hexColor": "#0017FF", "day": 4},
                                       {"hexColor": "#FFDD00", "day": 5}, {"hexColor": "#FF0102", "day": 6},
@@ -306,7 +306,7 @@ class TestUserController(GIRAFTestCase):
         response = get(f'{BASE_URL}v1/User/{citizen2_id}', headers=auth(guardian_token))
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
-        
+
         self.assertIsNotNone(response_body['data'])
         self.assertEqual(response_body['data']['username'], citizen2_username)
 
@@ -319,7 +319,7 @@ class TestUserController(GIRAFTestCase):
         """
         data = {'username': citizen2_username, 'displayName': 'FBI Surveillance Van'}
         response = put(f'{BASE_URL}v1/User/{citizen2_id}', headers=auth(citizen2_token), json=data)
-        
+
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
@@ -365,7 +365,7 @@ class TestUserController(GIRAFTestCase):
         response = post(f'{BASE_URL}v1/User/{citizen3_id}/resource', headers=auth(citizen2_token), json=data)
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
-        self.assertEqual(response_body['errorKey'], 'NotAuthorized')    
+        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
 
     @order
     def test_user_can_get_settings(self):
@@ -389,7 +389,7 @@ class TestUserController(GIRAFTestCase):
         """
         response = put(f'{BASE_URL}v1/User/{citizen2_id}/settings', headers=auth(guardian_token),
                        json=self.GRAYSCALE_THEME)
-        
+
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
@@ -417,7 +417,7 @@ class TestUserController(GIRAFTestCase):
         """
         response = put(f'{BASE_URL}v1/User/{citizen2_id}/settings', headers=auth(guardian_token),
                        json=self.TIMER_ONE_HOUR)
-        
+
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
@@ -444,7 +444,7 @@ class TestUserController(GIRAFTestCase):
         """
         response = put(f'{BASE_URL}v1/User/{citizen2_id}/settings', headers=auth(guardian_token),
                        json=self.MULTIPLE_SETTINGS)
-        
+
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
 
@@ -470,6 +470,7 @@ class TestUserController(GIRAFTestCase):
         self.assertEqual(2, response_body['data']['nrOfDaysToDisplay'])
         self.assertTrue(response_body['data']['greyScale'])
         self.assertTrue(response_body['data']['lockTimerControl'])
+        self.assertTrue(response_body['data']['pictogramText'])
         self.assertEqual("#FF00FF", response_body['data']['weekDayColors'][0]['hexColor'])
         self.assertEqual(1, response_body['data']['weekDayColors'][0]['day'])
 
@@ -482,9 +483,9 @@ class TestUserController(GIRAFTestCase):
         """
         response = get(f'{BASE_URL}v1/User/{citizen1_id}/citizens', headers=auth(citizen1_token))
         response_body = response.json()
-        
+
         self.assertEqual(response.status_code, HTTPStatus.FORBIDDEN)
-        self.assertEqual(response_body['errorKey'], 'Forbidden')    
+        self.assertEqual(response_body['errorKey'], 'Forbidden')
 
 
 
@@ -609,7 +610,7 @@ class TestUserController(GIRAFTestCase):
         """
         data = {'userIcon': self.RAW_IMAGE}
         response = put(f'{BASE_URL}v1/User/{citizen2_id}/icon', json=data, headers=auth(super_user_token))
-        
+
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
     @order
@@ -634,7 +635,7 @@ class TestUserController(GIRAFTestCase):
         """
         data = {'userIcon': self.RAW_IMAGE}
         response = put(f'{BASE_URL}v1/User/{citizen2_id}/icon', json=data, headers=auth(guardian_token))
-        
+
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
 

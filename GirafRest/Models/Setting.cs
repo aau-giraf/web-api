@@ -64,6 +64,11 @@ namespace GirafRest.Models
         public bool GreyScale { get; set; }
 
         /// <summary>
+        /// Flag for indicating if pictogram text should be enabled or not
+        /// </summary>
+        public bool PictogramText { get; set; }
+
+        /// <summary>
         /// Flag for indicating whether or not to show timer buttons
         /// </summary>
         public bool LockTimerControl { get; set; }
@@ -90,6 +95,7 @@ namespace GirafRest.Models
             this.NrOfDaysToDisplay = newOptions?.NrOfDaysToDisplay ?? this.NrOfDaysToDisplay;
             this.GreyScale = newOptions?.GreyScale ?? this.GreyScale;
             this.LockTimerControl = newOptions?.LockTimerControl ?? this.LockTimerControl;
+            this.PictogramText = newOptions?.PictogramText ?? this.PictogramText;
             if (newOptions.WeekDayColors != null)
                 updateWeekDayColors(newOptions.WeekDayColors);
         }
@@ -139,6 +145,7 @@ namespace GirafRest.Models
             NrOfDaysToDisplay = 7;
             TimerSeconds = 900;
             GreyScale = false;
+            PictogramText = false;
             LockTimerControl = false;
 
         }

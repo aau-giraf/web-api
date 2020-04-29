@@ -145,6 +145,10 @@ namespace GirafRest.Models.DTOs
         /// Flag for indicating whether or not timer buttons are enabled
         /// </summary>
         public bool LockTimerControl { get; set; }
+       /// <summary>
+        /// Flag for indicating whether or not pictogram text is enabled
+        /// </summary>
+        public bool PictogramText { get; set; }
 
         /// <summary>
         /// List of weekday colors
@@ -166,6 +170,7 @@ namespace GirafRest.Models.DTOs
             this.NrOfDaysToDisplay = options.NrOfDaysToDisplay;
             this.GreyScale = options.GreyScale;
             this.LockTimerControl = options.LockTimerControl;
+            this.PictogramText = options.PictogramText;
             this.WeekDayColors = SetWeekDayColorsFromModel(options.WeekDayColors);
         }
 
