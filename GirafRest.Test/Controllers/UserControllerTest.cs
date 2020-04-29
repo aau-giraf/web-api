@@ -74,7 +74,7 @@ namespace GirafRest.Test
                 new WeekDayColorDTO() { Day = Days.Sunday, HexColor = "#ffffff"}},
                 Theme = Theme.girafGreen,
                 TimerSeconds = 120,
-                DefaultTimer = DefaultTimer.analogClock,
+                DefaultTimer = DefaultTimer.pieChart,
                 ActivitiesCount = 5,
                 NrOfDaysToDisplay = 5,
                 GreyScale = true,
@@ -1064,10 +1064,10 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             
             var dto = UserSettings[0];
-            dto.DefaultTimer = DefaultTimer.analogClock;
+            dto.DefaultTimer = DefaultTimer.pieChart;
             usercontroller.UpdateUserSettings(mockUser.Id, dto).Wait();
 
-            Assert.Equal(DefaultTimer.analogClock, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.DefaultTimer);
+            Assert.Equal(DefaultTimer.pieChart, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.DefaultTimer);
         }    
 
         [Fact]
@@ -1124,7 +1124,7 @@ namespace GirafRest.Test
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.Equal(Theme.girafGreen, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.Theme);
             Assert.Equal(120, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.TimerSeconds);
-            Assert.Equal(DefaultTimer.analogClock, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.DefaultTimer);
+            Assert.Equal(DefaultTimer.pieChart, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.DefaultTimer);
             Assert.Equal(5, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.ActivitiesCount);
             Assert.Equal(5, _testContext.MockUsers[CITIZEN_DEP_TWO].Settings.NrOfDaysToDisplay);
             Assert.True(_testContext.MockUsers[CITIZEN_DEP_TWO].Settings.GreyScale);
