@@ -9,28 +9,48 @@ namespace GirafRest.Models {
     /// A pictogram is an image with an associated title. They are used by Guardians and Citizens and so on to 
     /// communicate visually.
     /// </summary>
-    public class Pictogram{
-
+    public class Pictogram {
+        /// <summary>
+        /// Pictogram title/name
+        /// </summary>
         [Required]
         public string Title { get; set; }
 
+        /// <summary>
+        /// Primary key; Identity autoincrementing
+        /// </summary>
         [Column("id")]
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long Id { get; set; }
 
+        /// <summary>
+        /// Last edited at
+        /// </summary>
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{yyyy-MM-dd HH:mm:ss}")]
-        public System.DateTime LastEdit { get; set; }
+        public DateTime LastEdit { get; set; }
 
+        /// <summary>
+        /// Belonging Users
+        /// </summary>
         public ICollection<UserResource> Users { get; set; }
 
+        /// <summary>
+        /// Belonging departments
+        /// </summary>
         public ICollection<DepartmentResource> Departments { get; set; }
 
+        /// <summary>
+        /// AccessLevel managing
+        /// </summary>
         [Required]
         public AccessLevel AccessLevel { get; set; }
 
+        /// <summary>
+        /// Hash of the image
+        /// </summary>
         [Column("ImageHash")]
-        public String ImageHash { get; set; }
+        public string ImageHash { get; set; }
 
         /// <summary>
         /// Currently not used, but old applications needs this
@@ -59,14 +79,22 @@ namespace GirafRest.Models {
                 this.ImageHash = other.ImageHash;
         }
 
-        // DO NOT DELETE
+        /// <summary>
+        /// DO NOT DELETE
+        /// </summary>
         public Pictogram(string title, AccessLevel accessLevel) : this()
         {
             this.Title = title;
             this.AccessLevel = accessLevel;
         }
 
-        public Pictogram(string title, AccessLevel accessLevel, String imageHash) : this()
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="title">Image title</param>
+        /// <param name="accessLevel">required accesslevel</param>
+        /// <param name="imageHash">hash of image</param>
+        public Pictogram(string title, AccessLevel accessLevel, string imageHash) : this()
         {
             this.Title = title;
             this.AccessLevel = accessLevel;

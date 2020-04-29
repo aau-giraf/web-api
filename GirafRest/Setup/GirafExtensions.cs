@@ -69,12 +69,13 @@ namespace GirafRest.Extensions
             GirafUser user)
         {
             GirafRoles userRole = new GirafRoles();
-            foreach (var role in roleManager.Roles)
-                if (await userManager.IsInRoleAsync(user, role.Name))
-                    userRole = (GirafRoles)Enum.Parse(typeof(GirafRoles), role.Name);
+            var roles = await userManager.GetRolesAsync(user);
+            if(roles.Count != 0) 
+                userRole = (GirafRoles)Enum.Parse(typeof(GirafRoles), roles[0]);
             return userRole;
         }
 
+        /// <summary>
         /// Removes the default password requirements from ASP.NET and set them to a bare minimum.
         /// </summary>
         /// <param name="options">A reference to IdentityOptions, which is used to configure Identity.</param>
@@ -92,7 +93,6 @@ namespace GirafRest.Extensions
         /// solely to the console or both the console and a log-file (that may be found on host/logs/log-yyyyMMdd.txt).
         /// </summary>
         /// <param name="app">A reference to the application builder, that is used to define the behaviour of the server.</param>
-        /// <param name="loggerFactory">A reference to the loggerFactory that is used to define the behaviour of the loggers.</param>
         public static void ConfigureLogging(this IApplicationBuilder app)
         {
             if (ProgramOptions.LogToFile)

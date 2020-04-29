@@ -9,9 +9,10 @@ using Moq;
 using GirafRest.Test.Mocks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Internal;
 using System.IO;
 using System.Text;
+using GirafRest.Data;
+using System.Threading;
 
 namespace GirafRest.Test
 {
@@ -103,65 +104,76 @@ namespace GirafRest.Test
                             new GirafUser()
                             {
                                 UserName = "Admin",
+                                DisplayName = "Admin",
                                 Id = "admin",
                                 DepartmentKey = 1,
                             },
                             new GirafUser()
                             {
                                 UserName = "Guardian in dep 2",
+                                DisplayName = "Guardian 2", 
                                 Id = "guardian2",
                                 DepartmentKey = 2,
                             },
                             new GirafUser()
                             {
                                 UserName = "Citizen of dep 2",
+                                DisplayName = "Citizen 2",
                                 Id = "citizen2",
                                 DepartmentKey = 2
                             },
                             new GirafUser()
                             {
                                 UserName = "Citizen of dep 3",
+                                DisplayName = "Citizen 3",
                                 Id = "citizen3",
                                 DepartmentKey = 3
                             },
                             new GirafUser()
                             {
                                 UserName = "Admin without Department",
+                                DisplayName = "Admin null",
                                 Id = "nimda"
                             },
                             new GirafUser()
                             {
                                 UserName = "Guardian 2 in dep 2",
+                                DisplayName = "Guardian 22",
                                 Id = "guardian22",
                                 DepartmentKey = 2
                             },
                             new GirafUser()
                             {
                                 UserName = "Departmant in dep2",
+                                DisplayName = "Department 2",
                                 Id = "department2",
                                 DepartmentKey = 2,
                             },
                             new GirafUser()
                             {
                                 UserName = "Guardian 3 in dep 1",
+                                DisplayName = "Guardian 3",
                                 Id = "guardian3",
                                 DepartmentKey = 1
                             },
                             new GirafUser()
                             {
                                 UserName = "Citizen of dep 1",
+                                DisplayName = "Citizen 4",
                                 Id = "citizen4",
                                 DepartmentKey = 1
                             },
                             new GirafUser()
                             {
                                 UserName = "Citizen of no department",
+                                DisplayName = "Citizen null",
                                 Id = "citizen5NoDepartment",
                                 DepartmentKey = 0
                             },
                             new GirafUser()
                             {
                                 UserName = "Guardian in dep 1",
+                                DisplayName = "Guardian 1",
                                 Id = "GuardianDepartment1",
                                 DepartmentKey = 1
                             }
@@ -522,7 +534,7 @@ namespace GirafRest.Test
             #endregion
             
             
-            public readonly Mock<MockDbContext> MockDbContext;
+            public readonly Mock<GirafDbContext> MockDbContext;
             public readonly MockUserManager MockUserManager;
             public Mock<HttpContext> MockHttpContext { get; set; }
             public Mock<ILoggerFactory> MockLoggerFactory { get; private set;}
@@ -546,7 +558,7 @@ namespace GirafRest.Test
 ;
             }
 
-            private Mock<MockDbContext> CreateMockDbContext()
+            private Mock<GirafDbContext> CreateMockDbContext()
             {
                 var mockSet = CreateMockDbSet(MockPictograms);
                 var mockRelationSet = CreateMockDbSet(MockUserResources);
@@ -558,15 +570,17 @@ namespace GirafRest.Test
                 var mockRoles = CreateMockDbSet(MockRoles);
                 var mockUserRoles = CreateMockDbSet(MockUserRoles);
                 var mockWeeks = CreateMockDbSet(MockWeeks);
+                var mockWeekdays = CreateMockDbSet(MockWeeks[0].Weekdays.ToList());
                 var mockWeekTemplates = CreateMockDbSet(MockWeekTemplates);
                 var mockGuardianRelations = CreateMockDbSet(MockGuardianRelations);
-                var dbMock = new Mock<MockDbContext>();
+                var dbMock = new Mock<GirafDbContext>();
                 dbMock.Setup(c => c.Pictograms).Returns(mockSet.Object);
                 dbMock.Setup(c => c.UserResources).Returns(mockRelationSet.Object);
                 dbMock.Setup(c => c.DepartmentResources).Returns(mockDepRes.Object);
                 dbMock.Setup(c => c.Activities).Returns(mockActivities.Object);
                 dbMock.Setup(c => c.Departments).Returns(mockDeps.Object);
                 dbMock.Setup(c => c.Weeks).Returns(mockWeeks.Object);
+                dbMock.Setup(c => c.Weekdays).Returns(mockWeekdays.Object);
                 dbMock.Setup(c => c.WeekTemplates).Returns(mockWeekTemplates.Object);
                 dbMock.Setup(c => c.Users).Returns(mockUsers.Object);
                 dbMock.Setup(c => c.Roles).Returns(mockRoles.Object);
@@ -592,6 +606,7 @@ namespace GirafRest.Test
                 return rlMock;
             }
 
+#pragma warning disable IDE0051 // Remove unused private members
             private Mock<ILoggerFactory> CreateMockLoggerFactory()
             {
                 var logs = new List<string>();
@@ -602,6 +617,7 @@ namespace GirafRest.Test
 
                 return lfMock;
             }
+#pragma warning restore IDE0051 // Remove unused private members
         }
 
         public static Mock<HttpContext> MockHttpContext(this Controller controller)
@@ -661,7 +677,7 @@ namespace GirafRest.Test
 
             var mockSet = new Mock<DbSet<T>>();
             mockSet.As<IAsyncEnumerable<T>>()
-                .Setup(m => m.GetEnumerator())
+                .Setup(m => m.GetAsyncEnumerator(It.IsAny<CancellationToken>()))
                 .Returns(new TestDbAsyncEnumerator<T>(data.GetEnumerator()));
             
 

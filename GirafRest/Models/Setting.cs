@@ -13,11 +13,18 @@ namespace GirafRest.Models
     /// </summary>
     public class Setting
     {
+        /// <summary>
+        /// Settingskey
+        /// </summary>
         [Key]
         public long Key { get; private set; }
 
+        /// <summary>
+        /// Preferred appearence of phone; Portrait or Landscape mode.
+        /// </summary>
         [Required]
         public Orientation Orientation { get; set; }
+
         /// <summary>
         /// Preferred appearence of checked resources
         /// </summary>
@@ -57,6 +64,16 @@ namespace GirafRest.Models
         public bool GreyScale { get; set; }
 
         /// <summary>
+        /// Flag for indicating if pictogram text should be enabled or not
+        /// </summary>
+        public bool PictogramText { get; set; }
+
+        /// <summary>
+        /// Flag for indicating whether or not to show timer buttons
+        /// </summary>
+        public bool LockTimerControl { get; set; }
+
+        /// <summary>
         /// Each day in a weekschedule has a hexcolor associated
         /// </summary>
         /// <value>The week day colors.</value>
@@ -77,11 +94,14 @@ namespace GirafRest.Models
             this.Theme = newOptions?.Theme ?? this.Theme;
             this.NrOfDaysToDisplay = newOptions?.NrOfDaysToDisplay ?? this.NrOfDaysToDisplay;
             this.GreyScale = newOptions?.GreyScale ?? this.GreyScale;
-            if(newOptions.WeekDayColors != null)
+            this.LockTimerControl = newOptions?.LockTimerControl ?? this.LockTimerControl;
+            this.PictogramText = newOptions?.PictogramText ?? this.PictogramText;
+            if (newOptions.WeekDayColors != null)
                 updateWeekDayColors(newOptions.WeekDayColors);
         }
 
-        private void updateWeekDayColors(List<WeekDayColorDTO> weekDayColors){
+        private void updateWeekDayColors(List<WeekDayColorDTO> weekDayColors)
+        {
             if (WeekDayColors != null)
             {
                 foreach (var weekDayColor in weekDayColors)
@@ -95,7 +115,11 @@ namespace GirafRest.Models
             }
         }
 
-        public void InitialiseWeekDayColors(){
+        /// <summary>
+        /// Initializes WeekDayColors.
+        /// </summary>
+        public void InitialiseWeekDayColors()
+        {
             this.WeekDayColors = new List<WeekDayColor>(){
                 new WeekDayColor(){Day = Days.Monday, HexColor = "#08a045", SettingId = Key},
                 new WeekDayColor(){Day = Days.Tuesday, HexColor = "#540d6e", SettingId = Key},
@@ -116,11 +140,13 @@ namespace GirafRest.Models
             Orientation = Orientation.portrait;
             CompleteMark = CompleteMark.Checkmark;
             CancelMark = CancelMark.Cross;
-            DefaultTimer = DefaultTimer.analogClock;
+            DefaultTimer = DefaultTimer.pieChart;
             Theme = Theme.girafYellow;
             NrOfDaysToDisplay = 7;
             TimerSeconds = 900;
             GreyScale = false;
+            PictogramText = false;
+            LockTimerControl = false;
 
         }
     }

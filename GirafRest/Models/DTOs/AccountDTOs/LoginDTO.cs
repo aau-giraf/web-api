@@ -2,6 +2,9 @@
 
 namespace GirafRest.Models.DTOs.AccountDTOs
 {
+    /// <summary>
+    /// DTO Used for Login
+    /// </summary>
     public class LoginDTO
     {
         

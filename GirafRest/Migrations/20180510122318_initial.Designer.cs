@@ -16,6 +16,10 @@ namespace GirafRest.Migrations
     [Migration("20180510122318_initial")]
     partial class initial
     {
+        /// <summary>
+        /// Build new model
+        /// </summary>
+        /// <param name="modelBuilder">Which MigrationBuilder to use</param>
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

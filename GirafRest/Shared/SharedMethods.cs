@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GirafRest.Shared
 {
+    /// <summary>
+    /// Shared static class for helper methods
+    /// </summary>
     public static class SharedMethods
     {
         /// <summary>
@@ -24,7 +27,7 @@ namespace GirafRest.Shared
             var modelErrorCode = weekDTO.ValidateModel();
             if (modelErrorCode.HasValue)
             {
-                return new ErrorResponse(modelErrorCode.Value);
+                return new ErrorResponse(modelErrorCode.Value, "Invalid model");
             }
             
             week.Name = weekDTO.Name;
@@ -32,7 +35,7 @@ namespace GirafRest.Shared
             Pictogram thumbnail = _giraf._context.Pictograms
                 .FirstOrDefault(p => p.Id == weekDTO.Thumbnail.Id);
             if(thumbnail == null)
-                return new ErrorResponse(ErrorCode.MissingProperties, "thumbnail");
+                return new ErrorResponse(ErrorCode.MissingProperties, "Missing thumbnail");
 
             week.Thumbnail = thumbnail;
 
@@ -41,13 +44,13 @@ namespace GirafRest.Shared
                 var wkDay = new Weekday(day);
                 if (!(await AddPictogramsToWeekday(wkDay, day, _giraf)))
                 {
-                    return new ErrorResponse(ErrorCode.ResourceNotFound, "pictogram");
+                    return new ErrorResponse(ErrorCode.ResourceNotFound, "Missing pictogram");
                 }
 
                 week.UpdateDay(wkDay);
             }
 
-            //All week days that were not specified in the new schedule, but existed before
+            // All week days that were not specified in the new schedule, but existed before
             var toBeDeleted = week.Weekdays.Where(wd => !weekDTO.Days.Any(d => d.Day == wd.Day)).ToList();
             foreach (var deletedDay in toBeDeleted)
             {
@@ -56,13 +59,14 @@ namespace GirafRest.Shared
 
             return null;
         }
-        
+
         /// <summary>
         /// Take pictograms and choices from DTO and add them to weekday object.
         /// </summary>
         /// <returns>True if all pictograms and choices were found and added, and false otherwise.</returns>
         /// <param name="to">Pictograms and choices will be added to this object.</param>
         /// <param name="from">Pictograms and choices will be read from this object.</param>
+        /// <param name="_giraf">IGirafService for injection.</param>
         private static async Task<bool> AddPictogramsToWeekday(Weekday to, WeekdayDTO from, IGirafService _giraf){
             if(from.Activities != null) 
             {

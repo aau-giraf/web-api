@@ -2,6 +2,9 @@
 
 namespace GirafRest.Models.DTOs.AccountDTOs
 {
+    /// <summary>
+    /// DTO Used for registrering/Signup
+    /// </summary>
     public class RegisterDTO
     {
         /// <summary>
@@ -20,6 +23,7 @@ namespace GirafRest.Models.DTOs.AccountDTOs
         /// <summary>
         /// The users DisplayName
         /// </summary>
+        [Required]
         public string DisplayName { get; set; }
 
         /// <summary>
@@ -28,6 +32,9 @@ namespace GirafRest.Models.DTOs.AccountDTOs
         [Required]
         public long? DepartmentId { get; set; }
 
+        /// <summary>
+        /// Signup role
+        /// </summary>
         [Required]
         public GirafRoles Role { get; set; }
     }
