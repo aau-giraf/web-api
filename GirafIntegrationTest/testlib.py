@@ -1,9 +1,11 @@
+import collections
 import unittest
 from unittest.runner import TextTestResult, TextTestRunner
 from unittest.case import TestCase
 import time
 import warnings
 import io
+from typing import Any
 from PIL import Image
 
 # base API url
@@ -54,6 +56,13 @@ def order_handler():
         return [1, -1][ordered[a] < ordered[b]]
 
     return ordered_handler, compare_handler
+
+
+def is_sequence(obj: Any) -> bool:
+    """Return true if object is instance of list or tuple."""
+    if isinstance(obj, (str, bytes)):
+        return False
+    return isinstance(obj, collections.abc.Sequence)
 
 
 # instances of ordering and comparison functions for external import
