@@ -332,15 +332,24 @@ namespace GirafRest.Controllers
             // This sets the path that the system looks for when retrieving a pictogram
             string path = imagePath + pictogram.Id + ".png";
 
-            if (image.Length > 0)
-            {
-                using (FileStream fs =
+            if (image.Length > 0){
+                try
+                {
+                    using (FileStream fs =
                     new FileStream(path,
                         FileMode.Create))
-                {
-
-                    fs.Write(image);
+                    {
+                        
+                        fs.Write(image);
+                    }
                 }
+                catch(System.UnauthorizedAccessException uaex)
+                {
+                    //Consider if the errorcode is the most appropriate one here
+                    return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.Forbidden, "The server does not have permission to write this file"));
+                }
+                
+
 
                 pictogram.ImageHash = image.GetHashCode().ToString();
             }
@@ -379,9 +388,26 @@ namespace GirafRest.Controllers
 
             if (!CheckOwnership(picto, usr).Result)
                 return StatusCode(StatusCodes.Status403Forbidden, 
-                    new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
+                    new ErrorResponse(ErrorCode.NotAuthorized,  "User does not have permission"));
 
-            return Ok(new SuccessResponse<byte[]>(System.IO.File.ReadAllBytes(imagePath + picto.Id + ".png")));
+            var pictoPath = $"{imagePath}{picto.Id}.png";
+            
+            
+            //At this time, there is no '.NET native' way to check file permissions on Linux, so instead we catch an exception, if current (OS) user does not have read permission
+            try
+            {
+                byte[] data = System.IO.File.ReadAllBytes(pictoPath);
+                return Ok(new SuccessResponse<byte[]>(data));
+            }
+            catch(UnauthorizedAccessException uAEx)
+            {
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "The server can not access the specified image"));
+            }
+            catch(FileNotFoundException fNFex)
+            {
+                return StatusCode(StatusCodes.Status404NotFound, new ErrorResponse(ErrorCode.NotAuthorized, "The server can not find the specified image"));
+            }
+        
         }
 
         /// <summary>
@@ -416,10 +442,9 @@ namespace GirafRest.Controllers
                 return NotFound(new ErrorResponse(ErrorCode.PictogramHasNoImage, "Pictogram has no image"));
 
             // you can get all public pictograms
-            if (CheckOwnership(picto, usr).Result)
+            if (!CheckOwnership(picto, usr).Result)
             {
-                _giraf._logger.LogInformation(imagePath);
-                return PhysicalFile(imagePath + picto.Id + ".png", IMAGE_TYPE_PNG);
+                return NotFound();
             }
 
             // you can only get a protected picogram if it is owned by your department
@@ -432,7 +457,7 @@ namespace GirafRest.Controllers
                 return StatusCode(StatusCodes.Status403Forbidden,
                     new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
-            return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, "Pictogram image not found"));
+            return PhysicalFile($"{imagePath}{picto.Id}.png", IMAGE_TYPE_PNG);
         }
 
         #endregion
@@ -446,7 +471,7 @@ namespace GirafRest.Controllers
         /// <param name="usr">The user in question.</param>
         /// <returns>A bool indicating whether the user owns the pictogram or not.</returns>
         private async Task<bool> CheckOwnership(Pictogram picto, GirafUser usr)
-        {
+        { 
             var ownsPictogram = false;
             switch (picto.AccessLevel)
             {
