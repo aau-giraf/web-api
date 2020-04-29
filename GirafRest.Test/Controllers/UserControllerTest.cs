@@ -59,12 +59,12 @@ namespace GirafRest.Test
 
             this.UserSettings = new List<SettingDTO>() {
                 new SettingDTO(){WeekDayColors = new List<WeekDayColorDTO> {
-                new WeekDayColorDTO() { Day = Days.Monday, HexColor = "#067700"},
-                new WeekDayColorDTO() { Day = Days.Tuesday, HexColor = "#8c1086"},
-                new WeekDayColorDTO() { Day = Days.Wednesday, HexColor = "#ff7f00"},
-                new WeekDayColorDTO() { Day = Days.Thursday, HexColor = "#0017ff"},
-                new WeekDayColorDTO() { Day = Days.Friday, HexColor = "#ffdd00"},
-                new WeekDayColorDTO() { Day = Days.Saturday, HexColor = "#ff0102"},
+                new WeekDayColorDTO() { Day = Days.Monday, HexColor = "#08a045"},
+                new WeekDayColorDTO() { Day = Days.Tuesday, HexColor = "#540d6e"},
+                new WeekDayColorDTO() { Day = Days.Wednesday, HexColor = "#f77f00"},
+                new WeekDayColorDTO() { Day = Days.Thursday, HexColor = "#004777"},
+                new WeekDayColorDTO() { Day = Days.Friday, HexColor = "#f9c80e"},
+                new WeekDayColorDTO() { Day = Days.Saturday, HexColor = "#db2b39"},
                 new WeekDayColorDTO() { Day = Days.Sunday, HexColor = "#ffffff"}},
                 Theme = Theme.girafGreen,
                 TimerSeconds = 120,
