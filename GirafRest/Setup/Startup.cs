@@ -90,6 +90,12 @@ namespace GirafRest.Setup
             //load general configuration from appsettings.json
             services.Configure<IpRateLimitOptions>(Configuration.GetSection("IpRateLimiting"));
 
+            services.Configure<IdentityOptions>(options => {
+               // User settings.
+               options.User.AllowedUserNameCharacters =
+               "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+æøåÆØÅ";
+            }); 
+
             // inject counter and rules stores
             services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
             services.AddSingleton<IRateLimitCounterStore, MemoryCacheRateLimitCounterStore>();
