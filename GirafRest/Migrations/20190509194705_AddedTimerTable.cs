@@ -3,8 +3,15 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace GirafRest.Migrations
 {
+    /// <summary>
+    /// Introduces Timer in database
+    /// </summary>
     public partial class AddedTimerTable : Migration
     {
+        /// <summary>
+        /// Run migration here
+        /// </summary>
+        /// <param name="migrationBuilder">Which MigrationBuilder to use</param>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<long>(
@@ -42,6 +49,10 @@ namespace GirafRest.Migrations
                 onDelete: ReferentialAction.Cascade);
         }
 
+        /// <summary>
+        /// Rollback migration here
+        /// </summary>
+        /// <param name="migrationBuilder">Which MigrationBuilder to use</param>
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(

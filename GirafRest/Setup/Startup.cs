@@ -8,20 +8,12 @@ using GirafRest.Models;
 using GirafRest.Services;
 using GirafRest.Extensions;
 using Microsoft.AspNetCore.Identity;
-using GirafRest.Controllers;
 using Serilog;
 using System;
-using Swashbuckle.AspNetCore.Swagger;
-using System.Net;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
-using GirafRest.Models.Responses;
 using System.IO;
 using System.Text;
-using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -29,6 +21,8 @@ using System.Collections.Generic;
 using GirafRest.Filters;
 using AspNetCoreRateLimit;
 using Swashbuckle.AspNetCore.SwaggerUI;
+using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Hosting;
 
 namespace GirafRest.Setup
 {
@@ -39,7 +33,11 @@ namespace GirafRest.Setup
     /// </summary>
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        /// <summary>
+        /// Startup Application, and set appsettings
+        /// </summary>
+        /// <param name="env">Hosting environment to start up into</param>
+        public Startup(IWebHostEnvironment env)
         {
             HostingEnvironment = env;
             var coreEnvironement = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
@@ -65,7 +63,12 @@ namespace GirafRest.Setup
             }
         }
 
-        public IHostingEnvironment HostingEnvironment { get; }
+
+        /// <summary>
+        /// Hosting Environment to be initialized with
+        /// </summary>
+        public IWebHostEnvironment HostingEnvironment { get; }
+
         /// <summary>
         /// The configuration, contains information regarding connecting to the database
         /// </summary>
@@ -86,6 +89,12 @@ namespace GirafRest.Setup
 
             //load general configuration from appsettings.json
             services.Configure<IpRateLimitOptions>(Configuration.GetSection("IpRateLimiting"));
+
+            services.Configure<IdentityOptions>(options => {
+               // User settings.
+               options.User.AllowedUserNameCharacters =
+               "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+æøåÆØÅ";
+            }); 
 
             // inject counter and rules stores
             services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
@@ -110,8 +119,10 @@ namespace GirafRest.Setup
             services.AddTransient<IGirafService, GirafService>();
             services.AddMvc(options =>
             {
+                options.EnableEndpointRouting = false;
                 options.Filters.Add<LogFilter>();
             });
+            services.AddControllers().AddNewtonsoftJson();
 
             // Set up Cross-Origin Requests
             services.AddCors(o => o.AddPolicy("AllowAll", builder =>
@@ -124,21 +135,34 @@ namespace GirafRest.Setup
             // Register the Swagger generator, defining one or more Swagger documents
             services.AddSwaggerGen(c =>
             { 
-                c.SwaggerDoc("v1", new Info { Title = "The Giraf REST API", Version = "v1" });
-                c.DescribeAllEnumsAsStrings();
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "The Giraf REST API", Version = "v1" });
                 var basePath = AppContext.BaseDirectory;
                 var xmlPath = Path.Combine(basePath, "GirafRest.xml");
                 c.IncludeXmlComments(xmlPath);
-                c.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
                     Name = "Authorization",
-                    In = "header",
-                    Type = "apiKey"
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey
                 });
-                c.AddSecurityRequirement(new Dictionary<string, IEnumerable<string>>
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
                 {
-                    { "Bearer", new string[] { } }
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            },
+                            Scheme = "oauth2",
+                            Name = "Bearer",
+                            In = ParameterLocation.Header,
+
+                        },
+                        new List<string>()
+                    }
                 });
             });
         }
@@ -184,18 +208,18 @@ namespace GirafRest.Setup
         /// </summary>
         public void Configure(
             IApplicationBuilder app,
-            IHostingEnvironment env,
+            IWebHostEnvironment env,
             ILoggerFactory loggerFactory,
             UserManager<GirafUser> userManager,
             RoleManager<GirafRole> roleManager,
-            IApplicationLifetime appLifetime)
+            IHostApplicationLifetime appLifetime)
         {
             app.UseIpRateLimiting();
 
             //Configure logging for the application
             appLifetime.ApplicationStopped.Register(Log.CloseAndFlush);
 
-            app.UseStatusCodePagesWithReExecute("/v1/Error", "?status={0}");
+            app.UseStatusCodePagesWithReExecute("/v1/Error", "?statusCode={0}");
             app.UseStaticFiles();
             // Enable Cors, see configuration in ConfigureServices
             app.UseCors("AllowAll");

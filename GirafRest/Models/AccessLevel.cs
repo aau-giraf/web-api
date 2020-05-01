@@ -5,13 +5,13 @@ namespace GirafRest.Models
     /// </summary>
     public enum AccessLevel
     {
-        //Accessible by everyone, even non-users.
+        /// <summary>Accessible by everyone, even non-users.</summary>
         PUBLIC = 1,
 
-        //Accessible to all users associated with the owning department.
+        /// <summary>Accessible to all users associated with the owning department.</summary>
         PROTECTED = 2,
 
-        //Accessible only to the owning user.
+        /// <summary>Accessible only to the owning user.</summary>
         PRIVATE = 3
     }
 }

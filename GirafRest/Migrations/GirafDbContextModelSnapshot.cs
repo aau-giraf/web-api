@@ -134,7 +134,8 @@ namespace GirafRest.Migrations
 
                     b.Property<long?>("DepartmentKey");
 
-                    b.Property<string>("DisplayName");
+                    b.Property<string>("DisplayName")
+                        .IsRequired();
 
                     b.Property<string>("Email")
                         .HasMaxLength(256);
@@ -232,9 +233,13 @@ namespace GirafRest.Migrations
 
                     b.Property<bool>("GreyScale");
 
+                    b.Property<bool>("LockTimerControl");
+
                     b.Property<int?>("NrOfDaysToDisplay");
 
                     b.Property<int>("Orientation");
+
+                    b.Property<bool>("PictogramText");
 
                     b.Property<int>("Theme");
 
@@ -292,6 +297,8 @@ namespace GirafRest.Migrations
 
                     b.Property<string>("Name");
 
+                    b.Property<long?>("ThumbnailId");
+
                     b.Property<long>("ThumbnailKey");
 
                     b.Property<int>("WeekNumber");
@@ -306,7 +313,7 @@ namespace GirafRest.Migrations
                         .IsUnique()
                         .HasAnnotation("SqlServer:Clustered", true);
 
-                    b.HasIndex("ThumbnailKey");
+                    b.HasIndex("ThumbnailId");
 
                     b.ToTable("Weeks");
                 });
@@ -321,13 +328,15 @@ namespace GirafRest.Migrations
 
                     b.Property<string>("Name");
 
+                    b.Property<long?>("ThumbnailId");
+
                     b.Property<long>("ThumbnailKey");
 
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentKey");
 
-                    b.HasIndex("ThumbnailKey");
+                    b.HasIndex("ThumbnailId");
 
                     b.ToTable("WeekTemplates");
                 });
@@ -537,8 +546,7 @@ namespace GirafRest.Migrations
 
                     b.HasOne("GirafRest.Models.Pictogram", "Thumbnail")
                         .WithMany()
-                        .HasForeignKey("ThumbnailKey")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("ThumbnailId");
                 });
 
             modelBuilder.Entity("GirafRest.Models.WeekTemplate", b =>
@@ -550,8 +558,7 @@ namespace GirafRest.Migrations
 
                     b.HasOne("GirafRest.Models.Pictogram", "Thumbnail")
                         .WithMany()
-                        .HasForeignKey("ThumbnailKey")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("ThumbnailId");
                 });
 
             modelBuilder.Entity("GirafRest.Models.Weekday", b =>

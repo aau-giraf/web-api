@@ -16,6 +16,10 @@ namespace GirafRest.Migrations
     [Migration("20180517064849_MakeGirafIdUnWeekRequired")]
     partial class MakeGirafIdUnWeekRequired
     {
+        /// <summary>
+        /// Setup target model
+        /// </summary>
+        /// <param name="modelBuilder">Which ModelBuilder to use</param>
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618

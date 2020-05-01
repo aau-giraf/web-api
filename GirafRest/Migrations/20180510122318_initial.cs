@@ -5,8 +5,15 @@ using System.Collections.Generic;
 
 namespace GirafRest.Migrations
 {
+    /// <summary>
+    /// Initial Migration
+    /// </summary>
     public partial class initial : Migration
     {
+        /// <summary>
+        /// Run migration here
+        /// </summary>
+        /// <param name="migrationBuilder">Which MigrationBuilder to use</param>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
@@ -588,6 +595,10 @@ namespace GirafRest.Migrations
                 column: "ThumbnailKey");
         }
 
+        /// <summary>
+        /// Rollback migration here
+        /// </summary>
+        /// <param name="migrationBuilder">Which MigrationBuilder to use</param>
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(

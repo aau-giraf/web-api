@@ -10,7 +10,24 @@ namespace GirafRest.Models.DTOs
     /// <summary>
     /// Giraf roles
     /// </summary>
-    public enum GirafRoles { Citizen=1, Department, Guardian, SuperUser }
+    public enum GirafRoles {
+        /// <summary>
+        /// Citizen role
+        /// </summary>
+        Citizen = 1,
+        /// <summary>
+        /// Department role
+        /// </summary>
+        Department,
+        /// <summary>
+        /// Guardian role
+        /// </summary>
+        Guardian,
+        /// <summary>
+        /// Super user role
+        /// </summary>
+        SuperUser
+    }
 
     /// <summary>
     /// Defines the structure of GirafUsers when serializing and deserializing data. Data transfer objects (DTOs) 
@@ -43,7 +60,8 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// The display name of the user.
         /// </summary>
-        public string ScreenName { get; set; }
+        [Required]
+        public string DisplayName { get; set; }
 
         /// <summary>
         /// The key of the user's department.
@@ -63,13 +81,12 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         /// <param name="user">User.</param>
         /// <param name="userRole">User role.</param>
-        /// <param name="addGuardianRelation">If set to <c>true</c> add guardian relation.</param>
         public GirafUserDTO(GirafUser user, GirafRoles userRole)
         {
             //Add all trivial values
             Id = user.Id;
             Username = user.UserName;
-            ScreenName = user.DisplayName;
+            DisplayName = user.DisplayName;
             RoleName = userRole.ToString();
             Role = userRole;
 

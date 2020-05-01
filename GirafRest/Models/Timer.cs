@@ -5,6 +5,9 @@ using GirafRest.Models.DTOs;
 
 namespace GirafRest.Models
 {
+    /// <summary>
+    /// Model for holding a timer, start time, progress etc.
+    /// </summary>
     public class Timer
     {
         /// <summary>

@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace GirafRest.Models.DTOs
 {
+    /// <summary>
+    /// Simple DTO for a Resource ID
+    /// </summary>
     public class ResourceIdDTO
     {
         /// <summary>

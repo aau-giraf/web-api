@@ -6,20 +6,26 @@ using Microsoft.AspNetCore.Identity;
 
 namespace GirafRest.Models.DTOs
 {
+    /// <summary>
+    /// DTO for <see cref="Department"/>
+    /// </summary>
     public class DepartmentDTO
     {
         /// <summary>
         /// The id of the department.
         /// </summary>
         public long Id { get; internal set; }
+
         /// <summary>
         /// The name of the department.
         /// </summary>
         public string Name { get; set; }
+
         /// <summary>
-        /// A list of the usernames of all members of the department.
+        /// A list of the displaynames of all members of the department.
         /// </summary>
-        public ICollection<UserNameDTO> Members { get; set; }
+        public ICollection<DisplayNameDTO> Members { get; set; }
+
         /// <summary>
         /// A list of ids of all resources owned by the department.
         /// </summary>
@@ -29,9 +35,8 @@ namespace GirafRest.Models.DTOs
         /// Creates a new department data transfer object from a given department.
         /// </summary>
         /// <param name="department">The department to transfer.</param>
-        /// <param name="roleManager">Used for finding the members' roles.</param>
-        /// <param name="girafService">Used for finding the members' roles.</param>
-        public DepartmentDTO(Department department, IEnumerable<UserNameDTO> users)
+        /// <param name="users">Used for finding the members.</param>
+        public DepartmentDTO(Department department, IEnumerable<DisplayNameDTO> users)
         {
             Id = department.Key;
             Members = users.ToList();
@@ -40,17 +45,24 @@ namespace GirafRest.Models.DTOs
             Resources = new List<long> (department.Resources.Select(dr => dr.PictogramKey));
         }
 
+        /// <summary>
+        /// Empty constructor for JSON Generation
+        /// </summary>
         public DepartmentDTO ()
         {
-            Members = new List<UserNameDTO>();
+            Members = new List<DisplayNameDTO>();
             Resources = new List<long>();
         }
 
-        public static List<UserNameDTO> FindMembers(IEnumerable<GirafUser> users, RoleManager<GirafRole> roleManager, IGirafService girafService)
+        /// <summary>
+        /// Find belonging members
+        /// </summary>
+        /// <returns>List of matching users</returns>
+        public static List<DisplayNameDTO> FindMembers(IEnumerable<GirafUser> users, RoleManager<GirafRole> roleManager, IGirafService girafService)
         {
-            return new List<UserNameDTO>(
-                users.Select(m => new UserNameDTO(
-                        m.UserName,
+            return new List<DisplayNameDTO>(
+                users.Select(m => new DisplayNameDTO(
+                        m.DisplayName,
                         roleManager.findUserRole(girafService._userManager, m).Result,
                         m.Id
                     )

@@ -77,6 +77,7 @@ namespace GirafRest.Services
             var usr = (await _userManager.GetUserAsync(principal));
             if (usr == null) return null;
             return await _context.Users
+                .Where(u => u.Id == usr.Id)
                 .Include(u => u.Department)
                 .FirstOrDefaultAsync();
         }
@@ -84,7 +85,7 @@ namespace GirafRest.Services
         /// <summary>
         /// Method for loading user from context and eager loading fields requied to read their <b>week schedules</b>
         /// </summary>
-        /// <param name="principal">The security claim - i.e. the information about the currently authenticated user.</param>
+        /// <param name="id">id of user to load.</param>
         /// <returns>A <see cref="GirafUser"/> with <b>all</b> related data.</returns>
         public async Task<GirafUser> LoadUserWithWeekSchedules(string id){
             var user = await _context.Users

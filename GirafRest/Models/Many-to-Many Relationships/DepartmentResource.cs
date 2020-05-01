@@ -42,7 +42,7 @@ namespace GirafRest.Models
         /// Creates a new many-to-many relationship between a department and a resource.
         /// </summary>
         /// <param name="dep">The involved department.</param>
-        /// <param name="resource">The involved resource.</param>
+        /// <param name="pictogram">The involved pictogram.</param>
         public DepartmentResource(Department dep, Pictogram pictogram)
         {
             this.OtherKey = dep.Key;
