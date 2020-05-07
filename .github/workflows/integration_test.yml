@@ -12,7 +12,7 @@ jobs:
         dotnet: [ '3.1.201' ]
     services:
       mysql:
-        image: mysql:8.0
+        image: mysql:5.7
         env:
           MYSQL_DATABASE: 'giraf'
         ports:
