@@ -32,6 +32,7 @@ jobs:
           dotnet tool install --global dotnet-ef
           cd GirafRest
           dotnet restore
+          export "ConnectionStrings__DefaultConnection"="server=localhost;userid=${{ secrets.IntegrationTestUser }};password=${{ secrets.IntegrationTestPassword }};database=giraf;Allow User Variables=True"
           dotnet ef database update
           dotnet run --sample-data
       - name: Set up Python
