@@ -1,4 +1,4 @@
-name: integration tests
+name: Integration tests
 
 on: push
 #  pull_request:
@@ -27,7 +27,6 @@ jobs:
           dotnet-version: ${{ matrix.dotnet }}
       - name: Run API
         run: |
-          env
           mysql --host 127.0.0.1 --port 3306 -uroot -pGiraf123 -e "SHOW DATABASES"
           export ASPNETCORE_ENVIRONMENT="Production"
           bash scripts/ci-setup.sh ${{ env.IP }} ${{ secrets.IntegrationTestUser }} ${{ secrets.IntegrationTestPassword }}
