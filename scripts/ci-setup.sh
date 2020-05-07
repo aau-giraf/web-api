@@ -12,3 +12,5 @@ sed -i "s/$default_con/$new_con/g" GirafRest/appsettings.json
 sed -i "s/<jwt-key>/$jwt_key/g" GirafRest/appsettings.json
 sed -i "s/<jwt-issuer>/$jwt_iss/g" GirafRest/appsettings.json
 sed -i "s/\"Limit\": 20/\"Limit\": $limit/g" GirafRest/appsettings.json
+
+cat GirafRest/appsettings.json
