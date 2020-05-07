@@ -10,13 +10,13 @@ jobs:
     strategy:
       matrix:
         dotnet: [ '3.1.201' ]
-    #services:
-    #  mysql:
-    #    image: mysql:8.0
-    #    env:
-    #      MYSQL_DATABASE: 'giraf'
-    #    ports:
-    #      - 3306
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: 'giraf'
+        ports:
+          - 3306
     steps:
       - uses: actions/checkout@v1
       - name: Set up API
@@ -27,7 +27,6 @@ jobs:
         env:
           ID: $(sudo docker ps -f ancestor=mysql:8.0 --format "{{.ID}}")
         run: |
-          sudo apt-get install -y mysql-client
           mysql --host 127.0.0.1 --port 3306 -uroot -pGiraf123 -e "SHOW DATABASES"
           export ASPNETCORE_ENVIRONMENT="Production"
           echo ::set-env name=IP::$(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${{ env.ID }})
