@@ -21,14 +21,13 @@ jobs:
           mysql database: 'giraf'
           mysql user: ${{ secrets.IntegrationTestUser }}
           mysql password: ${{ secrets.IntegrationTestPassword }}
-      - name: Get Docker ID
-        env:
-          ID: $(sudo docker ps -f ancestor=mysql:8.0 --format "{{.ID}}")
       - name: Set up API
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ matrix.dotnet }}
       - name: Run API
+        env:
+          ID: $(sudo docker ps -f ancestor=mysql:8.0 --format "{{.ID}}")
         run: |
           export ASPNETCORE_ENVIRONMENT="Production"
           echo ${{ env.ID }}
