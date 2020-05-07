@@ -14,6 +14,7 @@ jobs:
       mysql:
         image: mysql:5.7
         env:
+          MYSQL_ROOT_PASSWORD: Giraf123
           MYSQL_DATABASE: 'giraf'
         ports:
           - 3306:3306
