@@ -1,6 +1,8 @@
 # Giraf Backend
 
 ![Build Status](https://github.com/aau-giraf/web-api/workflows/.NET%20Core/badge.svg)
+[![codecov](https://codecov.io/gh/aau-giraf/web-api/branch/master/graph/badge.svg)](https://codecov.io/gh/aau-giraf/web-api)
+
 
 This repository contains the backend API for the Giraf Project. The API is a .net-core project written in C#.
 
