@@ -1,0 +1,45 @@
+name: integration tests
+
+on: push
+#  pull_request:
+#    types: [ready_for_review, review_requested, opened]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet: [ '3.1.201' ]
+    steps:
+      - uses: actions/checkout@v1
+      - name: Shutdown default MySQL
+        run: sudo service mysql stop
+      - name: Set up MySQL
+        uses: mirromutth/mysql-action@v1.1
+        with:
+          mysql version: '8.0'
+          mysql database: 'giraf'
+          mysql user: ${{ secrets.IntegrationTestUser }}
+          mysql password: ${{ secrets.IntegrationTestPassword }}
+      - name: Set up API
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ matrix.dotnet }}
+        run: |
+          dotnet tool install --global dotnet-ef
+          ASPNETCORE_ENVIRONMENT="Production"
+          bash scripts/ci-setup.sh ${{ secrets.IntegrationTestUser }} ${{ secrets.IntegrationTestPassword }}
+          cd GirafRest
+          dotnet restore
+          dotnet ef database update
+          dotnet run --sample-data
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r GirafIntegrationTest/requirements.txt
+      - name: Test
+        run: python GirafIntegrationTest/test.py
