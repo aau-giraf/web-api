@@ -16,7 +16,7 @@ jobs:
         env:
           MYSQL_DATABASE: 'giraf'
         ports:
-          - 3306
+          - 3306:3306
     steps:
       - uses: actions/checkout@v1
       - name: Set up API
