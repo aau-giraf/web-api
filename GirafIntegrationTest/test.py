@@ -42,4 +42,6 @@ suite = unittest.defaultTestLoader.discover(start_dir='tests', pattern=test_patt
 if __name__ == '__main__':
     print('\033[33m' + 'Running integration tests for the GIRAF web API' + '\033[0m')
     print('----------------------------------------------------------------------\n')
-    runner.run(suite)
+    res = runner.run(suite)
+    if not res.wasSuccessful():
+        sys.exit(1)
