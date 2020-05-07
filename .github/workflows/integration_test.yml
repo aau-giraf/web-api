@@ -25,6 +25,7 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ matrix.dotnet }}
+      - name: Run API
         run: |
           dotnet tool install --global dotnet-ef
           ASPNETCORE_ENVIRONMENT="Production"
