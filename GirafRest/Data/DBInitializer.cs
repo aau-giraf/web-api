@@ -58,7 +58,8 @@ namespace GirafRest.Setup
             }
             context.SaveChanges();
         }
-
+        
+        #region Generating pictograms
         private static void CreatePictograms(int count)
         {
             System.Console.WriteLine($"Creating {count} pictograms");
@@ -75,6 +76,7 @@ namespace GirafRest.Setup
                 pictogram.Save($"../pictograms/{i}.png", ImageFormat.Png); 
             }
         }
+
         private static Image DrawText(string text, Font font, Color textColor, Color backColor)
         {
             Image pictogram = new Bitmap(200, 200);
@@ -93,6 +95,7 @@ namespace GirafRest.Setup
 
             return pictogram;
         }
+        #endregion
 
         #region Ownership sample methods
         private static void AddPictogramsToUser(GirafUser user, params Pictogram[] pictograms)
