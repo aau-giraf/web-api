@@ -1,5 +1,6 @@
 import unittest
 import sys
+import os
 from requests import get
 from requests.exceptions import ConnectionError
 from argparse import ArgumentParser
@@ -42,4 +43,8 @@ suite = unittest.defaultTestLoader.discover(start_dir='tests', pattern=test_patt
 if __name__ == '__main__':
     print('\033[33m' + 'Running integration tests for the GIRAF web API' + '\033[0m')
     print('----------------------------------------------------------------------\n')
+    if sys.platform == 'win32':
+        os.system('python ../scripts/pictogen.py 200 ../pictograms')
+    else:
+        os.system('python3 ../scripts/pictogen.py 200 ../pictograms')
     runner.run(suite)
