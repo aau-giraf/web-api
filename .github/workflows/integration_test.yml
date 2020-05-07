@@ -27,9 +27,9 @@ jobs:
           dotnet-version: ${{ matrix.dotnet }}
       - name: Run API
         run: |
-          dotnet tool install --global dotnet-ef
           ASPNETCORE_ENVIRONMENT="Production"
           bash scripts/ci-setup.sh ${{ secrets.IntegrationTestUser }} ${{ secrets.IntegrationTestPassword }}
+          dotnet tool install --global dotnet-ef
           cd GirafRest
           dotnet restore
           dotnet ef database update
