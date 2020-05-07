@@ -26,12 +26,9 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnet }}
       - name: Run API
-        env:
-          ID: $(sudo docker ps -f ancestor=mysql:8.0 --format "{{.ID}}")
         run: |
           mysql --host 127.0.0.1 --port 3306 -uroot -pGiraf123 -e "SHOW DATABASES"
           export ASPNETCORE_ENVIRONMENT="Production"
-          echo ::set-env name=IP::$(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${{ env.ID }})
           bash scripts/ci-setup.sh ${{ env.IP }} ${{ secrets.IntegrationTestUser }} ${{ secrets.IntegrationTestPassword }}
           dotnet tool install --global dotnet-ef
           cd GirafRest
