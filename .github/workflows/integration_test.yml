@@ -18,7 +18,6 @@ jobs:
         uses: mirromutth/mysql-action@v1.1
         with:
           mysql version: '8.0'
-          container port: 3306
           mysql database: 'giraf'
           mysql user: ${{ secrets.IntegrationTestUser }}
           mysql password: ${{ secrets.IntegrationTestPassword }}
@@ -31,6 +30,7 @@ jobs:
           ID: $(sudo docker ps -f ancestor=mysql:8.0 --format "{{.ID}}")
         run: |
           export ASPNETCORE_ENVIRONMENT="Production"
+          sudo docker ps ${{ env.ID }}
           echo ::set-env name=IP::$(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${{ env.ID }})
           bash scripts/ci-setup.sh ${{ env.IP }} ${{ secrets.IntegrationTestUser }} ${{ secrets.IntegrationTestPassword }}
           dotnet tool install --global dotnet-ef
