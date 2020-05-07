@@ -10,17 +10,16 @@ jobs:
     strategy:
       matrix:
         dotnet: [ '3.1.201' ]
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: 'giraf'
+        ports:
+          - 3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
       - uses: actions/checkout@v1
-      - name: Shutdown default MySQL
-        run: sudo service mysql stop
-      - name: Set up MySQL
-        uses: mirromutth/mysql-action@v1.1
-        with:
-          mysql version: '8.0'
-          mysql database: 'giraf'
-          mysql user: ${{ secrets.IntegrationTestUser }}
-          mysql password: ${{ secrets.IntegrationTestPassword }}
       - name: Set up API
         uses: actions/setup-dotnet@v1
         with:
@@ -30,7 +29,6 @@ jobs:
           ID: $(sudo docker ps -f ancestor=mysql:8.0 --format "{{.ID}}")
         run: |
           export ASPNETCORE_ENVIRONMENT="Production"
-          sudo docker ps
           echo ::set-env name=IP::$(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${{ env.ID }})
           bash scripts/ci-setup.sh ${{ env.IP }} ${{ secrets.IntegrationTestUser }} ${{ secrets.IntegrationTestPassword }}
           dotnet tool install --global dotnet-ef
