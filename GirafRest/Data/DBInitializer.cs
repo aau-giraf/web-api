@@ -34,9 +34,7 @@ namespace GirafRest.Setup
                 sampleHandler.SerializeDataAsync(context, userManager);
 
                 return;
-            }
-
-          
+            }          
 
             SampleData sampleData = sampleHandler.DeserializeData();
             var departments = AddSampleDepartments(context, sampleData.DepartmentList);
@@ -157,7 +155,7 @@ namespace GirafRest.Setup
                 };
 
                 var x = userManager.CreateAsync(user, sampleUser.Password).Result.Succeeded;
-                if (x)
+                if(x)
                 {
                     var a = userManager.AddToRoleAsync(user, sampleUser.Role).Result.Succeeded;
                     if (!a)
