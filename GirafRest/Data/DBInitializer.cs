@@ -69,15 +69,10 @@ namespace GirafRest.Setup
                 FontStyle.Regular,
                 GraphicsUnit.Pixel);
 
-            using EncoderParameter ratio = new EncoderParameter(Encoder.Quality, 1L);
-            using EncoderParameters codecParams = new EncoderParameters(1);
-            codecParams.Param[0] = ratio;
-            ImageCodecInfo pngCodecInfo = ImageCodecInfo.GetImageEncoders().FirstOrDefault(x => x.FormatID == ImageFormat.Png.Guid);
-         
             for (int i = 1; i <= count; i++)
             {
                 using Image pictogram = DrawText(i.ToString(), font, Color.Black, Color.White);
-                pictogram.Save($"../pictograms/{i}.png", pngCodecInfo, codecParams); 
+                pictogram.Save($"../pictograms/{i}.png", ImageFormat.Png); 
             }
         }
         private static Image DrawText(string text, Font font, Color textColor, Color backColor)
