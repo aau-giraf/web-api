@@ -14,4 +14,3 @@ comment:
 ignore:
   - ".github/**/*"
   - "./*"
-  - "./GirafRest/Migrations/**/*"
