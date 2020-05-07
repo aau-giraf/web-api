@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace GirafRest.Setup
 {
@@ -18,6 +20,8 @@ namespace GirafRest.Setup
 
         public static void Initialize(GirafDbContext context, UserManager<GirafUser> userManager)
         {
+            CreatePictograms(200);
+
             // Check if any data is in the database
             if (context.Departments.Any())
             {
@@ -31,6 +35,8 @@ namespace GirafRest.Setup
 
                 return;
             }
+
+          
 
             SampleData sampleData = sampleHandler.DeserializeData();
             var departments = AddSampleDepartments(context, sampleData.DepartmentList);
@@ -53,6 +59,45 @@ namespace GirafRest.Setup
                 }
             }
             context.SaveChanges();
+        }
+
+        private static void CreatePictograms(int count)
+        {
+            System.Console.WriteLine($"Creating {count} pictograms");
+            using FontFamily family = new FontFamily("Arial");
+            using Font font = new Font(
+                family,
+                48,
+                FontStyle.Regular,
+                GraphicsUnit.Pixel);
+
+            using EncoderParameter ratio = new EncoderParameter(Encoder.Quality, 1L);
+            using EncoderParameters codecParams = new EncoderParameters(1);
+            codecParams.Param[0] = ratio;
+            ImageCodecInfo pngCodecInfo = ImageCodecInfo.GetImageEncoders().FirstOrDefault(x => x.FormatID == ImageFormat.Png.Guid);
+         
+            for (int i = 1; i <= count; i++)
+            {
+                using Image pictogram = DrawText(i.ToString(), font, Color.Black, Color.White);
+                pictogram.Save($"../pictograms/{i}.png", pngCodecInfo, codecParams); 
+            }
+        }
+        private static Image DrawText(string text, Font font, Color textColor, Color backColor)
+        {
+            Image pictogram = new Bitmap(200, 200);
+            using StringFormat format = new StringFormat();
+
+            format.LineAlignment = StringAlignment.Center;
+            format.Alignment = StringAlignment.Center;
+
+            using Graphics drawing = Graphics.FromImage(pictogram);
+            using Brush textBrush = new SolidBrush(textColor);
+
+            drawing.Clear(backColor);
+            drawing.DrawString(text, font, textBrush, RectangleF.FromLTRB(0, 0, 200, 200), format);
+            drawing.Save();
+
+            return pictogram;
         }
 
         #region Ownership sample methods
@@ -112,7 +157,7 @@ namespace GirafRest.Setup
                 };
 
                 var x = userManager.CreateAsync(user, sampleUser.Password).Result.Succeeded;
-                if(x)
+                if (x)
                 {
                     var a = userManager.AddToRoleAsync(user, sampleUser.Role).Result.Succeeded;
                     if (!a)
