@@ -12,7 +12,7 @@ jobs:
         dotnet: [ '3.1.201' ]
     services:
       mysql:
-        image: mysql:5.7
+        image: mysql:8.0
         env:
           MYSQL_ROOT_PASSWORD: Giraf123
           MYSQL_DATABASE: 'giraf'
