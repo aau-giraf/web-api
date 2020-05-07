@@ -78,10 +78,11 @@ namespace GirafRest.Setup
         private static Image DrawText(string text, Font font, Color textColor, Color backColor)
         {
             Image pictogram = new Bitmap(200, 200);
-            using StringFormat format = new StringFormat();
-
-            format.LineAlignment = StringAlignment.Center;
-            format.Alignment = StringAlignment.Center;
+            using StringFormat format = new StringFormat
+            {
+                LineAlignment = StringAlignment.Center,
+                Alignment = StringAlignment.Center
+            };
 
             using Graphics drawing = Graphics.FromImage(pictogram);
             using Brush textBrush = new SolidBrush(textColor);
