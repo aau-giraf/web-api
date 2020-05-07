@@ -34,7 +34,7 @@ namespace GirafRest.Setup
                 sampleHandler.SerializeDataAsync(context, userManager);
 
                 return;
-            }          
+            }
 
             SampleData sampleData = sampleHandler.DeserializeData();
             var departments = AddSampleDepartments(context, sampleData.DepartmentList);
