@@ -18,6 +18,7 @@ jobs:
         uses: mirromutth/mysql-action@v1.1
         with:
           mysql version: '8.0'
+          container port: 3306
           mysql database: 'giraf'
           mysql user: ${{ secrets.IntegrationTestUser }}
           mysql password: ${{ secrets.IntegrationTestPassword }}
