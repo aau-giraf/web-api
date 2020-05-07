@@ -30,7 +30,7 @@ jobs:
           ID: $(sudo docker ps -f ancestor=mysql:8.0 --format "{{.ID}}")
         run: |
           export ASPNETCORE_ENVIRONMENT="Production"
-          env:IP = "$(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${{ env.ID }})"
+          echo ::set-env name=IP::$(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${{ env.ID }})
           bash scripts/ci-setup.sh ${{ env.IP }} ${{ secrets.IntegrationTestUser }} ${{ secrets.IntegrationTestPassword }}
           dotnet tool install --global dotnet-ef
           cd GirafRest
