@@ -7,6 +7,7 @@ using System.Linq;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
 
 namespace GirafRest.Setup
 {
@@ -18,9 +19,9 @@ namespace GirafRest.Setup
 
         public static SampleDataHandler sampleHandler = new SampleDataHandler();
 
-        public static void Initialize(GirafDbContext context, UserManager<GirafUser> userManager)
+        public static void Initialize(GirafDbContext context, UserManager<GirafUser> userManager, int pictogramCount)
         {
-            CreatePictograms(200);
+            CreatePictograms(pictogramCount);
 
             // Check if any data is in the database
             if (context.Departments.Any())
@@ -63,6 +64,8 @@ namespace GirafRest.Setup
         private static void CreatePictograms(int count)
         {
             System.Console.WriteLine($"Creating {count} pictograms");
+            DirectoryInfo dir = Directory.CreateDirectory("../pictograms");
+          
             using FontFamily family = new FontFamily("Arial");
             using Font font = new Font(
                 family,
@@ -73,7 +76,7 @@ namespace GirafRest.Setup
             for (int i = 1; i <= count; i++)
             {
                 using Image pictogram = DrawText(i.ToString(), font, Color.Black, Color.White);
-                pictogram.Save($"../pictograms/{i}.png", ImageFormat.Png); 
+                pictogram.Save(Path.Combine(dir.FullName, $"{i}.png"), ImageFormat.Png); 
             }
         }
 

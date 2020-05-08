@@ -15,10 +15,11 @@ namespace GirafRest
         /// A list of arguments that are allowed by the application.
         /// </summary>
         private const string _options =
-                          "\t--port=integer\t\t\t| Specify which port to host the server on, defaults to 5000.\n" +
-                          "\t--list\t\t\t\t| List options\n" +
+                          "\t--port=integer\t\t| Specify which port to host the server on, defaults to 5000.\n" +
+                          "\t--list\t\t\t| List options\n" +
                           "\t--sample-data\t\t| Tells the rest-api to generate some sample data. This only works on an empty database.\n" +
-                          "\t--logfile=string\t\t| Toggles logging to a file, the string specifies the path to the file relative to the working directory.";
+                          "\t--pictograms=integer\t| Specify how many sample pictograms to generate. Default is 200. Only works when --sample-data is set.\n" +
+                          "\t--logfile=string\t| Toggles logging to a file, the string specifies the path to the file relative to the working directory.";
         /// <summary>
         /// A short help message telling the user how to see all program arguments.
         /// </summary>
@@ -48,6 +49,7 @@ namespace GirafRest
                 Console.WriteLine("\tEnabled sample data option.");
                 ProgramOptions.GenerateSampleData = true;
             };
+            programArgumentDictionary["--pictograms"] = programArgumentPictograms;
             programArgumentDictionary["--logfile"] = programArgumentLogfile;
         }
 
@@ -109,7 +111,26 @@ namespace GirafRest
                     + portString[0]);
             }
         }
-    
+
+        /// <summary>
+        /// Attempts to configure the number of sample pictograms to generate.
+        /// </summary>
+        /// <param name="argument">A string representation of an integer, denoting the desired number of sample pictograms to generate.</param>
+        private void programArgumentPictograms(params string[] argument)
+        {
+            try
+            {
+                var p = Int32.Parse(argument[0]);
+                ProgramOptions.Pictograms = p;
+            }
+            catch
+            {
+                throw new ArgumentException("\tERROR: Invalid pictograms parameter was specified, expected an integer, but found "
+                    + argument[0]);
+            }
+        }
+
+
         /// <summary>
         /// Specifies that the server should utilize file-logging to the given file.
         /// </summary>
