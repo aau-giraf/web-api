@@ -19,6 +19,12 @@ namespace GirafRest.Setup
 
         public static SampleDataHandler sampleHandler = new SampleDataHandler();
 
+        /// <summary>
+        /// Runs specificed initialisations before the API is started.
+        /// </summary>
+        /// <param name="context">The database context.</param>
+        /// <param name="userManager">The API for managing GirafUsers.</param>
+        /// <param name="pictogramCount">The number of sample pictograms to generate.</param>
         public static void Initialize(GirafDbContext context, UserManager<GirafUser> userManager, int pictogramCount)
         {
             CreatePictograms(pictogramCount);
