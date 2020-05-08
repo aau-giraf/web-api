@@ -15,9 +15,9 @@ To run the project locally with a MySQL database first do the following:
     * Install MySQL server 8.0, under the setup, create a root account with password "password", and add a user with username "user" with password "password".
     * (Optional) Install Workbench.
   - For Linux users:
-      * Run `apt install libc6-dev` and `apt install libgdiplus` to install dependecies required by System.Drawing.Common.
+      * Run `apt install libc6-dev` and `apt install libgdiplus` to install dependencies required by System.Drawing.Common.
   - For Mac users:
-      * Run `brew install mono-libgdiplus` to install dependecies required by System.Drawing.Common.
+      * Run `brew install mono-libgdiplus` to install dependencies required by System.Drawing.Common.
     
 1. Clone the web_api repository from GitHub.
 
