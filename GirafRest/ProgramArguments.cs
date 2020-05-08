@@ -130,7 +130,6 @@ namespace GirafRest
             }
         }
 
-
         /// <summary>
         /// Specifies that the server should utilize file-logging to the given file.
         /// </summary>
