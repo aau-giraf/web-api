@@ -12,7 +12,7 @@ To run the project locally with a MySQL database first do the following:
   - Download and install .NET Core 3.1 SDK or a version backwardly compatible with it (https://dotnet.microsoft.com/download/dotnet-core/3.1).
   - Download and install .NET Core ef tools by going to terminal and write "dotnet tool install --global dotnet-ef" after having installed .NET core. 
   - Download MySQL installer (https://dev.mysql.com/downloads/installer/).
-      * Install MySQL server 8.0, under the setup, create a root account with password "password", and add a user with username "user" with password "password".
+    * Install MySQL server 8.0, under the setup, create a root account with password "password", and add a user with username "user" with password "password".
     * (Optional) Install Workbench.
   - For Linux users:
       * Run `apt install libc6-dev` and `apt install libgdiplus` to install dependecies required by System.Drawing.Common.
