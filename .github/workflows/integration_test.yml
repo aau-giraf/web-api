@@ -1,8 +1,6 @@
 name: Integration test
 
 on: push
-#  pull_request:
-#    types: [ready_for_review, review_requested, opened]
 
 jobs:
   build:
@@ -27,8 +25,6 @@ jobs:
           dotnet-version: ${{ matrix.dotnet }}
       - name: Run API
         run: |
-          ls /usr/share/fonts/truetype/dejavu
-          mysql --host 127.0.0.1 --port 3306 -uroot -pGiraf123 -e "SHOW DATABASES"
           export ASPNETCORE_ENVIRONMENT="Production"
           bash scripts/ci-setup.sh ${{ env.IP }} ${{ secrets.IntegrationTestUser }} ${{ secrets.IntegrationTestPassword }}
           dotnet tool install --global dotnet-ef
@@ -46,8 +42,8 @@ jobs:
           pip install -r GirafIntegrationTest/requirements.txt
           python scripts/pictogen.py 6 pictograms
       - name: Test
+        # sleep is a hacky fix to ensure API is running before tests are run
         run: |
           sleep 10
-          curl -X GET "http://localhost:5000/v1/Status/version-info" -H  "accept: text/plain"
           cd GirafIntegrationTest
           python test.py
