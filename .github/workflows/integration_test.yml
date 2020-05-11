@@ -44,7 +44,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r GirafIntegrationTest/requirements.txt
           python scripts/pictogen.py 6 pictograms
-      - name: Test
+      - name: Tests
         # sleep is a hacky fix to ensure the Web API is running before tests are run
         # it is advised for future students to integrate a "heartbeat" into the python tests,
         # that checks whether the Web API is running, and tries again every 5-10 second or so
