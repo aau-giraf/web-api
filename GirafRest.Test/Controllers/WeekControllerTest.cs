@@ -217,7 +217,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             var tempWeek = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule;
             var res = wc.UpdateWeek(mockUser.Id, 2018, 10,
-                new WeekDTO() {Thumbnail = new Models.DTOs.WeekPictogramDTO(_testContext.MockPictograms[0])}).Resultas ObjectResult;
+                new WeekDTO() {Thumbnail = new Models.DTOs.WeekPictogramDTO(_testContext.MockPictograms[0])}).Result as ObjectResult;
             var body = res.Value as ErrorResponse;
             
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);

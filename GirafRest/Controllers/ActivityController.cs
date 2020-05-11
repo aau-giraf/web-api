@@ -145,7 +145,7 @@ namespace GirafRest.Controllers
         /// <returns></returns>
         [HttpGet("{userId}/{activityId}")]
         [Authorize]
-        public async Task<Response<ActivityDTO>> GetActivity(string userId, int activityId)
+        public async Task<ActionResult> GetActivity(string userId, int activityId)
         {
             var activity = await _giraf._context
                 .Activities
@@ -159,7 +159,7 @@ namespace GirafRest.Controllers
 
             activity.Pictograms = pictograms;
             
-            return new Response<ActivityDTO>(new ActivityDTO(activity));
+            return Ok(new ActivityDTO(activity));
         }
 
         /// <summary>

@@ -105,11 +105,11 @@ namespace GirafRest.Test
             }};
 
             var res = ac.PostActivity(
-                newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Saturday
+                newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int) Days.Saturday
             ).Result as ObjectResult;
 
             List<long> expectedPictogramIds = newActivity.Pictograms.Select(pictogram => pictogram.Id).ToList();
-            List<long> actualPictogramIds = res.Data.Pictograms.Select(pictogram => pictogram.Id).ToList();
+            List<long> actualPictogramIds = res.Pictograms.Select(pictogram => pictogram.Id).ToList();
 
             Assert.True(res.Success);
             Assert.Equal(expectedPictogramIds, actualPictogramIds);
