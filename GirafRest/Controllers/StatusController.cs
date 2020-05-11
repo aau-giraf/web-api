@@ -64,9 +64,16 @@ namespace GirafRest.Controllers
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         public ActionResult GetVersionInfo()
         {
-            return Ok(new ErrorResponse(ErrorCode.Error, $"Directory: " + Directory.GetCurrentDirectory()));
-
             var gitpath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName + "/.git/";
+
+            var exists = false;
+            if (Directory.Exists(gitpath))
+                exists = true;
+            
+
+            return Ok(new ErrorResponse(ErrorCode.Error, $"Directory: " + gitpath + ", exists: " + exists));
+
+
             var pathToHead = System.IO.File.ReadLines(gitpath + "HEAD").First().Split(" ").Last();
 
             var hash = System.IO.File.ReadLines(gitpath + pathToHead).First();
