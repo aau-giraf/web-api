@@ -142,7 +142,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="activityId"></param>
-        /// <returns></returns>
+        /// <returns>Returns <see cref="ActivityDTO"/></returns>
         [HttpGet("{userId}/{activityId}")]
         [Authorize]
         public async Task<ActionResult> GetActivity(string userId, int activityId)
@@ -159,7 +159,7 @@ namespace GirafRest.Controllers
 
             activity.Pictograms = pictograms;
             
-            return Ok(new ActivityDTO(activity));
+            return Ok(new SuccessResponse<ActivityDTO>(new ActivityDTO(activity)));
         }
 
         /// <summary>

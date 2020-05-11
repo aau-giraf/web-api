@@ -7,7 +7,7 @@ namespace GirafRest
 {
     public class PictogramRelation
     {
-        
+
         [Required]
         public long ActivityId { get; set; }
 

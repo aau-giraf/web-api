@@ -14,19 +14,22 @@ namespace GirafRest.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.3-servicing-35854")
+                .HasAnnotation("ProductVersion", "3.1.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("GirafRest.GuardianRelation", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
 
                     b.Property<string>("CitizenId")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<string>("GuardianId")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.HasKey("Id");
 
@@ -40,15 +43,20 @@ namespace GirafRest.Migrations
             modelBuilder.Entity("GirafRest.Models.Activity", b =>
                 {
                     b.Property<long>("Key")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("Order");
+                    b.Property<int>("Order")
+                        .HasColumnType("int");
 
-                    b.Property<long>("OtherKey");
+                    b.Property<long>("OtherKey")
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("State");
+                    b.Property<int>("State")
+                        .HasColumnType("int");
 
-                    b.Property<long?>("TimerKey");
+                    b.Property<long?>("TimerKey")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Key");
 
@@ -63,10 +71,12 @@ namespace GirafRest.Migrations
                 {
                     b.Property<long>("Key")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("Name")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.HasKey("Key");
 
@@ -80,11 +90,14 @@ namespace GirafRest.Migrations
             modelBuilder.Entity("GirafRest.Models.DepartmentResource", b =>
                 {
                     b.Property<long>("Key")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
 
-                    b.Property<long>("OtherKey");
+                    b.Property<long>("OtherKey")
+                        .HasColumnType("bigint");
 
-                    b.Property<long>("PictogramKey");
+                    b.Property<long>("PictogramKey")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Key");
 
@@ -98,15 +111,18 @@ namespace GirafRest.Migrations
             modelBuilder.Entity("GirafRest.Models.GirafRole", b =>
                 {
                     b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken();
+                        .IsConcurrencyToken()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Name")
+                        .HasColumnType("varchar(256) CHARACTER SET utf8mb4")
                         .HasMaxLength(256);
 
                     b.Property<string>("NormalizedName")
+                        .HasColumnType("varchar(256) CHARACTER SET utf8mb4")
                         .HasMaxLength(256);
 
                     b.HasKey("Id");
@@ -121,50 +137,69 @@ namespace GirafRest.Migrations
             modelBuilder.Entity("GirafRest.Models.GirafUser", b =>
                 {
                     b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
-                    b.Property<int>("AccessFailedCount");
+                    b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
-                        .IsConcurrencyToken();
+                        .IsConcurrencyToken()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<long?>("DepartmentKey");
+                    b.Property<long?>("DepartmentKey")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("DisplayName")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("Email")
+                        .HasColumnType("varchar(256) CHARACTER SET utf8mb4")
                         .HasMaxLength(256);
 
-                    b.Property<bool>("EmailConfirmed");
+                    b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("tinyint(1)");
 
-                    b.Property<bool>("IsDepartment");
+                    b.Property<bool>("IsDepartment")
+                        .HasColumnType("tinyint(1)");
 
-                    b.Property<bool>("LockoutEnabled");
+                    b.Property<bool>("LockoutEnabled")
+                        .HasColumnType("tinyint(1)");
 
-                    b.Property<DateTimeOffset?>("LockoutEnd");
+                    b.Property<DateTimeOffset?>("LockoutEnd")
+                        .HasColumnType("datetime(6)");
 
                     b.Property<string>("NormalizedEmail")
+                        .HasColumnType("varchar(256) CHARACTER SET utf8mb4")
                         .HasMaxLength(256);
 
                     b.Property<string>("NormalizedUserName")
+                        .HasColumnType("varchar(256) CHARACTER SET utf8mb4")
                         .HasMaxLength(256);
 
-                    b.Property<string>("PasswordHash");
+                    b.Property<string>("PasswordHash")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<string>("PhoneNumber");
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<bool>("PhoneNumberConfirmed");
+                    b.Property<bool>("PhoneNumberConfirmed")
+                        .HasColumnType("tinyint(1)");
 
-                    b.Property<string>("SecurityStamp");
+                    b.Property<string>("SecurityStamp")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<long?>("SettingsKey");
+                    b.Property<long?>("SettingsKey")
+                        .HasColumnType("bigint");
 
-                    b.Property<bool>("TwoFactorEnabled");
+                    b.Property<bool>("TwoFactorEnabled")
+                        .HasColumnType("tinyint(1)");
 
-                    b.Property<byte[]>("UserIcon");
+                    b.Property<byte[]>("UserIcon")
+                        .HasColumnType("longblob");
 
                     b.Property<string>("UserName")
+                        .HasColumnType("varchar(256) CHARACTER SET utf8mb4")
                         .HasMaxLength(256);
 
                     b.HasKey("Id");
@@ -191,19 +226,25 @@ namespace GirafRest.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("AccessLevel");
+                    b.Property<int>("AccessLevel")
+                        .HasColumnType("int");
 
                     b.Property<string>("ImageHash")
-                        .HasColumnName("ImageHash");
+                        .HasColumnName("ImageHash")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<DateTime>("LastEdit");
+                    b.Property<DateTime>("LastEdit")
+                        .HasColumnType("datetime(6)");
 
-                    b.Property<byte[]>("Sound");
+                    b.Property<byte[]>("Sound")
+                        .HasColumnType("longblob");
 
                     b.Property<string>("Title")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.HasKey("Id");
 
@@ -217,29 +258,41 @@ namespace GirafRest.Migrations
             modelBuilder.Entity("GirafRest.Models.Setting", b =>
                 {
                     b.Property<long>("Key")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
 
-                    b.Property<int?>("ActivitiesCount");
+                    b.Property<int?>("ActivitiesCount")
+                        .HasColumnType("int");
 
-                    b.Property<int>("CancelMark");
+                    b.Property<int>("CancelMark")
+                        .HasColumnType("int");
 
-                    b.Property<int>("CompleteMark");
+                    b.Property<int>("CompleteMark")
+                        .HasColumnType("int");
 
-                    b.Property<int>("DefaultTimer");
+                    b.Property<int>("DefaultTimer")
+                        .HasColumnType("int");
 
-                    b.Property<bool>("GreyScale");
+                    b.Property<bool>("GreyScale")
+                        .HasColumnType("tinyint(1)");
 
-                    b.Property<bool>("LockTimerControl");
+                    b.Property<bool>("LockTimerControl")
+                        .HasColumnType("tinyint(1)");
 
-                    b.Property<int?>("NrOfDaysToDisplay");
+                    b.Property<int?>("NrOfDaysToDisplay")
+                        .HasColumnType("int");
 
-                    b.Property<int>("Orientation");
+                    b.Property<int>("Orientation")
+                        .HasColumnType("int");
 
-                    b.Property<bool>("PictogramText");
+                    b.Property<bool>("PictogramText")
+                        .HasColumnType("tinyint(1)");
 
-                    b.Property<int>("Theme");
+                    b.Property<int>("Theme")
+                        .HasColumnType("int");
 
-                    b.Property<int?>("TimerSeconds");
+                    b.Property<int?>("TimerSeconds")
+                        .HasColumnType("int");
 
                     b.HasKey("Key");
 
@@ -249,15 +302,20 @@ namespace GirafRest.Migrations
             modelBuilder.Entity("GirafRest.Models.Timer", b =>
                 {
                     b.Property<long>("Key")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
 
-                    b.Property<long>("FullLength");
+                    b.Property<long>("FullLength")
+                        .HasColumnType("bigint");
 
-                    b.Property<bool>("Paused");
+                    b.Property<bool>("Paused")
+                        .HasColumnType("tinyint(1)");
 
-                    b.Property<long>("Progress");
+                    b.Property<long>("Progress")
+                        .HasColumnType("bigint");
 
-                    b.Property<long>("StartTime");
+                    b.Property<long>("StartTime")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Key");
 
@@ -267,12 +325,15 @@ namespace GirafRest.Migrations
             modelBuilder.Entity("GirafRest.Models.UserResource", b =>
                 {
                     b.Property<long>("Key")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
 
                     b.Property<string>("OtherKey")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
-                    b.Property<long>("PictogramKey");
+                    b.Property<long>("PictogramKey")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Key");
 
@@ -287,19 +348,23 @@ namespace GirafRest.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnType("bigint");
 
-                    b.Property<string>("GirafUserId");
+                    b.Property<string>("GirafUserId")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<long?>("ThumbnailId");
+                    b.Property<long>("ThumbnailKey")
+                        .HasColumnType("bigint");
 
-                    b.Property<long>("ThumbnailKey");
+                    b.Property<int>("WeekNumber")
+                        .HasColumnType("int");
 
-                    b.Property<int>("WeekNumber");
-
-                    b.Property<int>("WeekYear");
+                    b.Property<int>("WeekYear")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -309,7 +374,7 @@ namespace GirafRest.Migrations
                         .IsUnique()
                         .HasAnnotation("SqlServer:Clustered", true);
 
-                    b.HasIndex("ThumbnailId");
+                    b.HasIndex("ThumbnailKey");
 
                     b.ToTable("Weeks");
                 });
@@ -318,21 +383,23 @@ namespace GirafRest.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnType("bigint");
 
-                    b.Property<long>("DepartmentKey");
+                    b.Property<long>("DepartmentKey")
+                        .HasColumnType("bigint");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<long?>("ThumbnailId");
-
-                    b.Property<long>("ThumbnailKey");
+                    b.Property<long>("ThumbnailKey")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentKey");
 
-                    b.HasIndex("ThumbnailId");
+                    b.HasIndex("ThumbnailKey");
 
                     b.ToTable("WeekTemplates");
                 });
@@ -341,13 +408,17 @@ namespace GirafRest.Migrations
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnName("id");
+                        .HasColumnName("id")
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("Day");
+                    b.Property<int>("Day")
+                        .HasColumnType("int");
 
-                    b.Property<long?>("WeekId");
+                    b.Property<long?>("WeekId")
+                        .HasColumnType("bigint");
 
-                    b.Property<long?>("WeekTemplateId");
+                    b.Property<long?>("WeekTemplateId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -364,9 +435,11 @@ namespace GirafRest.Migrations
 
             modelBuilder.Entity("GirafRest.PictogramRelation", b =>
                 {
-                    b.Property<long>("ActivityId");
+                    b.Property<long>("ActivityId")
+                        .HasColumnType("bigint");
 
-                    b.Property<long>("PictogramId");
+                    b.Property<long>("PictogramId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("ActivityId", "PictogramId");
 
@@ -378,13 +451,17 @@ namespace GirafRest.Migrations
             modelBuilder.Entity("GirafRest.WeekDayColor", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
 
-                    b.Property<int>("Day");
+                    b.Property<int>("Day")
+                        .HasColumnType("int");
 
-                    b.Property<string>("HexColor");
+                    b.Property<string>("HexColor")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<long>("SettingId");
+                    b.Property<long>("SettingId")
+                        .HasColumnType("bigint");
 
                     b.HasKey("Id");
 
@@ -396,14 +473,18 @@ namespace GirafRest.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<string>("ClaimType");
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<string>("ClaimValue");
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("RoleId")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.HasKey("Id");
 
@@ -415,14 +496,18 @@ namespace GirafRest.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
 
-                    b.Property<string>("ClaimType");
+                    b.Property<string>("ClaimType")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
-                    b.Property<string>("ClaimValue");
+                    b.Property<string>("ClaimValue")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("UserId")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.HasKey("Id");
 
@@ -433,14 +518,18 @@ namespace GirafRest.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.Property<string>("LoginProvider");
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
-                    b.Property<string>("ProviderKey");
+                    b.Property<string>("ProviderKey")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
-                    b.Property<string>("ProviderDisplayName");
+                    b.Property<string>("ProviderDisplayName")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.Property<string>("UserId")
-                        .IsRequired();
+                        .IsRequired()
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -451,9 +540,11 @@ namespace GirafRest.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.Property<string>("UserId");
+                    b.Property<string>("UserId")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
-                    b.Property<string>("RoleId");
+                    b.Property<string>("RoleId")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -464,13 +555,17 @@ namespace GirafRest.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.Property<string>("UserId");
+                    b.Property<string>("UserId")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
-                    b.Property<string>("LoginProvider");
+                    b.Property<string>("LoginProvider")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
-                    b.Property<string>("Name");
+                    b.Property<string>("Name")
+                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
 
-                    b.Property<string>("Value");
+                    b.Property<string>("Value")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
@@ -482,12 +577,14 @@ namespace GirafRest.Migrations
                     b.HasOne("GirafRest.Models.GirafUser", "Citizen")
                         .WithMany("Guardians")
                         .HasForeignKey("CitizenId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("GirafRest.Models.GirafUser", "Guardian")
                         .WithMany("Citizens")
                         .HasForeignKey("GuardianId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("GirafRest.Models.Activity", b =>
@@ -495,7 +592,8 @@ namespace GirafRest.Migrations
                     b.HasOne("GirafRest.Models.Weekday", "Other")
                         .WithMany("Activities")
                         .HasForeignKey("OtherKey")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("GirafRest.Models.Timer", "Timer")
                         .WithMany()
@@ -508,12 +606,14 @@ namespace GirafRest.Migrations
                     b.HasOne("GirafRest.Models.Department", "Other")
                         .WithMany("Resources")
                         .HasForeignKey("OtherKey")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("GirafRest.Models.Pictogram", "Pictogram")
                         .WithMany("Departments")
                         .HasForeignKey("PictogramKey")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("GirafRest.Models.GirafUser", b =>
@@ -533,24 +633,28 @@ namespace GirafRest.Migrations
                     b.HasOne("GirafRest.Models.GirafUser", "Other")
                         .WithMany("Resources")
                         .HasForeignKey("OtherKey")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("GirafRest.Models.Pictogram", "Pictogram")
                         .WithMany("Users")
                         .HasForeignKey("PictogramKey")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("GirafRest.Models.Week", b =>
                 {
-                    b.HasOne("GirafRest.Models.GirafUser")
+                    b.HasOne("GirafRest.Models.GirafUser", null)
                         .WithMany("WeekSchedule")
                         .HasForeignKey("GirafUserId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("GirafRest.Models.Pictogram", "Thumbnail")
                         .WithMany()
-                        .HasForeignKey("ThumbnailId");
+                        .HasForeignKey("ThumbnailKey")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("GirafRest.Models.WeekTemplate", b =>
@@ -558,21 +662,24 @@ namespace GirafRest.Migrations
                     b.HasOne("GirafRest.Models.Department", "Department")
                         .WithMany("WeekTemplates")
                         .HasForeignKey("DepartmentKey")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("GirafRest.Models.Pictogram", "Thumbnail")
                         .WithMany()
-                        .HasForeignKey("ThumbnailId");
+                        .HasForeignKey("ThumbnailKey")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("GirafRest.Models.Weekday", b =>
                 {
-                    b.HasOne("GirafRest.Models.Week")
+                    b.HasOne("GirafRest.Models.Week", null)
                         .WithMany("Weekdays")
                         .HasForeignKey("WeekId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("GirafRest.Models.WeekTemplate")
+                    b.HasOne("GirafRest.Models.WeekTemplate", null)
                         .WithMany("Weekdays")
                         .HasForeignKey("WeekTemplateId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -583,12 +690,14 @@ namespace GirafRest.Migrations
                     b.HasOne("GirafRest.Models.Activity", "Activity")
                         .WithMany("Pictograms")
                         .HasForeignKey("ActivityId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("GirafRest.Models.Pictogram", "Pictogram")
                         .WithMany("Activities")
                         .HasForeignKey("PictogramId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("GirafRest.WeekDayColor", b =>
@@ -596,52 +705,59 @@ namespace GirafRest.Migrations
                     b.HasOne("GirafRest.Models.Setting", "Setting")
                         .WithMany("WeekDayColors")
                         .HasForeignKey("SettingId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("GirafRest.Models.GirafRole")
+                    b.HasOne("GirafRest.Models.GirafRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("GirafRest.Models.GirafUser")
+                    b.HasOne("GirafRest.Models.GirafUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("GirafRest.Models.GirafUser")
+                    b.HasOne("GirafRest.Models.GirafUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("GirafRest.Models.GirafRole")
+                    b.HasOne("GirafRest.Models.GirafRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.HasOne("GirafRest.Models.GirafUser")
+                    b.HasOne("GirafRest.Models.GirafUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("GirafRest.Models.GirafUser")
+                    b.HasOne("GirafRest.Models.GirafUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

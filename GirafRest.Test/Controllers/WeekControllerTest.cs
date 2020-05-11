@@ -348,7 +348,7 @@ var getBody = getResult.Value as SuccessResponse<WeekDTO>;
             var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             var res = wc.UpdateWeek(mockUser.Id, 2018, 20,
-                new WeekDTO() {Thumbnail = new Models.DTOs.WeekPictogramDTO(_testContext.MockPictograms[0])}).Resultas ObjectResult;
+                new WeekDTO() {Thumbnail = new Models.DTOs.WeekPictogramDTO(_testContext.MockPictograms[0])}).Result as ObjectResult;
             var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);

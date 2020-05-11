@@ -57,12 +57,12 @@ namespace GirafRest.Test
 
             ActivityDTO newActivity = new ActivityDTO() { Pictograms = new List<WeekPictogramDTO> { new WeekPictogramDTO(_testContext.MockPictograms.First()) }};
 
-            var res = ac.PostActivity(newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Monday).Result;
+            var res = ac.PostActivity(newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Monday).Result as ObjectResult;
+            var body = res.Value as SuccessResponse<ActivityDTO>;
 
             List<long> expectedPictogramIds = newActivity.Pictograms.Select(pictogram => pictogram.Id).ToList();
-            List<long> actualPictogramIds = res.Data.Pictograms.Select(pictogram => pictogram.Id).ToList();
+            List<long> actualPictogramIds = body.Data.Pictograms.Select(pictogram => pictogram.Id).ToList();
 
-            Assert.True(res.Success);
             Assert.Equal(expectedPictogramIds, actualPictogramIds);
         }
 
@@ -84,11 +84,12 @@ namespace GirafRest.Test
             var res = ac.PostActivity(
                 newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Monday
             ).Result as ObjectResult;
+            
+            var body = res.Value as SuccessResponse<ActivityDTO>;
 
             List<long> expectedPictogramIds = newActivity.Pictograms.Select(pictogram => pictogram.Id).ToList();
-            List<long> actualPictogramIds = res.Data.Pictograms.Select(pictogram => pictogram.Id).ToList();
+            List<long> actualPictogramIds = body.Data.Pictograms.Select(pictogram => pictogram.Id).ToList();
 
-            Assert.True(res.Success);
             Assert.Equal(expectedPictogramIds, actualPictogramIds);
         }
 
@@ -107,11 +108,12 @@ namespace GirafRest.Test
             var res = ac.PostActivity(
                 newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int) Days.Saturday
             ).Result as ObjectResult;
+            
+            var body = res.Value as SuccessResponse<ActivityDTO>;
 
             List<long> expectedPictogramIds = newActivity.Pictograms.Select(pictogram => pictogram.Id).ToList();
-            List<long> actualPictogramIds = res.Pictograms.Select(pictogram => pictogram.Id).ToList();
+            List<long> actualPictogramIds = body.Data.Pictograms.Select(pictogram => pictogram.Id).ToList();
 
-            Assert.True(res.Success);
             Assert.Equal(expectedPictogramIds, actualPictogramIds);
         }
 
@@ -274,12 +276,12 @@ namespace GirafRest.Test
             
             Assert.True(_testContext.MockActivities.Any(a => a.Key == _existingId));
 
-            var response = activityController.GetActivity(mockUser.Id, _existingId);
-            Assert.NotNull(response);
-            Assert.NotNull(response.Result);
-            Assert.True(response.Result.Success);
-
-            var actual = response.Result.Data;
+            var response = activityController.GetActivity(mockUser.Id, _existingId).Result as ObjectResult;
+            var body = response.Value as SuccessResponse<ActivityDTO>;
+            
+            Assert.Equal(StatusCodes.Status200OK, response.StatusCode);
+            
+            var actual = body.Data;
             ActivityDTO expected = new ActivityDTO(_testContext.MockActivities.First());
             
             Assert.Equal(expected.Id, actual.Id);
@@ -453,9 +455,8 @@ namespace GirafRest.Test
             var body = res.Value as SuccessResponse<ActivityDTO>;
 
             List<long> expectedPictogramIds = newActivity.Pictograms.Select(pictogram => pictogram.Id).ToList();
-            List<long> actualPictogramIds = res.Data.Pictograms.Select(pictogram => pictogram.Id).ToList();
+            List<long> actualPictogramIds = body.Data.Pictograms.Select(pictogram => pictogram.Id).ToList();
 
-            Assert.True(res.Success);
             Assert.Equal(expectedPictogramIds, actualPictogramIds);
         }
 
@@ -474,12 +475,12 @@ namespace GirafRest.Test
                 }
             };
 
-            var res = ac.UpdateActivity(newActivity, mockUser.Id).Result;
+            var res = ac.UpdateActivity(newActivity, mockUser.Id).Result as ObjectResult;
+            var body = res.Value as SuccessResponse<ActivityDTO>;
 
             List<long> expectedPictogramIds = newActivity.Pictograms.Select(pictogram => pictogram.Id).ToList();
-            List<long> actualPictogramIds = res.Data.Pictograms.Select(pictogram => pictogram.Id).ToList();
+            List<long> actualPictogramIds = body.Data.Pictograms.Select(pictogram => pictogram.Id).ToList();
 
-            Assert.True(res.Success);
             Assert.Equal(expectedPictogramIds, actualPictogramIds);
         }
         #endregion
