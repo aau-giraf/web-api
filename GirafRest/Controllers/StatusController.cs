@@ -67,12 +67,15 @@ namespace GirafRest.Controllers
         {
             try
             {
+                // Get the hidden .git folder
                 var gitpath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName + "/.git/";
 
+                // Get the path to the head, aka. the "refs/heads/branch_here"
                 var pathToHead = System.IO.File.ReadLines(gitpath + "HEAD").First().Split(" ").Last();
 
                 var hash = System.IO.File.ReadLines(gitpath + pathToHead).First();
-                // this assumes that branches are not named with / however this should be enforced anyways
+                
+                // Remove refs/heads from the string
                 var branch = pathToHead.Split("/").Last();
                 return Ok(new SuccessResponse($"Branch: {branch} CommitHash: {hash}"));
             }
