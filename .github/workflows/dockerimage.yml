@@ -11,7 +11,7 @@ jobs:
       - uses: docker/build-push-action@v1
         with:
           registry: docker.pkg.github.com
-          repository: aau-giraf/web-api
+          repository: aau-giraf/web-api/web-api
           username: ${{ github.actor }}
           password: ${{ github.token }}
           tag_with_ref: true
