@@ -91,7 +91,7 @@ namespace GirafRest.Controllers
             }
             catch (Exception e)
             {
-                return Ok(new ErrorResponse(ErrorCode.Error, $"Exception: " + e.ToString()));
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse(ErrorCode.Error, $"Exception: " + e.ToString()));
             }
         }
     }
