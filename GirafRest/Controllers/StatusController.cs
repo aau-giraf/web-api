@@ -64,6 +64,8 @@ namespace GirafRest.Controllers
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         public ActionResult GetVersionInfo()
         {
+            return Ok(new ErrorResponse(ErrorCode.Error, $"Directory: " + Directory.GetCurrentDirectory()));
+
             var gitpath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName + "/.git/";
             var pathToHead = System.IO.File.ReadLines(gitpath + "HEAD").First().Split(" ").Last();
 
