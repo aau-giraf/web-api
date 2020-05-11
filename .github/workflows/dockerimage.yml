@@ -13,4 +13,4 @@ jobs:
           registry: docker.pkg.github.com
           repository: aau-giraf/web-api
           tag_with_ref: true
-          push: false
+          push: true
