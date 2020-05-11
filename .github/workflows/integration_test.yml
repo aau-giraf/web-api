@@ -48,4 +48,5 @@ jobs:
       - name: Test
         run: |
           sleep 10
-          python GirafIntegrationTest/test.py
+          cd GirafIntegrationTest
+          python test.py
