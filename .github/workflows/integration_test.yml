@@ -46,4 +46,6 @@ jobs:
           pip install -r GirafIntegrationTest/requirements.txt
           python scripts/pictogen.py 6 pictograms
       - name: Test
-        run: python GirafIntegrationTest/test.py
+        run: |
+        sleep 10
+        python GirafIntegrationTest/test.py
