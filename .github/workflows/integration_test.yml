@@ -25,6 +25,7 @@ jobs:
           dotnet-version: ${{ matrix.dotnet }}
       - name: Run API
         # secrets are located in repo aau-giraf/web-api:settings.secrets
+        # "nohup" is used to run the dotnet application in the background 
         run: |
           export ASPNETCORE_ENVIRONMENT="Production"
           bash scripts/ci-setup.sh ${{ secrets.IntegrationTestUser }} ${{ secrets.IntegrationTestPassword }}
@@ -43,7 +44,9 @@ jobs:
           pip install -r GirafIntegrationTest/requirements.txt
           python scripts/pictogen.py 6 pictograms
       - name: Test
-        # sleep is a hacky fix to ensure API is running before tests are run
+        # sleep is a hacky fix to ensure the Web API is running before tests are run
+        # it is advised for future students to integrate a "heartbeat" into the python tests,
+        # that checks whether it is running, and tries again every 5-10 second or so
         run: |
           sleep 10
           cd GirafIntegrationTest
