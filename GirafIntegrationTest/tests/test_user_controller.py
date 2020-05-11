@@ -50,7 +50,7 @@ class TestUserController(GIRAFTestCase):
                                    {"hexColor": "#FFFFFF", "day": 7}]}
         cls.MULTIPLE_SETTINGS = {"orientation": 2, "completeMark": 2, "cancelMark": 1, "defaultTimer": 2,
                                  "timerSeconds": 60, "activitiesCount": 3, "theme": 3, "nrOfDaysToDisplay": 2,
-                                 "greyScale": True, "weekDayColors":
+                                 "greyScale": True, 'lockTimerControl': True, "weekDayColors":
                                      [{"hexColor": "#FF00FF", "day": 1}, {"hexColor": "#540D6E", "day": 2},
                                       {"hexColor": "#F77F00", "day": 3}, {"hexColor": "#004777", "day": 4},
                                       {"hexColor": "#F9C80E", "day": 5}, {"hexColor": "#DB2B39", "day": 6},
