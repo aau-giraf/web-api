@@ -42,7 +42,7 @@ jobs:
       - name: Install deps
         run: |
           python -m pip install --upgrade pip
-          python scripts/pictogen.py 6 pictograms
           pip install -r GirafIntegrationTest/requirements.txt
+          python scripts/pictogen.py 6 pictograms
       - name: Test
         run: python GirafIntegrationTest/test.py
