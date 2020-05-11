@@ -47,5 +47,5 @@ jobs:
           python scripts/pictogen.py 6 pictograms
       - name: Test
         run: |
-        sleep 10
-        python GirafIntegrationTest/test.py
+          sleep 10
+          python GirafIntegrationTest/test.py
