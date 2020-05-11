@@ -48,5 +48,6 @@ jobs:
       - name: Test
         run: |
           sleep 10
+          curl -X GET "http://localhost:5000/v1/Status/version-info" -H  "accept: text/plain"
           cd GirafIntegrationTest
           python test.py
