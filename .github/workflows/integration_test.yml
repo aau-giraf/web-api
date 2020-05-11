@@ -26,7 +26,7 @@ jobs:
       - name: Run API
         run: |
           export ASPNETCORE_ENVIRONMENT="Production"
-          bash scripts/ci-setup.sh ${{ env.IP }} ${{ secrets.IntegrationTestUser }} ${{ secrets.IntegrationTestPassword }}
+          bash scripts/ci-setup.sh ${{ secrets.IntegrationTestIP }} ${{ secrets.IntegrationTestUser }} ${{ secrets.IntegrationTestPassword }}
           dotnet tool install --global dotnet-ef
           cd GirafRest
           dotnet restore
