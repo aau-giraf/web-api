@@ -70,19 +70,26 @@ namespace GirafRest.Controllers
                 // Get the hidden .git folder
                 var gitpath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName + "/.git/";
 
-                // Get the path to the head, aka. the "refs/heads/branch_here"
-                //var pathToHead = System.IO.File.ReadLines(gitpath + "HEAD").First().Split(" ").Last();
-                var pathToHead = System.IO.File.ReadLines(gitpath + "HEAD");
-                return Ok(new ErrorResponse(ErrorCode.Error, $"Content: " + pathToHead.ElementAt(1)));
+                // Get commit hash from the HEAD file in the .git folder.
+                var commitHash = System.IO.File.ReadLines(gitpath + "HEAD").First();
+
+                // Return the response
+                return Ok(new SuccessResponse($"CommitHash: {commitHash}"));
+
+
+                // Previously, we retrieved the refs/head/branch, and then retrieved the commit hash.
+                // As the "HEAD" file now ONLY contains the commmit hash, this is no longer possible.
+                // This code is preserved in case future students wants to implement the behavior again.
+                /*
+                var pathToHead = System.IO.File.ReadLines(gitpath + "HEAD").First().Split(" ").Last();
 
                 var hash = System.IO.File.ReadLines(gitpath + pathToHead).First();
-                
-                // Remove refs/heads from the string
-                //var branch = pathToHead.Split("/").Last();
-                //return Ok(new SuccessResponse($"Branch: {branch} CommitHash: {hash}"));
+                // this assumes that branches are not named with / however this should be enforced anyways
+                var branch = pathToHead.Split("/").Last();
+                return Ok(new SuccessResponse($"Branch: {branch} CommitHash: {hash}"));
+                */
             }
-
-            catch(Exception e)
+            catch (Exception e)
             {
                 return Ok(new ErrorResponse(ErrorCode.Error, $"Exception: " + e.ToString()));
             }
