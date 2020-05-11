@@ -1,3 +1,5 @@
+name: Build GitHub Packages
+
 on: [push]
 
 jobs:
