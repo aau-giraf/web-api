@@ -64,6 +64,11 @@ namespace GirafRest.Models
         public bool GreyScale { get; set; }
 
         /// <summary>
+        /// Flag for indicating if pictogram text should be enabled or not
+        /// </summary>
+        public bool PictogramText { get; set; }
+
+        /// <summary>
         /// Flag for indicating whether or not to show timer buttons
         /// </summary>
         public bool LockTimerControl { get; set; }
@@ -90,11 +95,13 @@ namespace GirafRest.Models
             this.NrOfDaysToDisplay = newOptions?.NrOfDaysToDisplay ?? this.NrOfDaysToDisplay;
             this.GreyScale = newOptions?.GreyScale ?? this.GreyScale;
             this.LockTimerControl = newOptions?.LockTimerControl ?? this.LockTimerControl;
-            if(newOptions.WeekDayColors != null)
+            this.PictogramText = newOptions?.PictogramText ?? this.PictogramText;
+            if (newOptions.WeekDayColors != null)
                 updateWeekDayColors(newOptions.WeekDayColors);
         }
 
-        private void updateWeekDayColors(List<WeekDayColorDTO> weekDayColors){
+        private void updateWeekDayColors(List<WeekDayColorDTO> weekDayColors)
+        {
             if (WeekDayColors != null)
             {
                 foreach (var weekDayColor in weekDayColors)
@@ -111,14 +118,15 @@ namespace GirafRest.Models
         /// <summary>
         /// Initializes WeekDayColors.
         /// </summary>
-        public void InitialiseWeekDayColors(){
+        public void InitialiseWeekDayColors()
+        {
             this.WeekDayColors = new List<WeekDayColor>(){
-                new WeekDayColor(){Day = Days.Monday, HexColor = "#067700", SettingId = Key},
-                new WeekDayColor(){Day = Days.Tuesday, HexColor = "#8c1086", SettingId = Key},
-                new WeekDayColor(){Day = Days.Wednesday, HexColor = "#ff7f00", SettingId = Key},
-                new WeekDayColor(){Day = Days.Thursday, HexColor = "#0017ff", SettingId = Key},
-                new WeekDayColor(){Day = Days.Friday, HexColor = "#ffdd00", SettingId = Key},
-                new WeekDayColor(){Day = Days.Saturday, HexColor = "#ff0102", SettingId = Key},
+                new WeekDayColor(){Day = Days.Monday, HexColor = "#08a045", SettingId = Key},
+                new WeekDayColor(){Day = Days.Tuesday, HexColor = "#540d6e", SettingId = Key},
+                new WeekDayColor(){Day = Days.Wednesday, HexColor = "#f77f00", SettingId = Key},
+                new WeekDayColor(){Day = Days.Thursday, HexColor = "#004777", SettingId = Key},
+                new WeekDayColor(){Day = Days.Friday, HexColor = "#f9c80e", SettingId = Key},
+                new WeekDayColor(){Day = Days.Saturday, HexColor = "#db2b39", SettingId = Key},
                 new WeekDayColor(){Day = Days.Sunday, HexColor = "#ffffff", SettingId = Key},
 
             };
@@ -132,11 +140,12 @@ namespace GirafRest.Models
             Orientation = Orientation.portrait;
             CompleteMark = CompleteMark.Checkmark;
             CancelMark = CancelMark.Cross;
-            DefaultTimer = DefaultTimer.analogClock;
+            DefaultTimer = DefaultTimer.pieChart;
             Theme = Theme.girafYellow;
             NrOfDaysToDisplay = 7;
             TimerSeconds = 900;
             GreyScale = false;
+            PictogramText = false;
             LockTimerControl = false;
 
         }

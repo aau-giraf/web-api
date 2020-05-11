@@ -1,6 +1,8 @@
 # Giraf Backend
 
 ![Build Status](https://github.com/aau-giraf/web-api/workflows/.NET%20Core/badge.svg)
+[![codecov](https://codecov.io/gh/aau-giraf/web-api/branch/develop/graph/badge.svg)](https://codecov.io/gh/aau-giraf/web-api)
+
 
 This repository contains the backend API for the Giraf Project. The API is a .net-core project written in C#.
 
@@ -9,13 +11,11 @@ This repository contains the backend API for the Giraf Project. The API is a .ne
 To run the project locally with a MySQL database first do the following:
 
 0. Prerequisites:
-  - Download and install .NET Core 2.2 SDK or a version backwardly compatible with it (https://dotnet.microsoft.com/download/dotnet-core/2.2).
+  - Download and install .NET Core 3.1 SDK or a version backwardly compatible with it (https://dotnet.microsoft.com/download/dotnet-core/3.1).
+  - Download and install .NET Core ef tools by going to terminal and write "dotnet tool install --global dotnet-ef" after having installed .NET core. 
   - Download MySQL installer (https://dev.mysql.com/downloads/installer/).
-      * Install MySQL server 5.7, under the setup, create a root account with password "password", and add a user with username "user" with password "password".
+      * Install MySQL server 8.0, under the setup, create a root account with password "password", and add a user with username "user" with password "password".
     * (Optional) Install Workbench.
-  - Setup a giraf database/schema named giraf on the MySQL Server (can be done from Workbench or via cli).
-    * (Through Workbench) Start MySQL Workbench. There should be a Local instance running under MySQL Connections, log in using the created root password, "password", create a new schema named giraf.
-    * (Through cli) Open MySQL 5.8 Command Line Client (installed program) and login using the created root password "password". Create a new database named giraf by typing the following command "CREATE DATABASE giraf;"
     
 1. Clone the web_api repository from GitHub.
 

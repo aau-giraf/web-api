@@ -3,14 +3,16 @@ using System;
 using GirafRest.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GirafRest.Migrations
 {
     [DbContext(typeof(GirafDbContext))]
-    partial class GirafDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200422122648_MakeDisplayNameInAspnetusersRequired")]
+    partial class MakeDisplayNameInAspnetusersRequired
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,6 +48,8 @@ namespace GirafRest.Migrations
 
                     b.Property<long>("OtherKey");
 
+                    b.Property<long>("PictogramKey");
+
                     b.Property<int>("State");
 
                     b.Property<long?>("TimerKey");
@@ -53,6 +57,8 @@ namespace GirafRest.Migrations
                     b.HasKey("Key");
 
                     b.HasIndex("OtherKey");
+
+                    b.HasIndex("PictogramKey");
 
                     b.HasIndex("TimerKey");
 
@@ -229,13 +235,9 @@ namespace GirafRest.Migrations
 
                     b.Property<bool>("GreyScale");
 
-                    b.Property<bool>("LockTimerControl");
-
                     b.Property<int?>("NrOfDaysToDisplay");
 
                     b.Property<int>("Orientation");
-
-                    b.Property<bool>("PictogramText");
 
                     b.Property<int>("Theme");
 
@@ -293,8 +295,6 @@ namespace GirafRest.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<long?>("ThumbnailId");
-
                     b.Property<long>("ThumbnailKey");
 
                     b.Property<int>("WeekNumber");
@@ -309,7 +309,7 @@ namespace GirafRest.Migrations
                         .IsUnique()
                         .HasAnnotation("SqlServer:Clustered", true);
 
-                    b.HasIndex("ThumbnailId");
+                    b.HasIndex("ThumbnailKey");
 
                     b.ToTable("Weeks");
                 });
@@ -324,15 +324,13 @@ namespace GirafRest.Migrations
 
                     b.Property<string>("Name");
 
-                    b.Property<long?>("ThumbnailId");
-
                     b.Property<long>("ThumbnailKey");
 
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentKey");
 
-                    b.HasIndex("ThumbnailId");
+                    b.HasIndex("ThumbnailKey");
 
                     b.ToTable("WeekTemplates");
                 });
@@ -360,19 +358,6 @@ namespace GirafRest.Migrations
                     b.HasIndex("WeekTemplateId");
 
                     b.ToTable("Weekdays");
-                });
-
-            modelBuilder.Entity("GirafRest.PictogramRelation", b =>
-                {
-                    b.Property<long>("ActivityId");
-
-                    b.Property<long>("PictogramId");
-
-                    b.HasKey("ActivityId", "PictogramId");
-
-                    b.HasIndex("PictogramId");
-
-                    b.ToTable("PictogramRelations");
                 });
 
             modelBuilder.Entity("GirafRest.WeekDayColor", b =>
@@ -497,6 +482,11 @@ namespace GirafRest.Migrations
                         .HasForeignKey("OtherKey")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("GirafRest.Models.Pictogram", "Pictogram")
+                        .WithMany()
+                        .HasForeignKey("PictogramKey")
+                        .OnDelete(DeleteBehavior.Cascade);
+
                     b.HasOne("GirafRest.Models.Timer", "Timer")
                         .WithMany()
                         .HasForeignKey("TimerKey")
@@ -550,7 +540,8 @@ namespace GirafRest.Migrations
 
                     b.HasOne("GirafRest.Models.Pictogram", "Thumbnail")
                         .WithMany()
-                        .HasForeignKey("ThumbnailId");
+                        .HasForeignKey("ThumbnailKey")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("GirafRest.Models.WeekTemplate", b =>
@@ -562,7 +553,8 @@ namespace GirafRest.Migrations
 
                     b.HasOne("GirafRest.Models.Pictogram", "Thumbnail")
                         .WithMany()
-                        .HasForeignKey("ThumbnailId");
+                        .HasForeignKey("ThumbnailKey")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("GirafRest.Models.Weekday", b =>
@@ -575,19 +567,6 @@ namespace GirafRest.Migrations
                     b.HasOne("GirafRest.Models.WeekTemplate")
                         .WithMany("Weekdays")
                         .HasForeignKey("WeekTemplateId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("GirafRest.PictogramRelation", b =>
-                {
-                    b.HasOne("GirafRest.Models.Activity", "Activity")
-                        .WithMany("Pictograms")
-                        .HasForeignKey("ActivityId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("GirafRest.Models.Pictogram", "Pictogram")
-                        .WithMany("Activities")
-                        .HasForeignKey("PictogramId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

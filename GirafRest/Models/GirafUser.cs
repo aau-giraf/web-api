@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using GirafRest.Models.DTOs;
@@ -11,7 +12,7 @@ namespace GirafRest.Models
     /// GirafUser defines all relavant data for the user's of Giraf.
     /// </summary>
     [Table("User")]
-    public class GirafUser : IdentityUser<string>
+    public class GirafUser : IdentityUser
     {       
         /// <summary>
         /// Whether or not the current user is a DepartmentUser
@@ -31,6 +32,7 @@ namespace GirafRest.Models
         /// <summary>
         /// Display name used for showing
         /// </summary>
+        [Required]
         public string DisplayName { get; set; }
 
         /// <summary>
@@ -132,11 +134,13 @@ namespace GirafRest.Models
         /// Constructor for GirafUser
         /// </summary>
         /// <param name="userName">Username</param>
+        /// <param name="displayName">Display name</param>
         /// <param name="department">Department</param>
         /// <param name="role">Role for user</param>
-        public GirafUser(string userName, Department department, GirafRoles role) : base(userName)
+        public GirafUser(string userName, string displayName, Department department, GirafRoles role) : base(userName)
         {
             InitialiseData(role);
+            DisplayName = displayName;
             DepartmentKey = department?.Key ?? -1;
         }
 

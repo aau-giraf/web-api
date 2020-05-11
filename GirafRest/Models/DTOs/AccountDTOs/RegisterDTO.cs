@@ -23,6 +23,7 @@ namespace GirafRest.Models.DTOs.AccountDTOs
         /// <summary>
         /// The users DisplayName
         /// </summary>
+        [Required]
         public string DisplayName { get; set; }
 
         /// <summary>

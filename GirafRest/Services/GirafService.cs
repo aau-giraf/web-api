@@ -77,6 +77,7 @@ namespace GirafRest.Services
             var usr = (await _userManager.GetUserAsync(principal));
             if (usr == null) return null;
             return await _context.Users
+                .Where(u => u.Id == usr.Id)
                 .Include(u => u.Department)
                 .FirstOrDefaultAsync();
         }
