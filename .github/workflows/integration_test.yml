@@ -24,9 +24,10 @@ jobs:
         with:
           dotnet-version: ${{ matrix.dotnet }}
       - name: Run API
+        # secrets are located in repo aau-giraf/web-api:settings.secrets
         run: |
           export ASPNETCORE_ENVIRONMENT="Production"
-          bash scripts/ci-setup.sh ${{ secrets.IntegrationTestIP }} ${{ secrets.IntegrationTestUser }} ${{ secrets.IntegrationTestPassword }}
+          bash scripts/ci-setup.sh ${{ secrets.IntegrationTestUser }} ${{ secrets.IntegrationTestPassword }}
           dotnet tool install --global dotnet-ef
           cd GirafRest
           dotnet restore
