@@ -28,7 +28,7 @@ jobs:
       - name: Run API
         run: |
           ls /usr/share/fonts/truetype/dejavu
-          mysql --host 127.0.0.1 --port 3306 -uroot -pGiraf123 -e "SHOW DATABASES"
+          mysql --host 127.0.0.1 --port 5000 -uroot -pGiraf123 -e "SHOW DATABASES"
           export ASPNETCORE_ENVIRONMENT="Production"
           bash scripts/ci-setup.sh ${{ env.IP }} ${{ secrets.IntegrationTestUser }} ${{ secrets.IntegrationTestPassword }}
           dotnet tool install --global dotnet-ef
