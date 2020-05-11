@@ -5,6 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 
 namespace GirafRest.Setup
 {
@@ -16,8 +19,16 @@ namespace GirafRest.Setup
 
         public static SampleDataHandler sampleHandler = new SampleDataHandler();
 
-        public static void Initialize(GirafDbContext context, UserManager<GirafUser> userManager)
+        /// <summary>
+        /// Runs specificed initialisations before the API is started.
+        /// </summary>
+        /// <param name="context">The database context.</param>
+        /// <param name="userManager">The API for managing GirafUsers.</param>
+        /// <param name="pictogramCount">The number of sample pictograms to generate.</param>
+        public static void Initialize(GirafDbContext context, UserManager<GirafUser> userManager, int pictogramCount)
         {
+            CreatePictograms(pictogramCount);
+
             // Check if any data is in the database
             if (context.Departments.Any())
             {
@@ -54,6 +65,46 @@ namespace GirafRest.Setup
             }
             context.SaveChanges();
         }
+        
+        #region Generating pictograms
+        private static void CreatePictograms(int count)
+        {
+            System.Console.WriteLine($"Creating {count} pictograms");
+            DirectoryInfo dir = Directory.CreateDirectory("../pictograms");
+          
+            using FontFamily family = new FontFamily("Arial");
+            using Font font = new Font(
+                family,
+                48,
+                FontStyle.Regular,
+                GraphicsUnit.Pixel);
+
+            for (int i = 1; i <= count; i++)
+            {
+                using Image pictogram = DrawText(i.ToString(), font, Color.Black, Color.White);
+                pictogram.Save(Path.Combine(dir.FullName, $"{i}.png"), ImageFormat.Png); 
+            }
+        }
+
+        private static Image DrawText(string text, Font font, Color textColor, Color backColor)
+        {
+            Image pictogram = new Bitmap(200, 200);
+            using StringFormat format = new StringFormat
+            {
+                LineAlignment = StringAlignment.Center,
+                Alignment = StringAlignment.Center
+            };
+
+            using Graphics drawing = Graphics.FromImage(pictogram);
+            using Brush textBrush = new SolidBrush(textColor);
+
+            drawing.Clear(backColor);
+            drawing.DrawString(text, font, textBrush, RectangleF.FromLTRB(0, 0, 200, 200), format);
+            drawing.Save();
+
+            return pictogram;
+        }
+        #endregion
 
         #region Ownership sample methods
         private static void AddPictogramsToUser(GirafUser user, params Pictogram[] pictograms)

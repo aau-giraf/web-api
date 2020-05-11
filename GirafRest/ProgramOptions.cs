@@ -14,6 +14,11 @@ namespace GirafRest
         public static bool GenerateSampleData = false;
 
         /// <summary>
+        /// How many pictograms should be generated in the ../pictograms folder.
+        /// </summary>
+        public static int Pictograms = 200;
+
+        /// <summary>
         /// A field for storing the port on which to host the server.
         /// </summary>
         public static Int16 Port = 5000;

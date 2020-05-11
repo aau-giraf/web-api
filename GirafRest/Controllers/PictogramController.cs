@@ -441,17 +441,7 @@ namespace GirafRest.Controllers
             {
                 return NotFound();
             }
-
-            // you can only get a protected picogram if it is owned by your department
-            if (picto.AccessLevel == AccessLevel.PROTECTED && !picto.Departments.Any(d => d.OtherKey == usr.DepartmentKey))
-                return StatusCode(StatusCodes.Status403Forbidden,
-                    new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
-
-            // you can only get a private pictogram if you are among the owners of the pictogram
-            if (picto.AccessLevel == AccessLevel.PRIVATE && !picto.Users.Any(d => d.OtherKey == usr.Id))
-                return StatusCode(StatusCodes.Status403Forbidden,
-                    new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
-
+            
             return PhysicalFile($"{imagePath}{picto.Id}.png", IMAGE_TYPE_PNG);
         }
 

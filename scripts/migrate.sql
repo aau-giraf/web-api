@@ -45,12 +45,12 @@ INSERT INTO Pictograms(id, Discriminator, LastEdit, AccessLevel, Image, Title, S
 
 SET @newId = 0;
 
-INSERT INTO WeekDayColors (Id, SettingId, Day, HexColor) SELECT (@newId := @newId + 1), SettingsKey, 1, "#067700" From giraf_old.AspNetUsers;
-INSERT INTO WeekDayColors (Id, SettingId, Day, HexColor) SELECT (@newId := @newId + 1) , SettingsKey, 2, "#8c1086" From giraf_old.AspNetUsers;
-INSERT INTO WeekDayColors (Id, SettingId, Day, HexColor) SELECT (@newId := @newId + 1), SettingsKey, 3, "#ff7f00" From giraf_old.AspNetUsers;
-INSERT INTO WeekDayColors (Id, SettingId, Day, HexColor) SELECT (@newId := @newId + 1), SettingsKey, 4, "#0017ff" From giraf_old.AspNetUsers;
-INSERT INTO WeekDayColors (Id, SettingId, Day, HexColor) SELECT (@newId := @newId + 1), SettingsKey, 5, "#ffdd00" From giraf_old.AspNetUsers;
-INSERT INTO WeekDayColors (Id, SettingId, Day, HexColor) SELECT (@newId := @newId + 1), SettingsKey, 6, "#ff0102" From giraf_old.AspNetUsers;
+INSERT INTO WeekDayColors (Id, SettingId, Day, HexColor) SELECT (@newId := @newId + 1), SettingsKey, 1, "#08a045" From giraf_old.AspNetUsers;
+INSERT INTO WeekDayColors (Id, SettingId, Day, HexColor) SELECT (@newId := @newId + 1) , SettingsKey, 2, "#540d6e" From giraf_old.AspNetUsers;
+INSERT INTO WeekDayColors (Id, SettingId, Day, HexColor) SELECT (@newId := @newId + 1), SettingsKey, 3, "#f77f00" From giraf_old.AspNetUsers;
+INSERT INTO WeekDayColors (Id, SettingId, Day, HexColor) SELECT (@newId := @newId + 1), SettingsKey, 4, "#004777" From giraf_old.AspNetUsers;
+INSERT INTO WeekDayColors (Id, SettingId, Day, HexColor) SELECT (@newId := @newId + 1), SettingsKey, 5, "#f9c80e" From giraf_old.AspNetUsers;
+INSERT INTO WeekDayColors (Id, SettingId, Day, HexColor) SELECT (@newId := @newId + 1), SettingsKey, 6, "#db2b39" From giraf_old.AspNetUsers;
 INSERT INTO WeekDayColors (Id, SettingId, Day, HexColor) SELECT (@newId := @newId + 1), SettingsKey, 7, "#ffffff" From giraf_old.AspNetUsers;
 
 DROP DATABASE giraf_old;
