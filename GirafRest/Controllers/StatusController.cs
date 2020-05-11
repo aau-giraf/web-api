@@ -73,7 +73,7 @@ namespace GirafRest.Controllers
                 // Get the path to the head, aka. the "refs/heads/branch_here"
                 //var pathToHead = System.IO.File.ReadLines(gitpath + "HEAD").First().Split(" ").Last();
                 var pathToHead = System.IO.File.ReadLines(gitpath + "HEAD");
-                return Ok(new ErrorResponse(ErrorCode.Error, $"Content: " + pathToHead));
+                return Ok(new ErrorResponse(ErrorCode.Error, $"Content: " + pathToHead.First()));
 
                 var hash = System.IO.File.ReadLines(gitpath + pathToHead).First();
                 
