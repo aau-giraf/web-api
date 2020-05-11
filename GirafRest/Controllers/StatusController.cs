@@ -71,10 +71,12 @@ namespace GirafRest.Controllers
                 exists = true;
             
 
-            return Ok(new ErrorResponse(ErrorCode.Error, $"Directory: " + gitpath + ", exists: " + exists));
+            //return Ok(new ErrorResponse(ErrorCode.Error, $"Directory: " + gitpath + ", exists: " + exists));
 
 
             var pathToHead = System.IO.File.ReadLines(gitpath + "HEAD").First().Split(" ").Last();
+
+            return Ok(new ErrorResponse(ErrorCode.Error, $"Head: " + pathToHead));
 
             var hash = System.IO.File.ReadLines(gitpath + pathToHead).First();
             // this assumes that branches are not named with / however this should be enforced anyways
