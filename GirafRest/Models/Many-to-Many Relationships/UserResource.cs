@@ -14,7 +14,7 @@ namespace GirafRest.Models
         /// </summary>
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public long Key {get; set;}
+        public long Key { get; set; }
 
         /// <summary>
         /// The key of the user who is involved in the relationship.
@@ -25,7 +25,7 @@ namespace GirafRest.Models
         /// A reference to the actual user.
         /// </summary>
         [ForeignKey("OtherKey")]
-        public virtual GirafUser Other {get; set;}
+        public virtual GirafUser Other { get; set; }
 
         /// <summary>
         /// The key of the involved resource.
@@ -59,6 +59,6 @@ namespace GirafRest.Models
         /// <summary>
         /// DO NOT DELETE THIS.
         /// </summary>
-        public UserResource(){ }
+        public UserResource() { }
     }
 }

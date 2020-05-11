@@ -1,17 +1,16 @@
-using System;
+using GirafRest.Models;
+using GirafRest.Models.DTOs;
+using GirafRest.Models.Responses;
+using GirafRest.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GirafRest.Models;
-using GirafRest.Models.DTOs;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using GirafRest.Services;
-using GirafRest.Models.Responses;
 using static GirafRest.Shared.SharedMethods;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Http;
 
 namespace GirafRest.Controllers
 {
@@ -43,7 +42,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns>List of <see cref="WeekDTO"/> on success else UserNotFound</returns>
         /// <param name="userId">User identifier for the <see cref="GirafUser" /> to get schedules for/></param>
-        [HttpGet("v2/User/{userId}/week", Name="GetListOfWeeksExclDaysOfUser")]
+        [HttpGet("v2/User/{userId}/week", Name = "GetListOfWeeksExclDaysOfUser")]
         [Authorize]
         [ProducesResponseType(typeof(SuccessResponse<IEnumerable<WeekDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -60,7 +59,8 @@ namespace GirafRest.Controllers
             if (!user.WeekSchedule.Any())
                 return Ok(new SuccessResponse<IEnumerable<WeekDTO>>(Enumerable.Empty<WeekDTO>()));
 
-            return Ok(new SuccessResponse<IEnumerable<WeekDTO>>(user.WeekSchedule.Select(w => new WeekDTO(w) {
+            return Ok(new SuccessResponse<IEnumerable<WeekDTO>>(user.WeekSchedule.Select(w => new WeekDTO(w)
+            {
                 Days = null
             })));
         }
@@ -71,7 +71,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns>List of <see cref="WeekNameDTO"/> on success else UserNotFound</returns>
         /// <param name="userId">User identifier for the <see cref="GirafUser" /> to get schedules for</param>
-        [HttpGet("v1/User/{userId}/week", Name="GetListOfWeekNamesOfUser")]
+        [HttpGet("v1/User/{userId}/week", Name = "GetListOfWeekNamesOfUser")]
         [Authorize]
         [ProducesResponseType(typeof(SuccessResponse<IEnumerable<WeekNameDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -99,7 +99,7 @@ namespace GirafRest.Controllers
         /// <param name="weekNumber">The week number of the week schedule to fetch.</param>
         /// <returns><see cref="WeekDTO"/> for the requested week on success else UserNotFound or NotAuthorized</returns>
         /// <param name="userId">Identifier of the <see cref="GirafUser"/> to request schedule for</param>
-        [HttpGet("v1/User/{userId}/week/{weekYear}/{weekNumber}", Name="GetWeekByWeekNrAndYearOfUser")]
+        [HttpGet("v1/User/{userId}/week/{weekYear}/{weekNumber}", Name = "GetWeekByWeekNrAndYearOfUser")]
         [Authorize]
         [ProducesResponseType(typeof(SuccessResponse<WeekDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -113,7 +113,7 @@ namespace GirafRest.Controllers
             // check access rightss
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
-            
+
             var week = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber);
 
             if (week != null)
@@ -129,7 +129,7 @@ namespace GirafRest.Controllers
                         }
                     }
                 }
-                
+
                 return Ok(new SuccessResponse<WeekDTO>(new WeekDTO(week)));
             }
 
@@ -142,16 +142,18 @@ namespace GirafRest.Controllers
                 await _giraf._context.SaveChangesAsync();
                 emptyThumbnail = _giraf._context.Pictograms.FirstOrDefault(r => r.Title == "default");
 
-                return Ok(new SuccessResponse<WeekDTO>(new WeekDTO() {
-                    WeekYear = weekYear, 
-                    Name = $"{weekYear} - {weekNumber}", 
-                    WeekNumber = weekNumber, 
-                    Thumbnail = new Models.DTOs.WeekPictogramDTO(emptyThumbnail), 
+                return Ok(new SuccessResponse<WeekDTO>(new WeekDTO()
+                {
+                    WeekYear = weekYear,
+                    Name = $"{weekYear} - {weekNumber}",
+                    WeekNumber = weekNumber,
+                    Thumbnail = new Models.DTOs.WeekPictogramDTO(emptyThumbnail),
                     Days = new int[] { 1, 2, 3, 4, 5, 6, 7 }
-                        .Select(d => new WeekdayDTO() { 
-                            Activities = new List<ActivityDTO>(), 
-                            Day = (Days)d 
-                        }).ToArray() 
+                        .Select(d => new WeekdayDTO()
+                        {
+                            Activities = new List<ActivityDTO>(),
+                            Day = (Days)d
+                        }).ToArray()
                 }));
             }
             emptyThumbnail = _giraf._context.Pictograms.FirstOrDefault(r => r.Title == "default");
@@ -163,9 +165,10 @@ namespace GirafRest.Controllers
                 WeekNumber = weekNumber,
                 Thumbnail = new Models.DTOs.WeekPictogramDTO(emptyThumbnail),
                 Days = new[] { 1, 2, 3, 4, 5, 6, 7 }
-                    .Select(d => new WeekdayDTO() { 
-                        Activities = new List<ActivityDTO>(), 
-                        Day = (Days)d 
+                    .Select(d => new WeekdayDTO()
+                    {
+                        Activities = new List<ActivityDTO>(),
+                        Day = (Days)d
                     }).ToArray()
             }));
         }
@@ -229,21 +232,21 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeleteWeek(string userId, int weekYear, int weekNumber)
         {
-            var user =  _giraf._context.Users.Include(u => u.WeekSchedule).FirstOrDefault(u => u.Id == userId);
-            if (user == null) 
+            var user = _giraf._context.Users.Include(u => u.WeekSchedule).FirstOrDefault(u => u.Id == userId);
+            if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
-            
+
             // check access rightss
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
-            
+
             if (user.WeekSchedule.Any(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber))
             {
                 var week = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber);
-                if (week == null) 
+                if (week == null)
                     return NotFound(new ErrorResponse(ErrorCode.NoWeekScheduleFound, "No week schedule found"));
                 user.WeekSchedule.Remove(week);
-                
+
                 await _giraf._context.SaveChangesAsync();
                 return Ok(new SuccessResponse("Deleted info for entire week"));
             }

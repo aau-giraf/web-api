@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using GirafRest.Models;
 
 namespace GirafRest.Models.DTOs
 {
@@ -145,7 +144,7 @@ namespace GirafRest.Models.DTOs
         /// Flag for indicating whether or not timer buttons are enabled
         /// </summary>
         public bool LockTimerControl { get; set; }
-       /// <summary>
+        /// <summary>
         /// Flag for indicating whether or not pictogram text is enabled
         /// </summary>
         public bool PictogramText { get; set; }

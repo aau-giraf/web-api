@@ -1,23 +1,23 @@
-﻿using System.Threading.Tasks;
+﻿using GirafRest.Models;
+using GirafRest.Models.DTOs;
+using GirafRest.Models.DTOs.AccountDTOs;
+using GirafRest.Models.Responses;
+using GirafRest.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using GirafRest.Models;
-using GirafRest.Services;
-using GirafRest.Models.DTOs.AccountDTOs;
-using GirafRest.Models.DTOs;
-using System;
-using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using GirafRest.Models.Responses;
-using System.Collections.Generic;
-using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Microsoft.AspNetCore.Http;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 
 
 namespace GirafRest.Controllers
@@ -86,7 +86,7 @@ namespace GirafRest.Controllers
                     ErrorCode.MissingProperties, "Missing password"));
 
             if (!(_giraf._context.Users.Any(u => u.UserName == model.Username)))
-                return Unauthorized(new ErrorResponse(ErrorCode.InvalidCredentials, "Invalid credentials" ));
+                return Unauthorized(new ErrorResponse(ErrorCode.InvalidCredentials, "Invalid credentials"));
 
             var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, lockoutOnFailure: false);
 
@@ -135,7 +135,7 @@ namespace GirafRest.Controllers
             {
                 if (!(await _authentication.HasRegisterUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User),
                                                             model.Role, model.DepartmentId.Value)))
-                    return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User has no rights", 
+                    return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User has no rights",
                         "The authenticated user does not have the rights to add user for the given department"));
             }
 
@@ -150,7 +150,7 @@ namespace GirafRest.Controllers
                 return BadRequest(new ErrorResponse(ErrorCode.DepartmentNotFound, "Department not found", "A department with the given id could not be found"));
 
             //Create a new user with the supplied information
-            var user = new GirafUser (model.Username, model.DisplayName, department, model.Role);
+            var user = new GirafUser(model.Username, model.DisplayName, department, model.Role);
 
             var result = await _giraf._userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
@@ -205,7 +205,8 @@ namespace GirafRest.Controllers
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "You do not have permission to edit this user"));
 
             var result = await _giraf._userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
-            if (!result.Succeeded) {
+            if (!result.Succeeded)
+            {
                 return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse(ErrorCode.PasswordNotUpdated, "Password was not updated"));
             }
 

@@ -1,14 +1,12 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using GirafRest.Data;
+﻿using GirafRest.Data;
 using GirafRest.Models;
-using GirafRest.Models.DTOs;
-using GirafRest.Models.Responses;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GirafRest.Services
 {
@@ -21,11 +19,11 @@ namespace GirafRest.Services
         /// <summary>
         /// A reference to the database context - used to access the database and query for data. Handled by asp.net's dependency injection.
         /// </summary>
-        public GirafDbContext _context { get;  }
+        public GirafDbContext _context { get; }
         /// <summary>
         /// Asp.net's user manager. Can be used to fetch user data from the request's cookie. Handled by asp.net's dependency injection.
         /// </summary>
-        public UserManager<GirafUser> _userManager { get;  }
+        public UserManager<GirafUser> _userManager { get; }
         /// <summary>
         /// A data-logger used to write messages to the console. Handled by asp.net's dependency injection.
         /// </summary>
@@ -87,7 +85,8 @@ namespace GirafRest.Services
         /// </summary>
         /// <param name="id">id of user to load.</param>
         /// <returns>A <see cref="GirafUser"/> with <b>all</b> related data.</returns>
-        public async Task<GirafUser> LoadUserWithWeekSchedules(string id){
+        public async Task<GirafUser> LoadUserWithWeekSchedules(string id)
+        {
             var user = await _context.Users
                 //First load the user from the database
                 .Where(u => u.Id.ToLower() == id.ToLower())
@@ -113,12 +112,12 @@ namespace GirafRest.Services
         {
             if (principal == null) return null;
             var usr = (await _userManager.GetUserAsync(principal));
-            if(usr == null) return null;
+            if (usr == null) return null;
             return await _context.Users
                 //Get user by ID from database
                 .Where(u => u.Id == usr.Id)
                 //And return it
-                .FirstOrDefaultAsync();;
+                .FirstOrDefaultAsync(); ;
         }
 
         /// <summary>
@@ -140,7 +139,7 @@ namespace GirafRest.Services
                 catch (NotSupportedException)
                 {
                 }
-                
+
                 image = imageStream.ToArray();
             }
 
@@ -153,12 +152,13 @@ namespace GirafRest.Services
         /// <param name="pictogram">The pictogram to check the ownership for.</param>
         /// <param name="user"></param>
         /// <returns>True if the user is authorized to see the resource and false if not.</returns>
-        public async Task<bool> CheckPrivateOwnership(Pictogram pictogram, GirafUser user) {
+        public async Task<bool> CheckPrivateOwnership(Pictogram pictogram, GirafUser user)
+        {
             if (pictogram.AccessLevel != AccessLevel.PRIVATE)
                 return false;
 
             //The pictogram was not public, check if the user owns it.
-            if(user == null) return false;
+            if (user == null) return false;
             var ownedByUser = await _context.UserResources
                 .Where(ur => ur.PictogramKey == pictogram.Id && ur.OtherKey == user.Id)
                 .AnyAsync();
@@ -183,7 +183,7 @@ namespace GirafRest.Services
             var ownedByDepartment = await _context.DepartmentResources
                 .Where(dr => dr.PictogramKey == resource.Id && dr.OtherKey == user.Department.Key)
                 .AnyAsync();
-                
+
             return ownedByDepartment;
         }
     }

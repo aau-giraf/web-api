@@ -1,7 +1,6 @@
-﻿using System;
+﻿using GirafRest.Models;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using GirafRest.Models;
 
 namespace GirafRest
 {

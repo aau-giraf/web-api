@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace GirafRest
 {
@@ -109,7 +107,7 @@ namespace GirafRest
                     + portString[0]);
             }
         }
-    
+
         /// <summary>
         /// Specifies that the server should utilize file-logging to the given file.
         /// </summary>

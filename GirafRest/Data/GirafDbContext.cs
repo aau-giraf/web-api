@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using GirafRest.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using GirafRest.Models;
-using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations.Schema;
 
 #pragma warning disable 1591
 namespace GirafRest.Data
@@ -46,8 +40,8 @@ namespace GirafRest.Data
 
             //Indexes
             builder.Entity<Department>().HasIndex(dep => dep.Name).IsUnique().IsClustered();
-            builder.Entity<Pictogram>().HasIndex(pic => new {pic.Id, pic.Title}).IsUnique().IsClustered();
-            builder.Entity<Weekday>().HasIndex(day => new {day.Id}).IsUnique().IsClustered();
+            builder.Entity<Pictogram>().HasIndex(pic => new { pic.Id, pic.Title }).IsUnique().IsClustered();
+            builder.Entity<Weekday>().HasIndex(day => new { day.Id }).IsUnique().IsClustered();
             builder.Entity<Week>().HasIndex(week => week.Id).IsUnique().IsClustered();
             builder.Entity<GirafUser>().HasIndex(user => new { user.Id, user.UserName }).IsUnique().IsClustered();
 
@@ -73,7 +67,7 @@ namespace GirafRest.Data
                 .WithMany(u => u.Resources)
                 .HasForeignKey(u => u.OtherKey)
                 .OnDelete(DeleteBehavior.Cascade);
-            
+
             builder.Entity<UserResource>()
                 .HasOne(ur => ur.Pictogram)
                 .WithMany(r => r.Users)
@@ -109,7 +103,7 @@ namespace GirafRest.Data
                    .WithMany(w => w.Activities)
                 .HasForeignKey(wr => wr.OtherKey)
                 .OnDelete(DeleteBehavior.Cascade);
-            
+
             builder.Entity<Activity>()
                 .HasOne<Pictogram>(wr => wr.Pictogram)
                 .WithMany()
@@ -121,7 +115,7 @@ namespace GirafRest.Data
                 .WithMany()
                 .HasForeignKey(ac => ac.TimerKey)
                 .OnDelete(DeleteBehavior.Cascade);
-            
+
             // Configure that a citizen can have many guardians and that a citizen can have many guardians
             builder.Entity<GuardianRelation>()
                    .HasOne(gr => gr.Guardian)

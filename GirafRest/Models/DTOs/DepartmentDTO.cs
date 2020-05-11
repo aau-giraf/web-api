@@ -1,8 +1,8 @@
-using System.Collections.Generic;
-using System.Linq;
 using GirafRest.Extensions;
 using GirafRest.Services;
 using Microsoft.AspNetCore.Identity;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace GirafRest.Models.DTOs
 {
@@ -41,14 +41,14 @@ namespace GirafRest.Models.DTOs
             Id = department.Key;
             Members = users.ToList();
             Name = department.Name;
-            
-            Resources = new List<long> (department.Resources.Select(dr => dr.PictogramKey));
+
+            Resources = new List<long>(department.Resources.Select(dr => dr.PictogramKey));
         }
 
         /// <summary>
         /// Empty constructor for JSON Generation
         /// </summary>
-        public DepartmentDTO ()
+        public DepartmentDTO()
         {
             Members = new List<DisplayNameDTO>();
             Resources = new List<long>();

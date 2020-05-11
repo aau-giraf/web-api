@@ -32,7 +32,7 @@ namespace GirafRest.Models.Responses
         /// Create a new sucessfull text REST response
         /// </summary>
         /// <param name="data">The data of the response</param>
-        public SuccessResponse(string data): base(data)
+        public SuccessResponse(string data) : base(data)
         { }
     }
 }

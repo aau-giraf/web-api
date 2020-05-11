@@ -1,7 +1,5 @@
 ﻿using GirafRest.Data;
 using GirafRest.Models;
-using GirafRest.Models.DTOs;
-using GirafRest.Models.Responses;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System.IO;
@@ -37,7 +35,7 @@ namespace GirafRest.Services
         {
             get;
         }
-        
+
         /// <summary>
         /// Loads only the user with the given username, excluding any associated data.
         /// </summary>

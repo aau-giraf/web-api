@@ -14,7 +14,7 @@ namespace GirafRest.Models
         /// </summary>
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public long Key {get; set;}
+        public long Key { get; set; }
 
         /// <summary>
         /// The key of the involved department.
@@ -25,7 +25,7 @@ namespace GirafRest.Models
         /// A reference to the actual department.
         /// </summary>
         [ForeignKey("OtherKey")]
-        public virtual Department Other {get; set;}
+        public virtual Department Other { get; set; }
 
         /// <summary>
         /// The key of the involved resource.
@@ -58,6 +58,6 @@ namespace GirafRest.Models
         /// <summary>
         /// DO NOT DELETE THIS!
         /// </summary>
-        public DepartmentResource(){}
+        public DepartmentResource() { }
     }
 }

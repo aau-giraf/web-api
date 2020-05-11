@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace GirafRest.Models.DTOs
@@ -14,24 +12,26 @@ namespace GirafRest.Models.DTOs
         /// An enum defining which day of the week this Weekday represents.
         /// </summary>
         public Days Day { get; set; }
-        
+
         /// <summary>
         /// A list of all the activities of the week.
         /// </summary>
         public ICollection<ActivityDTO> Activities { get; set; }
-        
+
         /// <summary>
         /// Creates a new data transfer object for the given week.
         /// </summary>
         /// <param name="weekday">The weekday to create a DTO for.</param>
-        public WeekdayDTO(Weekday weekday) {
+        public WeekdayDTO(Weekday weekday)
+        {
             this.Day = weekday.Day;
             Activities = new List<ActivityDTO>();
-            
-            if(weekday.Activities != null){
+
+            if (weekday.Activities != null)
+            {
                 foreach (var elem in weekday.Activities.OrderBy(a => a.Order))
                 {
-                    if(elem.Pictogram != null) Activities.Add(new ActivityDTO(elem));
+                    if (elem.Pictogram != null) Activities.Add(new ActivityDTO(elem));
                 }
             }
         }
@@ -39,6 +39,6 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// Empty constructor required for test framework.
         /// </summary>
-        public WeekdayDTO() {}
+        public WeekdayDTO() { }
     }
 }

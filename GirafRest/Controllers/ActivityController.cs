@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using GirafRest.Models;
+using GirafRest.Models.DTOs;
+using GirafRest.Models.Responses;
+using GirafRest.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using GirafRest.Data;
-using GirafRest.Models;
-using Microsoft.AspNetCore.Authorization;
-using GirafRest.Models.DTOs;
-using GirafRest.Services;
 using Microsoft.Extensions.Logging;
-using GirafRest.Models.Responses;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GirafRest.Controllers
 {
@@ -57,7 +53,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> PostActivity([FromBody] ActivityDTO newActivity, string userId, string weekplanName, int weekYear, int weekNumber, int weekDayNmb)
         {
-            Days weekDay = (Days) weekDayNmb;
+            Days weekDay = (Days)weekDayNmb;
             if (newActivity == null)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing new activity"));
 
@@ -127,7 +123,7 @@ namespace GirafRest.Controllers
         /// <param name="userId">an ID of the user to update activities for.</param>
         /// <returns>Returns <see cref="ActivityDTO"/> for the updated activity on success else MissingProperties or NotFound</returns>
         [HttpPatch("{userId}/update")]
-        [Authorize] 
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -145,7 +141,7 @@ namespace GirafRest.Controllers
 
             // check access rights
             if (!await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user))
-                return StatusCode(StatusCodes.Status403Forbidden,new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permissions"));
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permissions"));
 
             // throws error if none of user's weeks' has the specific activity
             if (!user.WeekSchedule.Any(w => w.Weekdays.Any(wd => wd.Activities.Any(act => act.Key == activity.Id))))
