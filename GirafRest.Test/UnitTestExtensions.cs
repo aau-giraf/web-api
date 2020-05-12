@@ -216,16 +216,16 @@ namespace GirafRest.Test
                     if (_mockActivities == null)
                         _mockActivities = new List<Activity>()
                         {
-                            new Activity(MockWeeks[0].Weekdays[0], MockPictograms[5], 0, ActivityState.Active){
+                            new Activity(MockWeeks[0].Weekdays[0], MockPictograms[5], 0, ActivityState.Active, null){
                                 Key = 1,
                                 Order = 1,
                                 OtherKey = 1,
                                 PictogramKey = 1,
                                 State = ActivityState.Normal
                             },
-                            new Activity(MockWeeks[0].Weekdays[1], MockPictograms[6], 1, ActivityState.Canceled),
-                            new Activity(MockWeekTemplates[Template1].Weekdays[1], MockPictograms[5], 0, ActivityState.Active),
-                            new Activity(MockWeekTemplates[Template1].Weekdays[0], MockPictograms[6], 1, ActivityState.Canceled),
+                            new Activity(MockWeeks[0].Weekdays[1], MockPictograms[6], 1, ActivityState.Canceled, null),
+                            new Activity(MockWeekTemplates[Template1].Weekdays[1], MockPictograms[5], 0, ActivityState.Active, null),
+                            new Activity(MockWeekTemplates[Template1].Weekdays[0], MockPictograms[6], 1, ActivityState.Canceled, null),
                         };
 
                     return _mockActivities;

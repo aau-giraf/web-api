@@ -26,7 +26,6 @@
             this.Pictogram = new WeekPictogramDTO(weekdayResource.Pictogram);
             this.Order = weekdayResource.Order;
             this.State = weekdayResource.State;
-
             if (weekdayResource.Timer != null)
             {
                 this.Timer = new TimerDTO(weekdayResource.Timer);
@@ -42,6 +41,10 @@
             this.Order = weekdayResource.Order;
             this.State = weekdayResource.State;
             this.Pictogram = pictogram;
+            if (weekdayResource.Timer != null)
+            {
+                this.Timer = new TimerDTO(weekdayResource.Timer);
+            }
         }
 
         /// <summary>

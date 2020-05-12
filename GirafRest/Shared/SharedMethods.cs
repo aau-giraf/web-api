@@ -74,9 +74,16 @@ namespace GirafRest.Shared
                 {
                     var picto = await _giraf._context.Pictograms
                         .Where(p => p.Id == activityDTO.Pictogram.Id).FirstOrDefaultAsync();
+
+
+                    Timer timer = null;
+                    if(activityDTO.Timer != null)
+                    {
+                        timer = await _giraf._context.Timers.Where(t => t.Key == activityDTO.Timer.Key).FirstOrDefaultAsync();
+                    }
                     
                     if (picto != null)
-                        to.Activities.Add(new Activity(to, picto, activityDTO.Order, activityDTO.State));
+                        to.Activities.Add(new Activity(to, picto, activityDTO.Order, activityDTO.State, timer));
                 }
             }
             return true;

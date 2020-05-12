@@ -308,7 +308,7 @@ namespace GirafRest.Test
             
             var activities = new List<Activity>()
             {
-                new Activity(week.Weekdays[0], _testContext.MockPictograms[0], orderNumber, state)
+                new Activity(week.Weekdays[0], _testContext.MockPictograms[0], orderNumber, state, null)
             };
             
             week.Weekdays[0].Activities = activities;
