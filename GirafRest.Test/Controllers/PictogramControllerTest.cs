@@ -1206,23 +1206,6 @@ namespace GirafRest.Test
 
         #endregion
 
-        #region FilterByTitle
-        [Theory]
-        [InlineData("PUBLIC", 2)]
-        [InlineData("", 7)]
-        [InlineData("YYY", 0)]
-        [InlineData("Pr", 4)]
-        [InlineData("Pu", 2)]
-        [InlineData("P", 6)]
-        public void FilterByTitle(string query, int expectedPictograms) {
-            //var pc = initializeTest();
-            
-            //var res = pc.FilterByTitle(_testContext.MockPictograms.AsQueryable(), query);
-
-            //Assert.Equal(expectedPictograms, res.ToList().Count);
-        }
-        #endregion
-
         #region Helpers        
         private void _preparePictogramFolder(int publicPictogram)
         {

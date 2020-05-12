@@ -11,13 +11,13 @@ namespace GirafRest.Models.Responses
     {
         /// <summary> GIRAF error code </summary>
         [JsonIgnore]
-        public ErrorCode ErrorCode;
+        public ErrorCode ErrorCode { get; set; }
 
         /// <summary> Error message </summary>
-        public string Message;
+        public string Message { get; set; }
 
         /// <summary> Error details </summary>
-        public string Details;
+        public string Details { get; set; }
 
         /// <summary>
         /// GIRAF Error code, this property is used by the serializer

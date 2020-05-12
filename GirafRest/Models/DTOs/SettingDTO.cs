@@ -160,6 +160,9 @@ namespace GirafRest.Models.DTOs
         /// <param name="options">The launcher options in need of transfer</param>
         public SettingDTO(Setting options)
         {
+            if (options == null) {
+                throw new System.ArgumentNullException(options + " is null");
+            }
             this.Orientation = options.Orientation;
             this.CompleteMark = options.CompleteMark;
             this.CancelMark = options.CancelMark;

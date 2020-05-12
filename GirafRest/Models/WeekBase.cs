@@ -48,6 +48,9 @@ namespace GirafRest.Models
         /// <param name="day">A day instance to update the week with - the old one is completely overridden.</param>
         public void UpdateDay(Weekday day)
         {
+            if (day == null) {
+                throw new System.ArgumentNullException(day + " is null");
+            }
             var wd = Weekdays.FirstOrDefault(d => d.Day == day.Day);
             if (wd == null)
                 Weekdays.Add(day);

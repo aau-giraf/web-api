@@ -46,6 +46,11 @@ namespace GirafRest.Models
         /// <param name="pictogram">The involved pictogram.</param>
         public UserResource(GirafUser user, Pictogram pictogram)
         {
+            if (user == null) {
+                throw new System.ArgumentNullException(user + " is null");
+            } else if (pictogram == null) {
+                throw new System.ArgumentNullException(pictogram + " is null");
+            }
             this.OtherKey = user.Id;
             this.Other = user;
             this.PictogramKey = pictogram.Id;

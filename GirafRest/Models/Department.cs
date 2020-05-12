@@ -33,12 +33,12 @@ namespace GirafRest.Models
         /// <summary>
         /// All belongings resources
         /// </summary>
-        public virtual ICollection<DepartmentResource> Resources { get; set; }
+        public virtual ICollection<DepartmentResource> Resources { get; }
 
         /// <summary>
         /// All belonging week templates
         /// </summary>
-        public virtual ICollection<WeekTemplate> WeekTemplates { get; set; }
+        public virtual ICollection<WeekTemplate> WeekTemplates { get; }
 
         /// <summary>
         /// Empty contructor for JSON Generation
@@ -53,6 +53,9 @@ namespace GirafRest.Models
         /// </summary>
         /// <param name="depDTO">The DTO containing all data on the new department.</param>
         public Department(DepartmentDTO depDTO) : this (){
+            if (depDTO == null) {
+                throw new System.ArgumentNullException(depDTO + " is null");
+            }
             this.Name = depDTO.Name;
         }
     }
