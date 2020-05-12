@@ -39,7 +39,7 @@ namespace GirafRest.Models.DTOs
         public DepartmentDTO(Department department, IEnumerable<DisplayNameDTO> users)
         {
             if (department == null) {
-                throw new System.ArgumentNullException(nameof(department) + "is null");
+                throw new System.ArgumentNullException(department + "is null");
             }
             Id = department.Key;
             Members = users.ToList();
