@@ -20,6 +20,9 @@
         /// Constructor given a Timer
         /// </summary>
         public TimerDTO(Timer timer) { 
+            if (timer == null) {
+                throw new System.ArgumentNullException(nameof(timer) + "is null");
+            }
             StartTime = timer.StartTime;
             Progress = timer.Progress;
             FullLength = timer.FullLength;
