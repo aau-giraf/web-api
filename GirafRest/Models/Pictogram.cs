@@ -73,7 +73,7 @@ namespace GirafRest.Models {
         public virtual void Merge(PictogramDTO other)
         {
             if (other == null) {
-                throw new System.ArgumentNullException(nameof(other) + " is null");
+                throw new System.ArgumentNullException(other + " is null");
             }
             this.LastEdit = DateTime.Now;
             this.AccessLevel = (AccessLevel)other.AccessLevel;
