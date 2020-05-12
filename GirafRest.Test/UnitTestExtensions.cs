@@ -209,7 +209,7 @@ namespace GirafRest.Test
             }
 
             private List<Timer> _mockTimers;
-            private List<Timer> MockTimers
+            public List<Timer> MockTimers
             {
                 get
                 {
@@ -218,8 +218,8 @@ namespace GirafRest.Test
                         {
                             new Timer()
                             {
-                                Key = 0,
-                                StartTime = 0,
+                                Key = 1,
+                                StartTime = 1589270757422,
                                 Progress = 0,
                                 FullLength = 2000,
                                 Paused = true
@@ -589,6 +589,7 @@ namespace GirafRest.Test
                 var mockRelationSet = CreateMockDbSet(MockUserResources);
                 var mockDepRes = CreateMockDbSet(MockDepartmentResources);
                 var mockActivities = CreateMockDbSet(MockActivities);
+                var mockTimers = CreateMockDbSet(MockTimers);
                 var mockDeps = CreateMockDbSet(MockDepartments);
                 //var mockPF = CreateMockDbSet(MockPictograms.Cast<PictoFrame>().ToList());
                 var mockUsers = CreateMockDbSet(MockUsers);
@@ -603,6 +604,7 @@ namespace GirafRest.Test
                 dbMock.Setup(c => c.UserResources).Returns(mockRelationSet.Object);
                 dbMock.Setup(c => c.DepartmentResources).Returns(mockDepRes.Object);
                 dbMock.Setup(c => c.Activities).Returns(mockActivities.Object);
+                dbMock.Setup(c => c.Timers).Returns(mockTimers.Object);
                 dbMock.Setup(c => c.Departments).Returns(mockDeps.Object);
                 dbMock.Setup(c => c.Weeks).Returns(mockWeeks.Object);
                 dbMock.Setup(c => c.Weekdays).Returns(mockWeekdays.Object);

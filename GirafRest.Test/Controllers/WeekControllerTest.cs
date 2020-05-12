@@ -254,25 +254,19 @@ namespace GirafRest.Test
         }
 
         [Fact]
-       // public async void UpdateWeek_AddActivityAfterTimerIsAdded()
-      /*  {
+        public async void UpdateWeek_AddActivityAfterTimerIsAdded()
+        {
             var wc = initializeTest();
             var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             _testContext.MockWeeks[0].Weekdays[0].Activities.Add(_testContext.MockActivities[0]);
-            var timer = new Timer()
-            {
-                Key = 0,
-                StartTime = 0,
-                Progress = 0,
-                FullLength = 2000,
-                Paused = true
-            };
+            var timer = _testContext.MockTimers[0];
+            long timerkey = timer.Key;
             _testContext.MockWeeks[0].Weekdays[0].Activities.ElementAt(0).Timer = timer;
             var week = _testContext.MockWeeks[0];
             await wc.UpdateWeek(mockUser.Id, 2018, 1, new WeekDTO(week));
-            Assert.Equal(_testContext.MockWeeks[0].Weekdays[0].Activities.ElementAt(0).Timer.Key, timer.Key);
-        }*/
+            Assert.Equal(_testContext.MockWeeks[0].Weekdays[0].Activities.ElementAt(0).Timer.Key, timerkey);
+        }
 
         #endregion
         #region CreateWeek
