@@ -14,7 +14,7 @@ namespace GirafRest.Setup
         ///
         public string Role { get; set; }
         ///
-        public List<string> Weeks { get; set; }
+        public List<string> Weeks { get; }
         ///
         public string Password { get; set; }
         ///

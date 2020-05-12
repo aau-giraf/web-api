@@ -9,9 +9,9 @@ namespace GirafRest.Setup
         ///
         public Days Day { get; set; }
         ///
-        public List<string> ActivityIconTitles { get; set; }
+        public List<string> ActivityIconTitles { get; }
         ///
-        public List<string> ActivityStates { get; set; }
+        public List<string> ActivityStates { get; }
         ///
         public SampleWeekday(Days day, List<string> actIconTitles, List<string> actStates)
         {
