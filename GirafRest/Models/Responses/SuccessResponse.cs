@@ -10,7 +10,7 @@ namespace GirafRest.Models.Responses
         /// <summary>
         /// The data of the response
         /// </summary>
-        public TData Data;
+        public TData Data { get; set; }
 
         /// <summary>
         /// Create a new SuccessResponse class
