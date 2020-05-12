@@ -25,6 +25,9 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         /// <param name="weekday">The weekday to create a DTO for.</param>
         public WeekdayDTO(Weekday weekday) {
+            if (weekday == null) {
+                throw new System.ArgumentNullException(weekday + " is null");
+            }
             this.Day = weekday.Day;
             Activities = new List<ActivityDTO>();
             
