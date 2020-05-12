@@ -157,17 +157,17 @@ namespace GirafRest.Setup
     public class SampleData
     {
         ///
-        public List<SampleGirafUser> UserList { get; set; }
+        public List<SampleGirafUser> UserList { get; }
         ///
-        public List<SampleDepartment> DepartmentList { get; set; }
+        public List<SampleDepartment> DepartmentList { get; }
         ///
-        public List<SamplePictogram> PictogramList { get; set; }
+        public List<SamplePictogram> PictogramList { get; }
         ///
-        public List<SampleWeekday> WeekdayList { get; set; }
+        public List<SampleWeekday> WeekdayList { get; }
         ///
-        public List <SampleWeek> WeekList { get; set; }
+        public List <SampleWeek> WeekList { get; }
         ///
-        public List <SampleWeekTemplate> WeekTemplateList { get; set; }
+        public List <SampleWeekTemplate> WeekTemplateList { get; }
         ///
         public SampleData()
         {
