@@ -23,7 +23,7 @@
         public ActivityDTO(Activity weekdayResource)
         {
             if (weekdayResource == null) {
-                throw new System.ArgumentNullException(nameof(weekdayResource) + " is null");
+                throw new System.ArgumentNullException(weekdayResource + " is null");
             }
             this.Id = weekdayResource.Key;
             this.Pictogram = new WeekPictogramDTO(weekdayResource.Pictogram);
@@ -42,7 +42,7 @@
         public ActivityDTO(Activity weekdayResource, WeekPictogramDTO pictogram)
         {
             if (weekdayResource == null) {
-                throw new System.ArgumentNullException(nameof(weekdayResource) + " is null");
+                throw new System.ArgumentNullException(weekdayResource + " is null");
             }
             this.Id = weekdayResource.Key;
             this.Order = weekdayResource.Order;
