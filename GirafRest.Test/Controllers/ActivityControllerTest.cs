@@ -247,7 +247,7 @@ namespace GirafRest.Test
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
 
             //There exist an acitivity with the id
-            Assert.Contains(_testContext.MockActivities, a => a.Key == _existingId);
+            Assert.True(_testContext.MockActivities.Any(a => a.Key == _existingId));
 
             var res = activityController.DeleteActivity(
                 mockUser.Id, _existingId

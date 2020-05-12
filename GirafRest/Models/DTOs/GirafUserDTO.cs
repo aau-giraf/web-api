@@ -77,15 +77,12 @@ namespace GirafRest.Models.DTOs
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GirafUserDTO"/> class.
+        /// Initializes a new instance of the <see cref="T:GirafRest.Models.DTOs.GirafUserDTO"/> class.
         /// </summary>
         /// <param name="user">User.</param>
         /// <param name="userRole">User role.</param>
         public GirafUserDTO(GirafUser user, GirafRoles userRole)
         {
-            if (user == null) {
-                throw new System.ArgumentNullException(user + " is null");
-            }
             //Add all trivial values
             Id = user.Id;
             Username = user.UserName;

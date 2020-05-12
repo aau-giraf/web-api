@@ -24,12 +24,12 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// A list of the displaynames of all members of the department.
         /// </summary>
-        public ICollection<DisplayNameDTO> Members { get; }
+        public ICollection<DisplayNameDTO> Members { get; set; }
 
         /// <summary>
         /// A list of ids of all resources owned by the department.
         /// </summary>
-        public ICollection<long> Resources { get; }
+        public ICollection<long> Resources { get; set; }
 
         /// <summary>
         /// Creates a new department data transfer object from a given department.
@@ -38,9 +38,6 @@ namespace GirafRest.Models.DTOs
         /// <param name="users">Used for finding the members.</param>
         public DepartmentDTO(Department department, IEnumerable<DisplayNameDTO> users)
         {
-            if (department == null) {
-                throw new System.ArgumentNullException(department + "is null");
-            }
             Id = department.Key;
             Members = users.ToList();
             Name = department.Name;

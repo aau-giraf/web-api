@@ -33,12 +33,12 @@ namespace GirafRest.Models {
         /// <summary>
         /// Belonging Users
         /// </summary>
-        public ICollection<UserResource> Users { get; }
+        public ICollection<UserResource> Users { get; set; }
 
         /// <summary>
         /// Belonging departments
         /// </summary>
-        public ICollection<DepartmentResource> Departments { get; }
+        public ICollection<DepartmentResource> Departments { get; set; }
 
         /// <summary>
         /// AccessLevel managing
@@ -72,9 +72,6 @@ namespace GirafRest.Models {
         /// <param name="other">The new information.</param>
         public virtual void Merge(PictogramDTO other)
         {
-            if (other == null) {
-                throw new System.ArgumentNullException(other + " is null");
-            }
             this.LastEdit = DateTime.Now;
             this.AccessLevel = (AccessLevel)other.AccessLevel;
             this.Title = other.Title;

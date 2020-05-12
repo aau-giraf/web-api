@@ -69,11 +69,6 @@ namespace GirafRest.Models
         /// </summary>
         public Weekday(Days day, List<Pictogram> activityIcons, List<ActivityState> activityStates) : this()
         {
-            if (activityIcons == null) {
-                throw new System.ArgumentNullException(activityIcons + " is null");
-            } else if (activityStates == null) {
-                throw new System.ArgumentNullException(activityStates + " is null");
-            }
             if (activityIcons.Count != activityStates.Count)
             {
                 throw new ArgumentException($"{activityIcons.Count} elements are in activityicons, " +
@@ -94,9 +89,6 @@ namespace GirafRest.Models
         /// <param name="day"></param>
         public Weekday(WeekdayDTO day) : this()
         {
-            if (day == null) {
-                throw new System.ArgumentNullException(day + " is null");
-            }
             Day = day.Day;
             this.Activities = new List<Activity>();
         }
