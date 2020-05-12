@@ -54,7 +54,7 @@ namespace GirafRest.Models
         /// <param name="depDTO">The DTO containing all data on the new department.</param>
         public Department(DepartmentDTO depDTO) : this (){
             if (depDTO == null) {
-                throw new System.ArgumentNullException(depDTO + " is null");
+                throw new System.ArgumentNullException(nameof(depDTO) + " is null");
             }
             this.Name = depDTO.Name;
         }
