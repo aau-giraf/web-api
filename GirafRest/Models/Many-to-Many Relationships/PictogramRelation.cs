@@ -26,6 +26,12 @@ namespace GirafRest
             this.Pictogram = pictogram;
         }
 
+        public PictogramRelation(long activityId, long pictogramId)
+        {
+            this.ActivityId = activityId;
+            this.PictogramId = pictogramId;
+        }
+
         public PictogramRelation()
         {
 

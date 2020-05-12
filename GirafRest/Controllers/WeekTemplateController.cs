@@ -101,6 +101,8 @@ namespace GirafRest.Controllers
                 .Include(w => w.Thumbnail)
                 .Include(u => u.Weekdays)
                 .ThenInclude(wd => wd.Activities)
+                .ThenInclude(pa => pa.Pictograms)
+                .ThenInclude(p => p.Pictogram)
                 .Where(t => t.DepartmentKey == user.DepartmentKey)
                 .FirstOrDefaultAsync(w => w.Id == id));
 

@@ -28,7 +28,7 @@ namespace GirafRest.Models.DTOs
             this.Order = weekdayResource.Order;
             this.State = weekdayResource.State;
             this.Pictograms = new List<WeekPictogramDTO>();
-
+            
             foreach (var relation in weekdayResource.Pictograms)
             {
                 this.Pictograms.Add(new WeekPictogramDTO(relation.Pictogram));

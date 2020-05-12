@@ -80,9 +80,15 @@ namespace GirafRest.Shared
                     {
                         var picto = await _giraf._context.Pictograms
                             .Where(p => p.Id == pictogram.Id).FirstOrDefaultAsync();
-                        
-                        pictograms.Add(picto);
 
+                        if (picto != null)
+                        {
+                            pictograms.Add(picto);
+                        }
+                        else
+                        {
+                            return false;
+                        }
                     }
                     
                     if (pictograms.Any())

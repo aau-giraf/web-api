@@ -31,7 +31,8 @@ namespace GirafRest.Controllers
         /// <param name="giraf">Service Injection</param>
         /// <param name="loggerFactory">Service Injection</param>
         /// <param name="authentication">Service Injection</param>
-        public ActivityController(IGirafService giraf, ILoggerFactory loggerFactory, IAuthenticationService authentication)
+        public ActivityController(IGirafService giraf, ILoggerFactory loggerFactory,
+            IAuthenticationService authentication)
         {
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Activity");
@@ -55,7 +56,8 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> PostActivity([FromBody] ActivityDTO newActivity, string userId, string weekplanName, int weekYear, int weekNumber, int weekDayNmb)
+        public async Task<ActionResult> PostActivity([FromBody] ActivityDTO newActivity, string userId,
+            string weekplanName, int weekYear, int weekNumber, int weekDayNmb)
         {
             Days weekDay = (Days) weekDayNmb;
             if (newActivity == null)
@@ -66,10 +68,13 @@ namespace GirafRest.Controllers
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "Missing user"));
 
             // check access rights
-            if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
+            if (!(await _authentication.HasEditOrReadUserAccess(
+                await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+                return StatusCode(StatusCodes.Status403Forbidden,
+                    new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
-            var dbWeek = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber && string.Equals(w.Name, weekplanName));
+            var dbWeek = user.WeekSchedule.FirstOrDefault(w =>
+                w.WeekYear == weekYear && w.WeekNumber == weekNumber && string.Equals(w.Name, weekplanName));
             if (dbWeek == null)
                 return NotFound(new ErrorResponse(ErrorCode.WeekNotFound, "Week not found"));
 
@@ -80,22 +85,37 @@ namespace GirafRest.Controllers
             int order = dbWeekDay.Activities.Select(act => act.Order).DefaultIfEmpty(0).Max();
             order++;
 
-            List<Pictogram> pictograms = new List<Pictogram>();
-            foreach (var pictogram in newActivity.Pictograms)
-            {
-                pictograms.Add(new Pictogram() {Id = pictogram.Id});
-            }
-
             Activity dbActivity = new Activity(
                 dbWeekDay,
-                pictograms,
+                null,
                 order,
                 ActivityState.Normal
             );
             _giraf._context.Activities.Add(dbActivity);
+
+            foreach (var pictogram in newActivity.Pictograms)
+            {
+                var dbPictogram = _giraf._context.Pictograms.FirstOrDefault(id => id.Id == pictogram.Id);
+                if (dbPictogram != null)
+                {
+                    _giraf._context.PictogramRelations.Add(new PictogramRelation(
+                        dbActivity, dbPictogram
+                    ));
+                }
+                else
+                {
+                    return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, "Pictogram not found"));
+                }
+            }
+
             await _giraf._context.SaveChangesAsync();
 
-            return StatusCode(StatusCodes.Status201Created, new SuccessResponse<ActivityDTO>(new ActivityDTO(dbActivity)));
+            return StatusCode(
+                StatusCodes.Status201Created,
+                new SuccessResponse<ActivityDTO>(
+                    new ActivityDTO(dbActivity, newActivity.Pictograms.ToList())
+                )
+            );
         }
 
         /// <summary>
@@ -116,8 +136,10 @@ namespace GirafRest.Controllers
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
             // check access rights
-            if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
+            if (!(await _authentication.HasEditOrReadUserAccess(
+                await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+                return StatusCode(StatusCodes.Status403Forbidden,
+                    new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
             // throws error if none of user's weeks' has the specific activity
             if (!user.WeekSchedule.Any(w => w.Weekdays.Any(wd => wd.Activities.Any(act => act.Key == activityId))))
@@ -127,7 +149,7 @@ namespace GirafRest.Controllers
 
             // deletion of pictogram relations
             var pictogramRelations = _giraf._context.PictogramRelations
-                                                .Where(relation => relation.ActivityId == targetActivity.Key);
+                .Where(relation => relation.ActivityId == targetActivity.Key);
 
             _giraf._context.PictogramRelations.RemoveRange(pictogramRelations);
 
@@ -154,11 +176,12 @@ namespace GirafRest.Controllers
 
             var pictograms = _giraf._context
                 .PictogramRelations
+                .Include(pictogram => pictogram.Pictogram)
                 .Where(pr => pr.ActivityId == activityId)
                 .ToList();
 
             activity.Pictograms = pictograms;
-            
+
             return Ok(new SuccessResponse<ActivityDTO>(new ActivityDTO(activity)));
         }
 
@@ -169,7 +192,7 @@ namespace GirafRest.Controllers
         /// <param name="userId">an ID of the user to update activities for.</param>
         /// <returns>Returns <see cref="ActivityDTO"/> for the updated activity on success else MissingProperties or NotFound</returns>
         [HttpPatch("{userId}/update")]
-        [Authorize] 
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -186,8 +209,10 @@ namespace GirafRest.Controllers
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
             // check access rights
-            if (!await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user))
-                return StatusCode(StatusCodes.Status403Forbidden,new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permissions"));
+            if (!await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User),
+                user))
+                return StatusCode(StatusCodes.Status403Forbidden,
+                    new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permissions"));
 
             // throws error if none of user's weeks' has the specific activity
             if (!user.WeekSchedule.Any(w => w.Weekdays.Any(wd => wd.Activities.Any(act => act.Key == activity.Id))))
@@ -202,15 +227,32 @@ namespace GirafRest.Controllers
             updateActivity.Order = activity.Order;
             updateActivity.State = activity.State;
 
-            List<Pictogram> newPictogramList = new List<Pictogram>();
+
+            // deletion of pictogram relations
+
+            var pictogramRelations = _giraf._context.PictogramRelations
+                .Where(relation => relation.ActivityId == activity.Id);
+
+            _giraf._context.PictogramRelations.RemoveRange(pictogramRelations);
+
+            List<WeekPictogramDTO> pictograms = new List<WeekPictogramDTO>();
 
             foreach (var pictogram in activity.Pictograms)
             {
-                newPictogramList.Add(new Pictogram() {Id = pictogram.Id});
-            }
+                var db_pictogram = _giraf._context.Pictograms.Single(id => id.Id == pictogram.Id);
 
-            updateActivity.Pictograms.Clear();
-            updateActivity.AddPictograms(newPictogramList);
+                if (db_pictogram != null)
+                {
+                    _giraf._context.PictogramRelations.Add(new PictogramRelation(
+                        updateActivity, db_pictogram
+                    ));
+                    pictograms.Add(new WeekPictogramDTO(db_pictogram));
+                }
+                else
+                {
+                    return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, "Pictogram not found"));
+                }
+            }
 
             if (activity.Timer != null)
             {
@@ -250,13 +292,14 @@ namespace GirafRest.Controllers
                     {
                         _giraf._context.Timers.Remove(placeTimer);
                     }
+
                     updateActivity.TimerKey = null;
                 }
             }
 
             await _giraf._context.SaveChangesAsync();
 
-            return Ok(new SuccessResponse<ActivityDTO>(new ActivityDTO(updateActivity, activity.Pictograms.ToList())));
+            return Ok(new SuccessResponse<ActivityDTO>(new ActivityDTO(updateActivity, pictograms)));
         }
     }
 }

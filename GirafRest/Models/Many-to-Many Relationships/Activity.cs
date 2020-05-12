@@ -57,7 +57,10 @@ namespace GirafRest.Models
             this.Order = order;
             this.State = state;
             this.Pictograms = new List<PictogramRelation>();
-            AddPictograms(pictograms);
+            if (pictograms != null)
+            {
+                AddPictograms(pictograms);
+            }
         }
         
         public Activity(Weekday weekday, int order, ActivityState state)
