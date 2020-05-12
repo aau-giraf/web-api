@@ -22,6 +22,9 @@
         /// <param name="weekdayResource">Given Activity</param>
         public ActivityDTO(Activity weekdayResource)
         {
+            if (weekdayResource == null) {
+                throw new System.ArgumentNullException(nameof(weekdayResource) + " is null");
+            }
             this.Id = weekdayResource.Key;
             this.Pictogram = new WeekPictogramDTO(weekdayResource.Pictogram);
             this.Order = weekdayResource.Order;
@@ -38,6 +41,9 @@
         /// </summary>
         public ActivityDTO(Activity weekdayResource, WeekPictogramDTO pictogram)
         {
+            if (weekdayResource == null) {
+                throw new System.ArgumentNullException(nameof(weekdayResource) + " is null");
+            }
             this.Id = weekdayResource.Key;
             this.Order = weekdayResource.Order;
             this.State = weekdayResource.State;
