@@ -121,12 +121,14 @@ namespace GirafRest.Setup
 
         private static void AddPictogramToDepartment(Department department, params Pictogram[] pictograms)
         {
-            Console.WriteLine("Adding pictograms to " + department.Name);
+            String str1 = new String("Adding pictograms to");
+            String exception = new String("(You may only add protected pictograms to department." +
+                        " Pictogram id: {pict.Id}, AccessLevel: {pict.AccessLevel}.");
+            Console.WriteLine(str1 + department.Name);
             foreach (var pict in pictograms)
             {
                 if (pict.AccessLevel != AccessLevel.PROTECTED)
-                    throw new InvalidOperationException($"You may only add protected pictograms to department." +
-                        " Pictogram id: {pict.Id}, AccessLevel: {pict.AccessLevel}.");
+                    throw new InvalidOperationException(exception);
                 new DepartmentResource(department, pict);
             }
         }
@@ -134,7 +136,8 @@ namespace GirafRest.Setup
         #region Sample data methods
         private static List<Department> AddSampleDepartments(GirafDbContext context, List<SampleDepartment> sampleDeps)
         {
-            Console.WriteLine("Adding departments.");
+            string str = new string("Adding departments.");
+            Console.WriteLine(str);
             List<Department> departments = new List<Department>();
 
             foreach (SampleDepartment sampleDepartment in sampleDeps)
@@ -149,7 +152,8 @@ namespace GirafRest.Setup
 
         private static void AddSampleUsers(GirafDbContext context, UserManager<GirafUser> userManager, List<SampleGirafUser> sampleUsers, List<Department> departments123)
         {
-            Console.WriteLine("Adding users.");
+            String str2 = new String("Adding users.");
+            Console.WriteLine(str2);
             List<GirafUser> users = new List<GirafUser>();
             List<Department> departments = (from dep in context.Departments select dep).ToList();
 
@@ -181,7 +185,8 @@ namespace GirafRest.Setup
 
         private static List<Pictogram> AddSamplePictograms(GirafDbContext context, List<SamplePictogram> samplePictogramsList)
         {
-            System.Console.WriteLine("Adding pictograms.");
+             String str3 = new String("Adding pictograms.");
+            System.Console.WriteLine(str3);
             List<Pictogram> pictograms = new List<Pictogram>();
             foreach (var samplePict in samplePictogramsList)
             {
@@ -195,7 +200,8 @@ namespace GirafRest.Setup
 
         private static void AddSampleWeekAndWeekdays(GirafDbContext context, List<SampleWeek> sampleWeeks, List<SampleWeekday> sampleWeekdays, List<SampleGirafUser> sampleUsers, List<Pictogram> pictograms)
         {
-            Console.WriteLine("Adding weekdays to users");
+            String str4 = new string("Adding weekdays to users");
+            Console.WriteLine(str4);
             Pictogram thumbNail = null;
             List<Week> weekList = new List<Week>();
 
@@ -233,7 +239,8 @@ namespace GirafRest.Setup
         private static void AddSampleWeekTemplate(GirafDbContext context, List<SampleWeekTemplate> sampleTemplates, List<SampleWeekday> sampleWeekdays,
             List<SampleGirafUser> sampleUsers, List<Department> departments, List<Pictogram> pictograms)
         {
-            Console.WriteLine("Adding templates");
+            String str5 = new string("Adding templates");
+            Console.WriteLine(str5);
             Pictogram thumbNail = null;
 
             foreach (SampleWeekTemplate sampleTemplate in sampleTemplates)

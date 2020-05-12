@@ -15,6 +15,9 @@ namespace GirafRest.Migrations
         /// <param name="migrationBuilder">Which MigrationBuilder to use</param>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            if (migrationBuilder == null) {
+                throw new System.ArgumentNullException(migrationBuilder + " is null");
+            }
             migrationBuilder.DropColumn(
                 name: "Image",
                 table: "Pictograms");
@@ -31,6 +34,9 @@ namespace GirafRest.Migrations
         /// <param name="migrationBuilder">Which MigrationBuilder to use</param>
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            if (migrationBuilder == null) {
+                throw new System.ArgumentNullException(migrationBuilder + " is null");
+            }
             migrationBuilder.DropColumn(
                 name: "ImageHash",
                 table: "Pictograms");

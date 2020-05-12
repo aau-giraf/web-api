@@ -69,7 +69,7 @@ namespace GirafRest.Models
         public Activity(Weekday weekday, Pictogram pictogram, int order, ActivityState state)
         {
             if (pictogram == null) {
-                throw new System.ArgumentNullException(nameof(pictogram) + " is null");
+                throw new System.ArgumentNullException(pictogram + " is null");
             }
             this.Other = weekday;
             this.PictogramKey = pictogram.Id;

@@ -2,10 +2,15 @@
 
 namespace GirafRest.Migrations
 {
+    ///
     public partial class LockTimerControl : Migration
     {
+        ///
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            if (migrationBuilder == null) {
+                throw new System.ArgumentNullException(migrationBuilder + " is null");
+            }
             migrationBuilder.AddColumn<bool>(
                 name: "LockTimerControl",
                 table: "Setting",
@@ -13,8 +18,12 @@ namespace GirafRest.Migrations
                 defaultValue: false);
         }
 
+        ///
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            if (migrationBuilder == null) {
+                throw new System.ArgumentNullException(migrationBuilder + " is null");
+            }
             migrationBuilder.DropColumn(
                 name: "LockTimerControl",
                 table: "Setting");

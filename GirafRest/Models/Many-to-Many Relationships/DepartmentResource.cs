@@ -46,9 +46,9 @@ namespace GirafRest.Models
         public DepartmentResource(Department dep, Pictogram pictogram)
         {
             if (dep == null) {
-                throw new System.ArgumentNullException(nameof(dep) + " is null");
+                throw new System.ArgumentNullException(dep + " is null");
             } else if (pictogram == null) {
-                throw new System.ArgumentNullException(nameof(pictogram) + " is null");
+                throw new System.ArgumentNullException(pictogram + " is null");
             }
             this.OtherKey = dep.Key;
             this.Other = dep;

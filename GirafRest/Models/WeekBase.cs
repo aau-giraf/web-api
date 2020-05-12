@@ -49,7 +49,7 @@ namespace GirafRest.Models
         public void UpdateDay(Weekday day)
         {
             if (day == null) {
-                throw new System.ArgumentNullException(nameof(day) + " is null");
+                throw new System.ArgumentNullException(day + " is null");
             }
             var wd = Weekdays.FirstOrDefault(d => d.Day == day.Day);
             if (wd == null)
