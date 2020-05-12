@@ -54,7 +54,8 @@ namespace GirafRest.Test
         #region ReadWeekSchedules
 
         [Fact]
-        public void ReadWeekScheduleNames_Authenticated_Success() {
+        public void ReadWeekScheduleNames_Authenticated_Success()
+        {
             var wc = initializeTest();
             var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
@@ -208,7 +209,8 @@ namespace GirafRest.Test
             var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             var tempWeek = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule;
-            var res = wc.UpdateWeek(mockUser.Id, 2018, 10, new WeekDTO() {
+            var res = wc.UpdateWeek(mockUser.Id, 2018, 10, new WeekDTO()
+            {
                 Thumbnail = new Models.DTOs.WeekPictogramDTO(_testContext.MockPictograms[0])
             }).Result as ObjectResult;
             var body = res.Value as ErrorResponse;
@@ -280,9 +282,9 @@ namespace GirafRest.Test
 
             var tempWeek = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule;
             var res = wc.UpdateWeek(
-                _testContext.MockUsers[CITIZEN_DEP_TWO].Id, 
-                2018, 
-                WEEK_ZERO, 
+                _testContext.MockUsers[CITIZEN_DEP_TWO].Id,
+                2018,
+                WEEK_ZERO,
                 new WeekDTO(week)
             ).Result as ObjectResult;
             var body = res.Value as SuccessResponse<WeekDTO>;
@@ -313,19 +315,20 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void UpdateWeek_NewWeekValidDTO_CheckFrameNr_Success(){
+        public void UpdateWeek_NewWeekValidDTO_CheckFrameNr_Success()
+        {
             var wc = initializeTest();
             var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             var week = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.First();
             var orderNumber = 1;
             var state = ActivityState.Active;
-            
+
             var activities = new List<Activity>()
             {
                 new Activity(week.Weekdays[0], _testContext.MockPictograms[0], orderNumber, state, null)
             };
-            
+
             week.Weekdays[0].Activities = activities;
             var res = wc.UpdateWeek(mockUser.Id, 2018, 20, new WeekDTO(week)).Result as ObjectResult;
             var body = res.Value as SuccessResponse<WeekDTO>;
@@ -337,7 +340,7 @@ namespace GirafRest.Test
 
             var getResult = wc.ReadUsersWeekSchedule(mockUser.Id, 2018, 20).Result as ObjectResult;
             var getBody = getResult.Value as SuccessResponse<WeekDTO>;
-            
+
             Assert.Equal(StatusCodes.Status200OK, getResult.StatusCode);
             Assert.Equal(orderNumber, getBody.Data.Days.ToList()[0].Activities.ToList()[0].Order);
             Assert.Equal(state, getBody.Data.Days.ToList()[0].Activities.ToList()[0].State);
@@ -349,8 +352,9 @@ namespace GirafRest.Test
             var wc = initializeTest();
             var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
-            var res = wc.UpdateWeek(mockUser.Id, 2018, 20, new WeekDTO() { 
-                Thumbnail = new Models.DTOs.WeekPictogramDTO(_testContext.MockPictograms[0]) 
+            var res = wc.UpdateWeek(mockUser.Id, 2018, 20, new WeekDTO()
+            {
+                Thumbnail = new Models.DTOs.WeekPictogramDTO(_testContext.MockPictograms[0])
             }).Result as ObjectResult;
             var body = res.Value as ErrorResponse;
 
@@ -386,9 +390,9 @@ namespace GirafRest.Test
             var week = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.First();
 
             var res = wc.UpdateWeek(
-                _testContext.MockUsers[userToEdit].Id, 
-                2018, 
-                20, 
+                _testContext.MockUsers[userToEdit].Id,
+                2018,
+                20,
                 new WeekDTO(week)
             ).Result as ObjectResult;
 
@@ -413,9 +417,9 @@ namespace GirafRest.Test
             var week = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.First();
 
             var res = wc.UpdateWeek(
-                _testContext.MockUsers[userToEdit].Id, 
-                2018, 
-                20, 
+                _testContext.MockUsers[userToEdit].Id,
+                2018,
+                20,
                 new WeekDTO(week)
             ).Result as ObjectResult;
 
