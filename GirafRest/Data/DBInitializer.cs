@@ -16,8 +16,7 @@ namespace GirafRest.Setup
     /// </summary>
     public class DBInitializer
     {
-        
-        ///
+
         public static SampleDataHandler sampleHandler = new SampleDataHandler();
 
         /// <summary>
@@ -26,7 +25,7 @@ namespace GirafRest.Setup
         /// <param name="context">The database context.</param>
         /// <param name="userManager">The API for managing GirafUsers.</param>
         /// <param name="pictogramCount">The number of sample pictograms to generate.</param>
-        public static async void Initialize(GirafDbContext context, UserManager<GirafUser> userManager, int pictogramCount)
+        public static void Initialize(GirafDbContext context, UserManager<GirafUser> userManager, int pictogramCount)
         {
             CreatePictograms(pictogramCount);
 
@@ -39,8 +38,7 @@ namespace GirafRest.Setup
                 ///Passwords for users are written to the samples.json directly from the db, meaning they will be hashes. 
                 ///If you want more writeable passwords, manually set them in the samples.json.
                 ///</summary>
-                
-                await sampleHandler.SerializeDataAsync(context, userManager);
+                sampleHandler.SerializeDataAsync(context, userManager);
 
                 return;
             }

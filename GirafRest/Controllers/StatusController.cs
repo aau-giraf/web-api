@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace GirafRest.Controllers
 {
     /// <summary>
-    /// Status-endpoint; Getting status of HTTP, DB etc, for clients to see statuss
+    /// Status-endpoint; Getting status of HTTP, DB etc, for clients to see status
     /// </summary>
     [Route("v1/[controller]")]
     public class StatusController : Controller
