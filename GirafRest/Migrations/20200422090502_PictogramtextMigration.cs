@@ -2,10 +2,15 @@
 
 namespace GirafRest.Migrations
 {
+    ///
     public partial class PictogramtextMigration : Migration
     {
+        ///
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            if (migrationBuilder == null) {
+                throw new System.ArgumentNullException(migrationBuilder + " is null");
+            }
             migrationBuilder.DropForeignKey(
                 name: "FK_Weeks_Pictograms_ThumbnailKey",
                 table: "Weeks");
@@ -65,8 +70,12 @@ namespace GirafRest.Migrations
                 onDelete: ReferentialAction.Restrict);
         }
 
+        ///
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            if (migrationBuilder == null) {
+                throw new System.ArgumentNullException(migrationBuilder + " is null");
+            }
             migrationBuilder.DropForeignKey(
                 name: "FK_Weeks_Pictograms_ThumbnailId",
                 table: "Weeks");
