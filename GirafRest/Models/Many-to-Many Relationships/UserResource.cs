@@ -47,9 +47,9 @@ namespace GirafRest.Models
         public UserResource(GirafUser user, Pictogram pictogram)
         {
             if (user == null) {
-                throw new System.ArgumentNullException(nameof(user) + " is null");
+                throw new System.ArgumentNullException(user + " is null");
             } else if (pictogram == null) {
-                throw new System.ArgumentNullException(nameof(pictogram) + " is null");
+                throw new System.ArgumentNullException(pictogram + " is null");
             }
             this.OtherKey = user.Id;
             this.Other = user;
