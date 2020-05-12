@@ -95,7 +95,7 @@ namespace GirafRest.Models
         /// <param name="citizens"></param>
         public void AddCitizens(List<GirafUser> citizens){
             if (citizens == null) {
-                throw new System.ArgumentNullException(nameof(citizens) + " is null");
+                throw new System.ArgumentNullException(citizens + " is null");
             }
             foreach (var citizen in citizens)
             {
@@ -119,7 +119,7 @@ namespace GirafRest.Models
         public void AddGuardians(List<GirafUser> guardians)
         {
             if (guardians == null) {
-                throw new System.ArgumentNullException(nameof(guardians) + " is null");
+                throw new System.ArgumentNullException(guardians + " is null");
             }
             foreach (var guardian in guardians)
             {
