@@ -76,7 +76,7 @@ namespace GirafRest.Controllers
             if (model == null)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing model"));
 
-            //Check that the caller has supplied username in the request
+            //Check that the caller has supplied username in the reques
             if (string.IsNullOrEmpty(model.Username))
                 return Unauthorized(new ErrorResponse(
                     ErrorCode.MissingProperties, "Missing username"));
@@ -133,8 +133,8 @@ namespace GirafRest.Controllers
             // else all guardians, deps and admin roles can create user that does not belong to a dep
             if (model.DepartmentId != null)
             {
-                if (!(await _authentication.HasRegisterUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User),
-                                                            model.Role, model.DepartmentId.Value)))
+                if (!(await _authentication.HasRegisterUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true),
+                                                            model.Role, model.DepartmentId.Value).ConfigureAwait(true)))
                     return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User has no rights", 
                         "The authenticated user does not have the rights to add user for the given department"));
             }
@@ -143,7 +143,7 @@ namespace GirafRest.Controllers
             if (doesUserAlreadyExist)
                 return Conflict(new ErrorResponse(ErrorCode.UserAlreadyExists, "User already exists", "A user with the given username already exists"));
 
-            Department department = await _giraf._context.Departments.Where(dep => dep.Key == model.DepartmentId).FirstOrDefaultAsync();
+            Department department = await _giraf._context.Departments.Where(dep => dep.Key == model.DepartmentId).FirstOrDefaultAsync().ConfigureAwait(true);
 
             // Check that the department with the specified id exists
             if (department == null && model.DepartmentId != null)
@@ -152,7 +152,7 @@ namespace GirafRest.Controllers
             //Create a new user with the supplied information
             var user = new GirafUser (model.Username, model.DisplayName, department, model.Role);
 
-            var result = await _giraf._userManager.CreateAsync(user, model.Password);
+            var result = await _giraf._userManager.CreateAsync(user, model.Password).ConfigureAwait(true);
             if (result.Succeeded)
             {
                 if (department != null)
@@ -162,10 +162,10 @@ namespace GirafRest.Controllers
                     else if (model.Role == GirafRoles.Guardian)
                         AddCitizensToGuardian(user);
                     // save changes
-                    await _giraf._context.SaveChangesAsync();
+                    await _giraf._context.SaveChangesAsync().ConfigureAwait(true);
                 }
-                await _giraf._userManager.AddToRoleAsync(user, UserRoleStr);
-                await _signInManager.SignInAsync(user, isPersistent: true);
+                await _giraf._userManager.AddToRoleAsync(user, UserRoleStr).ConfigureAwait(true);
+                await _signInManager.SignInAsync(user, isPersistent: true).ConfigureAwait(true);
                 _giraf._logger.LogInformation("User created a new account with password.");
 
                 return Created(Request.Host + "/v1/user/" + user.Id, new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, model.Role)));
@@ -240,11 +240,11 @@ namespace GirafRest.Controllers
             if (model.Token == null || model.Password == null)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing token or password"));
 
-            var result = await _giraf._userManager.ResetPasswordAsync(user, model.Token, model.Password);
+            var result = await _giraf._userManager.ResetPasswordAsync(user, model.Token, model.Password).ConfigureAwait(true);
             if (!result.Succeeded)
                 return Unauthorized(new ErrorResponse(ErrorCode.InvalidProperties, "Invalid token"));
 
-            await _signInManager.SignInAsync(user, isPersistent: false);
+            await _signInManager.SignInAsync(user, isPersistent: false).ConfigureAwait(true);
             _giraf._logger.LogInformation("User changed their password successfully.");
             return Ok(new SuccessResponse("User password changed succesfully"));
         }
