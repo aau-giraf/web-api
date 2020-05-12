@@ -52,6 +52,9 @@ namespace GirafRest.Controllers
             IOptions<JwtConfig> configuration,
             IAuthenticationService authentication)
         {
+            if (giraf == null) {
+                throw new System.ArgumentNullException(giraf + " is null");
+            }
             _signInManager = signInManager;
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Account");
@@ -338,7 +341,7 @@ namespace GirafRest.Controllers
                 new Claim("departmentId", user.DepartmentKey?.ToString() ?? ""),
             };
 
-            claims.AddRange(await GetRoleClaims(user));
+            claims.AddRange(await GetRoleClaims(user).ConfigureAwait(true));
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.Value.JwtKey));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -360,7 +363,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns>The role as a string</returns>
         /// <param name="role">A given role as enum that should be converted to a string</param>
-        private string GirafRoleFromEnumToString(GirafRoles role)
+        private static string GirafRoleFromEnumToString(GirafRoles role)
         {
             switch (role)
             {
