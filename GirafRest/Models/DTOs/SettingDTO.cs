@@ -161,7 +161,7 @@ namespace GirafRest.Models.DTOs
         public SettingDTO(Setting options)
         {
             if (options == null) {
-                throw new System.ArgumentNullException(nameof(options) + " is null");
+                throw new System.ArgumentNullException(options + " is null");
             }
             this.Orientation = options.Orientation;
             this.CompleteMark = options.CompleteMark;
