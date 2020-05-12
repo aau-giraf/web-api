@@ -32,6 +32,9 @@ namespace GirafRest.Models.DTOs
         /// <param name="week">The week to create a DTO for.</param>
         public WeekBaseDTO(WeekBase week)
         {
+            if (week == null) {
+                throw new System.ArgumentNullException(nameof(week) + " is null");
+            }
             this.Name = week.Name;
             try
             {
