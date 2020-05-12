@@ -343,7 +343,7 @@ namespace GirafRest.Controllers
                         fs.Write(image);
                     }
                 }
-                catch(System.UnauthorizedAccessException uaex)
+                catch(System.UnauthorizedAccessException)
                 {
                     //Consider if the errorcode is the most appropriate one here
                     return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.Forbidden, "The server does not have permission to write this file"));

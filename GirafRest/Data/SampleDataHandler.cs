@@ -10,6 +10,7 @@ using System.Linq;
 
 namespace GirafRest.Setup
 {
+    ///
     public class SampleDataHandler
     {
         private readonly string jsonFile = $"{Directory.GetCurrentDirectory()}" +
@@ -17,13 +18,15 @@ namespace GirafRest.Setup
             $"Data" +
             $"{Path.DirectorySeparatorChar}" +
             $"samples.json";
-
+        ///
         public SampleDataHandler(){}
+        ///
         public SampleDataHandler(string path)
         {
             jsonFile = path;
         }
-
+        
+        ///
         public SampleData DeserializeData()
         {
             try
@@ -39,6 +42,7 @@ namespace GirafRest.Setup
             return null;
         }
 
+        ///
         public async System.Threading.Tasks.Task SerializeDataAsync(GirafDbContext context, UserManager<GirafUser> userManager)
         {
             SampleData data = new SampleData();
@@ -151,16 +155,23 @@ namespace GirafRest.Setup
             File.WriteAllText(jsonFile, jsonSamples);
         }
     }
-
+    ///
     public class SampleData
     {
-        public List<SampleGirafUser> UserList { get; set; }
-        public List<SampleDepartment> DepartmentList { get; set; }
-        public List<SamplePictogram> PictogramList { get; set; }
-        public List<SampleWeekday> WeekdayList { get; set; }
-        public List <SampleWeek> WeekList { get; set; }
-        public List <SampleWeekTemplate> WeekTemplateList { get; set; }
+        ///
+        public List<SampleGirafUser> UserList { get; }
+        ///
+        public List<SampleDepartment> DepartmentList { get; }
+        ///
+        public List<SamplePictogram> PictogramList { get; }
+        ///
+        public List<SampleWeekday> WeekdayList { get; }
+        ///
+        public List <SampleWeek> WeekList { get; }
+        ///
+        public List <SampleWeekTemplate> WeekTemplateList { get;}
 
+        ///
         public SampleData()
         {
             UserList = new List<SampleGirafUser>();
