@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Text;
 using GirafRest.Data;
-using System.Threading;
+
 
 namespace GirafRest.Test
 {
@@ -208,6 +208,31 @@ namespace GirafRest.Test
                 }
             }
 
+            private List<Timer> _mockTimers;
+            private List<Timer> MockTimers
+            {
+                get
+                {
+                    if (_mockTimers == null)
+                        _mockTimers = new List<Timer>()
+                        {
+                            new Timer()
+                            {
+                                Key = 0,
+                                StartTime = 0,
+                                Progress = 0,
+                                FullLength = 2000,
+                                Paused = true
+                            }
+                        };
+                    return _mockTimers;
+                }
+                set
+                {
+
+                }
+            }
+
             private List<Activity> _mockActivities;
             public List<Activity> MockActivities
             {
@@ -216,7 +241,7 @@ namespace GirafRest.Test
                     if (_mockActivities == null)
                         _mockActivities = new List<Activity>()
                         {
-                            new Activity(MockWeeks[0].Weekdays[0], MockPictograms[5], 0, ActivityState.Active, null){
+                            new Activity(MockWeeks[0].Weekdays[0], MockPictograms[5], 0, ActivityState.Active, MockTimers[0]){
                                 Key = 1,
                                 Order = 1,
                                 OtherKey = 1,
@@ -677,7 +702,7 @@ namespace GirafRest.Test
 
             var mockSet = new Mock<DbSet<T>>();
             mockSet.As<IAsyncEnumerable<T>>()
-                .Setup(m => m.GetAsyncEnumerator(It.IsAny<CancellationToken>()))
+                .Setup(m => m.GetAsyncEnumerator(It.IsAny<System.Threading.CancellationToken>()))
                 .Returns(new TestDbAsyncEnumerator<T>(data.GetEnumerator()));
             
 
