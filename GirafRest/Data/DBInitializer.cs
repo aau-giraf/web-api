@@ -38,7 +38,7 @@ namespace GirafRest.Setup
                 ///Passwords for users are written to the samples.json directly from the db, meaning they will be hashes. 
                 ///If you want more writeable passwords, manually set them in the samples.json.
                 ///</summary>
-                sampleHandler.SerializeDataAsync(context, userManager);
+                System.Threading.Tasks.Task task = sampleHandler.SerializeDataAsync(context, userManager);
 
                 return;
             }
