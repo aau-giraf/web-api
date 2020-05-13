@@ -40,10 +40,18 @@ namespace GirafRest.Controllers
         /// <param name="giraf">A reference to the GirafService.</param>
         /// <param name="loggerFactory">A reference to an implementation of ILoggerFactory. Used to create a logger.</param>
         /// <param name="authentication"></param>
-        public WeekTemplateController(IGirafService giraf, 
-            ILoggerFactory loggerFactory, 
-            IAuthenticationService authentication)
-        {
+        public WeekTemplateController(IGirafService giraf, ILoggerFactory loggerFactory, 
+            IAuthenticationService authentication){
+
+            if(giraf == null){
+                  throw new System.ArgumentNullException(giraf + " is null");
+            }
+
+              if(loggerFactory == null){
+                  throw new System.ArgumentNullException(loggerFactory + " is null");
+            }
+
+        
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger(new string("WeekTemplate"));
             _authentication = authentication;
