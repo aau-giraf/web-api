@@ -52,7 +52,7 @@ namespace GirafRest.Controllers
             }
             catch (System.Exception e)
             {
-                return StatusCode(StatusCodes.Status503ServiceUnavailable, new ErrorResponse(ErrorCode.Error, "Error when connecting to database", e.Message));
+                return StatusCode(StatusCodes.Status503ServiceUnavailable, new ErrorResponse(ErrorCode.Error, new string("Error when connecting to database"), e.Message));
             }
         }
 
