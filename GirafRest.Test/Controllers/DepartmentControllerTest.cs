@@ -236,7 +236,7 @@ namespace GirafRest.Test
             var body = res.Value as SuccessResponse<DepartmentDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
-            Assert.True(body.Data.Resources.Any(r => r == RESOURCE_THREE));
+            Assert.Contains(body.Data.Resources, a => a == RESOURCE_THREE);
         }
 
         [Fact]
