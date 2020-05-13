@@ -49,6 +49,10 @@ namespace GirafRest.Models.DTOs
             this.Order = weekdayResource.Order;
             this.State = weekdayResource.State;
             this.Pictograms = pictograms;
+            if (weekdayResource.Timer != null)
+            {
+                this.Timer = new TimerDTO(weekdayResource.Timer);
+            }
         }
 
         /// <summary>
@@ -84,6 +88,6 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// Timer object for Activity
         /// </summary>
-        public TimerDTO Timer { get; set; }
+        public TimerDTO Timer { get; set; } 
     }
 }

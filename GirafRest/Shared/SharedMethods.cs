@@ -90,9 +90,15 @@ namespace GirafRest.Shared
                             return false;
                         }
                     }
+
+                    Timer timer = null;
+                    if(activityDTO.Timer != null)
+                    {
+                        timer = await _giraf._context.Timers.Where(t => t.Key == activityDTO.Timer.Key).FirstOrDefaultAsync();
+                    }
                     
                     if (pictograms.Any())
-                        to.Activities.Add(new Activity(to, pictograms, activityDTO.Order, activityDTO.State));
+                        to.Activities.Add(new Activity(to, pictograms, activityDTO.Order, activityDTO.State, timer));
                 }
             }
             return true;

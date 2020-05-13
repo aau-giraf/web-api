@@ -33,21 +33,19 @@ namespace GirafRest.Test
 #pragma warning restore IDE0051 // Remove unused private members
 
         public List<GirafUser> users;
-
         public WeekControllerTest(ITestOutputHelper output)
         {
             _testLogger = output;
         }
-
         private WeekController initializeTest()
         {
             _testContext = new TestContext();
 
             var wc = new WeekController(
                 new MockGirafService(_testContext.MockDbContext.Object,
-                    _testContext.MockUserManager), _testContext.MockLoggerFactory.Object,
+                                     _testContext.MockUserManager), _testContext.MockLoggerFactory.Object,
                 new GirafAuthenticationService(_testContext.MockDbContext.Object, _testContext.MockRoleManager.Object,
-                    _testContext.MockUserManager));
+                                               _testContext.MockUserManager));
             _testContext.MockHttpContext = wc.MockHttpContext();
 
             return wc;
@@ -79,8 +77,8 @@ namespace GirafRest.Test
         [InlineData(CITIZEN_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
-        public void ReadWeekScheduleNames_CheckAuthentication_Errors(int authUser,
-            int userToEdit, ErrorCode expectedError)
+        public void ReadWeekScheduleNames_CheckAuthentication_Errors(
+            int authUser, int userToEdit, ErrorCode expectedError)
         {
             var wc = initializeTest();
             var mockUser = _testContext.MockUsers[authUser];
@@ -110,14 +108,12 @@ namespace GirafRest.Test
             var weekschedule = _testContext.MockWeeks[0];
             _testContext.MockUsers[userToEdit].WeekSchedule = new List<Week>() {weekschedule};
             var res = wc.ReadWeekSchedules(_testContext.MockUsers[userToEdit].Id).Result as ObjectResult;
-
+            
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
         }
 
         #endregion
-
         #region ReadWeekSchedule(id)
-
         [Fact]
         public void ReadWeekSchedules_AccessValidUsersSpecificWeek_Success()
         {
@@ -129,8 +125,7 @@ namespace GirafRest.Test
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
 
-            var adminDepOneWeekZeroSchedule = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule
-                .FirstOrDefault(w => w.Id == WEEK_ZERO);
+            var adminDepOneWeekZeroSchedule = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.FirstOrDefault(w => w.Id == WEEK_ZERO);
             Assert.Equal(adminDepOneWeekZeroSchedule?.Name, body.Data.Name);
             Assert.Equal(adminDepOneWeekZeroSchedule?.WeekYear, body.Data.WeekYear);
             Assert.Equal(adminDepOneWeekZeroSchedule?.WeekNumber, body.Data.WeekNumber);
@@ -155,8 +150,8 @@ namespace GirafRest.Test
         [InlineData(CITIZEN_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
-        public void ReadWeekSchedules_CheckAuthentication_Errors(int authUser,
-            int userToEdit, ErrorCode expectedError)
+        public void ReadWeekSchedules_CheckAuthentication_Errors(
+            int authUser, int userToEdit, ErrorCode expectedError)
         {
             var wc = initializeTest();
             var mockUser = _testContext.MockUsers[authUser];
@@ -168,7 +163,7 @@ namespace GirafRest.Test
             Assert.Equal(expectedError, body.ErrorCode);
         }
 
-
+        
         [Theory]
         [InlineData(ADMIN_DEP_ONE, DEPARTMENT_USER_DEP_TWO)]
         [InlineData(ADMIN_DEP_ONE, GUARDIAN_DEP_TWO)]
@@ -189,9 +184,7 @@ namespace GirafRest.Test
         }
 
         #endregion
-
         #region UpdateWeek
-
         [Fact]
         public void UpdateWeek_ValidWeekValidDTO_Success()
         {
@@ -216,11 +209,12 @@ namespace GirafRest.Test
             var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             var tempWeek = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule;
-            var res = wc.UpdateWeek(mockUser.Id, 2018, 10,
-                    new WeekDTO() {Thumbnail = new Models.DTOs.WeekPictogramDTO(_testContext.MockPictograms[0])})
-                .Result as ObjectResult;
+            var res = wc.UpdateWeek(mockUser.Id, 2018, 10, new WeekDTO()
+            {
+                Thumbnail = new Models.DTOs.WeekPictogramDTO(_testContext.MockPictograms[0])
+            }).Result as ObjectResult;
             var body = res.Value as ErrorResponse;
-
+            
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.InvalidAmountOfWeekdays, body.ErrorCode);
         }
@@ -248,12 +242,11 @@ namespace GirafRest.Test
 
             var tempWeek = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule;
             var res = wc.UpdateWeek(
-                    _testContext.MockUsers[CITIZEN_DEP_THREE].Id,
-                    2018,
-                    WEEK_ZERO,
-                    new WeekDTO(week)
-                )
-                .Result as ObjectResult;
+                _testContext.MockUsers[CITIZEN_DEP_THREE].Id,
+                2018,
+                WEEK_ZERO,
+                new WeekDTO(week)
+            ).Result as ObjectResult;
             var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
@@ -262,10 +255,23 @@ namespace GirafRest.Test
             _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule = tempWeek;
         }
 
+        [Fact]
+        public async void UpdateWeek_AddActivityAfterTimerIsAdded()
+        {
+            var wc = initializeTest();
+            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+            _testContext.MockWeeks[0].Weekdays[0].Activities.Add(_testContext.MockActivities[0]);
+            var timer = _testContext.MockTimers[0];
+            long timerkey = timer.Key;
+            _testContext.MockWeeks[0].Weekdays[0].Activities.ElementAt(0).Timer = timer;
+            var week = _testContext.MockWeeks[0];
+            await wc.UpdateWeek(mockUser.Id, 2018, 1, new WeekDTO(week));
+            Assert.Equal(_testContext.MockWeeks[0].Weekdays[0].Activities.ElementAt(0).Timer.Key, timerkey);
+        }
+
         #endregion
-
         #region CreateWeek
-
         [Fact]
         public void UpdateWeek_OtherCitizenAsGuardian_Success()
         {
@@ -276,12 +282,11 @@ namespace GirafRest.Test
 
             var tempWeek = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule;
             var res = wc.UpdateWeek(
-                    _testContext.MockUsers[CITIZEN_DEP_TWO].Id,
-                    2018,
-                    WEEK_ZERO,
-                    new WeekDTO(week)
-                )
-                .Result as ObjectResult;
+                _testContext.MockUsers[CITIZEN_DEP_TWO].Id,
+                2018,
+                WEEK_ZERO,
+                new WeekDTO(week)
+            ).Result as ObjectResult;
             var body = res.Value as SuccessResponse<WeekDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
@@ -318,13 +323,12 @@ namespace GirafRest.Test
             var week = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.First();
             var orderNumber = 1;
             var state = ActivityState.Active;
-
+            
             var activities = new List<Activity>()
             {
-                new Activity(week.Weekdays[0], new List<Pictogram>() {_testContext.MockPictograms[0]}, orderNumber,
-                    state)
+                new Activity(week.Weekdays[0], new List<Pictogram>() {_testContext.MockPictograms[0]}, orderNumber, state, null)
             };
-
+            
             week.Weekdays[0].Activities = activities;
             var res = wc.UpdateWeek(mockUser.Id, 2018, 20, new WeekDTO(week)).Result as ObjectResult;
             var body = res.Value as SuccessResponse<WeekDTO>;
@@ -336,7 +340,7 @@ namespace GirafRest.Test
 
             var getResult = wc.ReadUsersWeekSchedule(mockUser.Id, 2018, 20).Result as ObjectResult;
             var getBody = getResult.Value as SuccessResponse<WeekDTO>;
-
+            
             Assert.Equal(StatusCodes.Status200OK, getResult.StatusCode);
             Assert.Equal(orderNumber, getBody.Data.Days.ToList()[0].Activities.ToList()[0].Order);
             Assert.Equal(state, getBody.Data.Days.ToList()[0].Activities.ToList()[0].State);
@@ -348,9 +352,10 @@ namespace GirafRest.Test
             var wc = initializeTest();
             var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
-            var res = wc.UpdateWeek(mockUser.Id, 2018, 20,
-                    new WeekDTO() {Thumbnail = new Models.DTOs.WeekPictogramDTO(_testContext.MockPictograms[0])})
-                .Result as ObjectResult;
+            var res = wc.UpdateWeek(mockUser.Id, 2018, 20, new WeekDTO()
+            {
+                Thumbnail = new Models.DTOs.WeekPictogramDTO(_testContext.MockPictograms[0])
+            }).Result as ObjectResult;
             var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
@@ -377,8 +382,7 @@ namespace GirafRest.Test
         [InlineData(CITIZEN_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
-        public void UpdateWeek_AuthenticationChecks_Errors(int authUser,
-            int userToEdit, ErrorCode expectedError)
+        public void UpdateWeek_AuthenticationChecks_Errors(int authUser, int userToEdit, ErrorCode expectedError)
         {
             var wc = initializeTest();
             var mockUser = _testContext.MockUsers[authUser];
@@ -421,7 +425,6 @@ namespace GirafRest.Test
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
         }
-
         #endregion
     }
 }

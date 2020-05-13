@@ -79,7 +79,7 @@ namespace GirafRest.Models
             this.Day = day;
             for (int i = 0; i < pictograms.Count; i++)
             {
-                this.Activities.Add(new Activity(this, pictograms[i], i, activityStates[i]));
+                this.Activities.Add(new Activity(this, pictograms[i], i, activityStates[i], null));
             }
         }
 
