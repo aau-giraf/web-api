@@ -50,7 +50,7 @@ namespace GirafRest.Services
         public async Task<GirafUser> LoadUserWithResources(System.Security.Claims.ClaimsPrincipal principal)
         {
             if (principal == null) return null;
-            var usr = (await _userManager.GetUserAsync(principal));
+            var usr = (await _userManager.GetUserAsync(principal).ConfigureAwait(true));
             if (usr == null) return null;
             return await _context.Users
                 //Get user by ID from database
@@ -63,7 +63,7 @@ namespace GirafRest.Services
                     .ThenInclude(d => d.Resources)
                         .ThenInclude(dr => dr.Pictogram)
                 //And return it
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync().ConfigureAwait(true);
         }
 
         /// <summary>
@@ -74,12 +74,12 @@ namespace GirafRest.Services
         public async Task<GirafUser> LoadUserWithDepartment(System.Security.Claims.ClaimsPrincipal principal)
         {
             if (principal == null) return null;
-            var usr = (await _userManager.GetUserAsync(principal));
+            var usr = (await _userManager.GetUserAsync(principal).ConfigureAwait(true));
             if (usr == null) return null;
             return await _context.Users
                 .Where(u => u.Id == usr.Id)
                 .Include(u => u.Department)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync().ConfigureAwait(true);
         }
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace GirafRest.Services
                 .ThenInclude(wd => wd.Activities)
                 .ThenInclude(e => e.Pictogram)
                 //And return it
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync().ConfigureAwait(true);
 
             return user;
         }
@@ -112,13 +112,13 @@ namespace GirafRest.Services
         public async Task<GirafUser> LoadBasicUserDataAsync(System.Security.Claims.ClaimsPrincipal principal)
         {
             if (principal == null) return null;
-            var usr = (await _userManager.GetUserAsync(principal));
+            var usr = (await _userManager.GetUserAsync(principal).ConfigureAwait(true));
             if(usr == null) return null;
             return await _context.Users
                 //Get user by ID from database
                 .Where(u => u.Id == usr.Id)
                 //And return it
-                .FirstOrDefaultAsync();;
+                .FirstOrDefaultAsync().ConfigureAwait(true);
         }
 
         /// <summary>
@@ -131,11 +131,14 @@ namespace GirafRest.Services
             byte[] image;
             using (var imageStream = new MemoryStream())
             {
-                await bodyStream.CopyToAsync(imageStream);
+                if (bodyStream == null) {
+                    throw new System.ArgumentNullException(bodyStream + " is null");
+                }
+                await bodyStream.CopyToAsync(imageStream).ConfigureAwait(true);
 
                 try      //I assume this will always throw, but I dare not remove it, because why would it be here?
                 {
-                    await bodyStream.FlushAsync();
+                    await bodyStream.FlushAsync().ConfigureAwait(true);
                 }
                 catch (NotSupportedException)
                 {
@@ -154,6 +157,9 @@ namespace GirafRest.Services
         /// <param name="user"></param>
         /// <returns>True if the user is authorized to see the resource and false if not.</returns>
         public async Task<bool> CheckPrivateOwnership(Pictogram pictogram, GirafUser user) {
+            if (pictogram == null) {
+                throw new System.ArgumentNullException(pictogram + " is null");
+            }
             if (pictogram.AccessLevel != AccessLevel.PRIVATE)
                 return false;
 
@@ -161,7 +167,7 @@ namespace GirafRest.Services
             if(user == null) return false;
             var ownedByUser = await _context.UserResources
                 .Where(ur => ur.PictogramKey == pictogram.Id && ur.OtherKey == user.Id)
-                .AnyAsync();
+                .AnyAsync().ConfigureAwait(true);
 
             return ownedByUser;
         }
@@ -185,7 +191,7 @@ namespace GirafRest.Services
             //The pictogram was not owned by user, check if his department owns it.
             var ownedByDepartment = await _context.DepartmentResources
                 .Where(dr => dr.PictogramKey == resource.Id && dr.OtherKey == user.Department.Key)
-                .AnyAsync();
+                .AnyAsync().ConfigureAwait(true);
                 
             return ownedByDepartment;
         }
