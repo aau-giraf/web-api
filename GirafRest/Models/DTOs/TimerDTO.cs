@@ -8,12 +8,13 @@
         /// <summary>
         /// Constructor for DTO
         /// </summary>
-        public TimerDTO(long startTime, long progress, long fullLength, bool paused)
+        public TimerDTO(long startTime, long progress, long fullLength, bool paused, long key)
         {
             StartTime = startTime;
             Progress = progress;
             FullLength = fullLength;
             Paused = paused;
+            Key = key;
         }
 
         /// <summary>
@@ -25,6 +26,7 @@
             Progress = timer.Progress;
             FullLength = timer.FullLength;
             Paused = timer.Paused;
+            Key = timer.Key;
         }
 
         /// <summary>

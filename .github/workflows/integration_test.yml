@@ -1,0 +1,54 @@
+name: Integration Test
+
+on: push
+
+jobs:
+  build:
+    name: Integration Test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet: [ '3.1.201' ]
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.IntegrationTestPassword }}
+          MYSQL_DATABASE: 'giraf'
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up API
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ matrix.dotnet }}
+      - name: Run API
+        # secrets are located in repo aau-giraf/web-api:settings.secrets
+        # "nohup" is used to run the dotnet application in the background 
+        run: |
+          export ASPNETCORE_ENVIRONMENT="Production"
+          bash scripts/ci-setup.sh ${{ secrets.IntegrationTestUser }} ${{ secrets.IntegrationTestPassword }}
+          dotnet tool install --global dotnet-ef
+          cd GirafRest
+          dotnet restore
+          dotnet ef database update
+          nohup dotnet run --sample-data > /dev/null 2>&1 &
+      - name: Set up Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r GirafIntegrationTest/requirements.txt
+          python scripts/pictogen.py 6 pictograms
+      - name: Tests
+        # sleep is a hacky fix to ensure the Web API is running before tests are run
+        # it is advised for future students to integrate a "heartbeat" into the python tests,
+        # that checks whether the Web API is running, and tries again every 5-10 second or so
+        run: |
+          sleep 10
+          cd GirafIntegrationTest
+          python test.py

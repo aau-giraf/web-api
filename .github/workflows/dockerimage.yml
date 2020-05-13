@@ -1,0 +1,20 @@
+name: Build GitHub Packages
+
+on: [push]
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    name: Build and Push Docker image
+    steps:
+      # To use this repository's private action, you must check out the repository
+      - name: Checkout
+        uses: actions/checkout@v2
+      - uses: docker/build-push-action@v1
+        with:
+          registry: docker.pkg.github.com
+          repository: aau-giraf/web-api/web-api
+          username: ${{ github.actor }}
+          password: ${{ github.token }}
+          tag_with_ref: true
+          push: true

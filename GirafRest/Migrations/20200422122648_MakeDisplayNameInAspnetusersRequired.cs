@@ -6,8 +6,8 @@ namespace GirafRest.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("UPDATE aspnetusers SET DisplayName = UserName WHERE DisplayName IS NULL");
-
+            migrationBuilder.Sql("UPDATE AspNetUsers SET DisplayName = UserName WHERE DisplayName IS NULL");
+            
             migrationBuilder.AlterColumn<string>(
                 name: "DisplayName",
                 table: "AspNetUsers",

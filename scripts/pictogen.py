@@ -16,7 +16,7 @@ def write(id, outdir):
 
     font = None
     if sys.platform == 'linux':
-        font = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf', 36)
+        font = ImageFont.truetype('/usr/share/fonts/TTF/DejaVuSerif.ttf', 36)
     elif sys.platform == 'darwin':
         font = ImageFont.truetype('Library/Fonts/Apple\ Chancery.ttf', 36)
     elif sys.platform == 'win32':
