@@ -58,6 +58,7 @@ namespace GirafRest.Setup
             {
                 List<string> weekStrings = new List<string>();
                 foreach (Week week in user.WeekSchedule)
+                
                 {
                     weekStrings.Add(week.Name);
                 }
