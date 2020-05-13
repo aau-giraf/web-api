@@ -83,6 +83,7 @@ namespace GirafRest.Setup
         {
             System.Console.WriteLine($"Creating {count} pictograms");
             DirectoryInfo dir = Directory.CreateDirectory("../pictograms");
+
             using FontFamily family = new FontFamily("Arial");
             using Font font = new Font(
                 family,
@@ -92,7 +93,8 @@ namespace GirafRest.Setup
 
             for (int i = 1; i <= count; i++)
             {
-                using Image pictogram = DrawText(i.ToString(), font, Color.Black, Color.White);
+                using Image pictogram = DrawText(i.ToString("G", System.Globalization.CultureInfo
+                .InvariantCulture), font, Color.Black, Color.White);
                 pictogram.Save(Path.Combine(dir.FullName, $"{i}.png"), ImageFormat.Png); 
             }
         }
