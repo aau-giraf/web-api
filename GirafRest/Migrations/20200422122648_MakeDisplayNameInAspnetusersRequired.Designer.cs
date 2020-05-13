@@ -12,6 +12,7 @@ namespace GirafRest.Migrations
     [Migration("20200422122648_MakeDisplayNameInAspnetusersRequired")]
     partial class MakeDisplayNameInAspnetusersRequired
     {
+        ///        
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
