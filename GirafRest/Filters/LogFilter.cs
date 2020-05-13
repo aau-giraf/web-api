@@ -44,6 +44,9 @@ namespace GirafRest.Filters
         /// <param name="context">Context in which is executed</param>
         public void OnActionExecuted(ActionExecutedContext context)
         {
+            if (context == null) {
+                throw new System.ArgumentNullException(context + " is null");
+            }
             string path = "Logs/log-" + DateTime.Now.Year + DateTime.Now.Month.ToString().PadLeft(2, '0') + DateTime.Now.Day.ToString().PadLeft(2, '0') + ".txt";
             var controller = context.Controller as Controller;
             string userId = controller.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
