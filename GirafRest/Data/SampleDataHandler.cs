@@ -72,7 +72,7 @@ namespace GirafRest.Setup
                     weekStrings.Add(week.Name);
                 }
 
-                IList<string> roles = await userManager.GetRolesAsync(user);
+                IList<string> roles = await userManager.GetRolesAsync(user).ConfigureAwait(true);
 
                 if (!roles.Any())
                 {
