@@ -37,9 +37,6 @@ namespace GirafRest.Extensions
         /// <param name="roleManager">A reference to the role manager for the application.</param>
         public static void EnsureRoleSetup(this RoleManager<GirafRole> roleManager)
         {
-            if (roleManager == null) {
-                throw new System.ArgumentNullException(roleManager + " is null");
-            }
             if (roleManager.Roles.AnyAsync().Result)
                 return;
 
@@ -71,11 +68,8 @@ namespace GirafRest.Extensions
             UserManager<GirafUser> userManager, 
             GirafUser user)
         {
-            if (userManager == null) {
-                throw new System.ArgumentNullException(userManager + " is null");
-            }
             GirafRoles userRole = new GirafRoles();
-            var roles = await userManager.GetRolesAsync(user).ConfigureAwait(true);
+            var roles = await userManager.GetRolesAsync(user);
             if(roles.Count != 0) 
                 userRole = (GirafRoles)Enum.Parse(typeof(GirafRoles), roles[0]);
             return userRole;
@@ -86,9 +80,6 @@ namespace GirafRest.Extensions
         /// </summary>
         /// <param name="options">A reference to IdentityOptions, which is used to configure Identity.</param>
         public static void RemovePasswordRequirements(this IdentityOptions options) {
-            if (options == null) {
-                throw new System.ArgumentNullException(options + " is null");
-            }
             //Set password requirements to an absolute bare minimum.
             options.Password.RequireDigit = false;
             options.Password.RequireLowercase = false;
