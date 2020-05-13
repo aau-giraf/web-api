@@ -3,8 +3,8 @@ using GirafRest.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.ComponentModel;
+using System.Linq;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -163,7 +163,7 @@ namespace GirafRest.Setup
                 };
 
                 var x = userManager.CreateAsync(user, sampleUser.Password).Result.Succeeded;
-                if(x)
+                if (x)
                 {
                     var a = userManager.AddToRoleAsync(user, sampleUser.Role).Result.Succeeded;
                     if (!a)

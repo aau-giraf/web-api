@@ -1,8 +1,8 @@
-﻿using System.Threading.Tasks;
-using GirafRest.Data;
+﻿using GirafRest.Data;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
 
 namespace GirafRest
 {
@@ -43,7 +43,7 @@ namespace GirafRest
         /// <param name="roleToAdd">Role to add.</param>
         /// <param name="departmentKey">Department key.</param>
         Task<bool> HasRegisterUserAccess(GirafUser authUser, GirafRoles roleToAdd, long departmentKey);
-        
+
         /// <summary>
         /// Method for checking wheteher the authenticated user is allowed to edit and view templates in general. 
         /// </summary>

@@ -1,5 +1,4 @@
-﻿using System;
-namespace GirafRest
+﻿namespace GirafRest
 {
     /// <summary>
     /// DTO for weekname, holding year, number and name

@@ -50,7 +50,7 @@
         /// <summary>
         /// Empty constructor for JSON Generation
         /// </summary>
-        public ActivityDTO(){}
+        public ActivityDTO() { }
 
         /// <summary>
         /// Belonging pictogram
@@ -80,6 +80,6 @@
         /// <summary>
         /// Timer object for Activity
         /// </summary>
-        public TimerDTO Timer { get; set; } 
+        public TimerDTO Timer { get; set; }
     }
 }

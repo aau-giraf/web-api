@@ -1,16 +1,12 @@
-using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace GirafRest.Models.DTOs
 {
     /// <summary>
     /// Giraf roles
     /// </summary>
-    public enum GirafRoles {
+    public enum GirafRoles
+    {
         /// <summary>
         /// Citizen role
         /// </summary>

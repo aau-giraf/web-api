@@ -13,7 +13,7 @@ namespace GirafRest.Models
         /// </summary>
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public long Key {get; set;}
+        public long Key { get; set; }
 
         /// <summary>
         /// The key of the weekday to which the resource is attached.
@@ -24,7 +24,7 @@ namespace GirafRest.Models
         /// A reference to the actual weekday.
         /// </summary>
         [ForeignKey("OtherKey")]
-        public virtual Weekday Other {get; set;}
+        public virtual Weekday Other { get; set; }
 
         /// <summary>
         /// The key of the involved resource.
@@ -79,6 +79,6 @@ namespace GirafRest.Models
         /// <summary>
         /// Newtonsoft (JSON Generation) needs empty constructor. Don't delete.
         /// </summary>
-        public Activity(){}
+        public Activity() { }
     }
 }
