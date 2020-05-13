@@ -33,6 +33,9 @@ namespace GirafRest.Controllers
         /// <param name="authentication">Service Injection</param>
         public ActivityController(IGirafService giraf, ILoggerFactory loggerFactory, IAuthenticationService authentication)
         {
+            if (loggerFactory == null) {
+                throw new ArgumentNullException(loggerFactory + "is null");
+            }
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Activity");
             _authentication = authentication;
@@ -59,30 +62,30 @@ namespace GirafRest.Controllers
         {
             Days weekDay = (Days) weekDayNmb;
             if (newActivity == null)
-                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing new activity"));
+                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, new String("Missing new activity")));
 
-            GirafUser user = await _giraf.LoadUserWithWeekSchedules(userId);
+            GirafUser user = await _giraf.LoadUserWithWeekSchedules(userId).ConfigureAwait(true);
             if (user == null)
-                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "Missing user"));
+                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, new String("Missing user")));
 
             // check access rights
-            if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
+            if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true), user).ConfigureAwait(true)))
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, new String("User does not have permission")));
 
             var dbWeek = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber && string.Equals(w.Name, weekplanName));
             if (dbWeek == null)
-                return NotFound(new ErrorResponse(ErrorCode.WeekNotFound, "Week not found"));
+                return NotFound(new ErrorResponse(ErrorCode.WeekNotFound, new String("Week not found")));
 
             Weekday dbWeekDay = dbWeek.Weekdays.FirstOrDefault(day => day.Day == weekDay);
             if (dbWeekDay == null)
-                return NotFound(new ErrorResponse(ErrorCode.InvalidDay, "Day not found"));
+                return NotFound(new ErrorResponse(ErrorCode.InvalidDay, new String("Day not found")));
 
             int order = dbWeekDay.Activities.Select(act => act.Order).DefaultIfEmpty(0).Max();
             order++;
 
             Activity dbActivity = new Activity(dbWeekDay, new Pictogram() { Id = newActivity.Pictogram.Id }, order, ActivityState.Normal);
             _giraf._context.Activities.Add(dbActivity);
-            await _giraf._context.SaveChangesAsync();
+            await _giraf._context.SaveChangesAsync().ConfigureAwait(true);
 
             return StatusCode(StatusCodes.Status201Created, new SuccessResponse<ActivityDTO>(new ActivityDTO(dbActivity)));
         }
@@ -100,22 +103,22 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeleteActivity(string userId, long activityId)
         {
-            GirafUser user = await _giraf.LoadUserWithWeekSchedules(userId);
+            GirafUser user = await _giraf.LoadUserWithWeekSchedules(userId).ConfigureAwait(true);
             if (user == null)
-                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
+                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, new String("User not found")));
 
             // check access rights
-            if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
+            if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true), user).ConfigureAwait(true)))
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, new String("User does not have permission")));
 
             // throws error if none of user's weeks' has the specific activity
             if (!user.WeekSchedule.Any(w => w.Weekdays.Any(wd => wd.Activities.Any(act => act.Key == activityId))))
-                return NotFound(new ErrorResponse(ErrorCode.ActivityNotFound, "Activity not found"));
+                return NotFound(new ErrorResponse(ErrorCode.ActivityNotFound, new String("Activity not found")));
 
             Activity targetActivity = _giraf._context.Activities.First(act => act.Key == activityId);
 
             _giraf._context.Activities.Remove(targetActivity);
-            await _giraf._context.SaveChangesAsync();
+            await _giraf._context.SaveChangesAsync().ConfigureAwait(true);
 
             return Ok(new SuccessResponse("Activity deleted"));
         }
@@ -136,24 +139,24 @@ namespace GirafRest.Controllers
         {
             if (activity == null)
             {
-                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing activity"));
+                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, new String("Missing activity")));
             }
 
-            GirafUser user = await _giraf.LoadUserWithWeekSchedules(userId);
+            GirafUser user = await _giraf.LoadUserWithWeekSchedules(userId).ConfigureAwait(true);
             if (user == null)
-                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
+                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, new String("User not found")));
 
             // check access rights
-            if (!await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user))
-                return StatusCode(StatusCodes.Status403Forbidden,new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permissions"));
+            if (!await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true), user).ConfigureAwait(true))
+                return StatusCode(StatusCodes.Status403Forbidden,new ErrorResponse(ErrorCode.NotAuthorized, new String("User does not have permissions")));
 
             // throws error if none of user's weeks' has the specific activity
             if (!user.WeekSchedule.Any(w => w.Weekdays.Any(wd => wd.Activities.Any(act => act.Key == activity.Id))))
-                return NotFound(new ErrorResponse(ErrorCode.ActivityNotFound, "Activity not found"));
+                return NotFound(new ErrorResponse(ErrorCode.ActivityNotFound, new String("Activity not found")));
 
             Activity updateActivity = _giraf._context.Activities.FirstOrDefault(a => a.Key == activity.Id);
             if (updateActivity == null)
-                return NotFound(new ErrorResponse(ErrorCode.ActivityNotFound, "Activity not found"));
+                return NotFound(new ErrorResponse(ErrorCode.ActivityNotFound, new String("Activity not found")));
 
             updateActivity.Order = activity.Order;
             updateActivity.State = activity.State;
@@ -201,7 +204,7 @@ namespace GirafRest.Controllers
                 }
             }
 
-            await _giraf._context.SaveChangesAsync();
+            await _giraf._context.SaveChangesAsync().ConfigureAwait(true);
 
             return Ok(new SuccessResponse<ActivityDTO>(new ActivityDTO(updateActivity, activity.Pictogram)));
         }
