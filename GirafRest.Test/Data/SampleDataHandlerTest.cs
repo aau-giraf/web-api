@@ -53,19 +53,33 @@ namespace GirafRest.Test
             List<SampleWeekTemplate> weekTemplates = data.WeekTemplateList;
             List<SampleWeekday> weekdays = data.WeekdayList;
 
+            String str1 = new String("Admin");
+            String str2 = new String("Guardian in dep 2");
+            String str3 = new String("Citizen of dep 2");
+            String str4 = new String("Mock Department");
+            String str5 = new String("Mock Department2");
+            String str6 = new String("Picto 1");
+            String str7 = new String("Public Picto2");
+            String str8 = new String("No restrictions");
+            String str9 = new String("My awesome week");
+            String str10 = new String("My not so awesome week");
+            String str11 = new String("Template1");
+            String str12 = new String("Template2");
+            
+
             Assert.NotNull(data);
-            Assert.Equal(users[0].Name, "Admin");
-            Assert.Equal(users[1].Name, "Guardian in dep 2");
-            Assert.Equal(users[2].Name, "Citizen of dep 2");
-            Assert.Equal(deps[0].Name, "Mock Department");
-            Assert.Equal(deps[1].Name, "Mock Department2");
-            Assert.Equal(pics[0].Title, "Picto 1");
-            Assert.Equal(pics[1].Title, "Public Picto2");
-            Assert.Equal(pics[2].Title, "No restrictions");
-            Assert.Equal(weeks[0].Name, "My awesome week");
-            Assert.Equal(weeks[1].Name, "My not so awesome week");
-            Assert.Equal(weekTemplates[0].Name, "Template1");
-            Assert.Equal(weekTemplates[1].Name, "Template2");
+            Assert.Equal(users[0].Name, str1);
+            Assert.Equal(users[1].Name, str2);
+            Assert.Equal(users[2].Name, str3);
+            Assert.Equal(deps[0].Name, str4);
+            Assert.Equal(deps[1].Name, str5);
+            Assert.Equal(pics[0].Title, str6);
+            Assert.Equal(pics[1].Title, str7);
+            Assert.Equal(pics[2].Title, str8);
+            Assert.Equal(weeks[0].Name, str9);
+            Assert.Equal(weeks[1].Name, str10);
+            Assert.Equal(weekTemplates[0].Name, str11);
+            Assert.Equal(weekTemplates[1].Name, str12);
             Assert.Equal(weekdays[0].Day, Days.Monday);
             Assert.Equal(weekdays[1].Day, Days.Tuesday);
             Assert.Equal(weekdays[2].Day, Days.Wednesday);
