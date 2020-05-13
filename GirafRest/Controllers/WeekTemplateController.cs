@@ -45,7 +45,7 @@ namespace GirafRest.Controllers
             IAuthenticationService authentication)
         {
             _giraf = giraf;
-            _giraf._logger = loggerFactory.CreateLogger("WeekTemplate");
+            _giraf._logger = loggerFactory.CreateLogger(new string("WeekTemplate"));
             _authentication = authentication;
         }
 
@@ -62,18 +62,18 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)] 
         public async Task<ActionResult> GetWeekTemplates()
         {
-            var user = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
+            var user = await _giraf.LoadBasicUserDataAsync(HttpContext.User).ConfigureAwait(true);
             
-            if (! await _authentication.HasTemplateAccess(user))
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
-            
+            if (! await _authentication.HasTemplateAccess(user).ConfigureAwait(true))
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, new string("User does not have permission")));
+        
             var result = _giraf._context.WeekTemplates
                              .Where(t => t.DepartmentKey == user.DepartmentKey)
                              .Select(w => new WeekTemplateNameDTO(w.Name, w.Id)).ToArray();
             
             if (result.Length < 1)
             {
-                return NotFound(new ErrorResponse(ErrorCode.NoWeekTemplateFound, "No week template found"));
+                return NotFound(new ErrorResponse(ErrorCode.NoWeekTemplateFound, new string("No week template found")));
             }
             else
             {
@@ -95,7 +95,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> GetWeekTemplate(long id)
         {
-            var user = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
+            var user = await _giraf.LoadBasicUserDataAsync(HttpContext.User).ConfigureAwait(true);
             
             var template = await (_giraf._context.WeekTemplates
                 .Include(w => w.Thumbnail)
@@ -103,13 +103,13 @@ namespace GirafRest.Controllers
                     .ThenInclude(wd => wd.Activities)
                         .ThenInclude(a => a.Pictogram)
                 .Where(t => t.DepartmentKey == user.DepartmentKey)
-                .FirstOrDefaultAsync(w => w.Id == id));
+                .FirstOrDefaultAsync(w => w.Id == id)).ConfigureAwait(true);
 
             if (template == null)
-                return NotFound(new ErrorResponse(ErrorCode.NoWeekTemplateFound, "No week template found"));
+                return NotFound(new ErrorResponse(ErrorCode.NoWeekTemplateFound, new string("No week template found")));
 
-            if (! await _authentication.HasTemplateAccess(user, template?.DepartmentKey) )
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
+            if (! await _authentication.HasTemplateAccess(user, template?.DepartmentKey).ConfigureAwait(true) )
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, new string("User does not have permission")));
             
             return Ok(new SuccessResponse<WeekTemplateDTO>(new WeekTemplateDTO(template)));
         }
@@ -131,26 +131,26 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> CreateWeekTemplate([FromBody] WeekTemplateDTO templateDto)
         {
-            var user = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
+            var user = await _giraf.LoadBasicUserDataAsync(HttpContext.User).ConfigureAwait(true);
             
-            if (! await _authentication.HasTemplateAccess(user))
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
+            if (! await _authentication.HasTemplateAccess(user).ConfigureAwait(true))
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, new string("User does not have permission")));
 
             if (templateDto == null) 
-                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing templateDto"));
+                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, new string("Missing templateDto")));
 
             Department department = _giraf._context.Departments.FirstOrDefault(d => d.Key == user.DepartmentKey);
             if (department == null)
-                return BadRequest(new ErrorResponse(ErrorCode.UserMustBeInDepartment, "User must be in a department"));
+                return BadRequest(new ErrorResponse(ErrorCode.UserMustBeInDepartment, new string("User must be in a department")));
             
             var newTemplate = new WeekTemplate(department);
 
-            var errorCode = await SetWeekFromDTO(templateDto, newTemplate, _giraf);
+            var errorCode = await SetWeekFromDTO(templateDto, newTemplate, _giraf).ConfigureAwait(true);
             if (errorCode != null)
                 return BadRequest(errorCode);
 
             _giraf._context.WeekTemplates.Add(newTemplate);
-            await _giraf._context.SaveChangesAsync();
+            await _giraf._context.SaveChangesAsync().ConfigureAwait(true);
             return CreatedAtRoute(
                 "GetWeekTemplate",
                 new {id = newTemplate.Id}, 
@@ -178,12 +178,12 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> UpdateWeekTemplate(long id, [FromBody] WeekTemplateDTO newValuesDto)
         {
-            var user = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
+            var user = await _giraf.LoadBasicUserDataAsync(HttpContext.User).ConfigureAwait(true);
             if (user == null) 
-                return Unauthorized(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
+                return Unauthorized(new ErrorResponse(ErrorCode.UserNotFound, new string("User not found")));
 
             if(newValuesDto == null) 
-                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing newValuesDto"));
+                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, new string("Missing newValuesDto")));
 
             var template = _giraf._context.WeekTemplates
                 .Include(w => w.Thumbnail)
@@ -193,17 +193,17 @@ namespace GirafRest.Controllers
                 .FirstOrDefault(t => id == t.Id);
 
             if (template == null)
-                return NotFound(new ErrorResponse(ErrorCode.WeekTemplateNotFound, "Weektemplate not found"));
+                return NotFound(new ErrorResponse(ErrorCode.WeekTemplateNotFound, new string("Weektemplate not found")));
 
-            if (! await _authentication.HasTemplateAccess(user, template?.DepartmentKey) )
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
+            if (! await _authentication.HasTemplateAccess(user, template?.DepartmentKey).ConfigureAwait(true))
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, new string("User does not have permission")));
             
-            var errorCode = await SetWeekFromDTO(newValuesDto, template, _giraf);
+            var errorCode = await SetWeekFromDTO(newValuesDto, template, _giraf).ConfigureAwait(true);
             if (errorCode != null)
                 return BadRequest(errorCode);
 
             _giraf._context.WeekTemplates.Update(template);
-            await _giraf._context.SaveChangesAsync();
+            await _giraf._context.SaveChangesAsync().ConfigureAwait(true);
             return Ok(new SuccessResponse<WeekTemplateDTO>(new WeekTemplateDTO(template)));
         }
 
@@ -223,21 +223,21 @@ namespace GirafRest.Controllers
         [Authorize (Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
         public async Task<ActionResult> DeleteTemplate(long id)
         {
-            var user = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
+            var user = await _giraf.LoadBasicUserDataAsync(HttpContext.User).ConfigureAwait(true);
             if (user == null) 
-                return Unauthorized(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
+                return Unauthorized(new ErrorResponse(ErrorCode.UserNotFound, new string("User not found")));
 
             var template = _giraf._context.WeekTemplates
                                           .FirstOrDefault(t => id == t.Id);
 
             if (template == null)
-                return NotFound(new ErrorResponse(ErrorCode.WeekTemplateNotFound, "Weektemplate not found"));
+                return NotFound(new ErrorResponse(ErrorCode.WeekTemplateNotFound, new string("Weektemplate not found")));
 
-            if (! await _authentication.HasTemplateAccess(user, template?.DepartmentKey) )
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
+            if (! await _authentication.HasTemplateAccess(user, template?.DepartmentKey).ConfigureAwait(true) )
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, new string("User does not have permission")));
 
             _giraf._context.WeekTemplates.Remove(template);
-            await _giraf._context.SaveChangesAsync();
+            await _giraf._context.SaveChangesAsync().ConfigureAwait(true);
             return Ok(new SuccessResponse("Deleted week template"));
         }
     }
