@@ -14,10 +14,10 @@ namespace GirafRest.Setup
     /// <summary>
     /// A class for initializing the database with some sample data.
     /// </summary>
-    public class DBInitializer
+    static public class DBInitializer
     {
         ///
-        public static SampleDataHandler sampleHandler = new SampleDataHandler();
+        private static SampleDataHandler sampleHandler = new SampleDataHandler();
 
         /// <summary>
         /// Runs specificed initialisations before the API is started.
@@ -32,12 +32,12 @@ namespace GirafRest.Setup
             // Check if any data is in the database
             if (context.Departments.Any())
             {
-                ///<summary>
-                ///SampleDataHandler creates a samples.json file by storing current database data in plaintext, in samples.json
-                ///Use only if samples.json does not exist in Data folder and only sample data exists in the database.
-                ///Passwords for users are written to the samples.json directly from the db, meaning they will be hashes. 
-                ///If you want more writeable passwords, manually set them in the samples.json.
-                ///</summary>
+                //<summary>
+                //SampleDataHandler creates a samples.json file by storing current database data in plaintext, in samples.json
+                //Use only if samples.json does not exist in Data folder and only sample data exists in the database.
+                //Passwords for users are written to the samples.json directly from the db, meaning they will be hashes. 
+                //If you want more writeable passwords, manually set them in the samples.json.
+                //</summary>
                 System.Threading.Tasks.Task task = sampleHandler.SerializeDataAsync(context, userManager);
 
                 return;
@@ -46,6 +46,9 @@ namespace GirafRest.Setup
             SampleData sampleData = sampleHandler.DeserializeData();
             var departments = AddSampleDepartments(context, sampleData.DepartmentList);
             AddSampleUsers(context, userManager, sampleData.UserList, departments);
+            if (userManager == null) {
+                throw new System.ArgumentNullException(userManager + " is null");
+            }
             var pictograms = AddSamplePictograms(context, sampleData.PictogramList);
             AddSampleWeekAndWeekdays(context, sampleData.WeekList, sampleData.WeekdayList, sampleData.UserList, pictograms);
 
@@ -109,13 +112,14 @@ namespace GirafRest.Setup
         #region Ownership sample methods
         private static void AddPictogramsToUser(GirafUser user, params Pictogram[] pictograms)
         {
+            String temp1 = new String("You may only add private pictograms to users." +
+                        " Pictogram id: {pict.Id}, AccessLevel: {pict.AccessLevel}.");
             System.Console.WriteLine("Adding pictograms to " + user.UserName);
             foreach (var pict in pictograms)
             {
                 if (pict.AccessLevel != AccessLevel.PRIVATE)
-                    throw new InvalidOperationException($"You may only add private pictograms to users." +
-                        " Pictogram id: {pict.Id}, AccessLevel: {pict.AccessLevel}.");
-                new UserResource(user, pict);
+                    throw new InvalidOperationException(temp1);
+                
             }
         }
 
