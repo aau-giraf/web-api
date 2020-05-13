@@ -278,6 +278,7 @@ namespace GirafRest.Test
 
         #endregion
         #region GetUser
+        [Fact]
         public void GetUser_CitizenLogin_Success()
         {
             var usercontroller = initializeTest();
