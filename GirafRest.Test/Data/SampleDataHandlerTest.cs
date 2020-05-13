@@ -68,21 +68,21 @@ namespace GirafRest.Test
             
 
             Assert.NotNull(data);
-            Assert.Equal(users[0].Name, str1);
-            Assert.Equal(users[1].Name, str2);
-            Assert.Equal(users[2].Name, str3);
-            Assert.Equal(deps[0].Name, str4);
-            Assert.Equal(deps[1].Name, str5);
-            Assert.Equal(pics[0].Title, str6);
-            Assert.Equal(pics[1].Title, str7);
-            Assert.Equal(pics[2].Title, str8);
-            Assert.Equal(weeks[0].Name, str9);
-            Assert.Equal(weeks[1].Name, str10);
-            Assert.Equal(weekTemplates[0].Name, str11);
-            Assert.Equal(weekTemplates[1].Name, str12);
-            Assert.Equal(weekdays[0].Day, Days.Monday);
-            Assert.Equal(weekdays[1].Day, Days.Tuesday);
-            Assert.Equal(weekdays[2].Day, Days.Wednesday);
+            Assert.Equal("Admin", users[0].Name);
+            Assert.Equal("Guardian in dep 2", users[1].Name);
+            Assert.Equal("Citizen of dep 2", users[2].Name);
+            Assert.Equal("Mock Department", deps[0].Name);
+            Assert.Equal("Picto 1", deps[1].Name);
+            Assert.Equal("Public Picto2", pics[0].Title);
+            Assert.Equal("No restrictions", pics[1].Title);
+            Assert.Equal("My awesome week", pics[2].Title);
+            Assert.Equal("My not so awesome week", weeks[0].Name);
+            Assert.Equal("My not so awesome week", weeks[1].Name);
+            Assert.Equal("Template1", weekTemplates[0].Name);
+            Assert.Equal("Template2", weekTemplates[1].Name);
+            Assert.Equal( Days.Monday, weekdays[0].Day);
+            Assert.Equal( Days.Tuesday, weekdays[1].Day);
+            Assert.Equal(Days.Wednesday, weekdays[2].Day);
         }
 
         [Fact]
