@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using GirafRest.Services;
 using GirafRest.Models.Responses;
-using static GirafRest.Shared.SharedMethods;
+using static GirafRest.GirafShared.SharedMethods;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 

@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 using GirafRest.Services;
 using GirafRest.Models.Responses;
 using Microsoft.AspNetCore.Identity;
-using static GirafRest.Shared.SharedMethods;
+using static GirafRest.GirafShared.SharedMethods;
 using Microsoft.AspNetCore.Http;
 
 namespace GirafRest.Controllers

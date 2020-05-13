@@ -6,7 +6,7 @@ using GirafRest.Models.Responses;
 using GirafRest.Services;
 using Microsoft.EntityFrameworkCore;
 
-namespace GirafRest.Shared
+namespace GirafRest.GirafShared
 {
     /// <summary>
     /// Shared static class for helper methods
