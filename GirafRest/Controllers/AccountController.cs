@@ -117,7 +117,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> Register([FromBody] RegisterDTO model)  
+        public async Task<ActionResult> Register([FromBody] RegisterDTO model)
         {
             if (model == null)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing model"));
@@ -273,10 +273,10 @@ namespace GirafRest.Controllers
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
             // check access rights
-            if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true), user)))
+            if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return Unauthorized(new ErrorResponse(ErrorCode.NotAuthorized, "Unauthorized"));
 
-            var result = await _giraf._userManager.GeneratePasswordResetTokenAsync(user).ConfigureAwait(true);
+            var result = await _giraf._userManager.GeneratePasswordResetTokenAsync(user);
             return Ok(new SuccessResponse(result));
         }
 
@@ -298,7 +298,7 @@ namespace GirafRest.Controllers
 
             // tjek om man kan slette sig selv, før jeg kan bruge hasreaduseraccess (sig hvis logged in id = userid så fejl)
             // A user cannot delete himself/herself
-            var authenticatedUser = await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true);
+            var authenticatedUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
             if (authenticatedUser == null || (authenticatedUser.Id == userId))
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "Permission error"));
 
