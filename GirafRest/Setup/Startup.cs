@@ -39,6 +39,9 @@ namespace GirafRest.Setup
         /// <param name="env">Hosting environment to start up into</param>
         public Startup(IWebHostEnvironment env)
         {
+            if (env == null) {
+                throw new System.ArgumentNullException(env + " is null");
+            }
             HostingEnvironment = env;
             var coreEnvironement = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             if (coreEnvironement != null) env.EnvironmentName = coreEnvironement;
@@ -52,13 +55,13 @@ namespace GirafRest.Setup
             else if (env.IsProduction())
                 builder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
             else
-                throw new NotSupportedException("No database option is supported by this Environment mode");
+                throw new NotSupportedException(new String("No database option is supported by this Environment mode"));
             builder.AddEnvironmentVariables();
             try {
                 Configuration = builder.Build();
             } catch(FileNotFoundException) {
-                Console.WriteLine("ERROR: Missing appsettings file");
-                Console.WriteLine("Exiting...");
+                Console.WriteLine(new String("ERROR: Missing appsettings file"));
+                Console.WriteLine(new String("Exiting..."));
                 System.Environment.Exit(1);
             }
         }
@@ -206,7 +209,7 @@ namespace GirafRest.Setup
         /// <summary>
         /// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         /// </summary>
-        public void Configure(
+        public static void Configure(
             IApplicationBuilder app,
             IWebHostEnvironment env,
             UserManager<GirafUser> userManager,
@@ -215,6 +218,8 @@ namespace GirafRest.Setup
         {
             if (app == null) {
                 throw new System.ArgumentNullException(app + " is null");
+            } else if (appLifetime == null) {
+                throw new System.ArgumentNullException(appLifetime + " is null");
             }
             app.UseIpRateLimiting();
 
