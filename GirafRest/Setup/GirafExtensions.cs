@@ -1,32 +1,31 @@
+using GirafRest.Data;
+using GirafRest.Models;
+using GirafRest.Models.DTOs;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using System;
 using System.IO;
 using System.Threading.Tasks;
-using GirafRest.Data;
-using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.FileProviders;
-using GirafRest.Models;
-using GirafRest.Models.DTOs;
-using Microsoft.AspNetCore.Identity;
 
 namespace GirafRest.Extensions
 {
     /// <summary>
     /// The class for extension-methods for Giraf REST-api.
     /// </summary>
-    public static class GirafExtensions {
+    public static class GirafExtensions
+    {
         /// <summary>
         /// An extension-method for configuring the application to use a MySQL database.
         /// </summary>
         /// <param name="services">A reference to the services of the application.</param>
         /// <param name="Configuration">Contains the ConnectionString</param>
-        public static void AddMySql(this IServiceCollection services, IConfigurationRoot Configuration) {
+        public static void AddMySql(this IServiceCollection services, IConfigurationRoot Configuration)
+        {
             //Setup the connection to the sql server
             services.AddDbContext<GirafDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
         }
@@ -64,13 +63,13 @@ namespace GirafRest.Extensions
         /// Instance of GirafRole enum
         /// </returns>
         public static async Task<GirafRoles> findUserRole(
-            this RoleManager<GirafRole> roleManager, 
-            UserManager<GirafUser> userManager, 
+            this RoleManager<GirafRole> roleManager,
+            UserManager<GirafUser> userManager,
             GirafUser user)
         {
             GirafRoles userRole = new GirafRoles();
             var roles = await userManager.GetRolesAsync(user);
-            if(roles.Count != 0) 
+            if (roles.Count != 0)
                 userRole = (GirafRoles)Enum.Parse(typeof(GirafRoles), roles[0]);
             return userRole;
         }
@@ -79,7 +78,8 @@ namespace GirafRest.Extensions
         /// Removes the default password requirements from ASP.NET and set them to a bare minimum.
         /// </summary>
         /// <param name="options">A reference to IdentityOptions, which is used to configure Identity.</param>
-        public static void RemovePasswordRequirements(this IdentityOptions options) {
+        public static void RemovePasswordRequirements(this IdentityOptions options)
+        {
             //Set password requirements to an absolute bare minimum.
             options.Password.RequireDigit = false;
             options.Password.RequireLowercase = false;

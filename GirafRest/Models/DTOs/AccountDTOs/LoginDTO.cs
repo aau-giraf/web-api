@@ -7,7 +7,7 @@ namespace GirafRest.Models.DTOs.AccountDTOs
     /// </summary>
     public class LoginDTO
     {
-        
+
         /// <summary>
         /// The users username.
         /// </summary>

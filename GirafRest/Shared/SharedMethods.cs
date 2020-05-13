@@ -1,10 +1,10 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using GirafRest.Models;
+﻿using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
 using GirafRest.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 
 namespace GirafRest.Shared
@@ -35,7 +35,7 @@ namespace GirafRest.Shared
             
             Pictogram thumbnail = _giraf._context.Pictograms
                 .FirstOrDefault(p => p.Id == weekDTO.Thumbnail.Id);
-            if(thumbnail == null)
+            if (thumbnail == null)
                 return new ErrorResponse(ErrorCode.MissingProperties, "Missing thumbnail");
 
             week.Thumbnail = thumbnail;
@@ -68,8 +68,9 @@ namespace GirafRest.Shared
         /// <param name="to">Pictograms and choices will be added to this object.</param>
         /// <param name="from">Pictograms and choices will be read from this object.</param>
         /// <param name="_giraf">IGirafService for injection.</param>
-        private static async Task<bool> AddPictogramsToWeekday(Weekday to, WeekdayDTO from, IGirafService _giraf){
-            if(from.Activities != null) 
+        private static async Task<bool> AddPictogramsToWeekday(Weekday to, WeekdayDTO from, IGirafService _giraf)
+        {
+            if (from.Activities != null)
             {
                 foreach (var activityDTO in from.Activities)
                 {

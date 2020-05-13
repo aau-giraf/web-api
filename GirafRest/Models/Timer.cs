@@ -1,7 +1,5 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using GirafRest.Models.DTOs;
 
 namespace GirafRest.Models
 {
@@ -21,8 +19,8 @@ namespace GirafRest.Models
         /// Start time of the timer
         /// </summary>
         public long StartTime { get; set; }
-        
-        
+
+
         /// <summary>
         /// The progress of the timer in miliseconds.
         /// </summary>

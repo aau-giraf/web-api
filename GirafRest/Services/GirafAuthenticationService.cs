@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
-using GirafRest.Data;
+﻿using GirafRest.Data;
 using GirafRest.Extensions;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using Microsoft.AspNetCore.Identity;
+using System.Threading.Tasks;
 
 namespace GirafRest.Services
 {
@@ -50,9 +50,9 @@ namespace GirafRest.Services
         {
             if (authUser == null || userToEdit == null)
                 return false;
-            
+
             var authUserRole = await _roleManager.findUserRole(_userManager, authUser);
-            var userRole =  await _roleManager.findUserRole(_userManager, userToEdit);
+            var userRole = await _roleManager.findUserRole(_userManager, userToEdit);
 
             if (authUser.Id == userToEdit.Id)
                 return true;
@@ -98,7 +98,7 @@ namespace GirafRest.Services
 
             if (authUserRole == GirafRoles.Guardian || authUserRole == GirafRoles.Department)
             {
-                if (!(roleToAdd == GirafRoles.Guardian || roleToAdd == GirafRoles.Citizen) 
+                if (!(roleToAdd == GirafRoles.Guardian || roleToAdd == GirafRoles.Citizen)
                     && departmentKey == authUser.DepartmentKey)
                 {
                     return false;

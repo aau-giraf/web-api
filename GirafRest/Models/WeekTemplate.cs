@@ -1,10 +1,4 @@
-﻿using GirafRest.Models.DTOs;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GirafRest.Models
 {
@@ -18,7 +12,7 @@ namespace GirafRest.Models
         /// </summary>
         [ForeignKey("Department")]
         public long DepartmentKey { get; set; }
-        
+
         /// <summary>
         /// A reference to the department using this template.
         /// </summary>

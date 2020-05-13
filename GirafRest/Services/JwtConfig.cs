@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace GirafRest.Services
+﻿namespace GirafRest.Services
 {
     /// <summary>
     /// Instance of JwtConfig holding serverside configuration for building JWT Tokens

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
 using GirafRest.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 
 #pragma warning disable 1591
@@ -42,8 +42,8 @@ namespace GirafRest.Data
 
             //Indexes
             builder.Entity<Department>().HasIndex(dep => dep.Name).IsUnique().IsClustered();
-            builder.Entity<Pictogram>().HasIndex(pic => new {pic.Id, pic.Title}).IsUnique().IsClustered();
-            builder.Entity<Weekday>().HasIndex(day => new {day.Id}).IsUnique().IsClustered();
+            builder.Entity<Pictogram>().HasIndex(pic => new { pic.Id, pic.Title }).IsUnique().IsClustered();
+            builder.Entity<Weekday>().HasIndex(day => new { day.Id }).IsUnique().IsClustered();
             builder.Entity<Week>().HasIndex(week => week.Id).IsUnique().IsClustered();
             builder.Entity<GirafUser>().HasIndex(user => new { user.Id, user.UserName }).IsUnique().IsClustered();
 

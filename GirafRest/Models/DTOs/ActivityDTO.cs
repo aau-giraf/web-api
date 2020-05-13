@@ -58,7 +58,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// Empty constructor for JSON Generation
         /// </summary>
-        public ActivityDTO(){}
+        public ActivityDTO() { }
 
         /// <summary>
         /// Belonging pictogram
@@ -88,6 +88,6 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// Timer object for Activity
         /// </summary>
-        public TimerDTO Timer { get; set; } 
+        public TimerDTO Timer { get; set; }
     }
 }

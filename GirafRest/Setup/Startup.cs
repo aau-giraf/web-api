@@ -1,28 +1,28 @@
-﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+﻿using AspNetCoreRateLimit;
 using GirafRest.Data;
+using GirafRest.Extensions;
+using GirafRest.Filters;
 using GirafRest.Models;
 using GirafRest.Services;
-using GirafRest.Extensions;
-using Microsoft.AspNetCore.Identity;
-using Serilog;
-using System;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Serilog;
+using Swashbuckle.AspNetCore.SwaggerUI;
+using System;
+using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Text;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Collections.Generic;
-using GirafRest.Filters;
-using AspNetCoreRateLimit;
-using Swashbuckle.AspNetCore.SwaggerUI;
-using Microsoft.OpenApi.Models;
-using Microsoft.Extensions.Hosting;
+using System.Threading.Tasks;
 
 namespace GirafRest.Setup
 {
@@ -54,9 +54,12 @@ namespace GirafRest.Setup
             else
                 throw new NotSupportedException("No database option is supported by this Environment mode");
             builder.AddEnvironmentVariables();
-            try {
+            try
+            {
                 Configuration = builder.Build();
-            } catch(FileNotFoundException) {
+            }
+            catch (FileNotFoundException)
+            {
                 Console.WriteLine("ERROR: Missing appsettings file");
                 Console.WriteLine("Exiting...");
                 System.Environment.Exit(1);
@@ -134,7 +137,7 @@ namespace GirafRest.Setup
 
             // Register the Swagger generator, defining one or more Swagger documents
             services.AddSwaggerGen(c =>
-            { 
+            {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "The Giraf REST API", Version = "v1" });
                 var basePath = AppContext.BaseDirectory;
                 var xmlPath = Path.Combine(basePath, "GirafRest.xml");
@@ -174,7 +177,8 @@ namespace GirafRest.Setup
             where T : GirafDbContext
         {
             //Add Identity for user management.
-            services.AddIdentity<GirafUser, GirafRole>(options => {
+            services.AddIdentity<GirafUser, GirafRole>(options =>
+            {
                 options.RemovePasswordRequirements();
             })
                 .AddEntityFrameworkStores<T>()
@@ -223,7 +227,7 @@ namespace GirafRest.Setup
             app.UseStaticFiles();
             // Enable Cors, see configuration in ConfigureServices
             app.UseCors("AllowAll");
-            
+
             //Tells ASP.NET to generate an HTML exception page, if an exception occurs
             if (env.IsDevelopment())
             {
@@ -247,7 +251,7 @@ namespace GirafRest.Setup
             //[Authorize] endpoint without logging in.
             app.UseMvc(routes =>
             {
-                routes.MapRoute( 
+                routes.MapRoute(
                     name: "default",
                     template: "{controller=Account}/{action=AccessDenied}");
             });
@@ -270,8 +274,8 @@ namespace GirafRest.Setup
 
             app.Run(context2 =>
             {
-              context2.Response.StatusCode = 404;
-              return Task.FromResult(0);
+                context2.Response.StatusCode = 404;
+                return Task.FromResult(0);
             });
         }
     }

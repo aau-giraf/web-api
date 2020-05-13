@@ -1,16 +1,16 @@
+using GirafRest.Models.DTOs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using GirafRest.Models.DTOs;
-using Newtonsoft.Json;
 
 namespace GirafRest.Models
 {
     /// <summary>
     /// Possible days; 1 for Monday
     /// </summary>
-    public enum Days {
+    public enum Days
+    {
         /// <summary>
         /// Monday as 1
         /// </summary>
@@ -75,7 +75,7 @@ namespace GirafRest.Models
                                             $"but {activityStates.Count} elements are in activityStates. " +
                                             $"The numbers must match.");
             }
-            
+
             this.Day = day;
             for (int i = 0; i < pictograms.Count; i++)
             {

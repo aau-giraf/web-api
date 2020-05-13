@@ -6,6 +6,8 @@ using GirafRest.Models.Responses;
 using GirafRest.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.IO;
+using System.Linq;
 
 namespace GirafRest.Controllers
 {

@@ -1,5 +1,4 @@
-﻿using System;
-using GirafRest.Models;
+﻿using GirafRest.Models;
 
 namespace GirafRest
 {
