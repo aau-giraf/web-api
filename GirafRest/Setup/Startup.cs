@@ -209,11 +209,13 @@ namespace GirafRest.Setup
         public void Configure(
             IApplicationBuilder app,
             IWebHostEnvironment env,
-            ILoggerFactory loggerFactory,
             UserManager<GirafUser> userManager,
             RoleManager<GirafRole> roleManager,
             IHostApplicationLifetime appLifetime)
         {
+            if (app == null) {
+                throw new System.ArgumentNullException(app + " is null");
+            }
             app.UseIpRateLimiting();
 
             //Configure logging for the application
