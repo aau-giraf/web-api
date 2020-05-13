@@ -18,33 +18,40 @@ namespace GirafRest.Shared
         /// </summary>
         /// <param name="weekDTO">The DTO from which values are read.</param>
         /// <param name="week">The week object to which values are written.</param>
-        /// <param name="_giraf">An instance of the GirafService from which the database will be accessed when reading the DTO.</param>
+        /// <param name="giraf">An instance of the GirafService from which the database will be accessed when reading the DTO.</param>
         /// <returns>MissingProperties if thumbnail is missing.
         /// ResourceNotFound if any pictogram id is invalid.
         /// null otherwise.</returns>
-        public static async Task<ErrorResponse> SetWeekFromDTO(WeekBaseDTO weekDTO, WeekBase week, IGirafService _giraf)
+        public static async Task<ErrorResponse> SetWeekFromDTO(WeekBaseDTO weekDTO, WeekBase week, IGirafService giraf)
         {
+            if (week == null) {
+                throw new System.ArgumentNullException(week + " is null");
+            } else if (weekDTO == null) {
+                throw new System.ArgumentNullException(weekDTO + " is null");
+            } else if (giraf == null) {
+                throw new System.ArgumentNullException(giraf + " is null");
+            }
             var modelErrorCode = weekDTO.ValidateModel();
             if (modelErrorCode.HasValue)
             {
-                return new ErrorResponse(modelErrorCode.Value, "Invalid model");
+                return new ErrorResponse(modelErrorCode.Value, new string("Invalid model"));
             }
             
             week.Name = weekDTO.Name;
             
-            Pictogram thumbnail = _giraf._context.Pictograms
+            Pictogram thumbnail = giraf._context.Pictograms
                 .FirstOrDefault(p => p.Id == weekDTO.Thumbnail.Id);
             if(thumbnail == null)
-                return new ErrorResponse(ErrorCode.MissingProperties, "Missing thumbnail");
+                return new ErrorResponse(ErrorCode.MissingProperties, new string("Missing thumbnail"));
 
             week.Thumbnail = thumbnail;
 
             foreach (var day in weekDTO.Days)
             {
                 var wkDay = new Weekday(day);
-                if (!(await AddPictogramsToWeekday(wkDay, day, _giraf)))
+                if (!(await AddPictogramsToWeekday(wkDay, day, giraf).ConfigureAwait(true)))
                 {
-                    return new ErrorResponse(ErrorCode.ResourceNotFound, "Missing pictogram");
+                    return new ErrorResponse(ErrorCode.ResourceNotFound, new string("Missing pictogram"));
                 }
 
                 week.UpdateDay(wkDay);
@@ -73,7 +80,7 @@ namespace GirafRest.Shared
                 foreach (var activityDTO in from.Activities)
                 {
                     var picto = await _giraf._context.Pictograms
-                        .Where(p => p.Id == activityDTO.Pictogram.Id).FirstOrDefaultAsync();
+                        .Where(p => p.Id == activityDTO.Pictogram.Id).FirstOrDefaultAsync().ConfigureAwait(true);
                     
                     if (picto != null)
                         to.Activities.Add(new Activity(to, picto, activityDTO.Order, activityDTO.State));
