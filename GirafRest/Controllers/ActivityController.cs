@@ -33,8 +33,10 @@ namespace GirafRest.Controllers
         /// <param name="authentication">Service Injection</param>
         public ActivityController(IGirafService giraf, ILoggerFactory loggerFactory, IAuthenticationService authentication)
         {
-            if (loggerFactory == null) {
-                throw new ArgumentNullException(loggerFactory + "is null");
+            if (giraf == null) {
+                throw new System.ArgumentNullException(giraf + " is null");
+            } else if (loggerFactory == null) {
+                throw new System.ArgumentNullException(loggerFactory + " is null");
             }
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Activity");
@@ -72,7 +74,7 @@ namespace GirafRest.Controllers
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true), user).ConfigureAwait(true)))
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, new String("User does not have permission")));
 
-            var dbWeek = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber && string.Equals(w.Name, weekplanName));
+            var dbWeek = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber && string.Equals(w.Name, weekplanName, StringComparison.Ordinal));
             if (dbWeek == null)
                 return NotFound(new ErrorResponse(ErrorCode.WeekNotFound, new String("Week not found")));
 
