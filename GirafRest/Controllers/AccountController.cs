@@ -13,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 using GirafRest.Models.Responses;
 using System.Collections.Generic;
 using System.Security.Claims;
+using System.IO;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -126,11 +127,11 @@ namespace GirafRest.Controllers
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Model is invalid"));
 
             if (String.IsNullOrEmpty(model.Username) || String.IsNullOrEmpty(model.Password) || String.IsNullOrEmpty(model.DisplayName))
-                return BadRequest(new ErrorResponse(ErrorCode.InvalidCredentials, "Missing username, password or displayName"));
+                return BadRequest(new ErrorResponse(ErrorCode.InvalidCredentials, new String("Missing username, password or displayName")));
 
             var UserRoleStr = GirafRoleFromEnumToString(model.Role);
             if (UserRoleStr == null)
-                return BadRequest(new ErrorResponse(ErrorCode.RoleNotFound, "The provided role is not valid"));
+                return BadRequest(new ErrorResponse(ErrorCode.RoleNotFound, new String("The provided role is not valid")));
 
             // check that authenticated user has the right to add user for the given department
             // else all guardians, deps and admin roles can create user that does not belong to a dep
@@ -138,19 +139,19 @@ namespace GirafRest.Controllers
             {
                 if (!(await _authentication.HasRegisterUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true),
                                                             model.Role, model.DepartmentId.Value).ConfigureAwait(true)))
-                    return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User has no rights", 
+                    return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, new String("User has no rights"), 
                         "The authenticated user does not have the rights to add user for the given department"));
             }
 
             var doesUserAlreadyExist = (_giraf._context.Users.FirstOrDefault(u => u.UserName == model.Username) != null);
             if (doesUserAlreadyExist)
-                return Conflict(new ErrorResponse(ErrorCode.UserAlreadyExists, "User already exists", "A user with the given username already exists"));
+                return Conflict(new ErrorResponse(ErrorCode.UserAlreadyExists, new String("User already exists"), new String("A user with the given username already exists")));
 
             Department department = await _giraf._context.Departments.Where(dep => dep.Key == model.DepartmentId).FirstOrDefaultAsync().ConfigureAwait(true);
 
             // Check that the department with the specified id exists
             if (department == null && model.DepartmentId != null)
-                return BadRequest(new ErrorResponse(ErrorCode.DepartmentNotFound, "Department not found", "A department with the given id could not be found"));
+                return BadRequest(new ErrorResponse(ErrorCode.DepartmentNotFound, new String("Department not found"), new String("A department with the given id could not be found")));
 
             //Create a new user with the supplied information
             var user = new GirafUser (model.Username, model.DisplayName, department, model.Role);
@@ -169,12 +170,12 @@ namespace GirafRest.Controllers
                 }
                 await _giraf._userManager.AddToRoleAsync(user, UserRoleStr).ConfigureAwait(true);
                 await _signInManager.SignInAsync(user, isPersistent: true).ConfigureAwait(true);
-                _giraf._logger.LogInformation("User created a new account with password.");
+                _giraf._logger.LogInformation(new String("User created a new account with password."));
 
                 return Created(Request.Host + "/v1/user/" + user.Id, new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, model.Role)));
             }
 
-            return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse(ErrorCode.Error, "Something went wrong when creating user"));
+            return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse(ErrorCode.Error, new String("Something went wrong when creating user")));
         }
 
         /// <summary>
@@ -237,18 +238,18 @@ namespace GirafRest.Controllers
         {
             var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
             if (user == null)
-                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User was not found"));
+                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, new String("User was not found")));
             if (model == null)
-                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing model"));
+                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, new String("Missing model")));
             if (model.Token == null || model.Password == null)
-                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing token or password"));
+                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, new String("Missing token or password")));
 
             var result = await _giraf._userManager.ResetPasswordAsync(user, model.Token, model.Password).ConfigureAwait(true);
             if (!result.Succeeded)
-                return Unauthorized(new ErrorResponse(ErrorCode.InvalidProperties, "Invalid token"));
+                return Unauthorized(new ErrorResponse(ErrorCode.InvalidProperties, new String("Invalid token")));
 
             await _signInManager.SignInAsync(user, isPersistent: false).ConfigureAwait(true);
-            _giraf._logger.LogInformation("User changed their password successfully.");
+            _giraf._logger.LogInformation(new String("User changed their password successfully."));
             return Ok(new SuccessResponse("User password changed succesfully"));
         }
 
@@ -270,13 +271,13 @@ namespace GirafRest.Controllers
         {
             var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
             if (user == null)
-                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
+                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, new String("User not found")));
 
             // check access rights
-            if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return Unauthorized(new ErrorResponse(ErrorCode.NotAuthorized, "Unauthorized"));
+            if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true), user).ConfigureAwait(true)))
+                return Unauthorized(new ErrorResponse(ErrorCode.NotAuthorized, new String("Unauthorized")));
 
-            var result = await _giraf._userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _giraf._userManager.GeneratePasswordResetTokenAsync(user).ConfigureAwait(true);
             return Ok(new SuccessResponse(result));
         }
 
@@ -294,17 +295,17 @@ namespace GirafRest.Controllers
         {
             var user = _giraf._context.Users.FirstOrDefault(u => u.Id == userId);
             if (user == null)
-                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
+                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, new String("User not found")));
 
             // tjek om man kan slette sig selv, før jeg kan bruge hasreaduseraccess (sig hvis logged in id = userid så fejl)
             // A user cannot delete himself/herself
-            var authenticatedUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            var authenticatedUser = await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true);
             if (authenticatedUser == null || (authenticatedUser.Id == userId))
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "Permission error"));
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, new String("Permission error")));
 
             // check access rights
-            if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have rights"));
+            if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true), user).ConfigureAwait(true)))
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, new String("User does not have rights")));
 
             var result = _giraf._context.Users.Remove(user);
             _giraf._context.SaveChanges();
@@ -320,7 +321,7 @@ namespace GirafRest.Controllers
         private async Task<List<Claim>> GetRoleClaims(GirafUser user)
         {
             var roleclaims = new List<Claim>();
-            var userRoles = await _giraf._userManager.GetRolesAsync(user);
+            var userRoles = await _giraf._userManager.GetRolesAsync(user).ConfigureAwait(true);
             roleclaims.AddRange(userRoles.Select(userRole => new Claim(ClaimTypes.Role, userRole)));
             return roleclaims;
         }
@@ -334,11 +335,12 @@ namespace GirafRest.Controllers
         /// </returns>
         private async Task<string> GenerateJwtToken(GirafUser user)
         {
+            String depKey = user.DepartmentKey?.ToString("G") ?? "";
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim("departmentId", user.DepartmentKey?.ToString() ?? ""),
+                new Claim("departmentId", depKey),
             };
 
             claims.AddRange(await GetRoleClaims(user).ConfigureAwait(true));
