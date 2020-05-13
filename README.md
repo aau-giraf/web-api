@@ -1,6 +1,6 @@
 # Giraf Backend
 
-![Build Status](https://github.com/aau-giraf/web-api/workflows/.NET%20Core/badge.svg)
+![Unit Tests](https://github.com/aau-giraf/web-api/workflows/.NET%20Core/badge.svg)
 ![Integration Tests](https://github.com/aau-giraf/web-api/workflows/Integration%20Test/badge.svg)
 [![codecov](https://codecov.io/gh/aau-giraf/web-api/branch/develop/graph/badge.svg)](https://codecov.io/gh/aau-giraf/web-api)
 
