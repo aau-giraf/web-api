@@ -12,6 +12,7 @@ namespace GirafRest.Migrations
     [Migration("20200422090502_PictogramtextMigration")]
     partial class PictogramtextMigration
     {
+        ///
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
