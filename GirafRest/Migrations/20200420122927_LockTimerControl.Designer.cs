@@ -12,6 +12,7 @@ namespace GirafRest.Migrations
     [Migration("20200420122927_LockTimerControl")]
     partial class LockTimerControl
     {
+        ///
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
