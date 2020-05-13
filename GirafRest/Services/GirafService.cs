@@ -174,6 +174,9 @@ namespace GirafRest.Services
         /// <returns>True if the user's department owns the pictogram, false if not.</returns>
         public async Task<bool> CheckProtectedOwnership(Pictogram resource, GirafUser user)
         {
+            if (resource == null) {
+                throw new System.ArgumentNullException(resource + " is null");
+            }
             if (resource.AccessLevel != AccessLevel.PROTECTED)
                 return false;
 
