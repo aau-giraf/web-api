@@ -27,11 +27,20 @@ namespace GirafRest.Setup
         /// <param name="pictogramCount">The number of sample pictograms to generate.</param>
         public static void Initialize(GirafDbContext context, UserManager<GirafUser> userManager, int pictogramCount)
         {
+            if (context == null) {
+                throw new System.ArgumentNullException(context + " is null");
+            }
+
+            if (userManager == null) {
+                throw new System.ArgumentNullException(userManager + " is null");
+            }
+
             CreatePictograms(pictogramCount);
 
             // Check if any data is in the database
             if (context.Departments.Any())
             {
+                
                 //<summary>
                 //SampleDataHandler creates a samples.json file by storing current database data in plaintext, in samples.json
                 //Use only if samples.json does not exist in Data folder and only sample data exists in the database.
@@ -74,7 +83,6 @@ namespace GirafRest.Setup
         {
             System.Console.WriteLine($"Creating {count} pictograms");
             DirectoryInfo dir = Directory.CreateDirectory("../pictograms");
-          
             using FontFamily family = new FontFamily("Arial");
             using Font font = new Font(
                 family,

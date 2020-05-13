@@ -248,7 +248,7 @@ namespace GirafRest.Controllers
                 return Ok(new SuccessResponse("Deleted info for entire week"));
             }
             else
-                return NotFound(new ErrorResponse(ErrorCode.NoWeekScheduleFound, "No week schedule found"));
+                return NotFound(new ErrorResponse(ErrorCode.NoWeekScheduleFound, new string("No week schedule found")));
         }
     }
 }
