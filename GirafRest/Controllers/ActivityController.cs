@@ -1,4 +1,5 @@
-﻿using GirafRest.Models;
+﻿using System.Collections.Generic;
+using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
 using GirafRest.Services;
