@@ -265,7 +265,7 @@ namespace GirafRest.Setup
             //Fill some sample data into the database
             if (ProgramOptions.GenerateSampleData)
             {
-                DBInitializer.Initialize(context, userManager);
+                DBInitializer.Initialize(context, userManager, ProgramOptions.Pictograms);
             }
 
             app.Run(context2 =>

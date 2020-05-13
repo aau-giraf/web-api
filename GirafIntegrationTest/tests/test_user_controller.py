@@ -36,21 +36,23 @@ class TestUserController(GIRAFTestCase):
         print(f'file:/{__file__}\n')
         cls.GRAYSCALE_THEME = {'orientation': 1, 'completeMark': 2, 'cancelMark': 2, 'defaultTimer': 2,
                                'timerSeconds': 900, 'activitiesCount': None, 'theme': 2, 'nrOfDaysToDisplay': 7,
-                               'greyScale': True, 'weekDayColors':
+                               'greyScale': True, 'lockTimerControl': True, 'pictogramText': True, 'weekDayColors':
                                    [{"hexColor": "#08a045", "day": 1}, {"hexColor": "#540d6e", "day": 2},
                                     {"hexColor": "#f77f00", "day": 3}, {"hexColor": "#004777", "day": 4},
                                     {"hexColor": "#f9c80e", "day": 5}, {"hexColor": "#db2b39", "day": 6},
                                     {"hexColor": "#ffffff", "day": 7}]}
         cls.TIMER_ONE_HOUR = {"orientation": 1, "completeMark": 2, "cancelMark": 2, "defaultTimer": 2,
                               "timerSeconds": 3600, "activitiesCount": None, "theme": 1, "colorThemeWeekSchedules": 1,
-                              "nrOfDaysToDisplay": 4, "greyScale": True, "weekDayColors":
+                              "nrOfDaysToDisplay": 4, "greyScale": True, 'lockTimerControl': True,
+                              'pictogramText': True, "weekDayColors":
                                   [{"hexColor": "#08A045", "day": 1}, {"hexColor": "#540D6E", "day": 2},
                                    {"hexColor": "#F77F00", "day": 3}, {"hexColor": "#004777", "day": 4},
                                    {"hexColor": "#F9C80E", "day": 5}, {"hexColor": "#DB2B39", "day": 6},
                                    {"hexColor": "#FFFFFF", "day": 7}]}
         cls.MULTIPLE_SETTINGS = {"orientation": 2, "completeMark": 2, "cancelMark": 1, "defaultTimer": 2,
                                  "timerSeconds": 60, "activitiesCount": 3, "theme": 3, "nrOfDaysToDisplay": 2,
-                                 "greyScale": True, "weekDayColors":
+                                 "greyScale": True, 'lockTimerControl': True, 'pictogramText': True,
+                                 "weekDayColors":
                                      [{"hexColor": "#FF00FF", "day": 1}, {"hexColor": "#540D6E", "day": 2},
                                       {"hexColor": "#F77F00", "day": 3}, {"hexColor": "#004777", "day": 4},
                                       {"hexColor": "#F9C80E", "day": 5}, {"hexColor": "#DB2B39", "day": 6},

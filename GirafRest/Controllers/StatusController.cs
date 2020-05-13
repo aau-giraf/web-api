@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using GirafRest.Models.Responses;
@@ -64,13 +65,34 @@ namespace GirafRest.Controllers
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         public ActionResult GetVersionInfo()
         {
-            var gitpath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName + "/.git/";
-            var pathToHead = System.IO.File.ReadLines(gitpath + "HEAD").First().Split(" ").Last();
+            try
+            {
+                // Get the hidden .git folder
+                var gitpath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName + "/.git/";
 
-            var hash = System.IO.File.ReadLines(gitpath + pathToHead).First();
-            // this assumes that branches are not named with / however this should be enforced anyways
-            var branch = pathToHead.Split("/").Last();
-            return Ok(new SuccessResponse($"Branch: {branch} CommitHash: {hash}"));
+                // Get commit hash from the HEAD file in the .git folder.
+                var commitHash = System.IO.File.ReadLines(gitpath + "HEAD").First();
+
+                // Return the response
+                return Ok(new SuccessResponse($"CommitHash: {commitHash}"));
+
+
+                // Previously, we retrieved the refs/head/branch, and then retrieved the commit hash.
+                // As the "HEAD" file now ONLY contains the commmit hash, this is no longer possible.
+                // This code is preserved in case future students wants to implement the behavior again.
+                /*
+                var pathToHead = System.IO.File.ReadLines(gitpath + "HEAD").First().Split(" ").Last();
+
+                var hash = System.IO.File.ReadLines(gitpath + pathToHead).First();
+                // this assumes that branches are not named with / however this should be enforced anyways
+                var branch = pathToHead.Split("/").Last();
+                return Ok(new SuccessResponse($"Branch: {branch} CommitHash: {hash}"));
+                */
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse(ErrorCode.Error, $"Exception: " + e.ToString()));
+            }
         }
     }
 }
