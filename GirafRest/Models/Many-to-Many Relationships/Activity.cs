@@ -66,13 +66,14 @@ namespace GirafRest.Models
         /// <param name="pictogram">The activity's pictogram.</param>
         /// <param name="order">The activity's order.</param>
         /// <param name="state">The activity's current state.</param>
-        public Activity(Weekday weekday, Pictogram pictogram, int order, ActivityState state)
+        public Activity(Weekday weekday, Pictogram pictogram, int order, ActivityState state, Timer timer)
         {
             this.Other = weekday;
             this.PictogramKey = pictogram.Id;
             this.Pictogram = pictogram;
             this.Order = order;
             this.State = state;
+            this.Timer = timer;
         }
 
         /// <summary>
