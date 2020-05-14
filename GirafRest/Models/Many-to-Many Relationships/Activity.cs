@@ -67,7 +67,7 @@ namespace GirafRest.Models
         /// <param name="order">The activity's order.</param>
         /// <param name="state">The activity's current state.</param>
         /// <param name="ischoiceboard">The activity's choiceboard state.</param>
-        public Activity(Weekday weekday, List<Pictogram> pictograms, int order, ActivityState state, Timer timer, IsChoiceBoard choiceBoard)
+        public Activity(Weekday weekday, List<Pictogram> pictograms, int order, ActivityState state, Timer timer, bool choiceBoard)
         {
             this.Other = weekday;
             this.Order = order;
