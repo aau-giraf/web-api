@@ -10,12 +10,13 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// Constructor
         /// </summary>
-        public ActivityDTO(long id, List<WeekPictogramDTO> pictograms, int order, ActivityState state)
+        public ActivityDTO(long id, List<WeekPictogramDTO> pictograms, int order, ActivityState state, bool isChoiceBoard)
         {
             this.Id = id;
             this.Pictograms = pictograms;
             this.Order = order;
             this.State = state;
+            this.IsChoiceBoard = isChoiceBoard;
         }
 
         /// <summary>
@@ -27,6 +28,7 @@ namespace GirafRest.Models.DTOs
             this.Id = weekdayResource.Key;
             this.Order = weekdayResource.Order;
             this.State = weekdayResource.State;
+            this.IsChoiceBoard = weekdayResource.IsChoiceBoard;
             this.Pictograms = new List<WeekPictogramDTO>();
             
             foreach (var relation in weekdayResource.Pictograms)
@@ -48,6 +50,7 @@ namespace GirafRest.Models.DTOs
             this.Id = weekdayResource.Key;
             this.Order = weekdayResource.Order;
             this.State = weekdayResource.State;
+            this.IsChoiceBoard = weekdayResource.IsChoiceBoard;
             this.Pictograms = pictograms;
             if (weekdayResource.Timer != null)
             {

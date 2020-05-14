@@ -83,7 +83,8 @@ namespace GirafRest.Controllers
                 null,
                 order,
                 ActivityState.Normal,
-                null
+                null,
+                false
             );
             _giraf._context.Activities.Add(dbActivity);
 
@@ -216,6 +217,7 @@ namespace GirafRest.Controllers
 
             updateActivity.Order = activity.Order;
             updateActivity.State = activity.State;
+            updateActivity.IsChoiceBoard = activity.IsChoiceBoard;
             
             // deletion of pictogram relations
 

@@ -52,6 +52,12 @@ namespace GirafRest.Models
         /// </summary>
         public int Order { get; set; }
 
+        
+        /// <summary>
+        /// Ordering
+        /// </summary>
+        public bool IsChoiceBoard { get; set; }
+
         /// <summary>
         /// Creates a new many-to-many relationship between a weekday and a resource.
         /// </summary>
@@ -59,12 +65,14 @@ namespace GirafRest.Models
         /// <param name="pictograms">The activity's pictograms.</param>
         /// <param name="order">The activity's order.</param>
         /// <param name="state">The activity's current state.</param>
-        public Activity(Weekday weekday, List<Pictogram> pictograms, int order, ActivityState state, Timer timer)
+        /// <param name="ischoiceboard">The activity's choiceboard state.</param>
+        public Activity(Weekday weekday, List<Pictogram> pictograms, int order, ActivityState state, Timer timer, bool choiceBoard)
         {
             this.Other = weekday;
             this.Order = order;
             this.State = state;
             this.Timer = timer;
+            this.IsChoiceBoard = choiceBoard;
             this.Pictograms = new List<PictogramRelation>();
             if (pictograms != null)
             {
