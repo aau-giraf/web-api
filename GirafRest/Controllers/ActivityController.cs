@@ -159,6 +159,7 @@ namespace GirafRest.Controllers
         /// <returns>Returns <see cref="ActivityDTO"/></returns>
         [HttpGet("{userId}/{activityId}")]
         [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> GetActivity(string userId, int activityId)
         {
             var activity = await _giraf._context
@@ -208,8 +209,7 @@ namespace GirafRest.Controllers
             if (!user.WeekSchedule.Any(w => w.Weekdays.Any(wd => wd.Activities.Any(act => act.Key == activity.Id))))
                 return NotFound(new ErrorResponse(ErrorCode.ActivityNotFound, "Activity not found"));
 
-            Activity updateActivity = _giraf._context
-                .Activities
+            Activity updateActivity = _giraf._context.Activities
                 .FirstOrDefault(a => a.Key == activity.Id);
             if (updateActivity == null)
                 return NotFound(new ErrorResponse(ErrorCode.ActivityNotFound, "Activity not found"));

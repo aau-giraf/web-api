@@ -11,7 +11,6 @@ using GirafRest.Models.Responses;
 using GirafRest.Services;
 using Microsoft.AspNetCore.Http;
 using static GirafRest.Test.UnitTestExtensions.TestContext;
-
 using Microsoft.AspNetCore.Mvc;
 
 namespace GirafRest.Test

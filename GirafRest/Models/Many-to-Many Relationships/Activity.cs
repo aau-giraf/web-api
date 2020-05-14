@@ -28,11 +28,13 @@ namespace GirafRest.Models
         public virtual Weekday Other { get; set; }
 
         /// <summary>
-        /// The key of the involved resource.
+        /// The relations between pictogram and activity
         /// </summary>
-
         public virtual ICollection<PictogramRelation> Pictograms { get; set; }
         
+        /// <summary>
+        /// Nullable key for TimerKey
+        /// </summary>
         public long? TimerKey { get; set; }
 
         /// <summary>
