@@ -54,7 +54,7 @@ namespace GirafRest.Setup
 
             SampleData sampleData = sampleHandler.DeserializeData();
             var departments = AddSampleDepartments(context, sampleData.DepartmentList);
-            AddSampleUsers(context, userManager, sampleData.UserList, departments);
+            AddSampleUsers(context, userManager, sampleData.UserList);
             if (userManager == null) {
                 throw new System.ArgumentNullException(userManager + " is null");
             }
@@ -143,7 +143,6 @@ namespace GirafRest.Setup
             {
                 if (pict.AccessLevel != AccessLevel.PROTECTED)
                     throw new InvalidOperationException(exception);
-                new DepartmentResource(department, pict);
             }
         }
         #endregion
@@ -164,7 +163,7 @@ namespace GirafRest.Setup
             return departments;
         }
 
-        private static void AddSampleUsers(GirafDbContext context, UserManager<GirafUser> userManager, List<SampleGirafUser> sampleUsers, List<Department> departments123)
+        private static void AddSampleUsers(GirafDbContext context, UserManager<GirafUser> userManager, List<SampleGirafUser> sampleUsers)
         {
             String str2 = new String("Adding users.");
             Console.WriteLine(str2);

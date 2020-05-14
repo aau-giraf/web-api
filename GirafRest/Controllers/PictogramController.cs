@@ -45,6 +45,19 @@ namespace GirafRest.Controllers
         /// <param name="hostingEnvironment">Service Injection</param>
         public PictogramController(IGirafService girafController, ILoggerFactory lFactory, IHostEnvironment hostingEnvironment) 
     {
+            if(lFactory == null){
+                throw new ArgumentNullException(lFactory + "null");
+            }
+
+              if(hostingEnvironment == null){
+                throw new ArgumentNullException(hostingEnvironment + "null");
+            }
+
+            
+              if(girafController == null){
+                throw new ArgumentNullException(girafController + "null");
+            }
+
             _giraf = girafController;
             _giraf._logger = lFactory.CreateLogger("Pictogram");
             _hostingEnvironment = hostingEnvironment;
@@ -73,7 +86,7 @@ namespace GirafRest.Controllers
             if (page < 1)
                 return BadRequest(new ErrorResponse(ErrorCode.InvalidProperties, new string( "Missing page")));
             //Produce a list of all pictograms available to the user
-            var userPictograms = (await ReadAllPictograms()).AsEnumerable();
+            var userPictograms = (await ReadAllPictograms().ConfigureAwait(true)).AsEnumerable();
             if (userPictograms == null)
                 return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, new string("User has no pictograms")));
 
@@ -141,6 +154,7 @@ namespace GirafRest.Controllers
                 _giraf._logger.LogError(exceptionMessage);
                 return StatusCode(StatusCodes.Status500InternalServerError, 
                     new ErrorResponse(ErrorCode.Error, new string("An error happened while reading"), e.Message));
+                    throw;
             }
         }
 
@@ -163,8 +177,8 @@ namespace GirafRest.Controllers
 
             if (pictogram == null)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties,
-                    "Could not read pictogram DTO. Please make sure not to include image data in this request. " +
-                    "Use POST localhost/v1/pictogram/{id}/image instead."));
+                    new string("Could not read pictogram DTO. Please make sure not to include image data in this request. ") + new string(
+                    "Use POST localhost/v1/pictogram/{id}/image instead.")));
 
             if (!ModelState.IsValid)
                 return BadRequest(new ErrorResponse(ErrorCode.InvalidProperties, new string("Model is not valid")));
@@ -185,11 +199,11 @@ namespace GirafRest.Controllers
             else if (pictogram.AccessLevel == AccessLevel.PROTECTED)
             {
                 //Add the pictogram to the user's department
-                new DepartmentResource(user.Department, pict);
+                //new DepartmentResource(user.Department, pict);
             }
 
-            await _giraf._context.Pictograms.AddAsync(pict);
-            await _giraf._context.SaveChangesAsync();
+            await _giraf._context.Pictograms.AddAsync(pict).ConfigureAwait(true);
+            await _giraf._context.SaveChangesAsync().ConfigureAwait(true);
 
             return CreatedAtRoute(
                 "GetPictogram", 
@@ -217,8 +231,8 @@ namespace GirafRest.Controllers
             if (pictogram == null)
                 return BadRequest(
                     new ErrorResponse(ErrorCode.MissingProperties, 
-                    "Could not read pictogram DTO.", "Please make sure not to include image data in this request. " + 
-                    "Use POST localhost/v1/pictogram/{id}/image instead."));
+                    new string("Could not read pictogram DTO."), new string("Please make sure not to include image data in this request. " + 
+                    "Use POST localhost/v1/pictogram/{id}/image instead.")));
             if (pictogram.AccessLevel == null)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, new string("Missing access level")));
             if (!ModelState.IsValid)
@@ -343,7 +357,7 @@ namespace GirafRest.Controllers
                         fs.Write(image);
                     }
                 }
-                catch(System.UnauthorizedAccessException uaex)
+                catch(System.UnauthorizedAccessException)
                 {
                     //Consider if the errorcode is the most appropriate one here
                     return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.Forbidden, new string("The server does not have permission to write this file")));
@@ -351,10 +365,10 @@ namespace GirafRest.Controllers
                 
 
 
-                pictogram.ImageHash = image.GetHashCode().ToString();
+                pictogram.ImageHash = image.GetHashCode().ToString("G", System.Globalization.CultureInfo.InvariantCulture);
             }
 
-            await _giraf._context.SaveChangesAsync();
+            await _giraf._context.SaveChangesAsync().ConfigureAwait(true);
             return Ok(new SuccessResponse<WeekPictogramDTO>(new WeekPictogramDTO(pictogram)));
         }
 
@@ -399,11 +413,11 @@ namespace GirafRest.Controllers
                 byte[] data = System.IO.File.ReadAllBytes(pictoPath);
                 return Ok(new SuccessResponse<byte[]>(data));
             }
-            catch(UnauthorizedAccessException uAEx)
+            catch(UnauthorizedAccessException)
             {
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, new string("The server can not access the specified image")));
             }
-            catch(FileNotFoundException fNFex)
+            catch(FileNotFoundException)
             {
                 return StatusCode(StatusCodes.Status404NotFound, new ErrorResponse(ErrorCode.NotAuthorized, new string("The server can not find the specified image")));
             }
@@ -521,8 +535,9 @@ namespace GirafRest.Controllers
             }
             catch (Exception e)
             {
-                _giraf._logger.LogError("An exception occurred when reading all pictograms.", $"Message: {e.Message}", $"Source: {e.Source}");
+                _giraf._logger.LogError(new string("An exception occurred when reading all pictograms."), $"Message: {e.Message}", $"Source: {e.Source}");
                 return null;
+                throw;
             }
         }
 
@@ -532,21 +547,21 @@ namespace GirafRest.Controllers
         /// <returns>The edit distance between the strings a and b.</returns>
         /// <param name="a">Search string.</param>
         /// <param name="b">string to be compared against the search string</param>
-        private int IbsenDistance(string a, string b)
+        private static int IbsenDistance(string a, string b)
         {
             const int insertionCost = 1;
             const int deletionCost = 100;
             const int substitutionCost = 100;
-            int[,] d = new int[a.Length + 1, b.Length + 1];
+            int[][] d = {new int[]{a.Length + 1, b.Length + 1}};
             for (int i = 0; i <= a.Length; i++)
                 for (int j = 0; j <= b.Length; j++)
-                    d[i, j] = 0;
+                    d[i][j] = 0;
 
             for (int i = 1; i <= a.Length; i++)
-                d[i, 0] = i * deletionCost;
+                d[i][0] = i * deletionCost;
 
             for (int j = 1; j <= b.Length; j++)
-                d[0, j] = j * insertionCost;
+                d[0][j] = j * insertionCost;
 
             for (int j = 1; j <= b.Length; j++)
             {
@@ -556,12 +571,12 @@ namespace GirafRest.Controllers
                     if (a[i - 1] != b[j - 1])
                         _substitutionCost = substitutionCost;
 
-                    d[i, j] = Math.Min(d[i - 1, j] + deletionCost,
-                             Math.Min(d[i, j - 1] + insertionCost,
-                                      d[i - 1, j - 1] + _substitutionCost));
+                    d[i][j] = Math.Min(d[i - 1][ j] + deletionCost,
+                             Math.Min(d[i][ j - 1] + insertionCost,
+                                      d[i - 1][j - 1] + _substitutionCost));
                 }
             }
-            return d[a.Length, b.Length];
+            return d[a.Length][ b.Length];
         }
 
         #endregion

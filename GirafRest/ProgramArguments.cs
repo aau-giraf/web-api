@@ -60,11 +60,14 @@ namespace GirafRest
         /// <returns>True if all the arguments were valid and false otherwise.</returns>
         public bool CheckProgramArguments(string[] args)
         {
+            if (args == null) {
+                throw new System.ArgumentNullException(args + " is null");
+            }
             //Check if no arguments are specified and run in default configuration if so.
             if (args.Length == 0)
             {
-                Console.WriteLine("\tNo program arguments were found - running in default configuration.");
-                Console.WriteLine(_helpMessage);
+                Console.WriteLine(new string("\tNo program arguments were found - running in default configuration."));
+                Console.WriteLine(new string(_helpMessage));
                 return true;
             }
 
@@ -84,12 +87,13 @@ namespace GirafRest
             //An argument as invalid, display the error message and return false.
             catch (Exception e)
             {
-                Console.WriteLine(_options);
-                Console.WriteLine("\n\nAn exception occurred. Please check the arguments you have specified, " +
+                Console.WriteLine(new string(_options));
+                Console.WriteLine(new string("\n\nAn exception occurred. Please check the arguments you have specified, " +
                     "the list of supported options are shown above for you convenience.\n" +
-                    "The exception was:\n");
+                    "The exception was:\n"));
                 Console.WriteLine(e.Message);
                 return false;
+                throw;
             }
         }
 
