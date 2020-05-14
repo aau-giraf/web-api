@@ -174,7 +174,7 @@ namespace GirafRest.Controllers
                 await _signInManager.SignInAsync(user, isPersistent: true).ConfigureAwait(true);
                 _giraf._logger.LogInformation(new String("User created a new account with password."));
             
-                return Created(new Uri(Request.Host + "/v1/user/" + user.Id), new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, model.Role)));
+                return Created(Request.Host + "/v1/user/" + user.Id, new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, model.Role)));
             }
 
             return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse(ErrorCode.Error, new String("Something went wrong when creating user")));
