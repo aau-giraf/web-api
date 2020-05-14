@@ -3,8 +3,6 @@ using Xunit;
 using GirafRest.Models;
 using GirafRest.Controllers;
 using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using GirafRest.Test.Mocks;
 using static GirafRest.Test.UnitTestExtensions;
 using GirafRest.Models.DTOs;
@@ -12,12 +10,7 @@ using Xunit.Abstractions;
 using GirafRest.Models.Responses;
 using GirafRest.Services;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-using Moq;
 using static GirafRest.Test.UnitTestExtensions.TestContext;
-using Newtonsoft.Json;
-
 using Microsoft.AspNetCore.Mvc;
 
 namespace GirafRest.Test

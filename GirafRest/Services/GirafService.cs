@@ -4,15 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using GirafRest.Data;
 using GirafRest.Models;
-using GirafRest.Models.DTOs;
-using GirafRest.Models.Responses;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace GirafRest.Services
 {

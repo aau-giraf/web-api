@@ -28,16 +28,18 @@ namespace GirafRest.Models
         public virtual Weekday Other { get; set; }
 
         /// <summary>
-        /// The key of the involved resource.
+        /// The relations between pictogram and activity
         /// </summary>
-
         public virtual ICollection<PictogramRelation> Pictograms { get; set; }
         
+        /// <summary>
+        /// Nullable key for TimerKey
+        /// </summary>
         public long? TimerKey { get; set; }
 
         /// <summary>
         /// A reference to the actual timer.
-        /// </summary
+        /// </summary>
         [ForeignKey("TimerKey")]
         public virtual Timer Timer { get; set; }
 
@@ -52,9 +54,8 @@ namespace GirafRest.Models
         /// </summary>
         public int Order { get; set; }
 
-        
         /// <summary>
-        /// Ordering
+        /// ChoiceBoard
         /// </summary>
         public bool IsChoiceBoard { get; set; }
 
@@ -66,7 +67,7 @@ namespace GirafRest.Models
         /// <param name="order">The activity's order.</param>
         /// <param name="state">The activity's current state.</param>
         /// <param name="ischoiceboard">The activity's choiceboard state.</param>
-        public Activity(Weekday weekday, List<Pictogram> pictograms, int order, ActivityState state, Timer timer, bool choiceBoard)
+        public Activity(Weekday weekday, List<Pictogram> pictograms, int order, ActivityState state, Timer timer, IsChoiceBoard choiceBoard)
         {
             this.Other = weekday;
             this.Order = order;
@@ -79,15 +80,7 @@ namespace GirafRest.Models
                 AddPictograms(pictograms);
             }
         }
-        
-        public Activity(Weekday weekday, int order, ActivityState state)
-        {
-            this.Other = weekday;
-            this.Order = order;
-            this.State = state;
-            this.Pictograms = new List<PictogramRelation>();
-        }
-        
+
         public void AddPictogram(Pictogram pictogram) {
             this.Pictograms.Add(new PictogramRelation(this, pictogram));
         }
@@ -104,4 +97,5 @@ namespace GirafRest.Models
         /// </summary>
         public Activity() { }
     }
+
 }

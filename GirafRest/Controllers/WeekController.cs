@@ -136,8 +136,7 @@ namespace GirafRest.Controllers
                                     _giraf._context.Pictograms.FirstOrDefault(p => p.Id == pictogramRelation.PictogramId);
                                 if (dbPictogram != null)
                                 {
-                                    pictogramRelation.Pictogram =
-                                        _giraf._context.Pictograms.Single(p => p.Id == pictogramRelation.PictogramId);
+                                    pictogramRelation.Pictogram = dbPictogram;
                                 }
                                 else
                                 {
