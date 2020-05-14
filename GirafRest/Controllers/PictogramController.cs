@@ -537,7 +537,6 @@ namespace GirafRest.Controllers
             {
                 _giraf._logger.LogError(new string("An exception occurred when reading all pictograms."), $"Message: {e.Message}", $"Source: {e.Source}");
                 return null;
-                throw;
             }
         }
 
@@ -552,16 +551,16 @@ namespace GirafRest.Controllers
             const int insertionCost = 1;
             const int deletionCost = 100;
             const int substitutionCost = 100;
-            int[][] d = {new int[]{a.Length + 1, b.Length + 1}};
+            int[,] d = new int[a.Length + 1, b.Length + 1];
             for (int i = 0; i <= a.Length; i++)
                 for (int j = 0; j <= b.Length; j++)
-                    d[i][j] = 0;
+                    d[i, j] = 0;
 
             for (int i = 1; i <= a.Length; i++)
-                d[i][0] = i * deletionCost;
+                d[i, 0] = i * deletionCost;
 
             for (int j = 1; j <= b.Length; j++)
-                d[0][j] = j * insertionCost;
+                d[0, j] = j * insertionCost;
 
             for (int j = 1; j <= b.Length; j++)
             {
@@ -571,12 +570,12 @@ namespace GirafRest.Controllers
                     if (a[i - 1] != b[j - 1])
                         _substitutionCost = substitutionCost;
 
-                    d[i][j] = Math.Min(d[i - 1][ j] + deletionCost,
-                             Math.Min(d[i][ j - 1] + insertionCost,
-                                      d[i - 1][j - 1] + _substitutionCost));
+                    d[i, j] = Math.Min(d[i - 1, j] + deletionCost,
+                             Math.Min(d[i, j - 1] + insertionCost,
+                                      d[i - 1, j - 1] + _substitutionCost));
                 }
             }
-            return d[a.Length][ b.Length];
+            return d[a.Length, b.Length];
         }
 
         #endregion
