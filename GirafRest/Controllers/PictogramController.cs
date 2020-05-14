@@ -546,7 +546,7 @@ namespace GirafRest.Controllers
         /// <returns>The edit distance between the strings a and b.</returns>
         /// <param name="a">Search string.</param>
         /// <param name="b">string to be compared against the search string</param>
-        private int IbsenDistance(string a, string b)
+        private static int IbsenDistance(string a, string b)
         {
             const int insertionCost = 1;
             const int deletionCost = 100;
