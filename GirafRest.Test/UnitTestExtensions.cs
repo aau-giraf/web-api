@@ -370,7 +370,7 @@ namespace GirafRest.Test
                     Weekday monday = new Weekday() {
                         Day = Days.Monday,
                     };
-                    Activity activity = new Activity(monday, 0, ActivityState.Active);
+                    Activity activity = new Activity(monday, new List<Pictogram>(), 0, ActivityState.Active, null);
                     monday.Activities = new List<Activity>() {activity};
                     
                     if (_mockWeekTemplates == null) {

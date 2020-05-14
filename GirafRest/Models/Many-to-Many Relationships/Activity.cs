@@ -37,7 +37,7 @@ namespace GirafRest.Models
 
         /// <summary>
         /// A reference to the actual timer.
-        /// </summary
+        /// </summary>
         [ForeignKey("TimerKey")]
         public virtual Timer Timer { get; set; }
 
@@ -71,15 +71,7 @@ namespace GirafRest.Models
                 AddPictograms(pictograms);
             }
         }
-        
-        public Activity(Weekday weekday, int order, ActivityState state)
-        {
-            this.Other = weekday;
-            this.Order = order;
-            this.State = state;
-            this.Pictograms = new List<PictogramRelation>();
-        }
-        
+
         public void AddPictogram(Pictogram pictogram) {
             this.Pictograms.Add(new PictogramRelation(this, pictogram));
         }
