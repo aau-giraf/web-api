@@ -305,7 +305,7 @@ namespace GirafRest.Test
             Assert.Equal(expected.IsChoiceBoard, actual.IsChoiceBoard);
             Assert.Equal(expected.Order, actual.Order);
             Assert.Equal(expected.State, actual.State);
-            Assert.Equal(expected.Timer, actual.Timer);
+            Assert.Equal(expected.Timer.ToString(), actual.Timer.ToString());
             Assert.Equal(expected.Pictograms.Count, actual.Pictograms.Count);
 
             var actualPictogram = actual.Pictograms.First();
