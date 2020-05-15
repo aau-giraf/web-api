@@ -54,21 +54,21 @@ namespace GirafRest.Test
             List<SampleWeekday> weekdays = data.WeekdayList;
 
             Assert.NotNull(data);
-            Assert.Equal("Admin", users[0].Name);
-            Assert.Equal("Guardian in dep 2", users[1].Name);
-            Assert.Equal("Citizen of dep 2",users[2].Name);
-            Assert.Equal("Mock Department", deps[0].Name);
-            Assert.Equal("Mock Department2", deps[1].Name);
-            Assert.Equal("Picto 1", pics[0].Title);
-            Assert.Equal("Public Picto2", pics[1].Title);
-            Assert.Equal("No restrictions", pics[2].Title);
-            Assert.Equal("My awesome week", weeks[0].Name);
-            Assert.Equal("My not so awesome week", weeks[1].Name);
-            Assert.Equal("Template1",weekTemplates[0].Name);
-            Assert.Equal("Template1", weekTemplates[1].Name);
-            Assert.Equal(Day.Monday, weekdays[0].Day);
-            Assert.Equal(Day.Tuesday, weekdays[1].Day);
-            Assert.Equal(Day.Wednesday, weekdays[2].Day);
+            Assert.Equal(users[0].Name, new string("Admin"));
+            Assert.Equal(users[1].Name, new string("Guardian in dep 2"));
+            Assert.Equal(users[2].Name, new string( "Citizen of dep 2"));
+            Assert.Equal(deps[0].Name, new string("Mock Department"));
+            Assert.Equal(deps[1].Name, new string("Mock Department2"));
+            Assert.Equal(pics[0].Title, new string("Picto 1"));
+            Assert.Equal(pics[1].Title, new string("Public Picto2"));
+            Assert.Equal(pics[2].Title, new string("No restrictions"));
+            Assert.Equal(weeks[0].Name, new string( "My awesome week"));
+            Assert.Equal(weeks[1].Name, new string("My not so awesome week"));
+            Assert.Equal(weekTemplates[0].Name, new string("Template1"));
+            Assert.Equal(weekTemplates[1].Name, new string("Template2"));
+            Assert.Equal(weekdays[0].Day, Day.Monday);
+            Assert.Equal(weekdays[1].Day, Day.Tuesday);
+            Assert.Equal(weekdays[2].Day, Day.Wednesday);
         }
 
         [Fact]
