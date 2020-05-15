@@ -114,7 +114,7 @@ namespace GirafRest.Data
                 .HasOne<Timer>(ac => ac.Timer)
                 .WithMany()
                 .HasForeignKey(ac => ac.TimerKey)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.SetNull);
 
             // Configure that a citizen can have many guardians and that a citizen can have many guardians
             builder.Entity<GuardianRelation>()
