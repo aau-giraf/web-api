@@ -43,13 +43,13 @@ namespace GirafRest.Controllers
         public WeekTemplateController(IGirafService giraf, ILoggerFactory loggerFactory, 
             IAuthenticationService authentication){
 
-            if(giraf == null){
+            if(giraf == null)
                   throw new System.ArgumentNullException(giraf + " is null");
-            }
+            
 
-              if(loggerFactory == null){
+              if(loggerFactory == null)
                   throw new System.ArgumentNullException(loggerFactory + " is null");
-            }
+            
 
         
             _giraf = giraf;

@@ -33,13 +33,13 @@ namespace GirafRest.Controllers
         /// <param name="authentication">Service Injection</param>
         public WeekController(IGirafService giraf, ILoggerFactory loggerFactory, IAuthenticationService authentication)
         {
-            if(loggerFactory == null){
+            if(loggerFactory == null)
                   throw new System.ArgumentNullException(loggerFactory + " is null");
-            }
+            
 
-             if(giraf == null){
+             if(giraf == null)
                   throw new System.ArgumentNullException(giraf + " is null");
-            }
+            
 
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger(new string("Week"));

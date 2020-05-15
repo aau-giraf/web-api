@@ -45,18 +45,18 @@ namespace GirafRest.Controllers
         /// <param name="hostingEnvironment">Service Injection</param>
         public PictogramController(IGirafService girafController, ILoggerFactory lFactory, IHostEnvironment hostingEnvironment) 
     {
-            if(lFactory == null){
+            if(lFactory == null)
                 throw new ArgumentNullException(lFactory + "null");
-            }
+            
 
-              if(hostingEnvironment == null){
+              if(hostingEnvironment == null)
                 throw new ArgumentNullException(hostingEnvironment + "null");
-            }
+            
 
             
-              if(girafController == null){
+              if(girafController == null)
                 throw new ArgumentNullException(girafController + "null");
-            }
+            
 
             _giraf = girafController;
             _giraf._logger = lFactory.CreateLogger("Pictogram");
