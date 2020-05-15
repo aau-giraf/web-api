@@ -66,7 +66,7 @@ namespace GirafRest.Controllers
         [HttpGet("")]
         [ProducesResponseType(typeof(SuccessResponse<GirafUserDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> GetUser()
+        public async Task<ActionResult> GetUserInfo()
         {
             //First attempt to fetch the user and check that he exists
             var user = await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true);
@@ -85,7 +85,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> GetUser(string id)
+        public async Task<ActionResult> GetUserInfo(string id)
         {
             if (string.IsNullOrEmpty(id))
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, new string("User id not found")));
