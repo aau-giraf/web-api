@@ -25,7 +25,7 @@ namespace GirafRest
         /// <summary>
         /// Actual day
         /// </summary>
-        public Days Day { get; set; }
+        public Day Day { get; set; }
 
         /// <summary>
         /// Belonging setting id

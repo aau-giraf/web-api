@@ -24,7 +24,7 @@ namespace GirafRest
         /// Day for which the color belongs
         /// </summary>
         /// <value>The day.</value>
-        public Days Day { get; set; }
+        public Day Day { get; set; }
 
     }
 }

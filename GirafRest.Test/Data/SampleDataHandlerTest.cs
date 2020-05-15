@@ -80,9 +80,9 @@ namespace GirafRest.Test
             Assert.Equal(weeks[1].Name, str10);
             Assert.Equal(weekTemplates[0].Name, str11);
             Assert.Equal(weekTemplates[1].Name, str12);
-            Assert.Equal(Days.Monday, weekdays[0].Day);
-            Assert.Equal(Days.Tuesday, weekdays[1].Day);
-            Assert.Equal(Days.Wednesday, weekdays[2].Day);
+            Assert.Equal(Day.Monday, weekdays[0].Day);
+            Assert.Equal(Day.Tuesday, weekdays[1].Day);
+            Assert.Equal(Day.Wednesday, weekdays[2].Day);
         }
 
         [Fact]

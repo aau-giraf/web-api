@@ -10,7 +10,7 @@ namespace GirafRest.Models
     /// <summary>
     /// Possible days; 1 for Monday
     /// </summary>
-    public enum Days {
+    public enum Day {
         /// <summary>
         /// Monday as 1
         /// </summary>
@@ -57,7 +57,7 @@ namespace GirafRest.Models
         /// <summary>
         /// Day of the week Enum
         /// </summary>
-        public Days Day { get; set; }
+        public Day Day { get; set; }
 
         /// <summary>
         /// List of activities in the given weekday
@@ -67,7 +67,7 @@ namespace GirafRest.Models
         /// <summary>
         /// Constructor with including activities
         /// </summary>
-        public Weekday(Days day, List<Pictogram> activityIcons, List<ActivityState> activityStates) : this()
+        public Weekday(Day day, List<Pictogram> activityIcons, List<ActivityState> activityStates) : this()
         {
             if (activityIcons == null) {
                 throw new System.ArgumentNullException(activityIcons + " is null");

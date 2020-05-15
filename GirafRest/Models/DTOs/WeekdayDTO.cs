@@ -13,7 +13,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// An enum defining which day of the week this Weekday represents.
         /// </summary>
-        public Days Day { get; set; }
+        public Day Day { get; set; }
         
         /// <summary>
         /// A list of all the activities of the week.

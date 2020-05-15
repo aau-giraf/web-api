@@ -142,8 +142,8 @@ namespace GirafRest.Test
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.Equal("Template1", body.Data.Name);
-            Assert.Contains(Days.Wednesday, body.Data.Days.Select(d => d.Day));
-            Assert.DoesNotContain(Days.Friday, body.Data.Days.Select(d => d.Day));
+            Assert.Contains(Day.Wednesday, body.Data.Days.Select(d => d.Day));
+            Assert.DoesNotContain(Day.Friday, body.Data.Days.Select(d => d.Day));
         }
 
         #endregion

@@ -65,7 +65,7 @@ namespace GirafRest.Models.DTOs
         {
             if (this.Days == null || (this.Days.Count < 1 || this.Days.Count > 7))
                 return ErrorCode.InvalidAmountOfWeekdays;
-            if (this.Days.Any(d => !Enum.IsDefined(typeof(Days), d.Day)))
+            if (this.Days.Any(d => !Enum.IsDefined(typeof(Day), d.Day)))
                 return ErrorCode.InvalidDay;
             //If two days have the same day index
             if (this.Days.GroupBy(d => d.Day).Any(g => g.Count() != 1))

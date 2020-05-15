@@ -65,13 +65,13 @@ namespace GirafRest.Test
 
             this.UserSettings = new List<SettingDTO>() {
                 new SettingDTO(){WeekDayColors = new List<WeekDayColorDTO> {
-                new WeekDayColorDTO() { Day = Days.Monday, HexColor = "#08a045"},
-                new WeekDayColorDTO() { Day = Days.Tuesday, HexColor = "#540d6e"},
-                new WeekDayColorDTO() { Day = Days.Wednesday, HexColor = "#f77f00"},
-                new WeekDayColorDTO() { Day = Days.Thursday, HexColor = "#004777"},
-                new WeekDayColorDTO() { Day = Days.Friday, HexColor = "#f9c80e"},
-                new WeekDayColorDTO() { Day = Days.Saturday, HexColor = "#db2b39"},
-                new WeekDayColorDTO() { Day = Days.Sunday, HexColor = "#ffffff"}},
+                new WeekDayColorDTO() { Day = Day.Monday, HexColor = "#08a045"},
+                new WeekDayColorDTO() { Day = Day.Tuesday, HexColor = "#540d6e"},
+                new WeekDayColorDTO() { Day = Day.Wednesday, HexColor = "#f77f00"},
+                new WeekDayColorDTO() { Day = Day.Thursday, HexColor = "#004777"},
+                new WeekDayColorDTO() { Day = Day.Friday, HexColor = "#f9c80e"},
+                new WeekDayColorDTO() { Day = Day.Saturday, HexColor = "#db2b39"},
+                new WeekDayColorDTO() { Day = Day.Sunday, HexColor = "#ffffff"}},
                 Theme = Theme.girafGreen,
                 TimerSeconds = 120,
                 DefaultTimer = DefaultTimer.pieChart,

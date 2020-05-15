@@ -158,7 +158,7 @@ namespace GirafRest.Controllers
                     Days = new int[] { 1, 2, 3, 4, 5, 6, 7 }
                         .Select(d => new WeekdayDTO() { 
                             Activities = new List<ActivityDTO>(), 
-                            Day = (Days)d 
+                            Day = (Day)d 
                         }).ToArray() 
                 }));
             }
@@ -173,7 +173,7 @@ namespace GirafRest.Controllers
                 Days = new[] { 1, 2, 3, 4, 5, 6, 7 }
                     .Select(d => new WeekdayDTO() { 
                         Activities = new List<ActivityDTO>(), 
-                        Day = (Days)d 
+                        Day = (Day)d 
                     }).ToArray()
             }));
         }

@@ -59,7 +59,7 @@ namespace GirafRest.Test
             };
 
             var res = ac.PostActivity(
-                newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Monday
+                newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Day.Monday
             ).Result as ObjectResult;
 
             var body = res.Value as SuccessResponse<ActivityDTO>;
@@ -81,7 +81,7 @@ namespace GirafRest.Test
             };
 
             var res = ac.PostActivity(
-                newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Saturday
+                newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Day.Saturday
             ).Result as ObjectResult;
 
             var body = res.Value as SuccessResponse<ActivityDTO>;
@@ -101,7 +101,7 @@ namespace GirafRest.Test
             ActivityDTO newActivity = null;
 
             var res = ac.PostActivity(
-                newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Monday
+                newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Day.Monday
             ).Result as ObjectResult;
 
             var body = res.Value as ErrorResponse;
@@ -123,7 +123,7 @@ namespace GirafRest.Test
             };
 
             var res = ac.PostActivity(
-                newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Sunday + 1
+                newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Day.Sunday + 1
             ).Result as ObjectResult;
 
             var body = res.Value as ErrorResponse;
@@ -143,7 +143,7 @@ namespace GirafRest.Test
             ActivityDTO newActivity = new ActivityDTO() { Pictogram = new WeekPictogramDTO(_testContext.MockPictograms.First()) };
 
             var res = ac.PostActivity(
-                newActivity, mockUser.Id, week.Name, 9000, week.WeekNumber, (int)Days.Sunday
+                newActivity, mockUser.Id, week.Name, 9000, week.WeekNumber, (int)Day.Sunday
             ).Result as ObjectResult;
 
             var body = res.Value as ErrorResponse;
@@ -163,7 +163,7 @@ namespace GirafRest.Test
             ActivityDTO newActivity = new ActivityDTO() { Pictogram = new WeekPictogramDTO(_testContext.MockPictograms.First()) };
 
             var res = ac.PostActivity(
-                newActivity, mockUser.Id, week.Name, week.WeekYear, 54, (int)Days.Sunday
+                newActivity, mockUser.Id, week.Name, week.WeekYear, 54, (int)Day.Sunday
             ).Result as ObjectResult;
 
             var body = res.Value as ErrorResponse;
@@ -184,7 +184,7 @@ namespace GirafRest.Test
                 Pictogram = new WeekPictogramDTO(_testContext.MockPictograms.First()) };
 
             var res = ac.PostActivity(
-                newActivity, mockUser.Id, "WrongName", week.WeekYear, week.WeekYear, (int)Days.Sunday
+                newActivity, mockUser.Id, "WrongName", week.WeekYear, week.WeekYear, (int)Day.Sunday
             ).Result as ObjectResult;
 
             var body = res.Value as ErrorResponse;
@@ -204,7 +204,7 @@ namespace GirafRest.Test
             ActivityDTO newActivity = new ActivityDTO() { Pictogram = new WeekPictogramDTO(_testContext.MockPictograms.First()) };
 
             var res = ac.PostActivity(
-                newActivity, "NonExistingUserId", week.Name, week.WeekYear, week.WeekNumber, (int)Days.Sunday
+                newActivity, "NonExistingUserId", week.Name, week.WeekYear, week.WeekNumber, (int)Day.Sunday
             ).Result as ObjectResult;
             
             var body = res.Value as ErrorResponse;
@@ -228,7 +228,7 @@ namespace GirafRest.Test
             };
 
             var res = ac.PostActivity(
-                newActivity, differentMockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Sunday
+                newActivity, differentMockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Day.Sunday
             ).Result as ObjectResult;
 
             var body = res.Value as ErrorResponse;

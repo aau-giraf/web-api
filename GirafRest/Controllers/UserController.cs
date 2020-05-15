@@ -592,7 +592,7 @@ namespace GirafRest.Controllers
 
 
                 // check if all days in weekdaycolours is valid
-                if (options.WeekDayColors.Any(w => !Enum.IsDefined(typeof(Days), w.Day)))
+                if (options.WeekDayColors.Any(w => !Enum.IsDefined(typeof(Day), w.Day)))
                     return BadRequest(new ErrorResponse(ErrorCode.InvalidDay, new string("Invalid day")));
 
                 // check that Colors are in correct format

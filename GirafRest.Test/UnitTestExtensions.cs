@@ -253,25 +253,25 @@ namespace GirafRest.Test
                                 Name = "My awesome week",
                                 Weekdays = new List<Weekday>(){
                                     new Weekday(){
-                                        Day = Days.Monday
+                                        Day = Day.Monday
                                     },
                                     new Weekday(){
-                                        Day = Days.Tuesday
+                                        Day = Day.Tuesday
                                     },
                                     new Weekday(){
-                                        Day = Days.Wednesday
+                                        Day = Day.Wednesday
                                     },
                                     new Weekday(){
-                                        Day = Days.Thursday
+                                        Day = Day.Thursday
                                     },
                                     new Weekday(){
-                                        Day = Days.Friday
+                                        Day = Day.Friday
                                     },
                                     new Weekday(){
-                                        Day = Days.Saturday
+                                        Day = Day.Saturday
                                     },
                                     new Weekday(){
-                                        Day = Days.Sunday
+                                        Day = Day.Sunday
                                     }
                                 }
                             },
@@ -280,25 +280,25 @@ namespace GirafRest.Test
                                 Name = "My not so awesome week",
                                 Weekdays = new List<Weekday>(){
                                     new Weekday(){
-                                        Day = Days.Monday
+                                        Day = Day.Monday
                                     },
                                     new Weekday(){
-                                        Day = Days.Tuesday
+                                        Day = Day.Tuesday
                                     },
                                     new Weekday(){
-                                        Day = Days.Wednesday
+                                        Day = Day.Wednesday
                                     },
                                     new Weekday(){
-                                        Day = Days.Thursday
+                                        Day = Day.Thursday
                                     },
                                     new Weekday(){
-                                        Day = Days.Friday
+                                        Day = Day.Friday
                                     },
                                     new Weekday(){
-                                        Day = Days.Saturday
+                                        Day = Day.Saturday
                                     },
                                     new Weekday(){
-                                        Day = Days.Sunday
+                                        Day = Day.Sunday
                                     }
                                 }
                             },
@@ -331,13 +331,13 @@ namespace GirafRest.Test
                                 Name = "Template1",
                                 Weekdays = new List<Weekday>(){
                                     new Weekday(){
-                                        Day = Days.Monday
+                                        Day = Day.Monday
                                     },
                                     new Weekday(){
-                                        Day = Days.Tuesday
+                                        Day = Day.Tuesday
                                     },
                                     new Weekday(){
-                                        Day = Days.Wednesday
+                                        Day = Day.Wednesday
                                     }
                                 }
                             },
@@ -346,10 +346,10 @@ namespace GirafRest.Test
                                 Name = "Template2",
                                 Weekdays = new List<Weekday>(){
                                     new Weekday(){
-                                        Day = Days.Saturday
+                                        Day = Day.Saturday
                                     },
                                     new Weekday(){
-                                        Day = Days.Sunday
+                                        Day = Day.Sunday
                                     }
                                 }
                             },

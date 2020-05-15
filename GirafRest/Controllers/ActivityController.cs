@@ -62,7 +62,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> PostActivity([FromBody] ActivityDTO newActivity, string userId, string weekplanName, int weekYear, int weekNumber, int weekDayNmb)
         {
-            Days weekDay = (Days) weekDayNmb;
+            Day weekDay = (Day) weekDayNmb;
             if (newActivity == null)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, new String("Missing new activity")));
 

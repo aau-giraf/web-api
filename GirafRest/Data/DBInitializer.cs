@@ -297,7 +297,7 @@ namespace GirafRest.Setup
         {
             foreach (var sampleDay in sampleDays)
             {
-                Days day = sampleDay.Day;
+                Day day = sampleDay.Day;
                 List<Pictogram> picts = new List<Pictogram>();
                 Pictogram pic = null;
 
