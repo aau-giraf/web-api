@@ -13,7 +13,7 @@ namespace GirafRest
     /// <summary>
     /// Base program class
     /// </summary>
-    public static class Program
+    public class Program
     {
         /// <summary>
         /// Program configuration.
