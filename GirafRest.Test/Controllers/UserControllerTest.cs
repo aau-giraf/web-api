@@ -284,7 +284,7 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             var mockUser = _testContext.MockUsers[CITIZEN_DEP_TWO];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
-            var res = usercontroller.GetUserInfo(mockUser.Id).Result as ObjectResult;
+            var res = usercontroller.GetUser(mockUser.Id).Result as ObjectResult;
             var body = res.Value as SuccessResponse<GirafUserDTO> ;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
@@ -299,7 +299,7 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             var mockUser = _testContext.MockUsers[GUARDIAN_DEP_TWO];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
-            var res = usercontroller.GetUserInfo(mockUser.Id).Result as ObjectResult;
+            var res = usercontroller.GetUser(mockUser.Id).Result as ObjectResult;
             var body = res.Value as SuccessResponse<GirafUserDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
@@ -314,7 +314,7 @@ namespace GirafRest.Test
             var mockUser = _testContext.MockUsers[GUARDIAN_DEP_TWO];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
 
-            var res = usercontroller.GetUserInfo(mockUser.Id).Result as ObjectResult;
+            var res = usercontroller.GetUser(mockUser.Id).Result as ObjectResult;
             var body = res.Value as SuccessResponse<GirafUserDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
@@ -326,7 +326,7 @@ namespace GirafRest.Test
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[GUARDIAN_DEP_TWO]);
-            var res = usercontroller.GetUserInfo("invalid").Result as ObjectResult;
+            var res = usercontroller.GetUser("invalid").Result as ObjectResult;
             var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
@@ -339,7 +339,7 @@ namespace GirafRest.Test
             var usercontroller = initializeTest();
             var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
-            var res = usercontroller.GetUserInfo(mockUser.Id).Result as ObjectResult;
+            var res = usercontroller.GetUser(mockUser.Id).Result as ObjectResult;
             var body = res.Value as SuccessResponse<GirafUserDTO>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
@@ -352,7 +352,7 @@ namespace GirafRest.Test
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = usercontroller.GetUserInfo("invalidId").Result as ObjectResult;
+            var res = usercontroller.GetUser("invalidId").Result as ObjectResult;
             var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
@@ -364,7 +364,7 @@ namespace GirafRest.Test
         {
             var usercontroller = initializeTest();
             _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[CITIZEN_DEP_THREE]);
-            var res = usercontroller.GetUserInfo(_testContext.MockUsers[CITIZEN_DEP_TWO].Id).Result as ObjectResult;
+            var res = usercontroller.GetUser(_testContext.MockUsers[CITIZEN_DEP_TWO].Id).Result as ObjectResult;
             var body = res.Value as ErrorResponse;
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
