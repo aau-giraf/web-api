@@ -210,7 +210,7 @@ namespace GirafRest.Test
                 Username = userName,
                 Password = "GenericPassword",
                 DepartmentId = DEPARTMENT_ONE,
-                Role = GirafRoles.Citizen,
+                Role = Role.Citizen,
                 DisplayName = displayName
             }).Result as ObjectResult;
 
@@ -235,7 +235,7 @@ namespace GirafRest.Test
                 DisplayName = _testContext.MockUsers[ADMIN_DEP_ONE].DisplayName,
                 Password = "password",
                 DepartmentId = DEPARTMENT_ONE,
-                Role = GirafRoles.Citizen,
+                Role = Role.Citizen,
             }).Result as ObjectResult;
 
             var body = res.Value as ErrorResponse;
@@ -296,7 +296,7 @@ namespace GirafRest.Test
                 DisplayName = "",
                 Password = "GenericPassword",
                 DepartmentId = DEPARTMENT_ONE,
-                Role = GirafRoles.Citizen
+                Role = Role.Citizen
             }).Result as ObjectResult;
 
             var body = res.Value as ErrorResponse;
@@ -317,7 +317,7 @@ namespace GirafRest.Test
                 Username = "NewUser",
                 Password = "password",
                 DisplayName = "DisplayName",
-                Role = GirafRoles.Citizen
+                Role = Role.Citizen
             }).Result as ObjectResult;
 
             var body = res.Value as SuccessResponse<GirafUserDTO>;
@@ -353,7 +353,7 @@ namespace GirafRest.Test
                 DisplayName = "JustAnotherDisplayName",
                 Password= "iSecretlyLoveMileyCyrus", 
                 DepartmentId = 2, 
-                Role = GirafRoles.Citizen
+                Role = Role.Citizen
             }).Result as ObjectResult;
 
             Assert.Equal(StatusCodes.Status201Created, res.StatusCode);

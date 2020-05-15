@@ -24,7 +24,7 @@
         /// <summary>
         /// Constructor
         /// </summary>
-        public DisplayNameDTO(string displayName, GirafRoles userRole, string userId)
+        public DisplayNameDTO(string displayName, Role userRole, string userId)
         {
             DisplayName = displayName;
             UserRole = userRole.ToString();

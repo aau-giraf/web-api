@@ -36,6 +36,6 @@ namespace GirafRest.Models.DTOs.AccountDTOs
         /// Signup role
         /// </summary>
         [Required]
-        public GirafRoles Role { get; set; }
+        public Role Role { get; set; }
     }
 }

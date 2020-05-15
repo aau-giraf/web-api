@@ -66,7 +66,7 @@ namespace GirafRest.Extensions
         /// <returns>
         /// Instance of GirafRole enum
         /// </returns>
-        public static async Task<GirafRoles> findUserRole(
+        public static async Task<Role> findUserRole(
             this RoleManager<GirafRole> roleManager, 
             UserManager<GirafUser> userManager, 
             GirafUser user)
@@ -74,10 +74,10 @@ namespace GirafRest.Extensions
             if (userManager == null) {
                 throw new System.ArgumentNullException(userManager + " is null");
             }
-            GirafRoles userRole = new GirafRoles();
+            Role userRole = new Role();
             var roles = await userManager.GetRolesAsync(user).ConfigureAwait(true);
             if(roles.Count != 0) 
-                userRole = (GirafRoles)Enum.Parse(typeof(GirafRoles), roles[0]);
+                userRole = (Role)Enum.Parse(typeof(Role), roles[0]);
             return userRole;
         }
 

@@ -130,7 +130,7 @@ namespace GirafRest.Controllers
             var userRole = await _roleManager.findUserRole(_giraf._userManager, user).ConfigureAwait(true);
             
             //Returns the user settings if the user is a citizen otherwise returns an error (only citizens has settings). 
-            if (userRole == GirafRoles.Citizen)
+            if (userRole == Role.Citizen)
                 return Ok(new SuccessResponse<SettingDTO>(new SettingDTO(user.Settings)));
             else
                 return BadRequest(new ErrorResponse(ErrorCode.RoleMustBeCitizien, new string("User role must be a citizen")));
@@ -351,7 +351,7 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync().ConfigureAwait(true);
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user).ConfigureAwait(true);
+            Role userRole = await _roleManager.findUserRole(_giraf._userManager, user).ConfigureAwait(true);
 
             return Ok(new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, userRole)));
         }
@@ -443,7 +443,7 @@ namespace GirafRest.Controllers
             }
 
             var userRole = (await _roleManager.findUserRole(_giraf._userManager, user).ConfigureAwait(true));
-            if (userRole != GirafRoles.Guardian)
+            if (userRole != Role.Guardian)
                 return StatusCode(StatusCodes.Status403Forbidden, 
                     new ErrorResponse(ErrorCode.Forbidden, new string("User does not have permission")));
 
@@ -484,7 +484,7 @@ namespace GirafRest.Controllers
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, new string("User does not have permission")));
 
             var userRole = (await _roleManager.findUserRole(_giraf._userManager, user).ConfigureAwait(true));
-            if (userRole != GirafRoles.Citizen)
+            if (userRole != Role.Citizen)
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.Forbidden, new string("User does not have permission")));
 
             var guardians = new List<DisplayNameDTO>();
@@ -530,7 +530,7 @@ namespace GirafRest.Controllers
             var citRole = _roleManager.findUserRole(_giraf._userManager, citizen).Result;
             var guaRole = _roleManager.findUserRole(_giraf._userManager, guardian).Result;
 
-            if (citRole != GirafRoles.Citizen || guaRole != GirafRoles.Guardian)
+            if (citRole != Role.Citizen || guaRole != Role.Guardian)
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.Forbidden, new string("User does not have permission")));
 
             citizen.AddGuardian(guardian);
@@ -559,7 +559,7 @@ namespace GirafRest.Controllers
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, new string("User not found")));
 
             var userRole = await _roleManager.findUserRole(_giraf._userManager, user).ConfigureAwait(true);
-            if (userRole != GirafRoles.Citizen)
+            if (userRole != Role.Citizen)
                 return BadRequest(new ErrorResponse(ErrorCode.RoleMustBeCitizien, new string("User role is not citizen")));
 
             if (user.Settings == null)

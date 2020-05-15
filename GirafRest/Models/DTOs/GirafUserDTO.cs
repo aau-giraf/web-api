@@ -10,7 +10,7 @@ namespace GirafRest.Models.DTOs
     /// <summary>
     /// Giraf roles
     /// </summary>
-    public enum GirafRoles {
+    public enum Role {
         /// <summary>
         /// Citizen role
         /// </summary>
@@ -38,7 +38,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// List of the roles the current user is defined as in the system.
         /// </summary>
-        public GirafRoles Role { get; private set; }
+        public Role Role { get; private set; }
 
         /// <summary>
         /// List of the roles the current user is defined as in the system, as strings
@@ -81,7 +81,7 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         /// <param name="user">User.</param>
         /// <param name="userRole">User role.</param>
-        public GirafUserDTO(GirafUser user, GirafRoles userRole)
+        public GirafUserDTO(GirafUser user, Role userRole)
         {
             if (user == null) {
                 throw new System.ArgumentNullException(user + " is null");

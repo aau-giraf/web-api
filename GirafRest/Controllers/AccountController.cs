@@ -163,9 +163,9 @@ namespace GirafRest.Controllers
             {
                 if (department != null)
                 {
-                    if (model.Role == GirafRoles.Citizen)
+                    if (model.Role == Role.Citizen)
                         AddGuardiansToCitizens(user);
-                    else if (model.Role == GirafRoles.Guardian)
+                    else if (model.Role == Role.Guardian)
                         AddCitizensToGuardian(user);
                     // save changes
                     await _giraf._context.SaveChangesAsync().ConfigureAwait(true);
@@ -366,17 +366,17 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns>The role as a string</returns>
         /// <param name="role">A given role as enum that should be converted to a string</param>
-        private static string GirafRoleFromEnumToString(GirafRoles role)
+        private static string GirafRoleFromEnumToString(Role role)
         {
             switch (role)
             {
-                case GirafRoles.Citizen:
+                case Role.Citizen:
                     return GirafRole.Citizen;
-                case GirafRoles.Guardian:
+                case Role.Guardian:
                     return GirafRole.Guardian;
-                case GirafRoles.Department:
+                case Role.Department:
                     return GirafRole.Department;
-                case GirafRoles.SuperUser:
+                case Role.SuperUser:
                     return GirafRole.SuperUser;
                 default:
                     return null;

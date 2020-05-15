@@ -151,7 +151,7 @@ namespace GirafRest.Controllers
             var usersNamesInDepartment = _giraf._context.Users
                 .Where(u => userIds.Any(ui => ui == u.Id) && u.DepartmentKey == department.Key)
                 .Select(u =>
-                    new DisplayNameDTO(u.DisplayName, GirafRoles.Citizen, u.Id)
+                    new DisplayNameDTO(u.DisplayName, Role.Citizen, u.Id)
                 ).ToList();
 
             return Ok(new SuccessResponse<List<DisplayNameDTO>>(usersNamesInDepartment));
@@ -186,7 +186,7 @@ namespace GirafRest.Controllers
                     return NotFound(new ErrorResponse(ErrorCode.UserNotFound, new String("User not found")));
 
                 var userRole = await _roleManager.findUserRole(_giraf._userManager, authenticatedUser).ConfigureAwait(true);
-                if (userRole != GirafRoles.SuperUser)
+                if (userRole != Role.SuperUser)
                     return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, new String("User is not a super user")));
 
                 //Add the department to the database.
@@ -233,7 +233,7 @@ namespace GirafRest.Controllers
                 
                 //Create a new user with the supplied information
 
-                var departmentUser = new GirafUser(depDTO.Name, depDTO.Name, department, GirafRoles.Department) {IsDepartment = true};
+                var departmentUser = new GirafUser(depDTO.Name, depDTO.Name, department, Role.Department) {IsDepartment = true};
                 
                 //department.Members.Add(user);
 
@@ -287,7 +287,7 @@ namespace GirafRest.Controllers
 
             var role = await _roleManager.findUserRole(_giraf._userManager, currentUser).ConfigureAwait(true);
 
-            if(role == GirafRoles.Department || role == GirafRoles.Guardian){
+            if(role == Role.Department || role == Role.Guardian){
                 // lets check that we are in the correct department
                 if (currentUser.DepartmentKey != departmentId)
                 {
@@ -318,7 +318,7 @@ namespace GirafRest.Controllers
             var RoleOfUserToAdd = await _roleManager.findUserRole(_giraf._userManager, user).ConfigureAwait(true);
 
             // only makes sense to add a guardian or citizen to a department
-            if (RoleOfUserToAdd == GirafRoles.SuperUser || RoleOfUserToAdd == GirafRoles.Department)
+            if (RoleOfUserToAdd == Role.SuperUser || RoleOfUserToAdd == Role.Department)
                 return StatusCode(StatusCodes.Status403Forbidden, 
                     new ErrorResponse(ErrorCode.Forbidden, new string("Superusers or departments cannot be added to departments")));
 

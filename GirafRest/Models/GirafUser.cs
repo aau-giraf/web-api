@@ -66,9 +66,9 @@ namespace GirafRest.Models
         /// </summary>
         public virtual Setting Settings { get; set; }
 
-        private void InitialiseData(GirafRoles role)
+        private void InitialiseData(Role role)
         {
-            if (role == GirafRoles.Citizen)
+            if (role == Role.Citizen)
             {
                 this.Settings = new Setting();
                 this.Settings.InitialiseWeekDayColors();
@@ -143,7 +143,7 @@ namespace GirafRest.Models
         /// <param name="displayName">Display name</param>
         /// <param name="department">Department</param>
         /// <param name="role">Role for user</param>
-        public GirafUser(string userName, string displayName, Department department, GirafRoles role) : base(userName)
+        public GirafUser(string userName, string displayName, Department department, Role role) : base(userName)
         {
             InitialiseData(role);
             DisplayName = displayName;

@@ -14,17 +14,17 @@ namespace GirafRest
         /// <summary>
         /// Database context
         /// </summary>
-        GirafDbContext _context { get; }
+        GirafDbContext context { get; }
 
         /// <summary>
         /// Role Manager to be used
         /// </summary>
-        RoleManager<GirafRole> _roleManager { get; }
+        RoleManager<GirafRole> roleManager { get; }
 
         /// <summary>
         /// User manager to be used.
         /// </summary>
-        UserManager<GirafUser> _userManager { get; }
+        UserManager<GirafUser> userManager { get; }
 
         /// <summary>
         /// Checks if a user has access to edit information for another user i.ie that the authentication user
@@ -42,7 +42,7 @@ namespace GirafRest
         /// <param name="authUser">Auth user.</param>
         /// <param name="roleToAdd">Role to add.</param>
         /// <param name="departmentKey">Department key.</param>
-        Task<bool> HasRegisterUserAccess(GirafUser authUser, GirafRoles roleToAdd, long departmentKey);
+        Task<bool> HasRegisterUserAccess(GirafUser authUser, Role roleToAdd, long departmentKey);
         
         /// <summary>
         /// Method for checking wheteher the authenticated user is allowed to edit and view templates in general. 

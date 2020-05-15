@@ -16,17 +16,17 @@ namespace GirafRest.Services
         /// <summary>
         /// Database Context for authentication
         /// </summary>
-        public GirafDbContext _context { get; }
+        public GirafDbContext context { get; }
 
         /// <summary>
         /// Role manager for authentication roles
         /// </summary>
-        public RoleManager<GirafRole> _roleManager { get; }
+        public RoleManager<GirafRole> roleManager { get; }
 
         /// <summary>
         /// User Manager for Users
         /// </summary>
-        public UserManager<GirafUser> _userManager { get; }
+        public UserManager<GirafUser> userManager { get; }
 
         /// <summary>
         /// Constructor for GirafAuthenticationService
@@ -36,9 +36,9 @@ namespace GirafRest.Services
         /// <param name="userManager">User Manager to be used</param>
         public GirafAuthenticationService(GirafDbContext context, RoleManager<GirafRole> roleManager, UserManager<GirafUser> userManager)
         {
-            this._context = context;
-            this._roleManager = roleManager;
-            this._userManager = userManager;
+            this.context = context;
+            this.roleManager = roleManager;
+            this.userManager = userManager;
         }
 
         /// <summary>
@@ -51,28 +51,28 @@ namespace GirafRest.Services
             if (authUser == null || userToEdit == null)
                 return false;
             
-            var authUserRole = await _roleManager.findUserRole(_userManager, authUser).ConfigureAwait(true);
-            var userRole =  await _roleManager.findUserRole(_userManager, userToEdit).ConfigureAwait(true);
+            var authUserRole = await roleManager.findUserRole(userManager, authUser).ConfigureAwait(true);
+            var userRole =  await roleManager.findUserRole(userManager, userToEdit).ConfigureAwait(true);
 
             if (authUser.Id == userToEdit.Id)
                 return true;
 
-            if (userRole == GirafRoles.SuperUser)
+            if (userRole == Role.SuperUser)
                 return false;
 
             switch (authUserRole)
             {
-                case GirafRoles.Citizen:
+                case Role.Citizen:
                     return false;
-                case GirafRoles.Guardian:
-                    if (authUser.DepartmentKey != userToEdit.DepartmentKey || userRole != GirafRoles.Citizen)
+                case Role.Guardian:
+                    if (authUser.DepartmentKey != userToEdit.DepartmentKey || userRole != Role.Citizen)
                         return false;
                     break;
-                case GirafRoles.Department:
+                case Role.Department:
                     if (authUser.DepartmentKey != userToEdit.DepartmentKey)
                         return false;
                     break;
-                case GirafRoles.SuperUser:
+                case Role.SuperUser:
                     break;
                 default:
                     break;
@@ -86,19 +86,19 @@ namespace GirafRest.Services
         /// Citizen can never register, department and guardian can only register guardians and citizens in same dep
         /// Super user can register all roles
         /// </summary>
-        public async Task<bool> HasRegisterUserAccess(GirafUser authUser, GirafRoles roleToAdd, long departmentKey)
+        public async Task<bool> HasRegisterUserAccess(GirafUser authUser, Role roleToAdd, long departmentKey)
         {
             if (authUser == null)
                 return false;
 
-            var authUserRole = await _roleManager.findUserRole(_userManager, authUser).ConfigureAwait(true);
+            var authUserRole = await roleManager.findUserRole(userManager, authUser).ConfigureAwait(true);
 
-            if (authUserRole == GirafRoles.Citizen)
+            if (authUserRole == Role.Citizen)
                 return false;
 
-            if (authUserRole == GirafRoles.Guardian || authUserRole == GirafRoles.Department)
+            if (authUserRole == Role.Guardian || authUserRole == Role.Department)
             {
-                if (!(roleToAdd == GirafRoles.Guardian || roleToAdd == GirafRoles.Citizen) 
+                if (!(roleToAdd == Role.Guardian || roleToAdd == Role.Citizen) 
                     && departmentKey == authUser.DepartmentKey)
                 {
                     return false;
@@ -116,8 +116,8 @@ namespace GirafRest.Services
             if (authUser == null)
                 return false;
 
-            var authUserRole = await _roleManager.findUserRole(_userManager, authUser).ConfigureAwait(true);
-            if (authUserRole == GirafRoles.Citizen)
+            var authUserRole = await roleManager.findUserRole(userManager, authUser).ConfigureAwait(true);
+            if (authUserRole == Role.Citizen)
                 return false;
             return true;
         }
@@ -133,8 +133,8 @@ namespace GirafRest.Services
             if (departmentKey == null)
                 return false;
 
-            var authUserRole = await _roleManager.findUserRole(_userManager, authUser).ConfigureAwait(true);
-            if (authUserRole == GirafRoles.SuperUser)
+            var authUserRole = await roleManager.findUserRole(userManager, authUser).ConfigureAwait(true);
+            if (authUserRole == Role.SuperUser)
                 return true;
 
             return HasTemplateAccess(authUser).Result && authUser?.DepartmentKey == departmentKey;
@@ -148,8 +148,8 @@ namespace GirafRest.Services
             if (authUser == null) {
                 throw new System.ArgumentNullException(authUser + " is null");
             }
-            var authUserRole = await _roleManager.findUserRole(_userManager, authUser).ConfigureAwait(true);
-            if (authUserRole == GirafRoles.SuperUser)
+            var authUserRole = await roleManager.findUserRole(userManager, authUser).ConfigureAwait(true);
+            if (authUserRole == Role.SuperUser)
                 return true;
 
             return authUser.DepartmentKey == departmentKey;
@@ -163,8 +163,8 @@ namespace GirafRest.Services
         /// <returns></returns>
         public async Task<bool> HasEditDepartmentAccess(GirafUser authUser, long? departmentKey)
         {
-            var authUserRole = await _roleManager.findUserRole(_userManager, authUser).ConfigureAwait(true);
-            return authUserRole == GirafRoles.SuperUser;
+            var authUserRole = await roleManager.findUserRole(userManager, authUser).ConfigureAwait(true);
+            return authUserRole == Role.SuperUser;
         }
     }
 }
