@@ -41,9 +41,9 @@ namespace GirafRest.Controllers
             IAuthenticationService authentication)
         {
             if (giraf == null) 
-                throw new System.ArgumentNullException(giraf + " is null");
+                throw new System.ArgumentNullException(nameof(giraf) + new string(" is null"));
             else if (loggerFactory == null) 
-                throw new System.ArgumentNullException(loggerFactory + " is null");
+                throw new System.ArgumentNullException(nameof(loggerFactory) + new string(" is null"));
             
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Department");
