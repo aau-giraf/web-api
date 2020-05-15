@@ -134,22 +134,19 @@ namespace GirafRest.Setup
 
         private static void AddPictogramToDepartment(Department department, params Pictogram[] pictograms)
         {
-            String str1 = new String("Adding pictograms to");
-            String exception = new String("(You may only add protected pictograms to department." +
-                        " Pictogram id: {pict.Id}, AccessLevel: {pict.AccessLevel}.");
-            Console.WriteLine(str1 + department.Name);
+            Console.WriteLine(new String("Adding pictograms to") + department.Name);
             foreach (var pict in pictograms)
             {
                 if (pict.AccessLevel != AccessLevel.PROTECTED)
-                    throw new InvalidOperationException(exception);
+                    throw new InvalidOperationException(new String("(You may only add protected pictograms to department." +
+                        " Pictogram id: {pict.Id}, AccessLevel: {pict.AccessLevel}."));
             }
         }
         #endregion
         #region Sample data methods
         private static List<Department> AddSampleDepartments(GirafDbContext context, List<SampleDepartment> sampleDeps)
         {
-            string str = new string("Adding departments.");
-            Console.WriteLine(str);
+            Console.WriteLine(new string("Adding departments."));
             List<Department> departments = new List<Department>();
 
             foreach (SampleDepartment sampleDepartment in sampleDeps)
@@ -164,8 +161,7 @@ namespace GirafRest.Setup
 
         private static void AddSampleUsers(GirafDbContext context, UserManager<GirafUser> userManager, List<SampleGirafUser> sampleUsers)
         {
-            String str2 = new String("Adding users.");
-            Console.WriteLine(str2);
+            Console.WriteLine(new String("Adding users."));
             List<GirafUser> users = new List<GirafUser>();
             List<Department> departments = (from dep in context.Departments select dep).ToList();
 
@@ -197,8 +193,7 @@ namespace GirafRest.Setup
 
         private static List<Pictogram> AddSamplePictograms(GirafDbContext context, List<SamplePictogram> samplePictogramsList)
         {
-             String str3 = new String("Adding pictograms.");
-            System.Console.WriteLine(str3);
+            System.Console.WriteLine(new String("Adding pictograms."));
             List<Pictogram> pictograms = new List<Pictogram>();
             foreach (var samplePict in samplePictogramsList)
             {
