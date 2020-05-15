@@ -267,7 +267,9 @@ namespace GirafRest.Setup
             {
                 roleManager.EnsureRoleSetup();
             }
-            catch { }
+            catch { 
+                throw;
+            }
 
             //Fill some sample data into the database
             if (ProgramOptions.GenerateSampleData)
