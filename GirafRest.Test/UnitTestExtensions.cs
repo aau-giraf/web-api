@@ -241,15 +241,17 @@ namespace GirafRest.Test
                     if (_mockActivities == null)
                         _mockActivities = new List<Activity>()
                         {
-                            new Activity(MockWeeks[0].Weekdays[0], new List<Pictogram> {MockPictograms[5]}, 0, ActivityState.Active, MockTimers[0]){
+                            new Activity(MockWeeks[0].Weekdays[0], new List<Pictogram> {MockPictograms[5]}, 0, ActivityState.Active, MockTimers[0], false){
                                 Key = 1,
                                 Order = 1,
                                 OtherKey = 1,
-                                State = ActivityState.Normal
+                                State = ActivityState.Normal,
+                                IsChoiceBoard = false
+                                
                             },
-                            new Activity(MockWeeks[0].Weekdays[1], new List<Pictogram> {MockPictograms[6]}, 1, ActivityState.Canceled, null),
-                            new Activity(MockWeekTemplates[Template1].Weekdays[1], new List<Pictogram> {MockPictograms[5]}, 0, ActivityState.Active, null),
-                            new Activity(MockWeekTemplates[Template1].Weekdays[0], new List<Pictogram> {MockPictograms[6]}, 1, ActivityState.Canceled, null),
+                            new Activity(MockWeeks[0].Weekdays[1], new List<Pictogram> {MockPictograms[6]}, 1, ActivityState.Canceled, null, false),
+                            new Activity(MockWeekTemplates[Template1].Weekdays[1], new List<Pictogram> {MockPictograms[5]}, 0, ActivityState.Active, null, false),
+                            new Activity(MockWeekTemplates[Template1].Weekdays[0], new List<Pictogram> {MockPictograms[6]}, 1, ActivityState.Canceled, null, false),
                         };
 
                     return _mockActivities;
@@ -370,7 +372,7 @@ namespace GirafRest.Test
                     Weekday monday = new Weekday() {
                         Day = Days.Monday,
                     };
-                    Activity activity = new Activity(monday, new List<Pictogram>(), 0, ActivityState.Active, null);
+                    Activity activity = new Activity(monday, new List<Pictogram>(), 0, ActivityState.Active, null, false);
                     monday.Activities = new List<Activity>() {activity};
                     
                     if (_mockWeekTemplates == null) {
