@@ -2,10 +2,8 @@
 
 namespace GirafRest.Migrations
 {
-    ///
     public partial class MakeDisplayNameInAspnetusersRequired : Migration
     {
-        ///
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             if (migrationBuilder == null) {
@@ -21,7 +19,6 @@ namespace GirafRest.Migrations
                 oldNullable: true);
         }
 
-        ///
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             if (migrationBuilder == null) {

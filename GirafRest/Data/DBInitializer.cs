@@ -16,7 +16,6 @@ namespace GirafRest.Setup
     /// </summary>
     static public class DBInitializer
     {
-        ///
         private static SampleDataHandler sampleHandler = new SampleDataHandler();
 
         /// <summary>

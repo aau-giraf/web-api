@@ -2,10 +2,8 @@
 
 namespace GirafRest.Migrations
 {
-    ///
     public partial class PictogramtextMigration : Migration
     {
-        ///
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             if (migrationBuilder == null) {
@@ -70,7 +68,6 @@ namespace GirafRest.Migrations
                 onDelete: ReferentialAction.Restrict);
         }
 
-        ///
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             if (migrationBuilder == null) {

@@ -2,10 +2,8 @@
 
 namespace GirafRest.Migrations
 {
-    ///
     public partial class LockTimerControl : Migration
     {
-        ///
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             if (migrationBuilder == null) {
@@ -18,7 +16,6 @@ namespace GirafRest.Migrations
                 defaultValue: false);
         }
 
-        ///
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             if (migrationBuilder == null) {
