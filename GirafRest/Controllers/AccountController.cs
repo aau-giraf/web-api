@@ -53,11 +53,11 @@ namespace GirafRest.Controllers
             IOptions<JwtConfig> configuration,
             IAuthenticationService authentication)
         {
-            if (giraf == null) {
+            if (giraf == null) 
                 throw new System.ArgumentNullException(nameof(giraf) + new string(" is null"));
-            } else if (loggerFactory == null) {
+            else if (loggerFactory == null) 
                 throw new System.ArgumentNullException(nameof(loggerFactory) + new string(" is null"));
-            }
+            
             _signInManager = signInManager;
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Account");

@@ -45,9 +45,7 @@ namespace GirafRest.Controllers
 
             if(giraf == null)
                   throw new System.ArgumentNullException(giraf + " is null");
-            
-
-              if(loggerFactory == null)
+            else if(loggerFactory == null)
                   throw new System.ArgumentNullException(loggerFactory + " is null");
             
 

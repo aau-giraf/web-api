@@ -216,11 +216,11 @@ namespace GirafRest.Setup
             RoleManager<GirafRole> roleManager,
             IHostApplicationLifetime appLifetime)
         {
-            if (app == null) {
+            if (app == null) 
                 throw new System.ArgumentNullException(nameof(app) + new string(" is null"));
-            } else if (appLifetime == null) {
+            else if (appLifetime == null) 
                 throw new System.ArgumentNullException(nameof(appLifetime) + new string(" is null"));
-            }
+            
             app.UseIpRateLimiting();
 
             //Configure logging for the application

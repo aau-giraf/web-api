@@ -45,11 +45,11 @@ namespace GirafRest.Models
         /// <param name="pictogram">The involved pictogram.</param>
         public DepartmentResource(Department dep, Pictogram pictogram)
         {
-            if (dep == null) {
+            if (dep == null) 
                 throw new System.ArgumentNullException(nameof(dep) + new string(" is null"));
-            } else if (pictogram == null) {
+            else if (pictogram == null) 
                 throw new System.ArgumentNullException(nameof(pictogram) + new string(" is null"));
-            }
+            
             this.OtherKey = dep.Key;
             this.Other = dep;
             this.PictogramKey = pictogram.Id;

@@ -40,9 +40,7 @@ namespace GirafRest.Setup
         {
             if (context == null)
                 throw new System.ArgumentNullException(nameof(context) + new string(" is null"));
-
-
-            if (userManager == null)
+            else if (userManager == null)
                 throw new System.ArgumentNullException(nameof(userManager) + new string(" is null"));
 
             SampleData data = new SampleData();

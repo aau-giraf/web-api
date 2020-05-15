@@ -47,11 +47,11 @@ namespace GirafRest.Controllers
             RoleManager<GirafRole> roleManager, 
             IAuthenticationService authentication)
         {
-            if (giraf == null) {
+            if (giraf == null) 
                 throw new System.ArgumentNullException(giraf + " is null");
-            } else if (loggerFactory == null) {
+            else if (loggerFactory == null) 
                 throw new System.ArgumentNullException(loggerFactory + " is null");
-            }
+            
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("User");
             _roleManager = roleManager;
