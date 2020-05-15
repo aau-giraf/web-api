@@ -131,9 +131,9 @@ namespace GirafRest.Services
             byte[] image;
             using (var imageStream = new MemoryStream())
             {
-                if (bodyStream == null) {
-                    throw new System.ArgumentNullException(bodyStream + " is null");
-                }
+                if (bodyStream == null) 
+                    throw new System.ArgumentNullException(nameof(bodyStream) + new string(" is null"));
+                
                 await bodyStream.CopyToAsync(imageStream).ConfigureAwait(true);
 
                 try      //I assume this will always throw, but I dare not remove it, because why would it be here?
@@ -157,9 +157,9 @@ namespace GirafRest.Services
         /// <param name="user"></param>
         /// <returns>True if the user is authorized to see the resource and false if not.</returns>
         public async Task<bool> CheckPrivateOwnership(Pictogram pictogram, GirafUser user) {
-            if (pictogram == null) {
-                throw new System.ArgumentNullException(pictogram + " is null");
-            }
+            if (pictogram == null) 
+                throw new System.ArgumentNullException(nameof(pictogram) + new string(" is null"));
+            
             if (pictogram.AccessLevel != AccessLevel.PRIVATE)
                 return false;
 
@@ -180,9 +180,9 @@ namespace GirafRest.Services
         /// <returns>True if the user's department owns the pictogram, false if not.</returns>
         public async Task<bool> CheckProtectedOwnership(Pictogram resource, GirafUser user)
         {
-            if (resource == null) {
-                throw new System.ArgumentNullException(resource + " is null");
-            }
+            if (resource == null) 
+                throw new System.ArgumentNullException(nameof(resource) + new string(" is null"));
+            
             if (resource.AccessLevel != AccessLevel.PROTECTED)
                 return false;
 

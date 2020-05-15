@@ -25,11 +25,11 @@ namespace GirafRest.GirafShared
         public static async Task<ErrorResponse> SetWeekFromDTO(WeekBaseDTO weekDTO, WeekBase week, IGirafService giraf)
         {
             if (week == null) {
-                throw new System.ArgumentNullException(week + " is null");
+                throw new System.ArgumentNullException(nameof(week) + new string(" is null"));
             } else if (weekDTO == null) {
-                throw new System.ArgumentNullException(weekDTO + " is null");
+                throw new System.ArgumentNullException(nameof(weekDTO) + new string(" is null"));
             } else if (giraf == null) {
-                throw new System.ArgumentNullException(giraf + " is null");
+                throw new System.ArgumentNullException(nameof(giraf) + new string(" is null"));
             }
             var modelErrorCode = weekDTO.ValidateModel();
             if (modelErrorCode.HasValue)

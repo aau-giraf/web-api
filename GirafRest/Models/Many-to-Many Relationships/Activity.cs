@@ -68,9 +68,9 @@ namespace GirafRest.Models
         /// <param name="state">The activity's current state.</param>
         public Activity(Weekday weekday, Pictogram pictogram, int order, ActivityState state)
         {
-            if (pictogram == null) {
-                throw new System.ArgumentNullException(pictogram + " is null");
-            }
+            if (pictogram == null) 
+                throw new System.ArgumentNullException(nameof(pictogram) + new string(" is null"));
+            
             this.Other = weekday;
             this.PictogramKey = pictogram.Id;
             this.Pictogram = pictogram;

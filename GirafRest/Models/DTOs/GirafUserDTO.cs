@@ -83,9 +83,9 @@ namespace GirafRest.Models.DTOs
         /// <param name="userRole">User role.</param>
         public GirafUserDTO(GirafUser user, Role userRole)
         {
-            if (user == null) {
-                throw new System.ArgumentNullException(user + " is null");
-            }
+            if (user == null) 
+                throw new System.ArgumentNullException(nameof(user) + new string(" is null"));
+            
             //Add all trivial values
             Id = user.Id;
             Username = user.UserName;

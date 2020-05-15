@@ -44,9 +44,9 @@ namespace GirafRest.Filters
         /// <param name="context">Context in which is executed</param>
         public void OnActionExecuted(ActionExecutedContext context)
         {
-            if (context == null) {
-                throw new System.ArgumentNullException(context + " is null");
-            }
+            if (context == null)
+                throw new System.ArgumentNullException(nameof(context) + new string(" is null"));
+                
             string path = "Logs/log-" + DateTime.Now.Year + DateTime.Now.Month.ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo).PadLeft(2, '0') 
                 + DateTime.Now.Day.ToString(System.Globalization.DateTimeFormatInfo.InvariantInfo).PadLeft(2, '0') + ".txt";
             var controller = context.Controller as Controller;

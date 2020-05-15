@@ -6,9 +6,9 @@ namespace GirafRest.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            if (migrationBuilder == null) {
-                throw new System.ArgumentNullException(migrationBuilder + " is null");
-            }
+            if (migrationBuilder == null) 
+                throw new System.ArgumentNullException(nameof(migrationBuilder) + new string(" is null"));
+            
             migrationBuilder.DropForeignKey(
                 name: "FK_Weeks_Pictograms_ThumbnailKey",
                 table: "Weeks");
@@ -70,9 +70,9 @@ namespace GirafRest.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            if (migrationBuilder == null) {
-                throw new System.ArgumentNullException(migrationBuilder + " is null");
-            }
+            if (migrationBuilder == null) 
+                throw new System.ArgumentNullException(nameof(migrationBuilder) + new string(" is null"));
+            
             migrationBuilder.DropForeignKey(
                 name: "FK_Weeks_Pictograms_ThumbnailId",
                 table: "Weeks");
