@@ -268,7 +268,6 @@ namespace GirafRest.Setup
                 roleManager.EnsureRoleSetup();
             }
             catch { 
-                throw;
             }
 
             //Fill some sample data into the database
