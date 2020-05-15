@@ -46,13 +46,13 @@ namespace GirafRest.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
+                    b.Property<bool>("IsChoiceBoard")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<int>("Order")
                         .HasColumnType("int");
 
                     b.Property<long>("OtherKey")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("PictogramKey")
                         .HasColumnType("bigint");
 
                     b.Property<int>("State")
@@ -64,8 +64,6 @@ namespace GirafRest.Migrations
                     b.HasKey("Key");
 
                     b.HasIndex("OtherKey");
-
-                    b.HasIndex("PictogramKey");
 
                     b.HasIndex("TimerKey");
 
@@ -438,6 +436,21 @@ namespace GirafRest.Migrations
                     b.ToTable("Weekdays");
                 });
 
+            modelBuilder.Entity("GirafRest.PictogramRelation", b =>
+                {
+                    b.Property<long>("ActivityId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("PictogramId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("ActivityId", "PictogramId");
+
+                    b.HasIndex("PictogramId");
+
+                    b.ToTable("PictogramRelations");
+                });
+
             modelBuilder.Entity("GirafRest.WeekDayColor", b =>
                 {
                     b.Property<long>("Id")
@@ -585,12 +598,6 @@ namespace GirafRest.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GirafRest.Models.Pictogram", "Pictogram")
-                        .WithMany()
-                        .HasForeignKey("PictogramKey")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("GirafRest.Models.Timer", "Timer")
                         .WithMany()
                         .HasForeignKey("TimerKey")
@@ -679,6 +686,21 @@ namespace GirafRest.Migrations
                         .WithMany("Weekdays")
                         .HasForeignKey("WeekTemplateId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("GirafRest.PictogramRelation", b =>
+                {
+                    b.HasOne("GirafRest.Models.Activity", "Activity")
+                        .WithMany("Pictograms")
+                        .HasForeignKey("ActivityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GirafRest.Models.Pictogram", "Pictogram")
+                        .WithMany("Activities")
+                        .HasForeignKey("PictogramId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("GirafRest.WeekDayColor", b =>

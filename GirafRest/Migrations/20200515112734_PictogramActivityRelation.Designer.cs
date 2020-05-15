@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GirafRest.Migrations
 {
     [DbContext(typeof(GirafDbContext))]
-    [Migration("20200511090152_PictogramActivityRelationModel")]
-    partial class PictogramActivityRelationModel
+    [Migration("20200515112734_PictogramActivityRelation")]
+    partial class PictogramActivityRelation
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -47,6 +47,9 @@ namespace GirafRest.Migrations
                     b.Property<long>("Key")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
+
+                    b.Property<bool>("IsChoiceBoard")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<int>("Order")
                         .HasColumnType("int");
@@ -600,7 +603,7 @@ namespace GirafRest.Migrations
                     b.HasOne("GirafRest.Models.Timer", "Timer")
                         .WithMany()
                         .HasForeignKey("TimerKey")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.SetNull);
                 });
 
             modelBuilder.Entity("GirafRest.Models.DepartmentResource", b =>

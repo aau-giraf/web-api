@@ -17,6 +17,8 @@
     <Content Remove="wwwroot\admin\view\**" />
     <EmbeddedResource Remove="wwwroot\admin\view\**" />
     <None Remove="wwwroot\admin\view\**" />
+    <Compile Remove="Migrations\20200511090152_PictogramActivityRelationModel.Designer.cs" />
+    <Compile Remove="Migrations\20200511090152_PictogramActivityRelationModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.3" />
