@@ -204,8 +204,7 @@ namespace GirafRest.Setup
 
         private static void AddSampleWeekAndWeekdays(GirafDbContext context, List<SampleWeek> sampleWeeks, List<SampleWeekday> sampleWeekdays, List<SampleGirafUser> sampleUsers, List<Pictogram> pictograms)
         {
-            String str4 = new string("Adding weekdays to users");
-            Console.WriteLine(str4);
+            Console.WriteLine(new string("Adding weekdays to users"));
             Pictogram thumbNail = null;
             List<Week> weekList = new List<Week>();
 
@@ -243,8 +242,7 @@ namespace GirafRest.Setup
         private static void AddSampleWeekTemplate(GirafDbContext context, List<SampleWeekTemplate> sampleTemplates, List<SampleWeekday> sampleWeekdays,
             List<SampleGirafUser> sampleUsers, List<Department> departments, List<Pictogram> pictograms)
         {
-            String str5 = new string("Adding templates");
-            Console.WriteLine(str5);
+            Console.WriteLine(new string("Adding templates"));
             Pictogram thumbNail = null;
 
             foreach (SampleWeekTemplate sampleTemplate in sampleTemplates)
