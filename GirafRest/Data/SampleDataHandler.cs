@@ -38,14 +38,12 @@ namespace GirafRest.Setup
         }
         public async System.Threading.Tasks.Task SerializeDataAsync(GirafDbContext context, UserManager<GirafUser> userManager)
         {
-            if (context == null) {
-                throw new System.ArgumentNullException(context + " is null");
-            }
+            if (context == null)
+                throw new System.ArgumentNullException(nameof(context) + new string(" is null"));
 
 
-          if (userManager == null) {
-                throw new System.ArgumentNullException(userManager + " is null");
-            }
+            if (userManager == null)
+                throw new System.ArgumentNullException(nameof(userManager) + new string(" is null"));
 
             SampleData data = new SampleData();
 

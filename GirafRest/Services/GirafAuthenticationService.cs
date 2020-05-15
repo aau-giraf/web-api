@@ -145,9 +145,9 @@ namespace GirafRest.Services
         /// </summary>
         public async Task<bool> HasReadDepartmentAccess(GirafUser authUser, long? departmentKey)
         {
-            if (authUser == null) {
-                throw new System.ArgumentNullException(authUser + " is null");
-            }
+            if (authUser == null) 
+                throw new System.ArgumentNullException(nameof(authUser) + new string(" is null"));
+            
             var authUserRole = await roleManager.findUserRole(userManager, authUser).ConfigureAwait(true);
             if (authUserRole == Role.SuperUser)
                 return true;

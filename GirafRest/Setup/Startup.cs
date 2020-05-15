@@ -39,9 +39,9 @@ namespace GirafRest.Setup
         /// <param name="env">Hosting environment to start up into</param>
         public Startup(IWebHostEnvironment env)
         {
-            if (env == null) {
-                throw new System.ArgumentNullException(env + " is null");
-            }
+            if (env == null) 
+                throw new System.ArgumentNullException(nameof(env) + new string(" is null"));
+            
             HostingEnvironment = env;
             var coreEnvironement = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
             if (coreEnvironement != null) env.EnvironmentName = coreEnvironement;
@@ -217,9 +217,9 @@ namespace GirafRest.Setup
             IHostApplicationLifetime appLifetime)
         {
             if (app == null) {
-                throw new System.ArgumentNullException(app + " is null");
+                throw new System.ArgumentNullException(nameof(app) + new string(" is null"));
             } else if (appLifetime == null) {
-                throw new System.ArgumentNullException(appLifetime + " is null");
+                throw new System.ArgumentNullException(nameof(appLifetime) + new string(" is null"));
             }
             app.UseIpRateLimiting();
 

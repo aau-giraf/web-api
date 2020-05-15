@@ -15,9 +15,9 @@ namespace GirafRest.Migrations
         /// <param name="migrationBuilder">Which MigrationBuilder to use</param>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            if (migrationBuilder == null) {
-                throw new System.ArgumentNullException(migrationBuilder + " is null");
-            }
+            if (migrationBuilder == null) 
+                throw new System.ArgumentNullException(nameof(migrationBuilder) + new string(" is null"));
+            
             migrationBuilder.DropColumn(
                 name: "ResourceKey",
                 table: "DepartmentResources");
@@ -29,9 +29,9 @@ namespace GirafRest.Migrations
         /// <param name="migrationBuilder">Which MigrationBuilder to use</param>
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            if (migrationBuilder == null) {
-                throw new System.ArgumentNullException(migrationBuilder + " is null");
-            }
+            if (migrationBuilder == null) 
+                throw new System.ArgumentNullException(nameof(migrationBuilder) + new string(" is null"));
+            
             migrationBuilder.AddColumn<long>(
                 name: "ResourceKey",
                 table: "DepartmentResources",

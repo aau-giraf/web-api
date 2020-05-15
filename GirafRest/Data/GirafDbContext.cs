@@ -43,9 +43,8 @@ namespace GirafRest.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            if (builder == null) {
-                throw new System.ArgumentNullException(builder + " is null");
-            }
+            if (builder == null)
+                throw new System.ArgumentNullException(nameof(builder) + new string(" is null"));
             //Indexes
             builder.Entity<Department>().HasIndex(dep => dep.Name).IsUnique().IsClustered();
             builder.Entity<Pictogram>().HasIndex(pic => new {pic.Id, pic.Title}).IsUnique().IsClustered();

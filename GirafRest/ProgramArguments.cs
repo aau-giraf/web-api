@@ -60,9 +60,8 @@ namespace GirafRest
         /// <returns>True if all the arguments were valid and false otherwise.</returns>
         public bool CheckProgramArguments(string[] args)
         {
-            if (args == null) {
-                throw new System.ArgumentNullException(args + " is null");
-            }
+            if (args == null)
+                throw new System.ArgumentNullException(nameof(args) + new string(" is null"));
             //Check if no arguments are specified and run in default configuration if so.
             if (args.Length == 0)
             {

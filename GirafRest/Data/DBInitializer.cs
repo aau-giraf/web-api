@@ -26,13 +26,11 @@ namespace GirafRest.Setup
         /// <param name="pictogramCount">The number of sample pictograms to generate.</param>
         public static void Initialize(GirafDbContext context, UserManager<GirafUser> userManager, int pictogramCount)
         {
-            if (context == null) {
-                throw new System.ArgumentNullException(context + " is null");
-            }
+            if (context == null)
+                throw new System.ArgumentNullException(nameof(context) + new string(" is null"));
 
-            if (userManager == null) {
-                throw new System.ArgumentNullException(userManager + " is null");
-            }
+            if (userManager == null)
+                throw new System.ArgumentNullException(nameof(userManager) + new string(" is null"));
 
             CreatePictograms(pictogramCount);
 
@@ -54,9 +52,8 @@ namespace GirafRest.Setup
             SampleData sampleData = sampleHandler.DeserializeData();
             var departments = AddSampleDepartments(context, sampleData.DepartmentList);
             AddSampleUsers(context, userManager, sampleData.UserList);
-            if (userManager == null) {
-                throw new System.ArgumentNullException(userManager + " is null");
-            }
+            if (userManager == null)
+                throw new System.ArgumentNullException(nameof(userManager) + new string(" is null"));
             var pictograms = AddSamplePictograms(context, sampleData.PictogramList);
             AddSampleWeekAndWeekdays(context, sampleData.WeekList, sampleData.WeekdayList, sampleData.UserList, pictograms);
 

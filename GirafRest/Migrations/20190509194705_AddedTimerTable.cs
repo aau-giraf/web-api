@@ -14,9 +14,9 @@ namespace GirafRest.Migrations
         /// <param name="migrationBuilder">Which MigrationBuilder to use</param>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            if (migrationBuilder == null) {
-                throw new System.ArgumentNullException(migrationBuilder + " is null");
-            }
+            if (migrationBuilder == null) 
+                throw new System.ArgumentNullException(nameof(migrationBuilder) + new string(" is null"));
+            
             migrationBuilder.AddColumn<long>(
                 name: "TimerKey",
                 table: "Activities",
@@ -58,9 +58,9 @@ namespace GirafRest.Migrations
         /// <param name="migrationBuilder">Which MigrationBuilder to use</param>
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            if (migrationBuilder == null) {
-                throw new System.ArgumentNullException(migrationBuilder + " is null");
-            }
+            if (migrationBuilder == null) 
+                throw new System.ArgumentNullException(nameof(migrationBuilder) + new string(" is null"));
+            
             migrationBuilder.DropForeignKey(
                 name: "FK_Activities_Timers_TimerKey",
                 table: "Activities");

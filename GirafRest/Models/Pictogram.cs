@@ -72,9 +72,9 @@ namespace GirafRest.Models {
         /// <param name="other">The new information.</param>
         public virtual void Merge(PictogramDTO other)
         {
-            if (other == null) {
-                throw new System.ArgumentNullException(other + " is null");
-            }
+            if (other == null) 
+                throw new System.ArgumentNullException(nameof(other) + new string(" is null"));
+            
             this.LastEdit = DateTime.Now;
             this.AccessLevel = (AccessLevel)other.AccessLevel;
             this.Title = other.Title;
