@@ -105,8 +105,8 @@ namespace GirafRest
         {
             try
             {
-                var p = Int16.Parse(portString[0]);
-                Console.WriteLine("\tSetting the port to " + p.ToString());
+                var p = Int16.Parse(portString[0], System.Globalization.NumberFormatInfo.InvariantInfo);
+                Console.WriteLine("\tSetting the port to " + p.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
                 ProgramOptions.Port = p;
             }
             catch
@@ -124,7 +124,7 @@ namespace GirafRest
         {
             try
             {
-                var p = Int32.Parse(argument[0]);
+                var p = Int32.Parse(argument[0], System.Globalization.NumberFormatInfo.InvariantInfo);
                 ProgramOptions.Pictograms = p;
             }
             catch
@@ -143,7 +143,7 @@ namespace GirafRest
             if (String.IsNullOrWhiteSpace(filename[0]))
                 throw new ArgumentException("\tERROR: Invalid parameter specified for --logfile, expected a filename, but found "
                     + filename);
-            Console.WriteLine("\tEnabling file-logging on the path " + Path.Combine(ProgramOptions.LogDirectory, filename[0]).ToString());
+            Console.WriteLine("\tEnabling file-logging on the path " + Path.Combine(ProgramOptions.LogDirectory, filename[0]));
             ProgramOptions.LogToFile = true;
             ProgramOptions.LogFilepath = filename[0];
         }

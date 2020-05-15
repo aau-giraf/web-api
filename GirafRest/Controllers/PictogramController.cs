@@ -193,7 +193,7 @@ namespace GirafRest.Controllers
 
             if (pictogram.AccessLevel == AccessLevel.PRIVATE)
             {
-                //Add relation between pictogram and current user 
+                //Add relation between pictogram and current user
                 new UserResource(user, pict);
             }
             else if (pictogram.AccessLevel == AccessLevel.PROTECTED)
@@ -537,6 +537,7 @@ namespace GirafRest.Controllers
             {
                 _giraf._logger.LogError(new string("An exception occurred when reading all pictograms."), $"Message: {e.Message}", $"Source: {e.Source}");
                 return null;
+                throw;
             }
         }
 
