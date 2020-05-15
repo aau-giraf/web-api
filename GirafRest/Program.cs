@@ -43,6 +43,7 @@ namespace GirafRest
             }
             catch(Exception e){
                 Console.WriteLine("Error: " + e.Message);
+                throw;
             }
         }
         /// <summary>
