@@ -40,7 +40,7 @@ namespace GirafRest.Controllers
             
 
             _giraf = giraf;
-            _giraf._logger = loggerFactory.CreateLogger(new string("Week"));
+            _giraf._logger = loggerFactory.CreateLogger("Week");
             _authentication = authentication;
         }
 
@@ -58,7 +58,7 @@ namespace GirafRest.Controllers
         {
             var user = _giraf._context.Users.Include(u => u.WeekSchedule).FirstOrDefault(u => u.Id == userId);
             if (user == null)
-                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, new string("User not found")));
+                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true), user).ConfigureAwait(true)))
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, ""));
@@ -86,11 +86,11 @@ namespace GirafRest.Controllers
         {
             var user = _giraf._context.Users.Include(u => u.WeekSchedule).FirstOrDefault(u => u.Id == userId);
             if (user == null)
-                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, new string("User not found")));
+                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true), user).ConfigureAwait(true)))
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, new string("User does not have permission")));
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
             if (!user.WeekSchedule.Any())
                 return Ok(new SuccessResponse<IEnumerable<WeekNameDTO>>(Enumerable.Empty<WeekNameDTO>()));
@@ -114,11 +114,11 @@ namespace GirafRest.Controllers
         {
             var user = await _giraf.LoadUserWithWeekSchedules(userId).ConfigureAwait(true);
             if (user == null)
-                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, new string("User not found")));
+                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
             // check access rightss
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true), user).ConfigureAwait(true)))
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, new string ("User does not have permission")));
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
             
             var week = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber);
 
@@ -193,14 +193,14 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> UpdateWeek(string userId, int weekYear, int weekNumber, [FromBody]WeekDTO newWeek)
         {
-            if (newWeek == null) return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, new string("Missing newWeek")));
+            if (newWeek == null) return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing newWeek"));
 
             var user = await _giraf.LoadUserWithWeekSchedules(userId).ConfigureAwait(true);
-            if (user == null) return NotFound(new ErrorResponse(ErrorCode.UserNotFound, new string("User not found")));
+            if (user == null) return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
             // check access rightss
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true), user).ConfigureAwait(true)))
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, new string("User does not have permission")));
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
             Week week = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber);
 
@@ -237,24 +237,24 @@ namespace GirafRest.Controllers
         {
             var user =  _giraf._context.Users.Include(u => u.WeekSchedule).FirstOrDefault(u => u.Id == userId);
             if (user == null) 
-                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, new string("User not found")));
+                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
             
             // check access rightss
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true), user).ConfigureAwait(true)))
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, new string("User does not have permission")));
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
             
             if (user.WeekSchedule.Any(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber))
             {
                 var week = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber);
                 if (week == null) 
-                    return NotFound(new ErrorResponse(ErrorCode.NoWeekScheduleFound, new string("No week schedule found")));
+                    return NotFound(new ErrorResponse(ErrorCode.NoWeekScheduleFound, "No week schedule found"));
                 user.WeekSchedule.Remove(week);
                 
                 await _giraf._context.SaveChangesAsync().ConfigureAwait(true);
-                return Ok(new SuccessResponse(new string("Deleted info for entire week")));
+                return Ok(new SuccessResponse("Deleted info for entire week"));
             }
             else
-                return NotFound(new ErrorResponse(ErrorCode.NoWeekScheduleFound, new string("No week schedule found")));
+                return NotFound(new ErrorResponse(ErrorCode.NoWeekScheduleFound, "No week schedule found"));
         }
     }
 }

@@ -33,13 +33,13 @@ namespace GirafRest.Controllers
             }
 
             if (statusCode == StatusCodes.Status401Unauthorized)
-                return Unauthorized(new ErrorResponse(ErrorCode.NotAuthorized, new string("Unauthorized")));
+                return Unauthorized(new ErrorResponse(ErrorCode.NotAuthorized, "Unauthorized"));
             if (statusCode == StatusCodes.Status403Forbidden)
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.Forbidden, new string("User does not have permission")));
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.Forbidden, "User does not have permission"));
             if (statusCode == StatusCodes.Status404NotFound)
-                return NotFound(new ErrorResponse(ErrorCode.NotFound, new string("Not found"), "You tried to reach " + Request.Method + ": " + OriginalURL));
+                return NotFound(new ErrorResponse(ErrorCode.NotFound, "Not found", "You tried to reach " + Request.Method + ": " + OriginalURL));
             if (statusCode == 0)
-                return BadRequest(new ErrorResponse(ErrorCode.UnknownError, new string("Bad Request")));
+                return BadRequest(new ErrorResponse(ErrorCode.UnknownError, "Bad Request"));
 
             return StatusCode(statusCode, new ErrorResponse(ErrorCode.UnknownError, "Statuscode: " + statusCode));
 

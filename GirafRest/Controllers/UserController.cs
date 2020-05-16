@@ -71,7 +71,7 @@ namespace GirafRest.Controllers
             //First attempt to fetch the user and check that he exists
             var user = await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true);
             if (user == null)
-                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, new string("User not found")));
+                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
             return Ok(new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, await _roleManager.findUserRole(_giraf._userManager, user).ConfigureAwait(true))));
         }
@@ -88,16 +88,16 @@ namespace GirafRest.Controllers
         public async Task<ActionResult> GetUserInfo(string id)
         {
             if (string.IsNullOrEmpty(id))
-                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, new string("User id not found")));
+                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "User id not found"));
 
             //First attempt to fetch the user and check that he exists
             var user =  _giraf._context.Users.FirstOrDefault(u => u.Id == id);
             if (user == null)
-                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, new string("User not found")));
+                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true), user).ConfigureAwait(true)))
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, new string("User does not have permission")));
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
             return Ok(new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, await _roleManager.findUserRole(_giraf._userManager, user).ConfigureAwait(true))));
         }
@@ -115,16 +115,16 @@ namespace GirafRest.Controllers
         public async Task<ActionResult> GetSettings(string id)
         {
             if (string.IsNullOrEmpty(id))
-                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, new string("User id not found")));
+                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "User id not found"));
 
             //First attempt to fetch the user and check that he exists
             var user = _giraf._context.Users.Include(u => u.Settings).ThenInclude(w => w.WeekDayColors).FirstOrDefault(u => u.Id == id);
             if (user == null)
-                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, new string("User not found")));
+                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true), user).ConfigureAwait(true)))
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, new string("User does not have permission")));
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
             // Get the role the user is associated with
             var userRole = await _roleManager.findUserRole(_giraf._userManager, user).ConfigureAwait(true);
@@ -133,7 +133,7 @@ namespace GirafRest.Controllers
             if (userRole == Role.Citizen)
                 return Ok(new SuccessResponse<SettingDTO>(new SettingDTO(user.Settings)));
             else
-                return BadRequest(new ErrorResponse(ErrorCode.RoleMustBeCitizien, new string("User role must be a citizen")));
+                return BadRequest(new ErrorResponse(ErrorCode.RoleMustBeCitizien, "User role must be a citizen"));
         }
 
         /// <summary>
@@ -152,21 +152,21 @@ namespace GirafRest.Controllers
         public async Task<ActionResult> UpdateUser(string id, [FromBody] GirafUserDTO newUser)
         {
             if (newUser == null || newUser.Username == null || newUser.DisplayName == null)
-                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, new string("Missing user, userName or displayName")));
+                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing user, userName or displayName"));
 
             var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
             // Get the roles the user is associated with
             var userRole = await _roleManager.findUserRole(_giraf._userManager, user).ConfigureAwait(true);
             if (user == null)
-                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, new string("User not found")));
+                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true), user).ConfigureAwait(true)))
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, new string("User does not have permission")));
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
             
             // check whether user with that username already exist that does not have the same id
             if (_giraf._context.Users.Any(u => u.UserName == newUser.Username && u.Id != user.Id))
-                return Conflict(new ErrorResponse(ErrorCode.UserAlreadyExists, new string("Username already exists")));
+                return Conflict(new ErrorResponse(ErrorCode.UserAlreadyExists, "Username already exists"));
 
 
             // update fields if they are not null
@@ -196,12 +196,12 @@ namespace GirafRest.Controllers
             var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
             if (user == null)
                 return Task.FromResult<ActionResult>(
-                    NotFound(new ErrorResponse(ErrorCode.UserNotFound, new string("User not found"))));
+                    NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found")));
                 
 
             if (user.UserIcon == null)
                 return Task.FromResult<ActionResult>(
-                    NotFound(new ErrorResponse(ErrorCode.UserHasNoIcon, new string("User has no icon"))));
+                    NotFound(new ErrorResponse(ErrorCode.UserHasNoIcon, "User has no icon")));
 
             return Task.FromResult<ActionResult>(Ok(new SuccessResponse<ImageDTO>(new ImageDTO(user.UserIcon))));
         }
@@ -220,10 +220,10 @@ namespace GirafRest.Controllers
             var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
 
             if (user == null)
-                return Task.FromResult<ActionResult>(NotFound(new ErrorResponse(ErrorCode.UserNotFound, new string("User not found"))));
+                return Task.FromResult<ActionResult>(NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found")));
 
             if (user.UserIcon == null)
-                return Task.FromResult<ActionResult>(NotFound(new ErrorResponse(ErrorCode.UserHasNoIcon, new string("User has no icon"))));
+                return Task.FromResult<ActionResult>(NotFound(new ErrorResponse(ErrorCode.UserHasNoIcon, "User has no icon")));
 
 
             return Task.FromResult<ActionResult>(File(Convert.FromBase64String(System.Text.Encoding.UTF8.GetString(user.UserIcon)), IMAGE_TYPE_PNG));
@@ -244,17 +244,17 @@ namespace GirafRest.Controllers
             var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
 
             if (user == null)
-                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, new string("User not found")));
+                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true), user).ConfigureAwait(true)))
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, new string("User does not have permission")));
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
             
 
             byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body).ConfigureAwait(true);
 
             if (image.Length < IMAGE_CONTENT_TYPE_DEFINITION)
-                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, new string("Image is corrupt")));
+                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Image is corrupt"));
 
             user.UserIcon = image;
             await _giraf._context.SaveChangesAsync().ConfigureAwait(true);
@@ -276,12 +276,12 @@ namespace GirafRest.Controllers
         {
             var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
             if (user.UserIcon == null)
-                return NotFound(new ErrorResponse(ErrorCode.UserHasNoIcon, new string("User has no icon")));
+                return NotFound(new ErrorResponse(ErrorCode.UserHasNoIcon, "User has no icon"));
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true), user).ConfigureAwait(true)))
                 return StatusCode(StatusCodes.Status403Forbidden, 
-                    new ErrorResponse(ErrorCode.NotAuthorized, new string("User does not have permission")));
+                    new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
             user.UserIcon = null;
             await _giraf._context.SaveChangesAsync().ConfigureAwait(true);
@@ -308,19 +308,19 @@ namespace GirafRest.Controllers
         {
             //Check if valid parameters have been specified in the call
             if (string.IsNullOrEmpty(id))
-                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, new string("Missing username")));
+                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing username"));
 
             if (resourceIdDTO == null)
-                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, new string("Missing resourceIdDTO")));
+                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing resourceIdDTO"));
 
             //Attempt to find the target user and check that he exists
             var user = _giraf._context.Users.Include(u => u.Resources).ThenInclude(dr => dr.Pictogram).FirstOrDefault(u => u.Id == id);
             if (user == null)
-                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, new string("User not found")));
+                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true), user).ConfigureAwait(true)))
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, new string("User does not have permission")));
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
             //Find the resource and check that it actually does exist - also verify that the resource is private
             var resource = await _giraf._context.Pictograms
@@ -328,10 +328,10 @@ namespace GirafRest.Controllers
                 .FirstOrDefaultAsync().ConfigureAwait(true);
 
             if (resource == null)
-                return NotFound(new ErrorResponse(ErrorCode.ResourceNotFound, new string("Resource not found")));
+                return NotFound(new ErrorResponse(ErrorCode.ResourceNotFound, "Resource not found"));
 
             if (resource.AccessLevel != AccessLevel.PRIVATE)
-                return BadRequest(new ErrorResponse(ErrorCode.ResourceMustBePrivate, new string("Resource must be private")));
+                return BadRequest(new ErrorResponse(ErrorCode.ResourceMustBePrivate, "Resource must be private"));
 
 
             //Check that the currently authenticated user owns the resource
@@ -339,11 +339,11 @@ namespace GirafRest.Controllers
             var resourceOwnedByCaller = await _giraf.CheckPrivateOwnership(resource, curUsr).ConfigureAwait(true);
             if (!resourceOwnedByCaller)
                 return StatusCode(StatusCodes.Status403Forbidden, 
-                    new ErrorResponse(ErrorCode.NotAuthorized, new string("User does not own resource")));
+                    new ErrorResponse(ErrorCode.NotAuthorized, "User does not own resource"));
 
             //Check if the target user already owns the resource
             if (user.Resources.Any(ur => ur.PictogramKey == resourceIdDTO.Id))
-                return BadRequest(new ErrorResponse(ErrorCode.UserAlreadyOwnsResource, new string("User already owns resource")));
+                return BadRequest(new ErrorResponse(ErrorCode.UserAlreadyOwnsResource, "User already owns resource"));
 
             //Create the relation and save changes.
             var userResource = new UserResource(user, resource);
@@ -378,22 +378,22 @@ namespace GirafRest.Controllers
                 .FirstOrDefault(u => u.Id == id);
 
             if (user == null)
-                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, new string("User not found")));
+                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
             
             //Check that valid parameters have been specified in the call
             if (resourceIdDTO == null)
-                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, new string("Missing resourceIdDTO")));
+                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing resourceIdDTO"));
 
             //Fetch the resource with the given id, check that it exists.
             var resource = await _giraf._context.Pictograms
                 .Where(f => f.Id == resourceIdDTO.Id)
                 .FirstOrDefaultAsync().ConfigureAwait(true);
-            if (resource == null) return NotFound(new ErrorResponse(ErrorCode.ResourceNotFound, new string("Resource not found")));
+            if (resource == null) return NotFound(new ErrorResponse(ErrorCode.ResourceNotFound, "Resource not found"));
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true), user).ConfigureAwait(true)))
                 return StatusCode(StatusCodes.Status403Forbidden, 
-                    new ErrorResponse(ErrorCode.NotAuthorized, new string("User does not have permission")));
+                    new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
             //Fetch the relationship from the database and check that it exists
             var relationship = await _giraf._context.UserResources
@@ -401,7 +401,7 @@ namespace GirafRest.Controllers
                 .FirstOrDefaultAsync().ConfigureAwait(true);
             if (relationship == null) 
                 return StatusCode(StatusCodes.Status403Forbidden, 
-                    new ErrorResponse(ErrorCode.UserDoesNotOwnResource, new string("Resource is not owned by user")));
+                    new ErrorResponse(ErrorCode.UserDoesNotOwnResource, "Resource is not owned by user"));
 
             //Remove the resource - both from the user's list and the database
             user.Resources.Remove(relationship);
@@ -430,7 +430,7 @@ namespace GirafRest.Controllers
         public async Task<ActionResult> GetCitizens(string id)
         {
             if (String.IsNullOrEmpty(id))
-                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, new string("Missing id")));
+                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing id"));
             var user = _giraf._context.Users.Include(u => u.Citizens).FirstOrDefault(u => u.Id == id);
             var authUser = await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true);
             var citizens = new List<DisplayNameDTO>();
@@ -439,13 +439,13 @@ namespace GirafRest.Controllers
             if (!(await _authentication.HasEditOrReadUserAccess(authUser, user).ConfigureAwait(true)))
             {
                 return StatusCode(StatusCodes.Status403Forbidden, 
-                    new ErrorResponse(ErrorCode.NotAuthorized, new string("User does not have permission")));
+                    new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
             }
 
             var userRole = (await _roleManager.findUserRole(_giraf._userManager, user).ConfigureAwait(true));
             if (userRole != Role.Guardian)
                 return StatusCode(StatusCodes.Status403Forbidden, 
-                    new ErrorResponse(ErrorCode.Forbidden, new string("User does not have permission")));
+                    new ErrorResponse(ErrorCode.Forbidden, "User does not have permission"));
 
             foreach (var citizen in user.Citizens)
             {
@@ -455,7 +455,7 @@ namespace GirafRest.Controllers
 
             if (!citizens.Any())
             {
-                return NotFound(new ErrorResponse(ErrorCode.UserHasNoCitizens, new string("User does not have any citizens")));
+                return NotFound(new ErrorResponse(ErrorCode.UserHasNoCitizens, "User does not have any citizens"));
             }   
 
             return Ok(new SuccessResponse<List<DisplayNameDTO>>(citizens.ToList<DisplayNameDTO>()));
@@ -477,15 +477,15 @@ namespace GirafRest.Controllers
         {
             var user = _giraf._context.Users.Include(u => u.Guardians).FirstOrDefault(u => u.Id == id);
             if (user == null)
-                return BadRequest(new ErrorResponse(ErrorCode.InvalidProperties, new string("Missing id")));
+                return BadRequest(new ErrorResponse(ErrorCode.InvalidProperties, "Missing id"));
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true), user).ConfigureAwait(true)))
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, new string("User does not have permission")));
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
             var userRole = (await _roleManager.findUserRole(_giraf._userManager, user).ConfigureAwait(true));
             if (userRole != Role.Citizen)
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.Forbidden, new string("User does not have permission")));
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.Forbidden, "User does not have permission"));
 
             var guardians = new List<DisplayNameDTO>();
             foreach (var guardian in user.Guardians)
@@ -496,7 +496,7 @@ namespace GirafRest.Controllers
 
             if (!guardians.Any())
             {
-                return NotFound(new ErrorResponse(ErrorCode.UserHasNoGuardians, new string("User has no guardians")));
+                return NotFound(new ErrorResponse(ErrorCode.UserHasNoGuardians, "User has no guardians"));
             }
 
             return Ok(new SuccessResponse<List<DisplayNameDTO>>(guardians));
@@ -520,18 +520,18 @@ namespace GirafRest.Controllers
             var guardian = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
 
             if (guardian == null || citizen == null)
-                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, new string("User not found")));
+                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true), guardian).ConfigureAwait(true)))
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, new string("User does not have permission")));
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
                 
 
             var citRole = _roleManager.findUserRole(_giraf._userManager, citizen).Result;
             var guaRole = _roleManager.findUserRole(_giraf._userManager, guardian).Result;
 
             if (citRole != Role.Citizen || guaRole != Role.Guardian)
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.Forbidden, new string("User does not have permission")));
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.Forbidden, "User does not have permission"));
 
             citizen.AddGuardian(guardian);
 
@@ -556,49 +556,49 @@ namespace GirafRest.Controllers
         {
             var user = _giraf._context.Users.Include(u => u.Settings).ThenInclude(w => w.WeekDayColors).FirstOrDefault(u => u.Id == id);
             if (user == null)
-                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, new string("User not found")));
+                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
             var userRole = await _roleManager.findUserRole(_giraf._userManager, user).ConfigureAwait(true);
             if (userRole != Role.Citizen)
-                return BadRequest(new ErrorResponse(ErrorCode.RoleMustBeCitizien, new string("User role is not citizen")));
+                return BadRequest(new ErrorResponse(ErrorCode.RoleMustBeCitizien, "User role is not citizen"));
 
             if (user.Settings == null)
-                return NotFound(new ErrorResponse(ErrorCode.MissingSettings, new string("User settings not found")));
+                return NotFound(new ErrorResponse(ErrorCode.MissingSettings, "User settings not found"));
             
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User).ConfigureAwait(true), user).ConfigureAwait(true)))
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, new string("User does not have permission")));
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
             if (!ModelState.IsValid)
                 return BadRequest(new ErrorResponse(
                     ErrorCode.MissingProperties, 
-                    new string("Missing properties in model"), 
+                    "Missing properties in model", 
                     "Errors: " + String.Join(", ",ModelState.Values.Where(E => E.Errors.Count > 0)
                         .SelectMany(e => e.Errors)
                         .Select(e => e.ErrorMessage)
                         .ToArray())));
             
             if (options == null)
-                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, new string("Missing settings")));
+                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing settings"));
 
             var error = ValidateOptions(options);
             if (error.HasValue)
-                return BadRequest(new ErrorResponse(ErrorCode.InvalidProperties, new string("Invalid settings")));
+                return BadRequest(new ErrorResponse(ErrorCode.InvalidProperties, "Invalid settings"));
 
             if(options.WeekDayColors != null) {
                 // Validate Correct format of WeekDayColorDTOs. A color must be set for each day
                 if (options.WeekDayColors.GroupBy(d => d.Day).Any(g => g.Count() != 1))
-                    return BadRequest(new ErrorResponse(ErrorCode.ColorMustHaveUniqueDay, new string("Colors are not set")));
+                    return BadRequest(new ErrorResponse(ErrorCode.ColorMustHaveUniqueDay, "Colors are not set"));
 
 
                 // check if all days in weekdaycolours is valid
                 if (options.WeekDayColors.Any(w => !Enum.IsDefined(typeof(Day), w.Day)))
-                    return BadRequest(new ErrorResponse(ErrorCode.InvalidDay, new string("Invalid day")));
+                    return BadRequest(new ErrorResponse(ErrorCode.InvalidDay, "Invalid day"));
 
                 // check that Colors are in correct format
                 var isCorrectHexValues = IsWeekDayColorsCorrectHexFormat(options);
                 if (!isCorrectHexValues)
-                    return BadRequest(new ErrorResponse(ErrorCode.InvalidHexValues, new string("Invalid hex values")));
+                    return BadRequest(new ErrorResponse(ErrorCode.InvalidHexValues, "Invalid hex values"));
             }
 
             user.Settings.UpdateFrom(options);
