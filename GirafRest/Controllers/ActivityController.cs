@@ -1,4 +1,5 @@
-﻿using GirafRest.Models;
+﻿using System.Collections.Generic;
+using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
 using GirafRest.Services;
@@ -77,14 +78,39 @@ namespace GirafRest.Controllers
             int order = dbWeekDay.Activities.Select(act => act.Order).DefaultIfEmpty(0).Max();
             order++;
 
-            var picto = await _giraf._context.Pictograms
-                        .Where(p => p.Id == newActivity.Pictogram.Id).FirstOrDefaultAsync();
-            
-            Activity dbActivity = new Activity(dbWeekDay, picto, order, ActivityState.Normal, null);
+            Activity dbActivity = new Activity(
+                dbWeekDay,
+                null,
+                order,
+                ActivityState.Normal,
+                null,
+                false
+            );
             _giraf._context.Activities.Add(dbActivity);
+
+            foreach (var pictogram in newActivity.Pictograms)
+            {
+                var dbPictogram = _giraf._context.Pictograms.FirstOrDefault(id => id.Id == pictogram.Id);
+                if (dbPictogram != null)
+                {
+                    _giraf._context.PictogramRelations.Add(new PictogramRelation(
+                        dbActivity, dbPictogram
+                    ));
+                }
+                else
+                {
+                    return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, "Pictogram not found"));
+                }
+            }
+
             await _giraf._context.SaveChangesAsync();
 
-            return StatusCode(StatusCodes.Status201Created, new SuccessResponse<ActivityDTO>(new ActivityDTO(dbActivity)));
+            return StatusCode(
+                StatusCodes.Status201Created,
+                new SuccessResponse<ActivityDTO>(
+                    new ActivityDTO(dbActivity, newActivity.Pictograms.ToList())
+                )
+            );
         }
 
         /// <summary>
@@ -114,10 +140,43 @@ namespace GirafRest.Controllers
 
             Activity targetActivity = _giraf._context.Activities.First(act => act.Key == activityId);
 
+            // deletion of pictogram relations
+            var pictogramRelations = _giraf._context.PictogramRelations
+                .Where(relation => relation.ActivityId == targetActivity.Key);
+
+            _giraf._context.PictogramRelations.RemoveRange(pictogramRelations);
+
             _giraf._context.Activities.Remove(targetActivity);
             await _giraf._context.SaveChangesAsync();
 
             return Ok(new SuccessResponse("Activity deleted"));
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="activityId"></param>
+        /// <returns>Returns <see cref="ActivityDTO"/></returns>
+        [HttpGet("{userId}/{activityId}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult> GetActivity(string userId, int activityId)
+        {
+            var activity = await _giraf._context
+                .Activities
+                .Where(a => a.Key == activityId)
+                .FirstOrDefaultAsync();
+
+            var pictograms = _giraf._context
+                .PictogramRelations
+                .Include(pictogram => pictogram.Pictogram)
+                .Where(pr => pr.ActivityId == activityId)
+                .ToList();
+
+            activity.Pictograms = pictograms;
+
+            return Ok(new SuccessResponse<ActivityDTO>(new ActivityDTO(activity)));
         }
 
         /// <summary>
@@ -151,13 +210,40 @@ namespace GirafRest.Controllers
             if (!user.WeekSchedule.Any(w => w.Weekdays.Any(wd => wd.Activities.Any(act => act.Key == activity.Id))))
                 return NotFound(new ErrorResponse(ErrorCode.ActivityNotFound, "Activity not found"));
 
-            Activity updateActivity = _giraf._context.Activities.FirstOrDefault(a => a.Key == activity.Id);
+            Activity updateActivity = _giraf._context.Activities
+                .FirstOrDefault(a => a.Key == activity.Id);
             if (updateActivity == null)
                 return NotFound(new ErrorResponse(ErrorCode.ActivityNotFound, "Activity not found"));
 
             updateActivity.Order = activity.Order;
             updateActivity.State = activity.State;
-            updateActivity.PictogramKey = activity.Pictogram.Id;
+            updateActivity.IsChoiceBoard = activity.IsChoiceBoard;
+            
+            // deletion of pictogram relations
+
+            var pictogramRelations = _giraf._context.PictogramRelations
+                .Where(relation => relation.ActivityId == activity.Id);
+
+            _giraf._context.PictogramRelations.RemoveRange(pictogramRelations);
+
+            List<WeekPictogramDTO> pictograms = new List<WeekPictogramDTO>();
+
+            foreach (var pictogram in activity.Pictograms)
+            {
+                var db_pictogram = _giraf._context.Pictograms.Single(id => id.Id == pictogram.Id);
+
+                if (db_pictogram != null)
+                {
+                    _giraf._context.PictogramRelations.Add(new PictogramRelation(
+                        updateActivity, db_pictogram
+                    ));
+                    pictograms.Add(new WeekPictogramDTO(db_pictogram));
+                }
+                else
+                {
+                    return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, "Pictogram not found"));
+                }
+            }
 
             if (activity.Timer != null)
             {
@@ -203,7 +289,7 @@ namespace GirafRest.Controllers
 
             await _giraf._context.SaveChangesAsync();
 
-            return Ok(new SuccessResponse<ActivityDTO>(new ActivityDTO(updateActivity, activity.Pictogram)));
+            return Ok(new SuccessResponse<ActivityDTO>(new ActivityDTO(updateActivity, pictograms)));
         }
     }
 }

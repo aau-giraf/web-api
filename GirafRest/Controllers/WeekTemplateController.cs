@@ -24,7 +24,7 @@ namespace GirafRest.Controllers
         /// A reference to GirafService, that contains common functionality for all controllers.
         /// </summary>
         private readonly IGirafService _giraf;
-
+        
         /// <summary>
         /// reference to the authenticationservice which provides commong authentication checks
         /// </summary>
@@ -97,8 +97,9 @@ namespace GirafRest.Controllers
             var template = await (_giraf._context.WeekTemplates
                 .Include(w => w.Thumbnail)
                 .Include(u => u.Weekdays)
-                    .ThenInclude(wd => wd.Activities)
-                        .ThenInclude(a => a.Pictogram)
+                .ThenInclude(wd => wd.Activities)
+                .ThenInclude(pa => pa.Pictograms)
+                .ThenInclude(p => p.Pictogram)
                 .Where(t => t.DepartmentKey == user.DepartmentKey)
                 .FirstOrDefaultAsync(w => w.Id == id));
 
@@ -185,8 +186,8 @@ namespace GirafRest.Controllers
             var template = _giraf._context.WeekTemplates
                 .Include(w => w.Thumbnail)
                 .Include(u => u.Weekdays)
-                    .ThenInclude(wd => wd.Activities)
-                        .ThenInclude(e => e.Pictogram)
+                .ThenInclude(wd => wd.Activities)
+                .ThenInclude(e => e.Pictograms)
                 .FirstOrDefault(t => id == t.Id);
 
             if (template == null)

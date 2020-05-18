@@ -3,8 +3,6 @@ using Xunit;
 using GirafRest.Models;
 using GirafRest.Controllers;
 using System.Collections.Generic;
-using System.Security.Claims;
-using System.Threading.Tasks;
 using GirafRest.Test.Mocks;
 using static GirafRest.Test.UnitTestExtensions;
 using GirafRest.Models.DTOs;
@@ -12,9 +10,6 @@ using Xunit.Abstractions;
 using GirafRest.Models.Responses;
 using GirafRest.Services;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-using Moq;
 using static GirafRest.Test.UnitTestExtensions.TestContext;
 using Microsoft.AspNetCore.Mvc;
 
@@ -139,7 +134,7 @@ namespace GirafRest.Test
 
             var res = wtc.GetWeekTemplate(_testContext.MockWeekTemplates[Template1].Id).Result as ObjectResult;
             var body = res.Value as SuccessResponse<WeekTemplateDTO>;
-
+            
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.Equal("Template1", body.Data.Name);
             Assert.Contains(Days.Wednesday, body.Data.Days.Select(d => d.Day));

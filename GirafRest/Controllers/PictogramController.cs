@@ -271,12 +271,13 @@ namespace GirafRest.Controllers
             _giraf._context.UserResources.RemoveRange(userRessourceRelations);
 
             var depRessourceRelations = _giraf._context.DepartmentResources
-                                              .Where(ur => ur.PictogramKey == pict.Id);
+                                                .Where(ur => ur.PictogramKey == pict.Id);
             _giraf._context.DepartmentResources.RemoveRange(depRessourceRelations);
 
-            var weekDayRessourceRelations = _giraf._context.Activities
-                                                  .Where(ur => ur.PictogramKey == pict.Id);
-            _giraf._context.Activities.RemoveRange(weekDayRessourceRelations);
+            var pictogramRelations = _giraf._context.PictogramRelations
+                                                .Where(relation => relation.PictogramId == pict.Id);
+
+            _giraf._context.PictogramRelations.RemoveRange(pictogramRelations);
 
             await _giraf._context.SaveChangesAsync();
 

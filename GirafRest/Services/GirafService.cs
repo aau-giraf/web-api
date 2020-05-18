@@ -1,12 +1,12 @@
-﻿using GirafRest.Data;
+﻿using System;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using GirafRest.Data;
 using GirafRest.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using System;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace GirafRest.Services
 {
@@ -96,7 +96,7 @@ namespace GirafRest.Services
                 .Include(u => u.WeekSchedule)
                 .ThenInclude(w => w.Weekdays)
                 .ThenInclude(wd => wd.Activities)
-                .ThenInclude(e => e.Pictogram)
+                .ThenInclude(e => e.Pictograms)
                 //And return it
                 .FirstOrDefaultAsync();
 
@@ -117,7 +117,7 @@ namespace GirafRest.Services
                 //Get user by ID from database
                 .Where(u => u.Id == usr.Id)
                 //And return it
-                .FirstOrDefaultAsync(); ;
+                .FirstOrDefaultAsync();
         }
 
         /// <summary>

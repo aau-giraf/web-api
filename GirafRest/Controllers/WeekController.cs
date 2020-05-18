@@ -127,6 +127,24 @@ namespace GirafRest.Controllers
                             var timerPlace = _giraf._context.Timers.FirstOrDefault(t => t.Key == activity.TimerKey);
                             activity.Timer = timerPlace;
                         }
+
+                        if (activity.Pictograms != null)
+                        {
+                            foreach (var pictogramRelation in activity.Pictograms)
+                            {
+                                var dbPictogram =
+                                    _giraf._context.Pictograms.FirstOrDefault(p => p.Id == pictogramRelation.PictogramId);
+                                if (dbPictogram != null)
+                                {
+                                    pictogramRelation.Pictogram = dbPictogram;
+                                }
+                                else
+                                {
+                                    return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound,
+                                        "Pictogram not found"));
+                                }
+                            }
+                        }
                     }
                 }
 

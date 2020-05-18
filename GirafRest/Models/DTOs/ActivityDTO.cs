@@ -1,4 +1,6 @@
-﻿namespace GirafRest.Models.DTOs
+﻿using System.Collections.Generic;
+
+namespace GirafRest.Models.DTOs
 {
     /// <summary>
     /// DTO for <see cref="Activity"/>
@@ -8,12 +10,13 @@
         /// <summary>
         /// Constructor
         /// </summary>
-        public ActivityDTO(long id, WeekPictogramDTO pictogram, int order, ActivityState state)
+        public ActivityDTO(long id, List<WeekPictogramDTO> pictograms, int order, ActivityState state, bool isChoiceBoard)
         {
             this.Id = id;
-            this.Pictogram = pictogram;
+            this.Pictograms = pictograms;
             this.Order = order;
             this.State = state;
+            this.IsChoiceBoard = isChoiceBoard;
         }
 
         /// <summary>
@@ -23,9 +26,16 @@
         public ActivityDTO(Activity weekdayResource)
         {
             this.Id = weekdayResource.Key;
-            this.Pictogram = new WeekPictogramDTO(weekdayResource.Pictogram);
             this.Order = weekdayResource.Order;
             this.State = weekdayResource.State;
+            this.IsChoiceBoard = weekdayResource.IsChoiceBoard;
+            this.Pictograms = new List<WeekPictogramDTO>();
+            
+            foreach (var relation in weekdayResource.Pictograms)
+            {
+                this.Pictograms.Add(new WeekPictogramDTO(relation.Pictogram));
+            }
+
             if (weekdayResource.Timer != null)
             {
                 this.Timer = new TimerDTO(weekdayResource.Timer);
@@ -35,12 +45,13 @@
         /// <summary>
         /// Constructor
         /// </summary>
-        public ActivityDTO(Activity weekdayResource, WeekPictogramDTO pictogram)
+        public ActivityDTO(Activity weekdayResource, List<WeekPictogramDTO> pictograms)
         {
             this.Id = weekdayResource.Key;
             this.Order = weekdayResource.Order;
             this.State = weekdayResource.State;
-            this.Pictogram = pictogram;
+            this.IsChoiceBoard = weekdayResource.IsChoiceBoard;
+            this.Pictograms = pictograms;
             if (weekdayResource.Timer != null)
             {
                 this.Timer = new TimerDTO(weekdayResource.Timer);
@@ -55,7 +66,7 @@
         /// <summary>
         /// Belonging pictogram
         /// </summary>
-        public WeekPictogramDTO Pictogram { get; set; }
+        public ICollection<WeekPictogramDTO> Pictograms { get; set; }
 
         /// <summary>
         /// The order that the activity will appear on in a weekschedule. If two has same order it is a choice

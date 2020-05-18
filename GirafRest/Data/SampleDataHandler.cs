@@ -100,7 +100,7 @@ namespace GirafRest.Setup
                 {
                     if (day.Id == act.OtherKey)
                     {
-                        actIconTitles.Add(act.Pictogram.Title);
+                        actIconTitles.Add(act.Pictograms.First().Pictogram.Title);
                         actStates.Add(act.State.ToString());
                     }
                 }

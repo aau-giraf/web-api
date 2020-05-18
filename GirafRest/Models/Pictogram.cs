@@ -43,6 +43,11 @@ namespace GirafRest.Models
         public ICollection<DepartmentResource> Departments { get; set; }
 
         /// <summary>
+        /// Getting activity relations
+        /// </summary>
+        public ICollection<PictogramRelation> Activities { get; set;  }
+
+        /// <summary>
         /// AccessLevel managing
         /// </summary>
         [Required]

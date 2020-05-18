@@ -278,7 +278,7 @@ namespace GirafRest.Setup
             foreach (var sampleDay in sampleDays)
             {
                 Days day = sampleDay.Day;
-                List<Pictogram> picts = new List<Pictogram>();
+                List<List<Pictogram>> picts = new List<List<Pictogram>>();
                 Pictogram pic = null;
 
                 foreach (string actIcon in sampleDay.ActivityIconTitles)
@@ -290,7 +290,7 @@ namespace GirafRest.Setup
                             pic = pict;
                         }
                     }
-                    picts.Add(pic);
+                    picts.Add(new List<Pictogram>{ pic });
                 }
 
                 List<ActivityState> activityStates = (from activityState in sampleDay.ActivityStates select (ActivityState)Enum.Parse(typeof(ActivityState), activityState)).ToList<ActivityState>();

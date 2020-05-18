@@ -1,6 +1,7 @@
-﻿using GirafRest.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using GirafRest.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 #pragma warning disable 1591
 namespace GirafRest.Data
@@ -22,6 +23,7 @@ namespace GirafRest.Data
         public virtual DbSet<Activity> Activities { get; set; }
         public virtual DbSet<Timer> Timers { get; set; }
         public virtual DbSet<GuardianRelation> GuardianRelations { get; set; }
+        public virtual DbSet<PictogramRelation> PictogramRelations { get; set; }
         public virtual DbSet<WeekDayColor> WeekDayColors { get; set; }
         protected GirafDbContext() { }
 
@@ -67,7 +69,7 @@ namespace GirafRest.Data
                 .WithMany(u => u.Resources)
                 .HasForeignKey(u => u.OtherKey)
                 .OnDelete(DeleteBehavior.Cascade);
-
+            
             builder.Entity<UserResource>()
                 .HasOne(ur => ur.Pictogram)
                 .WithMany(r => r.Users)
@@ -100,14 +102,8 @@ namespace GirafRest.Data
             //Configure a many-to-many relationship between Weekday and Resource(Pictogram)
             builder.Entity<Activity>()
                 .HasOne<Weekday>(wr => wr.Other)
-                   .WithMany(w => w.Activities)
+                .WithMany(w => w.Activities)
                 .HasForeignKey(wr => wr.OtherKey)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.Entity<Activity>()
-                .HasOne<Pictogram>(wr => wr.Pictogram)
-                .WithMany()
-                .HasForeignKey(wr => wr.PictogramKey)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Activity>()
@@ -129,6 +125,23 @@ namespace GirafRest.Data
                    .WithMany(c => c.Guardians)
                    .HasForeignKey(mg => mg.CitizenId)
                    .OnDelete(DeleteBehavior.Cascade);
+
+            // The pivot tables for the many-many between an activity and pictograms
+            builder.Entity<PictogramRelation>()
+                .HasKey(x => new {x.ActivityId, x.PictogramId});
+                
+            builder.Entity<PictogramRelation>()
+                    .HasOne(pr => pr.Activity)
+                    .WithMany(ac => ac.Pictograms)
+                    .HasForeignKey(pr => pr.ActivityId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<PictogramRelation>()
+                .HasOne(pr => pr.Pictogram)
+                .WithMany(p => p.Activities)
+                .HasForeignKey(pr => pr.PictogramId)
+                .OnDelete(DeleteBehavior.Cascade);
+
 
             // Configure a one-to-many relationship setting and weekdaycolors
             builder.Entity<Setting>()

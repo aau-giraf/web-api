@@ -84,7 +84,7 @@ namespace GirafRest.Test
             var mockUser = _testContext.MockUsers[authUser];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             var weekschedule = _testContext.MockWeeks[0];
-            _testContext.MockUsers[userToEdit].WeekSchedule = new List<Week>() { weekschedule };
+            _testContext.MockUsers[userToEdit].WeekSchedule = new List<Week>() {weekschedule};
             var res = wc.ReadWeekSchedules(_testContext.MockUsers[userToEdit].Id).Result as ObjectResult;
 
             var body = res.Value as ErrorResponse;
@@ -106,9 +106,9 @@ namespace GirafRest.Test
             var mockUser = _testContext.MockUsers[authUser];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
             var weekschedule = _testContext.MockWeeks[0];
-            _testContext.MockUsers[userToEdit].WeekSchedule = new List<Week>() { weekschedule };
+            _testContext.MockUsers[userToEdit].WeekSchedule = new List<Week>() {weekschedule};
             var res = wc.ReadWeekSchedules(_testContext.MockUsers[userToEdit].Id).Result as ObjectResult;
-
+            
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
         }
 
@@ -150,8 +150,8 @@ namespace GirafRest.Test
         [InlineData(CITIZEN_DEP_TWO, GUARDIAN_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, DEPARTMENT_USER_DEP_TWO, ErrorCode.NotAuthorized)]
         [InlineData(CITIZEN_DEP_TWO, ADMIN_DEP_ONE, ErrorCode.NotAuthorized)]
-        public void ReadWeekSchedules_CheckAuthentication_Errors(int authUser,
-                                                          int userToEdit, ErrorCode expectedError)
+        public void ReadWeekSchedules_CheckAuthentication_Errors(
+            int authUser, int userToEdit, ErrorCode expectedError)
         {
             var wc = initializeTest();
             var mockUser = _testContext.MockUsers[authUser];
@@ -163,7 +163,7 @@ namespace GirafRest.Test
             Assert.Equal(expectedError, body.ErrorCode);
         }
 
-
+        
         [Theory]
         [InlineData(ADMIN_DEP_ONE, DEPARTMENT_USER_DEP_TWO)]
         [InlineData(ADMIN_DEP_ONE, GUARDIAN_DEP_TWO)]
@@ -173,7 +173,7 @@ namespace GirafRest.Test
         [InlineData(DEPARTMENT_USER_DEP_TWO, CITIZEN_DEP_TWO)]
         [InlineData(CITIZEN_DEP_TWO, CITIZEN_DEP_TWO)]
         public void ReadWeekSchedules_CheckAuthentication_Success(int authUser,
-                                                          int userToEdit)
+            int userToEdit)
         {
             var wc = initializeTest();
             var mockUser = _testContext.MockUsers[authUser];
@@ -214,7 +214,7 @@ namespace GirafRest.Test
                 Thumbnail = new Models.DTOs.WeekPictogramDTO(_testContext.MockPictograms[0])
             }).Result as ObjectResult;
             var body = res.Value as ErrorResponse;
-
+            
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.InvalidAmountOfWeekdays, body.ErrorCode);
         }
@@ -323,12 +323,12 @@ namespace GirafRest.Test
             var week = _testContext.MockUsers[ADMIN_DEP_ONE].WeekSchedule.First();
             var orderNumber = 1;
             var state = ActivityState.Active;
-
+            
             var activities = new List<Activity>()
             {
-                new Activity(week.Weekdays[0], _testContext.MockPictograms[0], orderNumber, state, null)
+                new Activity(week.Weekdays[0], new List<Pictogram>() {_testContext.MockPictograms[0]}, orderNumber, state, null, false)
             };
-
+            
             week.Weekdays[0].Activities = activities;
             var res = wc.UpdateWeek(mockUser.Id, 2018, 20, new WeekDTO(week)).Result as ObjectResult;
             var body = res.Value as SuccessResponse<WeekDTO>;
@@ -340,7 +340,7 @@ namespace GirafRest.Test
 
             var getResult = wc.ReadUsersWeekSchedule(mockUser.Id, 2018, 20).Result as ObjectResult;
             var getBody = getResult.Value as SuccessResponse<WeekDTO>;
-
+            
             Assert.Equal(StatusCodes.Status200OK, getResult.StatusCode);
             Assert.Equal(orderNumber, getBody.Data.Days.ToList()[0].Activities.ToList()[0].Order);
             Assert.Equal(state, getBody.Data.Days.ToList()[0].Activities.ToList()[0].State);

@@ -73,7 +73,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_login_as_citizen1(self):
         """
         Testing logging in as Citizen1
-
         Endpoint: POST:/v1/Account/login
         """
         global citizen1_token
@@ -89,7 +88,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_login_as_guardian(self):
         """
         Testing logging in as Guardian
-
         Endpoint: POST:/v1/Account/login
         """
         global guardian_token
@@ -105,7 +103,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_login_as_super_user(self):
         """
         Testing logging in as Super User
-
         Endpoint: POST:/v1/Account/login
         """
         global super_user_token
@@ -121,7 +118,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_create_new_guardian(self):
         """
         Creating a new guardian with no relations to test other endpoints
-
         Endpoint: POST:/v1/Account/register
         """
         global new_guardian_id
@@ -139,7 +135,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_login_as_new_guardian(self):
         """
         Testing logging in as Guardian
-
         Endpoint: POST:/v1/Account/login
         """
         global new_guardian_token
@@ -155,7 +150,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_login_as_department(self):
         """
         Testing logging in as Department
-
         Endpoint: POST:/v1/Account/login
         """
         global department_token
@@ -171,7 +165,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_get_citizen1_id(self):
         """
         Testing getting Citizen1's id
-
         Endpoint: GET:/v1/User
         """
         global citizen1_id
@@ -186,7 +179,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_get_guardian_id(self):
         """
         Testing getting Guardian's id
-
         Endpoint: GET:/v1/User
         """
         global guardian_id
@@ -202,7 +194,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_register_citizen2(self):
         """
         Testing registering Citizen2
-
         Endpoint: POST:/v1/Account/register
         """
         data = {'username': citizen2_username, 'displayname': citizen2_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 2}
@@ -214,7 +205,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_login_as_citizen2(self):
         """
         Testing logging in as Citizen2
-
         Endpoint: POST:/v1/Account/login
         """
         global citizen2_token
@@ -230,7 +220,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_get_citizen2_id(self):
         """
         Testing getting Citizen2's id
-
         Endpoint: GET:/v1/User
         """
         global citizen2_id
@@ -246,7 +235,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_register_citizen3(self):
         """
         Testing registering Citizen3
-
         Endpoint: POST:/v1/Account/register
         """
         data = {'username': citizen3_username, 'displayname': citizen3_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 2}
@@ -258,7 +246,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_login_as_citizen3(self):
         """
         Testing logging in as Citizen3
-
         Endpoint: POST:/v1/Account/login
         """
         global citizen3_token
@@ -274,7 +261,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_get_citizen3_id(self):
         """
         Testing getting Citizen3's id
-
         Endpoint: GET:/v1/User
         """
         global citizen3_id
@@ -290,7 +276,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_get_citizen3_id_with_citizen2_should_fail(self):
         """
         Testing getting Citizen3's id with Citizen2
-
         Endpoint: GET:/v1/User/{id}
         """
         response = get(f'{BASE_URL}v1/User/{citizen3_id}', headers=auth(citizen2_token))
@@ -302,7 +287,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_get_citizen_info_as_guardian(self):
         """
         Testing getting citizen info as guardian
-
         Endpoint: GET:/v1/User/{id}
         """
         response = get(f'{BASE_URL}v1/User/{citizen2_id}', headers=auth(guardian_token))
@@ -316,7 +300,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_set_display_name(self):
         """
         Testing setting display name
-
         Endpoint: PUT:/v1/User/{id}
         """
         data = {'username': citizen2_username, 'displayName': 'FBI Surveillance Van'}
@@ -329,7 +312,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_get_display_name(self):
         """
         Testing ensuring display name is updated
-
         Endpoint: GET:/v1/User
         """
         response = get(f'{BASE_URL}v1/User', headers=auth(citizen2_token))
@@ -343,7 +325,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_add_new_pictogram_as_citizen2(self):
         """
         Testing adding new pictogram as Citizen2
-
         Endpoint: POST:/v1/Pictogram
         """
         global wednesday_id
@@ -360,7 +341,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_add_pictogram_to_citizen3_as_citizen2(self):
         """
         Testing adding pictogram to Citizen3 as Citizen2
-
         Endpoint: POST:/v1/User/{id}/resource
         """
         data = {'id': wednesday_id}
@@ -373,7 +353,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_get_settings(self):
         """
         Testing getting user settings
-
         Endpoint: GET:/v1/User/{id}/settings
         """
         response = get(f'{BASE_URL}v1/User/{citizen2_id}/settings', headers=auth(citizen2_token))
@@ -386,7 +365,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_enable_grayscale_theme(self):
         """
         Testing setting grayscale theme
-
         Endpoint: PUT:/v1/User/{id}/settings
         """
         response = put(f'{BASE_URL}v1/User/{citizen2_id}/settings', headers=auth(guardian_token),
@@ -399,7 +377,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_check_theme(self):
         """
         Testing ensuring theme has been updated
-
         Endpoint: GET:/v1/User/{id}/settings
         """
         response = get(f'{BASE_URL}v1/User/{citizen2_id}/settings', headers=auth(guardian_token),
@@ -414,7 +391,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_set_default_countdown_time(self):
         """
         Testing setting default countdown time
-
         Endpoint: PUT:/v1/User/{id}/settings
         """
         response = put(f'{BASE_URL}v1/User/{citizen2_id}/settings', headers=auth(guardian_token),
@@ -427,7 +403,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_check_countdown_timer(self):
         """
         Testing ensuring countdown timer has been updated
-
         Endpoint: GET:/v1/User/{id}/settings
         """
         response = get(f'{BASE_URL}v1/User/{citizen2_id}/settings', headers=auth(guardian_token))
@@ -441,7 +416,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_set_multiple_settings(self):
         """
         Testing setting multiple settings at once
-
         Endpoint: PUT:/v1/User/{id}/settings
         """
         response = put(f'{BASE_URL}v1/User/{citizen2_id}/settings', headers=auth(guardian_token),
@@ -454,7 +428,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_check_multiple_settings(self):
         """
         Testing ensuring settings have been updated
-
         Endpoint: GET:/v1/User/{id}/settings
         """
         response = get(f'{BASE_URL}v1/User/{citizen2_id}/settings', headers=auth(guardian_token))
@@ -480,7 +453,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_get_citizen1_citizens_should_fail(self):
         """
         Testing getting Citizen1's citizens
-
         Endpoint: GET:/v1/User/{userId}/citizens
         """
         response = get(f'{BASE_URL}v1/User/{citizen1_id}/citizens', headers=auth(citizen1_token))
@@ -495,7 +467,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_get_guardian_citizens(self):
         """
         Testing getting Guardian's citizens
-
         Endpoint: GET:/v1/User/{userId}/citizens
         """
         response = get(f'{BASE_URL}v1/User/{guardian_id}/citizens', headers=auth(guardian_token))
@@ -509,7 +480,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_get_citizen1_guardians(self):
         """
         Testing getting Citizen1's guardians
-
         Endpoint: GET:/v1/User/{userId}/guardians
         """
         response = get(f'{BASE_URL}v1/User/{citizen1_id}/guardians', headers=auth(citizen1_token))
@@ -523,7 +493,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_get_guardian_guardians_should_fail(self):
         """
         Testing getting Guardian's guardians
-
         Endpoint: GET:/v1/User/{userId}/guardians
         """
         response = get(f'{BASE_URL}v1/User/{guardian_id}/guardians', headers=auth(guardian_token))
@@ -536,7 +505,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_change_guardian_settings_should_fail(self):
         """
         Testing changing Guardian settings
-
         Endpoint: GET:/v1/User/{id}/settings
         """
         response = get(f'{BASE_URL}v1/User/{guardian_id}/settings', headers=auth(guardian_token))
@@ -549,7 +517,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_change_settings_as_citizen_should_fail(self):
         """
         Testing changing settings as citizen
-
         Endpoint: PUT:/v1/User/{id}/settings
         """
         response = put(f'{BASE_URL}v1/User/{citizen1_id}/settings', headers=auth(citizen1_token),
@@ -564,7 +531,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_change_settings_as_super_user(self):
         """
         Testing changing settings as super user
-
         Endpoint: PUT:/v1/User/{id}/settings
         """
         response = put(f'{BASE_URL}v1/User/{citizen2_id}/settings', headers=auth(super_user_token),
@@ -579,7 +545,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_change_settings_as_department(self):
         """
         Testing changing settings as department
-
         Endpoint: PUT:/v1/User/{id}/settings
         """
         response = put(f'{BASE_URL}v1/User/{citizen2_id}/settings', headers=auth(department_token),
@@ -594,7 +559,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_change_guardian_settings_as_super_user_should_fail(self):
         """
         Testing changing Guardian settings as Super User
-
         Endpoint: PUT:/v1/User/{id}/settings
         """
         response = put(f'{BASE_URL}v1/User/{guardian_id}/settings', headers=auth(super_user_token),
@@ -607,7 +571,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_superuser_can_give_citizen_icon(self):
         """
         Testing if a superuser can set a users icon
-
         Endpoint: PUT:/v1/User/{id}/icon
         """
         data = {'userIcon': self.RAW_IMAGE}
@@ -619,7 +582,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_user_can_set_icon_of_another_user_should_fail(self):
         """
         Testing if a user can change another users icon
-
         Endpoint: PUT:/v1/User/{id}/icon
         """
         data = {'userIcon': self.RAW_IMAGE}
@@ -632,7 +594,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_guardian_can_set_icon_of_another_user(self):
         """
         Testing if a guardian can change another users icon
-
         Endpoint: PUT:/v1/User/{id}/icon
         """
         data = {'userIcon': self.RAW_IMAGE}
@@ -645,7 +606,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_user_can_get_own_icon(self):
         """
         Testing if a user can get own userIcon
-
         Endpoint: GET:/v1/User/{id}/icon
         """
         response = get(f'{BASE_URL}v1/User/{citizen2_id}/icon', headers=auth(citizen2_token))
@@ -659,7 +619,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_user_can_get_specific_user_icon(self):
         """
         Testing if a user can get the userIcon of another user
-
         Endpoint: GET:/v1/User/{id}/icon
         """
         response = get(f'{BASE_URL}v1/User/{citizen2_id}/icon', headers=auth(citizen1_token))
@@ -672,7 +631,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_guardian_can_get_specific_user_icon(self):
         """
         Testing if a guardian can get the userIcon of another user
-
         Endpoint: GET:/v1/User/{id}/icon
         """
         response = get(f'{BASE_URL}v1/User/{citizen2_id}/icon', headers=auth(guardian_token))
@@ -685,7 +643,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_superuser_can_get_specific_user_icon(self):
         """
         Testing if a superuser can get the userIcon of another user
-
         Endpoint: GET:/v1/User/{id}/icon
         """
         response = get(f'{BASE_URL}v1/User/{citizen2_id}/icon', headers=auth(super_user_token))
@@ -699,7 +656,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_superuser_can_get_specific_user_icon_raw(self):
         """
         Testing if a superuser can get the raw userIcon of another user
-
         Endpoint: GET:/v1/User/{id}/icon/raw
         """
         response = get(f'{BASE_URL}v1/User/{citizen2_id}/icon/raw', headers=auth(super_user_token))
@@ -712,7 +668,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_superuser_can_delete_specific_user_icon(self):
         """
         Testing if a superuser can delete the userIcon of another user
-
         Endpoint: DELETE:/v1/User/{id}/icon
         """
         response = delete(f'{BASE_URL}v1/User/{citizen2_id}/icon', headers=auth(super_user_token))
@@ -725,7 +680,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_guardian_add_relation_to_user(self):
         """
         Testing if guardian can add relation to existing citizen
-
         Endpoint: POST:/v1/User/{userId}/citizens/{citizenId}
         """
         response = post(f'{BASE_URL}v1/User/{new_guardian_id}/citizens/{citizen2_id}', headers=auth(new_guardian_token))
@@ -736,7 +690,6 @@ class TestUserController(GIRAFTestCase):
     def test_user_delete_new_guardian(self):
         """
         deleting newly testing guardian
-
         Endpoint: DELETE:/v1/Account/user/{userId}
         """
         response = delete(f'{BASE_URL}v1/Account/user/{new_guardian_id}', headers=auth(super_user_token))

@@ -5,6 +5,7 @@ using GirafRest.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace GirafRest.Shared
 {
@@ -29,9 +30,9 @@ namespace GirafRest.Shared
             {
                 return new ErrorResponse(modelErrorCode.Value, "Invalid model");
             }
-
+            
             week.Name = weekDTO.Name;
-
+            
             Pictogram thumbnail = _giraf._context.Pictograms
                 .FirstOrDefault(p => p.Id == weekDTO.Thumbnail.Id);
             if (thumbnail == null)
@@ -73,17 +74,32 @@ namespace GirafRest.Shared
             {
                 foreach (var activityDTO in from.Activities)
                 {
-                    var picto = await _giraf._context.Pictograms
-                        .Where(p => p.Id == activityDTO.Pictogram.Id).FirstOrDefaultAsync();
+                    
+                    List<Pictogram> pictograms = new List<Pictogram>();
+
+                    foreach (var pictogram in activityDTO.Pictograms)
+                    {
+                        var picto = await _giraf._context.Pictograms
+                            .Where(p => p.Id == pictogram.Id).FirstOrDefaultAsync();
+
+                        if (picto != null)
+                        {
+                            pictograms.Add(picto);
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
 
                     Timer timer = null;
                     if(activityDTO.Timer != null)
                     {
                         timer = await _giraf._context.Timers.Where(t => t.Key == activityDTO.Timer.Key).FirstOrDefaultAsync();
                     }
-                  
-                    if (picto != null)
-                        to.Activities.Add(new Activity(to, picto, activityDTO.Order, activityDTO.State, timer));
+                    
+                    if (pictograms.Any())
+                        to.Activities.Add(new Activity(to, pictograms, activityDTO.Order, activityDTO.State, timer, activityDTO.IsChoiceBoard));
                 }
             }
             return true;
