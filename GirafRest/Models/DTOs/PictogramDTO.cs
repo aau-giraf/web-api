@@ -1,6 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using System.Security.Cryptography;
-using Newtonsoft.Json;
 using System;
 
 namespace GirafRest.Models.DTOs

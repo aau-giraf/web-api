@@ -13,7 +13,7 @@ namespace GirafRest.Migrations
         /// <param name="migrationBuilder">Which MigrationBuilder to use</param>
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-           
+
             migrationBuilder.Sql("DELETE FROM Weeks WHERE GirafUserId is NULL");
 
             migrationBuilder.DropForeignKey(name: "FK_Weeks_AspNetUsers_GirafUserId", table: "Weeks");

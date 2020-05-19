@@ -18,7 +18,7 @@ namespace GirafRest.Setup
             $"{Path.DirectorySeparatorChar}" +
             $"samples.json";
 
-        public SampleDataHandler(){}
+        public SampleDataHandler() { }
         public SampleDataHandler(string path)
         {
             jsonFile = path;
@@ -30,7 +30,7 @@ namespace GirafRest.Setup
             {
                 string jsonString = File.ReadAllText(jsonFile);
                 return JsonConvert.DeserializeObject<SampleData>(jsonString);
-            } 
+            }
             catch (FileNotFoundException e)
             {
                 Console.WriteLine(e.StackTrace);
@@ -100,7 +100,7 @@ namespace GirafRest.Setup
                 {
                     if (day.Id == act.OtherKey)
                     {
-                        actIconTitles.Add(act.Pictogram.Title);
+                        actIconTitles.Add(act.Pictograms.First().Pictogram.Title);
                         actStates.Add(act.State.ToString());
                     }
                 }
@@ -158,8 +158,8 @@ namespace GirafRest.Setup
         public List<SampleDepartment> DepartmentList { get; set; }
         public List<SamplePictogram> PictogramList { get; set; }
         public List<SampleWeekday> WeekdayList { get; set; }
-        public List <SampleWeek> WeekList { get; set; }
-        public List <SampleWeekTemplate> WeekTemplateList { get; set; }
+        public List<SampleWeek> WeekList { get; set; }
+        public List<SampleWeekTemplate> WeekTemplateList { get; set; }
 
         public SampleData()
         {

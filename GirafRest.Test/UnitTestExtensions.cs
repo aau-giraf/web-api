@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Text;
 using GirafRest.Data;
-using System.Threading;
+
 
 namespace GirafRest.Test
 {
@@ -208,6 +208,31 @@ namespace GirafRest.Test
                 }
             }
 
+            private List<Timer> _mockTimers;
+            public List<Timer> MockTimers
+            {
+                get
+                {
+                    if (_mockTimers == null)
+                        _mockTimers = new List<Timer>()
+                        {
+                            new Timer()
+                            {
+                                Key = 1,
+                                StartTime = 1589270757422,
+                                Progress = 0,
+                                FullLength = 2000,
+                                Paused = true
+                            }
+                        };
+                    return _mockTimers;
+                }
+                set
+                {
+
+                }
+            }
+
             private List<Activity> _mockActivities;
             public List<Activity> MockActivities
             {
@@ -216,16 +241,17 @@ namespace GirafRest.Test
                     if (_mockActivities == null)
                         _mockActivities = new List<Activity>()
                         {
-                            new Activity(MockWeeks[0].Weekdays[0], MockPictograms[5], 0, ActivityState.Active){
+                            new Activity(MockWeeks[0].Weekdays[0], new List<Pictogram> {MockPictograms[5]}, 0, ActivityState.Active, MockTimers[0], false){
                                 Key = 1,
                                 Order = 1,
                                 OtherKey = 1,
-                                PictogramKey = 1,
-                                State = ActivityState.Normal
+                                State = ActivityState.Normal,
+                                IsChoiceBoard = false
+                                
                             },
-                            new Activity(MockWeeks[0].Weekdays[1], MockPictograms[6], 1, ActivityState.Canceled),
-                            new Activity(MockWeekTemplates[Template1].Weekdays[1], MockPictograms[5], 0, ActivityState.Active),
-                            new Activity(MockWeekTemplates[Template1].Weekdays[0], MockPictograms[6], 1, ActivityState.Canceled),
+                            new Activity(MockWeeks[0].Weekdays[1], new List<Pictogram> {MockPictograms[6]}, 1, ActivityState.Canceled, null, false),
+                            new Activity(MockWeekTemplates[Template1].Weekdays[1], new List<Pictogram> {MockPictograms[5]}, 0, ActivityState.Active, null, false),
+                            new Activity(MockWeekTemplates[Template1].Weekdays[0], new List<Pictogram> {MockPictograms[6]}, 1, ActivityState.Canceled, null, false),
                         };
 
                     return _mockActivities;
@@ -234,6 +260,28 @@ namespace GirafRest.Test
                 {
                     _mockActivities = value;
                 }
+            }
+
+            private List<PictogramRelation> mockPictogramRelations;
+
+            public IReadOnlyList<PictogramRelation> MockPictogramRelations
+            {
+                get
+                {
+                    if (mockPictogramRelations == null)
+                    {
+                        mockPictogramRelations = new List<PictogramRelation>
+                        {
+                            new PictogramRelation(MockActivities[0], MockPictograms[0])
+                            {
+                                ActivityId = MockActivities[0].Key,
+                                PictogramId = MockPictograms[0].Id
+                            }
+                        };
+                    }
+                    return mockPictogramRelations;
+                }
+
             }
 
             private List<Week> mockWeeks;
@@ -321,6 +369,12 @@ namespace GirafRest.Test
             {
                 get
                 {
+                    Weekday monday = new Weekday() {
+                        Day = Days.Monday,
+                    };
+                    Activity activity = new Activity(monday, new List<Pictogram>(), 0, ActivityState.Active, null, false);
+                    monday.Activities = new List<Activity>() {activity};
+                    
                     if (_mockWeekTemplates == null) {
                         _mockWeekTemplates = new List<WeekTemplate>()
                         {
@@ -330,9 +384,7 @@ namespace GirafRest.Test
                                 Id = 1,
                                 Name = "Template1",
                                 Weekdays = new List<Weekday>(){
-                                    new Weekday(){
-                                        Day = Days.Monday
-                                    },
+                                    monday,
                                     new Weekday(){
                                         Day = Days.Tuesday
                                     },
@@ -564,6 +616,7 @@ namespace GirafRest.Test
                 var mockRelationSet = CreateMockDbSet(MockUserResources);
                 var mockDepRes = CreateMockDbSet(MockDepartmentResources);
                 var mockActivities = CreateMockDbSet(MockActivities);
+                var mockTimers = CreateMockDbSet(MockTimers);
                 var mockDeps = CreateMockDbSet(MockDepartments);
                 //var mockPF = CreateMockDbSet(MockPictograms.Cast<PictoFrame>().ToList());
                 var mockUsers = CreateMockDbSet(MockUsers);
@@ -573,11 +626,13 @@ namespace GirafRest.Test
                 var mockWeekdays = CreateMockDbSet(MockWeeks[0].Weekdays.ToList());
                 var mockWeekTemplates = CreateMockDbSet(MockWeekTemplates);
                 var mockGuardianRelations = CreateMockDbSet(MockGuardianRelations);
+                var mockPictogramRelations = CreateMockDbSet(MockPictogramRelations);
                 var dbMock = new Mock<GirafDbContext>();
                 dbMock.Setup(c => c.Pictograms).Returns(mockSet.Object);
                 dbMock.Setup(c => c.UserResources).Returns(mockRelationSet.Object);
                 dbMock.Setup(c => c.DepartmentResources).Returns(mockDepRes.Object);
                 dbMock.Setup(c => c.Activities).Returns(mockActivities.Object);
+                dbMock.Setup(c => c.Timers).Returns(mockTimers.Object);
                 dbMock.Setup(c => c.Departments).Returns(mockDeps.Object);
                 dbMock.Setup(c => c.Weeks).Returns(mockWeeks.Object);
                 dbMock.Setup(c => c.Weekdays).Returns(mockWeekdays.Object);
@@ -585,6 +640,7 @@ namespace GirafRest.Test
                 dbMock.Setup(c => c.Users).Returns(mockUsers.Object);
                 dbMock.Setup(c => c.Roles).Returns(mockRoles.Object);
                 dbMock.Setup(c => c.UserRoles).Returns(mockUserRoles.Object);
+                dbMock.Setup(c => c.PictogramRelations).Returns(mockPictogramRelations.Object);
 
                 //Make sure that all references are setup - Entity does not handle it for us this time.
                 MockUsers[0].Department = MockDepartments[0];
@@ -677,7 +733,7 @@ namespace GirafRest.Test
 
             var mockSet = new Mock<DbSet<T>>();
             mockSet.As<IAsyncEnumerable<T>>()
-                .Setup(m => m.GetAsyncEnumerator(It.IsAny<CancellationToken>()))
+                .Setup(m => m.GetAsyncEnumerator(It.IsAny<System.Threading.CancellationToken>()))
                 .Returns(new TestDbAsyncEnumerator<T>(data.GetEnumerator()));
             
 

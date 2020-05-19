@@ -1,15 +1,17 @@
+using GirafRest.Models.DTOs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using GirafRest.Models.DTOs;
 
-namespace GirafRest.Models {
+namespace GirafRest.Models
+{
     /// <summary>
     /// A pictogram is an image with an associated title. They are used by Guardians and Citizens and so on to 
     /// communicate visually.
     /// </summary>
-    public class Pictogram {
+    public class Pictogram
+    {
         /// <summary>
         /// Pictogram title/name
         /// </summary>
@@ -41,6 +43,11 @@ namespace GirafRest.Models {
         public ICollection<DepartmentResource> Departments { get; set; }
 
         /// <summary>
+        /// Getting activity relations
+        /// </summary>
+        public ICollection<PictogramRelation> Activities { get; set;  }
+
+        /// <summary>
         /// AccessLevel managing
         /// </summary>
         [Required]
@@ -60,7 +67,8 @@ namespace GirafRest.Models {
         /// <summary>
         /// Empty constructor is required by Newtonsoft.
         /// </summary>
-        public Pictogram(){
+        public Pictogram()
+        {
             Users = new List<UserResource>();
             Departments = new List<DepartmentResource>();
             LastEdit = DateTime.Now;
@@ -75,7 +83,7 @@ namespace GirafRest.Models {
             this.LastEdit = DateTime.Now;
             this.AccessLevel = (AccessLevel)other.AccessLevel;
             this.Title = other.Title;
-            if(other.ImageHash != null)
+            if (other.ImageHash != null)
                 this.ImageHash = other.ImageHash;
         }
 

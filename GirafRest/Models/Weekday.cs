@@ -1,16 +1,16 @@
+using GirafRest.Models.DTOs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using GirafRest.Models.DTOs;
-using Newtonsoft.Json;
 
 namespace GirafRest.Models
 {
     /// <summary>
     /// Possible days; 1 for Monday
     /// </summary>
-    public enum Days {
+    public enum Days
+    {
         /// <summary>
         /// Monday as 1
         /// </summary>
@@ -67,19 +67,19 @@ namespace GirafRest.Models
         /// <summary>
         /// Constructor with including activities
         /// </summary>
-        public Weekday(Days day, List<Pictogram> activityIcons, List<ActivityState> activityStates) : this()
+        public Weekday(Days day, List<List<Pictogram>> pictograms, List<ActivityState> activityStates) : this()
         {
-            if (activityIcons.Count != activityStates.Count)
+            if (pictograms.Count != activityStates.Count)
             {
-                throw new ArgumentException($"{activityIcons.Count} elements are in activityicons, " +
+                throw new ArgumentException($"{pictograms.Count} elements are in activityicons, " +
                                             $"but {activityStates.Count} elements are in activityStates. " +
                                             $"The numbers must match.");
             }
-            
+
             this.Day = day;
-            for (int i = 0; i < activityIcons.Count; i++)
+            for (int i = 0; i < pictograms.Count; i++)
             {
-                this.Activities.Add(new Activity(this, activityIcons[i], i, activityStates[i]));
+                this.Activities.Add(new Activity(this, pictograms[i], i, activityStates[i], null, false));
             }
         }
 

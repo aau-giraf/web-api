@@ -12,5 +12,5 @@
             ImageTitle = imageTitle;
             DepartmentName = departmentName;
         }
-    }  
+    }
 }

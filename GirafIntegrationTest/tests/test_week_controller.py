@@ -1,3 +1,5 @@
+import json
+
 from requests import get, post, put, delete
 import time
 from testlib import order, BASE_URL, auth, is_sequence, GIRAFTestCase
@@ -42,20 +44,56 @@ class TestWeekController(GIRAFTestCase):
 
     @staticmethod
     def day(day_number: int) -> dict:
-        return {'day': day_number, 'activities': [{'pictogram': {'title': 'sig', 'id': 4, 'state': 1,
-                                                                 'lastEdit': '2018-03-28T10:47:51.628333',
-                                                                 'accessLevel': 0}, 'order': 0}]}
+        return {
+            'day': day_number,
+            'activities': [
+                {
+                    'pictograms': [
+                        {
+                            'title': 'sig',
+                            'id': 4,
+                            'state': 1,
+                            'lastEdit': '2018-03-28T10:47:51.628333',
+                            'accessLevel': 0
+                        }
+                    ],
+                    'order': 0,
+                }
+            ]
+        }
 
     @staticmethod
     def different_day(day_number: int) -> dict:
-        return {'day': day_number, 'activities': [{'pictogram': {'title': 'JUNK', 'id': 2, 'state': 3,
-                                                                 'lastEdit': '2017-03-28T10:47:51.628333',
-                                                                 'accessLevel': 0}, 'order': 0}]}
+        return {
+            'day': day_number,
+            'activities': [
+                {
+                    'pictograms': [
+                        {
+                            'title': 'JUNK',
+                            'id': 2,
+                            'state': 3,
+                            'lastEdit': '2017-03-28T10:47:51.628333',
+                            'accessLevel': 0
+                        }
+                    ],
+                    'order': 0
+                }
+            ]
+        }
 
     @staticmethod
     def week(days: list) -> dict:
-        return {'thumbnail': {'title': 'simpelt', 'id': 5, 'lastEdit': '2018-04-20T13:17:51.033Z', 'accessLevel': 0},
-                'name': 'Coronabots roll out', 'id': 0, 'days': days}
+        return {
+            'thumbnail': {
+                'title': 'simpelt',
+                'id': 5,
+                'lastEdit': '2018-04-20T13:17:51.033Z',
+                'accessLevel': 0
+            },
+            'name': 'Coronabots roll out',
+            'id': 0, 'days': days
+        }
 
     @order
     def test_week_can_login_as_super_user(self):

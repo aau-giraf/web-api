@@ -1,10 +1,7 @@
-﻿using System;
+﻿using GirafRest.Models.DTOs;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
-using GirafRest.Models.DTOs;
-using GirafRest.Models.Responses;
 
 namespace GirafRest.Models
 {
@@ -121,12 +118,12 @@ namespace GirafRest.Models
         public void InitialiseWeekDayColors()
         {
             this.WeekDayColors = new List<WeekDayColor>(){
-                new WeekDayColor(){Day = Days.Monday, HexColor = "#067700", SettingId = Key},
-                new WeekDayColor(){Day = Days.Tuesday, HexColor = "#8c1086", SettingId = Key},
-                new WeekDayColor(){Day = Days.Wednesday, HexColor = "#ff7f00", SettingId = Key},
-                new WeekDayColor(){Day = Days.Thursday, HexColor = "#0017ff", SettingId = Key},
-                new WeekDayColor(){Day = Days.Friday, HexColor = "#ffdd00", SettingId = Key},
-                new WeekDayColor(){Day = Days.Saturday, HexColor = "#ff0102", SettingId = Key},
+                new WeekDayColor(){Day = Days.Monday, HexColor = "#08a045", SettingId = Key},
+                new WeekDayColor(){Day = Days.Tuesday, HexColor = "#540d6e", SettingId = Key},
+                new WeekDayColor(){Day = Days.Wednesday, HexColor = "#f77f00", SettingId = Key},
+                new WeekDayColor(){Day = Days.Thursday, HexColor = "#004777", SettingId = Key},
+                new WeekDayColor(){Day = Days.Friday, HexColor = "#f9c80e", SettingId = Key},
+                new WeekDayColor(){Day = Days.Saturday, HexColor = "#db2b39", SettingId = Key},
                 new WeekDayColor(){Day = Days.Sunday, HexColor = "#ffffff", SettingId = Key},
 
             };

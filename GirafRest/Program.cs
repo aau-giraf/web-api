@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using GirafRest.Setup;
+﻿using GirafRest.Setup;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using MySql.Data.MySqlClient;
 using Microsoft.Extensions.Logging;
+using MySql.Data.MySqlClient;
+using System;
 
 namespace GirafRest
 {
@@ -31,17 +29,20 @@ namespace GirafRest
             //Parse all the program arguments and stop execution if any invalid arguments were found.
             var pa = new ProgramArgumentParser();
             bool validArguments = pa.CheckProgramArguments(args);
-            if(!validArguments) return;
+            if (!validArguments) return;
 
             //Build the host from the given arguments.
-            try{
+            try
+            {
                 BuildWebHost(args).Run();
             }
-            catch(MySqlException e){
+            catch (MySqlException e)
+            {
                 Console.WriteLine("Something went wrong in connecting to the MySql server: " +
-                                  $"{e.Message}");              
+                                  $"{e.Message}");
             }
-            catch(Exception e){
+            catch (Exception e)
+            {
                 Console.WriteLine("Error: " + e.Message);
             }
         }
@@ -58,13 +59,13 @@ namespace GirafRest
                .UseStartup<Startup>()
                .ConfigureAppConfiguration((hostContext, config) =>
                {
-                   config.Sources.Clear();            
+                   config.Sources.Clear();
                })
                 .ConfigureLogging((hostingContext, logging) =>
                 {
                     logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
                 })
-               .UseDefaultServiceProvider(options =>options.ValidateScopes = false)
+               .UseDefaultServiceProvider(options => options.ValidateScopes = false)
                .UseApplicationInsights()
                .Build();
     }

@@ -26,6 +26,6 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// DO NOT DELETE THIS! NEWTONSOFT REQUIRES AN EMPTY CONSTRUCTOR!
         /// </summary>
-        public ImageDTO() {}
+        public ImageDTO() { }
     }
 }

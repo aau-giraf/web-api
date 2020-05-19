@@ -1,18 +1,18 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+using GirafRest.Extensions;
 using GirafRest.Models;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Logging;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
 using GirafRest.Services;
-using Microsoft.AspNetCore.Identity;
-using GirafRest.Extensions;
-using System;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace GirafRest.Controllers
 {
@@ -68,7 +68,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="id">The id of the <see cref="Department"/> to retrieve.</param>
         /// <returns>The department as a DepartmentDTO if success else UserNotfound, NotAuthorised or NotFound</returns>
-        [HttpGet("{id}", Name="GetDepartment")]
+        [HttpGet("{id}", Name = "GetDepartment")]
         [ProducesResponseType(typeof(SuccessResponse<DepartmentDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -119,7 +119,7 @@ namespace GirafRest.Controllers
 
             var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
 
-            currentUser =  _giraf._context.Users.Include(a => a.Department)
+            currentUser = _giraf._context.Users.Include(a => a.Department)
                                                .FirstOrDefault(d => d.UserName == currentUser.UserName);
 
             var isSuperUser = await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser);
@@ -212,7 +212,7 @@ namespace GirafRest.Controllers
                             .FirstOrDefaultAsync();
                         if (res == null)
                             return BadRequest(new ErrorResponse(
-                                ErrorCode.InvalidProperties, 
+                                ErrorCode.InvalidProperties,
                                 "The list of resources contained an invalid resource id: " + reso
                             ));
                         var dr = new DepartmentResource(department, res);
@@ -222,11 +222,11 @@ namespace GirafRest.Controllers
 
                 _giraf._context.Departments.Add(department);
                 _giraf._context.SaveChanges();
-                
+
                 //Create a new user with the supplied information
 
-                var departmentUser = new GirafUser(depDTO.Name, depDTO.Name, department, GirafRoles.Department) {IsDepartment = true};
-                
+                var departmentUser = new GirafUser(depDTO.Name, depDTO.Name, department, GirafRoles.Department) { IsDepartment = true };
+
                 //department.Members.Add(user);
 
                 var identityUser = await _giraf._userManager.CreateAsync(departmentUser, "0000");
@@ -275,16 +275,17 @@ namespace GirafRest.Controllers
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing userId"));
 
             var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
-            if(currentUser == null)
+            if (currentUser == null)
                 return Unauthorized(new ErrorResponse(ErrorCode.UserNotFound, "No user logged in"));
 
             var role = await _roleManager.findUserRole(_giraf._userManager, currentUser);
 
-            if(role == GirafRoles.Department || role == GirafRoles.Guardian){
+            if (role == GirafRoles.Department || role == GirafRoles.Guardian)
+            {
                 // lets check that we are in the correct department
                 if (currentUser.DepartmentKey != departmentId)
                 {
-                    return StatusCode(StatusCodes.Status403Forbidden, 
+                    return StatusCode(StatusCodes.Status403Forbidden,
                         new ErrorResponse(ErrorCode.NotAuthorized, "Not authorized / department is incorrect"));
                 }
             }
@@ -310,7 +311,7 @@ namespace GirafRest.Controllers
 
             // only makes sense to add a guardian or citizen to a department
             if (RoleOfUserToAdd == GirafRoles.SuperUser || RoleOfUserToAdd == GirafRoles.Department)
-                return StatusCode(StatusCodes.Status403Forbidden, 
+                return StatusCode(StatusCodes.Status403Forbidden,
                     new ErrorResponse(ErrorCode.Forbidden, "Superusers or departments cannot be added to departments"));
 
             if (user == null)
@@ -362,7 +363,7 @@ namespace GirafRest.Controllers
 
             var resourceOwned = await _giraf.CheckPrivateOwnership(resource, usr);
             if (!resourceOwned)
-                return StatusCode(StatusCodes.Status403Forbidden, 
+                return StatusCode(StatusCodes.Status403Forbidden,
                     new ErrorResponse(ErrorCode.NotAuthorized, "User does not own the resource"));
 
             //Check if the department already owns the resource
@@ -419,7 +420,7 @@ namespace GirafRest.Controllers
             if (department == null)
                 return NotFound(new ErrorResponse(ErrorCode.DepartmentNotFound, "Department not found"));
 
-            if(nameDTO == null || string.IsNullOrEmpty(nameDTO.Name))
+            if (nameDTO == null || string.IsNullOrEmpty(nameDTO.Name))
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Name is missing"));
 
             department.Name = nameDTO.Name;
@@ -490,7 +491,7 @@ namespace GirafRest.Controllers
 
             var resourceOwned = await _giraf.CheckProtectedOwnership(resource, usr);
             if (!resourceOwned)
-                return StatusCode(StatusCodes.Status403Forbidden, 
+                return StatusCode(StatusCodes.Status403Forbidden,
                     new ErrorResponse(ErrorCode.NotAuthorized, "User does not own resource"));
 
             //Check if the department already owns the resource and remove if so.
@@ -498,7 +499,7 @@ namespace GirafRest.Controllers
                                          .Where(dr => dr.PictogramKey == resource.Id && dr.OtherKey == department.Key)
                 .FirstOrDefaultAsync();
             if (drrelation == null)
-                return StatusCode(StatusCodes.Status403Forbidden, 
+                return StatusCode(StatusCodes.Status403Forbidden,
                     new ErrorResponse(ErrorCode.ResourceNotOwnedByDepartment, "Resource not owned by department"));
 
             usr.Department.Resources.Remove(drrelation);

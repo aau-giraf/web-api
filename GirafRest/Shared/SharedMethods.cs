@@ -1,10 +1,11 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using GirafRest.Models;
+﻿using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
 using GirafRest.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace GirafRest.Shared
 {
@@ -34,7 +35,7 @@ namespace GirafRest.Shared
             
             Pictogram thumbnail = _giraf._context.Pictograms
                 .FirstOrDefault(p => p.Id == weekDTO.Thumbnail.Id);
-            if(thumbnail == null)
+            if (thumbnail == null)
                 return new ErrorResponse(ErrorCode.MissingProperties, "Missing thumbnail");
 
             week.Thumbnail = thumbnail;
@@ -67,16 +68,38 @@ namespace GirafRest.Shared
         /// <param name="to">Pictograms and choices will be added to this object.</param>
         /// <param name="from">Pictograms and choices will be read from this object.</param>
         /// <param name="_giraf">IGirafService for injection.</param>
-        private static async Task<bool> AddPictogramsToWeekday(Weekday to, WeekdayDTO from, IGirafService _giraf){
-            if(from.Activities != null) 
+        private static async Task<bool> AddPictogramsToWeekday(Weekday to, WeekdayDTO from, IGirafService _giraf)
+        {
+            if (from.Activities != null)
             {
                 foreach (var activityDTO in from.Activities)
                 {
-                    var picto = await _giraf._context.Pictograms
-                        .Where(p => p.Id == activityDTO.Pictogram.Id).FirstOrDefaultAsync();
                     
-                    if (picto != null)
-                        to.Activities.Add(new Activity(to, picto, activityDTO.Order, activityDTO.State));
+                    List<Pictogram> pictograms = new List<Pictogram>();
+
+                    foreach (var pictogram in activityDTO.Pictograms)
+                    {
+                        var picto = await _giraf._context.Pictograms
+                            .Where(p => p.Id == pictogram.Id).FirstOrDefaultAsync();
+
+                        if (picto != null)
+                        {
+                            pictograms.Add(picto);
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+
+                    Timer timer = null;
+                    if(activityDTO.Timer != null)
+                    {
+                        timer = await _giraf._context.Timers.Where(t => t.Key == activityDTO.Timer.Key).FirstOrDefaultAsync();
+                    }
+                    
+                    if (pictograms.Any())
+                        to.Activities.Add(new Activity(to, pictograms, activityDTO.Order, activityDTO.State, timer, activityDTO.IsChoiceBoard));
                 }
             }
             return true;

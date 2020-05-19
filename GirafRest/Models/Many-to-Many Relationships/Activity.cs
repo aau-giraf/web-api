@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Collections.Generic;
 
 namespace GirafRest.Models
 {
@@ -13,7 +14,7 @@ namespace GirafRest.Models
         /// </summary>
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public long Key {get; set;}
+        public long Key { get; set; }
 
         /// <summary>
         /// The key of the weekday to which the resource is attached.
@@ -24,19 +25,13 @@ namespace GirafRest.Models
         /// A reference to the actual weekday.
         /// </summary>
         [ForeignKey("OtherKey")]
-        public virtual Weekday Other {get; set;}
+        public virtual Weekday Other { get; set; }
 
         /// <summary>
-        /// The key of the involved resource.
+        /// The relations between pictogram and activity
         /// </summary>
-        [Required]
-        public long PictogramKey { get; set; }
-        /// <summary>
-        /// A reference to the actual resource.
-        /// </summary>
-        [ForeignKey("PictogramKey")]
-        public virtual Pictogram Pictogram { get; set; }
-
+        public virtual ICollection<PictogramRelation> Pictograms { get; set; }
+        
         /// <summary>
         /// Nullable key for TimerKey
         /// </summary>
@@ -60,24 +55,47 @@ namespace GirafRest.Models
         public int Order { get; set; }
 
         /// <summary>
+        /// ChoiceBoard
+        /// </summary>
+        public bool IsChoiceBoard { get; set; }
+
+        /// <summary>
         /// Creates a new many-to-many relationship between a weekday and a resource.
         /// </summary>
         /// <param name="weekday">The involved weekday.</param>
-        /// <param name="pictogram">The activity's pictogram.</param>
+        /// <param name="pictograms">The activity's pictograms.</param>
         /// <param name="order">The activity's order.</param>
         /// <param name="state">The activity's current state.</param>
-        public Activity(Weekday weekday, Pictogram pictogram, int order, ActivityState state)
+        /// <param name="ischoiceboard">The activity's choiceboard state.</param>
+        public Activity(Weekday weekday, List<Pictogram> pictograms, int order, ActivityState state, Timer timer, bool choiceBoard)
         {
             this.Other = weekday;
-            this.PictogramKey = pictogram.Id;
-            this.Pictogram = pictogram;
             this.Order = order;
             this.State = state;
+            this.Timer = timer;
+            this.IsChoiceBoard = choiceBoard;
+            this.Pictograms = new List<PictogramRelation>();
+            if (pictograms != null)
+            {
+                AddPictograms(pictograms);
+            }
+        }
+
+        public void AddPictogram(Pictogram pictogram) {
+            this.Pictograms.Add(new PictogramRelation(this, pictogram));
+        }
+
+        public void AddPictograms(List<Pictogram> pictograms) {
+            foreach (var pictogram in pictograms) 
+            {
+                AddPictogram(pictogram);
+            }
         }
 
         /// <summary>
         /// Newtonsoft (JSON Generation) needs empty constructor. Don't delete.
         /// </summary>
-        public Activity(){}
+        public Activity() { }
     }
+
 }

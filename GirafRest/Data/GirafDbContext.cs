@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using GirafRest.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations.Schema;
 
 #pragma warning disable 1591
 namespace GirafRest.Data
@@ -28,6 +23,7 @@ namespace GirafRest.Data
         public virtual DbSet<Activity> Activities { get; set; }
         public virtual DbSet<Timer> Timers { get; set; }
         public virtual DbSet<GuardianRelation> GuardianRelations { get; set; }
+        public virtual DbSet<PictogramRelation> PictogramRelations { get; set; }
         public virtual DbSet<WeekDayColor> WeekDayColors { get; set; }
         protected GirafDbContext() { }
 
@@ -46,8 +42,8 @@ namespace GirafRest.Data
 
             //Indexes
             builder.Entity<Department>().HasIndex(dep => dep.Name).IsUnique().IsClustered();
-            builder.Entity<Pictogram>().HasIndex(pic => new {pic.Id, pic.Title}).IsUnique().IsClustered();
-            builder.Entity<Weekday>().HasIndex(day => new {day.Id}).IsUnique().IsClustered();
+            builder.Entity<Pictogram>().HasIndex(pic => new { pic.Id, pic.Title }).IsUnique().IsClustered();
+            builder.Entity<Weekday>().HasIndex(day => new { day.Id }).IsUnique().IsClustered();
             builder.Entity<Week>().HasIndex(week => week.Id).IsUnique().IsClustered();
             builder.Entity<GirafUser>().HasIndex(user => new { user.Id, user.UserName }).IsUnique().IsClustered();
 
@@ -106,22 +102,16 @@ namespace GirafRest.Data
             //Configure a many-to-many relationship between Weekday and Resource(Pictogram)
             builder.Entity<Activity>()
                 .HasOne<Weekday>(wr => wr.Other)
-                   .WithMany(w => w.Activities)
+                .WithMany(w => w.Activities)
                 .HasForeignKey(wr => wr.OtherKey)
-                .OnDelete(DeleteBehavior.Cascade);
-            
-            builder.Entity<Activity>()
-                .HasOne<Pictogram>(wr => wr.Pictogram)
-                .WithMany()
-                .HasForeignKey(wr => wr.PictogramKey)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<Activity>()
                 .HasOne<Timer>(ac => ac.Timer)
                 .WithMany()
                 .HasForeignKey(ac => ac.TimerKey)
-                .OnDelete(DeleteBehavior.Cascade);
-            
+                .OnDelete(DeleteBehavior.SetNull);
+
             // Configure that a citizen can have many guardians and that a citizen can have many guardians
             builder.Entity<GuardianRelation>()
                    .HasOne(gr => gr.Guardian)
@@ -135,6 +125,23 @@ namespace GirafRest.Data
                    .WithMany(c => c.Guardians)
                    .HasForeignKey(mg => mg.CitizenId)
                    .OnDelete(DeleteBehavior.Cascade);
+
+            // The pivot tables for the many-many between an activity and pictograms
+            builder.Entity<PictogramRelation>()
+                .HasKey(x => new {x.ActivityId, x.PictogramId});
+                
+            builder.Entity<PictogramRelation>()
+                    .HasOne(pr => pr.Activity)
+                    .WithMany(ac => ac.Pictograms)
+                    .HasForeignKey(pr => pr.ActivityId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<PictogramRelation>()
+                .HasOne(pr => pr.Pictogram)
+                .WithMany(p => p.Activities)
+                .HasForeignKey(pr => pr.PictogramId)
+                .OnDelete(DeleteBehavior.Cascade);
+
 
             // Configure a one-to-many relationship setting and weekdaycolors
             builder.Entity<Setting>()

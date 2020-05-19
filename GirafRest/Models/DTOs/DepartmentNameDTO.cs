@@ -1,5 +1,4 @@
-﻿using System;
-namespace GirafRest
+﻿namespace GirafRest
 {
     /// <summary>
     /// DTO for Department Name
@@ -27,6 +26,6 @@ namespace GirafRest
         /// <summary>
         /// Empty constructor for JSON Generation
         /// </summary>
-        public DepartmentNameDTO() {}
+        public DepartmentNameDTO() { }
     }
 }

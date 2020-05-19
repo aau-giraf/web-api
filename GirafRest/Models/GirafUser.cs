@@ -1,10 +1,8 @@
+using GirafRest.Models.DTOs;
+using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using GirafRest.Models.DTOs;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace GirafRest.Models
 {
@@ -13,7 +11,7 @@ namespace GirafRest.Models
     /// </summary>
     [Table("User")]
     public class GirafUser : IdentityUser
-    {       
+    {
         /// <summary>
         /// Whether or not the current user is a DepartmentUser
         /// </summary>
@@ -78,7 +76,7 @@ namespace GirafRest.Models
             this.Citizens = new List<GuardianRelation>();
             this.Guardians = new List<GuardianRelation>();
         }
-        
+
         private void InitialiseData()
         {
             this.Settings = new Setting();
@@ -93,7 +91,8 @@ namespace GirafRest.Models
         /// Iteratr citizens for calling AddCitizen
         /// </summary>
         /// <param name="citizens"></param>
-        public void AddCitizens(List<GirafUser> citizens){
+        public void AddCitizens(List<GirafUser> citizens)
+        {
             foreach (var citizen in citizens)
             {
                 AddCitizen(citizen);
@@ -152,6 +151,6 @@ namespace GirafRest.Models
             InitialiseData();
         }
 
-       
+
     }
 }
