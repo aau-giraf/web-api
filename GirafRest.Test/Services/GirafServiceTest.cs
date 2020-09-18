@@ -119,7 +119,7 @@ namespace GirafRest.Test.Services
 
             //5 requests to forces the 429 reponse
             HttpResponseMessage response = null;
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 50; i++)
             {
                 response = await _client.GetAsync("/");
             }
