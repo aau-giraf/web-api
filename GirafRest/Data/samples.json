@@ -3,51 +3,6 @@
   "UserList": [
     {
       "$id": "2",
-      "Name": "Simon",
-      "DisplayName": "Simon Sim",
-      "DepartmentName": "Tobias' stue for godt humør",
-      "Role": "Citizen",
-      "Weeks": [],
-      "Password": "AQAAAAEAACcQAAAAEOKOFQSIbS0nVq6eI3MZGWj/58anzUa4Ib6pb3+HMLCcN4zuYxwL5bC7tDWIL8XB8A=="
-    },
-    {
-      "$id": "3",
-      "Name": "Lee",
-      "DisplayName": "Mr. Lee",
-      "DepartmentName": "Bajer plejen",
-      "Role": "SuperUser",
-      "Weeks": [],
-      "Password": "AQAAAAEAACcQAAAAEJ9tEtkcIQrvRxX+Mb4Q18zoah/al/OQOfbLSOh8lC1E/553iGPr1ENmGV2KRQs/+w=="
-    },
-    {
-      "$id": "4",
-      "Name": "Decker",
-      "DisplayName": "Deck",
-      "DepartmentName": "Tobias' stue for godt humør",
-      "Role": "Citizen",
-      "Weeks": [],
-      "Password": "AQAAAAEAACcQAAAAEECklizkkftT7R7yz80g1o13NmoDVcbVWXC7+5OULbMvhck4xikxKszWtqC64v6ing=="
-    },
-    {
-      "$id": "5",
-      "Name": "test_bruger",
-      "DisplayName": "Test",
-      "DepartmentName": "Tobias' stue for godt humør",
-      "Role": "Citizen",
-      "Weeks": [],
-      "Password": "AQAAAAEAACcQAAAAEFy89Ct/FKAPwyeV/Tq1oVAMtJM/tpPeN2wlXy1Usk7gsVxU4dDQTfV/MI1FHJ8X+Q=="
-    },
-    {
-      "$id": "6",
-      "Name": "Tobias",
-      "DisplayName": "Tobias Tobiassss",
-      "DepartmentName": "Tobias' stue for godt humør",
-      "Role": "Department",
-      "Weeks": [],
-      "Password": "AQAAAAEAACcQAAAAEPj/HBhRpCEG0lIAE1TrbNISfMif5ardGhsUeybKA2n6DqnXRYN/xNbJbWysWaGlLg=="
-    },
-    {
-      "$id": "7",
       "Name": "Kurt",
       "DisplayName": "Kurt Andersen",
       "DepartmentName": "Tobias' stue for godt humør",
@@ -55,655 +10,691 @@
       "Weeks": [
         "Normal Uge"
       ],
-      "Password": "AQAAAAEAACcQAAAAEDX7pXTRyIPov9Ve3Qg5xvPDiEuTYthVjiJ4EvmkIUI6eN+SLlFzBD6lJhGa+dOVow=="
+      "Password": "AQAAAAEAACcQAAAAELVr0vE4abptLCJYAs+eyg8caeXXstyNSvwyUOEaKOZiJugouPBmFXPjkYJTt6IzYg=="
     },
     {
-      "$id": "8",
+      "$id": "3",
       "Name": "Graatand",
       "DisplayName": "Harald Graatand",
       "DepartmentName": "Tobias' stue for godt humør",
       "Role": "Guardian",
       "Weeks": [],
-      "Password": "AQAAAAEAACcQAAAAEOFH/bKUe6Jh2a4HO3ogbvaHenJi7Mjf7fX21xXHAlpIyhkEWoshdMrh9k564Ky2UQ=="
+      "Password": "AQAAAAEAACcQAAAAEM3xe7sReFnmbLmux9SZIao7ousXhjsXvsBtp7YypKI7IWpLk2hWAditbgBpsG84wA=="
+    },
+    {
+      "$id": "4",
+      "Name": "Tobias",
+      "DisplayName": "Tobias Tobiassss",
+      "DepartmentName": "Tobias' stue for godt humør",
+      "Role": "Department",
+      "Weeks": [],
+      "Password": "AQAAAAEAACcQAAAAEKoUa+gCK8vV+MPytoFmTQtCeKXldl8iNQshUqPbddbYwtEUuLqOIFgrwXnk28MV4Q=="
+    },
+    {
+      "$id": "5",
+      "Name": "Lee",
+      "DisplayName": "Mr. Lee",
+      "DepartmentName": "Bajer plejen",
+      "Role": "SuperUser",
+      "Weeks": [],
+      "Password": "AQAAAAEAACcQAAAAEMjyzaYAmxTD3Bt5W6qDaJdxVyyhtR4+Bv2YXPcQMet4ldDtZCGHQCumhAdT1pUZ0Q=="
+    },
+    {
+      "$id": "6",
+      "Name": "Decker",
+      "DisplayName": "Deck",
+      "DepartmentName": "Tobias' stue for godt humør",
+      "Role": "Citizen",
+      "Weeks": [],
+      "Password": "AQAAAAEAACcQAAAAEGUUx404Rft3qFzgb3IhDhV2T4Ei3F781QkfDZ6L9eH08y6pMkhdAx1MO1d/CKAqYQ=="
+    },
+    {
+      "$id": "7",
+      "Name": "Simon",
+      "DisplayName": "Simon Sim",
+      "DepartmentName": "Tobias' stue for godt humør",
+      "Role": "Citizen",
+      "Weeks": [],
+      "Password": "AQAAAAEAACcQAAAAEM0Mu+hJSnoiRy/Hz8LOD+ruDyNl3MHfpJdjCj56tf0OjbG26Y7U1b6vmWJ5ump26g=="
     }
   ],
   "DepartmentList": [
     {
-      "$id": "9",
+      "$id": "8",
       "Name": "Bajer plejen"
     },
     {
-      "$id": "10",
+      "$id": "9",
       "Name": "Tobias' stue for godt humør"
     }
   ],
   "PictogramList": [
     {
-      "$id": "11",
+      "$id": "10",
       "Title": "som",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "12",
+      "$id": "11",
       "Title": "gul",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "13",
+      "$id": "12",
       "Title": "farve",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "14",
+      "$id": "13",
       "Title": "alfabet",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "15",
+      "$id": "14",
       "Title": "alle",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "16",
+      "$id": "15",
       "Title": "alting",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "17",
+      "$id": "16",
       "Title": "antal",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "18",
+      "$id": "17",
       "Title": "berøre",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "19",
+      "$id": "18",
       "Title": "bogstav",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "20",
+      "$id": "19",
       "Title": "delmængde",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "21",
+      "$id": "20",
       "Title": "division",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "22",
+      "$id": "21",
       "Title": "gylden",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "23",
+      "$id": "22",
       "Title": "en",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "24",
+      "$id": "23",
       "Title": "fem",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "25",
+      "$id": "24",
       "Title": "grå",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "26",
+      "$id": "25",
       "Title": "femininum",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "27",
+      "$id": "26",
       "Title": "figurer",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "28",
+      "$id": "27",
       "Title": "fire",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "29",
+      "$id": "28",
       "Title": "former",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "30",
+      "$id": "29",
       "Title": "fredsdue",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "31",
+      "$id": "30",
       "Title": "frihed",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "32",
+      "$id": "31",
       "Title": "færdig",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "33",
+      "$id": "32",
       "Title": "geometriske",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "34",
+      "$id": "33",
       "Title": "fantastisk",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "35",
+      "$id": "34",
       "Title": "heldig",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "36",
+      "$id": "35",
       "Title": "nnummer",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "37",
+      "$id": "36",
       "Title": "nederste",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "38",
+      "$id": "37",
       "Title": "cat17",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "39",
+      "$id": "38",
       "Title": "numer",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "40",
+      "$id": "39",
       "Title": "hunkøn",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "41",
+      "$id": "40",
       "Title": "hvid",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "42",
+      "$id": "41",
       "Title": "hvilken",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "43",
+      "$id": "42",
       "Title": "hørelse",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "44",
+      "$id": "43",
       "Title": "intet",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "45",
+      "$id": "44",
       "Title": "j",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "46",
+      "$id": "45",
       "Title": "komme",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "47",
+      "$id": "46",
       "Title": "kvinde",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "48",
+      "$id": "47",
       "Title": "langt",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "49",
+      "$id": "48",
       "Title": "lilla",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "50",
+      "$id": "49",
       "Title": "line",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "51",
+      "$id": "50",
       "Title": "lysegrøn",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "52",
+      "$id": "51",
       "Title": "lægge",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "53",
+      "$id": "52",
       "Title": "maskulin",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "54",
+      "$id": "53",
       "Title": "med",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "55",
+      "$id": "54",
       "Title": "mere arbejde",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "56",
+      "$id": "55",
       "Title": "midterste",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "57",
+      "$id": "56",
       "Title": "mindre arbejde",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "58",
+      "$id": "57",
       "Title": "multiplikation",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "59",
+      "$id": "58",
       "Title": "mørkeblå",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "60",
+      "$id": "59",
       "Title": "mørkegrøn",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "61",
+      "$id": "60",
       "Title": "godt",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "62",
+      "$id": "61",
       "Title": "nul",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "63",
+      "$id": "62",
       "Title": "fra",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "64",
+      "$id": "63",
       "Title": "cat16",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "65",
+      "$id": "64",
       "Title": "regnestykke",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "66",
+      "$id": "65",
       "Title": "også",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "67",
+      "$id": "66",
       "Title": "ok",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "68",
+      "$id": "67",
       "Title": "nuværende",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "69",
+      "$id": "68",
       "Title": "orange",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "70",
+      "$id": "69",
       "Title": "ovenfor",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "71",
+      "$id": "70",
       "Title": "parantes",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "72",
+      "$id": "71",
       "Title": "parentes",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "73",
+      "$id": "72",
       "Title": "pege",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "74",
+      "$id": "73",
       "Title": "pink",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "75",
+      "$id": "74",
       "Title": "q",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "76",
+      "$id": "75",
       "Title": "regnestykke1",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "77",
+      "$id": "76",
       "Title": "sort",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "78",
+      "$id": "77",
       "Title": "respekt",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "79",
+      "$id": "78",
       "Title": "rød",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "80",
+      "$id": "79",
       "Title": "sammen",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "81",
+      "$id": "80",
       "Title": "sejt",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "82",
+      "$id": "81",
       "Title": "selv",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "83",
+      "$id": "82",
       "Title": "sig",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "84",
+      "$id": "83",
       "Title": "simpelt",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "85",
+      "$id": "84",
       "Title": "sjovt",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "86",
+      "$id": "85",
       "Title": "slut",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "87",
+      "$id": "86",
       "Title": "Epik",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "88",
+      "$id": "87",
       "Title": "starte",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "89",
+      "$id": "88",
       "Title": "stjerne",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "90",
+      "$id": "89",
       "Title": "omdømme",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "91",
+      "$id": "90",
       "Title": "cat15",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "92",
+      "$id": "91",
       "Title": "nærme",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "93",
+      "$id": "92",
       "Title": "symbol",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "94",
+      "$id": "93",
       "Title": "synssans",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "95",
+      "$id": "94",
       "Title": "sætte",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "96",
+      "$id": "95",
       "Title": "sølv",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "97",
+      "$id": "96",
       "Title": "større end",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "98",
+      "$id": "97",
       "Title": "tegn",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "99",
+      "$id": "98",
       "Title": "terning",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "100",
+      "$id": "99",
       "Title": "tiders",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "101",
+      "$id": "100",
       "Title": "cat1",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "102",
+      "$id": "101",
       "Title": "cat2",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "103",
+      "$id": "102",
       "Title": "cat0",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "104",
+      "$id": "103",
       "Title": "cat4",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "105",
+      "$id": "104",
       "Title": "cat14",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "106",
+      "$id": "105",
       "Title": "cat13",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "107",
+      "$id": "106",
       "Title": "cat12",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "108",
+      "$id": "107",
       "Title": "cat3",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "109",
+      "$id": "108",
       "Title": "cat10",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "110",
+      "$id": "109",
       "Title": "cat11",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "111",
+      "$id": "110",
       "Title": "cat8",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "112",
+      "$id": "111",
       "Title": "cat7",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "113",
+      "$id": "112",
       "Title": "cat6",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "114",
+      "$id": "113",
       "Title": "cat5",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
     },
     {
-      "$id": "115",
+      "$id": "114",
       "Title": "cat9",
       "AccessLevel": "PUBLIC",
       "ImageHash": "secure hash"
@@ -711,7 +702,7 @@
   ],
   "WeekdayList": [
     {
-      "$id": "116",
+      "$id": "115",
       "Day": 1,
       "ActivityIconTitles": [
         "antal",
@@ -729,7 +720,7 @@
       ]
     },
     {
-      "$id": "117",
+      "$id": "116",
       "Day": 5,
       "ActivityIconTitles": [
         "delmængde",
@@ -741,7 +732,7 @@
       ]
     },
     {
-      "$id": "118",
+      "$id": "117",
       "Day": 4,
       "ActivityIconTitles": [
         "berøre",
@@ -757,7 +748,7 @@
       ]
     },
     {
-      "$id": "119",
+      "$id": "118",
       "Day": 3,
       "ActivityIconTitles": [
         "femininum",
@@ -775,7 +766,7 @@
       ]
     },
     {
-      "$id": "120",
+      "$id": "119",
       "Day": 2,
       "ActivityIconTitles": [
         "division",
@@ -791,7 +782,7 @@
       ]
     },
     {
-      "$id": "121",
+      "$id": "120",
       "Day": 7,
       "ActivityIconTitles": [
         "alting",
@@ -803,7 +794,7 @@
       ]
     },
     {
-      "$id": "122",
+      "$id": "121",
       "Day": 6,
       "ActivityIconTitles": [
         "berøre",
@@ -815,7 +806,7 @@
       ]
     },
     {
-      "$id": "123",
+      "$id": "122",
       "Day": 5,
       "ActivityIconTitles": [
         "delmængde",
@@ -827,7 +818,7 @@
       ]
     },
     {
-      "$id": "124",
+      "$id": "123",
       "Day": 4,
       "ActivityIconTitles": [
         "berøre",
@@ -843,7 +834,7 @@
       ]
     },
     {
-      "$id": "125",
+      "$id": "124",
       "Day": 3,
       "ActivityIconTitles": [
         "femininum",
@@ -861,7 +852,7 @@
       ]
     },
     {
-      "$id": "126",
+      "$id": "125",
       "Day": 2,
       "ActivityIconTitles": [
         "division",
@@ -877,7 +868,7 @@
       ]
     },
     {
-      "$id": "127",
+      "$id": "126",
       "Day": 1,
       "ActivityIconTitles": [
         "Epik",
@@ -895,7 +886,7 @@
       ]
     },
     {
-      "$id": "128",
+      "$id": "127",
       "Day": 6,
       "ActivityIconTitles": [
         "division",
@@ -907,7 +898,7 @@
       ]
     },
     {
-      "$id": "129",
+      "$id": "128",
       "Day": 7,
       "ActivityIconTitles": [
         "berøre",
@@ -919,74 +910,80 @@
       ]
     },
     {
-      "$id": "130",
+      "$id": "129",
       "Day": 2,
+      "ActivityIconTitles": [],
+      "ActivityStates": []
+    },
+    {
+      "$id": "130",
+      "Day": 3,
       "ActivityIconTitles": [],
       "ActivityStates": []
     },
     {
       "$id": "131",
-      "Day": 3,
+      "Day": 4,
       "ActivityIconTitles": [],
       "ActivityStates": []
     },
     {
       "$id": "132",
-      "Day": 4,
+      "Day": 5,
       "ActivityIconTitles": [],
       "ActivityStates": []
     },
     {
       "$id": "133",
-      "Day": 5,
+      "Day": 6,
       "ActivityIconTitles": [],
       "ActivityStates": []
     },
     {
       "$id": "134",
-      "Day": 6,
+      "Day": 7,
       "ActivityIconTitles": [],
       "ActivityStates": []
     },
     {
       "$id": "135",
-      "Day": 7,
-      "ActivityIconTitles": [],
-      "ActivityStates": []
-    },
-    {
-      "$id": "136",
       "Day": 4,
       "ActivityIconTitles": [],
       "ActivityStates": []
     },
     {
-      "$id": "137",
+      "$id": "136",
       "Day": 2,
       "ActivityIconTitles": [],
       "ActivityStates": []
     },
     {
-      "$id": "138",
+      "$id": "137",
       "Day": 3,
       "ActivityIconTitles": [],
       "ActivityStates": []
     },
     {
-      "$id": "139",
+      "$id": "138",
       "Day": 5,
       "ActivityIconTitles": [],
       "ActivityStates": []
     },
     {
-      "$id": "140",
+      "$id": "139",
       "Day": 6,
       "ActivityIconTitles": [],
       "ActivityStates": []
     },
     {
-      "$id": "141",
+      "$id": "140",
       "Day": 7,
+      "ActivityIconTitles": [],
+      "ActivityStates": []
+    },
+    {
+      "$id": "141",
+      "Day": 1,
       "ActivityIconTitles": [],
       "ActivityStates": []
     },
@@ -995,34 +992,18 @@
       "Day": 1,
       "ActivityIconTitles": [],
       "ActivityStates": []
-    },
-    {
-      "$id": "143",
-      "Day": 1,
-      "ActivityIconTitles": [
-        "fantastisk",
-        "fantastisk",
-        "fantastisk",
-        "fantastisk"
-      ],
-      "ActivityStates": [
-        "Active",
-        "Active",
-        "Active",
-        "Active"
-      ]
     }
   ],
   "WeekList": [
     {
-      "$id": "144",
+      "$id": "143",
       "Name": "Normal Uge",
       "ImageTitle": "Epik"
     }
   ],
   "WeekTemplateList": [
     {
-      "$id": "145",
+      "$id": "144",
       "Name": "SkabelonUge",
       "ImageTitle": "Epik",
       "DepartmentName": "Tobias' stue for godt humør"

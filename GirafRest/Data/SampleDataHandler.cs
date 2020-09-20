@@ -52,27 +52,20 @@ namespace GirafRest.Setup
             SampleData data = new SampleData();
 
             // Giraf users
-            List<GirafUser> userList = await context.Users.ToListAsync()
-                                                          .ConfigureAwait(false);
+            List<GirafUser> userList = await context.Users.ToListAsync();
             // Departments
-            List<Department> departmentList = await context.Departments.ToListAsync()
-                                                                       .ConfigureAwait(false);
+            List<Department> departmentList = await context.Departments.ToListAsync();
             // Pictograms
-            List<Pictogram> pictogramList = await context.Pictograms.ToListAsync()
-                                                                    .ConfigureAwait(false);
+            List<Pictogram> pictogramList = await context.Pictograms.ToListAsync();
             // Activities
             List<Activity> activityList = await context.Activities.Include(x => x.Pictograms)
-                                                                  .ToListAsync()
-                                                                  .ConfigureAwait(false);
+                                                                  .ToListAsync();
             // Weekdays
-            List<Weekday> weekdayList = await context.Weekdays.ToListAsync()
-                                                              .ConfigureAwait(false);
+            List<Weekday> weekdayList = await context.Weekdays.ToListAsync();
             // Week
-            List<Week> weekList = await context.Weeks.ToListAsync()
-                                                     .ConfigureAwait(false);
+            List<Week> weekList = await context.Weeks.ToListAsync();
             // Week template
-            List<WeekTemplate> weekTemplateList = await context.WeekTemplates.ToListAsync()
-                                                                             .ConfigureAwait(false);
+            List<WeekTemplate> weekTemplateList = await context.WeekTemplates.ToListAsync();
             // Convert users into sample data
             foreach (GirafUser user in userList)
             {
@@ -80,7 +73,7 @@ namespace GirafRest.Setup
                 foreach (Week week in user.WeekSchedule)
                     weekStrings.Add(week.Name);
 
-                IList<string> roles = await userManager.GetRolesAsync(user).ConfigureAwait(false);
+                IList<string> roles = await userManager.GetRolesAsync(user);
 
                 if (!roles.Any())
                 {
