@@ -34,7 +34,7 @@ jobs:
           cd GirafRest
           dotnet restore
           dotnet ef database update
-          nohup dotnet run --sample-data
+          nohup dotnet run --sample-data > /dev/null 2>&1 &
       - name: Set up Python
         uses: actions/setup-python@v1
         with:
