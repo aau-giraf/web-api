@@ -10,7 +10,7 @@
       "Weeks": [
         "Normal Uge"
       ],
-      "Password": "AQAAAAEAACcQAAAAELVr0vE4abptLCJYAs+eyg8caeXXstyNSvwyUOEaKOZiJugouPBmFXPjkYJTt6IzYg=="
+      "Password": "password"
     },
     {
       "$id": "3",
@@ -19,7 +19,7 @@
       "DepartmentName": "Tobias' stue for godt humør",
       "Role": "Guardian",
       "Weeks": [],
-      "Password": "AQAAAAEAACcQAAAAEM3xe7sReFnmbLmux9SZIao7ousXhjsXvsBtp7YypKI7IWpLk2hWAditbgBpsG84wA=="
+      "Password": "password"
     },
     {
       "$id": "4",
@@ -28,7 +28,7 @@
       "DepartmentName": "Tobias' stue for godt humør",
       "Role": "Department",
       "Weeks": [],
-      "Password": "AQAAAAEAACcQAAAAEKoUa+gCK8vV+MPytoFmTQtCeKXldl8iNQshUqPbddbYwtEUuLqOIFgrwXnk28MV4Q=="
+      "Password": "password"
     },
     {
       "$id": "5",
@@ -37,7 +37,7 @@
       "DepartmentName": "Bajer plejen",
       "Role": "SuperUser",
       "Weeks": [],
-      "Password": "AQAAAAEAACcQAAAAEMjyzaYAmxTD3Bt5W6qDaJdxVyyhtR4+Bv2YXPcQMet4ldDtZCGHQCumhAdT1pUZ0Q=="
+      "Password": "password"
     },
     {
       "$id": "6",
@@ -46,7 +46,7 @@
       "DepartmentName": "Tobias' stue for godt humør",
       "Role": "Citizen",
       "Weeks": [],
-      "Password": "AQAAAAEAACcQAAAAEGUUx404Rft3qFzgb3IhDhV2T4Ei3F781QkfDZ6L9eH08y6pMkhdAx1MO1d/CKAqYQ=="
+      "Password": "password"
     },
     {
       "$id": "7",
@@ -55,7 +55,7 @@
       "DepartmentName": "Tobias' stue for godt humør",
       "Role": "Citizen",
       "Weeks": [],
-      "Password": "AQAAAAEAACcQAAAAEM0Mu+hJSnoiRy/Hz8LOD+ruDyNl3MHfpJdjCj56tf0OjbG26Y7U1b6vmWJ5ump26g=="
+      "Password": "password"
     }
   ],
   "DepartmentList": [

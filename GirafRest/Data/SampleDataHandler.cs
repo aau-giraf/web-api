@@ -80,10 +80,11 @@ namespace GirafRest.Setup
                     roles.Add(GirafRole.Citizen);
                 }
 
+                var password = "password";
                 if (user.Department == null)
-                    data.UserList.Add(new SampleGirafUser(user.UserName, user.DisplayName, "", roles[0], weekStrings, user.PasswordHash));
+                    data.UserList.Add(new SampleGirafUser(user.UserName, user.DisplayName, "", roles[0], weekStrings, password));
                 else
-                    data.UserList.Add(new SampleGirafUser(user.UserName, user.DisplayName, user.Department.Name, roles[0], weekStrings, user.PasswordHash));
+                    data.UserList.Add(new SampleGirafUser(user.UserName, user.DisplayName, user.Department.Name, roles[0], weekStrings, password));
             }
             // Convert departments into sample data
             foreach (Department dep in departmentList)
