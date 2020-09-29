@@ -83,6 +83,8 @@ namespace GirafRest.Setup
         /// </summary>
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddApplicationInsightsTelemetry();
+
             #region RateLimit
             // needed to load configuration from appsettings.json
             services.AddOptions();
@@ -256,23 +258,16 @@ namespace GirafRest.Setup
                     template: "{controller=Account}/{action=AccessDenied}");
             });
 
-            GirafDbContext context;
-            context = app.ApplicationServices.GetService<GirafDbContext>();
+            GirafDbContext context = app.ApplicationServices.GetService<GirafDbContext>();
 
             // Create roles if they do not exist
-            try
-            {
-                roleManager.EnsureRoleSetup();
-            }
-            catch { }
+            roleManager.EnsureRoleSetup().Wait();
 
-            //Fill some sample data into the database
+            // Fill some sample data into the database
             if (ProgramOptions.GenerateSampleData)
-            {
-                DBInitializer.Initialize(context, userManager, ProgramOptions.Pictograms);
-            }
+                DBInitializer.Initialize(context, userManager, ProgramOptions.Pictograms).Wait();
 
-            app.Run(context2 =>
+            app.Run((context2) =>
             {
                 context2.Response.StatusCode = 404;
                 return Task.FromResult(0);

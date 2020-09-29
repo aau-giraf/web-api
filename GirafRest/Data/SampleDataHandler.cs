@@ -1,12 +1,13 @@
 ﻿using GirafRest.Data;
 using GirafRest.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
+using System.Threading.Tasks;
 
 namespace GirafRest.Setup
 {
@@ -39,26 +40,37 @@ namespace GirafRest.Setup
             return null;
         }
 
-        public async System.Threading.Tasks.Task SerializeDataAsync(GirafDbContext context, UserManager<GirafUser> userManager)
+        /// <summary>
+        /// Serialize database data and save it into a file
+        /// </summary>
+        /// <param name="context">Context for the database</param>
+        /// <param name="userManager">ASP.NET Core user manager</param>
+        /// <returns>A task</returns>
+        public async Task SerializeDataAsync(GirafDbContext context, UserManager<GirafUser> userManager)
         {
             SampleData data = new SampleData();
 
-            List<GirafUser> userList = (from user in context.Users select user).ToList();
-            List<Department> departmentList = (from dep in context.Departments select dep).ToList();
-            List<Pictogram> pictogramList = (from pic in context.Pictograms select pic).ToList();
-            List<Activity> activityList = (from act in context.Activities select act).ToList();
-            List<Weekday> weekdayList = (from day in context.Weekdays select day).ToList();
-            List<Week> weekList = (from week in context.Weeks select week).ToList();
-            List<WeekTemplate> weekTemplateList = (from weekTemplate in context.WeekTemplates select weekTemplate).ToList();
-
-
+            // Giraf users
+            List<GirafUser> userList = await context.Users.ToListAsync();
+            // Departments
+            List<Department> departmentList = await context.Departments.ToListAsync();
+            // Pictograms
+            List<Pictogram> pictogramList = await context.Pictograms.ToListAsync();
+            // Activities
+            List<Activity> activityList = await context.Activities.Include(x => x.Pictograms)
+                                                                  .ToListAsync();
+            // Weekdays
+            List<Weekday> weekdayList = await context.Weekdays.ToListAsync();
+            // Week
+            List<Week> weekList = await context.Weeks.ToListAsync();
+            // Week template
+            List<WeekTemplate> weekTemplateList = await context.WeekTemplates.ToListAsync();
+            // Convert users into sample data
             foreach (GirafUser user in userList)
             {
                 List<string> weekStrings = new List<string>();
                 foreach (Week week in user.WeekSchedule)
-                {
                     weekStrings.Add(week.Name);
-                }
 
                 IList<string> roles = await userManager.GetRolesAsync(user);
 
@@ -68,29 +80,19 @@ namespace GirafRest.Setup
                     roles.Add(GirafRole.Citizen);
                 }
 
+                var password = "password";
                 if (user.Department == null)
-                {
-                    data.UserList.Add(new SampleGirafUser(user.UserName, user.DisplayName, "", roles[0], weekStrings, user.PasswordHash));
-                }
+                    data.UserList.Add(new SampleGirafUser(user.UserName, user.DisplayName, "", roles[0], weekStrings, password));
                 else
-                {
-                    data.UserList.Add(new SampleGirafUser(user.UserName, user.DisplayName, user.Department.Name, roles[0], weekStrings, user.PasswordHash));
-                }
+                    data.UserList.Add(new SampleGirafUser(user.UserName, user.DisplayName, user.Department.Name, roles[0], weekStrings, password));
             }
-
-
+            // Convert departments into sample data
             foreach (Department dep in departmentList)
-            {
                 data.DepartmentList.Add(new SampleDepartment(dep.Name));
-            }
-
-
+            // Convert pictograms into sample data
             foreach (Pictogram pic in pictogramList)
-            {
                 data.PictogramList.Add(new SamplePictogram(pic.Title, pic.AccessLevel.ToString(), pic.ImageHash));
-            }
-
-
+            // Convert weekdays into sample data
             foreach (Weekday day in weekdayList)
             {
                 List<string> actIconTitles = new List<string>();
@@ -107,12 +109,11 @@ namespace GirafRest.Setup
 
                 data.WeekdayList.Add(new SampleWeekday(day.Day, actIconTitles, actStates));
             }
-
-
+            // Convert weeks into sample data
             foreach (Week week in weekList)
             {
                 string thumbTitle = "0";
-                foreach (Pictogram pic in context.Pictograms)
+                foreach (Pictogram pic in pictogramList)
                 {
                     if (week.Thumbnail == null)
                     {
@@ -125,9 +126,8 @@ namespace GirafRest.Setup
                 }
                 data.WeekList.Add(new SampleWeek(week.Name, thumbTitle));
             }
-
-
-            foreach (WeekTemplate weekTemp in context.WeekTemplates)
+            // Convert week templates into sample data
+            foreach (WeekTemplate weekTemp in weekTemplateList)
             {
                 if (weekTemp.Thumbnail == null)
                 {
@@ -139,15 +139,12 @@ namespace GirafRest.Setup
                 }
                 data.WeekTemplateList.Add(new SampleWeekTemplate(weekTemp.Name, weekTemp.Thumbnail.Title, weekTemp.Department.Name));
             }
-
-
-
+            // Save sample data into file
             string jsonSamples = JsonConvert.SerializeObject(data, new JsonSerializerSettings()
             {
                 PreserveReferencesHandling = PreserveReferencesHandling.Objects,
                 Formatting = Formatting.Indented
             });
-
             File.WriteAllText(jsonFile, jsonSamples);
         }
     }
