@@ -97,7 +97,7 @@ namespace GirafRest.Controllers
                         dbActivity, dbPictogram
                     ));
                 }
-                else if(dbPictogram.Title == null)
+                else if(dbPictogram != null && dbPictogram.Title == null)
                 {
                     return NotFound(new ErrorResponse(ErrorCode.InvalidProperties, "Invalid pictogram"));
                 }
