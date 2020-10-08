@@ -91,11 +91,15 @@ namespace GirafRest.Controllers
             foreach (var pictogram in newActivity.Pictograms)
             {
                 var dbPictogram = _giraf._context.Pictograms.FirstOrDefault(id => id.Id == pictogram.Id);
-                if (dbPictogram != null)
+                if (dbPictogram != null && dbPictogram.Title != null)
                 {
                     _giraf._context.PictogramRelations.Add(new PictogramRelation(
                         dbActivity, dbPictogram
                     ));
+                }
+                else if(dbPictogram.Title == null)
+                {
+                    return NotFound(new ErrorResponse(ErrorCode.InvalidProperties, "Invalid pictogram"));
                 }
                 else
                 {
