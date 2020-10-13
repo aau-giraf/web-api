@@ -91,16 +91,16 @@ namespace GirafRest.Controllers
             foreach (var pictogram in newActivity.Pictograms)
             {
                 var dbPictogram = _giraf._context.Pictograms.FirstOrDefault(id => id.Id == pictogram.Id);
-                if (dbPictogram != null && dbPictogram.Title != null)
+                if (dbPictogram != null && string.IsNullOrEmpty(dbPictogram.Title))
+                {
+                    return BadRequest(new ErrorResponse(ErrorCode.InvalidProperties, "Invalid pictogram: Blank title"));
+                }
+                if (dbPictogram != null && !string.IsNullOrEmpty(dbPictogram.Title))
                 {
                     _giraf._context.PictogramRelations.Add(new PictogramRelation(
                         dbActivity, dbPictogram
                     ));
-                }
-                else if(dbPictogram != null && dbPictogram.Title == null)
-                {
-                    return NotFound(new ErrorResponse(ErrorCode.InvalidProperties, "Invalid pictogram"));
-                }
+                }               
                 else
                 {
                     return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, "Pictogram not found"));

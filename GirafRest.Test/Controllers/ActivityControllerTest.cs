@@ -130,6 +130,7 @@ namespace GirafRest.Test
             Week week = mockUser.WeekSchedule.First();
 
             ActivityDTO newActivity = null;
+            
 
             var res = ac.PostActivity(
                 newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int) Days.Monday
@@ -140,6 +141,29 @@ namespace GirafRest.Test
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
         }
+
+       [Fact]
+       public void PostActivity_ValidDayInvalidDTO_InvalidProperties()
+       {
+           ActivityController ac = InitializeTest();
+           GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+           _testContext.MockUserManager.MockLoginAsUser(mockUser);
+           Week week = mockUser.WeekSchedule.First();
+     
+           ActivityDTO newActivity = new ActivityDTO()
+           {
+               Pictograms = new List<WeekPictogramDTO>() { new WeekPictogramDTO(new Pictogram("", AccessLevel.PUBLIC))}
+           };
+     
+           var res = ac.PostActivity(
+               newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int) Days.Monday
+           ).Result as ObjectResult;
+     
+           var body = res.Value as ErrorResponse;
+     
+           Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
+           Assert.Equal(ErrorCode.InvalidProperties, body.ErrorCode);
+       }
 
         [Fact]
         public void PostActivity_InvalidDayValidDTO_InvalidDay()

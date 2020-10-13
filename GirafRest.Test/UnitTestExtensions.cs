@@ -75,7 +75,7 @@ namespace GirafRest.Test
                         },
                         new Pictogram("cat1", AccessLevel.PUBLIC) {
                             Id = 9
-                        }
+                        },
                     };
 
                     return _mockPictograms;

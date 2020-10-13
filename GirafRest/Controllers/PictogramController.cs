@@ -160,6 +160,9 @@ namespace GirafRest.Controllers
                     "Could not read pictogram DTO. Please make sure not to include image data in this request. " +
                     "Use POST localhost/v1/pictogram/{id}/image instead."));
 
+            if (string.IsNullOrEmpty(pictogram.Title))
+                return BadRequest(new ErrorResponse(ErrorCode.InvalidProperties, "Invalid pictogram: Blank title"));
+
             if (!ModelState.IsValid)
                 return BadRequest(new ErrorResponse(ErrorCode.InvalidProperties, "Model is not valid"));
 
