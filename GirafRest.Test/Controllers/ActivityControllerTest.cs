@@ -152,7 +152,10 @@ namespace GirafRest.Test
      
            ActivityDTO newActivity = new ActivityDTO()
            {
-               Pictograms = new List<WeekPictogramDTO>() { new WeekPictogramDTO(new Pictogram("", AccessLevel.PUBLIC))}
+               Pictograms = new List<WeekPictogramDTO>()
+               {
+                   new WeekPictogramDTO(_testContext.MockPictograms[10])
+               }
            };
      
            var res = ac.PostActivity(
