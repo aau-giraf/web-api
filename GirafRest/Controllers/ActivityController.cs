@@ -157,7 +157,7 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Gets a user's activity from an activity id.
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="activityId"></param>

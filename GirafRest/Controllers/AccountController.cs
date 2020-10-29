@@ -26,7 +26,7 @@ namespace GirafRest.Controllers
     /// Manages accounts such as login, sign up, etc.
     /// </summary>
     [Authorize]
-    [Route("v1/[controller]")]
+    [Route("v2/[controller]")]
     public class AccountController : Controller
     {
         private readonly SignInManager<GirafUser> _signInManager;
@@ -182,7 +182,7 @@ namespace GirafRest.Controllers
         /// <returns>
         /// Empty Response on success. Else: Missingproperties, PasswordNotUpdated or UserNotFound
         /// </returns>
-        [HttpPut("/v1/User/{id}/Account/password")]
+        [HttpPut("password/{userId}")]
         [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -225,7 +225,7 @@ namespace GirafRest.Controllers
         /// UserNotFound if invalid user id was suplied
         /// /// MissingProperties if there was missing properties
         /// </returns>
-        [HttpPost("/v1/User/{id}/Account/password")]
+        [HttpPost("password/{userId}")]
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -259,7 +259,7 @@ namespace GirafRest.Controllers
         /// UserNotFound if invalid user id was suplied
         /// NotAuthorized if the  currently logged in user is not allowed to change the given users password
         /// </returns>
-        [HttpGet("/v1/User/{id}/Account/password-reset-token")]
+        [HttpGet("password-reset-token/{userId}")]
         [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -283,7 +283,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="userId">id for identifying the given <see cref="GirafUser"/> to be deleted</param>
         /// <returns>Empty response on success else UserNotFound or NotAuthorized</returns>
-        [HttpDelete("/v1/Account/user/{userId}")]
+        [HttpDelete("user/{userId}")]
         [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
