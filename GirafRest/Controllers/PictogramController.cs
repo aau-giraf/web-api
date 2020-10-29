@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using GirafRest.Utilities;
 
 namespace GirafRest.Controllers
 {
@@ -73,7 +74,7 @@ namespace GirafRest.Controllers
 
             //Filter out all that does not satisfy the query string, if such is present.
             if (!String.IsNullOrEmpty(query))
-                userPictograms = userPictograms.OrderBy((Pictogram _p) => IbsenDistance(query, _p.Title));
+                userPictograms = userPictograms.OrderBy((Pictogram _p) => PictogramUtil.IbsenDistance(query.ToLower(), _p.Title.ToLower()));
 
             return Ok(new SuccessResponse<List<WeekPictogramDTO>>(
                 userPictograms.OfType<Pictogram>()
@@ -523,44 +524,6 @@ namespace GirafRest.Controllers
                 _giraf._logger.LogError("An exception occurred when reading all pictograms.", $"Message: {e.Message}", $"Source: {e.Source}");
                 return null;
             }
-        }
-
-        /// <summary>
-        /// The wagner-fisher implementation of the levenshtein distance named funny by my peers (long story)
-        /// </summary>
-        /// <returns>The edit distance between the strings a and b.</returns>
-        /// <param name="a">Search string.</param>
-        /// <param name="b">string to be compared against the search string</param>
-        private int IbsenDistance(string a, string b)
-        {
-            const int insertionCost = 1;
-            const int deletionCost = 100;
-            const int substitutionCost = 100;
-            int[,] d = new int[a.Length + 1, b.Length + 1];
-            for (int i = 0; i <= a.Length; i++)
-                for (int j = 0; j <= b.Length; j++)
-                    d[i, j] = 0;
-
-            for (int i = 1; i <= a.Length; i++)
-                d[i, 0] = i * deletionCost;
-
-            for (int j = 1; j <= b.Length; j++)
-                d[0, j] = j * insertionCost;
-
-            for (int j = 1; j <= b.Length; j++)
-            {
-                for (int i = 1; i <= a.Length; i++)
-                {
-                    int _substitutionCost = 0;
-                    if (a[i - 1] != b[j - 1])
-                        _substitutionCost = substitutionCost;
-
-                    d[i, j] = Math.Min(d[i - 1, j] + deletionCost,
-                             Math.Min(d[i, j - 1] + insertionCost,
-                                      d[i - 1, j - 1] + _substitutionCost));
-                }
-            }
-            return d[a.Length, b.Length];
         }
 
         #endregion

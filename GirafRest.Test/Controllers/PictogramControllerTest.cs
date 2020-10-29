@@ -269,6 +269,31 @@ namespace GirafRest.Test
             Assert.Equal("cat1", body.Data[1].Title);
         }
 
+        [Fact]
+        public void ReadPictograms_NoUserSearchIsNotCaseSensitive_Success()
+        {
+            // Testing that upper or lower case letters do not change the result of the search
+            /*
+             *  The Mocked pictograms relevant for this test are titled:
+             *  "casesensitive",
+             *  "CASESENSITIVE1"
+             *
+             *  If the search ignores whether letters are written in capital then the search should always
+             *  produce the same order.
+             */
+            var pc = initializeTest();
+            const string lowercaseSearchQuery = "casesensitive";
+            var resForLowercase = pc.ReadPictograms(lowercaseSearchQuery, 1, 2).Result as ObjectResult;
+            var bodyForLowercase = resForLowercase.Value as SuccessResponse<List<WeekPictogramDTO>>;
+
+            const string uppercaseSearchQuery = "CASESENSITIVE";
+            var resForUppercase = pc.ReadPictograms(uppercaseSearchQuery, 1, 2).Result as ObjectResult;
+            var bodyForUppercase = resForUppercase.Value as SuccessResponse<List<WeekPictogramDTO>>;
+            
+            // As there are only two results, testing that the first element is the same should be sufficient
+            Assert.Equal(bodyForLowercase.Data[0].Title, bodyForUppercase.Data[0].Title);
+        }
+
 
         #endregion
 
