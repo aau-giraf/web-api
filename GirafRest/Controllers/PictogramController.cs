@@ -68,13 +68,9 @@ namespace GirafRest.Controllers
             if (page < 1)
                 return BadRequest(new ErrorResponse(ErrorCode.InvalidProperties, "Missing page"));
             //Produce a list of all pictograms available to the user
-            var userPictograms = (await ReadAllPictograms()).AsEnumerable();
+            var userPictograms = (await FindPictogramsFromQuery(query)).AsEnumerable();
             if (userPictograms == null)
                 return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, "User has no pictograms"));
-
-            //Filter out all that does not satisfy the query string, if such is present.
-            if (!String.IsNullOrEmpty(query))
-                userPictograms = userPictograms.OrderBy((Pictogram _p) => PictogramUtil.IbsenDistance(query.ToLower(), _p.Title.ToLower()));
 
             return Ok(new SuccessResponse<List<WeekPictogramDTO>>(
                 userPictograms.OfType<Pictogram>()
@@ -485,39 +481,48 @@ namespace GirafRest.Controllers
         /// Read all pictograms available to the current user (or only the PUBLIC ones if no user is authorized).
         /// </summary>
         /// <returns>A list of said pictograms.</returns>
-        private async Task<IQueryable<Pictogram>> ReadAllPictograms()
+        private async Task<IQueryable<Pictogram>> FindPictogramsFromQuery(string query, int page = 1, int pageSize = 10)
         {
             //In this method .AsNoTracking is used due to a bug in EntityFramework Core, where we are not allowed to call a constructor in .Select,
             //i.e. convert the pictograms to PictogramDTOs.
             try
             {
                 //Find the user and add his pictograms to the result
-                var user = await _giraf.LoadUserWithDepartment(HttpContext.User);
+                GirafUser user = await _giraf.LoadUserWithDepartment(HttpContext.User);
+                if (query != null)
+                    query = toLowerAndRemoveWhiteSpace(query);                
 
+                bool queryIsNullOrEmpty = string.IsNullOrEmpty(query);
+                
                 if (user != null)
                 {
                     if (user.Department != null)
                     {
                         _giraf._logger.LogInformation($"Fetching pictograms for department {user.Department.Name}");
-                        return _giraf._context.Pictograms.AsNoTracking()
-                            //All public pictograms
-                            .Where(pictogram => pictogram.AccessLevel == AccessLevel.PUBLIC
-                            //All the users pictograms
-                            || pictogram.Users.Any(ur => ur.OtherKey == user.Id)
-                            //All the department's pictograms
-                            || pictogram.Departments.Any(dr => dr.OtherKey == user.DepartmentKey));
+                        //All public pictograms
+                        _giraf._context.Pictograms.Where(pictogram => (!queryIsNullOrEmpty && toLowerAndRemoveWhiteSpace(pictogram.Title).Contains(query) || queryIsNullOrEmpty) 
+                                                                      && (pictogramIsPublic(pictogram)
+                                                                          || isUserPrivatePictogram(pictogram,user) 
+                                                                          || isDepartmentPictogram(pictogram,user)))
+                            .Skip((page - 1) * pageSize)
+                            .Take(pageSize)
+                            .AsNoTracking();
                     }
-
-                    return _giraf._context.Pictograms.AsNoTracking()
-                            //All public pictograms
-                            .Where(pictogram => pictogram.AccessLevel == AccessLevel.PUBLIC
-                            //All the users pictograms
-                            || pictogram.Users.Any(ur => ur.OtherKey == user.Id));
+                    // User not part of department
+                    return _giraf._context.Pictograms.Where(pictogram => (!queryIsNullOrEmpty && toLowerAndRemoveWhiteSpace(pictogram.Title).Contains(query) || queryIsNullOrEmpty)
+                                                                         && (pictogramIsPublic(pictogram) 
+                                                                             || isUserPrivatePictogram(pictogram,user)))
+                        .Skip((page - 1) * pageSize)
+                        .Take(pageSize)
+                        .AsNoTracking();
                 }
 
                 //Fetch all public pictograms as there is no user.
-                return _giraf._context.Pictograms.AsNoTracking()
-                    .Where(pictogram => pictogram.AccessLevel == AccessLevel.PUBLIC);
+                return _giraf._context.Pictograms.Where(pictogram => (!queryIsNullOrEmpty && toLowerAndRemoveWhiteSpace(pictogram.Title).Contains(query) || queryIsNullOrEmpty) 
+                                                                     && pictogramIsPublic(pictogram))
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .AsNoTracking();
             }
             catch (Exception e)
             {
@@ -525,6 +530,31 @@ namespace GirafRest.Controllers
                 return null;
             }
         }
+
+        private bool isUserPrivatePictogram(Pictogram pictogram,GirafUser user)
+        {
+            return pictogram.Users.Any(ur => ur.OtherKey == user.Id);
+        }
+
+        private bool pictogramIsPublic(Pictogram pictogram)
+        {
+            return pictogram.AccessLevel == AccessLevel.PUBLIC;
+        }
+
+        private bool isDepartmentPictogram(Pictogram pictogram,GirafUser user)
+        {
+            return pictogram.Departments.Any(dr => dr.OtherKey == user.DepartmentKey);
+        }
+
+        private string toLowerAndRemoveWhiteSpace(string input)
+        {
+            string result = "";
+            result = input.ToLower().Replace(" ", string.Empty);
+
+            return result;
+        }
+        
+        
 
         #endregion
     }
