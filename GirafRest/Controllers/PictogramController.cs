@@ -490,17 +490,15 @@ namespace GirafRest.Controllers
                 //Find the user and add his pictograms to the result
                 GirafUser user = await _giraf.LoadUserWithDepartment(HttpContext.User);
                 if (query != null)
-                    query = toLowerAndRemoveWhiteSpace(query);                
+                    query = toLowerAndRemoveWhiteSpace(query);
 
-                bool queryIsNullOrEmpty = string.IsNullOrEmpty(query);
-                
                 if (user != null)
                 {
                     if (user.Department != null)
                     {
                         _giraf._logger.LogInformation($"Fetching pictograms for department {user.Department.Name}");
                         //All public pictograms
-                        _giraf._context.Pictograms.Where(pictogram => (!queryIsNullOrEmpty && toLowerAndRemoveWhiteSpace(pictogram.Title).Contains(query) || queryIsNullOrEmpty) 
+                        _giraf._context.Pictograms.Where(pictogram => QueryIsEmptyOrMatchesPictogram(query, pictogram)
                                                                       && (pictogramIsPublic(pictogram)
                                                                           || isUserPrivatePictogram(pictogram,user) 
                                                                           || isDepartmentPictogram(pictogram,user)))
@@ -509,7 +507,7 @@ namespace GirafRest.Controllers
                             .AsNoTracking();
                     }
                     // User not part of department
-                    return _giraf._context.Pictograms.Where(pictogram => (!queryIsNullOrEmpty && toLowerAndRemoveWhiteSpace(pictogram.Title).Contains(query) || queryIsNullOrEmpty)
+                    return _giraf._context.Pictograms.Where(pictogram => QueryIsEmptyOrMatchesPictogram(query, pictogram)
                                                                          && (pictogramIsPublic(pictogram) 
                                                                              || isUserPrivatePictogram(pictogram,user)))
                         .Skip((page - 1) * pageSize)
@@ -518,7 +516,7 @@ namespace GirafRest.Controllers
                 }
 
                 //Fetch all public pictograms as there is no user.
-                return _giraf._context.Pictograms.Where(pictogram => (!queryIsNullOrEmpty && toLowerAndRemoveWhiteSpace(pictogram.Title).Contains(query) || queryIsNullOrEmpty) 
+                return _giraf._context.Pictograms.Where(pictogram => QueryIsEmptyOrMatchesPictogram(query, pictogram)
                                                                      && pictogramIsPublic(pictogram))
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
@@ -530,7 +528,27 @@ namespace GirafRest.Controllers
                 return null;
             }
         }
+        
+        // These are a series of helper methods, to make the conditions for the querys more readable
+        private bool QueryIsEmptyOrMatchesPictogram(string query, Pictogram pictogram)
+        {
+            bool queryIsNullOrEmpty = string.IsNullOrEmpty(query);
+            return !queryIsNullOrEmpty && PictogramTitleContainsQuery(pictogram, query) || queryIsNullOrEmpty;
+        }
+        
+        private bool PictogramTitleContainsQuery(Pictogram pictogram, string query)
+        {
+            return toLowerAndRemoveWhiteSpace(pictogram.Title).Contains(query);
+        }
+        
+        private string toLowerAndRemoveWhiteSpace(string input)
+        {
+            string result = "";
+            result = input.ToLower().Replace(" ", string.Empty);
 
+            return result;
+        }
+        
         private bool isUserPrivatePictogram(Pictogram pictogram,GirafUser user)
         {
             return pictogram.Users.Any(ur => ur.OtherKey == user.Id);
@@ -545,16 +563,6 @@ namespace GirafRest.Controllers
         {
             return pictogram.Departments.Any(dr => dr.OtherKey == user.DepartmentKey);
         }
-
-        private string toLowerAndRemoveWhiteSpace(string input)
-        {
-            string result = "";
-            result = input.ToLower().Replace(" ", string.Empty);
-
-            return result;
-        }
-        
-        
 
         #endregion
     }
