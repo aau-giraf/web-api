@@ -13,7 +13,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using GirafRest.Utilities;
 
 namespace GirafRest.Controllers
 {
@@ -69,6 +68,7 @@ namespace GirafRest.Controllers
                 return BadRequest(new ErrorResponse(ErrorCode.InvalidProperties, "Missing page"));
             //Produce a list of all pictograms available to the user
             var userPictograms = (await FindPictogramsFromQuery(query)).AsEnumerable();
+            // This does not occur only when user has no pictograms, but when any error is caught in the previous call
             if (userPictograms == null)
                 return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, "User has no pictograms"));
 

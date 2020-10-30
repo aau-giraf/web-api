@@ -89,6 +89,9 @@ namespace GirafRest.Test
                         new Pictogram("casesensitive", AccessLevel.PUBLIC) {
                             Id = 13
                         },
+                        new Pictogram("Private for user 4", AccessLevel.PRIVATE) {
+                            Id = 14
+                        },
                     };
 
                     return _mockPictograms;
