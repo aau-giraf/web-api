@@ -523,41 +523,6 @@ namespace GirafRest.Controllers
             }
         }
         
-        // These are a series of helper methods, to make the conditions for the querys more readable
-        private bool QueryIsEmptyOrMatchesPictogram(string query, Pictogram pictogram)
-        {
-            bool queryIsNullOrEmpty = string.IsNullOrEmpty(query);
-            return !queryIsNullOrEmpty && PictogramTitleContainsQuery(pictogram, query) || queryIsNullOrEmpty;
-        }
-        
-        private bool PictogramTitleContainsQuery(Pictogram pictogram, string query)
-        {
-            return toLowerAndRemoveWhiteSpace(pictogram.Title).Contains(query);
-        }
-        
-        private string toLowerAndRemoveWhiteSpace(string input)
-        {
-            string result = "";
-            result = input.ToLower().Replace(" ", string.Empty);
-
-            return result;
-        }
-        
-        private bool isUserPrivatePictogram(Pictogram pictogram,GirafUser user)
-        {
-            return pictogram.Users.Any(ur => ur.OtherKey == user.Id);
-        }
-
-        private bool pictogramIsPublic(Pictogram pictogram)
-        {
-            return pictogram.AccessLevel == AccessLevel.PUBLIC;
-        }
-
-        private bool isDepartmentPictogram(Pictogram pictogram,GirafUser user)
-        {
-            return pictogram.Departments.Any(dr => dr.OtherKey == user.DepartmentKey);
-        }
-
         #endregion
     }
 }
