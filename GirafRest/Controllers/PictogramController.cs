@@ -331,11 +331,8 @@ namespace GirafRest.Controllers
             {
                 try
                 {
-                    using (FileStream fs =
-                    new FileStream(path,
-                        FileMode.Create))
+                    using (FileStream fs = new FileStream(path, FileMode.Create))
                     {
-
                         fs.Write(image);
                     }
                 }
@@ -497,7 +494,7 @@ namespace GirafRest.Controllers
                     if (user.Department != null)
                     {
                         _giraf._logger.LogInformation($"Fetching pictograms for department {user.Department.Name}");
-                        //All public pictograms
+                        //All public, private, department pictograms
                         _giraf._context.Pictograms.Where(pictogram => QueryIsEmptyOrMatchesPictogram(query, pictogram)
                                                                       && (pictogramIsPublic(pictogram)
                                                                           || isUserPrivatePictogram(pictogram,user) 
@@ -506,7 +503,7 @@ namespace GirafRest.Controllers
                             .Take(pageSize)
                             .AsNoTracking();
                     }
-                    // User not part of department
+                    // User not part of department, therefore only public and private pictograms
                     return _giraf._context.Pictograms.Where(pictogram => QueryIsEmptyOrMatchesPictogram(query, pictogram)
                                                                          && (pictogramIsPublic(pictogram) 
                                                                              || isUserPrivatePictogram(pictogram,user)))
@@ -515,7 +512,7 @@ namespace GirafRest.Controllers
                         .AsNoTracking();
                 }
 
-                //Fetch all public pictograms as there is no user.
+                //Fetch only public pictograms as there is no user.
                 return _giraf._context.Pictograms.Where(pictogram => QueryIsEmptyOrMatchesPictogram(query, pictogram)
                                                                      && pictogramIsPublic(pictogram))
                     .Skip((page - 1) * pageSize)
@@ -524,6 +521,7 @@ namespace GirafRest.Controllers
             }
             catch (Exception e)
             {
+                // This exception is thrown if there is any error, not just the one described in the message below
                 _giraf._logger.LogError("An exception occurred when reading all pictograms.", $"Message: {e.Message}", $"Source: {e.Source}");
                 return null;
             }

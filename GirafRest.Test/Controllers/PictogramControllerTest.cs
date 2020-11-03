@@ -332,9 +332,6 @@ namespace GirafRest.Test
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.InvalidProperties, body.ErrorCode);
         }
-        
-        //TODO: Write tests for the catchall error,
-
 
         #endregion
 
