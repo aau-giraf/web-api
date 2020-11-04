@@ -30,6 +30,7 @@ namespace GirafRest.Test
         private readonly string JPEG_FILEPATH;
         private const int GUARDIAN_DEP_ONE = 7;
         private const int CITIZEN_DEP_ONE = 8;
+        private const int ADMIN_NO_DEP = 4;
 #pragma warning restore IDE0051 // Remove unused private members
 
 
@@ -207,7 +208,7 @@ namespace GirafRest.Test
             var body = res.Value as SuccessResponse<List<WeekPictogramDTO>>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
-            // Do we get the expected amount?
+            // Check that all resulting pictograms are public
             Assert.True(_testContext.MockPictograms.Count(m => m.AccessLevel == AccessLevel.PUBLIC) == body.Data.Count);
         }
 
@@ -268,7 +269,69 @@ namespace GirafRest.Test
             Assert.Equal("cat", body.Data[0].Title);
             Assert.Equal("cat1", body.Data[1].Title);
         }
+        
+        [Fact]
+        public void ReadPictograms_LoginWithNoDepartment_Success()
+        {
+            // When the user has no department, the search should not return any protected picotograms
+            var pc = initializeTest();
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_NO_DEP]);
+            var res = pc.ReadPictograms("", 1, 100).Result as ObjectResult;
+            var body = res.Value as SuccessResponse<List<WeekPictogramDTO>>;
 
+            // Determine if there are any Protected pictograms in the result
+            bool result = body.Data.Any(pictogram => pictogram.AccessLevel == AccessLevel.PROTECTED);
+            
+            // Expect there to be no protected pictograms in the result
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void ReadPictograms_NoUserSearchIsNotCaseSensitive_Success()
+        {
+            // Testing that upper or lower case letters do not change the result of the search
+            /*
+             *  The Mocked pictograms relevant for this test are titled:
+             *  "casesensitive",
+             *  "CASESENSITIVE1"
+             *
+             *  If the search ignores whether letters are written in capital then the search should always
+             *  produce the same order.
+             */
+            var pc = initializeTest();
+            const string lowercaseSearchQuery = "casesensitive";
+            var resForLowercase = pc.ReadPictograms(lowercaseSearchQuery, 1, 2).Result as ObjectResult;
+            var bodyForLowercase = resForLowercase.Value as SuccessResponse<List<WeekPictogramDTO>>;
+
+            const string uppercaseSearchQuery = "CASESENSITIVE";
+            var resForUppercase = pc.ReadPictograms(uppercaseSearchQuery, 1, 2).Result as ObjectResult;
+            var bodyForUppercase = resForUppercase.Value as SuccessResponse<List<WeekPictogramDTO>>;
+            
+            // As there are only two results, testing that the first element is the same should be sufficient
+            Assert.Equal(bodyForLowercase.Data[0].Title, bodyForUppercase.Data[0].Title);
+        }
+
+        [Fact]
+        public void ReadPictograms_InvalidPageSize_InvalidProperties()
+        {
+            var pc = initializeTest();
+            var res = pc.ReadPictograms("", 1, 0).Result as ObjectResult;
+            var body = res.Value as ErrorResponse;
+
+            Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
+            Assert.Equal(ErrorCode.InvalidProperties, body.ErrorCode);
+        }
+        
+        [Fact]
+        public void ReadPictograms_InvalidNumberOfPages_InvalidProperties()
+        {
+            var pc = initializeTest();
+            var res = pc.ReadPictograms("", 0, 10).Result as ObjectResult;
+            var body = res.Value as ErrorResponse;
+
+            Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
+            Assert.Equal(ErrorCode.InvalidProperties, body.ErrorCode);
+        }
 
         #endregion
 
