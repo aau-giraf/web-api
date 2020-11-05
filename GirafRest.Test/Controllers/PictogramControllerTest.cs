@@ -350,6 +350,7 @@ namespace GirafRest.Test
             var res = pc.ReadPictograms("", 0, 10).Result as ObjectResult;
             var body = res.Value as ErrorResponse;
 
+
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.InvalidProperties, body.ErrorCode);
         }

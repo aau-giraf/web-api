@@ -67,7 +67,9 @@ namespace GirafRest.Controllers
             if (page < 1)
                 return BadRequest(new ErrorResponse(ErrorCode.InvalidProperties, "Missing page"));
             //Produce a list of all pictograms available to the user
+
             var userPictograms = (await ReadAllPictograms(query,page,pageSize)).AsEnumerable();
+
             // This does not occur only when user has no pictograms, but when any error is caught in the previous call
             if (userPictograms == null)
                 return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, "User has no pictograms"));
@@ -495,6 +497,7 @@ namespace GirafRest.Controllers
                     if (user.Department != null)
                     {
                         _giraf._logger.LogInformation($"Fetching pictograms for department {user.Department.Name}");
+
                         return fetchingPictogramsFromDepartment(query, user, page, pageSize);
                     }
                     // User is not part of a department
@@ -503,6 +506,7 @@ namespace GirafRest.Controllers
 
                 // Fetch all public pictograms as there is no user.
                 return fetchPictogramsNoUserLoggedIn(query, page, pageSize);
+
             }
             catch (Exception e)
             {
