@@ -49,11 +49,11 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing logging in as Kurt
         
-        Endpoint: POST:/v1/Account/login
+        Endpoint: POST:/v2/Account/login
         """
         global user_token
         data = {'username': self.user_name, 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response = post(f'{BASE_URL}v2/Account/login', json=data)
         response_body = response.json()
         
         self.assertEqual(response.status_code, HTTPStatus.OK)
@@ -84,11 +84,11 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing setting password
 
-        Endpoint: POST:/v1/User/{id}/Account/password
+        Endpoint: POST:/v2/Account/password/{userId}
         """
         global user_id
         data = {'unrelated': 'unrelated'}
-        response = post(f'{BASE_URL}v1/User/{user_id}/Account/password', json=data)
+        response = post(f'{BASE_URL}v2/Account/password/{user_id}', json=data)
         response_body = response.json()
 
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
@@ -99,9 +99,9 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing changing password
 
-        Endpoint: PUT:/v1/User/{id}/Account/password
+        Endpoint: PUT:/v2/Account/password/{userId}
         """
-        response = put(f'{BASE_URL}v1/User/{user_id}/Account/password')
+        response = put(f'{BASE_URL}v2/Account/password/{user_id}')
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
         self.assertEqual(response_body['errorKey'], 'NotAuthorized')
@@ -111,9 +111,9 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing getting password reset token
 
-        Endpoint: GET:/v1/User/{id}/Account/password-reset-token
+        Endpoint: GET:/v2/Account/password-reset-token/{userId}
         """
-        response = get(f'{BASE_URL}v1/User/{user_id}/Account/password-reset-token')
+        response = get(f'{BASE_URL}v2/Account/password-reset-token/{user_id}')
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
         self.assertEqual(response_body['errorKey'], 'NotAuthorized')
@@ -123,9 +123,9 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing account login
 
-        Endpoint: POST:/v1/Account/login
+        Endpoint: POST:/v2/Account/login
         """
-        response = post(f'{BASE_URL}v1/Account/login', json={})
+        response = post(f'{BASE_URL}v2/Account/login', json={})
         response_body = response.json()
 
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
@@ -136,9 +136,9 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing account registration without authentication token
 
-        Endpoint: POST:/v1/Account/register
+        Endpoint: POST:/v2/Account/register
         """
-        response = post(f'{BASE_URL}v1/Account/register')
+        response = post(f'{BASE_URL}v2/Account/register')
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
         self.assertEqual(response_body['errorKey'], 'NotAuthorized')
@@ -148,9 +148,9 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing account DELETION with authentication token
 
-        Endpoint: DELETE:/v1/Account/user/{id}
+        Endpoint: DELETE:/v2/Account/user/{id}
         """
-        response = delete(f'{BASE_URL}v1/Account/user/{user_id}')
+        response = delete(f'{BASE_URL}v2/Account/user/{user_id}')
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
         self.assertEqual(response_body['errorKey'], 'NotAuthorized')
@@ -620,9 +620,9 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing GET on user specific week v2
 
-        Endpoint: GET:/v2/User/{userId}/week
+        Endpoint: GET:/v1/Week/{userId}/week
         """
-        response = get(f'{BASE_URL}v2/User/{user_id}/week')
+        response = get(f'{BASE_URL}v1/Week/{user_id}/week')
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
         self.assertEqual(response_body['errorKey'], 'NotAuthorized')
@@ -632,9 +632,9 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing GET on user specific week v1
 
-        Endpoint: GET:/v1/User/{userId}/week
+        Endpoint: GET:/v1/Week/{userId}/weekName
         """
-        response = get(f'{BASE_URL}v1/User/{user_id}/week')
+        response = get(f'{BASE_URL}v1/Week/{user_id}/weekName')
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
         self.assertEqual(response_body['errorKey'], 'NotAuthorized')
@@ -644,9 +644,9 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing GET on user specific weekyear and number
 
-        Endpoint: GET:/v1/User/{userId}/week/{weekYear}/{weekNumber}
+        Endpoint: GET:/v1/Week/{userId}/{weekYear}/{weekNumber}
         """
-        response = get(f'{BASE_URL}v1/User/{user_id}/week/{self.week_Year}/{self.week_Number}')
+        response = get(f'{BASE_URL}v1/Week/{user_id}/{self.week_Year}/{self.week_Number}')
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
         self.assertEqual(response_body['errorKey'], 'NotAuthorized')
@@ -656,9 +656,9 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing PUT on user specific weekyear and number
 
-        Endpoint: PUT:/v1/User/{userId}/week/{weekYear}/{weekNumber}
+        Endpoint: PUT:/v1/Week/{userId}/{weekYear}/{weekNumber}
         """
-        response = put(f'{BASE_URL}v1/User/{user_id}/week/{self.week_Year}/{self.week_Number}')
+        response = put(f'{BASE_URL}v1/Week/{user_id}/{self.week_Year}/{self.week_Number}')
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
         self.assertEqual(response_body['errorKey'], 'NotAuthorized')
@@ -668,9 +668,9 @@ class TestAuthorization(GIRAFTestCase):
         """
         Testing DELETE on user specific weekyear and number
 
-        Endpoint: DELETE:/v1/User/{userId}/week/{weekYear}/{weekNumber}
+        Endpoint: DELETE:/v1/Week/{userId}/{weekYear}/{weekNumber}
         """
-        response = delete(f'{BASE_URL}v1/User/{user_id}/week/{self.week_Year}/{self.week_Number}')
+        response = delete(f'{BASE_URL}v1/Week/{user_id}/{self.week_Year}/{self.week_Number}')
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
         self.assertEqual(response_body['errorKey'], 'NotAuthorized')

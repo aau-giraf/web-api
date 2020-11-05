@@ -100,11 +100,11 @@ class TestWeekController(GIRAFTestCase):
         """
         Testing logging in as Super User
 
-        Endpoint: POST:/v1/Account/login
+        Endpoint: POST:/v2/Account/login
         """
         global super_user_token
         data = {'username': 'Lee', 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response = post(f'{BASE_URL}v2/Account/login', json=data)
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
@@ -115,10 +115,10 @@ class TestWeekController(GIRAFTestCase):
         """
         Testing registering Citizen
 
-        Endpoint: POST:/v1/Account/register
+        Endpoint: POST:/v2/Account/register
         """
         data = {'username': citizen_username, 'displayname': citizen_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
-        response = post(f'{BASE_URL}v1/Account/register', headers=auth(super_user_token), json=data)
+        response = post(f'{BASE_URL}v2/Account/register', headers=auth(super_user_token), json=data)
         
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
 
@@ -127,11 +127,11 @@ class TestWeekController(GIRAFTestCase):
         """
         Testing logging in as Citizen
 
-        Endpoint: POST:/v1/Account/login
+        Endpoint: POST:/v2/Account/login
         """
         global citizen_token
         data = {'username': citizen_username, 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response = post(f'{BASE_URL}v2/Account/login', json=data)
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
@@ -157,9 +157,9 @@ class TestWeekController(GIRAFTestCase):
         """
         Testing getting empty list of weeks
 
-        Endpoint: GET:/v1/User/{userId}/week
+        Endpoint: GET:/v1/Week/{userId}/weekName
         """
-        response = get(f'{BASE_URL}v1/User/{citizen_id}/week', headers=auth(citizen_token))
+        response = get(f'{BASE_URL}v1/Week/{citizen_id}/weekName', headers=auth(citizen_token))
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertFalse(response_body['data'])
@@ -170,10 +170,10 @@ class TestWeekController(GIRAFTestCase):
         """
         Testing adding week
 
-        Endpoint: PUT:/v1/User/{userId}/week/{weekYear}/{weekNumber}
+        Endpoint: PUT:/v1/Week/{userId}/{weekYear}/{weekNumber}
         """
         global week_year, week_number
-        response = put(f'{BASE_URL}v1/User/{citizen_id}/week/2018/11', headers=auth(super_user_token),
+        response = put(f'{BASE_URL}v1/Week/{citizen_id}/2018/11', headers=auth(super_user_token),
                        json=self.correct_week)
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
@@ -188,9 +188,9 @@ class TestWeekController(GIRAFTestCase):
         """
         Testing getting list containing new week
 
-        Endpoint: GET:/v1/User/{userId}/week
+        Endpoint: GET:/v1/Week/{userId}/weekName
         """
-        response = get(f'{BASE_URL}v1/User/{citizen_id}/week', headers=auth(citizen_token))
+        response = get(f'{BASE_URL}v1/Week/{citizen_id}/weekName', headers=auth(citizen_token))
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
@@ -202,9 +202,9 @@ class TestWeekController(GIRAFTestCase):
         """
         Testing getting list containing new week v2 endpoint
 
-        Endpoint: GET:/v2/User/{userId}/week
+        Endpoint: GET:/v1/Week/{userId}/week
         """
-        response = get(f'{BASE_URL}v2/User/{citizen_id}/week', headers=auth(citizen_token))
+        response = get(f'{BASE_URL}v1/Week/{citizen_id}/week', headers=auth(citizen_token))
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
@@ -216,9 +216,9 @@ class TestWeekController(GIRAFTestCase):
         """
         Testing adding week containing too many days
 
-        Endpoint: PUT:/v1/User/{userId}/week/{weekYear}/{weekNumber}
+        Endpoint: PUT:/v1/Week/{userId}/{weekYear}/{weekNumber}
         """
-        response = put(f'{BASE_URL}v1/User/{citizen_id}/week/2018/12', headers=auth(super_user_token),
+        response = put(f'{BASE_URL}v1/Week/{citizen_id}/2018/12', headers=auth(super_user_token),
                        json=self.too_many_days_week)
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
@@ -229,9 +229,9 @@ class TestWeekController(GIRAFTestCase):
         """
         Testing ensuring week containing too many days was not added
 
-        Endpoint: GET:/v1/User/{userId}/week
+        Endpoint: GET:/v1/Week/{userId}/weekName
         """
-        response = get(f'{BASE_URL}v1/User/{citizen_id}/week', headers=auth(citizen_token))
+        response = get(f'{BASE_URL}v1/Week/{citizen_id}/weekName', headers=auth(citizen_token))
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
@@ -242,9 +242,9 @@ class TestWeekController(GIRAFTestCase):
         """
         Testing adding new week with invalid enums
 
-        Endpoint: PUT:/v1/User/{userId}/week/{weekYear}/{weekNumber}
+        Endpoint: PUT:/v1/Week/{userId}/{weekYear}/{weekNumber}
         """
-        response = put(f'{BASE_URL}v1/User/{citizen_id}/week/2018/13', headers=auth(super_user_token),
+        response = put(f'{BASE_URL}v1/Week/{citizen_id}/2018/13', headers=auth(super_user_token),
                        json=self.bad_enum_value_week)
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
@@ -255,9 +255,9 @@ class TestWeekController(GIRAFTestCase):
         """
         Testing ensuring week with invalid enums was not added
 
-        Endpoint: GET:/v1/User/{userId}/week
+        Endpoint: GET:/v1/Week/{userId}/weekName
         """
-        response = get(f'{BASE_URL}v1/User/{citizen_id}/week', headers=auth(citizen_token))
+        response = get(f'{BASE_URL}v1/Week/{citizen_id}/weekName', headers=auth(citizen_token))
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertIsNotNone(response_body['data'])
@@ -268,9 +268,9 @@ class TestWeekController(GIRAFTestCase):
         """
         Testing updating week
 
-        Endpoint: PUT:/v1/User/{userId}/week/{weekYear}/{weekNumber}
+        Endpoint: PUT:/v1/Week/{userId}/{weekYear}/{weekNumber}
         """
-        response = put(f'{BASE_URL}v1/User/{citizen_id}/week/{week_year}/{week_number}', headers=auth(super_user_token),
+        response = put(f'{BASE_URL}v1/Week/{citizen_id}/{week_year}/{week_number}', headers=auth(super_user_token),
                        json=self.different_correct_week)
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
@@ -281,9 +281,9 @@ class TestWeekController(GIRAFTestCase):
         """
         Testing ensuring week has been updated
 
-        Endpoint: GET:/v1/User/{userId}/week/{weekYear}/{weekNumber}
+        Endpoint: GET:/v1/Week/{userId}/{weekYear}/{weekNumber}
         """
-        response = get(f'{BASE_URL}v1/User/{citizen_id}/week/{week_year}/{week_number}',
+        response = get(f'{BASE_URL}v1/Week/{citizen_id}/{week_year}/{week_number}',
                        headers=auth(citizen_token))
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
@@ -295,9 +295,9 @@ class TestWeekController(GIRAFTestCase):
         """
         Testing deleting week
 
-        Endpoint: DELETE:/v1/User/{userId}/week/{weekYear}/{weekNumber}
+        Endpoint: DELETE:/v1/Week/{userId}/{weekYear}/{weekNumber}
         """
-        response = delete(f'{BASE_URL}v1/User/{citizen_id}/week/{week_year}/{week_number}',
+        response = delete(f'{BASE_URL}v1/Week/{citizen_id}/{week_year}/{week_number}',
                           headers=auth(super_user_token))
         
         self.assertEqual(response.status_code, HTTPStatus.OK)
@@ -307,9 +307,9 @@ class TestWeekController(GIRAFTestCase):
         """
         Testing ensuring week has been deleted
 
-        Endpoint: GET:/v1/User/{userId}/week
+        Endpoint: GET:/v1/Week/{userId}/weekName
         """
-        response = get(f'{BASE_URL}v1/User/{citizen_id}/week', headers=auth(citizen_token))
+        response = get(f'{BASE_URL}v1/Week/{citizen_id}/weekName', headers=auth(citizen_token))
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
         self.assertFalse(response_body['data'])
