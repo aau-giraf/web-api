@@ -204,7 +204,7 @@ namespace GirafRest.Test
             var pc = initializeTest();
             _testContext.MockUserManager.MockLogout();
             _testContext.MockHttpContext.MockClearQueries();
-            var res = pc.ReadPictograms(null, 1, 10).Result as ObjectResult;
+            var res = pc.ReadPictograms(null, 1, 20).Result as ObjectResult;
             var body = res.Value as SuccessResponse<List<WeekPictogramDTO>>;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
@@ -309,6 +309,27 @@ namespace GirafRest.Test
             
             // As there are only two results, testing that the first element is the same should be sufficient
             Assert.Equal(bodyForLowercase.Data[0].Title, bodyForUppercase.Data[0].Title);
+        }
+        
+        [Fact]
+        public void ReadPictograms_SearchResultInCorrectOrder_Success()
+        {
+            // Testing that upper or lower case letters do not change the result of the search
+            /*
+             *  The Mocked pictograms relevant for this test are titled:
+             *  "primus",
+             *  "mus"
+             *
+             *  If the search ignores whether letters are written in capital then the search should always
+             *  produce the same order.
+             */
+            var pc = initializeTest();
+            const string startsWithQuery = "m";
+            var resForStartsWithQuery = pc.ReadPictograms(startsWithQuery, 1, 2).Result as ObjectResult;
+            var bodyForStartsWithQuery = resForStartsWithQuery.Value as SuccessResponse<List<WeekPictogramDTO>>;
+
+            // As there are only two results, testing that the first element is the same should be sufficient
+            Assert.True(bodyForStartsWithQuery.Data[0].Title== "mus" && bodyForStartsWithQuery.Data[1].Title== "primus");
         }
 
         [Fact]
