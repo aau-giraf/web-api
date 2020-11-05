@@ -67,7 +67,7 @@ namespace GirafRest.Controllers
             if (page < 1)
                 return BadRequest(new ErrorResponse(ErrorCode.InvalidProperties, "Missing page"));
             //Produce a list of all pictograms available to the user
-            var userPictograms = (await ReadAllPictograms(query)).AsEnumerable();
+            var userPictograms = (await ReadAllPictograms(query,page,pageSize)).AsEnumerable();
             // This does not occur only when user has no pictograms, but when any error is caught in the previous call
             if (userPictograms == null)
                 return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, "User has no pictograms"));
