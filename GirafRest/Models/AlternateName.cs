@@ -1,8 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using GirafRest.Models.DTOs;
 
 namespace GirafRest.Models
 {
+    
+    /// <summary>
+    /// Class for saving alternate names for pictograms 
+    /// </summary>
     [Table("AlternateNames")]
     public class AlternateName
     {
@@ -16,21 +21,28 @@ namespace GirafRest.Models
 
         [ForeignKey("CitizenId")] 
         public string CitizenId { get; set; }
-        public GirafUser Citizen { get; }
+        public GirafUser Citizen { get; set; }
         
         [ForeignKey("PictogramId")]
         public long PictogramId { get; set; }
-        public Pictogram Pictogram { get; }
+        public Pictogram Pictogram { get; set; }
 
         [Column("Name")]
         public string Name { get; set; }
 
-        AlternateName(GirafUser citizen, Pictogram pictogram, string name)
+        public AlternateName()
         {
-            Citizen = citizen;
-            Pictogram = pictogram;
-            Name = name;
+            
         }
         
+        public AlternateName(GirafUser citizen, Pictogram pictogram, string name)
+        {
+            Citizen = citizen;
+            CitizenId = Citizen.Id;
+            Pictogram = pictogram;
+            PictogramId = Pictogram.Id;
+            Name = name;
+        }
+
     }
 }
