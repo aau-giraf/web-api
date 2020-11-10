@@ -78,13 +78,20 @@ namespace GirafRest.Controllers
             int order = dbWeekDay.Activities.Select(act => act.Order).DefaultIfEmpty(0).Max();
             order++;
 
+
+            AlternateName an = await _giraf._context.AlternateNames.FirstOrDefaultAsync(altnam =>
+                altnam.Citizen == user && altnam.PictogramId == newActivity.Pictograms.First().Id);
+
+            string title = an == null ? newActivity.Pictograms.First().Title : an.Name;
+            
             Activity dbActivity = new Activity(
                 dbWeekDay,
                 null,
                 order,
                 ActivityState.Normal,
                 null,
-                false
+                false,
+                title
             );
             _giraf._context.Activities.Add(dbActivity);
 

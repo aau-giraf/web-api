@@ -43,12 +43,12 @@ namespace GirafRest.Controllers
         /// 
         /// </summary>
         /// <returns></returns>
-        [HttpGet("{picId}/{userId}")]
+        [HttpGet("{userId}/{picId}")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType((StatusCodes.Status200OK))]
-        public async Task<ActionResult> GetName(long picId, string userId)
+        public async Task<ActionResult> GetName(string userId, long picId )
         {
             GirafUser user = await _giraf._context.Users.FirstOrDefaultAsync(us => us.Id == userId);
             if (user == null)
@@ -79,8 +79,8 @@ namespace GirafRest.Controllers
                     new ErrorResponse(ErrorCode.NotFound, "Alternate name not found"));
             }
 
-            return StatusCode(StatusCodes.Status200OK, new SuccessResponse(
-                new AlternateNameDTO(an).ToString()));
+            return StatusCode(StatusCodes.Status200OK, new SuccessResponse<AlternateNameDTO>(
+                new AlternateNameDTO(an)));
         }
 
         /// <summary>
@@ -189,8 +189,8 @@ namespace GirafRest.Controllers
             _giraf._context.AlternateNames.Update(oldAn);
             await _giraf._context.SaveChangesAsync();
             
-            return StatusCode(StatusCodes.Status200OK, new SuccessResponse(
-                an.ToString()));
+            return StatusCode(StatusCodes.Status200OK, new SuccessResponse<AlternateNameDTO>(
+                an));
         }
         
         
