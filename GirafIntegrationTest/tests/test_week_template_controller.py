@@ -44,11 +44,11 @@ class TestWeekTemplateController(GIRAFTestCase):
         """
         Testing logging in as Guardian
 
-        Endpoint: POST:/v1/Account/login
+        Endpoint: POST:/v2/Account/login
         """
         global guardian_token
         data = {'username': 'Graatand', 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response = post(f'{BASE_URL}v2/Account/login', json=data)
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
@@ -60,10 +60,10 @@ class TestWeekTemplateController(GIRAFTestCase):
         """
         Testing registering Citizen
 
-        Endpoint: POST:/v1/Account/register
+        Endpoint: POST:/v2/Account/register
         """
         data = {'username': citizen_username, 'displayname': citizen_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 1}
-        response = post(f'{BASE_URL}v1/Account/register', headers=auth(guardian_token), json=data)
+        response = post(f'{BASE_URL}v2/Account/register', headers=auth(guardian_token), json=data)
 
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
 
@@ -73,11 +73,11 @@ class TestWeekTemplateController(GIRAFTestCase):
         """
         Testing logging in as Citizen
 
-        Endpoint: POST:/v1/Account/login
+        Endpoint: POST:/v2/Account/login
         """
         global citizen_token
         data = {'username': citizen_username, 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response = post(f'{BASE_URL}v2/Account/login', json=data)
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
 

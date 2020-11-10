@@ -60,7 +60,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(typeof(SuccessResponse<List<WeekPictogramDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> ReadPictograms([FromQuery]string query, [FromQuery]int page = 1, [FromQuery]int pageSize = 10)
+        public async Task<ActionResult> ReadPictograms([FromQuery] string query, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             if (pageSize < 1 || pageSize > 100)
                 return BadRequest(new ErrorResponse(ErrorCode.InvalidProperties, "pageSize must be in the range 1-100"));
@@ -145,7 +145,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(typeof(SuccessResponse<WeekPictogramDTO>), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> CreatePictogram([FromBody]PictogramDTO pictogram)
+        public async Task<ActionResult> CreatePictogram([FromBody] PictogramDTO pictogram)
         {
             var user = await _giraf.LoadUserWithResources(HttpContext.User);
 
@@ -439,7 +439,7 @@ namespace GirafRest.Controllers
             {
                 return NotFound();
             }
-            
+
             return PhysicalFile($"{imagePath}{picto.Id}.png", IMAGE_TYPE_PNG);
         }
 
@@ -487,7 +487,7 @@ namespace GirafRest.Controllers
                 //Find the user and add his pictograms to the result
                 var user = await _giraf.LoadUserWithDepartment(HttpContext.User).ConfigureAwait(false);
                 if (query != null)
-                    query = query.ToLower().Replace(" ", string.Empty);                
+                    query = query.ToLower().Replace(" ", string.Empty);
 
                 if (user != null)
                 {
@@ -495,21 +495,21 @@ namespace GirafRest.Controllers
                     if (user.Department != null)
                     {
                         _giraf._logger.LogInformation($"Fetching pictograms for department {user.Department.Name}");
-                        return _giraf._context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query) && 
-                                                                                 pictogram.Title.ToLower().Replace(" ", string.Empty).Contains(query) 
-                                                                                 || string.IsNullOrEmpty(query)) 
-                                                                             && (pictogram.AccessLevel == AccessLevel.PUBLIC 
-                                                                                 || pictogram.Users.Any(ur => ur.OtherKey == user.Id) 
+                        return _giraf._context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query) &&
+                                                                                 pictogram.Title.ToLower().Replace(" ", string.Empty).Contains(query)
+                                                                                 || string.IsNullOrEmpty(query))
+                                                                             && (pictogram.AccessLevel == AccessLevel.PUBLIC
+                                                                                 || pictogram.Users.Any(ur => ur.OtherKey == user.Id)
                                                                                  || pictogram.Departments.Any(dr => dr.OtherKey == user.DepartmentKey)))
                                                          .Skip((page - 1) * pageSize)
                                                          .Take(pageSize)
                                                          .AsNoTracking();
                     }
                     // User is not part of a department
-                    return _giraf._context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query) 
-                                                                          && pictogram.Title.ToLower().Replace(" ", string.Empty).Contains(query) 
-                                                                          || string.IsNullOrEmpty(query)) 
-                                                                         && (pictogram.AccessLevel == AccessLevel.PUBLIC 
+                    return _giraf._context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query)
+                                                                          && pictogram.Title.ToLower().Replace(" ", string.Empty).Contains(query)
+                                                                          || string.IsNullOrEmpty(query))
+                                                                         && (pictogram.AccessLevel == AccessLevel.PUBLIC
                                                                              || pictogram.Users.Any(ur => ur.OtherKey == user.Id)))
                                                      .Skip((page - 1) * pageSize)
                                                      .Take(pageSize)
@@ -517,9 +517,9 @@ namespace GirafRest.Controllers
                 }
 
                 // Fetch all public pictograms as there is no user.
-                return _giraf._context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query) 
-                                                                      && pictogram.Title.ToLower().Replace(" ", string.Empty).Contains(query) 
-                                                                      || string.IsNullOrEmpty(query)) 
+                return _giraf._context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query)
+                                                                      && pictogram.Title.ToLower().Replace(" ", string.Empty).Contains(query)
+                                                                      || string.IsNullOrEmpty(query))
                                                                      && (pictogram.AccessLevel == AccessLevel.PUBLIC))
                                                  .Skip((page - 1) * pageSize)
                                                  .Take(pageSize)
@@ -531,7 +531,7 @@ namespace GirafRest.Controllers
                 return null;
             }
         }
-        
+
         #endregion
     }
 }
