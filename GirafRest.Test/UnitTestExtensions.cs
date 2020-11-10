@@ -92,6 +92,14 @@ namespace GirafRest.Test
                         new Pictogram("Private for user 4", AccessLevel.PRIVATE) {
                             Id = 14
                         },
+
+                        new Pictogram("primus", AccessLevel.PUBLIC) {
+                            Id = 15
+                        },
+                        new Pictogram("mus", AccessLevel.PUBLIC) {
+                            Id = 16
+                        },
+
                     };
 
                     return _mockPictograms;
