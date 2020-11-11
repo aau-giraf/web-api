@@ -173,9 +173,9 @@ namespace GirafRest.Services
         /// <returns>The hash as a string</returns>
         public string GetHash(byte[] image)
         {
-            using (var md4 = new System.Security.Cryptography.MD5CryptoServiceProvider())
+            using (var md5 = new System.Security.Cryptography.MD5CryptoServiceProvider())
             {
-                var hash = md4.ComputeHash(image);
+                var hash = md5.ComputeHash(image);
                 return Convert.ToBase64String(hash);
             }
         }
