@@ -196,7 +196,7 @@ namespace GirafRest.Controllers
         /// <param name="activity">a serialized version of the activity that will be updated.</param>
         /// <param name="userId">an ID of the user to update activities for.</param>
         /// <returns>Returns <see cref="ActivityDTO"/> for the updated activity on success else MissingProperties or NotFound</returns>
-        [HttpPatch("{userId}/update")]
+        [HttpPut("{userId}/update")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -230,6 +230,7 @@ namespace GirafRest.Controllers
             updateActivity.State = activity.State;
             updateActivity.IsChoiceBoard = activity.IsChoiceBoard;
             updateActivity.ChoiceBoardName = activity.ChoiceBoardName;
+            updateActivity.Title = activity.Title;
             // deletion of pictogram relations
 
             var pictogramRelations = _giraf._context.PictogramRelations
