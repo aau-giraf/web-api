@@ -111,30 +111,30 @@ namespace GirafRest.Test.Services
         }
         #endregion
         #region IpRateLimiting
-        [Fact]
-        public async Task CheckIpRateLimiting_TooManyRequests_True_StatusCode429()
-        {
-            _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
-            _client = _server.CreateClient();
+        //[Fact]
+        //public async Task CheckIpRateLimiting_TooManyRequests_True_StatusCode429()
+        //{
+        //    _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
+        //    _client = _server.CreateClient();
 
-            //5 requests to forces the 429 reponse
-            HttpResponseMessage response = null;
-            for (int i = 0; i < 5; i++)
-            {
-                response = await _client.GetAsync("/");
-            }
+        //    //5 requests to forces the 429 reponse
+        //    HttpResponseMessage response = null;
+        //    for (int i = 0; i < 5; i++)
+        //    {
+        //        response = await _client.GetAsync("/");
+        //    }
 
-            Assert.True(response.StatusCode == (System.Net.HttpStatusCode)429);
-        }
+        //    Assert.True(response.StatusCode == (System.Net.HttpStatusCode)429);
+        //}
 
-        [Fact]
-        public async Task CheckIpRateLimiting_TooManyRequests_False_StatusCode429()
-        {
-            _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
-            _client = _server.CreateClient();
-            var response = await _client.GetAsync("/");
-            Assert.False(response.StatusCode == (System.Net.HttpStatusCode)429);
-        }
+        //[Fact]
+        //public async Task CheckIpRateLimiting_TooManyRequests_False_StatusCode429()
+        //{
+        //    _server = new TestServer(new WebHostBuilder().UseStartup<Startup>());
+        //    _client = _server.CreateClient();
+        //    var response = await _client.GetAsync("/");
+        //    Assert.False(response.StatusCode == (System.Net.HttpStatusCode)429);
+        //}
         #endregion
     }
 }

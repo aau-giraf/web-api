@@ -36,11 +36,11 @@ class TestActivityController(GIRAFTestCase):
         """
         Testing logging in as Guardian
 
-        Endpoint: POST:/v1/Account/login
+        Endpoint: POST:/v2/Account/login
         """
         global guardian_token
         data = {'username': 'graatand', 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response = post(f'{BASE_URL}v2/Account/login', json=data)
         response_body = response.json()
 
         self.assertEqual(response.status_code, HTTPStatus.OK)
@@ -53,11 +53,11 @@ class TestActivityController(GIRAFTestCase):
         """
         Testing logging in as Citizen1
 
-        Endpoint: POST:/v1/Account/login
+        Endpoint: POST:/v2/Account/login
         """
         global user_token
         data = {'username': 'Kurt', 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response = post(f'{BASE_URL}v2/Account/login', json=data)
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
 

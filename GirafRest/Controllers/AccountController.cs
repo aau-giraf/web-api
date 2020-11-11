@@ -26,7 +26,7 @@ namespace GirafRest.Controllers
     /// Manages accounts such as login, sign up, etc.
     /// </summary>
     [Authorize]
-    [Route("v1/[controller]")]
+    [Route("v2/[controller]")]
     public class AccountController : Controller
     {
         private readonly SignInManager<GirafUser> _signInManager;
@@ -177,12 +177,12 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Allows the user to change his password if they know their old password.
         /// </summary>
-        /// <param name="id">References the User, changing passwords. <see cref="GirafUser"/></param>
+        /// <param name="userId">References the User, changing passwords. <see cref="GirafUser"/></param>
         /// <param name="model">A reference to <see cref="ChangePasswordDTO"/></param>
         /// <returns>
         /// Empty Response on success. Else: Missingproperties, PasswordNotUpdated or UserNotFound
         /// </returns>
-        [HttpPut("/v1/User/{id}/Account/password")]
+        [HttpPut("password/{userId}")]
         [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -190,9 +190,9 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public async Task<ActionResult> ChangePasswordByOldPassword(string id, [FromBody] ChangePasswordDTO model)
+        public async Task<ActionResult> ChangePasswordByOldPassword(string userId, [FromBody] ChangePasswordDTO model)
         {
-            var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
+            var user = _giraf._context.Users.FirstOrDefault(u => u.Id == userId);
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
             if (model == null)
@@ -218,22 +218,22 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Allows a user to set a new password if they forgot theirs.
         /// </summary>
-        /// <param name="id">References the User, changing passwords. <see cref="GirafUser"/></param>
+        /// <param name="userId">References the User, changing passwords. <see cref="GirafUser"/></param>
         /// <param name="model">All information needed to set the password in a ResetPasswordDTO, i.e. password and reset token.</param>
         /// <returns>
         /// Empty Response on success. 
         /// UserNotFound if invalid user id was suplied
         /// /// MissingProperties if there was missing properties
         /// </returns>
-        [HttpPost("/v1/User/{id}/Account/password")]
+        [HttpPost("password/{userId}")]
         [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> ChangePasswordByToken(string id, [FromBody] ResetPasswordDTO model)
+        public async Task<ActionResult> ChangePasswordByToken(string userId, [FromBody] ResetPasswordDTO model)
         {
-            var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
+            var user = _giraf._context.Users.FirstOrDefault(u => u.Id == userId);
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User was not found"));
             if (model == null)
@@ -253,20 +253,20 @@ namespace GirafRest.Controllers
         /// <summary>
         /// Allows the user to get a password reset token for a given user
         /// </summary>
-        /// <param name="id">References the User, changing passwords. <see cref="GirafUser"/></param>
+        /// <param name="userId">References the User, changing passwords. <see cref="GirafUser"/></param>
         /// <returns>
         /// Return the password reset token on success. 
         /// UserNotFound if invalid user id was suplied
         /// NotAuthorized if the  currently logged in user is not allowed to change the given users password
         /// </returns>
-        [HttpGet("/v1/User/{id}/Account/password-reset-token")]
+        [HttpGet("password-reset-token/{userId}")]
         [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> GetPasswordResetToken(string id)
+        public async Task<ActionResult> GetPasswordResetToken(string userId)
         {
-            var user = _giraf._context.Users.FirstOrDefault(u => u.Id == id);
+            var user = _giraf._context.Users.FirstOrDefault(u => u.Id == userId);
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
@@ -283,7 +283,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="userId">id for identifying the given <see cref="GirafUser"/> to be deleted</param>
         /// <returns>Empty response on success else UserNotFound or NotAuthorized</returns>
-        [HttpDelete("/v1/Account/user/{userId}")]
+        [HttpDelete("user/{userId}")]
         [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]

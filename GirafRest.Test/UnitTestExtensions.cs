@@ -75,7 +75,31 @@ namespace GirafRest.Test
                         },
                         new Pictogram("cat1", AccessLevel.PUBLIC) {
                             Id = 9
-                        }
+                        },
+                        //Do not change this Id = 10. This is used in PostActivity_ValidDayInvalidDTO_InvalidProperties()
+                        new Pictogram("", AccessLevel.PUBLIC) {
+                            Id = 10
+                        },
+                        new Pictogram("Public Picto3", AccessLevel.PUBLIC){
+                            Id = 11
+                        },
+                        new Pictogram("CASESENSITIVE1", AccessLevel.PUBLIC) {
+                            Id = 12
+                        },
+                        new Pictogram("casesensitive", AccessLevel.PUBLIC) {
+                            Id = 13
+                        },
+                        new Pictogram("Private for user 4", AccessLevel.PRIVATE) {
+                            Id = 14
+                        },
+
+                        new Pictogram("primus", AccessLevel.PUBLIC) {
+                            Id = 15
+                        },
+                        new Pictogram("mus", AccessLevel.PUBLIC) {
+                            Id = 16
+                        },
+
                     };
 
                     return _mockPictograms;

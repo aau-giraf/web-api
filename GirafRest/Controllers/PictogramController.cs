@@ -67,13 +67,12 @@ namespace GirafRest.Controllers
             if (page < 1)
                 return BadRequest(new ErrorResponse(ErrorCode.InvalidProperties, "Missing page"));
             //Produce a list of all pictograms available to the user
-            var userPictograms = (await ReadAllPictograms()).AsEnumerable();
+
+            var userPictograms = (await ReadAllPictograms(query,page,pageSize)).AsEnumerable();
+
+            // This does not occur only when user has no pictograms, but when any error is caught in the previous call
             if (userPictograms == null)
                 return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, "User has no pictograms"));
-
-            //Filter out all that does not satisfy the query string, if such is present.
-            if (!String.IsNullOrEmpty(query))
-                userPictograms = userPictograms.OrderBy((Pictogram _p) => IbsenDistance(query, _p.Title));
 
             return Ok(new SuccessResponse<List<WeekPictogramDTO>>(
                 userPictograms.OfType<Pictogram>()
@@ -159,6 +158,9 @@ namespace GirafRest.Controllers
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties,
                     "Could not read pictogram DTO. Please make sure not to include image data in this request. " +
                     "Use POST localhost/v1/pictogram/{id}/image instead."));
+
+            if (string.IsNullOrEmpty(pictogram.Title))
+                return BadRequest(new ErrorResponse(ErrorCode.InvalidProperties, "Invalid pictogram: Blank title"));
 
             if (!ModelState.IsValid)
                 return BadRequest(new ErrorResponse(ErrorCode.InvalidProperties, "Model is not valid"));
@@ -331,11 +333,8 @@ namespace GirafRest.Controllers
             {
                 try
                 {
-                    using (FileStream fs =
-                    new FileStream(path,
-                        FileMode.Create))
+                    using (FileStream fs = new FileStream(path, FileMode.Create))
                     {
-
                         fs.Write(image);
                     }
                 }
@@ -354,7 +353,6 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
             return Ok(new SuccessResponse<WeekPictogramDTO>(new WeekPictogramDTO(pictogram)));
         }
-        
         /// <summary>
         /// Read the image of a given pictogram as a sequence of bytes.
         /// </summary>
@@ -482,39 +480,33 @@ namespace GirafRest.Controllers
         /// Read all pictograms available to the current user (or only the PUBLIC ones if no user is authorized).
         /// </summary>
         /// <returns>A list of said pictograms.</returns>
-        private async Task<IQueryable<Pictogram>> ReadAllPictograms()
+        private async Task<IQueryable<Pictogram>> ReadAllPictograms(string query, int page = 1, int pageSize = 10)
         {
-            //In this method .AsNoTracking is used due to a bug in EntityFramework Core, where we are not allowed to call a constructor in .Select,
+            //In this method .AsNoTracking is used due to a bug in EntityFramework Core, where we are not allowed to call a constructor in .Select
             //i.e. convert the pictograms to PictogramDTOs.
             try
             {
                 //Find the user and add his pictograms to the result
-                var user = await _giraf.LoadUserWithDepartment(HttpContext.User);
+                var user = await _giraf.LoadUserWithDepartment(HttpContext.User).ConfigureAwait(false);
+                if (query != null)
+                    query = query.ToLower().Replace(" ", string.Empty);                
 
                 if (user != null)
                 {
+                    // User is a part of a department
                     if (user.Department != null)
                     {
                         _giraf._logger.LogInformation($"Fetching pictograms for department {user.Department.Name}");
-                        return _giraf._context.Pictograms.AsNoTracking()
-                            //All public pictograms
-                            .Where(pictogram => pictogram.AccessLevel == AccessLevel.PUBLIC
-                            //All the users pictograms
-                            || pictogram.Users.Any(ur => ur.OtherKey == user.Id)
-                            //All the department's pictograms
-                            || pictogram.Departments.Any(dr => dr.OtherKey == user.DepartmentKey));
-                    }
 
-                    return _giraf._context.Pictograms.AsNoTracking()
-                            //All public pictograms
-                            .Where(pictogram => pictogram.AccessLevel == AccessLevel.PUBLIC
-                            //All the users pictograms
-                            || pictogram.Users.Any(ur => ur.OtherKey == user.Id));
+                        return fetchingPictogramsFromDepartment(query, user, page, pageSize);
+                    }
+                    // User is not part of a department
+                    return fetchingPictogramsUserNotInDepartment(query, user, page, pageSize);
                 }
 
-                //Fetch all public pictograms as there is no user.
-                return _giraf._context.Pictograms.AsNoTracking()
-                    .Where(pictogram => pictogram.AccessLevel == AccessLevel.PUBLIC);
+                // Fetch all public pictograms as there is no user.
+                return fetchPictogramsNoUserLoggedIn(query, page, pageSize);
+
             }
             catch (Exception e)
             {
@@ -523,44 +515,101 @@ namespace GirafRest.Controllers
             }
         }
 
-        /// <summary>
-        /// The wagner-fisher implementation of the levenshtein distance named funny by my peers (long story)
-        /// </summary>
-        /// <returns>The edit distance between the strings a and b.</returns>
-        /// <param name="a">Search string.</param>
-        /// <param name="b">string to be compared against the search string</param>
-        private int IbsenDistance(string a, string b)
+        private IQueryable<Pictogram> fetchingPictogramsFromDepartment(string query,GirafUser user, int page, int pageSize)
         {
-            const int insertionCost = 1;
-            const int deletionCost = 100;
-            const int substitutionCost = 100;
-            int[,] d = new int[a.Length + 1, b.Length + 1];
-            for (int i = 0; i <= a.Length; i++)
-                for (int j = 0; j <= b.Length; j++)
-                    d[i, j] = 0;
+            return fetchPictogramsFromDepartmentStartsWithQuery(query, user)
+                .Union(fetchPictogramsFromDepartmentsContainsQuery(query, user))                
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .AsNoTracking();
 
-            for (int i = 1; i <= a.Length; i++)
-                d[i, 0] = i * deletionCost;
+        }
+        
+        private IQueryable<Pictogram> fetchingPictogramsUserNotInDepartment(string query,GirafUser user, int page, int pageSize)
+        {
+            return fetchPictogramsUserNotPartOfDepartmentStartsWithQuery(query,user).
+                Union(
+                    fetchPictogramsUserNotPartOfDepartmentContainsQuery(query,user))
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .AsNoTracking();
 
-            for (int j = 1; j <= b.Length; j++)
-                d[0, j] = j * insertionCost;
-
-            for (int j = 1; j <= b.Length; j++)
-            {
-                for (int i = 1; i <= a.Length; i++)
-                {
-                    int _substitutionCost = 0;
-                    if (a[i - 1] != b[j - 1])
-                        _substitutionCost = substitutionCost;
-
-                    d[i, j] = Math.Min(d[i - 1, j] + deletionCost,
-                             Math.Min(d[i, j - 1] + insertionCost,
-                                      d[i - 1, j - 1] + _substitutionCost));
-                }
-            }
-            return d[a.Length, b.Length];
         }
 
+        private IQueryable<Pictogram> fetchPictogramsNoUserLoggedIn(string query, int page, int pageSize)
+        {
+            return fetchPictogramsNoUserLoggedInStartsWithQuery(query)
+                .Union(
+                    fetchPictogramsNoUserLoggedInContainsQuery(query))
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .AsNoTracking();
+
+        }
+
+        #region DatabaseQueries
+        private IQueryable<Pictogram> fetchPictogramsFromDepartmentStartsWithQuery(string query,GirafUser user)
+        {
+            return _giraf._context.Pictograms.Where(
+                    pictogram => (!string.IsNullOrEmpty(query) &&
+                                  pictogram.Title.ToLower().Replace(" ", string.Empty).StartsWith(query)
+                                  || string.IsNullOrEmpty(query))
+                                 && (pictogram.AccessLevel == AccessLevel.PUBLIC
+                                     || pictogram.Users.Any(ur => ur.OtherKey == user.Id)
+                                     || pictogram.Departments.Any(dr => dr.OtherKey == user.DepartmentKey)));
+        }
+
+        private IQueryable<Pictogram> fetchPictogramsFromDepartmentsContainsQuery(string query,GirafUser user)
+        {
+            return _giraf._context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query) 
+                                                           && pictogram.Title.ToLower().Replace(" ", string.Empty).Contains(query) 
+                                                           || string.IsNullOrEmpty(query)) 
+                                                          && (pictogram.AccessLevel == AccessLevel.PUBLIC 
+                                                              || pictogram.Users.Any(ur => ur.OtherKey == user.Id) 
+                                                              || pictogram.Departments.Any(dr => dr.OtherKey == user.DepartmentKey)));
+        }
+
+        private IQueryable<Pictogram> fetchPictogramsUserNotPartOfDepartmentStartsWithQuery(string query,GirafUser user)
+        {
+            return _giraf._context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query)
+                                                                  && pictogram.Title.ToLower()
+                                                                      .Replace(" ", string.Empty).StartsWith(query)
+                                                                  || string.IsNullOrEmpty(query))
+                                                                 && (pictogram.AccessLevel == AccessLevel.PUBLIC
+                                                                     || pictogram.Users.Any(
+                                                                         ur => ur.OtherKey == user.Id)));
+        }
+        
+        private IQueryable<Pictogram> fetchPictogramsUserNotPartOfDepartmentContainsQuery(string query,GirafUser user)
+        {
+            return _giraf._context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query)
+                                                                  && pictogram.Title.ToLower()
+                                                                      .Replace(" ", string.Empty).Contains(query)
+                                                                  || string.IsNullOrEmpty(query))
+                                                                 && (pictogram.AccessLevel == AccessLevel.PUBLIC
+                                                                     || pictogram.Users.Any(
+                                                                         ur => ur.OtherKey == user.Id)));
+        }
+
+        private IQueryable<Pictogram> fetchPictogramsNoUserLoggedInStartsWithQuery(string query)
+        {
+            return _giraf._context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query)
+                                                                  && pictogram.Title.ToLower()
+                                                                      .Replace(" ", string.Empty).StartsWith(query)
+                                                                  || string.IsNullOrEmpty(query))
+                                                                 && (pictogram.AccessLevel == AccessLevel.PUBLIC));
+        }
+        
+        private IQueryable<Pictogram> fetchPictogramsNoUserLoggedInContainsQuery(string query)
+        {
+            return _giraf._context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query)
+                                                                  && pictogram.Title.ToLower()
+                                                                      .Replace(" ", string.Empty).Contains(query)
+                                                                  || string.IsNullOrEmpty(query))
+                                                                 && (pictogram.AccessLevel == AccessLevel.PUBLIC));
+        }
+        #endregion
+        
         #endregion
     }
 }

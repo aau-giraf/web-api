@@ -91,12 +91,16 @@ namespace GirafRest.Controllers
             foreach (var pictogram in newActivity.Pictograms)
             {
                 var dbPictogram = _giraf._context.Pictograms.FirstOrDefault(id => id.Id == pictogram.Id);
-                if (dbPictogram != null)
+                if (dbPictogram != null && string.IsNullOrEmpty(dbPictogram.Title))
+                {
+                    return BadRequest(new ErrorResponse(ErrorCode.InvalidProperties, "Invalid pictogram: Blank title"));
+                }
+                if (dbPictogram != null && !string.IsNullOrEmpty(dbPictogram.Title))
                 {
                     _giraf._context.PictogramRelations.Add(new PictogramRelation(
                         dbActivity, dbPictogram
                     ));
-                }
+                }               
                 else
                 {
                     return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, "Pictogram not found"));
@@ -153,7 +157,7 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Gets a user's activity from an activity id.
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="activityId"></param>
@@ -218,7 +222,7 @@ namespace GirafRest.Controllers
             updateActivity.Order = activity.Order;
             updateActivity.State = activity.State;
             updateActivity.IsChoiceBoard = activity.IsChoiceBoard;
-            
+            updateActivity.ChoiceBoardName = activity.ChoiceBoardName;
             // deletion of pictogram relations
 
             var pictogramRelations = _giraf._context.PictogramRelations
