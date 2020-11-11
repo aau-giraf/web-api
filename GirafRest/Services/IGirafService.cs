@@ -86,5 +86,11 @@ namespace GirafRest.Services
         /// <returns>The user with department.</returns>
         /// <param name="principal">Principal.</param>
         Task<GirafUser> LoadUserWithDepartment(ClaimsPrincipal principal);
+        /// <summary>
+        /// Creates a MD5 hash used for hashing pictures, and returns the hash as a string.
+        /// </summary>
+        /// <param name="image">Input image</param>
+        /// <returns>The hash as a string</returns>
+        string GetHash(byte[] image);
     }
 }

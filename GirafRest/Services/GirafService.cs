@@ -165,6 +165,21 @@ namespace GirafRest.Services
 
             return ownedByUser;
         }
+        
+        /// <summary>
+        /// Creates a MD5 hash used for hashing pictures, and returns the hash as a string.
+        /// </summary>
+        /// <param name="image">Input image</param>
+        /// <returns>The hash as a string</returns>
+        public string GetHash(byte[] image)
+        {
+            using (var md4 = new System.Security.Cryptography.MD5CryptoServiceProvider())
+            {
+                var hash = md4.ComputeHash(image);
+                return Convert.ToBase64String(hash);
+            }
+        }
+
 
         /// <summary>
         /// Checks if the current user's department owns the given resource.
