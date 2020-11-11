@@ -347,7 +347,6 @@ namespace GirafRest.Controllers
 
 
                 pictogram.ImageHash = _giraf.GetHash(image);
-                Console.WriteLine(pictogram.ImageHash);
             }
 
             await _giraf._context.SaveChangesAsync();
