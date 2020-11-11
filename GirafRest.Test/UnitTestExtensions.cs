@@ -387,7 +387,7 @@ namespace GirafRest.Test
                     Weekday monday = new Weekday() {
                         Day = Days.Monday,
                     };
-                    Activity activity = new Activity(monday, new List<Pictogram>(), 0, ActivityState.Active, null, false, null);
+                    Activity activity = new Activity(monday, new List<Pictogram>(), 0, ActivityState.Active, null, false, "");
                     monday.Activities = new List<Activity>() {activity};
                     
                     if (_mockWeekTemplates == null) {
@@ -598,6 +598,23 @@ namespace GirafRest.Test
                 }
             }
 
+            private List<AlternateName> mockAlternateNames;
+            public List<AlternateName> MockAlternateNames
+            {
+                get
+                {
+                    if (mockAlternateNames == null)
+                    {
+                        mockAlternateNames = new List<AlternateName>()
+                        {
+                            new AlternateName(MockUsers.First(), MockPictograms.First(), "Kage")
+                        };
+                    }
+
+                    return mockAlternateNames;
+                }
+            }
+
             #endregion
             
             
@@ -642,6 +659,7 @@ namespace GirafRest.Test
                 var mockWeekTemplates = CreateMockDbSet(MockWeekTemplates);
                 var mockGuardianRelations = CreateMockDbSet(MockGuardianRelations);
                 var mockPictogramRelations = CreateMockDbSet(MockPictogramRelations);
+                var mockAlternateNames = CreateMockDbSet(MockAlternateNames);
                 var dbMock = new Mock<GirafDbContext>();
                 dbMock.Setup(c => c.Pictograms).Returns(mockSet.Object);
                 dbMock.Setup(c => c.UserResources).Returns(mockRelationSet.Object);
@@ -656,6 +674,7 @@ namespace GirafRest.Test
                 dbMock.Setup(c => c.Roles).Returns(mockRoles.Object);
                 dbMock.Setup(c => c.UserRoles).Returns(mockUserRoles.Object);
                 dbMock.Setup(c => c.PictogramRelations).Returns(mockPictogramRelations.Object);
+                dbMock.Setup(c => c.AlternateNames).Returns(mockAlternateNames.Object);
 
                 //Make sure that all references are setup - Entity does not handle it for us this time.
                 MockUsers[0].Department = MockDepartments[0];
