@@ -93,7 +93,9 @@ namespace GirafRest.Controllers
                 false,
                 title
             );
+            dbWeekDay.Activities.Add(dbActivity);
             _giraf._context.Activities.Add(dbActivity);
+            _giraf._context.Weekdays.Update(dbWeekDay);
 
             foreach (var pictogram in newActivity.Pictograms)
             {
