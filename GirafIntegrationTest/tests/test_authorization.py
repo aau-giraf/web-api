@@ -190,7 +190,7 @@ class TestAuthorization(GIRAFTestCase):
         Endpoint: PATCH:/v2/Activity/{user_id}/update
         """
         data = {'pictogram': {'id': 6}, 'id': 1}
-        response = patch(f'{BASE_URL}v2/Activity/{user_id}/update', json=data)
+        response = put(f'{BASE_URL}v2/Activity/{user_id}/update', json=data)
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
         self.assertEqual(response_body['errorKey'], 'NotAuthorized')
