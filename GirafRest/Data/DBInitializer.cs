@@ -84,18 +84,18 @@ namespace GirafRest.Setup
             System.Console.WriteLine($"Creating {count} pictograms");
             DirectoryInfo dir = Directory.CreateDirectory("../pictograms");
           
-            /*using FontFamily family = new FontFamily("Arial");
+            using FontFamily family = new FontFamily("Arial");
             using Font font = new Font(
                 family,
                 48,
                 FontStyle.Regular,
-                GraphicsUnit.Pixel);*/
+                GraphicsUnit.Pixel);
+            
 
             for (int i = 1; i <= count; i++)
             {
-                File.Copy("wwwroot/images/sample_pic.png",dir.FullName +$"/{i}.png",true);
-                //using Image pictogram = DrawText(i.ToString(), font, Color.Black, Color.White);
-                //pictogram.Save(Path.Combine(dir.FullName, $"{i}.png"), ImageFormat.Png); 
+                using Image pictogram = DrawText(i.ToString(), font, Color.Black, Color.White);
+                pictogram.Save(Path.Combine(dir.FullName, $"{i}.png"), ImageFormat.Png); 
             }
         }
 
