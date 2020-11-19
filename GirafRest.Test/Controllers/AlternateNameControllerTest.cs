@@ -147,6 +147,22 @@ namespace GirafRest.Test
     
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
         }
+        
+        [Fact]
+        public void PostAlternateName_CreateWithoutDTO_Error()
+        {
+            AlternateNameController ac = InitialiseTest();
+            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+
+
+            AlternateNameDTO newAN = null;
+
+            var res = ac.CreateAlternateName(newAN).Result as ObjectResult;
+    
+            Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
+        }
+        
+        
         #endregion
 
         #region GetAlternateName
@@ -267,10 +283,133 @@ namespace GirafRest.Test
             Assert.Equal(StatusCodes.Status400BadRequest,res.StatusCode);
         }
         
-        
+        [Fact]
+        public void PutAlternateName_WithUnauthorizedUser_Error()
+        {
+            AlternateNameController ac = InitialiseTest();
+            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
 
+            AlternateNameDTO newAN = new AlternateNameDTO()
+            {
+                Citizen = mockUser.Id,
+                Name = "Kage",
+                Pictogram = _testContext.MockPictograms.First().Id
+            };
+            
+            var res = ac.EditAlternateName(0,newAN).Result as ObjectResult;
+            
+            Assert.Equal(StatusCodes.Status403Forbidden,res.StatusCode);
+        }
         
+        [Fact]
+        public void PutAlternateName_WithoutUser_Error()
+        {
+            AlternateNameController ac = InitialiseTest();
+            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+            
+            AlternateNameDTO newAN = new AlternateNameDTO()
+            {
+                Citizen = "",
+                Name = "Kage",
+                Pictogram = _testContext.MockPictograms.First().Id
+            };
+            
+            var res = ac.EditAlternateName(0,newAN).Result as ObjectResult;
+            
+            Assert.Equal(StatusCodes.Status404NotFound,res.StatusCode);
+        }
+        
+        [Fact]
+        public void PutAlternateName_WithoutPictogram_Error()
+        {
+            AlternateNameController ac = InitialiseTest();
+            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+            
+            AlternateNameDTO newAN = new AlternateNameDTO()
+            {
+                Citizen = mockUser.Id,
+                Name = "Kage",
+                Pictogram = -1
+            };
+            
+            var res = ac.EditAlternateName(0,newAN).Result as ObjectResult;
+            
+            Assert.Equal(StatusCodes.Status404NotFound,res.StatusCode);
+        }
+        
+        [Fact]
+        public void PutAlternateName_WithWrongUser_Error()
+        {
+            AlternateNameController ac = InitialiseTest();
+            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            GirafUser otherUser = _testContext.MockUsers[1];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+            
+            AlternateNameDTO newAN = new AlternateNameDTO()
+            {
+                Citizen = otherUser.Id,
+                Name = "Kage",
+                Pictogram = _testContext.MockPictograms.First().Id
+            };
+            
+            var res = ac.EditAlternateName(0,newAN).Result as ObjectResult;
+            
+            Assert.Equal(StatusCodes.Status400BadRequest,res.StatusCode);
+        }
+        
+        [Fact]
+        public void PutAlternateName_WithWrongPictogram_Error()
+        {
+            AlternateNameController ac = InitialiseTest();
+            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+            
+            AlternateNameDTO newAN = new AlternateNameDTO()
+            {
+                Citizen = mockUser.Id,
+                Name = "Kage",
+                Pictogram = _testContext.MockPictograms[1].Id
+            };
+            
+            var res = ac.EditAlternateName(0,newAN).Result as ObjectResult;
+            
+            Assert.Equal(StatusCodes.Status400BadRequest,res.StatusCode);
+        }
+        
+        [Fact]
+        public void PutAlternateName_EditWithoutDTO_Error()
+        {
+            AlternateNameController ac = InitialiseTest();
+            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
 
+
+            AlternateNameDTO newAN = null;
+
+            var res = ac.EditAlternateName(0,newAN).Result as ObjectResult;
+    
+            Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
+        }
+        [Fact]
+        public void PutAlternateName_EditNotExistingAN_Error()
+        {
+            AlternateNameController ac = InitialiseTest();
+            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+
+
+            AlternateNameDTO newAN = new AlternateNameDTO()
+            {
+                Citizen = mockUser.Id,
+                Name = "Kage",
+                Pictogram = _testContext.MockPictograms.First().Id
+            };
+
+            var res = ac.EditAlternateName(-1,newAN).Result as ObjectResult;
+    
+            Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
+        }
+        
         #endregion
     }
 }

@@ -169,7 +169,7 @@ namespace GirafRest.Controllers
             }
 
             AlternateName oldAn = await _giraf._context.AlternateNames.FirstOrDefaultAsync(altnam => altnam.Id == id);
-            
+
             if (oldAn == null)
             {
                 return StatusCode(StatusCodes.Status404NotFound,
@@ -177,22 +177,36 @@ namespace GirafRest.Controllers
             }
             
             GirafUser user = await _giraf._context.Users.FirstOrDefaultAsync(us => us.Id == an.Citizen);
+            if (user == null)
+            {
+                return StatusCode(StatusCodes.Status404NotFound,
+                    new ErrorResponse(ErrorCode.NotFound, "User not found"));
+            }
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(
                 await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return StatusCode(StatusCodes.Status403Forbidden,
                     new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
+
+            Pictogram pic = await _giraf._context.Pictograms.FirstOrDefaultAsync(p => p.Id == an.Pictogram);
+            if (pic == null)
+            {
+                return StatusCode(StatusCodes.Status404NotFound,
+                    new ErrorResponse(ErrorCode.NotFound, "Pictogram not found"));
+            }
             
             if (string.IsNullOrEmpty(an.Name))
             {
                 return StatusCode(StatusCodes.Status400BadRequest,
                     new ErrorResponse(ErrorCode.MissingProperties, "Name cannot be empty"));
             }
+
+            if (oldAn.PictogramId != pic.Id || oldAn.CitizenId != user.Id)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest,
+                    new ErrorResponse(ErrorCode.InvalidProperties, "Only name should be changed"));
+            }
             
-            oldAn.CitizenId = user.Id;
-            oldAn.Citizen = user;
-            oldAn.PictogramId = an.Pictogram;
-            oldAn.Pictogram = await _giraf._context.Pictograms.FirstOrDefaultAsync(pic => pic.Id == oldAn.PictogramId);
             oldAn.Name = an.Name;
 
             _giraf._context.AlternateNames.Update(oldAn);
