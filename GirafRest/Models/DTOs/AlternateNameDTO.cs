@@ -7,6 +7,11 @@ namespace GirafRest.Models.DTOs
     /// </summary>
     public class AlternateNameDTO
     {
+        
+        /// <summary>
+        /// The unique id of the alternatename
+        /// </summary>
+        public long Id { get; set; }
         /// <summary>
         /// Citizen
         /// </summary>
@@ -37,6 +42,8 @@ namespace GirafRest.Models.DTOs
             {
                 return;
             }
+
+            Id = an.Id;
             Citizen = an.CitizenId;
             Pictogram = an.PictogramId;
             Name = an.Name;

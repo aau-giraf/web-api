@@ -608,6 +608,9 @@ namespace GirafRest.Test
                         mockAlternateNames = new List<AlternateName>()
                         {
                             new AlternateName(MockUsers.First(), MockPictograms.First(), "Kage")
+                            {
+                                Id = 0
+                            }
                         };
                     }
 

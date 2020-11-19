@@ -39,9 +39,12 @@ namespace GirafRest.Controllers
 
         }
 
+
         /// <summary>
-        /// 
+        /// Get AlternateName for specified <see cref="GirafUser"/> and <see cref="Pictogram"/>
         /// </summary>
+        /// <param name="userId">The id of the related user</param>
+        /// <param name="picId">The id of the related pictogram</param>
         /// <returns></returns>
         [HttpGet("{userId}/{picId}")]
         [Authorize]
@@ -84,10 +87,10 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Create a new AlternateName from AlternateNameDTO
         /// </summary>
         /// <param name="an"></param>
-        /// <returns></returns>
+        /// <returns>StatusCode containing relevant error or success with the created AltenateNaem</returns>
         [HttpPost("")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -149,6 +152,12 @@ namespace GirafRest.Controllers
             ));
         }
 
+        /// <summary>
+        /// Edit an AlternateName
+        /// </summary>
+        /// <param name="id">The id of the AlternateName to edit</param>
+        /// <param name="an">The AlternateNameDTO containing changes</param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         [Authorize]
         public async Task<ActionResult> EditAlternateName(int id, [FromBody] AlternateNameDTO an)
