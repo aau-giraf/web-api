@@ -223,18 +223,6 @@ class TestAuthorization(GIRAFTestCase):
         self.assertEqual(response_body['errorKey'], 'NotAuthorized')
 
     @order
-    def test_auth_POST_department_user_should_fail(self):
-        """
-        Testing adding user to department
-
-        Endpoint: POST:/v1/Department/{departmentId}/user/{userId}
-        """
-        response = post(f'{BASE_URL}v1/Department/{self.department_Id}/user/{user_id}')
-        response_body = response.json()
-        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-    @order
     def test_auth_GET_department_succes(self):
         """
         Testing GET on department
