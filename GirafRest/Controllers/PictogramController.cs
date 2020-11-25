@@ -346,13 +346,12 @@ namespace GirafRest.Controllers
 
 
 
-                pictogram.ImageHash = image.GetHashCode().ToString();
+                pictogram.ImageHash = _giraf.GetHash(image);
             }
 
             await _giraf._context.SaveChangesAsync();
             return Ok(new SuccessResponse<WeekPictogramDTO>(new WeekPictogramDTO(pictogram)));
         }
-
         /// <summary>
         /// Read the image of a given pictogram as a sequence of bytes.
         /// </summary>

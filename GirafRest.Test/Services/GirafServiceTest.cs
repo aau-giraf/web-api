@@ -136,5 +136,23 @@ namespace GirafRest.Test.Services
         //    Assert.False(response.StatusCode == (System.Net.HttpStatusCode)429);
         //}
         #endregion
+
+        #region GetHash
+
+        [Fact]
+        public void GetHashTest()
+        {
+            var gs = initializeTest();
+            var expectedhash = "Ec/vqhaNURTjCzcEuyVSqQ==";
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "..", "..", "..", "Mocks", "MockImage.png");
+            var image = File.ReadAllBytes(path);
+            var imagehash = gs.GetHash(image);
+            
+            Assert.Equal(expectedhash, imagehash);
+
+        }
+        
+
+        #endregion
     }
 }
