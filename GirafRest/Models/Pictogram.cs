@@ -58,6 +58,11 @@ namespace GirafRest.Models
         /// </summary>
         [Column("ImageHash")]
         public string ImageHash { get; set; }
+        
+        /// <summary>
+        /// A list of alternate names of the pictogram
+        /// </summary>
+        public ICollection<AlternateName> AlternateNames { get; set; }
 
         /// <summary>
         /// Currently not used, but old applications needs this

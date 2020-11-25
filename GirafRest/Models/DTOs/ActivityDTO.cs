@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GirafRest.Models.DTOs
 {
@@ -43,10 +44,12 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         public string ChoiceBoardName { get; set; }
         
+        public string Title { get; set; }
+        
         /// <summary>
         /// Constructor
         /// </summary>
-        public ActivityDTO(long id, List<WeekPictogramDTO> pictograms, int order, ActivityState state, bool isChoiceBoard, string choiceBoardName = "ChoiceBoard")
+        public ActivityDTO(long id, List<WeekPictogramDTO> pictograms, int order, ActivityState state, bool isChoiceBoard, string title, string choiceBoardName = "ChoiceBoard")
         {
             this.Id = id;
             this.Pictograms = pictograms;
@@ -54,6 +57,8 @@ namespace GirafRest.Models.DTOs
             this.State = state;
             this.IsChoiceBoard = isChoiceBoard;
             this.ChoiceBoardName = choiceBoardName;
+            this.Title = title;
+
         }
 
         /// <summary>
@@ -68,7 +73,9 @@ namespace GirafRest.Models.DTOs
             this.IsChoiceBoard = weekdayResource.IsChoiceBoard;
             this.ChoiceBoardName = weekdayResource.ChoiceBoardName;
             this.Pictograms = new List<WeekPictogramDTO>();
-            
+            this.Title = weekdayResource.Title;
+
+
             foreach (var relation in weekdayResource.Pictograms)
             {
                 this.Pictograms.Add(new WeekPictogramDTO(relation.Pictogram));
@@ -91,6 +98,7 @@ namespace GirafRest.Models.DTOs
             this.IsChoiceBoard = weekdayResource.IsChoiceBoard;
             this.ChoiceBoardName = weekdayResource.ChoiceBoardName;
             this.Pictograms = pictograms;
+            this.Title = weekdayResource.Title;
             if (weekdayResource.Timer != null)
             {
                 this.Timer = new TimerDTO(weekdayResource.Timer);

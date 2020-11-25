@@ -78,15 +78,24 @@ namespace GirafRest.Controllers
             int order = dbWeekDay.Activities.Select(act => act.Order).DefaultIfEmpty(0).Max();
             order++;
 
+
+            AlternateName an = await _giraf._context.AlternateNames.FirstOrDefaultAsync(altnam =>
+                altnam.Citizen == user && altnam.PictogramId == newActivity.Pictograms.First().Id);
+
+            string title = an == null ? newActivity.Pictograms.First().Title : an.Name;
+            
             Activity dbActivity = new Activity(
                 dbWeekDay,
                 null,
                 order,
                 ActivityState.Normal,
                 null,
-                false
+                false,
+                title
             );
+            dbWeekDay.Activities.Add(dbActivity);
             _giraf._context.Activities.Add(dbActivity);
+            _giraf._context.Weekdays.Update(dbWeekDay);
 
             foreach (var pictogram in newActivity.Pictograms)
             {
@@ -189,7 +198,7 @@ namespace GirafRest.Controllers
         /// <param name="activity">a serialized version of the activity that will be updated.</param>
         /// <param name="userId">an ID of the user to update activities for.</param>
         /// <returns>Returns <see cref="ActivityDTO"/> for the updated activity on success else MissingProperties or NotFound</returns>
-        [HttpPatch("{userId}/update")]
+        [HttpPut("{userId}/update")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -223,6 +232,7 @@ namespace GirafRest.Controllers
             updateActivity.State = activity.State;
             updateActivity.IsChoiceBoard = activity.IsChoiceBoard;
             updateActivity.ChoiceBoardName = activity.ChoiceBoardName;
+            updateActivity.Title = activity.Title;
             // deletion of pictogram relations
 
             var pictogramRelations = _giraf._context.PictogramRelations

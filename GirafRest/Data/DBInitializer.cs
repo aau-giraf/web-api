@@ -78,6 +78,7 @@ namespace GirafRest.Setup
         }
 
         #region Generating pictograms
+        //Method for generating pictograms
         private static void CreatePictograms(int count)
         {
             System.Console.WriteLine($"Creating {count} pictograms");
@@ -89,6 +90,7 @@ namespace GirafRest.Setup
                 48,
                 FontStyle.Regular,
                 GraphicsUnit.Pixel);
+            
 
             for (int i = 1; i <= count; i++)
             {

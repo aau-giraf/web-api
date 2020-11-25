@@ -25,6 +25,8 @@ namespace GirafRest.Data
         public virtual DbSet<GuardianRelation> GuardianRelations { get; set; }
         public virtual DbSet<PictogramRelation> PictogramRelations { get; set; }
         public virtual DbSet<WeekDayColor> WeekDayColors { get; set; }
+        
+        public virtual DbSet<AlternateName> AlternateNames { get; set; }
         protected GirafDbContext() { }
 
         public GirafDbContext(DbContextOptions<GirafDbContext> options)
@@ -46,6 +48,7 @@ namespace GirafRest.Data
             builder.Entity<Weekday>().HasIndex(day => new { day.Id }).IsUnique().IsClustered();
             builder.Entity<Week>().HasIndex(week => week.Id).IsUnique().IsClustered();
             builder.Entity<GirafUser>().HasIndex(user => new { user.Id, user.UserName }).IsUnique().IsClustered();
+            builder.Entity<AlternateName>().HasIndex(name => name.Id).IsUnique().IsClustered();
 
             builder.Entity<DepartmentResource>()
                 //States that one department is involved in each DepartmentResourceRelation
@@ -155,6 +158,19 @@ namespace GirafRest.Data
                 .HasMany<Week>(u => u.WeekSchedule)
                 .WithOne()
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<Pictogram>()
+                .HasMany(pic => pic.AlternateNames)
+                .WithOne(an => an.Pictogram)
+                .HasForeignKey(an => an.PictogramId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<AlternateName>()
+                .HasOne(an => an.Citizen)
+                .WithMany()
+                .HasForeignKey(an => an.CitizenId)
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }
