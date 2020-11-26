@@ -163,67 +163,6 @@ namespace GirafRest.Test
 
         #endregion
 
-        #region AddUser
-
-        [Fact]
-        public void AddUser_ExistingDepartment_Success()
-        {
-            var dc = initializeTest();
-            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
-            _testContext.MockUserManager.MockLoginAsUser(mockUser);
-            var user = _testContext.MockUsers[CITIZEN_NO_DEPARTMENT];
-
-            var res = dc.AddUser(DEPARTMENT_TWO, user.Id).Result as ObjectResult;
-            var body = res.Value as SuccessResponse<DepartmentDTO>;
-
-            Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
-            Assert.Equal(DEPARTMENT_TWO, body.Data.Id);
-        }
-
-        [Fact]
-        public void AddUser_ExistingDepartment_UserAlreadyHasDepartment()
-        {
-            var dc = initializeTest();
-            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
-            _testContext.MockUserManager.MockLoginAsUser(mockUser);
-            var user = _testContext.MockUsers[CITIZEN_DEP_THREE];
-
-            var res = dc.AddUser(DEPARTMENT_TWO, user.Id).Result as ObjectResult;
-            var body = res.Value as ErrorResponse;
-
-            Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
-            Assert.Equal(ErrorCode.UserAlreadyHasDepartment, body.ErrorCode);
-        }
-
-
-        [Fact]
-        public void AddUser_NonExistingDepartment_DepartmentNotFound()
-        {
-            var dc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var user = _testContext.MockUsers[DEPARTMENT_TWO_USER];
-
-            var res = dc.AddUser(DEPARTMENT_TEN, user.Id).Result as ObjectResult;
-            var body = res.Value as ErrorResponse;
-
-            Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
-            Assert.Equal(ErrorCode.DepartmentNotFound, body.ErrorCode);
-        }
-
-        [Fact]
-        public void AddUser_ExistingDepartmentInvalidUser_MissingProperties()
-        {
-            var dc = initializeTest();
-            var user = new GirafUserDTO() { };
-            var res = dc.AddUser(DEPARTMENT_ONE, user.Id).Result as ObjectResult;
-            var body = res.Value as ErrorResponse;
-
-            Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
-            Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
-        }
-
-        #endregion
-
         #region AddResource
 
         [Fact]
