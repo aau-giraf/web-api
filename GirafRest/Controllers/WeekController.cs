@@ -234,6 +234,45 @@ namespace GirafRest.Controllers
             return Ok(new SuccessResponse<WeekDTO>(new WeekDTO(week)));
         }
 
+        [HttpPut("{userId}/{weekYear}/{weekNumber}")]
+        [Authorize]
+        [ProducesResponseType(typeof(SuccessResponse<WeekdayDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> UpdateWeekday(string userId, int weekYear, int weekNumber,
+            [FromBody] WeekdayDTO weekdayDto)
+        {
+            if (weekdayDto == null)
+            {
+                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing weekday"));
+            }
+            
+            var user = await _giraf.LoadUserWithWeekSchedules(userId);
+            if (user == null) return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
+
+            // check access rights
+            if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
+            
+            Week week = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber);
+
+            if (week == null)
+            {
+                return NotFound(new ErrorResponse(ErrorCode.NotFound,"Week not found"));
+            }
+            
+            Weekday newDay = new Weekday(weekdayDto);
+
+            week.Weekdays[(int)newDay.Day-1] = newDay;
+            
+            _giraf._context.Weeks.Update(week);
+            await _giraf._context.SaveChangesAsync();
+            
+            return Ok(new SuccessResponse<WeekdayDTO>(new WeekdayDTO(newDay)));
+        }
+        
+
         /// <summary>
         /// Deletes all information for the entire week with the given year and week number.
         /// </summary>
