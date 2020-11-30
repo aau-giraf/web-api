@@ -233,6 +233,7 @@ namespace GirafRest.Controllers
             updateActivity.IsChoiceBoard = activity.IsChoiceBoard;
             updateActivity.ChoiceBoardName = activity.ChoiceBoardName;
             updateActivity.Title = activity.Title;
+
             // deletion of pictogram relations
 
             var pictogramRelations = _giraf._context.PictogramRelations

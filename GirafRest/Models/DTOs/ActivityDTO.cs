@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
+
 namespace GirafRest.Models.DTOs
 {
     /// <summary>
@@ -44,6 +45,7 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         public string ChoiceBoardName { get; set; }
         
+
         public string Title { get; set; }
         
         /// <summary>
