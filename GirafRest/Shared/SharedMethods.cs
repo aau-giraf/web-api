@@ -99,7 +99,7 @@ namespace GirafRest.Shared
                     }
                     
                     if (pictograms.Any())
-                        to.Activities.Add(new Activity(to, pictograms, activityDTO.Order, activityDTO.State, timer, activityDTO.IsChoiceBoard, activityDTO.Title));
+                        to.Activities.Add(new Activity(to, pictograms, activityDTO.Order, activityDTO.State, timer, activityDTO.IsChoiceBoard, activityDTO.Title, activityDTO.ChoiceBoardName));
                 }
             }
             return true;
