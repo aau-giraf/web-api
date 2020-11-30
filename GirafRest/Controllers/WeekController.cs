@@ -234,7 +234,7 @@ namespace GirafRest.Controllers
             return Ok(new SuccessResponse<WeekDTO>(new WeekDTO(week)));
         }
 
-        [HttpPut("{userId}/{weekYear}/{weekNumber}")]
+        [HttpPut("day/{userId}/{weekYear}/{weekNumber}")]
         [Authorize]
         [ProducesResponseType(typeof(SuccessResponse<WeekdayDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -263,6 +263,12 @@ namespace GirafRest.Controllers
             }
             
             Weekday newDay = new Weekday(weekdayDto);
+
+            newDay.Activities.Clear();
+            if (!await AddPictogramsToWeekday(newDay, weekdayDto, _giraf))
+            {
+                return NotFound(new ErrorResponse(ErrorCode.ResourceNotFound, "Missing pictogram"));
+            }
 
             week.Weekdays[(int)newDay.Day-1] = newDay;
             

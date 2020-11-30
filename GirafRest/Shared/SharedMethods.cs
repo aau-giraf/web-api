@@ -68,7 +68,7 @@ namespace GirafRest.Shared
         /// <param name="to">Pictograms and choices will be added to this object.</param>
         /// <param name="from">Pictograms and choices will be read from this object.</param>
         /// <param name="_giraf">IGirafService for injection.</param>
-        private static async Task<bool> AddPictogramsToWeekday(Weekday to, WeekdayDTO from, IGirafService _giraf)
+        public static async Task<bool> AddPictogramsToWeekday(Weekday to, WeekdayDTO from, IGirafService _giraf)
         {
             if (from.Activities != null)
             {
