@@ -191,6 +191,68 @@ namespace GirafRest.Controllers
             }));
         }
 
+        [HttpGet("{userId}/{weekYear}/{weekNumber}/{day}")]
+        [Authorize]
+        [ProducesResponseType(typeof(SuccessResponse<WeekdayDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> GetWeekDay(string userId, int weekYear, int weekNumber, int day)
+        {
+            if (day < 0 || day > 6)
+            {
+                return BadRequest(new ErrorResponse(ErrorCode.InvalidDay, "Day must be between 0 and 6"));
+            }
+            
+            var user = await _giraf.LoadUserWithWeekSchedules(userId);
+            if (user == null) return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
+
+            // check access rights
+            if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
+            
+            Week week = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber);
+
+            if (week == null)
+            {
+                return NotFound(new ErrorResponse(ErrorCode.NotFound,"Week not found"));
+            }
+
+            Weekday weekday = week.Weekdays.Single(d => d.Day == (Days)day + 1);
+            if (weekday == null)
+            {
+                return NotFound(new ErrorResponse(ErrorCode.NotFound, "Weekday not found"));
+            }
+            
+            foreach (var activity in weekday.Activities)
+            {
+                if (activity.TimerKey != null)
+                {
+                    var timerPlace = _giraf._context.Timers.FirstOrDefault(t => t.Key == activity.TimerKey);
+                    activity.Timer = timerPlace;
+                }
+
+                if (activity.Pictograms != null)
+                {
+                    foreach (var pictogramRelation in activity.Pictograms)
+                    {
+                        var dbPictogram =
+                            _giraf._context.Pictograms.FirstOrDefault(p => p.Id == pictogramRelation.PictogramId);
+                        if (dbPictogram != null)
+                        {
+                            pictogramRelation.Pictogram = dbPictogram;
+                        }
+                        else
+                        {
+                            return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound,
+                                "Pictogram not found"));
+                        }
+                    }
+                }
+            }
+
+            return Ok(new SuccessResponse<WeekdayDTO>(new WeekdayDTO(weekday)));
+        }
+
         /// <summary>
         /// Updates the entire information of the week with the given year and week number.
         /// </summary>
@@ -270,7 +332,8 @@ namespace GirafRest.Controllers
                 return NotFound(new ErrorResponse(ErrorCode.ResourceNotFound, "Missing pictogram"));
             }
 
-            week.Weekdays[(int)newDay.Day-1] = newDay;
+            var oldDay = week.Weekdays.IndexOf( week.Weekdays.Single(d => d.Day == newDay.Day));
+            week.Weekdays[oldDay] = newDay;
             
             _giraf._context.Weeks.Update(week);
             await _giraf._context.SaveChangesAsync();
