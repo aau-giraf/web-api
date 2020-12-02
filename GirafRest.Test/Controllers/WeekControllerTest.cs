@@ -317,19 +317,18 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.NotFound, body.ErrorCode);
         }
 
-        /*[Fact]
+        [Fact]
         public void GetWeekDay_UserPermission_NotAuthorized()
         {
             var wc = initializeTest();
-            var mockUer = _testContext.MockUsers[4];
-            _testContext.MockUserManager.MockLoginAsUser(mockUer);
+            var mockUser = _testContext.MockUsers[4];          
 
-            var res = wc.GetWeekDay(mockUer.Id, YEAR_ZERO, WEEK_ZERO, DAY_ZERO).Result as ObjectResult;
+            var res = wc.GetWeekDay(mockUser.Id, YEAR_ZERO, WEEK_ZERO, DAY_ZERO).Result as ObjectResult;
             var body = res.Value as ErrorResponse;
             
-            //Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
+            Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
-        }*/
+        }
 
 
         #endregion
