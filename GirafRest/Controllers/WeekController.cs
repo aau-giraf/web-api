@@ -191,6 +191,15 @@ namespace GirafRest.Controllers
             }));
         }
 
+        /// <summary>
+        /// Gets the <see cref="WeekdayDTO"/> with the specified week number and year for the user with the given id
+        /// </summary>
+        /// <param name="userId">Identifier of the <see cref="GirafUser"/> to request schedule for</param>
+        /// <param name="weekYear">The year of the week schedule to fetch.</param>
+        /// <param name="weekNumber">The week number of the week schedule to fetch.</param>
+        /// <param name="day">The index of the day of the week. (Monday = 1 and sunday = 7)</param>
+        /// <returns><see cref="WeekdayDTO"/> for the requested week on success else InvalidDay, UserNotFound, 
+        /// NotAuthorized or NotFound</returns>
         [HttpGet("{userId}/{weekYear}/{weekNumber}/{day}")]
         [Authorize]
         [ProducesResponseType(typeof(SuccessResponse<WeekdayDTO>), StatusCodes.Status200OK)]
@@ -296,6 +305,16 @@ namespace GirafRest.Controllers
             return Ok(new SuccessResponse<WeekDTO>(new WeekDTO(week)));
         }
 
+        /// <summary>
+        /// Updates the entire information of the <see cref="WeekdayDTO"/> with the given year, week number and
+        /// the user id."/>.
+        /// </summary>
+        /// <param name="userId">id of user you want to get weekschedule for.</param>
+        /// <param name="weekYear">year of the week you want to update</param>
+        /// <param name="weekNumber">weeknumber of week you want to update.</param>
+        /// <param name="weekdayDto">A serialized <see cref="Weekday"/> with the new information</param>
+        /// <returns><see cref="WeekdayDTO"/> for the requested week on success else UserNotFound, MissingProperties,
+        /// NotAuthorized or NotFound</returns>
         [HttpPut("day/{userId}/{weekYear}/{weekNumber}")]
         [Authorize]
         [ProducesResponseType(typeof(SuccessResponse<WeekdayDTO>), StatusCodes.Status200OK)]
@@ -332,7 +351,7 @@ namespace GirafRest.Controllers
                 return NotFound(new ErrorResponse(ErrorCode.ResourceNotFound, "Missing pictogram"));
             }
 
-            var oldDay = week.Weekdays.IndexOf( week.Weekdays.Single(d => d.Day == newDay.Day));
+            int oldDay = week.Weekdays.IndexOf( week.Weekdays.Single(d => d.Day == newDay.Day));
             week.Weekdays[oldDay] = newDay;
             
             _giraf._context.Weeks.Update(week);
