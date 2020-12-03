@@ -272,7 +272,63 @@ namespace GirafRest.Test
         }
 
         #endregion
+        #region UpdateWeekDay
+        [Fact]
+        public void UpdateWeekday_ValidWeekdayValidDTO_Success()
+        {
+            var wc = initializeTest();
+            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+            var weekday = mockUser.WeekSchedule.First().Weekdays[0];
+            var res = wc.UpdateWeekday(mockUser.Id, 2018, 1, new WeekdayDTO(weekday)).Result as ObjectResult;
+            var body = res.Value as SuccessResponse<WeekdayDTO>;
 
+            Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
+            Assert.Equal(weekday.Day.ToString(), body.Data.Day.ToString());
+        }
+        [Fact]
+        public void UpdateWeekday_InvalidWeekdayValdidDTO_MissingProperties()
+        {
+            var wc = initializeTest();
+            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+
+            var res = wc.UpdateWeekday(mockUser.Id, 2018, 1, null).Result as ObjectResult;
+            var body = res.Value as ErrorResponse;
+
+            Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
+            Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
+        }
+        [Fact]
+        public void UpdateWeekday_InvalidWeek_ValidDTO_NotFound()
+        {
+            var wc = initializeTest();
+            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+
+            var weekday = mockUser.WeekSchedule.First().Weekdays[0];
+
+            var res = wc.UpdateWeekday(mockUser.Id, 99999, 99, new WeekdayDTO(weekday)).Result as ObjectResult;
+            var body = res.Value as ErrorResponse;
+
+            Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
+            Assert.Equal(ErrorCode.NotFound, body.ErrorCode);
+        }
+        [Fact]
+        public void UpdateWeekday_InvalidUser_NotFound()
+        {
+            var wc = initializeTest();
+            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+
+            var weekday = mockUser.WeekSchedule.First().Weekdays[0];
+            var res = wc.UpdateWeekday("FakeUserId", 2018, 1, new WeekdayDTO(weekday)).Result as ObjectResult;
+            var body = res.Value as ErrorResponse;
+
+            Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
+            Assert.Equal(ErrorCode.UserNotFound, body.ErrorCode);
+        }
+        #endregion
         #region GetWeekDay
 
         [Fact]
