@@ -274,6 +274,18 @@ namespace GirafRest.Test
         #endregion
         #region UpdateWeekDay
         [Fact]
+        public void UpdateWeekday_UserPermission_NotAuthorized()
+        {
+            var wc = initializeTest();
+            var mockUser = _testContext.MockUsers[4];
+
+            var res = wc.UpdateWeekday(mockUser.Id, YEAR_ZERO, WEEK_ZERO, new WeekdayDTO()).Result as ObjectResult;
+            var body = res.Value as ErrorResponse;
+
+            Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
+            Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
+        }
+        [Fact]
         public void UpdateWeekday_ValidWeekdayValidDTO_Success()
         {
             var wc = initializeTest();
@@ -385,7 +397,6 @@ namespace GirafRest.Test
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
         }
-
 
         #endregion
         #region CreateWeek
