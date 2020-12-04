@@ -3,14 +3,16 @@ using System;
 using GirafRest.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace GirafRest.Migrations
 {
     [DbContext(typeof(GirafDbContext))]
-    partial class GirafDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201019081210_ChoiceBoardName")]
+    partial class ChoiceBoardName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -64,9 +66,6 @@ namespace GirafRest.Migrations
                     b.Property<long?>("TimerKey")
                         .HasColumnType("bigint");
 
-                    b.Property<string>("Title")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
                     b.HasKey("Key");
 
                     b.HasIndex("OtherKey");
@@ -74,36 +73,6 @@ namespace GirafRest.Migrations
                     b.HasIndex("TimerKey");
 
                     b.ToTable("Activities");
-                });
-
-            modelBuilder.Entity("GirafRest.Models.AlternateName", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("id")
-                        .HasColumnType("bigint");
-
-                    b.Property<string>("CitizenId")
-                        .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
-
-                    b.Property<string>("Name")
-                        .HasColumnName("Name")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<long>("PictogramId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CitizenId");
-
-                    b.HasIndex("Id")
-                        .IsUnique()
-                        .HasAnnotation("SqlServer:Clustered", true);
-
-                    b.HasIndex("PictogramId");
-
-                    b.ToTable("AlternateNames");
                 });
 
             modelBuilder.Entity("GirafRest.Models.Department", b =>
@@ -638,20 +607,6 @@ namespace GirafRest.Migrations
                         .WithMany()
                         .HasForeignKey("TimerKey")
                         .OnDelete(DeleteBehavior.SetNull);
-                });
-
-            modelBuilder.Entity("GirafRest.Models.AlternateName", b =>
-                {
-                    b.HasOne("GirafRest.Models.GirafUser", "Citizen")
-                        .WithMany()
-                        .HasForeignKey("CitizenId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("GirafRest.Models.Pictogram", "Pictogram")
-                        .WithMany("AlternateNames")
-                        .HasForeignKey("PictogramId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
                 });
 
             modelBuilder.Entity("GirafRest.Models.DepartmentResource", b =>

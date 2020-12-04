@@ -66,7 +66,6 @@ namespace GirafRest
                     logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
                 })
                .UseDefaultServiceProvider(options => options.ValidateScopes = false)
-               .UseApplicationInsights()
                .Build();
     }
 }

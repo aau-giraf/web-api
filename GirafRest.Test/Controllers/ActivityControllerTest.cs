@@ -130,6 +130,7 @@ namespace GirafRest.Test
             Week week = mockUser.WeekSchedule.First();
 
             ActivityDTO newActivity = null;
+            
 
             var res = ac.PostActivity(
                 newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int) Days.Monday
@@ -140,6 +141,32 @@ namespace GirafRest.Test
             Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
             Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
         }
+
+       [Fact]
+       public void PostActivity_ValidDayInvalidDTO_InvalidProperties()
+       {
+           ActivityController ac = InitializeTest();
+           GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+           _testContext.MockUserManager.MockLoginAsUser(mockUser);
+           Week week = mockUser.WeekSchedule.First();
+     
+           ActivityDTO newActivity = new ActivityDTO()
+           {
+               Pictograms = new List<WeekPictogramDTO>()
+               {
+                   new WeekPictogramDTO(_testContext.MockPictograms[10])
+               }
+           };
+     
+           var res = ac.PostActivity(
+               newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int) Days.Monday
+           ).Result as ObjectResult;
+     
+           var body = res.Value as ErrorResponse;
+     
+           Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
+           Assert.Equal(ErrorCode.InvalidProperties, body.ErrorCode);
+       }
 
         [Fact]
         public void PostActivity_InvalidDayValidDTO_InvalidDay()
@@ -278,6 +305,61 @@ namespace GirafRest.Test
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
+        }
+
+        [Fact]
+        public void PostActivity_Have_AlternateName_Sets_Title()
+        {
+            ActivityController ac = InitializeTest();
+            GirafUser mockUser = _testContext.MockUsers.First();
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+            Week week = mockUser.WeekSchedule.First();
+
+            ActivityDTO newActivity = new ActivityDTO()
+            {
+                Pictograms = new List<WeekPictogramDTO>()
+                {
+                    new WeekPictogramDTO(_testContext.MockPictograms.First())
+                }
+            };
+            
+            var res = ac.PostActivity(
+                newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int) Days.Sunday
+            ).Result as ObjectResult;
+            
+            var body = res.Value as SuccessResponse<ActivityDTO>;
+            
+            
+            Assert.Equal(StatusCodes.Status201Created, res.StatusCode);
+            Assert.Equal("Kage",body.Data.Title);
+            
+        }
+
+        [Fact]
+        public void PostActivity_No_AlternateName_Sets_Title()
+        {
+            ActivityController ac = InitializeTest();
+            GirafUser mockUser = _testContext.MockUsers.First();
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+            Week week = mockUser.WeekSchedule.First();
+            Pictogram pic = _testContext.MockPictograms[1];
+
+            ActivityDTO newActivity = new ActivityDTO()
+            {
+                Pictograms = new List<WeekPictogramDTO>()
+                {
+                    new WeekPictogramDTO(pic)
+                }
+            };
+            
+            var res = ac.PostActivity(
+                newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int) Days.Sunday
+            ).Result as ObjectResult;
+            
+            var body = res.Value as SuccessResponse<ActivityDTO>;
+            
+            Assert.Equal(StatusCodes.Status201Created, res.StatusCode);
+            Assert.Equal(pic.Title,body.Data.Title);
         }
 
         #endregion

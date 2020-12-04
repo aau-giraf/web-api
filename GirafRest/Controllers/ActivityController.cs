@@ -78,25 +78,38 @@ namespace GirafRest.Controllers
             int order = dbWeekDay.Activities.Select(act => act.Order).DefaultIfEmpty(0).Max();
             order++;
 
+
+            AlternateName an = await _giraf._context.AlternateNames.FirstOrDefaultAsync(altnam =>
+                altnam.Citizen == user && altnam.PictogramId == newActivity.Pictograms.First().Id);
+
+            string title = an == null ? newActivity.Pictograms.First().Title : an.Name;
+            
             Activity dbActivity = new Activity(
                 dbWeekDay,
                 null,
                 order,
                 ActivityState.Normal,
                 null,
-                false
+                false,
+                title
             );
+            dbWeekDay.Activities.Add(dbActivity);
             _giraf._context.Activities.Add(dbActivity);
+            _giraf._context.Weekdays.Update(dbWeekDay);
 
             foreach (var pictogram in newActivity.Pictograms)
             {
                 var dbPictogram = _giraf._context.Pictograms.FirstOrDefault(id => id.Id == pictogram.Id);
-                if (dbPictogram != null)
+                if (dbPictogram != null && string.IsNullOrEmpty(dbPictogram.Title))
+                {
+                    return BadRequest(new ErrorResponse(ErrorCode.InvalidProperties, "Invalid pictogram: Blank title"));
+                }
+                if (dbPictogram != null && !string.IsNullOrEmpty(dbPictogram.Title))
                 {
                     _giraf._context.PictogramRelations.Add(new PictogramRelation(
                         dbActivity, dbPictogram
                     ));
-                }
+                }               
                 else
                 {
                     return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, "Pictogram not found"));
@@ -153,7 +166,7 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Gets a user's activity from an activity id.
         /// </summary>
         /// <param name="userId"></param>
         /// <param name="activityId"></param>
@@ -185,7 +198,7 @@ namespace GirafRest.Controllers
         /// <param name="activity">a serialized version of the activity that will be updated.</param>
         /// <param name="userId">an ID of the user to update activities for.</param>
         /// <returns>Returns <see cref="ActivityDTO"/> for the updated activity on success else MissingProperties or NotFound</returns>
-        [HttpPatch("{userId}/update")]
+        [HttpPut("{userId}/update")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -218,7 +231,8 @@ namespace GirafRest.Controllers
             updateActivity.Order = activity.Order;
             updateActivity.State = activity.State;
             updateActivity.IsChoiceBoard = activity.IsChoiceBoard;
-            
+            updateActivity.ChoiceBoardName = activity.ChoiceBoardName;
+            updateActivity.Title = activity.Title;
             // deletion of pictogram relations
 
             var pictogramRelations = _giraf._context.PictogramRelations

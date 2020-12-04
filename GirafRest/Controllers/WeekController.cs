@@ -17,7 +17,7 @@ namespace GirafRest.Controllers
     /// <summary>
     /// Controller for managing Weeks, CRUD-ish
     /// </summary>
-    [Route("")]
+    [Route("v1/[controller]")]
     public class WeekController : Controller
     {
         private readonly IGirafService _giraf;
@@ -42,7 +42,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns>List of <see cref="WeekDTO"/> on success else UserNotFound</returns>
         /// <param name="userId">User identifier for the <see cref="GirafUser" /> to get schedules for/></param>
-        [HttpGet("v2/User/{userId}/week", Name = "GetListOfWeeksExclDaysOfUser")]
+        [HttpGet("{userId}/week", Name = "GetListOfWeeksExclDaysOfUser")]
         [Authorize]
         [ProducesResponseType(typeof(SuccessResponse<IEnumerable<WeekDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -71,7 +71,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns>List of <see cref="WeekNameDTO"/> on success else UserNotFound</returns>
         /// <param name="userId">User identifier for the <see cref="GirafUser" /> to get schedules for</param>
-        [HttpGet("v1/User/{userId}/week", Name = "GetListOfWeekNamesOfUser")]
+        [HttpGet("{userId}/weekName", Name = "GetListOfWeekNamesOfUser")]
         [Authorize]
         [ProducesResponseType(typeof(SuccessResponse<IEnumerable<WeekNameDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -99,7 +99,7 @@ namespace GirafRest.Controllers
         /// <param name="weekNumber">The week number of the week schedule to fetch.</param>
         /// <returns><see cref="WeekDTO"/> for the requested week on success else UserNotFound or NotAuthorized</returns>
         /// <param name="userId">Identifier of the <see cref="GirafUser"/> to request schedule for</param>
-        [HttpGet("v1/User/{userId}/week/{weekYear}/{weekNumber}", Name = "GetWeekByWeekNrAndYearOfUser")]
+        [HttpGet("{userId}/{weekYear}/{weekNumber}", Name = "GetWeekByWeekNrAndYearOfUser")]
         [Authorize]
         [ProducesResponseType(typeof(SuccessResponse<WeekDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -200,7 +200,7 @@ namespace GirafRest.Controllers
         /// <param name="newWeek">A serialized Week with new information.</param>
         /// <returns><see cref="WeekDTO"/> for the requested week on success else MissingProperties, UserNotFound
         /// or NotAuthorized</returns>
-        [HttpPut("v1/User/{userId}/week/{weekYear}/{weekNumber}")]
+        [HttpPut("{userId}/{weekYear}/{weekNumber}")]
         [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
         [ProducesResponseType(typeof(SuccessResponse<WeekDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -242,7 +242,7 @@ namespace GirafRest.Controllers
         /// <param name="weekNumber"></param>
         /// <returns>Success Reponse else UserNotFound, NotAuthorized,
         /// or NoWeekScheduleFound </returns>
-        [HttpDelete("v1/User/{userId}/week/{weekYear}/{weekNumber}")]
+        [HttpDelete("{userId}/{weekYear}/{weekNumber}")]
         [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

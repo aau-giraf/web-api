@@ -1,6 +1,8 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GirafRest.Models
 {
@@ -58,6 +60,13 @@ namespace GirafRest.Models
         /// ChoiceBoard
         /// </summary>
         public bool IsChoiceBoard { get; set; }
+        
+        /// <summary>
+        /// The name of the choiceboard
+        /// </summary>
+        public string ChoiceBoardName { get; set; }
+        
+        public string Title { get; set; }
 
         /// <summary>
         /// Creates a new many-to-many relationship between a weekday and a resource.
@@ -67,18 +76,21 @@ namespace GirafRest.Models
         /// <param name="order">The activity's order.</param>
         /// <param name="state">The activity's current state.</param>
         /// <param name="ischoiceboard">The activity's choiceboard state.</param>
-        public Activity(Weekday weekday, List<Pictogram> pictograms, int order, ActivityState state, Timer timer, bool choiceBoard)
+        public Activity(Weekday weekday, List<Pictogram> pictograms, int order, ActivityState state, Timer timer, bool choiceBoard, string title, string choiceBoardName = "ChoiceBoard" )
         {
             this.Other = weekday;
             this.Order = order;
             this.State = state;
             this.Timer = timer;
             this.IsChoiceBoard = choiceBoard;
+            this.ChoiceBoardName = choiceBoardName;
+            this.Title = title ?? pictograms.First().Title;
             this.Pictograms = new List<PictogramRelation>();
             if (pictograms != null)
             {
                 AddPictograms(pictograms);
             }
+            
         }
 
         public void AddPictogram(Pictogram pictogram) {

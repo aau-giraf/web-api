@@ -30,7 +30,14 @@ namespace GirafRest.Test.Mocks
             get;
             private set;
         }
-
+        public string GetHash(byte[] image)
+        {
+            using (var md5 = new System.Security.Cryptography.MD5CryptoServiceProvider())
+            {
+                var hash = md5.ComputeHash(image);
+                return Convert.ToBase64String(hash);
+            }
+        }
         public MockGirafService(GirafDbContext context, MockUserManager userManager)
         {
             _context = context;

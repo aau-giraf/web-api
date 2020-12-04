@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
 
 namespace GirafRest.Models
 {
@@ -79,7 +80,8 @@ namespace GirafRest.Models
             this.Day = day;
             for (int i = 0; i < pictograms.Count; i++)
             {
-                this.Activities.Add(new Activity(this, pictograms[i], i, activityStates[i], null, false));
+                string title = pictograms[i].First().Title;
+                this.Activities.Add(new Activity(this, pictograms[i], i, activityStates[i], null, false,title));
             }
         }
 

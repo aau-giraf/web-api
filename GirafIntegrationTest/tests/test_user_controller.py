@@ -73,11 +73,11 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_login_as_citizen1(self):
         """
         Testing logging in as Citizen1
-        Endpoint: POST:/v1/Account/login
+        Endpoint: POST:/v2/Account/login
         """
         global citizen1_token
         data = {'username': 'Kurt', 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response = post(f'{BASE_URL}v2/Account/login', json=data)
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
@@ -88,11 +88,11 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_login_as_guardian(self):
         """
         Testing logging in as Guardian
-        Endpoint: POST:/v1/Account/login
+        Endpoint: POST:/v2/Account/login
         """
         global guardian_token
         data = {'username': 'Graatand', 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response = post(f'{BASE_URL}v2/Account/login', json=data)
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
@@ -103,11 +103,11 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_login_as_super_user(self):
         """
         Testing logging in as Super User
-        Endpoint: POST:/v1/Account/login
+        Endpoint: POST:/v2/Account/login
         """
         global super_user_token
         data = {'username': 'Lee', 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response = post(f'{BASE_URL}v2/Account/login', json=data)
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
@@ -118,13 +118,13 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_create_new_guardian(self):
         """
         Creating a new guardian with no relations to test other endpoints
-        Endpoint: POST:/v1/Account/register
+        Endpoint: POST:/v2/Account/register
         """
         global new_guardian_id
         global new_guardian_username
         new_guardian_username = f'Testguardian{time.time()}'
         data = {'username': new_guardian_username, 'username': new_guardian_username, 'password': 'password', 'displayName': 'testG','departmentId': 2, 'role': 'Guardian'}
-        response = post(f'{BASE_URL}v1/Account/register', json=data, headers=auth(super_user_token))
+        response = post(f'{BASE_URL}v2/Account/register', json=data, headers=auth(super_user_token))
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
 
@@ -135,11 +135,11 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_login_as_new_guardian(self):
         """
         Testing logging in as Guardian
-        Endpoint: POST:/v1/Account/login
+        Endpoint: POST:/v2/Account/login
         """
         global new_guardian_token
         data = {'username': new_guardian_username, 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response = post(f'{BASE_URL}v2/Account/login', json=data)
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
@@ -150,11 +150,11 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_login_as_department(self):
         """
         Testing logging in as Department
-        Endpoint: POST:/v1/Account/login
+        Endpoint: POST:/v2/Account/login
         """
         global department_token
         data = {'username': 'Tobias', 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response = post(f'{BASE_URL}v2/Account/login', json=data)
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
@@ -194,10 +194,10 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_register_citizen2(self):
         """
         Testing registering Citizen2
-        Endpoint: POST:/v1/Account/register
+        Endpoint: POST:/v2/Account/register
         """
         data = {'username': citizen2_username, 'displayname': citizen2_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 2}
-        response = post(f'{BASE_URL}v1/Account/register', headers=auth(super_user_token), json=data)
+        response = post(f'{BASE_URL}v2/Account/register', headers=auth(super_user_token), json=data)
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
 
 
@@ -205,11 +205,11 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_login_as_citizen2(self):
         """
         Testing logging in as Citizen2
-        Endpoint: POST:/v1/Account/login
+        Endpoint: POST:/v2/Account/login
         """
         global citizen2_token
         data = {'username': citizen2_username, 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response = post(f'{BASE_URL}v2/Account/login', json=data)
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
@@ -235,10 +235,10 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_register_citizen3(self):
         """
         Testing registering Citizen3
-        Endpoint: POST:/v1/Account/register
+        Endpoint: POST:/v2/Account/register
         """
         data = {'username': citizen3_username, 'displayname': citizen3_username, 'password': 'password', 'role': 'Citizen', 'departmentId': 2}
-        response = post(f'{BASE_URL}v1/Account/register', headers=auth(super_user_token), json=data)
+        response = post(f'{BASE_URL}v2/Account/register', headers=auth(super_user_token), json=data)
         self.assertEqual(response.status_code, HTTPStatus.CREATED)
 
 
@@ -246,11 +246,11 @@ class TestUserController(GIRAFTestCase):
     def test_user_can_login_as_citizen3(self):
         """
         Testing logging in as Citizen3
-        Endpoint: POST:/v1/Account/login
+        Endpoint: POST:/v2/Account/login
         """
         global citizen3_token
         data = {'username': citizen3_username, 'password': 'password'}
-        response = post(f'{BASE_URL}v1/Account/login', json=data)
+        response = post(f'{BASE_URL}v2/Account/login', json=data)
         response_body = response.json()
         self.assertEqual(response.status_code, HTTPStatus.OK)
 
@@ -690,7 +690,7 @@ class TestUserController(GIRAFTestCase):
     def test_user_delete_new_guardian(self):
         """
         deleting newly testing guardian
-        Endpoint: DELETE:/v1/Account/user/{userId}
+        Endpoint: DELETE:/v2/Account/user/{userId}
         """
-        response = delete(f'{BASE_URL}v1/Account/user/{new_guardian_id}', headers=auth(super_user_token))
+        response = delete(f'{BASE_URL}v2/Account/user/{new_guardian_id}', headers=auth(super_user_token))
         self.assertEqual(response.status_code, HTTPStatus.OK)

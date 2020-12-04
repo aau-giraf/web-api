@@ -75,7 +75,31 @@ namespace GirafRest.Test
                         },
                         new Pictogram("cat1", AccessLevel.PUBLIC) {
                             Id = 9
-                        }
+                        },
+                        //Do not change this Id = 10. This is used in PostActivity_ValidDayInvalidDTO_InvalidProperties()
+                        new Pictogram("", AccessLevel.PUBLIC) {
+                            Id = 10
+                        },
+                        new Pictogram("Public Picto3", AccessLevel.PUBLIC){
+                            Id = 11
+                        },
+                        new Pictogram("CASESENSITIVE1", AccessLevel.PUBLIC) {
+                            Id = 12
+                        },
+                        new Pictogram("casesensitive", AccessLevel.PUBLIC) {
+                            Id = 13
+                        },
+                        new Pictogram("Private for user 4", AccessLevel.PRIVATE) {
+                            Id = 14
+                        },
+
+                        new Pictogram("primus", AccessLevel.PUBLIC) {
+                            Id = 15
+                        },
+                        new Pictogram("mus", AccessLevel.PUBLIC) {
+                            Id = 16
+                        },
+
                     };
 
                     return _mockPictograms;
@@ -241,17 +265,16 @@ namespace GirafRest.Test
                     if (_mockActivities == null)
                         _mockActivities = new List<Activity>()
                         {
-                            new Activity(MockWeeks[0].Weekdays[0], new List<Pictogram> {MockPictograms[5]}, 0, ActivityState.Active, MockTimers[0], false){
+                            new Activity(MockWeeks[0].Weekdays[0], new List<Pictogram> {MockPictograms[5]}, 0, ActivityState.Active, MockTimers[0],  false, null){
                                 Key = 1,
                                 Order = 1,
                                 OtherKey = 1,
                                 State = ActivityState.Normal,
                                 IsChoiceBoard = false
-                                
                             },
-                            new Activity(MockWeeks[0].Weekdays[1], new List<Pictogram> {MockPictograms[6]}, 1, ActivityState.Canceled, null, false),
-                            new Activity(MockWeekTemplates[Template1].Weekdays[1], new List<Pictogram> {MockPictograms[5]}, 0, ActivityState.Active, null, false),
-                            new Activity(MockWeekTemplates[Template1].Weekdays[0], new List<Pictogram> {MockPictograms[6]}, 1, ActivityState.Canceled, null, false),
+                            new Activity(MockWeeks[0].Weekdays[1], new List<Pictogram> {MockPictograms[6]}, 1, ActivityState.Canceled, null, false, null),
+                            new Activity(MockWeekTemplates[Template1].Weekdays[1], new List<Pictogram> {MockPictograms[5]}, 0, ActivityState.Active, null, false, null),
+                            new Activity(MockWeekTemplates[Template1].Weekdays[0], new List<Pictogram> {MockPictograms[6]}, 1, ActivityState.Canceled, null, false, null),
                         };
 
                     return _mockActivities;
@@ -372,7 +395,7 @@ namespace GirafRest.Test
                     Weekday monday = new Weekday() {
                         Day = Days.Monday,
                     };
-                    Activity activity = new Activity(monday, new List<Pictogram>(), 0, ActivityState.Active, null, false);
+                    Activity activity = new Activity(monday, new List<Pictogram>(), 0, ActivityState.Active, null, false, "");
                     monday.Activities = new List<Activity>() {activity};
                     
                     if (_mockWeekTemplates == null) {
@@ -583,6 +606,26 @@ namespace GirafRest.Test
                 }
             }
 
+            private List<AlternateName> mockAlternateNames;
+            public List<AlternateName> MockAlternateNames
+            {
+                get
+                {
+                    if (mockAlternateNames == null)
+                    {
+                        mockAlternateNames = new List<AlternateName>()
+                        {
+                            new AlternateName(MockUsers.First(), MockPictograms.First(), "Kage")
+                            {
+                                Id = 0
+                            }
+                        };
+                    }
+
+                    return mockAlternateNames;
+                }
+            }
+
             #endregion
             
             
@@ -627,6 +670,7 @@ namespace GirafRest.Test
                 var mockWeekTemplates = CreateMockDbSet(MockWeekTemplates);
                 var mockGuardianRelations = CreateMockDbSet(MockGuardianRelations);
                 var mockPictogramRelations = CreateMockDbSet(MockPictogramRelations);
+                var mockAlternateNames = CreateMockDbSet(MockAlternateNames);
                 var dbMock = new Mock<GirafDbContext>();
                 dbMock.Setup(c => c.Pictograms).Returns(mockSet.Object);
                 dbMock.Setup(c => c.UserResources).Returns(mockRelationSet.Object);
@@ -641,6 +685,7 @@ namespace GirafRest.Test
                 dbMock.Setup(c => c.Roles).Returns(mockRoles.Object);
                 dbMock.Setup(c => c.UserRoles).Returns(mockUserRoles.Object);
                 dbMock.Setup(c => c.PictogramRelations).Returns(mockPictogramRelations.Object);
+                dbMock.Setup(c => c.AlternateNames).Returns(mockAlternateNames.Object);
 
                 //Make sure that all references are setup - Entity does not handle it for us this time.
                 MockUsers[0].Department = MockDepartments[0];
