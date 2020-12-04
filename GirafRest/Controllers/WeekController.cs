@@ -331,7 +331,7 @@ namespace GirafRest.Controllers
             
             var user = await _giraf.LoadUserWithWeekSchedules(userId);
             if (user == null) return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
-
+            
             // check access rights
             if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
@@ -343,21 +343,17 @@ namespace GirafRest.Controllers
                 return NotFound(new ErrorResponse(ErrorCode.NotFound,"Week not found"));
             }
             
-            Weekday newDay = new Weekday(weekdayDto);
+            Weekday oldDay =week.Weekdays.Single(d => d.Day == weekdayDto.Day);
 
-            newDay.Activities.Clear();
-            if (!await AddPictogramsToWeekday(newDay, weekdayDto, _giraf))
+            oldDay.Activities.Clear();
+            if (!await AddPictogramsToWeekday(oldDay, weekdayDto, _giraf))
             {
                 return NotFound(new ErrorResponse(ErrorCode.ResourceNotFound, "Missing pictogram"));
             }
-
-            int oldDay = week.Weekdays.IndexOf( week.Weekdays.Single(d => d.Day == newDay.Day));
-            week.Weekdays[oldDay] = newDay;
-            
-            _giraf._context.Weeks.Update(week);
+            _giraf._context.Weekdays.Update(oldDay);
             await _giraf._context.SaveChangesAsync();
             
-            return Ok(new SuccessResponse<WeekdayDTO>(new WeekdayDTO(newDay)));
+            return Ok(new SuccessResponse<WeekdayDTO>(new WeekdayDTO(oldDay)));
         }
         
 
