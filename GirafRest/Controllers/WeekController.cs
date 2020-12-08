@@ -192,6 +192,77 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
+        /// Gets the <see cref="WeekdayDTO"/> with the specified week number and year for the user with the given id
+        /// </summary>
+        /// <param name="userId">Identifier of the <see cref="GirafUser"/> to request schedule for</param>
+        /// <param name="weekYear">The year of the week schedule to fetch.</param>
+        /// <param name="weekNumber">The week number of the week schedule to fetch.</param>
+        /// <param name="day">The index of the day of the week. (Monday = 1 and sunday = 7)</param>
+        /// <returns><see cref="WeekdayDTO"/> for the requested week on success else InvalidDay, UserNotFound, 
+        /// NotAuthorized or NotFound</returns>
+        [HttpGet("{userId}/{weekYear}/{weekNumber}/{day}")]
+        [Authorize]
+        [ProducesResponseType(typeof(SuccessResponse<WeekdayDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> GetWeekDay(string userId, int weekYear, int weekNumber, int day)
+        {
+            if (day < 0 || day > 6)
+            {
+                return BadRequest(new ErrorResponse(ErrorCode.InvalidDay, "Day must be between 0 and 6"));
+            }
+            
+            var user = await _giraf.LoadUserWithWeekSchedules(userId);
+            if (user == null) return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
+
+            // check access rights
+            if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
+            
+            Week week = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber);
+
+            if (week == null)
+            {
+                return NotFound(new ErrorResponse(ErrorCode.NotFound,"Week not found"));
+            }
+
+            Weekday weekday = week.Weekdays.Single(d => d.Day == (Days)day + 1);
+            if (weekday == null)
+            {
+                return NotFound(new ErrorResponse(ErrorCode.NotFound, "Weekday not found"));
+            }
+            
+            foreach (var activity in weekday.Activities)
+            {
+                if (activity.TimerKey != null)
+                {
+                    var timerPlace = _giraf._context.Timers.FirstOrDefault(t => t.Key == activity.TimerKey);
+                    activity.Timer = timerPlace;
+                }
+
+                if (activity.Pictograms != null)
+                {
+                    foreach (var pictogramRelation in activity.Pictograms)
+                    {
+                        var dbPictogram =
+                            _giraf._context.Pictograms.FirstOrDefault(p => p.Id == pictogramRelation.PictogramId);
+                        if (dbPictogram != null)
+                        {
+                            pictogramRelation.Pictogram = dbPictogram;
+                        }
+                        else
+                        {
+                            return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound,
+                                "Pictogram not found"));
+                        }
+                    }
+                }
+            }
+
+            return Ok(new SuccessResponse<WeekdayDTO>(new WeekdayDTO(weekday)));
+        }
+
+        /// <summary>
         /// Updates the entire information of the week with the given year and week number.
         /// </summary>
         /// <param name="userId">id of user you want to get weekschedule for.</param>
@@ -233,6 +304,58 @@ namespace GirafRest.Controllers
             await _giraf._context.SaveChangesAsync();
             return Ok(new SuccessResponse<WeekDTO>(new WeekDTO(week)));
         }
+
+        /// <summary>
+        /// Updates the entire information of the <see cref="WeekdayDTO"/> with the given year, week number and
+        /// the user id."/>.
+        /// </summary>
+        /// <param name="userId">id of user you want to get weekschedule for.</param>
+        /// <param name="weekYear">year of the week you want to update</param>
+        /// <param name="weekNumber">weeknumber of week you want to update.</param>
+        /// <param name="weekdayDto">A serialized <see cref="Weekday"/> with the new information</param>
+        /// <returns><see cref="WeekdayDTO"/> for the requested week on success else UserNotFound, MissingProperties,
+        /// NotAuthorized or NotFound</returns>
+        [HttpPut("day/{userId}/{weekYear}/{weekNumber}")]
+        [Authorize]
+        [ProducesResponseType(typeof(SuccessResponse<WeekdayDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> UpdateWeekday(string userId, int weekYear, int weekNumber,
+            [FromBody] WeekdayDTO weekdayDto)
+        {
+            if (weekdayDto == null)
+            {
+                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing weekday"));
+            }
+            
+            var user = await _giraf.LoadUserWithWeekSchedules(userId);
+            if (user == null) return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
+            
+            // check access rights
+            if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
+                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
+            
+            Week week = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber);
+
+            if (week == null)
+            {
+                return NotFound(new ErrorResponse(ErrorCode.NotFound,"Week not found"));
+            }
+            
+            Weekday oldDay =week.Weekdays.Single(d => d.Day == weekdayDto.Day);
+
+            oldDay.Activities.Clear();
+            if (!await AddPictogramsToWeekday(oldDay, weekdayDto, _giraf))
+            {
+                return NotFound(new ErrorResponse(ErrorCode.ResourceNotFound, "Missing pictogram"));
+            }
+            _giraf._context.Weekdays.Update(oldDay);
+            await _giraf._context.SaveChangesAsync();
+            
+            return Ok(new SuccessResponse<WeekdayDTO>(new WeekdayDTO(oldDay)));
+        }
+        
 
         /// <summary>
         /// Deletes all information for the entire week with the given year and week number.

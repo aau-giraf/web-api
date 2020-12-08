@@ -222,11 +222,22 @@ namespace GirafRest.Test
                                 Citizen = MockUsers[2],
                                 GuardianId = MockUsers[1].Id,
                                 CitizenId = MockUsers[2].Id
+                            },
+                            new GuardianRelation()
+                            {
+                                Guardian = MockUsers[5],
+                                Citizen = MockUsers[4],
+                                GuardianId = MockUsers[5].Id,
+                                CitizenId = MockUsers[4].Id
                             }
+                            
+                            
                         };
 
                         MockUsers[1].Citizens.Add(mockGuardianRelations[0]);
                         MockUsers[2].Guardians.Add(mockGuardianRelations[0]);
+                        MockUsers[4].Citizens.Add(MockGuardianRelations[1]);
+                        MockUsers[5].Guardians.Add(MockGuardianRelations[1]);
                     }
                     return mockGuardianRelations;
                 }
@@ -379,6 +390,8 @@ namespace GirafRest.Test
                         MockUsers[1].WeekSchedule.Add(mockWeeks[1]);
                         MockUsers[2].WeekSchedule.Clear();
                         MockUsers[3].WeekSchedule.Clear();
+                        MockUsers[4].WeekSchedule.Add(mockWeeks[0]);
+                        MockUsers[4].WeekSchedule.Add(mockWeeks[1]);
                     }
                     return mockWeeks;
                 }
