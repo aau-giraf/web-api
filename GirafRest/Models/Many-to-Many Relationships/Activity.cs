@@ -109,7 +109,6 @@ namespace GirafRest.Models
         /// Newtonsoft (JSON Generation) needs empty constructor. Don't delete.
         /// </summary>
         public Activity() { }
-        
-    }
+        }
 
 }
