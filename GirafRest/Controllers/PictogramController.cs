@@ -68,7 +68,7 @@ namespace GirafRest.Controllers
                 return BadRequest(new ErrorResponse(ErrorCode.InvalidProperties, "Missing page"));
             //Produce a list of all pictograms available to the user
 
-            var userPictograms = (await ReadAllPictograms(query,page,pageSize)).AsEnumerable();
+            var userPictograms = (await ReadAllPictograms(query)).AsEnumerable();
 
             // This does not occur only when user has no pictograms, but when any error is caught in the previous call
             if (userPictograms == null)
@@ -479,7 +479,7 @@ namespace GirafRest.Controllers
         /// Read all pictograms available to the current user (or only the PUBLIC ones if no user is authorized).
         /// </summary>
         /// <returns>A list of said pictograms.</returns>
-        private async Task<IQueryable<Pictogram>> ReadAllPictograms(string query, int page = 1, int pageSize = 10)
+        private async Task<IQueryable<Pictogram>> ReadAllPictograms(string query)
         {
             //In this method .AsNoTracking is used due to a bug in EntityFramework Core, where we are not allowed to call a constructor in .Select
             //i.e. convert the pictograms to PictogramDTOs.
@@ -497,14 +497,14 @@ namespace GirafRest.Controllers
                     {
                         _giraf._logger.LogInformation($"Fetching pictograms for department {user.Department.Name}");
 
-                        return fetchingPictogramsFromDepartment(query, user, page, pageSize);
+                        return fetchingPictogramsFromDepartment(query, user);
                     }
                     // User is not part of a department
-                    return fetchingPictogramsUserNotInDepartment(query, user, page, pageSize);
+                    return fetchingPictogramsUserNotInDepartment(query, user);
                 }
 
                 // Fetch all public pictograms as there is no user.
-                return fetchPictogramsNoUserLoggedIn(query, page, pageSize);
+                return fetchPictogramsNoUserLoggedIn(query);
 
             }
             catch (Exception e)
@@ -514,36 +514,27 @@ namespace GirafRest.Controllers
             }
         }
 
-        private IQueryable<Pictogram> fetchingPictogramsFromDepartment(string query,GirafUser user, int page, int pageSize)
+        private IQueryable<Pictogram> fetchingPictogramsFromDepartment(string query,GirafUser user)
         {
             return fetchPictogramsFromDepartmentStartsWithQuery(query, user)
                 .Union(fetchPictogramsFromDepartmentsContainsQuery(query, user))                
-                    .Skip((page - 1) * pageSize)
-                    .Take(pageSize)
                     .AsNoTracking();
-
         }
         
-        private IQueryable<Pictogram> fetchingPictogramsUserNotInDepartment(string query,GirafUser user, int page, int pageSize)
+        private IQueryable<Pictogram> fetchingPictogramsUserNotInDepartment(string query,GirafUser user)
         {
             return fetchPictogramsUserNotPartOfDepartmentStartsWithQuery(query,user).
                 Union(
                     fetchPictogramsUserNotPartOfDepartmentContainsQuery(query,user))
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
                 .AsNoTracking();
-
         }
 
-        private IQueryable<Pictogram> fetchPictogramsNoUserLoggedIn(string query, int page, int pageSize)
+        private IQueryable<Pictogram> fetchPictogramsNoUserLoggedIn(string query)
         {
             return fetchPictogramsNoUserLoggedInStartsWithQuery(query)
                 .Union(
                     fetchPictogramsNoUserLoggedInContainsQuery(query))
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
                 .AsNoTracking();
-
         }
 
         #region DatabaseQueries
