@@ -27,6 +27,7 @@ namespace GirafRest.Test
         private const int CITIZEN_DEP_TWO = 2;
         private const int DEPARTMENT_USER_DEP_TWO = 6;
         private const int CITIZEN_DEP_THREE = 3; // Have no week
+        private const int YEAR_ZERO = 0;
         private const int WEEK_ZERO = 0;
         private const int DAY_ZERO = 0;
         private const int NONEXISTING = 999;
@@ -268,6 +269,133 @@ namespace GirafRest.Test
             var week = _testContext.MockWeeks[0];
             await wc.UpdateWeek(mockUser.Id, 2018, 1, new WeekDTO(week));
             Assert.Equal(_testContext.MockWeeks[0].Weekdays[0].Activities.ElementAt(0).Timer.Key, timerkey);
+        }
+
+        #endregion
+        #region UpdateWeekDay
+        [Fact]
+        public void UpdateWeekday_UserPermission_NotAuthorized()
+        {
+            var wc = initializeTest();
+            var mockUser = _testContext.MockUsers[4];
+
+            var res = wc.UpdateWeekday(mockUser.Id, YEAR_ZERO, WEEK_ZERO, new WeekdayDTO()).Result as ObjectResult;
+            var body = res.Value as ErrorResponse;
+
+            Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
+            Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
+        }
+        [Fact]
+        public void UpdateWeekday_ValidWeekdayValidDTO_Success()
+        {
+            var wc = initializeTest();
+            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+            var weekday = mockUser.WeekSchedule.First().Weekdays[0];
+            var res = wc.UpdateWeekday(mockUser.Id, 2018, 1, new WeekdayDTO(weekday)).Result as ObjectResult;
+            var body = res.Value as SuccessResponse<WeekdayDTO>;
+
+            Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
+            Assert.Equal(weekday.Day.ToString(), body.Data.Day.ToString());
+        }
+        [Fact]
+        public void UpdateWeekday_InvalidWeekdayValdidDTO_MissingProperties()
+        {
+            var wc = initializeTest();
+            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+
+            var res = wc.UpdateWeekday(mockUser.Id, 2018, 1, null).Result as ObjectResult;
+            var body = res.Value as ErrorResponse;
+
+            Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
+            Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
+        }
+        [Fact]
+        public void UpdateWeekday_InvalidWeek_ValidDTO_NotFound()
+        {
+            var wc = initializeTest();
+            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+
+            var weekday = mockUser.WeekSchedule.First().Weekdays[0];
+
+            var res = wc.UpdateWeekday(mockUser.Id, 99999, 99, new WeekdayDTO(weekday)).Result as ObjectResult;
+            var body = res.Value as ErrorResponse;
+
+            Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
+            Assert.Equal(ErrorCode.NotFound, body.ErrorCode);
+        }
+        [Fact]
+        public void UpdateWeekday_InvalidUser_NotFound()
+        {
+            var wc = initializeTest();
+            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+
+            var weekday = mockUser.WeekSchedule.First().Weekdays[0];
+            var res = wc.UpdateWeekday("FakeUserId", 2018, 1, new WeekdayDTO(weekday)).Result as ObjectResult;
+            var body = res.Value as ErrorResponse;
+
+            Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
+            Assert.Equal(ErrorCode.UserNotFound, body.ErrorCode);
+        }
+        #endregion
+        #region GetWeekDay
+
+        [Fact]
+        public void GetWeekDay_SuccessResponse()
+        {
+            var wc = initializeTest();
+            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+
+            var week = mockUser.WeekSchedule.FirstOrDefault();
+
+            var res = wc.GetWeekDay(mockUser.Id, week.WeekYear, week.WeekNumber, DAY_ZERO).Result as ObjectResult;
+            var body = res.Value as SuccessResponse<WeekdayDTO>;
+            
+            Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
+            Assert.Equal(week.Weekdays.First().Activities.Count, body.Data.Activities.Count);
+        }
+        [Fact]
+        public void GetWeekDay_WeekDayOutOfBounds()
+        {
+            var wc = initializeTest();
+            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+            var res = wc.GetWeekDay(mockUser.Id, YEAR_ZERO, WEEK_ZERO, NONEXISTING).Result as ObjectResult;
+            var body = res.Value as ErrorResponse;
+            
+            Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
+            Assert.Equal(ErrorCode.InvalidDay, body.ErrorCode);
+        }
+
+        [Fact]
+        public void GetWeekDay_WeekNull_NotFound()
+        {
+            var wc = initializeTest();
+            var mockUser = _testContext.MockUsers[CITIZEN_DEP_THREE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+
+            var res = wc.GetWeekDay(mockUser.Id, YEAR_ZERO, WEEK_ZERO, DAY_ZERO).Result as ObjectResult;
+            var body = res.Value as ErrorResponse;
+            
+            Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
+            Assert.Equal(ErrorCode.NotFound, body.ErrorCode);
+        }
+
+        [Fact]
+        public void GetWeekDay_UserPermission_NotAuthorized()
+        {
+            var wc = initializeTest();
+            var mockUser = _testContext.MockUsers[4];          
+
+            var res = wc.GetWeekDay(mockUser.Id, YEAR_ZERO, WEEK_ZERO, DAY_ZERO).Result as ObjectResult;
+            var body = res.Value as ErrorResponse;
+            
+            Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
+            Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
         }
 
         #endregion
