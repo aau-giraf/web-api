@@ -22,6 +22,7 @@ namespace GirafRest.Controllers
     /// </summary>
     [Authorize]
     [Route("v1/[controller]")]
+
     public class UserController : Controller
     {
         private const int IMAGE_CONTENT_TYPE_DEFINITION = 25;
@@ -448,6 +449,12 @@ namespace GirafRest.Controllers
                 citizens.Add(new DisplayNameDTO { UserId = girafUser.Id, DisplayName = girafUser.DisplayName });
             }
 
+            //sort function for users in citizens
+            citizens.Sort(delegate(DisplayNameDTO user1, DisplayNameDTO user2)
+            {
+                return user1.DisplayName.CompareTo(user2.DisplayName);
+            });
+
             if (!citizens.Any())
             {
                 return NotFound(new ErrorResponse(ErrorCode.UserHasNoCitizens, "User does not have any citizens"));
@@ -529,7 +536,7 @@ namespace GirafRest.Controllers
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.Forbidden, "User does not have permission"));
 
             citizen.AddGuardian(guardian);
-
+            
             return Ok(new SuccessResponse("Added relation between guardian and citizen"));
         }
 
