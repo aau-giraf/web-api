@@ -24,7 +24,7 @@ namespace GirafRest.Controllers
     public class PictogramController : Controller
     {
         private const string IMAGE_TYPE_PNG = "image/png";
-
+        //test
         private readonly IGirafService _giraf;
 
         private readonly IHostEnvironment _hostingEnvironment;
