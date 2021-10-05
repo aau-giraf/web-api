@@ -31,7 +31,6 @@ namespace GirafRest.Controllers
 
         private readonly string imagePath;
 
-
         /// <summary>
         /// Constructor for controller
         /// </summary>
@@ -68,7 +67,7 @@ namespace GirafRest.Controllers
             if (page < 1)
                 return BadRequest(new ErrorResponse(ErrorCode.InvalidProperties, "Missing page"));
             //Produce a list of all pictograms available to the user
-
+            
             var userPictograms = (await ReadAllPictograms(query)).AsEnumerable();
 
             // This does not occur only when user has no pictograms, but when any error is caught in the previous call
@@ -345,8 +344,6 @@ namespace GirafRest.Controllers
                     return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.Forbidden, "The server does not have permission to write this file"));
                 }
 
-
-
                 pictogram.ImageHash = _giraf.GetHash(image);
             }
 
@@ -497,7 +494,6 @@ namespace GirafRest.Controllers
                     if (user.Department != null)
                     {
                         _giraf._logger.LogInformation($"Fetching pictograms for department {user.Department.Name}");
-
                         return fetchingPictogramsFromDepartment(query, user);
                     }
                     // User is not part of a department
@@ -506,7 +502,6 @@ namespace GirafRest.Controllers
 
                 // Fetch all public pictograms as there is no user.
                 return fetchPictogramsNoUserLoggedIn(query);
-
             }
             catch (Exception e)
             {
@@ -515,26 +510,24 @@ namespace GirafRest.Controllers
             }
         }
 
-        private IQueryable<Pictogram> fetchingPictogramsFromDepartment(string query,GirafUser user)
+        private IQueryable<Pictogram> fetchingPictogramsFromDepartment(string query, GirafUser user)
         {
             return fetchPictogramsFromDepartmentStartsWithQuery(query, user)
                 .Union(fetchPictogramsFromDepartmentsContainsQuery(query, user))                
-                    .AsNoTracking();
+                .AsNoTracking();
         }
         
-        private IQueryable<Pictogram> fetchingPictogramsUserNotInDepartment(string query,GirafUser user)
+        private IQueryable<Pictogram> fetchingPictogramsUserNotInDepartment(string query, GirafUser user)
         {
-            return fetchPictogramsUserNotPartOfDepartmentStartsWithQuery(query,user).
-                Union(
-                    fetchPictogramsUserNotPartOfDepartmentContainsQuery(query,user))
+            return fetchPictogramsUserNotPartOfDepartmentStartsWithQuery(query,user)
+                .Union(fetchPictogramsUserNotPartOfDepartmentContainsQuery(query,user))
                 .AsNoTracking();
         }
 
         private IQueryable<Pictogram> fetchPictogramsNoUserLoggedIn(string query)
         {
             return fetchPictogramsNoUserLoggedInStartsWithQuery(query)
-                .Union(
-                    fetchPictogramsNoUserLoggedInContainsQuery(query))
+                .Union(fetchPictogramsNoUserLoggedInContainsQuery(query))
                 .AsNoTracking();
         }
 
