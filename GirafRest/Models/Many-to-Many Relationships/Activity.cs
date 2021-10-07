@@ -110,5 +110,4 @@ namespace GirafRest.Models
         /// </summary>
         public Activity() { }
     }
-
 }
