@@ -4,7 +4,7 @@ using GirafRest.Models.DTOs;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 
-namespace GirafRest
+namespace GirafRest.Interfaces
 {
     /// <summary>
     /// Contains methods for authentication checks

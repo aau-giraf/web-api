@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using GirafRest.Data;
 using GirafRest.Models;
+using GirafRest.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
