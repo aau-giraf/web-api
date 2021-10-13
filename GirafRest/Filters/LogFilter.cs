@@ -1,5 +1,5 @@
 ﻿using GirafRest.Models.Responses;
-using GirafRest.Services;
+using GirafRest.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;

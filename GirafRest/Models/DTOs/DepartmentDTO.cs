@@ -1,5 +1,5 @@
 using GirafRest.Extensions;
-using GirafRest.Services;
+using GirafRest.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Linq;

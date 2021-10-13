@@ -1,7 +1,7 @@
 ﻿using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
-using GirafRest.Services;
+using GirafRest.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
