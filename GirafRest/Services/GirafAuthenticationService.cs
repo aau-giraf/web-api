@@ -2,6 +2,7 @@
 using GirafRest.Extensions;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
+using GirafRest.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 
