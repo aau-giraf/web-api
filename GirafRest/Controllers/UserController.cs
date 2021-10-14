@@ -76,7 +76,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="username"></param>
         /// <returns></returns>
-        [HttpGet("{UserName}/role", Name = "GetUserRole")]
+        [HttpGet("{username}/role", Name = "GetUserRole")]
         [ProducesResponseType(typeof(SuccessResponse<GirafUserDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
