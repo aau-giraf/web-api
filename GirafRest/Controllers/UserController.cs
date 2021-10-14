@@ -95,7 +95,7 @@ namespace GirafRest.Controllers
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
             
             //Returns the role of the user as a list, should only contain one entry
-            return Ok(new SuccessResponse<List<GirafRoles>>(_roleManager.findUserRole(_giraf._userManager, user));
+            return Ok(new SuccessResponse<List<GirafRoles>>(_roleManager.findUserRole(_giraf._userManager, user)));
         }
 
         /// <summary>
