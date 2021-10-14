@@ -8,9 +8,20 @@ namespace GirafRest.IRepositories
     {
 
 
-        IUserRepository Users { get; }
-
+        IAlternateNameRepository AlternateNames { get; }
+        IDepartmentRepository Departments { get; }
+        IGirafRoleRepository GirafRoles { get; }
+        IGirafUserRepository GirafUsers { get; }
+        IPictogramRepository Pictograms { get; }
+        ISettingRepository Settings { get; }
+        ITimerRepository Timers { get; }
+        IWeekBaseRepository WeekBases { get; }
+        IWeekDayColorRepository WeekDayColors { get; }
         IWeekRepository Weeks { get; }
+        IWeekTemplateRepository WeekTemplates { get; }
+
+
+        
        
        //other repositories
        
