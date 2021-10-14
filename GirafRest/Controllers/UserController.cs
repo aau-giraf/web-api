@@ -88,7 +88,7 @@ namespace GirafRest.Controllers
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Username is not found"));
 
             //Gets the user info
-            var user = _giraf._context.Users.FirstOrDefault(u => u.userName == username);
+            var user = _giraf._context.Users.FirstOrDefault(u => u.username == username);
 
             //Checks that the user isn't null(not found) and throws an error if it isn't found
             if(user == null)
