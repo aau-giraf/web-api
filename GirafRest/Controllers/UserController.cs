@@ -72,6 +72,33 @@ namespace GirafRest.Controllers
         }
 
         /// <summary>
+        /// Gets the role of the user with the given username.
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
+        [HttpGet("{username}/role", Name = "GetUserRole")]
+        [ProducesResponseType(typeof(SuccessResponse<GirafUserDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> GetUserRole(string username)
+        {
+            //Checks that the string isn't empty or null
+            if (string.IsNullOrEmpty(username))
+                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Username is not found"));
+
+            //Gets the user info
+            var user = _giraf._context.Users.FirstOrDefault(u => u.userName == username);
+
+            //Checks that the user isn't null(not found) and throws an error if it isn't found
+            if(user == null)
+                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
+            
+            //Returns the role of the user as a list, should only contain one entry
+            return Ok(new SuccessResponse<List<GirafRoles>>(_roleManager.findUserRole(_giraf._userManager, user));
+        }
+
+        /// <summary>
         /// Find information on the user with the username supplied as a url query parameter or the current user.
         /// </summary>
         /// <returns>  Data about the user if success else MissingProperties, UserNotFound or NotAuthorized </returns>
