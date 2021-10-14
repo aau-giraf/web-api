@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace GirafRest
+namespace GirafRest.Models
 {
     /// <summary>
     /// The entity for enabling a day to have a specific Color
