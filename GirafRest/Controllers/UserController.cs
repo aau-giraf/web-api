@@ -76,7 +76,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="username"></param>
         /// <returns></returns>
-        [HttpGet("{username}/role", Name = "GetUserRole")]
+        [HttpGet("{UserName}/role", Name = "GetUserRole")]
         [ProducesResponseType(typeof(SuccessResponse<GirafUserDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -88,7 +88,7 @@ namespace GirafRest.Controllers
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Username is not found"));
 
             //Gets the user info
-            var user = _giraf._context.Users.FirstOrDefault(u => u.username == username);
+            var user = _giraf._context.Users.FirstOrDefault(u => u.UserName == username);
 
             //Checks that the user isn't null(not found) and throws an error if it isn't found
             if(user == null)
