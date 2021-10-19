@@ -11,5 +11,8 @@ namespace GirafRest.Repositories
         public TimerRepository(GirafDbContext context) : base(context)
         {
         }
+
+        public int CHANGENAME()
+        _context.Timers.FirstOrDefault(t => t.Key == activity.TimerKey);
     }
 }
