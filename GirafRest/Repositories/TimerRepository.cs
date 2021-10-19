@@ -12,7 +12,6 @@ namespace GirafRest.Repositories
         {
         }
 
-        public int CHANGENAME()
-        _context.Timers.FirstOrDefault(t => t.Key == activity.TimerKey);
+      
     }
 }
