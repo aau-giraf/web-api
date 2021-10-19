@@ -10,8 +10,6 @@ namespace GirafRest.Repositories
     {
         public TimerRepository(GirafDbContext context) : base(context)
         {
-        }
-
-      
+        }    
     }
 }

@@ -117,12 +117,7 @@ namespace GirafRest.Setup
 
             services.Configure<JwtConfig>(Configuration.GetSection("Jwt"));
 
-            ////Add the database context to the server using extension-methods
-            //services.AddMySql(Configuration);
-            //configureIdentity<GirafDbContext>(services);
-
-            // services.AddTransient<IAuthenticationService, GirafAuthenticationService>();
-
+           
             // Add the implementation of IGirafService to the context, i.e. all common functionality for
             // the controllers.
             services.AddTransient<IGirafService, GirafService>();
