@@ -12,6 +12,8 @@ using GirafRest.Models.Responses;
 using Microsoft.Extensions.Options;
 using System.Linq;
 using System;
+using GirafRest.IRepositories;
+using GirafRest.Repositories;
 using Microsoft.AspNetCore.Http; 
 
 
@@ -46,7 +48,8 @@ namespace GirafRest.Test
 
             var mockSignInManager = new MockSignInManager(_testContext.MockUserManager, _testContext);
             var mockGirafService = new MockGirafService(_testContext.MockDbContext.Object, _testContext.MockUserManager);
-
+            var mockUserRepository = Mock.Of<IGirafUserRepository>();
+            var mockDepartmentRepository = Mock.Of<IDepartmentRepository>();
             //var roleManager = new RoleManager<GirafRole>(new Mock<IRoleStore<GirafRole>>().Object, null, null, null, null, null);
             
             AccountController ac = new AccountController(
@@ -58,9 +61,8 @@ namespace GirafRest.Test
                     JwtKey = "123456789123456789123456789",
                     JwtIssuer = "example.com",
                     JwtExpireDays = 30
-                }),
-                new GirafAuthenticationService(_testContext.MockDbContext.Object, _testContext.MockRoleManager.Object,
-                                               _testContext.MockUserManager));
+                }), mockUserRepository, mockDepartmentRepository
+            );
 
             _testContext.MockHttpContext = ac.MockHttpContext();
             _testContext.MockHttpContext
