@@ -117,12 +117,7 @@ namespace GirafRest.Setup
 
             services.Configure<JwtConfig>(Configuration.GetSection("Jwt"));
 
-            ////Add the database context to the server using extension-methods
-            //services.AddMySql(Configuration);
-            //configureIdentity<GirafDbContext>(services);
-
-            // services.AddTransient<IAuthenticationService, GirafAuthenticationService>();
-
+           
             // Add the implementation of IGirafService to the context, i.e. all common functionality for
             // the controllers.
             services.AddTransient<IGirafService, GirafService>();
@@ -134,7 +129,7 @@ namespace GirafRest.Setup
             services.AddControllers().AddNewtonsoftJson();
             //add dbcontext
             services.AddEntityFrameworkMySql().AddDbContext<GirafDbContext>(options => options.UseMySql("name=ConnectionStrings:DefaultConnection"));
-            //add repositories
+            //add scoped repositories. Every single request gets it's own scoped repositories.
             services.AddScoped<IAlternateNameRepository,AlternateNameRepository>();
             services.AddScoped<IDepartmentRepository,DepartmentRepository>();
             services.AddScoped<IGirafRoleRepository, GirafRoleRepository>();
