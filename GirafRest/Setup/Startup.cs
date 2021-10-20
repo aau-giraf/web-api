@@ -141,8 +141,12 @@ namespace GirafRest.Setup
             services.AddScoped<IWeekDayColorRepository, WeekDayColorRepository>();
             services.AddScoped<IWeekRepository, WeekRepository>();
             services.AddScoped<IWeekTemplateRepository, WeekTemplateRepository>();
-
-
+            services.AddScoped<IActivityRepository,ActivityRepository>();
+            services.AddScoped<IDepartmentResourseRepository,DepartmentResourseRepository>();
+            services.AddScoped<IGuardianRelationRepository,GuardianRelationRepository>();
+            services.AddScoped<IPictogramRelationRepository,PictogramRelationRepository>();
+            services.AddScoped<IUserResourseRepository, UserResourseRepository>();
+           
             // Set up Cross-Origin Requests
             services.AddCors(o => o.AddPolicy("AllowAll", builder =>
             {
