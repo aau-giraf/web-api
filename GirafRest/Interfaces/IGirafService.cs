@@ -48,7 +48,7 @@ namespace GirafRest.Interfaces
         /// </summary>
         /// <returns>The user with week schedules.</returns>
         /// <param name="id">Identifier of <see cref="GirafUser"/></param>
-        Task<GirafUser> LoadUserWithWeekSchedules(string id);
+        // Task<GirafUser> LoadUserWithWeekSchedules(string id);
 
         /// <summary>
         /// Loads the image of the request body.
