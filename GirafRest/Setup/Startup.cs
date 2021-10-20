@@ -24,6 +24,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using GirafRest.IRepositories;
+using GirafRest.Repositories;
 
 namespace GirafRest.Setup
 {
@@ -114,12 +117,7 @@ namespace GirafRest.Setup
 
             services.Configure<JwtConfig>(Configuration.GetSection("Jwt"));
 
-            //Add the database context to the server using extension-methods
-            services.AddMySql(Configuration);
-            configureIdentity<GirafDbContext>(services);
-
-            services.AddTransient<IAuthenticationService, GirafAuthenticationService>();
-
+           
             // Add the implementation of IGirafService to the context, i.e. all common functionality for
             // the controllers.
             services.AddTransient<IGirafService, GirafService>();
@@ -129,6 +127,21 @@ namespace GirafRest.Setup
                 options.Filters.Add<LogFilter>();
             });
             services.AddControllers().AddNewtonsoftJson();
+            //add dbcontext
+            services.AddEntityFrameworkMySql().AddDbContext<GirafDbContext>(options => options.UseMySql("name=ConnectionStrings:DefaultConnection"));
+            //add scoped repositories. Every single request gets it's own scoped repositories.
+            services.AddScoped<IAlternateNameRepository,AlternateNameRepository>();
+            services.AddScoped<IDepartmentRepository,DepartmentRepository>();
+            services.AddScoped<IGirafRoleRepository, GirafRoleRepository>();
+            services.AddScoped<IGirafUserRepository, GirafUserRepository>();
+            services.AddScoped<IPictogramRepository,PictogramRepository>();
+            services.AddScoped<ISettingRepository,SettingRepository>();
+            services.AddScoped<ITimerRepository,TimerRepository>();
+            services.AddScoped<IWeekBaseRepository,WeekBaseRepository>();
+            services.AddScoped<IWeekDayColorRepository, WeekDayColorRepository>();
+            services.AddScoped<IWeekRepository, WeekRepository>();
+            services.AddScoped<IWeekTemplateRepository, WeekTemplateRepository>();
+
 
             // Set up Cross-Origin Requests
             services.AddCors(o => o.AddPolicy("AllowAll", builder =>
