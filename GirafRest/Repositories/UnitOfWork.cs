@@ -2,9 +2,6 @@ using System;
 using GirafRest.IRepositories;
 using GirafRest.Data;
 
-
-
-
 namespace GirafRest.Repositories
 {
     public class UnitOfWork : IUnitOfWork
@@ -25,11 +22,7 @@ namespace GirafRest.Repositories
             WeekBases = new WeekBaseRepository(_context);
             WeekDayColors = new WeekDayColorRepository(_context);
             WeekTemplates = new WeekTemplateRepository(_context);
-
-
         }
-
-
 
         public IAlternateNameRepository AlternateNames { get; private set; }
 

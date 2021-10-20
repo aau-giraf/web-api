@@ -6,8 +6,6 @@ namespace GirafRest.IRepositories
 {
     public interface IUnitOfWork : IDisposable
     {
-
-
         IAlternateNameRepository AlternateNames { get; }
         IDepartmentRepository Departments { get; }
         IGirafRoleRepository GirafRoles { get; }
@@ -19,10 +17,6 @@ namespace GirafRest.IRepositories
         IWeekDayColorRepository WeekDayColors { get; }
         IWeekRepository Weeks { get; }
         IWeekTemplateRepository WeekTemplates { get; }
-
-
-        
-       
        //other repositories
        
        int Complete();

@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading.Tasks;
+using GirafRest.IRepositories;
 
 namespace GirafRest.Controllers
 {
@@ -20,20 +21,20 @@ namespace GirafRest.Controllers
     [Route("v2/[controller]")]
     public class ActivityController : Controller
     {
-        private readonly IAuthenticationService _authentication;
         private readonly IGirafService _giraf;
+        private readonly IUnitOfWork _unitOfWork;
 
         /// <summary>
         /// Constructor for Controller
         /// </summary>
         /// <param name="giraf">Service Injection</param>
         /// <param name="loggerFactory">Service Injection</param>
-        /// <param name="authentication">Service Injection</param>
-        public ActivityController(IGirafService giraf, ILoggerFactory loggerFactory, IAuthenticationService authentication)
+        /// <param name="unitOfWork">Service Injection</param>
+        public ActivityController(IGirafService giraf, ILoggerFactory loggerFactory, IUnitOfWork unitOfWork)
         {
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Activity");
-            _authentication = authentication;
+            _unitOfWork = unitOfWork;
         }
 
         /// <summary>
@@ -59,13 +60,9 @@ namespace GirafRest.Controllers
             if (newActivity == null)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing new activity"));
 
-            GirafUser user = await _giraf.LoadUserWithWeekSchedules(userId);
+            GirafUser user = await _unitOfWork.GirafUsers.LoadUserWithWeekSchedules(userId);
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "Missing user"));
-
-            // check access rights
-            if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
             var dbWeek = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber && string.Equals(w.Name, weekplanName));
             if (dbWeek == null)
@@ -78,11 +75,9 @@ namespace GirafRest.Controllers
             int order = dbWeekDay.Activities.Select(act => act.Order).DefaultIfEmpty(0).Max();
             order++;
 
+            AlternateName alternateName = await _unitOfWork.AlternateNames.Get(user, newActivity.Pictograms.First().Id);
 
-            AlternateName an = await _giraf._context.AlternateNames.FirstOrDefaultAsync(altnam =>
-                altnam.Citizen == user && altnam.PictogramId == newActivity.Pictograms.First().Id);
-
-            string title = an == null ? newActivity.Pictograms.First().Title : an.Name;
+            string title = alternateName == null ? newActivity.Pictograms.First().Title : alternateName.Name;
             
             Activity dbActivity = new Activity(
                 dbWeekDay,
@@ -94,6 +89,8 @@ namespace GirafRest.Controllers
                 title
             );
             dbWeekDay.Activities.Add(dbActivity);
+            
+            
             _giraf._context.Activities.Add(dbActivity);
             _giraf._context.Weekdays.Update(dbWeekDay);
 
