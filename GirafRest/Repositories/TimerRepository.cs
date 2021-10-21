@@ -4,6 +4,7 @@ using GirafRest.Models;
 using GirafRest.IRepositories;
 using GirafRest.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace GirafRest.Repositories
 {
@@ -13,9 +14,9 @@ namespace GirafRest.Repositories
         {
         }
 
-        public Task getActivityTimerkey(Activity activity)
+        public Task<Timer> getActivityTimerkey(Activity activity)
         {
-            Context.Timers.FirstOrDefaultAsync(t => t.Key == activity.TimerKey);
+            return Context.Timers.FirstOrDefaultAsync(t => t.Key == activity.TimerKey);
 
         }
 
