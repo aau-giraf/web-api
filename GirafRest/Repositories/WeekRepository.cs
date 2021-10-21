@@ -35,6 +35,12 @@ namespace GirafRest.Repositories
 
             return user;
         }
+        public async Task<int> DeleteSpecificWeek(GirafUser user, Week week)
+        {
+            user.WeekSchedule.Remove(week);
+            return await Context.SaveChangesAsync();
+
+        }
 
     }
 }

@@ -11,5 +11,6 @@ namespace GirafRest.IRepositories
         public Task<GirafUser> getAllWeeksOfUser(string userId);
 
         Task<GirafUser> LoadUserWithWeekSchedules(string userId);
+        public Task<int> DeleteSpecificWeek(GirafUser user, Week week)
     }
 }

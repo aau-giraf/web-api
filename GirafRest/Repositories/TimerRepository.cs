@@ -14,7 +14,7 @@ namespace GirafRest.Repositories
         {
         }
 
-        public Task<Timer> getActivityTimerkey(Activity activity)
+        public Task<Timer> getActivitysTimerkey(Activity activity)
         {
             return Context.Timers.FirstOrDefaultAsync(t => t.Key == activity.TimerKey);
 
