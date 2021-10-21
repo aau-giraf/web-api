@@ -38,11 +38,14 @@ namespace GirafRest.Controllers
         private readonly IOptions<JwtConfig> _configuration;
 
         private readonly IAuthenticationService _authentication;
+        
         private readonly IUnitOfWork _unitOfWork;
+        
         private readonly IGirafUserRepository _userRepository;
 
         private readonly IDepartmentRepository _departmentRepository;
 
+        private readonly IGirafRoleRepository _girafRoleRepository;
         /// <summary>
         /// Constructor for AccountController
         /// </summary>
@@ -57,8 +60,9 @@ namespace GirafRest.Controllers
             IGirafService giraf,
             IOptions<JwtConfig> configuration,
             IGirafUserRepository userRepository,
-            IDepartmentRepository departmentRepository
-            )
+            IDepartmentRepository departmentRepository,
+            IGirafRoleRepository girafRoleRepository
+        )
         {
             _signInManager = signInManager;
             _giraf = giraf;
@@ -66,6 +70,7 @@ namespace GirafRest.Controllers
             _configuration = configuration;
             _userRepository = userRepository;
             _departmentRepository = departmentRepository;
+            _girafRoleRepository = girafRoleRepository;
         }
 
         /// <summary>
@@ -391,12 +396,10 @@ namespace GirafRest.Controllers
         private void AddGuardiansToCitizens(GirafUser user)
         {
 
-            var roleGuardianId = _giraf._context.Roles.Where(r => r.Name == GirafRole.Guardian)
-                                       .Select(c => c.Id).FirstOrDefault();
+            var roleGuardianId = _girafRoleRepository.GetRoleGuardianId();
             var userIds = _giraf._context.UserRoles.Where(u => u.RoleId == roleGuardianId)
                                 .Select(r => r.UserId).Distinct();
-            var guardians = _giraf._context.Users.Where(u => userIds.Any(ui => ui == u.Id)
-                                                        && u.DepartmentKey == user.DepartmentKey).ToList();
+            var guardians = _userRepository.GetListOfUsersByIdAndDep(user, userIds);
             foreach (var guardian in guardians)
             {
                 user.AddGuardian(guardian);
@@ -406,12 +409,10 @@ namespace GirafRest.Controllers
         private void AddCitizensToGuardian(GirafUser user)
         {
             // Add a relation to all the newly created guardians citizens
-            var roleGuardianId = _giraf._context.Roles.Where(r => r.Name == GirafRole.Citizen)
-                                       .Select(c => c.Id).FirstOrDefault();
+            var roleGuardianId = _girafRoleRepository.GetRoleGuardianId();
             var userIds = _giraf._context.UserRoles.Where(u => u.RoleId == roleGuardianId)
                                 .Select(r => r.UserId).Distinct();
-            var citizens = _giraf._context.Users.Where(u => userIds.Any(ui => ui == u.Id)
-                                                       && u.DepartmentKey == user.DepartmentKey).ToList();
+            var citizens = _userRepository.GetListOfUsersByIdAndDep(user, userIds);
             foreach (var citizen in citizens)
             {
                 user.AddCitizen(citizen);

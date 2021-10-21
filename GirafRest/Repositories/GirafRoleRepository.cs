@@ -14,7 +14,9 @@ namespace GirafRest.Repositories
 
         public string GetRoleGuardianId()
         {
-           return Context.Roles.Where(r => r.Name == GirafRole.Guardian).Select(c => c.Id).FirstOrDefault();
+           return Context.Roles.Where(r => r.Name == GirafRole.Guardian)
+                                .Select(c => c.Id).FirstOrDefault();
+           
         }
     }
 }

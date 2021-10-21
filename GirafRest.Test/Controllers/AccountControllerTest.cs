@@ -50,6 +50,7 @@ namespace GirafRest.Test
             var mockGirafService = new MockGirafService(_testContext.MockDbContext.Object, _testContext.MockUserManager);
             var mockUserRepository = Mock.Of<IGirafUserRepository>();
             var mockDepartmentRepository = Mock.Of<IDepartmentRepository>();
+            var mockGirafRoleRepository = Mock.Of<IGirafRoleRepository>();
             //var roleManager = new RoleManager<GirafRole>(new Mock<IRoleStore<GirafRole>>().Object, null, null, null, null, null);
             
             AccountController ac = new AccountController(
@@ -61,7 +62,10 @@ namespace GirafRest.Test
                     JwtKey = "123456789123456789123456789",
                     JwtIssuer = "example.com",
                     JwtExpireDays = 30
-                }), mockUserRepository, mockDepartmentRepository
+                }), 
+                mockUserRepository, 
+                mockDepartmentRepository, 
+                mockGirafRoleRepository
             );
 
             _testContext.MockHttpContext = ac.MockHttpContext();
