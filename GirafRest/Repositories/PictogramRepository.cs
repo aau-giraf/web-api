@@ -3,6 +3,7 @@ using System.Linq;
 using GirafRest.Models;
 using GirafRest.IRepositories;
 using GirafRest.Data;
+using System.Threading.Tasks;
 
 namespace GirafRest.Repositories
 {
@@ -10,6 +11,17 @@ namespace GirafRest.Repositories
     {
         public PictogramRepository(GirafDbContext context) : base(context)
         {
+
         }
+
+        public Task<Pictogram> getPictogramMatchingRelation(PictogramRelation pictogramRelation)
+        {
+
+            return Context.Pictograms.FirstOrDefault(p => p.Id == pictogramRelation.PictogramId);
+        }
+
+
+
+
     }
 }
