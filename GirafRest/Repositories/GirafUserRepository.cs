@@ -10,6 +10,10 @@ namespace GirafRest.Repositories
     {
         public GirafUserRepository(GirafDbContext context) : base(context)
         {
+
         }
+
+        GirafUser GetUserByID(long userID) 
+            => return Context.Users.FirstOrDefaultAsync(us => us.Id == userId);
     }
 }

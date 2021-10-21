@@ -10,6 +10,8 @@ namespace GirafRest.Repositories
     {
         public PictogramRepository(GirafDbContext context) : base(context)
         {
+
         }
-    }
+
+        Pictogram GetPictogramByID(long pictogramID) => return Context.Pictograms.FirstOrDefaultAsync(id => id.Id == picId);
 }

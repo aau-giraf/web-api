@@ -24,6 +24,8 @@ namespace GirafRest.Controllers
         
         private readonly IGirafService _giraf;
         private readonly IAuthenticationService _authentication;
+        private readonly IPictogramRepository _pictogramRepository;
+        private readonly IGirafUserRepository _girafUserRepository;
         
         /// <summary>
         /// Constructor for controller
@@ -31,11 +33,13 @@ namespace GirafRest.Controllers
         /// <param name="girafService">Service Injection</param>
         /// <param name="lFactory">Service Injection</param>
         /// <param name="authentication">Service Injection</param>
-        public AlternateNameController(IGirafService girafService, ILoggerFactory lFactory, IAuthenticationService authentication)
+        public AlternateNameController(IGirafService girafService, ILoggerFactory lFactory, IPictogramRepository pictogramRepository, IGirafUserRepository girafUserRepository)
         {
             _giraf = girafService;
             _giraf._logger = lFactory.CreateLogger("AlternateName");
             _authentication = authentication;
+            _pictogramRepository = pictogramRepository;
+            _girafUserRepository = girafUserRepository;
 
         }
 
@@ -53,7 +57,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType((StatusCodes.Status200OK))]
         public async Task<ActionResult> GetName(string userId, long picId )
         {
-            GirafUser user = await _giraf._context.Users.FirstOrDefaultAsync(us => us.Id == userId);
+            GirafUser user = _girafUserRepository.GetUserByID(userId);
             if (user == null)
             {
                 return StatusCode(StatusCodes.Status404NotFound,
@@ -66,7 +70,7 @@ namespace GirafRest.Controllers
                 return StatusCode(StatusCodes.Status403Forbidden,
                     new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
             
-            Pictogram pic = await _giraf._context.Pictograms.FirstOrDefaultAsync(id => id.Id == picId);
+            Pictogram pic = _pictogramRepository.GetPictogramByID(picId);
             if (pic == null)
             {
                 return StatusCode(StatusCodes.Status404NotFound,
