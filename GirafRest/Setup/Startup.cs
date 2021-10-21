@@ -146,7 +146,8 @@ namespace GirafRest.Setup
             services.AddScoped<IGuardianRelationRepository,GuardianRelationRepository>();
             services.AddScoped<IPictogramRelationRepository,PictogramRelationRepository>();
             services.AddScoped<IUserResourseRepository, UserResourseRepository>();
-            
+            services.AddScoped<IImageRepository, ImageRepository>();
+           
             // Set up Cross-Origin Requests
             services.AddCors(o => o.AddPolicy("AllowAll", builder =>
             {
