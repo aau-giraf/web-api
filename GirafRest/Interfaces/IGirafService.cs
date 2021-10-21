@@ -55,7 +55,7 @@ namespace GirafRest.Interfaces
         /// </summary>
         /// <param name="bodyStream">A stream from which the request body may be read.</param>
         /// <returns>The image as a byte array.</returns>
-        Task<byte[]> ReadRequestImage(Stream bodyStream);
+        //Task<byte[]> ReadRequestImage(Stream bodyStream);
 
         /// <summary>
         /// Loads the user with resources.
