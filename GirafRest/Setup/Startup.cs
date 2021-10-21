@@ -24,6 +24,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using GirafRest.IRepositories;
+using GirafRest.Repositories;
 
 namespace GirafRest.Setup
 {
@@ -114,11 +117,11 @@ namespace GirafRest.Setup
 
             services.Configure<JwtConfig>(Configuration.GetSection("Jwt"));
 
-            //Add the database context to the server using extension-methods
-            services.AddMySql(Configuration);
-            configureIdentity<GirafDbContext>(services);
+            ////Add the database context to the server using extension-methods
+            //services.AddMySql(Configuration);
+            //configureIdentity<GirafDbContext>(services);
 
-            services.AddTransient<IAuthenticationService, GirafAuthenticationService>();
+            //services.AddTransient<IAuthenticationService, GirafAuthenticationService>();
 
             // Add the implementation of IGirafService to the context, i.e. all common functionality for
             // the controllers.
@@ -130,6 +133,9 @@ namespace GirafRest.Setup
             });
             services.AddControllers().AddNewtonsoftJson();
 
+            services.AddEntityFrameworkMySql().AddDbContext<GirafDbContext>(options => options.UseMySql("name=ConnectionStrings:DefaultConnection"));
+            services.AddScoped<IGirafUserRepository, GirafUserRepository>();
+          
             // Set up Cross-Origin Requests
             services.AddCors(o => o.AddPolicy("AllowAll", builder =>
             {
