@@ -3,6 +3,7 @@ using System.Linq;
 using GirafRest.Models;
 using GirafRest.IRepositories;
 using GirafRest.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace GirafRest.Repositories
 {
@@ -12,5 +13,11 @@ namespace GirafRest.Repositories
         {
 
         }
+
+        public ICollection<PictogramRelation> GetWithPictogram(int activityID)
+            => Context.PictogramRelations
+                .Include(pictogram => pictogram.Pictogram)
+                .Where(pr => pr.ActivityId == activityID)
+                .ToList();
     }
 }
