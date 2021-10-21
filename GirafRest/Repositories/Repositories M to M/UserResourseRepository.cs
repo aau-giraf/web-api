@@ -6,10 +6,11 @@ using GirafRest.Data;
 
 namespace GirafRest.Repositories
 {
-    public class TimerRepository : Repository<Timer>, ITimerRepository
+    public class UserResourseRepository : Repository<UserResource>, IUserResourseRepository
     {
-        public TimerRepository(GirafDbContext context) : base(context)
+        public UserResourseRepository(GirafDbContext context) : base(context)
         {
-        }    
+
+        }
     }
 }

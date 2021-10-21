@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GirafRest.IRepositories
 {
-    public interface IGirafUserRepository : IRepository<GirafRest.Models.GirafUser> {
+    public interface IGirafUserRepository : IRepository<GirafUser> {
         /// <summary>
         /// Loads the user with week schedules.
         /// </summary>
