@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace GirafRest.IRepositories
 {
-    public interface IAlternateNameRepository : IRepository<GirafRest.Models.AlternateName>
+    public interface IPictogramRelationRepository : IRepository<PictogramRelation>
     {
+        public ICollection<PictogramRelation> GetWithPictogram(int activityID);
     }
 }

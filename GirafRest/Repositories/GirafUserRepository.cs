@@ -19,7 +19,7 @@ namespace GirafRest.Repositories
         /// </summary>
         /// <param name="id">id of user to load.</param>
         /// <returns>A <see cref="GirafUser"/> with <b>all</b> related data.</returns>
-        public async Task<GirafUser> LoadUserWithWeekSchedules(string id)
+        public async Task<GirafUser> GetWithWeekSchedules(string id)
             => await Context.Users
                 //First load the user from the database
                 .Where(u => u.Id.ToLower() == id.ToLower())
