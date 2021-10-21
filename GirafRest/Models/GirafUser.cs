@@ -130,6 +130,15 @@ namespace GirafRest.Models
         }
 
         /// <summary>
+        /// Add specific Guardian to this
+        /// </summary>
+        /// <param name="trustee"></param>
+        public void AddTrustee(GirafUser trustee)
+        {
+            this.Guardians.Add(new GuardianRelation(trustee, this));
+        }
+
+        /// <summary>
         /// Constructor for GirafUser
         /// </summary>
         /// <param name="userName">Username</param>

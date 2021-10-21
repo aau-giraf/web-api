@@ -99,7 +99,7 @@ namespace GirafRest.Services
 
             if (authUserRole == GirafRoles.Guardian || authUserRole == GirafRoles.Department)
             {
-                if (!(roleToAdd == GirafRoles.Guardian || roleToAdd == GirafRoles.Citizen)
+                if (!(roleToAdd == GirafRoles.Guardian || roleToAdd == GirafRoles.Citizen || roleToAdd == GirafRoles.Trustee)
                     && departmentKey == authUser.DepartmentKey)
                 {
                     return false;

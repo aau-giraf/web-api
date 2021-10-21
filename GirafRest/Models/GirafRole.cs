@@ -24,6 +24,10 @@ namespace GirafRest.Models
         /// Constant for SuperUser
         /// </summary>
         public const string SuperUser = "SuperUser";
+        /// <summary>
+        /// Constant for Trustee
+        /// </summary>
+        public const string Trustee = "Trustee";
         #endregion
 
         /// <summary>
