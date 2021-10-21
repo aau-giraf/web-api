@@ -19,16 +19,10 @@ namespace GirafRest.Repositories
         public GirafUser GetUserByUsername(string username)
             => Context.Users.FirstOrDefault(u => u.UserName == username);
 
-        public GirafUser GetUserByUserID(string userId)
-            => Context.Users.FirstOrDefault(u => u.Id == userId);
-
         public List<GirafUser> GetListOfUsersByIdAndDep(GirafUser user, IQueryable<string> userIds)
         {
            return Context.Users.Where(u => userIds.Any(ui => ui == u.Id)
                                              && u.DepartmentKey == user.DepartmentKey).ToList();
         }
-
-        public void RemoveUser(GirafUser user)
-            => Context.Users.Remove(user);
     }
 }

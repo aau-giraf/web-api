@@ -10,10 +10,6 @@ namespace GirafRest.IRepositories
     {
         bool ExistsUsername(string username);
         GirafUser GetUserByUsername(string username);
-
-        GirafUser GetUserByUserID(string userId);
-
         List<GirafUser> GetListOfUsersByIdAndDep(GirafUser user, IQueryable<string> userIds);
-        void RemoveUser(GirafUser user);
     }
 }

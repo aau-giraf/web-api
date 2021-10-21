@@ -207,7 +207,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> ChangePasswordByOldPassword(string userId, [FromBody] ChangePasswordDTO model)
         {
-            var user = _userRepository.GetUserByUserID(userId);
+            var user = _userRepository.Get(userId);
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
             if (model == null)
@@ -248,7 +248,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> ChangePasswordByToken(string userId, [FromBody] ResetPasswordDTO model)
         {
-            var user = _userRepository.GetUserByUserID(userId);
+            var user = _userRepository.Get(userId);
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User was not found"));
             if (model == null)
@@ -281,7 +281,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> GetPasswordResetToken(string userId)
         {
-            var user = _userRepository.GetUserByUserID(userId);
+            var user = _userRepository.Get(userId);
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
@@ -305,7 +305,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeleteUser(string userId)
         {
-            var user = _userRepository.GetUserByUserID(userId);
+            var user = _userRepository.Get(userId);
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
@@ -319,7 +319,7 @@ namespace GirafRest.Controllers
             /*if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have rights"));
                 */
-            _userRepository.RemoveUser(user);
+            _userRepository.Remove(user);
             _giraf._context.SaveChanges();
 
             return Ok(new SuccessResponse("User deleted"));
