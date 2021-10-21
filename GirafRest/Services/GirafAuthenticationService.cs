@@ -1,7 +1,7 @@
 ﻿using GirafRest.Data;
 using GirafRest.Extensions;
 using GirafRest.Models;
-using GirafRest.Models.DTOs;
+using GirafRest.Models.Enums;
 using GirafRest.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;

@@ -1,6 +1,6 @@
 ﻿using GirafRest.Data;
 using GirafRest.Models;
-using GirafRest.Models.DTOs;
+using GirafRest.Models.Enums;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
 

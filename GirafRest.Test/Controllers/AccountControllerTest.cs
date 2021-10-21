@@ -1,5 +1,6 @@
 ﻿using GirafRest.Controllers;
 using GirafRest.Models.DTOs.AccountDTOs;
+using GirafRest.Models.Enums;
 using GirafRest.Test.Mocks;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
@@ -198,7 +199,7 @@ namespace GirafRest.Test
 
         #region Register
         [Fact]
-        public void Register_InputOk_Success()
+        public void Register_CitizenInputOk_Success()
         {
             var accountController = InitializeTest();
 
@@ -223,7 +224,35 @@ namespace GirafRest.Test
             Assert.Equal(DEPARTMENT_ONE, body.Data.Department);
             Assert.Equal(displayName, body.Data.DisplayName);
         }
-        
+
+
+        [Fact]
+        public void Register_TrusteeInputOk_Success()
+        {
+            var accountController = InitializeTest();
+
+            var userName = "GenericName";
+            var displayName = "GenericDisplayName";
+            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
+            var res = accountController.Register(new RegisterDTO()
+            {
+                Username = userName,
+                Password = "GenericPassword",
+                DepartmentId = DEPARTMENT_ONE,
+                Role = GirafRoles.Trustee,
+                DisplayName = displayName
+            }).Result as ObjectResult;
+
+            var body = res.Value as SuccessResponse<GirafUserDTO>;
+
+            Assert.Equal(StatusCodes.Status201Created, res.StatusCode);
+
+            // check data
+            Assert.Equal(userName, body.Data.Username);
+            Assert.Equal(DEPARTMENT_ONE, body.Data.Department);
+            Assert.Equal(displayName, body.Data.DisplayName);
+        }
+
         [Fact]
         public void Register_ExistingUsername_UserAlreadyExists()
         {
