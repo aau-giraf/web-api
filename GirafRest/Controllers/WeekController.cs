@@ -28,20 +28,21 @@ namespace GirafRest.Controllers
         private readonly IWeekRepository _weekRepository;
         private readonly ITimerRepository _timerRepository;
         private readonly IPictogramRepository _pictogramRepository;
+        private readonly IWeekdayRepository _weekdayRepository;
 
         /// <summary>
         /// Constructor for WeekController
         /// </summary>
         /// <param name="giraf">Service Injection</param>
         /// <param name="loggerFactory">Service Injection</param>
-        public WeekController(IGirafService giraf, ILoggerFactory loggerFactory, IWeekRepository weekBaseRepository, ITimerRepository timerRepository,IPictogramRepository pictogramRepository)
+        public WeekController(IGirafService giraf, ILoggerFactory loggerFactory, IWeekRepository weekBaseRepository, ITimerRepository timerRepository,IPictogramRepository pictogramRepository,IWeekdayRepository weekdayRepository)
         {
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Week");
             _weekRepository = weekBaseRepository;
             _timerRepository = timerRepository;
             _pictogramRepository = pictogramRepository;
-     
+            _weekdayRepository = weekdayRepository;
         }
 
         /// <summary>
@@ -286,12 +287,11 @@ namespace GirafRest.Controllers
                 user.WeekSchedule.Add(week);
             }
 
-            var errorCode = await SetWeekFromDTO(newWeek, week, _giraf);
+            var errorCode = await _weekRepository.SetWeekFromDTO(newWeek, week);
             if (errorCode != null)
                 return BadRequest(errorCode);
 
-            _giraf._context.Weeks.Update(week);
-            await _giraf._context.SaveChangesAsync();
+            await _weekRepository.UpdateSpecificWeek(week);
             return Ok(new SuccessResponse<WeekDTO>(new WeekDTO(week)));
         }
 
@@ -305,6 +305,7 @@ namespace GirafRest.Controllers
         /// <param name="weekdayDto">A serialized <see cref="Weekday"/> with the new information</param>
         /// <returns><see cref="WeekdayDTO"/> for the requested week on success else UserNotFound, MissingProperties,
         /// NotAuthorized or NotFound</returns>
+        /// refactored to repository
         [HttpPut("day/{userId}/{weekYear}/{weekNumber}")]
         [Authorize]
         [ProducesResponseType(typeof(SuccessResponse<WeekdayDTO>), StatusCodes.Status200OK)]
@@ -333,14 +334,13 @@ namespace GirafRest.Controllers
             Weekday oldDay =week.Weekdays.Single(d => d.Day == weekdayDto.Day);
 
             oldDay.Activities.Clear();
-            if (!await AddPictogramsToWeekday(oldDay, weekdayDto, _giraf))
+            if (!await _weekRepository.AddPictogramsToWeekday(oldDay,weekdayDto))
             {
                 return NotFound(new ErrorResponse(ErrorCode.ResourceNotFound, "Missing pictogram"));
             }
 
-
-            _giraf._context.Weekdays.Update(oldDay);
-            await _giraf._context.SaveChangesAsync();
+            await _weekdayRepository.DeleteSpecificWeekDay(oldDay);
+          
             
             return Ok(new SuccessResponse<WeekdayDTO>(new WeekdayDTO(oldDay)));
         }
