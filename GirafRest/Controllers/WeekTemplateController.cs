@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using static GirafRest.Shared.SharedMethods;
 using GirafRest.Repositories;
 using GirafRest.Data;
+using GirafRest.IRepositories;
 
 namespace GirafRest.Controllers
 {
@@ -31,8 +32,7 @@ namespace GirafRest.Controllers
         /// reference to the authenticationservice which provides commong authentication checks
         /// </summary>
         private readonly IAuthenticationService _authentication;
-        private readonly WeekTemplateRepository _weekTemplateRepository;
-        private readonly GirafDbContext _dbContext;
+        private readonly IWeekTemplateRepository _weekTemplateRepository;
 
 
         /// <summary>
@@ -43,12 +43,13 @@ namespace GirafRest.Controllers
         /// <param name="authentication"></param>
         public WeekTemplateController(IGirafService giraf,
             ILoggerFactory loggerFactory,
-            IAuthenticationService authentication)
+            IAuthenticationService authentication,
+            IWeekTemplateRepository weekTemplateRepository)
         {
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("WeekTemplate");
             _authentication = authentication;
-            _weekTemplateRepository = new WeekTemplateRepository(_giraf, _dbContext, this);
+            _weekTemplateRepository = weekTemplateRepository;
         }
 
         /// <summary>
@@ -64,19 +65,20 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> GetWeekTemplates()
         {
-            var user = _weekTemplateRepository.GetUserAsync().Result;
+            var user = await _weekTemplateRepository.GetUserAsync(HttpContext.User);
 
             if (!await _authentication.HasTemplateAccess(user))
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
-            var weekTemplates = _weekTemplateRepository.GetAll();
+            var weekTemplates = await _weekTemplateRepository.GetAllUserWeekTemplatesAsync(user);
 
-            if (weekTemplates.Length < 1)
+            if (weekTemplates.Any() == false)
             {
                 return NotFound(new ErrorResponse(ErrorCode.NoWeekTemplateFound, "No week template found"));
             }
             else
             {
+                
                 return Ok(new SuccessResponse<IEnumerable<WeekTemplateNameDTO>>(weekTemplates));
             }
         }
@@ -95,9 +97,9 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> GetWeekTemplate(long templateID)
         {
-            var user = _weekTemplateRepository.GetUserAsync().Result;
+            var user = await _weekTemplateRepository.GetUserAsync(HttpContext.User);
 
-            var weekTemplate = _weekTemplateRepository.Get(templateID).Result;
+            var weekTemplate = await _weekTemplateRepository.GetUserWeekTemplateAsync(templateID);
 
             if (weekTemplate == null)
                 return NotFound(new ErrorResponse(ErrorCode.NoWeekTemplateFound, "No week template found"));
@@ -125,7 +127,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> CreateWeekTemplate([FromBody] WeekTemplateDTO templateDto)
         {
-            var user = _weekTemplateRepository.GetUserAsync().Result;
+            var user = await _weekTemplateRepository.GetUserAsync(HttpContext.User);
 
             if (!await _authentication.HasTemplateAccess(user))
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
@@ -143,7 +145,7 @@ namespace GirafRest.Controllers
             if (errorCode != null)
                 return BadRequest(errorCode);
 
-            _weekTemplateRepository.Add(newWeekTemplate);
+            await _weekTemplateRepository.AddWeekTemplateToDbCtxAsync(newWeekTemplate);
             return CreatedAtRoute(
                 "GetWeekTemplate",
                 new { id = newWeekTemplate.Id },
@@ -171,14 +173,14 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> UpdateWeekTemplate(long templateID, [FromBody] WeekTemplateDTO newValuesDto)
         {
-            var user = _weekTemplateRepository.GetUserAsync().Result;
+            var user = _weekTemplateRepository.GetUserAsync(HttpContext.User).Result;
             if (user == null)
                 return Unauthorized(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
             if (newValuesDto == null)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing newValuesDto"));
 
-            var weekTemplate = _weekTemplateRepository.Get(templateID).Result;
+            var weekTemplate = await _weekTemplateRepository.GetUserWeekTemplateAsync(templateID);
 
 
             if (weekTemplate == null)
@@ -191,7 +193,7 @@ namespace GirafRest.Controllers
             if (errorCode != null)
                 return BadRequest(errorCode);
 
-            _weekTemplateRepository.UpdateTemplateAsync(weekTemplate);
+            await _weekTemplateRepository.UpdateUserWeekTemplateAsync(weekTemplate);
             return Ok(new SuccessResponse<WeekTemplateDTO>(new WeekTemplateDTO(weekTemplate)));
         }
 
@@ -209,13 +211,13 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
-        public async Task<ActionResult> DeleteTemplate(long templateID)
+        public async Task<ActionResult> DeleteTemplate(int templateID)
         {
             var user = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
             if (user == null)
                 return Unauthorized(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
-            var weekTemplate = _weekTemplateRepository.Get(templateID).Result;
+            var weekTemplate = await _weekTemplateRepository.GetUserWeekTemplateAsync(templateID);
 
             if (weekTemplate == null)
                 return NotFound(new ErrorResponse(ErrorCode.WeekTemplateNotFound, "Weektemplate not found"));

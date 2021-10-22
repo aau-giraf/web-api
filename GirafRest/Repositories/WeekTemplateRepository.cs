@@ -13,21 +13,18 @@ using Microsoft.EntityFrameworkCore;
 using GirafRest.Models.Responses;
 using Microsoft.AspNetCore.Http;
 using GirafRest.Models.DTOs;
+using System.Security.Claims;
 
 namespace GirafRest.Repositories
 {
-    public class WeekTemplateRepository :IWeekTemplateRepository
+    public class WeekTemplateRepository : Repository<WeekTemplate>, IWeekTemplateRepository
     {
-        private readonly IGirafService          _giraf;
-        private readonly GirafDbContext         _dbContext;
-        private readonly Controller             _controllerInstance;
-        public WeekTemplateRepository(IGirafService giraf, GirafDbContext dbContext, Controller controllerInstance)
+        IGirafService _giraf;
+        public WeekTemplateRepository(IGirafService giraf, GirafDbContext context) : base(context)
         {
-            _giraf                  =                  giraf;
-            _dbContext              =              dbContext;
-            _controllerInstance     =     controllerInstance;
+            _giraf = giraf;
         }
-        public async Task<WeekTemplate> Get(long templateID)
+        public async Task<WeekTemplate> GetUserWeekTemplateAsync(long templateID)
         {
             var template = await (_giraf._context.WeekTemplates
                 .Include(weekTemplate => weekTemplate.Thumbnail)
@@ -39,83 +36,45 @@ namespace GirafRest.Repositories
                 .FirstOrDefaultAsync(weekTemplate => weekTemplate.Id == templateID));
             return template;
         }
-        public WeekTemplateNameDTO[] GetAll()
+        
+         
+        public async Task<WeekTemplateNameDTO[]> GetAllUserWeekTemplatesAsync(GirafUser user)
         {
-            // if (!await _authentication.HasTemplateAccess(_currentUser))
-            //    return _controllerInstance.StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
-            var currentUser = GetUserAsync().Result;
+
             var templates = _giraf._context.WeekTemplates
-                             .Where(weekTemplate => weekTemplate.DepartmentKey == currentUser.DepartmentKey)
+                             .Where(weekTemplate => weekTemplate.DepartmentKey == user.DepartmentKey)
                              .Select(weekTemplate => new WeekTemplateNameDTO(weekTemplate.Name, weekTemplate.Id)).ToArray();
             return templates;
         }
         
-        public async Task Add(WeekTemplate weekTemplate)
+
+        public async Task AddWeekTemplateToDbCtxAsync(WeekTemplate weekTemplate)
         {
-            _giraf._context.WeekTemplates.Add(weekTemplate); 
+            _giraf._context.WeekTemplates.Add(weekTemplate);
             await _giraf._context.SaveChangesAsync();
         }
-        public async Task UpdateTemplateAsync(WeekTemplate weekTemplate)
+        
+        public async Task UpdateUserWeekTemplateAsync(WeekTemplate weekTemplate)
         {
             _giraf._context.WeekTemplates.Update(weekTemplate);
             await _giraf._context.SaveChangesAsync();
         }
-      
-        public async Task<GirafUser> GetUserAsync()
+
+        public async Task<GirafUser> GetUserAsync(ClaimsPrincipal principal)
         {
-            return await _giraf.LoadBasicUserDataAsync(_controllerInstance.User);
-            
+            return await _giraf.LoadBasicUserDataAsync(principal);
+
         }
-        public async Task Remove(WeekTemplate weekTemplate)
+        public new async Task Remove(WeekTemplate weekTemplate)
         {
             _giraf._context.WeekTemplates.Remove(weekTemplate);
             await _giraf._context.SaveChangesAsync();
         }
 
-        //Not used, implement when needed
-        void RemoveRange(IEnumerable<WeekTemplate> entities)
+        public Department GetUserDepartmentAsync(GirafUser user)
         {
-            throw new NotImplementedException();
-        }
-        //Not used, implement when needed
-        IEnumerable<WeekTemplate> Find(Expression<Func<WeekTemplate, bool>> predicate)
-        {
-            throw new NotImplementedException();
-        }
-
-        public WeekTemplate Get(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        IEnumerable<WeekTemplate> IRepository<WeekTemplate>.GetAll()
-        {
-            throw new NotImplementedException();
-        }
-
-        IEnumerable<WeekTemplate> IRepository<WeekTemplate>.Find(Expression<Func<WeekTemplate, bool>> predicate)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IRepository<WeekTemplate>.Add(WeekTemplate entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void AddRange(IEnumerable<WeekTemplate> entities)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IRepository<WeekTemplate>.Remove(WeekTemplate entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        void IRepository<WeekTemplate>.RemoveRange(IEnumerable<WeekTemplate> entities)
-        {
-            throw new NotImplementedException();
+            var department = _giraf._context.Departments.FirstOrDefault(department => department.Key == user.DepartmentKey);
+            return department;
         }
     }
 }

@@ -196,3 +196,12 @@ dotnet_naming_style.begins_with_i.required_prefix = I
 dotnet_naming_style.begins_with_i.required_suffix =
 dotnet_naming_style.begins_with_i.word_separator =
 dotnet_naming_style.begins_with_i.capitalization = pascal_case
+
+# IDE0047: Remove unnecessary parentheses
+dotnet_diagnostic.IDE0047.severity = silent
+
+# CS1573: Parameter has no matching param tag in the XML comment (but other parameters do)
+dotnet_diagnostic.CS1573.severity = silent
+
+# CS1591: Missing XML comment for publicly visible type or member
+dotnet_diagnostic.CS1591.severity = silent

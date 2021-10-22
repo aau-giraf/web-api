@@ -12,6 +12,8 @@ using GirafRest.Services;
 using Microsoft.AspNetCore.Http;
 using static GirafRest.Test.UnitTestExtensions.TestContext;
 using Microsoft.AspNetCore.Mvc;
+using GirafRest.Repositories;
+using GirafRest.IRepositories;
 
 namespace GirafRest.Test
 {
@@ -30,7 +32,6 @@ namespace GirafRest.Test
         private WeekTemplateController InitializeTest()
         {
             _testContext = new TestContext();
-
             var wtc = new WeekTemplateController(
                 new MockGirafService(
                     _testContext.MockDbContext.Object,
@@ -40,10 +41,13 @@ namespace GirafRest.Test
                 new GirafAuthenticationService(_testContext.MockDbContext.Object,
                     _testContext.MockRoleManager.Object,
                     _testContext.MockUserManager
-                    )
+                    ),
+                new WeekTemplateRepository(
+                    new MockGirafService(
+                        _testContext.MockDbContext.Object,
+                        _testContext.MockUserManager),
+                    _testContext.MockDbContext.Object) as IWeekTemplateRepository
             );
-            
-
             _testContext.MockHttpContext = wtc.MockHttpContext();
 
             return wtc;
