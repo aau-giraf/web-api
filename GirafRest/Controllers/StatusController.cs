@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
 using System.Linq;
+using GirafRest.IRepositories;
 
 namespace GirafRest.Controllers
 {
@@ -18,13 +19,14 @@ namespace GirafRest.Controllers
     public class StatusController : Controller
     {
         private readonly IGirafService _giraf;
-
+        private readonly IStatusControllerRepository _statusControllerRepository;
         /// <summary>
         /// Constructor for StatusController
         /// </summary>
         /// <param name="giraf">Service Injection</param>
-        public StatusController(IGirafService giraf)
+        public StatusController(IGirafService giraf, IStatusControllerRepository statusControllerRepository)
         {
+            _statusControllerRepository = statusControllerRepository;
             _giraf = giraf;
         }
 
