@@ -65,7 +65,7 @@ namespace GirafRest.Repositories
             return await _giraf.LoadBasicUserDataAsync(principal);
 
         }
-        public new async Task Remove(WeekTemplate weekTemplate)
+        public async Task Remove(WeekTemplate weekTemplate)
         {
             _giraf._context.WeekTemplates.Remove(weekTemplate);
             await _giraf._context.SaveChangesAsync();
