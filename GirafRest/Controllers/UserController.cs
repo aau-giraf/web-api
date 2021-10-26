@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -32,6 +31,9 @@ namespace GirafRest.Controllers
 
         private readonly IGirafService _giraf;
         private readonly IGirafUserRepository _girafUserRepository;
+        private readonly IImageRepository _imageRepository;
+        private readonly IUserResourseRepository _userResourseRepository;
+        private readonly IPictogramRepository _pictogramRepository;
 
         private readonly RoleManager<GirafRole> _roleManager;
 
@@ -47,12 +49,15 @@ namespace GirafRest.Controllers
         public UserController(
             IGirafService giraf,
             ILoggerFactory loggerFactory,
-            RoleManager<GirafRole> roleManager, IGirafUserRepository girafUserRepository)
+            RoleManager<GirafRole> roleManager, IGirafUserRepository girafUserRepository, IImageRepository imageRepository, IUserResourseRepository userResourseRepository, IPictogramRepository pictogramRepository)
         {
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("User");
             _roleManager = roleManager;
             _girafUserRepository = girafUserRepository;
+            _imageRepository = imageRepository;
+            _userResourseRepository = userResourseRepository;
+            _pictogramRepository = pictogramRepository;
         }
 
 
@@ -113,7 +118,7 @@ namespace GirafRest.Controllers
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "User id not found"));
 
             //First attempt to fetch the user and check that he exists
-            var user = _girafUserRepository.GetSettingsWithId(id);
+            var user = _girafUserRepository.GetUserSettingsByWeekDayColor(id);
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
@@ -237,7 +242,7 @@ namespace GirafRest.Controllers
 
             
 
-            byte[] image = await _girafUserRepository.ReadRequestImage(HttpContext.Request.Body);
+            byte[] image = await _imageRepository.ReadRequestImage(HttpContext.Request.Body);
 
             if (image.Length < IMAGE_CONTENT_TYPE_DEFINITION)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Image is corrupt"));
@@ -303,30 +308,16 @@ namespace GirafRest.Controllers
 
 
             //Find the resource and check that it actually does exist - also verify that the resource is private
-            var resource = await _girafUserRepository.FindResource(resourceIdDTO);
+            var resource = await _pictogramRepository.FindResource(resourceIdDTO);
 
             if (resource == null)
                 return NotFound(new ErrorResponse(ErrorCode.ResourceNotFound, "Resource not found"));
 
-            if (resource.AccessLevel != AccessLevel.PRIVATE)
-                return BadRequest(new ErrorResponse(ErrorCode.ResourceMustBePrivate, "Resource must be private"));
-
-
-            //Check that the currently authenticated user owns the resource
-            var curUsr = await _girafUserRepository.LoadBasicUserDataAsync();
-            var resourceOwnedByCaller = await _girafUserRepository.CheckPrivateOwnership(resource, curUsr);
-            if (!resourceOwnedByCaller)
-                return StatusCode(StatusCodes.Status403Forbidden,
-                    new ErrorResponse(ErrorCode.NotAuthorized, "User does not own resource"));
-
-            //Check if the target user already owns the resource
-            if (user.Resources.Any(ur => ur.PictogramKey == resourceIdDTO.Id))
-                return BadRequest(new ErrorResponse(ErrorCode.UserAlreadyOwnsResource, "User already owns resource"));
-
+            
             //Create the relation and save changes.
             var userResource = new UserResource(user, resource);
-            await _giraf._context.UserResources.AddAsync(userResource);
-            await _girafUserRepository.SaveChangesAsync();
+            await _userResourseRepository.AddAsync(userResource);
+            
 
             // Get the roles the user is associated with
             GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
@@ -360,20 +351,20 @@ namespace GirafRest.Controllers
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing resourceIdDTO"));
 
             //Fetch the resource with the given id, check that it exists.
-            var resource = await _girafUserRepository.FetchResourceWithId(resourceIdDTO);
+            var resource = await _pictogramRepository.FetchResourceWithId(resourceIdDTO);
             if (resource == null) return NotFound(new ErrorResponse(ErrorCode.ResourceNotFound, "Resource not found"));
 
 
 
             //Fetch the relationship from the database and check that it exists
-            var relationship = await _girafUserRepository.FetchRelationshipFromDb(resource, user);
+            var relationship = await _userResourseRepository.FetchRelationshipFromDb(resource, user);
             if (relationship == null)
                 return StatusCode(StatusCodes.Status403Forbidden,
                     new ErrorResponse(ErrorCode.UserDoesNotOwnResource, "Resource is not owned by user"));
 
             //Remove the resource - both from the user's list and the database
             user.Resources.Remove(relationship);
-            _girafUserRepository.Remove(relationship);
+            _userResourseRepository.Remove(relationship);
             await _girafUserRepository.SaveChangesAsync();
 
             // Get the roles the user is associated with
@@ -451,7 +442,7 @@ namespace GirafRest.Controllers
             var guardians = new List<DisplayNameDTO>();
             foreach (var guardian in user.Guardians)
             {
-                var girafUser = _girafUserRepository.GetGuardian(guardian);
+                var girafUser = _girafUserRepository.GetGuardianFromRelation(guardian);
                 guardians.Add(new DisplayNameDTO { UserId = girafUser.Id, DisplayName = girafUser.DisplayName });
             }
 

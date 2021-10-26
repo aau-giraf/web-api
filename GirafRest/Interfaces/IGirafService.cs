@@ -35,6 +35,14 @@ namespace GirafRest.Interfaces
         {
             get;
         }
+        
+        
+        /// <summary>
+        /// Reads an image from the current request's body and return it as a byte array.
+        /// </summary>
+        /// <param name="bodyStream">A byte-stream from the body of the request.</param>
+        /// <returns>The image found in the request represented as a byte array.</returns>
+        Task<byte[]> ReadRequestImage(Stream bodyStream);
 
         /// <summary>
         /// Loads only the user with the given username, excluding any associated data.
