@@ -19,8 +19,8 @@ namespace GirafRest.Repositories
         /// </summary>
         /// <param name="id">id of user to load.</param>
         /// <returns>A <see cref="GirafUser"/> with <b>all</b> related data.</returns>
-        public async Task<GirafUser> GetWithWeekSchedules(string id)
-            => await Context.Users
+        public GirafUser GetWithWeekSchedules(string id)
+            => Context.Users
                 //First load the user from the database
                 .Where(u => u.Id.ToLower() == id.ToLower())
                 // then load his week schedule
@@ -31,6 +31,6 @@ namespace GirafRest.Repositories
                 .ThenInclude(wd => wd.Activities)
                 .ThenInclude(e => e.Pictograms)
                 //And return it
-                .FirstOrDefaultAsync();
+                .FirstOrDefault();
     }
 }

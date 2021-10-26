@@ -21,7 +21,6 @@ namespace GirafRest.Controllers
     [Route("v2/[controller]")]
     public class ActivityController : Controller
     {
-        private readonly IGirafService _giraf;
         private readonly IGirafUserRepository _userRepository;
         private readonly IAlternateNameRepository _alternateNameRepository;
         private readonly IActivityRepository _activityRepository;
@@ -31,9 +30,13 @@ namespace GirafRest.Controllers
         private readonly ITimerRepository _timerRepository;
 
         /// <summary>
+        /// A data-logger used to write messages to the console. Handled by asp.net's dependency injection.
+        /// </summary>
+        public ILogger _logger { get; set; }
+
+        /// <summary>
         /// Constructor for Controller
         /// </summary>
-        /// <param name="giraf">Service Injection</param>
         /// <param name="loggerFactory">Service Injection</param>
         /// <param name="userRepository">Service Injection</param>
         /// <param name="alternateNameRepository">Service Injection</param>
@@ -43,7 +46,6 @@ namespace GirafRest.Controllers
         /// <param name="pictogramRelationRepository">Service Injection</param>
         /// <param name="timerRepository">Service Injection</param>
         public ActivityController(
-            IGirafService giraf,
             ILoggerFactory loggerFactory,
             IGirafUserRepository userRepository,
             IAlternateNameRepository alternateNameRepository,
@@ -53,8 +55,7 @@ namespace GirafRest.Controllers
             IPictogramRelationRepository pictogramRelationRepository,
             ITimerRepository timerRepository)
         {
-            _giraf = giraf;
-            _giraf._logger = loggerFactory.CreateLogger("Activity");
+            _logger = loggerFactory.CreateLogger("Activity");
             _userRepository = userRepository;
             _alternateNameRepository = alternateNameRepository;
             _activityRepository = activityRepository;
@@ -87,7 +88,7 @@ namespace GirafRest.Controllers
             if (newActivity == null)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing new activity"));
 
-            GirafUser user = await _userRepository.GetWithWeekSchedules(userId);
+            GirafUser user = _userRepository.GetWithWeekSchedules(userId);
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "Missing user"));
 
@@ -168,7 +169,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeleteActivity(string userId, long activityId)
         {
-            GirafUser user = await _userRepository.GetWithWeekSchedules(userId);
+            GirafUser user = _userRepository.GetWithWeekSchedules(userId);
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
@@ -230,7 +231,7 @@ namespace GirafRest.Controllers
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing activity"));
             }
 
-            GirafUser user = await _userRepository.GetWithWeekSchedules(userId);
+            GirafUser user = _userRepository.GetWithWeekSchedules(userId);
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 

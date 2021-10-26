@@ -12,6 +12,6 @@ namespace GirafRest.IRepositories
         /// </summary>
         /// <returns>The user with week schedules.</returns>
         /// <param name="id">Identifier of <see cref="GirafUser"/></param>
-        public Task<GirafUser> GetWithWeekSchedules(string id);
+        public GirafUser GetWithWeekSchedules(string id);
     }
 }

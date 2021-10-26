@@ -10,6 +10,13 @@ using Microsoft.AspNetCore.Mvc;
 using Xunit;
 using static GirafRest.Test.UnitTestExtensions;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
+using Moq;
+using GirafRest.IRepositories;
+using GirafRest.Interfaces;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System.Diagnostics;
 
 namespace GirafRest.Test
 {
@@ -20,14 +27,13 @@ namespace GirafRest.Test
         private const int GUARDIAN_DEP_TWO = 1;
         private const int CITIZEN_NO_DEP = 9;
 
-
         private const int PICTO_DEP_TWO = 6;
 
         private const int _existingId = 1;
         private const int _nonExistingId = 404;
 #pragma warning restore IDE0051 // Remove unused private members
 
-        private TestContext _testContext;
+        private TestContext _testContext = new TestContext();
 
         private ActivityController InitializeTest()
         {
@@ -37,13 +43,64 @@ namespace GirafRest.Test
             _testContext.MockDbContext.Object.Users.First().WeekSchedule.First().Weekdays
                 .First().Activities.Add(_testContext.MockActivities.Find(a => a.Key == _existingId));
 
-            var ac = new ActivityController(
-                new MockGirafService(_testContext.MockDbContext.Object,
-                    _testContext.MockUserManager), _testContext.MockLoggerFactory.Object,
-                new GirafAuthenticationService(_testContext.MockDbContext.Object, _testContext.MockRoleManager.Object,
-                    _testContext.MockUserManager));
+            var ac = new MockActivityController();
             _testContext.MockHttpContext = ac.MockHttpContext();
             return ac;
+        }
+
+        public class MockActivityController : ActivityController
+        {
+            public MockActivityController()
+                : this(
+                    new Mock<ILoggerFactory>(),
+                    new Mock<IGirafUserRepository>(),
+                    new Mock<IAlternateNameRepository>(),
+                    new Mock<IActivityRepository>(),
+                    new Mock<IWeekdayRepository>(),
+                    new Mock<IPictogramRepository>(),
+                    new Mock<IPictogramRelationRepository>(),
+                    new Mock<ITimerRepository>()
+                )
+            { }
+
+            public MockActivityController(
+            Mock<ILoggerFactory> loggerFactory,
+            Mock<IGirafUserRepository> userRepository,
+            Mock<IAlternateNameRepository> alternateNameRepository,
+            Mock<IActivityRepository> activityRepository,
+            Mock<IWeekdayRepository> weekdayRepository,
+            Mock<IPictogramRepository> pictogramRepository,
+            Mock<IPictogramRelationRepository> pictogramRelationRepository,
+            Mock<ITimerRepository> timerRepository)
+                : base(
+                    loggerFactory.Object,
+                    userRepository.Object,
+                    alternateNameRepository.Object,
+                    activityRepository.Object,
+                    weekdayRepository.Object,
+                    pictogramRepository.Object,
+                    pictogramRelationRepository.Object,
+                    timerRepository.Object
+                )
+            {
+                LoggerFactory = loggerFactory;
+                UserRepository = userRepository;
+                AlternateNameRepository = alternateNameRepository;
+                ActivityRepository = activityRepository;
+                WeekdayRepository = weekdayRepository;
+                PictogramRepository = pictogramRepository;
+                PictogramRelationRepository = pictogramRelationRepository;
+                TimerRepository = timerRepository;
+            }
+
+            public Mock<ILoggerFactory> LoggerFactory { get; }
+            public Mock<IGirafUserRepository> UserRepository { get; }
+            public Mock<IAlternateNameRepository> AlternateNameRepository { get; }
+            public Mock<IActivityRepository> ActivityRepository { get; }
+            public Mock<IWeekdayRepository> WeekdayRepository { get; }
+            public Mock<IPictogramRepository> PictogramRepository { get; }
+            public Mock<IPictogramRelationRepository> PictogramRelationRepository { get; }
+            public Mock<ITimerRepository> TimerRepository { get; }
         }
 
         #region CreateActivity
@@ -51,74 +108,200 @@ namespace GirafRest.Test
         [Fact]
         public void PostActivity_ValidDayValidDTOWithOnePictogram_Succes()
         {
-            ActivityController ac = InitializeTest();
-            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
-            _testContext.MockUserManager.MockLoginAsUser(mockUser);
-            Week week = mockUser.WeekSchedule.First();
+            // Arrange
+            var activityController = new MockActivityController();
 
-            ActivityDTO newActivity = new ActivityDTO()
-                {Pictograms = new List<WeekPictogramDTO> {new WeekPictogramDTO(_testContext.MockPictograms.First())}};
+            // Mock
+            List<Weekday> weekdays = new List<Weekday>()
+            {
+                new Weekday() { Day = Days.Monday },
+                new Weekday() { Day = Days.Tuesday },
+                new Weekday() { Day = Days.Wednesday },
+                new Weekday() { Day = Days.Thursday },
+                new Weekday() { Day = Days.Friday },
+                new Weekday() { Day = Days.Saturday },
+                new Weekday() { Day = Days.Sunday }
+            };
+            Week week = new Week()
+            {
+                Id = 0,
+                WeekYear = 2000,
+                WeekNumber = 1,
+                Name = "week",
+                Weekdays = weekdays
+            };
+            GirafUser user = new GirafUser()
+            {
+                UserName = "user1",
+                DisplayName = "user1",
+                Id = "u1",
+                DepartmentKey = 1,
+                WeekSchedule = new List<Week> { week }
+            };
+            Pictogram pictogram1 = new Pictogram
+            {
+                Id = 0,
+                Title = "Pictogram1",
+                AccessLevel = AccessLevel.PUBLIC
+            };
+            ActivityDTO activity = new ActivityDTO()
+            {
+                Pictograms = new List<WeekPictogramDTO>
+                {
+                    new WeekPictogramDTO(pictogram1)
+                }
+            };
 
-            var res = ac.PostActivity(newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber,
-                (int) Days.Monday).Result as ObjectResult;
-            var body = res.Value as SuccessResponse<ActivityDTO>;
+            activityController.UserRepository.Setup(rep => rep.GetWithWeekSchedules(user.Id)).Returns(user);
+            activityController.PictogramRepository.Setup(rep => rep.Get(pictogram1.Id)).Returns(pictogram1);
 
-            List<long> expectedPictogramIds = newActivity.Pictograms.Select(pictogram => pictogram.Id).ToList();
-            List<long> actualPictogramIds = body.Data.Pictograms.Select(pictogram => pictogram.Id).ToList();
+            // Act
+            ICollection<WeekPictogramDTO> expected = activity.Pictograms;
+            ICollection<WeekPictogramDTO> actual = ((activityController.PostActivity(activity, user.Id, week.Name, week.WeekYear, week.WeekNumber, (int)weekdays[0].Day)
+                .Result as ObjectResult)
+                .Value as SuccessResponse<ActivityDTO>)
+                .Data.Pictograms;
 
-            Assert.Equal(expectedPictogramIds, actualPictogramIds);
+            // Assert
+            activityController.UserRepository.Verify(rep => rep.GetWithWeekSchedules(user.Id), Times.Once);
+            activityController.PictogramRepository.Verify(rep => rep.Get(pictogram1.Id), Times.Once);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
         public void PostActivity_ValidDayValidDTOWithMultiplePictograms_Success()
         {
-            ActivityController ac = InitializeTest();
-            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
-            _testContext.MockUserManager.MockLoginAsUser(mockUser);
-            Week week = mockUser.WeekSchedule.First();
+            // Arrange
+            var activityController = new MockActivityController();
 
-            ActivityDTO newActivity = new ActivityDTO()
+            // Mock
+            List<Weekday> weekdays = new List<Weekday>()
+            {
+                new Weekday() { Day = Days.Monday },
+                new Weekday() { Day = Days.Tuesday },
+                new Weekday() { Day = Days.Wednesday },
+                new Weekday() { Day = Days.Thursday },
+                new Weekday() { Day = Days.Friday },
+                new Weekday() { Day = Days.Saturday },
+                new Weekday() { Day = Days.Sunday }
+            };
+            Week week = new Week()
+            {
+                Id = 0,
+                WeekYear = 2000,
+                WeekNumber = 1,
+                Name = "week",
+                Weekdays = weekdays
+            };
+            GirafUser user = new GirafUser()
+            {
+                UserName = "user1",
+                DisplayName = "user1",
+                Id = "u1",
+                DepartmentKey = 1,
+                WeekSchedule = new List<Week> { week }
+            };
+            Pictogram pictogram1 = new Pictogram
+            {
+                Id = 0,
+                Title = "Pictogram1",
+                AccessLevel = AccessLevel.PUBLIC
+            };
+            Pictogram pictogram2 = new Pictogram
+            {
+                Id = 1,
+                Title = "Pictogram2",
+                AccessLevel = AccessLevel.PUBLIC
+            };
+            ActivityDTO activity = new ActivityDTO()
             {
                 Pictograms = new List<WeekPictogramDTO>
                 {
-                    new WeekPictogramDTO(_testContext.MockPictograms.First()),
-                    new WeekPictogramDTO(_testContext.MockPictograms.Last()),
+                    new WeekPictogramDTO(pictogram1),
+                    new WeekPictogramDTO(pictogram2)
                 }
             };
 
-            var res = ac.PostActivity(
-                newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int) Days.Monday
-            ).Result as ObjectResult;
+            activityController.UserRepository.Setup(rep => rep.GetWithWeekSchedules(user.Id)).Returns(user);
+            activityController.PictogramRepository.Setup(rep => rep.Get(pictogram1.Id)).Returns(pictogram1);
+            activityController.PictogramRepository.Setup(rep => rep.Get(pictogram2.Id)).Returns(pictogram2);
 
-            var body = res.Value as SuccessResponse<ActivityDTO>;
+            // Act
+            ICollection<WeekPictogramDTO> expected = activity.Pictograms;
+            ICollection<WeekPictogramDTO> actual = ((activityController.PostActivity(activity, user.Id, week.Name, week.WeekYear, week.WeekNumber, (int)weekdays[0].Day)
+                .Result as ObjectResult)
+                .Value as SuccessResponse<ActivityDTO>)
+                .Data.Pictograms;
 
-            List<long> expectedPictogramIds = newActivity.Pictograms.Select(pictogram => pictogram.Id).ToList();
-            List<long> actualPictogramIds = body.Data.Pictograms.Select(pictogram => pictogram.Id).ToList();
-
-            Assert.Equal(expectedPictogramIds, actualPictogramIds);
+            // Assert
+            activityController.UserRepository.Verify(rep => rep.GetWithWeekSchedules(user.Id), Times.Once);
+            activityController.PictogramRepository.Verify(rep => rep.Get(pictogram1.Id), Times.Once);
+            activityController.PictogramRepository.Verify(rep => rep.Get(pictogram2.Id), Times.Once);
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
         public void PostActivity_NoExistingActivitiesOnDayValidDTO_Succes()
         {
-            ActivityController ac = InitializeTest();
-            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
-            _testContext.MockUserManager.MockLoginAsUser(mockUser);
-            Week week = mockUser.WeekSchedule.First();
+            // Arrange
+            var activityController = new MockActivityController();
 
-            ActivityDTO newActivity = new ActivityDTO()
+            // Mock
+            List<Weekday> weekdays = new List<Weekday>()
             {
-                Pictograms = new List<WeekPictogramDTO>(){new WeekPictogramDTO(_testContext.MockPictograms.First())}
+                new Weekday() { Day = Days.Monday },
+                new Weekday() { Day = Days.Tuesday },
+                new Weekday() { Day = Days.Wednesday },
+                new Weekday() { Day = Days.Thursday },
+                new Weekday() { Day = Days.Friday },
+                new Weekday() { Day = Days.Saturday },
+                new Weekday() { Day = Days.Sunday }
+            };
+            Week week = new Week()
+            {
+                Id = 0,
+                WeekYear = 2000,
+                WeekNumber = 1,
+                Name = "week",
+                Weekdays = weekdays
+            };
+            GirafUser user = new GirafUser()
+            {
+                UserName = "user1",
+                DisplayName = "user1",
+                Id = "u1",
+                DepartmentKey = 1,
+                WeekSchedule = new List<Week> { week }
+            };
+            Pictogram pictogram1 = new Pictogram
+            {
+                Id = 0,
+                Title = "Pictogram1",
+                AccessLevel = AccessLevel.PUBLIC
+            };
+            ActivityDTO activity = new ActivityDTO()
+            {
+                Pictograms = new List<WeekPictogramDTO>
+                {
+                    new WeekPictogramDTO(pictogram1)
+                }
             };
 
-            var res = ac.PostActivity(
-                newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int) Days.Saturday
-            ).Result as ObjectResult;
+            activityController.UserRepository.Setup(rep => rep.GetWithWeekSchedules(user.Id)).Returns(user);
+            activityController.PictogramRepository.Setup(rep => rep.Get(pictogram1.Id)).Returns(pictogram1);
 
-            var body = res.Value as SuccessResponse<ActivityDTO>;
+            // Act
+            ICollection<WeekPictogramDTO> expected = activity.Pictograms;
+            var actual = (activityController.PostActivity(activity, user.Id, week.Name, week.WeekYear, week.WeekNumber, (int)weekdays[0].Day)
+                .Result as ObjectResult).StatusCode;
 
-            Assert.Equal(StatusCodes.Status201Created, res.StatusCode);
-            Assert.Equal(newActivity.Pictograms, body.Data.Pictograms);
+            // Assert
+            activityController.UserRepository.Verify(rep => rep.GetWithWeekSchedules(user.Id), Times.Once);
+            activityController.PictogramRepository.Verify(rep => rep.Get(pictogram1.Id), Times.Once);
+            //Assert.Equal(expected, actual);
+
+            Assert.Equal(StatusCodes.Status201Created, actual);
+            //Assert.Equal(newActivity.Pictograms, body.Data.Pictograms);
         }
 
         [Fact]
@@ -130,10 +313,10 @@ namespace GirafRest.Test
             Week week = mockUser.WeekSchedule.First();
 
             ActivityDTO newActivity = null;
-            
+
 
             var res = ac.PostActivity(
-                newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int) Days.Monday
+                newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Monday
             ).Result as ObjectResult;
 
             var body = res.Value as ErrorResponse;
@@ -142,31 +325,31 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
         }
 
-       [Fact]
-       public void PostActivity_ValidDayInvalidDTO_InvalidProperties()
-       {
-           ActivityController ac = InitializeTest();
-           GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
-           _testContext.MockUserManager.MockLoginAsUser(mockUser);
-           Week week = mockUser.WeekSchedule.First();
-     
-           ActivityDTO newActivity = new ActivityDTO()
-           {
-               Pictograms = new List<WeekPictogramDTO>()
+        [Fact]
+        public void PostActivity_ValidDayInvalidDTO_InvalidProperties()
+        {
+            ActivityController ac = InitializeTest();
+            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
+            _testContext.MockUserManager.MockLoginAsUser(mockUser);
+            Week week = mockUser.WeekSchedule.First();
+
+            ActivityDTO newActivity = new ActivityDTO()
+            {
+                Pictograms = new List<WeekPictogramDTO>()
                {
                    new WeekPictogramDTO(_testContext.MockPictograms[10])
                }
-           };
-     
-           var res = ac.PostActivity(
-               newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int) Days.Monday
-           ).Result as ObjectResult;
-     
-           var body = res.Value as ErrorResponse;
-     
-           Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
-           Assert.Equal(ErrorCode.InvalidProperties, body.ErrorCode);
-       }
+            };
+
+            var res = ac.PostActivity(
+                newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Monday
+            ).Result as ObjectResult;
+
+            var body = res.Value as ErrorResponse;
+
+            Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
+            Assert.Equal(ErrorCode.InvalidProperties, body.ErrorCode);
+        }
 
         [Fact]
         public void PostActivity_InvalidDayValidDTO_InvalidDay()
@@ -185,7 +368,7 @@ namespace GirafRest.Test
             };
 
             var res = ac.PostActivity(
-                newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int) Days.Sunday + 1
+                newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Sunday + 1
             ).Result as ObjectResult;
 
             var body = res.Value as ErrorResponse;
@@ -203,10 +386,10 @@ namespace GirafRest.Test
             Week week = mockUser.WeekSchedule.First();
 
             ActivityDTO newActivity = new ActivityDTO()
-                {Pictograms = new List<WeekPictogramDTO> {new WeekPictogramDTO(_testContext.MockPictograms.First())}};
+            { Pictograms = new List<WeekPictogramDTO> { new WeekPictogramDTO(_testContext.MockPictograms.First()) } };
 
             var res = ac.PostActivity(
-                newActivity, mockUser.Id, week.Name, 9000, week.WeekNumber, (int) Days.Sunday
+                newActivity, mockUser.Id, week.Name, 9000, week.WeekNumber, (int)Days.Sunday
             ).Result as ObjectResult;
 
             var body = res.Value as ErrorResponse;
@@ -224,10 +407,10 @@ namespace GirafRest.Test
             Week week = mockUser.WeekSchedule.First();
 
             ActivityDTO newActivity = new ActivityDTO()
-                {Pictograms = new List<WeekPictogramDTO> {new WeekPictogramDTO(_testContext.MockPictograms.First())}};
+            { Pictograms = new List<WeekPictogramDTO> { new WeekPictogramDTO(_testContext.MockPictograms.First()) } };
 
             var res = ac.PostActivity(
-                newActivity, mockUser.Id, week.Name, week.WeekYear, 54, (int) Days.Sunday
+                newActivity, mockUser.Id, week.Name, week.WeekYear, 54, (int)Days.Sunday
             ).Result as ObjectResult;
 
             var body = res.Value as ErrorResponse;
@@ -246,11 +429,11 @@ namespace GirafRest.Test
 
             ActivityDTO newActivity = new ActivityDTO()
             {
-                Pictograms = new List<WeekPictogramDTO> {new WeekPictogramDTO(_testContext.MockPictograms.First())}
+                Pictograms = new List<WeekPictogramDTO> { new WeekPictogramDTO(_testContext.MockPictograms.First()) }
             };
 
             var res = ac.PostActivity(
-                newActivity, mockUser.Id, "WrongName", week.WeekYear, week.WeekYear, (int) Days.Sunday
+                newActivity, mockUser.Id, "WrongName", week.WeekYear, week.WeekYear, (int)Days.Sunday
             ).Result as ObjectResult;
 
             var body = res.Value as ErrorResponse;
@@ -268,10 +451,10 @@ namespace GirafRest.Test
             Week week = mockUser.WeekSchedule.First();
 
             ActivityDTO newActivity = new ActivityDTO()
-                {Pictograms = new List<WeekPictogramDTO> {new WeekPictogramDTO(_testContext.MockPictograms.First())}};
+            { Pictograms = new List<WeekPictogramDTO> { new WeekPictogramDTO(_testContext.MockPictograms.First()) } };
 
             var res = ac.PostActivity(
-                newActivity, "NonExistingUserId", week.Name, week.WeekYear, week.WeekNumber, (int) Days.Sunday
+                newActivity, "NonExistingUserId", week.Name, week.WeekYear, week.WeekNumber, (int)Days.Sunday
             ).Result as ObjectResult;
 
             var body = res.Value as ErrorResponse;
@@ -298,7 +481,7 @@ namespace GirafRest.Test
             };
 
             var res = ac.PostActivity(
-                newActivity, differentMockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int) Days.Sunday
+                newActivity, differentMockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Sunday
             ).Result as ObjectResult;
 
             var body = res.Value as ErrorResponse;
@@ -322,17 +505,17 @@ namespace GirafRest.Test
                     new WeekPictogramDTO(_testContext.MockPictograms.First())
                 }
             };
-            
+
             var res = ac.PostActivity(
-                newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int) Days.Sunday
+                newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Sunday
             ).Result as ObjectResult;
-            
+
             var body = res.Value as SuccessResponse<ActivityDTO>;
-            
-            
+
+
             Assert.Equal(StatusCodes.Status201Created, res.StatusCode);
-            Assert.Equal("Kage",body.Data.Title);
-            
+            Assert.Equal("Kage", body.Data.Title);
+
         }
 
         [Fact]
@@ -351,15 +534,15 @@ namespace GirafRest.Test
                     new WeekPictogramDTO(pic)
                 }
             };
-            
+
             var res = ac.PostActivity(
-                newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int) Days.Sunday
+                newActivity, mockUser.Id, week.Name, week.WeekYear, week.WeekNumber, (int)Days.Sunday
             ).Result as ObjectResult;
-            
+
             var body = res.Value as SuccessResponse<ActivityDTO>;
-            
+
             Assert.Equal(StatusCodes.Status201Created, res.StatusCode);
-            Assert.Equal(pic.Title,body.Data.Title);
+            Assert.Equal(pic.Title, body.Data.Title);
         }
 
         #endregion
@@ -512,7 +695,7 @@ namespace GirafRest.Test
             GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
 
-            ActivityDTO newActivity = new ActivityDTO() {Id = 420};
+            ActivityDTO newActivity = new ActivityDTO() { Id = 420 };
 
             var res = ac.UpdateActivity(newActivity, mockUser.Id).Result as ObjectResult;
 
@@ -555,7 +738,7 @@ namespace GirafRest.Test
             ActivityDTO newActivity = new ActivityDTO()
             {
                 Id = _testContext.MockActivities.First().Key,
-                Pictograms = new List<WeekPictogramDTO> {new WeekPictogramDTO(_testContext.MockPictograms.First())}
+                Pictograms = new List<WeekPictogramDTO> { new WeekPictogramDTO(_testContext.MockPictograms.First()) }
             };
 
             var res = ac.UpdateActivity(newActivity, mockUser.Id).Result as ObjectResult;
