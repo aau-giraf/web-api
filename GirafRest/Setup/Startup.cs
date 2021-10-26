@@ -129,7 +129,28 @@ namespace GirafRest.Setup
                 options.Filters.Add<LogFilter>();
             });
             services.AddControllers().AddNewtonsoftJson();
-
+            //add dbcontext
+            services.AddEntityFrameworkMySql().AddDbContext<GirafDbContext>(options => options.UseMySql("name=ConnectionStrings:DefaultConnection"));
+            //add scoped repositories. Every single request gets it's own scoped repositories.
+            services.AddScoped<IAlternateNameRepository,AlternateNameRepository>();
+            services.AddScoped<IDepartmentRepository,DepartmentRepository>();
+            services.AddScoped<IGirafRoleRepository, GirafRoleRepository>();
+            services.AddScoped<IGirafUserRepository, GirafUserRepository>();
+            services.AddScoped<IPictogramRepository,PictogramRepository>();
+            services.AddScoped<ISettingRepository,SettingRepository>();
+            services.AddScoped<ITimerRepository,TimerRepository>();
+            services.AddScoped<IWeekBaseRepository,WeekBaseRepository>();
+            services.AddScoped<IWeekDayColorRepository, WeekDayColorRepository>();
+            services.AddScoped<IWeekRepository, WeekRepository>();
+            services.AddScoped<IWeekTemplateRepository, WeekTemplateRepository>();
+            services.AddScoped<IActivityRepository,ActivityRepository>();
+            services.AddScoped<IDepartmentResourseRepository,DepartmentResourseRepository>();
+            services.AddScoped<IGuardianRelationRepository,GuardianRelationRepository>();
+            services.AddScoped<IPictogramRelationRepository,PictogramRelationRepository>();
+            services.AddScoped<IUserResourseRepository, UserResourseRepository>();
+            services.AddScoped<IImageRepository, ImageRepository>();
+            services.AddScoped<IWeekdayRepository, WeekdayRepository>();
+           
             // Set up Cross-Origin Requests
             services.AddCors(o => o.AddPolicy("AllowAll", builder =>
             {
