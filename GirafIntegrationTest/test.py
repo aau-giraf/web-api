@@ -9,16 +9,18 @@ from testlib import GIRAFTestResults, GIRAFTestRunner, compare, BASE_URL
 RETRYLIMIT = 5
 
 def ConnectServer(count):
+    result = False
     if (count < RETRYLIMIT):
         try:
             get(f'{BASE_URL}v1/Status').json()
-            return
+            return True
         except ConnectionError:
-            sleep(10)
+            sleep(5)
             print('\033[91m' + 'Error:' + '\033[0m' + f' could not get response from server. Retrying {count}')
-            ConnectServer(count+1)
-    print(f'\033[91m' + 'Error:' + '\033[0m' + ' could not get response from server.\n Exiting...')
-    sys.exit(1)
+            result = ConnectServer(count+1)
+    if (not result):
+        print(f'\033[91m' + 'Error:' + '\033[0m' + ' could not get response from server.\n Exiting...')
+        sys.exit(1)
 
 
 parser = ArgumentParser()
