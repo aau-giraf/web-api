@@ -1,26 +1,9 @@
-from time import sleep
 import unittest
 import sys
 from requests import get
 from requests.exceptions import ConnectionError
 from argparse import ArgumentParser
 from testlib import GIRAFTestResults, GIRAFTestRunner, compare, BASE_URL
-
-RETRYLIMIT = 5
-
-def ConnectServer(count):
-    if (count < RETRYLIMIT):
-        try:
-            get(f'{BASE_URL}v1/Status').json()
-            return True
-        except ConnectionError:
-            sleep(10)
-            print('\033[91m' + 'Error:' + '\033[0m' + f' could not get response from server. Retrying {count}')
-            result = ConnectServer(count+1)
-    if (not result):
-        print(f'\033[91m' + 'Error:' + '\033[0m' + ' could not get response from server.\n Exiting...')
-        sys.exit(1)
-
 
 parser = ArgumentParser()
 parser.add_argument('--pattern', type=str, help='custom search pattern',)
@@ -39,7 +22,11 @@ if args.tested:
     tested_endpoints()
     sys.exit(0)
 
-ConnectServer(0)
+try:
+    result = get(f'{BASE_URL}v1/Status').json()
+except ConnectionError:
+    print('\033[91m' + 'Error:' + '\033[0m' + ' could not get response from server.\nExiting...')
+    sys.exit(1)
 
 # setup runner with high verbosity, variable printing on fail/error, and custom results class
 runner = GIRAFTestRunner(verbosity=5, tb_locals=True, resultclass=GIRAFTestResults)
