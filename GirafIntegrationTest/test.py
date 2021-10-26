@@ -8,16 +8,19 @@ from testlib import GIRAFTestResults, GIRAFTestRunner, compare, BASE_URL
 
 RETRYLIMIT = 5
 
-def ConnectServer(count):
+# Check if the server is online by calling status up to retry limit.
+# exits the integration test if all calls give an connection error
+def ConnectServer():
     result = False
-    if (count < RETRYLIMIT):
-        try:
-            get(f'{BASE_URL}v1/Status').json()
-            return True
-        except ConnectionError:
-            sleep(5)
-            print('\033[91m' + 'Error:' + '\033[0m' + f' could not get response from server. Retrying {count}')
-            result = ConnectServer(count+1)
+    for count in range(RETRYLIMIT):
+        if (count < RETRYLIMIT):
+            try:
+                get(f'{BASE_URL}v1/Status')
+                result = True
+            except ConnectionError:
+                sleep(5)
+                print('\033[91m' + 'Error:' + '\033[0m' + f' could not get response from server. Retrying {count}')
+    
     if (not result):
         print(f'\033[91m' + 'Error:' + '\033[0m' + ' could not get response from server.\n Exiting...')
         sys.exit(1)
@@ -40,7 +43,7 @@ if args.tested:
     tested_endpoints()
     sys.exit(0)
 
-ConnectServer(0)
+ConnectServer()
 
 # setup runner with high verbosity, variable printing on fail/error, and custom results class
 runner = GIRAFTestRunner(verbosity=5, tb_locals=True, resultclass=GIRAFTestResults)
