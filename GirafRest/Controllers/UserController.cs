@@ -477,11 +477,8 @@ namespace GirafRest.Controllers
             }
 
             //sort function for users in citizens
-            citizens.Sort(delegate(DisplayNameDTO user1, DisplayNameDTO user2)
-            {
-                return user1.DisplayName.CompareTo(user2.DisplayName);
-            });
-
+            citizens.Sort();
+           
             if (!citizens.Any())
             {
                 return NotFound(new ErrorResponse(ErrorCode.UserHasNoCitizens, "User does not have any citizens"));

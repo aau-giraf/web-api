@@ -1,9 +1,12 @@
-﻿namespace GirafRest.Models.DTOs
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+
+namespace GirafRest.Models.DTOs
 {
     /// <summary>
     /// DTO for DisplayName, used to avoid sending entire GirafUserDTO to avoid sending unnecessary information
     /// </summary>
-    public class DisplayNameDTO
+    public class DisplayNameDTO : IComparable<DisplayNameDTO>
     {
         /// <summary>
         /// DisplayName
@@ -36,6 +39,19 @@
         /// </summary>
         public DisplayNameDTO()
         {
+        }
+
+        public int CompareTo(DisplayNameDTO other)
+        {
+           if(other == null)
+            {
+                return 1;
+            }
+            else
+            {
+                return this.DisplayName.CompareTo(other.DisplayName);
+            }
+
         }
     }
 }
