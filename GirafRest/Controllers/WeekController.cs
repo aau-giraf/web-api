@@ -35,11 +35,11 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="giraf">Service Injection</param>
         /// <param name="loggerFactory">Service Injection</param>
-        public WeekController(IGirafService giraf, ILoggerFactory loggerFactory, IWeekRepository weekBaseRepository, ITimerRepository timerRepository,IPictogramRepository pictogramRepository,IWeekdayRepository weekdayRepository)
+        public WeekController(IGirafService giraf, ILoggerFactory loggerFactory, IWeekRepository weekRepository, ITimerRepository timerRepository,IPictogramRepository pictogramRepository,IWeekdayRepository weekdayRepository)
         {
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Week");
-            _weekRepository = weekBaseRepository;
+            _weekRepository = weekRepository;
             _timerRepository = timerRepository;
             _pictogramRepository = pictogramRepository;
             _weekdayRepository = weekdayRepository;
