@@ -27,6 +27,7 @@ namespace GirafRest.IRepositories
         GirafUser GetCitizenRelationship(string citizenId);
         GirafUser GetGuardianRelationship(string id);
         GirafUser GetUserSettingsByWeekDayColor(string id);
+        public bool CheckIfUsernameHasSameId(GirafUserDTO newUser, GirafUser user);
     }
     
 }

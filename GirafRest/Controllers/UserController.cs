@@ -159,7 +159,7 @@ namespace GirafRest.Controllers
 
             
             // check whether user with that username already exist that does not have the same id
-            if (_giraf._context.Users.Any(u => u.UserName == newUser.Username && u.Id != user.Id))
+            if (_girafUserRepository.CheckIfUsernameHasSameId(newUser, user))
                 return Conflict(new ErrorResponse(ErrorCode.UserAlreadyExists, "Username already exists"));
 
 
