@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Http;
 using Castle.Core.Logging;
 using GirafRest.Interfaces;
 using GirafRest.IRepositories;
+using ILoggerFactory = Microsoft.Extensions.Logging.ILoggerFactory;
 
 namespace GirafRest.Test.CHANGETHISNAMESPACE
 {
@@ -40,19 +41,19 @@ namespace GirafRest.Test.CHANGETHISNAMESPACE
                     weekdayRepository.Object
                 )
             {
-                GirafService = giraf;
-                LoggerFactory = loggerFactory;
-                Configuration = configuration;
-                UserRepository = userRepository;
-                DepartmentRepository = departmentRepository;
-                GirafRoleRepository = girafRoleRepository;
+            GirafService = giraf;
+            LoggerFactory = loggerFactory;
+            WeekRepository = weekRepository;
+            TimerRepository = timerRepository;
+            PictogramRepository = pictogramRepository;
+            WeekdayRespository = weekdayRepository;
             }
             
             
             public Mock<ILoggerFactory> LoggerFactory { get; }
             public Mock<IGirafService> GirafService { get; }
-            public Mock<IOptions<JwtConfig>> Configuration { get; }
-            public Mock<IGirafUserRepository> UserRepository { get; }
-            public Mock<IDepartmentRepository> DepartmentRepository { get; }
-            public Mock<IGirafRoleRepository> GirafRoleRepository { get; }
+            public Mock<IWeekRepository> WeekRepository { get; }
+            public Mock<ITimerRepository> TimerRepository { get; }
+            public Mock<IPictogramRepository> PictogramRepository { get; }
+            public Mock<IWeekdayRepository> WeekdayRespository { get; }
 }
