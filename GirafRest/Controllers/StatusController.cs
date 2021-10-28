@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.IO;
 using System.Linq;
 using GirafRest.IRepositories;
+using Microsoft.Extensions.Logging;
 
 namespace GirafRest.Controllers
 {
@@ -20,14 +21,16 @@ namespace GirafRest.Controllers
     {
         private readonly IGirafService _giraf;
         private readonly IStatusControllerRepository _statusControllerRepository;
+        private readonly IAuthenticationService _authentication;
         /// <summary>
         /// Constructor for StatusController
         /// </summary>
         /// <param name="giraf">Service Injection</param>
-        public StatusController(IGirafService giraf, IStatusControllerRepository statusControllerRepository)
+        public StatusController(IGirafService giraf, ILoggerFactory loggerFactory, IStatusControllerRepository statusControllerRepository)
         {
             _statusControllerRepository = statusControllerRepository;
             _giraf = giraf;
+            _giraf._logger = loggerFactory.CreateLogger("StatusController");
         }
 
         /// <summary>
@@ -48,17 +51,18 @@ namespace GirafRest.Controllers
         [HttpGet("database")]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
-        public ActionResult DatabaseStatus()
+        public async Task<ActionResult> DatabaseStatus()
         {
-            try
+
+            var connection = await _statusControllerRepository.CheckDbConnectionAsync();
+            if (connection)
             {
-                _giraf._context.Users.FirstOrDefault();
-                return Ok(new SuccessResponse("Connection to database"));
+                 return Ok(new SuccessResponse("Connection to database"));
             }
-            catch (System.Exception e)
-            {
-                return StatusCode(StatusCodes.Status503ServiceUnavailable, new ErrorResponse(ErrorCode.Error, "Error when connecting to database", e.Message));
+            else{
+                return StatusCode(StatusCodes.Status503ServiceUnavailable, new ErrorResponse(ErrorCode.Error, "Error when connecting to database"));
             }
+            
         }
 
         /// <summary>
