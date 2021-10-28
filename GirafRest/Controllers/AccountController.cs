@@ -132,6 +132,7 @@ namespace GirafRest.Controllers
         {
             if (model == null)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing model"));
+
             //Check that all the necesarry data has been supplied
             if (!ModelState.IsValid)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Model is invalid"));
@@ -145,6 +146,7 @@ namespace GirafRest.Controllers
 
             if (_userRepository.ExistsUsername(model.Username))
                 return Conflict(new ErrorResponse(ErrorCode.UserAlreadyExists, "User already exists", "A user with the given username already exists"));
+
             if (model.DepartmentId == null)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Did not find any Department ID",
                     "No Id found")); 
@@ -169,13 +171,11 @@ namespace GirafRest.Controllers
                     // save changes
                     await _giraf._context.SaveChangesAsync();
                 }
-                await _giraf._userManager.AddToRoleAsync(user, UserRoleStr);
+                await _signInManager.UserManager.AddToRoleAsync(user, UserRoleStr);
                 await _signInManager.SignInAsync(user, isPersistent: true);
-                _giraf._logger.LogInformation("User created a new account with password.");
 
-                return Created(Request.Host + "/v1/user/" + user.Id, new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, model.Role)));
+                return Created("/v1/user/" + user.Id, new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, model.Role)));
             }
-
             return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse(ErrorCode.Error, "Something went wrong when creating user"));
         }
 
@@ -246,6 +246,7 @@ namespace GirafRest.Controllers
             if (model.Token == null || model.Password == null)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing token or password"));
 
+            
             var result = await _giraf._userManager.ResetPasswordAsync(user, model.Token, model.Password);
             if (!result.Succeeded)
                 return Unauthorized(new ErrorResponse(ErrorCode.InvalidProperties, "Invalid token"));
