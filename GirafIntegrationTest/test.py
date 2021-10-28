@@ -1,3 +1,4 @@
+from time import sleep
 import unittest
 import sys
 from requests import get
@@ -43,11 +44,7 @@ if args.tested:
     tested_endpoints()
     sys.exit(0)
 
-try:
-    result = get(f'{BASE_URL}v1/Status').json()
-except ConnectionError:
-    print('\033[91m' + 'Error:' + '\033[0m' + ' could not get response from server.\nExiting...')
-    sys.exit(1)
+ConnectServer()
 
 # setup runner with high verbosity, variable printing on fail/error, and custom results class
 runner = GIRAFTestRunner(verbosity=5, tb_locals=True, resultclass=GIRAFTestResults)
