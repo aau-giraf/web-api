@@ -408,7 +408,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void Register_ExistingUsername_UserAlreadyExists()
+        public void Register_ExistingUsername_CodeUserAlreadyExists()
         {
             // Arrange
             var accountController = new MockedAccountController();
@@ -434,54 +434,71 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.UserAlreadyExists, body.ErrorCode);
         }
 
-        /*
         [Fact]
-        public void Register_NoUsername_InvalidCredentials()
-        {
-            // Arrange 
-            var signInManager = new FakeSignInManager();
-            var accountController = new MockAccountController(signInManager);
-            var dto = new RegisterDTO()
-            {
-                DisplayName = "Seje Thomas",
-                Password = "password",
-                DepartmentId = 1,
-                Role = GirafRoles.Citizen,
-            };
-            // Mock 
-            
-            // Act 
-            var response = accountController.Register(dto);
-            var objectResult = response.Result as ObjectResult;
-            var errorResponse = objectResult.Value as ErrorResponse;
-            // Assert
-            Assert.Equal(ErrorCode.InvalidCredentials, errorResponse.ErrorCode);
-        }
-        
-        [Fact]
-        //tries to register a new account with no display name 
-        public void Register_NoDisplayName_InvalidCredentials()
+        public void Register_EmptyUsername_CodeInvalidCredentials()
         {
             // Arrange
-            var signInManager = new FakeSignInManager();
-            var accountController = new MockAccountController(signInManager);
-            var dto = new RegisterDTO()
+            var accountController = new MockedAccountController();
+            var registrationDto = new RegisterDTO()
             {
-                Username = "Thomas",
-                Password = "password",
-                DepartmentId = 1,
-                Role = GirafRoles.Citizen,
+                DisplayName = "Brandhoej",
+                Password = "P@ssw0rd",
+                Role = GirafRoles.SuperUser,
             };
-            // Mock
+
             // Act
-            var response = accountController.Register(dto);
-            var objectResult = response.Result as ObjectResult;
-            var errorResponse = objectResult.Value as ErrorResponse;
+            var response = accountController.Register(registrationDto);
+            var result = response.Result as ObjectResult;
+            var body = result.Value as ErrorResponse;
+
             // Assert
-            Assert.Equal(ErrorCode.InvalidCredentials, errorResponse.ErrorCode);
+            Assert.Equal(ErrorCode.InvalidCredentials, body.ErrorCode);
         }
         
+        [Fact]
+        public void Register_EmptyPassword_CodeInvalidCredenials()
+        {
+            // Arrange
+            var accountController = new MockedAccountController();
+            var registrationDto = new RegisterDTO()
+            {
+                Username = "Andreas",
+                DisplayName = "Brandhoej",
+                Role = GirafRoles.SuperUser,
+            };
+
+            // Act
+            var response = accountController.Register(registrationDto);
+            var result = response.Result as ObjectResult;
+            var body = result.Value as ErrorResponse;
+
+            // Assert
+            Assert.Equal(ErrorCode.InvalidCredentials, body.ErrorCode);
+        }
+
+        [Fact]
+        //tries to register a new account with no display name 
+        public void Register_EmptyDisplayname_CodeInvalidCredentials()
+        {
+            // Arrange
+            var accountController = new MockedAccountController();
+            var registrationDto = new RegisterDTO()
+            {
+                Username = "Andreas",
+                Password = "P@ssw0rd",
+                Role = GirafRoles.SuperUser,
+            };
+
+            // Act
+            var response = accountController.Register(registrationDto);
+            var result = response.Result as ObjectResult;
+            var body = result.Value as ErrorResponse;
+
+            // Assert
+            Assert.Equal(ErrorCode.InvalidCredentials, body.ErrorCode);
+        }
         
+        /*        
         [Fact]
         // Tries to register a new account with an empty displayName
         public void Register_user_empty_displayName()
