@@ -497,32 +497,8 @@ namespace GirafRest.Test
             // Assert
             Assert.Equal(ErrorCode.InvalidCredentials, body.ErrorCode);
         }
-        
-        /*        
-        [Fact]
-        // Tries to register a new account with an empty displayName
-        public void Register_user_empty_displayName()
-        {
-            // Arrange
-            var signInManager = new FakeSignInManager();
-            var accountController = new MockAccountController(signInManager);
-            var dto = new RegisterDTO()
-            {
-                Username = "Thomas",
-                DisplayName = "",
-                Password = "password",
-                DepartmentId = 1,
-                Role = GirafRoles.Citizen,
-            };
-            // Mock
-            // Act
-            var response = accountController.Register(dto);
-            var objectResult = response.Result as ObjectResult;
-            var errorResponse = objectResult.Value as ErrorResponse;
-            // Assert
-            Assert.Equal(ErrorCode.InvalidCredentials, errorResponse.ErrorCode);
-        }
 
+        /*
         [Fact]
         // Account may exist without department
         // If user is without department, then Department=null, otherwise department = user.DepartmentKey
