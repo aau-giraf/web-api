@@ -103,7 +103,9 @@ namespace GirafRest.Controllers
             int order = dbWeekDay.Activities.Select(act => act.Order).DefaultIfEmpty(0).Max();
             order++;
 
-            AlternateName alternateName = _alternateNameRepository.Get(user, newActivity.Pictograms.First().Id);
+            AlternateName alternateName = _alternateNameRepository.SingleOrDefault(alternateName
+                => alternateName.Citizen == user
+                && alternateName.PictogramId == newActivity.Pictograms.First().Id);
 
             string title = alternateName == null ? newActivity.Pictograms.First().Title : alternateName.Name;
             
