@@ -1,94 +1,212 @@
 ﻿using GirafRest.Controllers;
 using GirafRest.Models.DTOs.AccountDTOs;
-using GirafRest.Test.Mocks;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
-using Xunit.Abstractions;
-using static GirafRest.Test.UnitTestExtensions;
 using GirafRest.Services;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
 using Microsoft.Extensions.Options;
-using System.Linq;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Castle.Core.Logging;
 using GirafRest.Interfaces;
 using GirafRest.IRepositories;
 using GirafRest.Models;
-using GirafRest.Repositories;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using ILoggerFactory = Microsoft.Extensions.Logging.ILoggerFactory;
-
+using System.Threading;
 
 namespace GirafRest.Test
 {
     public class AccountControllerTest
     {
-#pragma warning disable IDE0051 // Remove unused private members
-        private TestContext _testContext= new TestContext();
-        private readonly ITestOutputHelper _testLogger;
-
-        private const int ADMIN_DEP_ONE = 0;
-        private const int DEPARTMENT_ONE = 1;
-        private const int GUARDIAN_DEP_TWO = 1;
-        private const int ANOTHER_GUARDIAN_DEP_TWO = 5;
-        private const int CITIZEN_DEP_TWO = 2;
-        private const int CITIZEN_DEP_THREE = 3;
-        private const int ADMIN_NO_DEP = 4;
-        private const int DEPARTMENT_DEP_TWO = 6;
-#pragma warning restore IDE0051 // Remove unused private members
-
-
-        public AccountControllerTest(ITestOutputHelper output)
+        public class MockUserManager : Mock<UserManager<GirafUser>>
         {
-            _testLogger = output;
+            public MockUserManager()
+                : this(new Mock<IUserStore<GirafUser>>())
+            { }
+
+            public MockUserManager(Mock<IUserStore<GirafUser>> userStore)
+                : this(
+                    userStore,
+                    new Mock<IOptions<IdentityOptions>>(),
+                    new Mock<IPasswordHasher<GirafUser>>(),
+                    new Mock<IEnumerable<IUserValidator<GirafUser>>>(),
+                    new Mock<IEnumerable<IPasswordValidator<GirafUser>>>(),
+                    new Mock<ILookupNormalizer>(),
+                    new Mock<IdentityErrorDescriber>(),
+                    new Mock<IServiceProvider>(),
+                    new Mock<ILogger<UserManager<GirafUser>>>()
+                )
+            { }
+
+            public MockUserManager(
+                    Mock<IUserStore<GirafUser>> userStore,
+                    Mock<IOptions<IdentityOptions>> options,
+                    Mock<IPasswordHasher<GirafUser>> passwordHasher,
+                    Mock<IEnumerable<IUserValidator<GirafUser>>> userValidators,
+                    Mock<IEnumerable<IPasswordValidator<GirafUser>>> passwordValidators,
+                    Mock<ILookupNormalizer> lookupNormalizers,
+                    Mock<IdentityErrorDescriber> identityErrorDescriber,
+                    Mock<IServiceProvider> serviceProvider,
+                    Mock<ILogger<UserManager<GirafUser>>> logger)
+                : base(
+                    userStore.Object,
+                    options.Object,
+                    passwordHasher.Object,
+                    null,
+                    null,
+                    lookupNormalizers.Object,
+                    identityErrorDescriber.Object,
+                    serviceProvider.Object,
+                    logger.Object
+                )
+            {
+                UserStore = userStore;
+                Options = options;
+                PasswordHasher = passwordHasher;
+                UserValidators = userValidators;
+                PasswordValidators = passwordValidators;
+                LookupNormalizers = lookupNormalizers;
+                IdentityErrorDescriber = identityErrorDescriber;
+                ServiceProvider = serviceProvider;
+                Logger = logger;
+            }
+
+            public Mock<IUserStore<GirafUser>> UserStore { get; }
+            public Mock<IOptions<IdentityOptions>> Options { get; }
+            public Mock<IPasswordHasher<GirafUser>> PasswordHasher { get; }
+            public Mock<IEnumerable<IUserValidator<GirafUser>>> UserValidators { get; }
+            public Mock<IEnumerable<IPasswordValidator<GirafUser>>> PasswordValidators { get; }
+            public Mock<ILookupNormalizer> LookupNormalizers { get; } 
+            public Mock<IdentityErrorDescriber> IdentityErrorDescriber { get; }
+            public Mock<IServiceProvider> ServiceProvider { get; }
+            public Mock<ILogger<UserManager<GirafUser>>> Logger { get; }
         }
         
-        private AccountController InitializeTest()
+        public class MockSignInManager : Mock<SignInManager<GirafUser>>
         {
-            _testContext = new TestContext();
+            public MockSignInManager()
+                : this(new Mock<UserManager<GirafUser>>())
+            { }
 
+            public MockSignInManager(
+                Mock<UserManager<GirafUser>> userManager
+            )
+                : this(
+                    userManager,
+                    new Mock<IHttpContextAccessor>(),
+                    new Mock<IUserClaimsPrincipalFactory<GirafUser>>(),
+                    new Mock<IOptions<IdentityOptions>>(),
+                    new Mock<ILogger<SignInManager<GirafUser>>>(),
+                    new Mock<IAuthenticationSchemeProvider>(),
+                    new Mock<IUserConfirmation<GirafUser>>())
+            { }
 
-            var mockSignInManager = new MockSignInManager(_testContext.MockUserManager, _testContext);
-            var mockGirafService = new MockGirafService(_testContext.MockDbContext.Object, _testContext.MockUserManager);
-            var mockUserRepository = Mock.Of<IGirafUserRepository>();
-            var mockDepartmentRepository = Mock.Of<IDepartmentRepository>();
-            var mockGirafRoleRepository = Mock.Of<IGirafRoleRepository>();
-            //var roleManager = new RoleManager<GirafRole>(new Mock<IRoleStore<GirafRole>>().Object, null, null, null, null, null);
-            
-            AccountController ac = new AccountController(
-                mockSignInManager,
-                _testContext.MockLoggerFactory.Object,
-                mockGirafService,
-                Options.Create(new JwtConfig()
-                {
-                    JwtKey = "123456789123456789123456789",
-                    JwtIssuer = "example.com",
-                    JwtExpireDays = 30
-                }), 
-                mockUserRepository, 
-                mockDepartmentRepository, 
-                mockGirafRoleRepository
-            );
+            public MockSignInManager(
+                    Mock<UserManager<GirafUser>> userManager,
+                    Mock<IHttpContextAccessor> httpContextAccessor,
+                    Mock<IUserClaimsPrincipalFactory<GirafUser>> userClaimsPrincipalFactory,
+                    Mock<IOptions<IdentityOptions>> options,
+                    Mock<ILogger<SignInManager<GirafUser>>> logger,
+                    Mock<IAuthenticationSchemeProvider> authenticationSchemeProvider,
+                    Mock<IUserConfirmation<GirafUser>> userConfirmation
+                )
+                : base (
+                    userManager.Object,
+                    httpContextAccessor.Object,
+                    userClaimsPrincipalFactory.Object,
+                    options.Object,
+                    logger.Object,
+                    authenticationSchemeProvider.Object,
+                    userConfirmation.Object
+                )
+            {
+                UserManager = userManager;
+                IHttpContextAccessor = httpContextAccessor;
+                IUserClaimsPrincipalFactory = userClaimsPrincipalFactory;
+                IOptions = options;
+                ILogger = logger;
+                IAuthenticationSchemeProvider = authenticationSchemeProvider;
+                IUserConfirmation = userConfirmation;
+            }
 
-            _testContext.MockHttpContext = ac.MockHttpContext();
-            _testContext.MockHttpContext
-                .Setup(mhc => mhc.Request.Scheme)
-                .Returns("Scheme?");
-
-            var mockUrlHelper = new Mock<IUrlHelper>();
-            ac.Url = mockUrlHelper.Object;
-
-            return ac;
+            public Mock<UserManager<GirafUser>> UserManager { get; }
+            public Mock<IHttpContextAccessor> IHttpContextAccessor { get; }
+            public Mock<IUserClaimsPrincipalFactory<GirafUser>> IUserClaimsPrincipalFactory { get; }
+            public Mock<IOptions<IdentityOptions>> IOptions { get; }
+            public Mock<ILogger<SignInManager<GirafUser>>> ILogger { get; }
+            public Mock<IAuthenticationSchemeProvider> IAuthenticationSchemeProvider { get; }
+            public Mock<IUserConfirmation<GirafUser>> IUserConfirmation { get; }
         }
 
+        public class MockedAccountController : AccountController
+        {
+            public MockedAccountController()
+                : this(new MockSignInManager())
+            { }
+
+            public MockedAccountController(MockSignInManager signInManager) 
+                : this(
+                    signInManager, 
+                    new Mock<ILoggerFactory>(),
+                    new Mock<IGirafService>(),
+                    new Mock<IOptions<JwtConfig>>(),
+                    new Mock<IGirafUserRepository>(),
+                    new Mock<IDepartmentRepository>(),
+                    new Mock<IGirafRoleRepository>()
+                )
+            { }
+            
+            public MockedAccountController(
+                Mock<SignInManager<GirafUser>> signInManager,
+                Mock<ILoggerFactory> loggerFactory,
+                Mock<IGirafService> giraf,
+                Mock<IOptions<JwtConfig>> configuration,
+                Mock<IGirafUserRepository> userRepository,
+                Mock<IDepartmentRepository> departmentRepository, 
+                Mock<IGirafRoleRepository> girafRoleRepository
+                ) 
+                : base(
+                    signInManager.Object, 
+                    loggerFactory.Object,
+                    giraf.Object, 
+                    configuration.Object,
+                    userRepository.Object,
+                    departmentRepository.Object,
+                    girafRoleRepository.Object
+                )
+            {
+                SignInManager = signInManager;
+                LoggerFactory = loggerFactory;
+                GirafService = giraf;
+                Configuration = configuration;
+                UserRepository = userRepository;
+                DepartmentRepository = departmentRepository;
+                GirafRoleRepository = girafRoleRepository;
+
+                // The following are primary mocks whcih are generic.
+                //   These are added to ease the development of tests.
+                var affectedRows = 1;
+                GirafService.Setup(
+                    service => service._context.SaveChangesAsync(It.IsAny<CancellationToken>())
+                ).Returns(Task.FromResult(affectedRows));
+            }
+            
+            public Mock<SignInManager<GirafUser>> SignInManager { get; }
+            public Mock<ILoggerFactory> LoggerFactory { get; }
+            public Mock<IGirafService> GirafService { get; }
+            public Mock<IOptions<JwtConfig>> Configuration { get; }
+            public Mock<IGirafUserRepository> UserRepository { get; }
+            public Mock<IDepartmentRepository> DepartmentRepository { get; }
+            public Mock<IGirafRoleRepository> GirafRoleRepository { get; }
+        }
+
+        /*
         #region Login
         // When logging in, one is only allowed to login as users below them in the hierarchy. The hierarchy in order is: Admin, Department, Guardian, Citizen
         // Check if possible to login with mock credentials. All passwords are initialised (Data folder, DBInitializer.cs) to be "password"
@@ -227,111 +345,70 @@ namespace GirafRest.Test
         }
 
         #endregion
+        */
 
         #region Register
         [Fact]
         public void Register_InputOk_Success()
         {
-            var accountController = InitializeTest();
-
-            var userName = "GenericName";
-            var displayName = "GenericDisplayName";
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = accountController.Register(new RegisterDTO()
+            // Arrange
+            var userManager = new MockUserManager();
+            var signInManager = new MockSignInManager(userManager);
+            var accountController = new MockedAccountController(
+                signInManager
+            );
+            var department = new Department()
             {
-                Username = userName,
-                Password = "GenericPassword",
-                DepartmentId = DEPARTMENT_ONE,
-                Role = GirafRoles.Citizen,
-                DisplayName = displayName
-            }).Result as ObjectResult;
-
-            var body = res.Value as SuccessResponse<GirafUserDTO>;
-            
-            Assert.Equal(StatusCodes.Status201Created, res.StatusCode);
-
-            // check data
-            Assert.Equal(userName, body.Data.Username);
-            Assert.Equal(DEPARTMENT_ONE, body.Data.Department);
-            Assert.Equal(displayName, body.Data.DisplayName);
-        }
-        public class FakeUserManager : UserManager<GirafUser>
-        {
-            public FakeUserManager()
-                : base(new Mock<IUserStore<GirafUser>>().Object,
-                    new Mock<IOptions<IdentityOptions>>().Object,
-                    new Mock<IPasswordHasher<GirafUser>>().Object,
-                    new IUserValidator<GirafUser>[0],
-                    new IPasswordValidator<GirafUser>[0],
-                    new Mock<ILookupNormalizer>().Object,
-                    new Mock<IdentityErrorDescriber>().Object,
-                    new Mock<IServiceProvider>().Object,
-                    new Mock<ILogger<UserManager<GirafUser>>>().Object)
-            { }
-        }
-        
-        public class FakeSignInManager : SignInManager<GirafUser>
-        {
-            public FakeSignInManager()
-                : base(new FakeUserManager(),
-                    new Mock<IHttpContextAccessor>().Object,
-                    new Mock<IUserClaimsPrincipalFactory<GirafUser>>().Object,
-                    new Mock<IOptions<IdentityOptions>>().Object,
-                    new Mock<ILogger<SignInManager<GirafUser>>>().Object,
-                    new Mock<IAuthenticationSchemeProvider>().Object,
-                    new Mock<IUserConfirmation<GirafUser>>().Object)
-            { }
-        }
-
-        public class MockAccountController : AccountController
-        {
-            public MockAccountController(SignInManager<GirafUser> signInManager) 
-                : this(
-                    signInManager, 
-                    new Mock<ILoggerFactory>(),
-                    new Mock<IGirafService>(),
-                    new Mock<IOptions<JwtConfig>>(),
-                    new Mock<IGirafUserRepository>(),
-                    new Mock<IDepartmentRepository>(),
-                    new Mock<IGirafRoleRepository>()
-                )
-            { }
-            
-            public MockAccountController(
-                SignInManager<GirafUser> signInManager,
-                Mock<ILoggerFactory> loggerFactory,
-                Mock<IGirafService> giraf,
-                Mock<IOptions<JwtConfig>> configuration,
-                Mock<IGirafUserRepository> userRepository,
-                Mock<IDepartmentRepository> departmentRepository, 
-                Mock<IGirafRoleRepository> girafRoleRepository) 
-                : base(
-                    signInManager, 
-                    loggerFactory.Object,
-                    giraf.Object, 
-                    configuration.Object,
-                    userRepository.Object,
-                    departmentRepository.Object,
-                    girafRoleRepository.Object
-                )
+                Key = 1,
+                Name = "SomewhereOverTheRainbow",
+                // For some reason the empty constructor of "Department"
+                //   initializes all collection/enumerables with a List
+                //   but not "WeekTemplates", for this reason to ensure
+                //   no weird braking changes, i manually initialize it.
+                WeekTemplates = new List<WeekTemplate>()
+            };
+            var registrationDto = new RegisterDTO() 
             {
-                LoggerFactory = loggerFactory;
-                GirafService = giraf;
-                Configuration = configuration;
-                UserRepository = userRepository;
-                DepartmentRepository = departmentRepository;
-                GirafRoleRepository = girafRoleRepository;
-            }
-            
-            
-            public Mock<ILoggerFactory> LoggerFactory { get; }
-            public Mock<IGirafService> GirafService { get; }
-            public Mock<IOptions<JwtConfig>> Configuration { get; }
-            public Mock<IGirafUserRepository> UserRepository { get; }
-            public Mock<IDepartmentRepository> DepartmentRepository { get; }
-            public Mock<IGirafRoleRepository> GirafRoleRepository { get; }
-            
+                Username = "Andreas",
+                DisplayName = "Brandhoej",
+                Password = "P@ssw0rd",
+                DepartmentId = department.Key,
+                Role = GirafRoles.SuperUser,
+            };
+            var creationResult = IdentityResult.Success;
+            var roleResult = IdentityResult.Success;
+            var roleAsString = "SuperUser";
+            var request = new Mock<HttpRequest>();
+
+            // Mock
+            accountController.UserRepository.Setup(
+                repo => repo.ExistsUsername(registrationDto.Username)
+            ).Returns(false);
+            accountController.DepartmentRepository.Setup(
+                repo => repo.GetDepartmentById(department.Key)
+            ).Returns(department);
+            signInManager.UserManager.Setup(
+                manager => manager.CreateAsync(It.IsAny<GirafUser>(), It.IsAny<string>())
+            ).Returns(Task.FromResult(creationResult));
+            signInManager.UserManager.Setup(
+                manager => manager.AddToRoleAsync(It.IsAny<GirafUser>(), roleAsString)
+            ).Returns(Task.FromResult(roleResult));
+            signInManager.Setup(
+                manager => manager.SignInAsync(It.IsAny<GirafUser>(), true, null)
+            ).Returns(Task.CompletedTask);
+
+            // Arrange
+            var response = accountController.Register(registrationDto);
+            var result = response.Result as ObjectResult;
+            var body = result.Value as SuccessResponse<GirafUserDTO>;
+
+            // Assert
+            Assert.Equal(StatusCodes.Status201Created, result.StatusCode);
+            Assert.Equal(registrationDto.Username, body.Data.Username);
+            Assert.Equal(registrationDto.DepartmentId, body.Data.Department);
+            Assert.Equal(registrationDto.DisplayName, body.Data.DisplayName);
         }
+        /*
         [Fact]
         public void Register_ExistingUsername_UserAlreadyExists()
         {
@@ -718,6 +795,7 @@ namespace GirafRest.Test
 
             Assert.Equal(StatusCodes.Status200OK, objectResult.StatusCode);
         }   
+        */
         #endregion
 
     }
