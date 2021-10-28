@@ -384,24 +384,24 @@ namespace GirafRest.Controllers
             }
         }
 
-        private void AddGuardiansToCitizens(GirafUser user)
+        private void AddGuardiansToCitizens(GirafUser citizen)
         {
             var guardians = _girafRoleRepository.GetAllGuardians();
-            var guardiansInDepartment = _userRepository.GetUsersInDepartment((long)user.DepartmentKey, guardians);
+            var guardiansInDepartment = _userRepository.GetUsersInDepartment((long)citizen.DepartmentKey, guardians);
             foreach (var guardian in guardiansInDepartment)
             {
-                user.AddGuardian(guardian);
+                citizen.AddGuardian(guardian);
             }
         }
 
-        private void AddCitizensToGuardian(GirafUser user)
+        private void AddCitizensToGuardian(GirafUser guardian)
         {
             // Add a relation to all the newly created guardians citizens
-            var guardians = _girafRoleRepository.GetAllGuardians();
-            var citizens = _userRepository.GetUsersInDepartment((long)user.DepartmentKey, guardians);
-            foreach (var citizen in citizens)
+            var citizens = _girafRoleRepository.GetAllCitizens();
+            var citizensInDepartment = _userRepository.GetUsersInDepartment((long)guardian.DepartmentKey, citizens);
+            foreach (var citizen in citizensInDepartment)
             {
-                user.AddCitizen(citizen);
+                guardian.AddCitizen(citizen);
             }
         }
     }

@@ -9,7 +9,9 @@ namespace GirafRest.IRepositories
     public interface IGirafRoleRepository : IRepository<GirafRest.Models.GirafRole>
     {
         string GetGuardianRoleId();
+        string GetCitizenRoleId();
         IEnumerable<string> GetUsersWithRole(string role);
         IEnumerable<string> GetAllGuardians();
+        IEnumerable<string> GetAllCitizens();
     }
 }
