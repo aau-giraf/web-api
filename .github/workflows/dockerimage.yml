@@ -59,7 +59,7 @@ jobs:
           # The context is NOT relative to the Dockerfile location but the repository root
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          file: ./builds/docker/Dockerfile
+          file: ./Dockerfile
           tags: ${{ steps.docker_meta.outputs.tags }}
 
         # Temp fix
