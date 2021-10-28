@@ -59,22 +59,26 @@ namespace GirafRest.Test
         public async void CheckUsersDB_Successful_Connection()
         {
             
-            var _girafService = new Mock<IGirafService>(_dbContext);
-            var _logger = new LoggerFactory();
-            var _statusControllerRepository = new Mock<StatusControllerRepository>(_girafService, _dbContext);
-            var statusController = new MockStatusController(_girafService.Object, _logger, _statusControllerRepository.Object);
-            var res = await statusController.DatabaseStatus() as ObjectResult;
-            //var body = res.Value as ErrorResponse;
+            var _statusController = new MockStatusController();
+            var _statusControllerRepository = _statusController.StatusControllerRepository;
+            _statusControllerRepository.Setup(c=>c.CheckDbConnectionAsync()).Returns(Task.FromResult(true));
+
+            var res = await _statusController.DatabaseStatus() as ObjectResult;
+            var body = res.Value as ErrorResponse;
              
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
         }
 
         [Fact]
-        public void CheckUsersDB_Failed_Connection()
+        public async void CheckUsersDB_Failed_Connection()
         {
-            var stc = InitializeTest();
-            var res = stc.DatabaseStatus().Result as ObjectResult;
+            var _statusController = new MockStatusController();
+            var _statusControllerRepository = _statusController.StatusControllerRepository;
+            _statusControllerRepository.Setup(c => c.CheckDbConnectionAsync()).Returns(Task.FromResult(false));
+
+            var res = await _statusController.DatabaseStatus() as ObjectResult;
             var body = res.Value as ErrorResponse;
+
             Assert.Equal("Error when connecting to database", body.Message);
             Assert.Equal(ErrorCode.Error, body.ErrorCode);
             Assert.Equal(StatusCodes.Status503ServiceUnavailable, res.StatusCode);
@@ -82,7 +86,7 @@ namespace GirafRest.Test
         }
     }
 
-    internal class MockStatusController : StatusController
+    /*public class MockStatusController : StatusController
     {
         private Mock<IStatusControllerRepository> _statusControllerRepository;
         private Mock<IGirafService> _girafService;
@@ -102,6 +106,37 @@ namespace GirafRest.Test
             _statusControllerRepository = statusControllerRepository;
         }
 
+    }*/
+    public class MockStatusController : StatusController
+    {
+        public MockStatusController()
+            : this(
+                new Mock<IGirafService>(),
+                new Mock<ILoggerFactory>(),
+                new Mock<IStatusControllerRepository>()
+            )
+        { }
+
+        public MockStatusController(
+            Mock<IGirafService> giraf,
+            Mock<ILoggerFactory> loggerFactory,
+            Mock<IStatusControllerRepository> statusControllerRepository)
+            : base(
+                giraf.Object,
+                loggerFactory.Object,
+                statusControllerRepository.Object
+            )
+        {
+            LoggerFactory = loggerFactory;
+            GirafService = giraf;
+            StatusControllerRepository = statusControllerRepository;
+        }
+
+
+        public Mock<ILoggerFactory> LoggerFactory { get; }
+        public Mock<IGirafService> GirafService { get; }
+        public Mock<IStatusControllerRepository> StatusControllerRepository{ get; }
+
     }
-    
+
 }
