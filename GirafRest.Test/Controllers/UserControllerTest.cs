@@ -1,14 +1,20 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using GirafRest.Controllers;
+using GirafRest.Interfaces;
+using GirafRest.IRepositories;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
 using GirafRest.Services;
 using GirafRest.Test.Mocks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Moq;
 using Xunit;
 using Xunit.Abstractions;
@@ -51,14 +57,18 @@ namespace GirafRest.Test
         private UserController initializeTest()
         {
             _testContext = new UnitTestExtensions.TestContext();
-
+            
+            var mockGirafService = new MockGirafService(_testContext.MockDbContext.Object, _testContext.MockUserManager);
+            var mockUserRepository = Mock.Of<IGirafUserRepository>();
+            var mockImageRepository = Mock.Of<IImageRepository>();
+            var mockUserResourceRepository = Mock.Of<IUserResourseRepository>();
+            var mockPictorgramRepository = Mock.Of<IPictogramRepository>();
+            
             var usercontroller = new UserController(
-                new MockGirafService(_testContext.MockDbContext.Object,
-                    _testContext.MockUserManager),
+                mockGirafService,
                 _testContext.MockLoggerFactory.Object,
                 _testContext.MockRoleManager.Object,
-                new GirafAuthenticationService(_testContext.MockDbContext.Object, _testContext.MockRoleManager.Object,
-                    _testContext.MockUserManager));
+                mockUserRepository, mockImageRepository,mockUserResourceRepository, mockPictorgramRepository);
 
             _testContext.MockHttpContext = usercontroller.MockHttpContext();
             _testContext.MockHttpContext.MockQuery("username", null);
@@ -1239,5 +1249,63 @@ namespace GirafRest.Test
         }
 
         #endregion
+
+        public class FakeUserManager : UserManager<GirafUser>
+        {
+            public FakeUserManager()
+                : base(new Mock<IUserStore<GirafUser>>().Object,
+                    new Mock<IOptions<IdentityOptions>>().Object,
+                    new Mock<IPasswordHasher<GirafUser>>().Object,
+                    new IUserValidator<GirafUser>[0],
+                    new IPasswordValidator<GirafUser>[0],
+                    new Mock<ILookupNormalizer>().Object,
+                    new Mock<IdentityErrorDescriber>().Object,
+                    new Mock<IServiceProvider>().Object,
+                    new Mock<ILogger<UserManager<GirafUser>>>().Object)
+            { }
+        } 
+    }
+
+    public class MockUserController : UserController
+    {
+        public MockUserController(Mock<IGirafService> giraf,
+            Mock<ILoggerFactory> loggerFactory,
+            Mock<RoleManager<GirafRole>> girafRoleManager,
+            Mock<IGirafUserRepository> userRepository,
+            Mock<IImageRepository> imageRepository,
+            Mock<IUserResourseRepository> userResourseRepository,
+            Mock<IPictogramRepository> pictogramRepository)
+            : base(giraf.Object,
+                loggerFactory.Object,
+                girafRoleManager.Object,
+                userRepository.Object,
+                imageRepository.Object,
+                userResourseRepository.Object,
+                pictogramRepository.Object)
+
+        {
+            GirafService = giraf;
+            LoggerFactory = loggerFactory;
+            GirafRoleRepository = girafRoleManager;
+            UserRepository = userRepository;
+            ImageRepository = imageRepository;
+            UserResourseRepository = userResourseRepository;
+            PictogramRepository = pictogramRepository;
+
+        }
+       
+        public Mock<IGirafService> GirafService { get; }
+        public Mock<ILoggerFactory> LoggerFactory { get; }
+        public Mock<RoleManager<GirafRole>> GirafRoleRepository { get; }
+        public Mock<IGirafUserRepository> UserRepository { get; }
+        public Mock<IImageRepository> ImageRepository { get; }
+        public Mock<IUserResourseRepository> UserResourseRepository { get; }
+        public Mock<IPictogramRepository> PictogramRepository { get; }
+
+        [Fact]
+        public void Register()
+        {
+            
+        }
     }
 }
