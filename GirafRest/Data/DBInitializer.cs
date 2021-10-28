@@ -87,6 +87,7 @@ namespace GirafRest.Setup
         private static void CreatePictograms(int count)
         {
             System.Console.WriteLine($"Creating {count} pictograms");
+            Console.WriteLine($"vibe");
             DirectoryInfo dir = Directory.CreateDirectory("../pictograms");
           
             using FontFamily family = new FontFamily("Arial");
