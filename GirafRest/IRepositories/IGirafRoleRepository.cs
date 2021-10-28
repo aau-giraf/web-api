@@ -8,6 +8,8 @@ namespace GirafRest.IRepositories
 {
     public interface IGirafRoleRepository : IRepository<GirafRest.Models.GirafRole>
     {
-        string GetRoleGuardianId();
+        string GetGuardianRoleId();
+        IEnumerable<string> GetUsersWithRole(string role);
+        IEnumerable<string> GetAllGuardians();
     }
 }

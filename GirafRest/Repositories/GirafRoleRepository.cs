@@ -12,11 +12,17 @@ namespace GirafRest.Repositories
         {
         }
 
-        public string GetRoleGuardianId()
-        {
-           return Context.Roles.Where(r => r.Name == GirafRole.Guardian)
-                                .Select(c => c.Id).FirstOrDefault();
-           
-        }
+        public IEnumerable<string> GetUsersWithRole(string roleId)
+            => Context.UserRoles
+                .Where(identityRolePair => identityRolePair.RoleId == roleId)
+                .Select(identityRolePair => identityRolePair.UserId).Distinct();
+
+        public string GetGuardianRoleId()
+            => Context.Roles
+                .Where(r => r.Name == GirafRole.Guardian)
+                .Select(c => c.Id).FirstOrDefault();
+        
+        public IEnumerable<string> GetAllGuardians()
+            => GetUsersWithRole(GetGuardianRoleId());
     }
 }

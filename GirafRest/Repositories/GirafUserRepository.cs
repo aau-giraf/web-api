@@ -19,10 +19,14 @@ namespace GirafRest.Repositories
         public GirafUser GetUserByUsername(string username)
             => Context.Users.FirstOrDefault(u => u.UserName == username);
 
-        public List<GirafUser> GetListOfUsersByIdAndDep(GirafUser user, IQueryable<string> userIds)
+        public List<GirafUser> GetUsersInDepartment(long departmentKey, IEnumerable<string> users)
         {
-           return Context.Users.Where(u => userIds.Any(ui => ui == u.Id)
-                                             && u.DepartmentKey == user.DepartmentKey).ToList();
+           return Context.Users
+            .Where(user => 
+                // Checks if the user is a guardian
+                users.Any(currUser => currUser == user.Id) &&
+                user.DepartmentKey != null && user.DepartmentKey == departmentKey)
+            .ToList();
         }
 
         public GirafUser GetUserByID(string id)

@@ -153,7 +153,7 @@ namespace GirafRest.Controllers
             Department department = _departmentRepository.GetDepartmentById((long)model.DepartmentId);
 
             // Check that the department with the specified id exists
-            if (department == null && model.DepartmentId != null)
+            if (department == null)
                 return BadRequest(new ErrorResponse(ErrorCode.DepartmentNotFound, "Department not found", "A department with the given id could not be found"));
 
             //Create a new user with the supplied information
@@ -386,12 +386,9 @@ namespace GirafRest.Controllers
 
         private void AddGuardiansToCitizens(GirafUser user)
         {
-
-            var roleGuardianId = _girafRoleRepository.GetRoleGuardianId();
-            var userIds = _giraf._context.UserRoles.Where(u => u.RoleId == roleGuardianId)
-                                .Select(r => r.UserId).Distinct();
-            var guardians = _userRepository.GetListOfUsersByIdAndDep(user, userIds);
-            foreach (var guardian in guardians)
+            var guardians = _girafRoleRepository.GetAllGuardians();
+            var guardiansInDepartment = _userRepository.GetUsersInDepartment((long)user.DepartmentKey, guardians);
+            foreach (var guardian in guardiansInDepartment)
             {
                 user.AddGuardian(guardian);
             }
@@ -400,10 +397,8 @@ namespace GirafRest.Controllers
         private void AddCitizensToGuardian(GirafUser user)
         {
             // Add a relation to all the newly created guardians citizens
-            var roleGuardianId = _girafRoleRepository.GetRoleGuardianId();
-            var userIds = _giraf._context.UserRoles.Where(u => u.RoleId == roleGuardianId)
-                                .Select(r => r.UserId).Distinct();
-            var citizens = _userRepository.GetListOfUsersByIdAndDep(user, userIds);
+            var guardians = _girafRoleRepository.GetAllGuardians();
+            var citizens = _userRepository.GetUsersInDepartment((long)user.DepartmentKey, guardians);
             foreach (var citizen in citizens)
             {
                 user.AddCitizen(citizen);
