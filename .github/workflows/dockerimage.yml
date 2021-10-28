@@ -1,20 +1,74 @@
-name: Build GitHub Packages
+# Inspired by: https://github.com/gbaeke/python-msi/blob/main/.github/workflows/build-push.yml
+name: Docker push
 
-on: [push]
+on:
+  push:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
 
 jobs:
-  build-and-push:
+  ghcr-publish:
     runs-on: ubuntu-latest
-    name: Build and Push Docker image
     steps:
-      # To use this repository's private action, you must check out the repository
-      - name: Checkout
-        uses: actions/checkout@v2
-      - uses: docker/build-push-action@v1
+      - uses: actions/checkout@v2
+        name: Check out
+
+      - uses: crazy-max/ghaction-docker-meta@v1
+        name: Docker meta
+        id: docker_meta
         with:
-          registry: docker.pkg.github.com
-          repository: aau-giraf/web-api/web-api
+          images: ${{ env.REGISTRY }}/${{ github.repository }}
+          tag-sha: true
+          tag-edge: false
+          tag-latest: true
+
+      - uses: docker/setup-qemu-action@v1
+        name: Set up QEMU
+
+      - uses: docker/setup-buildx-action@v1
+        name: Set up Docker Buildx
+
+      - uses: actions/cache@v2.1.6
+        name: Cache Docker layers
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - uses: docker/login-action@v1
+        name: Login to GitHub Container Registry (ghcr.io)
+        with:
+          registry: ${{ env.REGISTRY }}
+          # The login of the user that initiated the workflow run.
           username: ${{ github.actor }}
+          # A token to authenticate on behalf of the GitHub App installed on your repository.
           password: ${{ github.token }}
-          tag_with_ref: true
-          push: true
+
+      - uses: docker/build-push-action@v2
+        # Allows us to retrieve the output from the build
+        id: docker_image_build
+        with:
+          # builder: ${{ steps.buildx.outputs.name }}
+          cache-from: type=local,src=/tmp/.buildx-cache-new
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+          # The context is NOT relative to the Dockerfile location but the repository root
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          file: ./builds/docker/Dockerfile
+          tags: ${{ steps.docker_meta.outputs.tags }}
+
+        # Temp fix
+        # https://github.com/docker/build-push-action/issues/252
+        # https://github.com/moby/buildkit/issues/1896
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+      - name: Docker image digest
+        run: echo ${{ steps.docker_image_build.outputs.digest }}
