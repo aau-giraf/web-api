@@ -25,12 +25,8 @@ namespace GirafRest.Repositories
             WeekBases = new WeekBaseRepository(_context);
             WeekDayColors = new WeekDayColorRepository(_context);
             WeekTemplates = new WeekTemplateRepository(_context);
-
-
         }
-
-
-
+        
         public IAlternateNameRepository AlternateNames { get; private set; }
 
         public IDepartmentRepository Departments { get; private set; }

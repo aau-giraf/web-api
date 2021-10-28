@@ -16,9 +16,9 @@ namespace GirafRest.Repositories
             Context = context;
         }
 
-        public TEntity Get(int id)
+        public TEntity Get(params object[] ids)
         {
-            return Context.Set<TEntity>().Find(id);
+            return Context.Set<TEntity>().Find(ids);
         }
 
         public IEnumerable<TEntity> GetAll()
