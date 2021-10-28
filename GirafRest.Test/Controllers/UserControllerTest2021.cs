@@ -21,88 +21,42 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.InMemory;
 using GirafRest.Data;
 using GirafRest.Test.Mocks;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace GirafRest.Test.Controllers
 {
+    [TestClass]
     public class UserControllerTest2021
     {
+        readonly GirafRoles citizen = GirafRoles.Citizen;
 
-        public readonly DbContextOptions<GirafDbContext> options;
-        public readonly Mock<ILoggerFactory> loggerFactory;
-        public readonly Mock<MockRoleManager> roleManager;
-        private readonly MockGirafService girafService;
-        private readonly GirafAuthenticationService authenticationService;
-        private readonly UnitTestExtensions.TestContext testContext;
-
-        public UserControllerTest2021()
+        [TestMethod]
+        public void GetSortedCitizens()
         {
-            options = new DbContextOptionsBuilder<GirafDbContext>()
-                .UseInMemoryDatabase(databaseName: "GirafDatabase").Options;
-            var mocklogger = new Mock<ILogger>();
-            loggerFactory = new Mock<ILoggerFactory>();
-            loggerFactory.Setup(lf => lf.CreateLogger(It.IsAny<string>())).Returns(mocklogger.Object);
-
-            var rolestore = new Mock<IRoleStore<GirafRole>>();
-            var mockRoles = new List<GirafRole>()
-                        {
-                            new GirafRole(GirafRole.SuperUser) {
-                                Id = GirafRole.SuperUser
-                            },
-                            new GirafRole(GirafRole.Guardian) {
-                                Id = GirafRole.Guardian
-                            },
-                            new GirafRole(GirafRole.Citizen)
-                            {
-                                Id = GirafRole.Citizen
-                            },
-                            new GirafRole(GirafRole.Department)
-                            {
-                                Id = GirafRole.Department
-                            }
-                        };
-
-            roleManager = new Mock<MockRoleManager>(rolestore.Object);
-            roleManager.Setup(m => m.Roles).Returns(mockRoles.AsQueryable());
-
-            var userStore = new Mock<IUserStore<GirafUser>>();
-            MockUserManager mockUserManager = new MockUserManager(userStore.Object, testContext); 
-            girafService = new MockGirafService(new GirafDbContext(options), mockUserManager);
-
-            authenticationService = new GirafAuthenticationService(new GirafDbContext(options), roleManager.Object, mockUserManager);
-        }
-        
-        [Fact]
-        public async Task GetSortedCitizens()
-        {
-            //Arrange
-            string expectedItem = "ANNA";
-            int expectedStatus = 200;
-            using (var context = new GirafDbContext(options))
-            {
-                context.Users.Add(new GirafUser("kenneth", "KENNETH", new Department(), GirafRoles.Citizen));
-                context.Users.Add(new GirafUser("christoffer", "CHRIS", new Department(), GirafRoles.Citizen));
-                context.Users.Add(new GirafUser("anna", "ANNA", new Department(), GirafRoles.Citizen));
-                context.SaveChanges();
-            }
+            //Arrange 
+            List<DisplayNameDTO> unsorted_test_list = new List<DisplayNameDTO>();
+            List<DisplayNameDTO> sorted_test_list = new List<DisplayNameDTO>();
+            DisplayNameDTO Kenneth = new DisplayNameDTO("Kenneth", citizen, "1101");
+            DisplayNameDTO Louise = new DisplayNameDTO("Louise", citizen, "1101");
+            DisplayNameDTO Josefine = new DisplayNameDTO("Josefine", citizen, "1101");
+            DisplayNameDTO Søren = new DisplayNameDTO("Søren", citizen, "1101");
+            DisplayNameDTO Fatima = new DisplayNameDTO("Fatima", citizen, "1101");
+            DisplayNameDTO Christoffer = new DisplayNameDTO("Christoffer", citizen, "1101");
+            //add users to list unsorted
+            unsorted_test_list.Add(Josefine);
+            unsorted_test_list.Add(Kenneth);
+            unsorted_test_list.Add(Louise);
+            unsorted_test_list.Add(Søren);
+            unsorted_test_list.Add(Fatima);
+            unsorted_test_list.Add(Christoffer);
             //Act
-            using(var context = new GirafDbContext(options))
-            {
-              
-                UserController userController = 
-                    new UserController(girafService, loggerFactory.Object, roleManager.Object, authenticationService);
-
-                var response = await userController.GetCitizens("12");
-                OkObjectResult okObjectResult = response as OkObjectResult;
-                List<DisplayNameDTO> actualItems = (List<DisplayNameDTO>)okObjectResult.Value;
-                var actualStatus = okObjectResult.StatusCode;
-                //Assert
-                Console.WriteLine(actualItems);
-                Assert.Equal(expectedStatus, actualStatus);
-                Assert.Equal(expectedItem, actualItems[0].DisplayName);            
-            }
-
+            var sorted = unsorted_test_list.OrderBy(person => person.DisplayName); //Make an sorted version of the unsorted list
+             unsorted_test_list.Sort(); //sort the original list
+            
+            //Assert
+            CollectionAssert.AreEqual(sorted.ToList(), unsorted_test_list.ToList()); //check is they are equal in order
         }
 
     }
+
 }
