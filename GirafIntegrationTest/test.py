@@ -19,11 +19,11 @@ def ConnectServer():
                 result = True
             except ConnectionError as error:
                 sleep(5)
-                print(f'Error: {error}')
+                print(f'Response: {error} ')
                 print('\033[91m' + 'Error:' + '\033[0m' + f' could not get response from server. Retrying {count+1}')
     
     if (not result):
-        print(f'\033[91m' + 'Error:' + '\033[0m' + ' could not get response from server.\n Exiting...')
+        print('Exiting...')
         sys.exit(1)
 
 
