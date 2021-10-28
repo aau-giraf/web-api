@@ -17,6 +17,8 @@ using GirafRest.IRepositories;
 using GirafRest.Interfaces;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Moq;
+using System;
 
 namespace GirafRest.Test
 {
@@ -32,30 +34,29 @@ namespace GirafRest.Test
         private StatusController InitializeTest()
         {
             _testContext = new TestContext();
+            var mockGirafService = new Mock<GirafService>(_testContext.MockDbContext.Object, _testContext.MockUserManager);
+            var mockRepository = new Mock<StatusControllerRepository>(mockGirafService.Object, _testContext.MockDbContext.Object);
+            mockRepository.Setup(c => c.CheckDbConnectionAsync()).Returns(Task.FromResult(new Boolean()));
 
-            var stc = new StatusController(
-                 new MockGirafService(
-                     _testContext.MockDbContext.Object,
-                     _testContext.MockUserManager
-                     ),
+
+            var stc = new Mock<StatusController>(
+                 mockGirafService.Object,
                  _testContext.MockLoggerFactory.Object,
-                 new StatusControllerRepository(new MockGirafService(
-                     _testContext.MockDbContext.Object,
-                     _testContext.MockUserManager
-                     ), _testContext.MockDbContext.Object) as IStatusControllerRepository
+                 mockRepository as IStatusControllerRepository
              );
 
+            
 
-            _testContext.MockHttpContext = stc.MockHttpContext();
-
-            return stc;
+            _testContext.MockHttpContext = stc.Object.MockHttpContext();
+            
+            return stc.Object;
         }
 
         [Fact]
-        public void CheckUsersDB_Successful_Connection()
+        public async void CheckUsersDB_Successful_Connection()
         {
             var stc = InitializeTest();
-            var res = stc.DatabaseStatus().Result as ObjectResult;
+            var res = await stc.DatabaseStatus() as ObjectResult;
             var body = res.Value as ErrorResponse;
              
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);

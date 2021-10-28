@@ -19,7 +19,7 @@ namespace GirafRest.Repositories
         {
         }
 
-        public async Task<Boolean> CheckDbConnectionAsync()
+        public virtual async Task<Boolean> CheckDbConnectionAsync()
         {
             return await Context.Database.CanConnectAsync();
         }

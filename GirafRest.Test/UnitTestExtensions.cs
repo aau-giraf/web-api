@@ -659,7 +659,7 @@ namespace GirafRest.Test
                 MockLoggerFactory = new Mock<ILoggerFactory>();
                 MockLoggerFactory.Setup(lf => lf.CreateLogger(It.IsAny<string>()))
                     .Returns(mockLogger.Object);
-
+                
                 MockRoleManager = CreateMockRoleManager();
                 MockRoleManager.Setup(m => m.Roles).Returns(MockRoles.AsQueryable());
             }
