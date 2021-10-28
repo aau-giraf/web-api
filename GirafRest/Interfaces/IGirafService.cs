@@ -56,7 +56,7 @@ namespace GirafRest.Interfaces
         /// </summary>
         /// <returns>The user with week schedules.</returns>
         /// <param name="id">Identifier of <see cref="GirafUser"/></param>
-        Task<GirafUser> LoadUserWithWeekSchedules(string id);
+        // Task<GirafUser> LoadUserWithWeekSchedules(string id);
 
         /// <summary>
         /// Loads the image of the request body.
@@ -100,5 +100,7 @@ namespace GirafRest.Interfaces
         /// <param name="image">Input image</param>
         /// <returns>The hash as a string</returns>
         string GetHash(byte[] image);
+
+        public Task<GirafUser> LoadUserWithWeekSchedules(string id);
     }
 }

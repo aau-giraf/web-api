@@ -143,7 +143,7 @@ namespace GirafRest.Models
             TimerSeconds = 900;
             GreyScale = false;
             PictogramText = false;
-            LockTimerControl = false;
+            LockTimerControl = true;
 
         }
     }

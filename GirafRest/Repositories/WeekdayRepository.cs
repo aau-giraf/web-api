@@ -3,6 +3,7 @@ using System.Linq;
 using GirafRest.Models;
 using GirafRest.IRepositories;
 using GirafRest.Data;
+using System.Threading.Tasks;
 
 namespace GirafRest.Repositories
 {
@@ -10,6 +11,12 @@ namespace GirafRest.Repositories
     {
         public WeekdayRepository(GirafDbContext context) : base(context)
         {
+            
+        }
+        public async Task<int> DeleteSpecificWeekDay(Weekday oldDay)
+        {
+            Context.Weekdays.Update(oldDay);
+            return await Context.SaveChangesAsync();
         }
     }
 }
