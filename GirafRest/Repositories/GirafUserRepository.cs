@@ -24,5 +24,8 @@ namespace GirafRest.Repositories
            return Context.Users.Where(u => userIds.Any(ui => ui == u.Id)
                                              && u.DepartmentKey == user.DepartmentKey).ToList();
         }
+
+        public GirafUser GetUserByID(string id)
+            => Context.Users.FirstOrDefault(u => u.Id == id);
     }
 }

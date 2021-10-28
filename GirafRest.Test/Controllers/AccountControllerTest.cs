@@ -12,6 +12,8 @@ using GirafRest.Models.Responses;
 using Microsoft.Extensions.Options;
 using System.Linq;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Castle.Core.Logging;
 using GirafRest.Interfaces;
 using GirafRest.IRepositories;
@@ -94,21 +96,37 @@ namespace GirafRest.Test
         [Fact]
         public void Login_CredentialsOk_Success()
         {
-            var accountController = InitializeTest();
-
-            var res = accountController.Login(new LoginDTO()
+            // Arrange
+            var signInManager = new FakeSignInManager();
+            var accountController = new MockAccountController(signInManager);
+            var userRepository = accountController.UserRepository;
+            var dto = new LoginDTO()
             {
-                Username = _testContext.MockUsers[ADMIN_DEP_ONE].UserName,
+                Username = "Thomas",
                 Password = "password"
-            }).Result as ObjectResult;
-
-            var body = res.Value as SuccessResponse;
-
-            Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
+            };
+            var mockuser = new GirafUser()
+            {
+                UserName = "Thomas",
+                DisplayName = "Thomas",
+                Id = "Thomas22",
+                DepartmentKey = 1
+            };
+            
+            // Mock
+            userRepository.Setup(x => x.ExistsUsername(dto.Username)).Returns(false);
+            userRepository.Setup(x => x.GetUserByUsername(dto.Username)).Returns(mockuser);
+            // Act
+            var response = accountController.Login(dto);
+            var objectResult = response.Result as ObjectResult;
+            var succesResponse = objectResult.Value as SuccessResponse;
+            
+            // Assert
+            Assert.Equal(StatusCodes.Status200OK, objectResult.StatusCode);
 
             // Check that jwt token is not null and atleast contains 40 characters
-            Assert.NotNull(body.Data);
-            Assert.True(body.Data.Length >= 40);
+            Assert.NotNull(succesResponse.Data);
+            Assert.True(succesResponse.Data.Length >= 40);
         }
 
         // Same user log in twice no problem
@@ -418,20 +436,54 @@ namespace GirafRest.Test
         // If user is without department, then Department=null, otherwise department = user.DepartmentKey
         public void Register_NoDepartment_Success()
         {
-            var accountController = InitializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = accountController.Register(new RegisterDTO()
+            // Arrange
+            var signInManager = new FakeSignInManager();
+            var accountController = new MockAccountController(signInManager);
+            var userManager = new Mock<UserManager<GirafUser>>();
+            var departmentRepository = accountController.DepartmentRepository;
+            var userRepository = accountController.UserRepository;
+            var dto = new RegisterDTO()
             {
-                Username = "NewUser",
+                Username = "Thomas",
+                DisplayName = "Thomas",
                 Password = "password",
-                DisplayName = "DisplayName",
-                Role = GirafRoles.Citizen
-            }).Result as ObjectResult;
+                DepartmentId = 1,
+                Role = GirafRoles.Citizen,
+            };
+            var mockUser1 = new GirafUser()
+            {
+                UserName = "Thomas",
+                DisplayName = "Thomas",
+                Id = "Thomas22",
+                DepartmentKey = 1
 
-            var body = res.Value as SuccessResponse<GirafUserDTO>;
-
-            Assert.Equal(StatusCodes.Status201Created, res.StatusCode);
-            Assert.Null(body.Data.Department);
+            };
+            var dep = new Department()
+            {
+                Key = 1,
+                Name = "Mock Department1",
+                Members = new List<GirafUser>()
+                {
+                    mockUser1,
+                }
+            };
+            var identityResult = IdentityResult.Success;
+            
+            // Mock
+            userRepository.Setup(x => x.ExistsUsername(dto.Username)).Returns(false);
+            departmentRepository.Setup(x => x.GetDepartmentById((long) dto.DepartmentId)).Returns(dep);
+            userManager.Setup(x => x.CreateAsync(It.IsAny<GirafUser>(), It.IsAny<string>()))
+                .Returns(Task.FromResult(identityResult));
+             
+            
+            // Act
+            var response = accountController.Register(dto);
+            var objectResult = response.Result as ObjectResult;
+            var succesResponse = objectResult.Value as SuccessResponse<GirafUserDTO>;
+            
+            // Assert
+            Assert.Equal(StatusCodes.Status201Created, objectResult.StatusCode);
+            Assert.Null(succesResponse.Data.Department);
         }
         
         [Fact]
@@ -462,21 +514,44 @@ namespace GirafRest.Test
             var signInManager = new FakeSignInManager();
             var accountController = new MockAccountController(signInManager);
             var userRepository = accountController.UserRepository;
-            var dto = new RegisterDTO()
+            var dto1 = new RegisterDTO()
             {
                 Username = "Thomas",
-                DisplayName = "",
+                DisplayName = "Thomas",
                 Password = "password",
                 DepartmentId = 1,
                 Role = GirafRoles.Citizen,
             };
-            var mockUser = new GirafUser();
+            var dto2 = new RegisterDTO()
+            {
+                Username = "Daniel",
+                DisplayName = "Daniel",
+                Password = "password",
+                DepartmentId = 1,
+                Role = GirafRoles.Citizen,
+            };
+            var mockUser1 = new GirafUser()
+            {
+                UserName = "Thomas",
+                DisplayName = "Thomas",
+                Id = "Thomas22",
+                DepartmentKey = 1
+
+            };
+            var mockUser2 = new GirafUser()
+            {
+                UserName = "Daniel",
+                DisplayName = "Daniel",
+                Id = "Daniel23",
+                DepartmentKey = 2
+
+            };
             
             // Mock
-            userRepository.Setup(x => x.GetUserByUsername(dto.Username)).Returns(mockUser);
+            userRepository.Setup(x => x.GetUserByUsername(dto1.Username)).Returns(mockUser1);
             
             // Act
-            var response = accountController.Register(dto);
+            var response = accountController.Register(dto1);
             var objectResult = response.Result as ObjectResult;
             var errorResponse = objectResult.Value as ErrorResponse;
             
@@ -633,7 +708,7 @@ namespace GirafRest.Test
             };
             
             // Mock
-            userRepository.Setup(x => x.Get(userid)).Returns(mockUser);
+            userRepository.Setup(x => x.GetUserByID(mockUser.Id)).Returns(mockUser);
             
             
             // Act

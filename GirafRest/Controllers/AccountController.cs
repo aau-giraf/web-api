@@ -143,16 +143,6 @@ namespace GirafRest.Controllers
             if (UserRoleStr == null)
                 return BadRequest(new ErrorResponse(ErrorCode.RoleNotFound, "The provided role is not valid"));
 
-            // check that authenticated user has the right to add user for the given department
-            // else all guardians, deps and admin roles can create user that does not belong to a dep
-            /*if (model.DepartmentId != null)
-            {
-                if (!(await _authentication.HasRegisterUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User),
-                                                            model.Role, model.DepartmentId.Value)))
-                    return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User has no rights",
-                        "The authenticated user does not have the rights to add user for the given department"));
-            }*/
-            
             if (_userRepository.ExistsUsername(model.Username))
                 return Conflict(new ErrorResponse(ErrorCode.UserAlreadyExists, "User already exists", "A user with the given username already exists"));
             if (model.DepartmentId == null)
@@ -167,7 +157,7 @@ namespace GirafRest.Controllers
             //Create a new user with the supplied information
             var user = new GirafUser(model.Username, model.DisplayName, department, model.Role);
 
-            var result = await _giraf._userManager.CreateAsync(user, model.Password);
+            var result  = await _signInManager.UserManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
                 if (department != null)
@@ -305,15 +295,15 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeleteUser(string userId)
         {
-            var user = _userRepository.GetUserByUsername(userId);
+            var user = _userRepository.GetUserByID(userId);
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
             // tjek om man kan slette sig selv, før jeg kan bruge hasreaduseraccess (sig hvis logged in id = userid så fejl)
             // A user cannot delete himself/herself
-            var authenticatedUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
-            if (authenticatedUser == null || (authenticatedUser.Id == userId))
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "Permission error"));
+            //var authenticatedUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            //if (authenticatedUser == null || (authenticatedUser.Id == userId))
+              //  return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "Permission error"));
 
             // check access rights
             /*if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
