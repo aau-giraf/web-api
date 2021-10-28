@@ -5,6 +5,27 @@ from requests.exceptions import ConnectionError
 from argparse import ArgumentParser
 from testlib import GIRAFTestResults, GIRAFTestRunner, compare, BASE_URL
 
+RETRYLIMIT = 5
+
+# Check if the server is online by calling status up to retry limit.
+# exits the integration test if all calls give an connection error
+def ConnectServer():
+    result = False
+    for count in range(RETRYLIMIT):
+        if (count < RETRYLIMIT):
+            try:
+                get(f'{BASE_URL}v1/Status')
+                result = True
+            except ConnectionError as error:
+                sleep(5)
+                print(f'Error: {error}')
+                print('\033[91m' + 'Error:' + '\033[0m' + f' could not get response from server. Retrying {count+1}')
+    
+    if (not result):
+        print(f'\033[91m' + 'Error:' + '\033[0m' + ' could not get response from server.\n Exiting...')
+        sys.exit(1)
+
+
 parser = ArgumentParser()
 parser.add_argument('--pattern', type=str, help='custom search pattern',)
 parser.add_argument('--missing', action='store_true', help='print untested endpoints')
