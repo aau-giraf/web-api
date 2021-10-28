@@ -91,7 +91,7 @@ namespace GirafRest.Test
         public class MockSignInManager : Mock<SignInManager<GirafUser>>
         {
             public MockSignInManager()
-                : this(new Mock<UserManager<GirafUser>>())
+                : this(new MockUserManager())
             { }
 
             public MockSignInManager(
@@ -349,14 +349,12 @@ namespace GirafRest.Test
 
         #region Register
         [Fact]
-        public void Register_InputOk_Success()
+        public void Register_CorrectModelAndConditions_ReturnsCreatedWithDto()
         {
             // Arrange
             var userManager = new MockUserManager();
             var signInManager = new MockSignInManager(userManager);
-            var accountController = new MockedAccountController(
-                signInManager
-            );
+            var accountController = new MockedAccountController(signInManager);
             var department = new Department()
             {
                 Key = 1,
@@ -372,8 +370,8 @@ namespace GirafRest.Test
                 Username = "Andreas",
                 DisplayName = "Brandhoej",
                 Password = "P@ssw0rd",
-                DepartmentId = department.Key,
                 Role = GirafRoles.SuperUser,
+                DepartmentId = department.Key,
             };
             var creationResult = IdentityResult.Success;
             var roleResult = IdentityResult.Success;
@@ -408,35 +406,35 @@ namespace GirafRest.Test
             Assert.Equal(registrationDto.DepartmentId, body.Data.Department);
             Assert.Equal(registrationDto.DisplayName, body.Data.DisplayName);
         }
-        /*
+
         [Fact]
         public void Register_ExistingUsername_UserAlreadyExists()
         {
             // Arrange
-            var signInManager = new FakeSignInManager();
-            var accountController = new MockAccountController(signInManager);
-            var userRepository = accountController.UserRepository;
-            var dto = new RegisterDTO()
+            var accountController = new MockedAccountController();
+            var registrationDto = new RegisterDTO()
             {
-                Username = "Thomas",
-                DisplayName = "Seje Thomas",
-                Password = "password",
-                DepartmentId = 1,
-                Role = GirafRoles.Citizen,
+                Username = "Andreas",
+                DisplayName = "Brandhoej",
+                Password = "P@ssw0rd",
+                Role = GirafRoles.SuperUser,
             };
-            
+
             // Mock
-            userRepository.Setup(x => x.ExistsUsername(dto.Username)).Returns(true);
+            accountController.UserRepository.Setup(
+                repo => repo.ExistsUsername(registrationDto.Username) 
+            ).Returns(true);
 
             // Act
-            var response = accountController.Register(dto);
-            var objectResult = response.Result as ObjectResult;
-            var errorResponse = objectResult.Value as ErrorResponse;
-            
+            var response = accountController.Register(registrationDto);
+            var result = response.Result as ObjectResult;
+            var body = result.Value as ErrorResponse;
+
             // Assert
-            Assert.Equal(ErrorCode.UserAlreadyExists, errorResponse.ErrorCode);
+            Assert.Equal(ErrorCode.UserAlreadyExists, body.ErrorCode);
         }
 
+        /*
         [Fact]
         public void Register_NoUsername_InvalidCredentials()
         {
