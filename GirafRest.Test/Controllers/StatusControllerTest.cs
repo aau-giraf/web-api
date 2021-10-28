@@ -67,9 +67,6 @@ namespace GirafRest.Test
         public void CheckUsersDB_Failed_Connection()
         {
             var stc = InitializeTest();
-            var res = _testContext.MockDbContext.Object.Database.CanConnect();
-            var res = _testContext.MockDbContext.Object.Database = new Microsoft.EntityFrameworkCore.Infrastructure.DatabaseFacade();
-            /*
             var res = stc.DatabaseStatus().Result as ObjectResult;
              
             var body = res.Value as ErrorResponse;
@@ -77,6 +74,7 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.Error, body.ErrorCode);
             Assert.Equal(StatusCodes.Status503ServiceUnavailable, res.StatusCode);
              */
+            /*
 
         }
     }
