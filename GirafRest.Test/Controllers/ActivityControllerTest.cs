@@ -573,7 +573,9 @@ namespace GirafRest.Test
             };
 
             activityController.UserRepository.Setup(rep => rep.GetWithWeekSchedules(user.Id)).Returns(user);
-            activityController.AlternateNameRepository.Setup(rep => rep.Get(user, pictogram1.Id)).Returns(alternateName);
+            activityController.AlternateNameRepository.Setup(rep => rep.SingleOrDefault(alternateName
+                => alternateName.Citizen == user
+                && alternateName.PictogramId == activity.Pictograms.First().Id)).Returns(alternateName);
             activityController.PictogramRepository.Setup(rep => rep.Get(pictogram1.Id)).Returns(pictogram1);
 
             // Act
