@@ -54,13 +54,11 @@ namespace GirafRest.Test
         [Fact]
         public void CheckUsersDB_Successful_Connection()
         {
-            /*
             var stc = InitializeTest();
             var res = stc.DatabaseStatus().Result as ObjectResult;
             var body = res.Value as ErrorResponse;
              
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
-             */
         }
 
         [Fact]
@@ -68,13 +66,10 @@ namespace GirafRest.Test
         {
             var stc = InitializeTest();
             var res = stc.DatabaseStatus().Result as ObjectResult;
-             
             var body = res.Value as ErrorResponse;
             Assert.Equal("Error when connecting to database", body.Message);
             Assert.Equal(ErrorCode.Error, body.ErrorCode);
             Assert.Equal(StatusCodes.Status503ServiceUnavailable, res.StatusCode);
-             */
-            /*
 
         }
     }
