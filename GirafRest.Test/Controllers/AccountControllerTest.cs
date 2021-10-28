@@ -195,6 +195,9 @@ namespace GirafRest.Test
                 GirafService.Setup(
                     service => service._context.SaveChangesAsync(It.IsAny<CancellationToken>())
                 ).Returns(Task.FromResult(affectedRows));
+                GirafService.SetupGet(
+                    service => service._userManager
+                ).Returns(signInManager.Object.UserManager);
             }
             
             public Mock<SignInManager<GirafUser>> SignInManager { get; }
@@ -345,15 +348,14 @@ namespace GirafRest.Test
         }
 
         #endregion
-        */
 
         #region Register
+        */
         [Fact]
         public void Register_CorrectModelAndConditions_ReturnsCreatedWithDto()
         {
             // Arrange
-            var userManager = new MockUserManager();
-            var signInManager = new MockSignInManager(userManager);
+            var signInManager = new MockSignInManager();
             var accountController = new MockedAccountController(signInManager);
             var department = new Department()
             {
@@ -498,86 +500,75 @@ namespace GirafRest.Test
             Assert.Equal(ErrorCode.InvalidCredentials, body.ErrorCode);
         }
 
-        /*
-        [Fact]
-        // Account may exist without department
-        // If user is without department, then Department=null, otherwise department = user.DepartmentKey
-        public void Register_NoDepartment_Success()
-        {
-            // Arrange
-            var signInManager = new FakeSignInManager();
-            var accountController = new MockAccountController(signInManager);
-            var userManager = new Mock<UserManager<GirafUser>>();
-            var departmentRepository = accountController.DepartmentRepository;
-            var userRepository = accountController.UserRepository;
-            var dto = new RegisterDTO()
-            {
-                Username = "Thomas",
-                DisplayName = "Thomas",
-                Password = "password",
-                DepartmentId = 1,
-                Role = GirafRoles.Citizen,
-            };
-            var mockUser1 = new GirafUser()
-            {
-                UserName = "Thomas",
-                DisplayName = "Thomas",
-                Id = "Thomas22",
-                DepartmentKey = 1
-
-            };
-            var dep = new Department()
-            {
-                Key = 1,
-                Name = "Mock Department1",
-                Members = new List<GirafUser>()
-                {
-                    mockUser1,
-                }
-            };
-            var identityResult = IdentityResult.Success;
-            
-            // Mock
-            userRepository.Setup(x => x.ExistsUsername(dto.Username)).Returns(false);
-            departmentRepository.Setup(x => x.GetDepartmentById((long) dto.DepartmentId)).Returns(dep);
-            userManager.Setup(x => x.CreateAsync(It.IsAny<GirafUser>(), It.IsAny<string>()))
-                .Returns(Task.FromResult(identityResult));
-             
-            
-            // Act
-            var response = accountController.Register(dto);
-            var objectResult = response.Result as ObjectResult;
-            var succesResponse = objectResult.Value as SuccessResponse<GirafUserDTO>;
-            
-            // Assert
-            Assert.Equal(StatusCodes.Status201Created, objectResult.StatusCode);
-            Assert.Null(succesResponse.Data.Department);
-        }
-        
-        [Fact]
-        public void Register_BlankDTO_InvalidCredentials()
-        {
-            // Arrange
-            var signInManager = new FakeSignInManager();
-            var accountController = new MockAccountController(signInManager);
-            var dto = new RegisterDTO()
-            {
-                Username = "",
-                Password = "",
-            };
-            // Mock
-            // Act
-            var response = accountController.Register(dto);
-            var objectResult = response.Result as ObjectResult;
-            var errorResponse = objectResult.Value as ErrorResponse;
-            
-            // Assert
-            Assert.Equal(StatusCodes.Status400BadRequest, objectResult.StatusCode);
-            Assert.Equal(ErrorCode.InvalidCredentials, errorResponse.ErrorCode);
-        }
-
         [Fact]
         public void Register_GuardianRelation_Success(){
+            /*
+            // Arrange
+            var signInManager = new MockSignInManager();
+            var accountController = new MockedAccountController(signInManager);
+            var department = new Department()
+            {
+                Key = 1,
+                Name = "SomewhereOverTheRainbow",
+                // For some reason the empty constructor of "Department"
+                //   initializes all collection/enumerables with a List
+                //   but not "WeekTemplates", for this reason to ensure
+                //   no weird braking changes, i manually initialize it.
+                WeekTemplates = new List<WeekTemplate>()
+            };
+            var registrationDto = new RegisterDTO() 
+            {
+                Username = "Andreas",
+                DisplayName = "Brandhoej",
+                Password = "P@ssw0rd",
+                Role = GirafRoles.Citizen,
+                DepartmentId = department.Key,
+            };
+            var creationResult = IdentityResult.Success;
+            var roleResult = IdentityResult.Success;
+            var roleAsString = "Citizen";
+            var request = new Mock<HttpRequest>();
+            var guardianIds = new List<string>()
+            {
+                "GuradianId1"
+            };
+
+            // Mock
+            accountController.UserRepository.Setup(
+                repo => repo.ExistsUsername(registrationDto.Username)
+            ).Returns(false);
+            accountController.DepartmentRepository.Setup(
+                repo => repo.GetDepartmentById(department.Key)
+            ).Returns(department);
+            signInManager.UserManager.Setup(
+                manager => manager.CreateAsync(It.IsAny<GirafUser>(), It.IsAny<string>())
+            ).Returns(Task.FromResult(creationResult));
+            signInManager.UserManager.Setup(
+                manager => manager.AddToRoleAsync(It.IsAny<GirafUser>(), roleAsString)
+            ).Returns(Task.FromResult(roleResult));
+            signInManager.Setup(
+                manager => manager.SignInAsync(It.IsAny<GirafUser>(), true, null)
+            ).Returns(Task.CompletedTask);
+            accountController.GirafRoleRepository.Setup(
+                repo => repo.GetAllGuardians()
+            ).Returns(guardianIds);
+            accountController.UserRepository.Setup(
+                repo => repo.GetUsersInDepartment(department.Key, guardianIds)
+            ).Returns()
+
+            // Arrange
+            var response = accountController.Register(registrationDto);
+            var result = response.Result as ObjectResult;
+            var body = result.Value as SuccessResponse<GirafUserDTO>;
+
+            // Assert
+            Assert.Equal(StatusCodes.Status201Created, result.StatusCode);
+            */
+
+
+
+
+            /*
             // Arrange
             var signInManager = new FakeSignInManager();
             var accountController = new MockAccountController(signInManager);
@@ -631,8 +622,10 @@ namespace GirafRest.Test
             // check data
             Assert.Equal(2, newUser.Guardians.Count());
             Assert.Equal(guardian, newUser.Guardians.First().Guardian);
-        }
+            */
+        // }
 
+        /*
         [Fact]
         public void Register_NullDTO_MissingProperties()
         {
@@ -786,8 +779,7 @@ namespace GirafRest.Test
 
             Assert.Equal(StatusCodes.Status200OK, objectResult.StatusCode);
         }   
-        */
         #endregion
-
+        */
     }
 }
