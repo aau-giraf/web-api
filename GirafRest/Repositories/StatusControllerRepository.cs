@@ -18,7 +18,7 @@ namespace GirafRest.Repositories
         public StatusControllerRepository(IGirafService giraf, GirafDbContext context) : base(context)
         {
         }
-
+        //Checks connection to database through context
         public virtual async Task<Boolean> CheckDbConnectionAsync()
         {
             return await Context.Database.CanConnectAsync();

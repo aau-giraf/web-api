@@ -6,8 +6,6 @@ using GirafRest.Models.Responses;
 using GirafRest.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using System.Linq;
 using GirafRest.IRepositories;
 using Microsoft.Extensions.Logging;
 

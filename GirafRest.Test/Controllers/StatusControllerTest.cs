@@ -86,29 +86,8 @@ namespace GirafRest.Test
         }
     }
 
-    /*public class MockStatusController : StatusController
-    {
-        private Mock<IStatusControllerRepository> _statusControllerRepository;
-        private Mock<IGirafService> _girafService;
-        private Mock<ILoggerFactory> _loggerFactory;
-
-        public Mock<ILoggerFactory> LoggerFactory { get { return _loggerFactory; } set { _loggerFactory = value; } }
-        public Mock<IGirafService> GirafService { get {return _girafService; } set { _girafService = value; } }
-        public Mock<IStatusControllerRepository> StatusControllerRepository{ get { return _statusControllerRepository; } set { _statusControllerRepository = value;} }
-        public MockStatusController(IGirafService girafService, ILoggerFactory logger, IStatusControllerRepository statusControllerRepository):base(girafService, logger, statusControllerRepository)
+        public class MockStatusController : StatusController
         {
-
-        }
-        public MockStatusController(Mock<IGirafService> girafService, Mock<ILoggerFactory> logger, Mock<IStatusControllerRepository> statusControllerRepository) : base(girafService.Object, logger.Object, statusControllerRepository.Object)
-        {
-            _girafService = girafService;
-            _loggerFactory = logger;
-            _statusControllerRepository = statusControllerRepository;
-        }
-
-    }*/
-    public class MockStatusController : StatusController
-    {
         public MockStatusController()
             : this(
                 new Mock<IGirafService>(),
@@ -136,7 +115,6 @@ namespace GirafRest.Test
         public Mock<ILoggerFactory> LoggerFactory { get; }
         public Mock<IGirafService> GirafService { get; }
         public Mock<IStatusControllerRepository> StatusControllerRepository{ get; }
-
-    }
+        }
 
 }
