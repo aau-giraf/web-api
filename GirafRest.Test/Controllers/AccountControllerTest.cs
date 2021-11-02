@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using ILoggerFactory = Microsoft.Extensions.Logging.ILoggerFactory;
 using System.Threading;
+using System.Linq;
 
 namespace GirafRest.Test
 {
@@ -501,8 +502,8 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void Register_GuardianRelation_Success(){
-            /*
+        public void Register_GuardianRelation_Success()
+        {
             // Arrange
             var signInManager = new MockSignInManager();
             var accountController = new MockedAccountController(signInManager);
@@ -532,6 +533,12 @@ namespace GirafRest.Test
             {
                 "GuradianId1"
             };
+            var guardian = new GirafUser("Emil", "Guardian Of The galaxy", department, GirafRoles.Guardian);
+            var guardians = new List<GirafUser>()
+            {
+                guardian
+            };
+            IList<GirafUser> capturedNewUsers = new List<GirafUser>();
 
             // Mock
             accountController.UserRepository.Setup(
@@ -541,7 +548,7 @@ namespace GirafRest.Test
                 repo => repo.GetDepartmentById(department.Key)
             ).Returns(department);
             signInManager.UserManager.Setup(
-                manager => manager.CreateAsync(It.IsAny<GirafUser>(), It.IsAny<string>())
+                manager => manager.CreateAsync(Capture.In(capturedNewUsers), It.IsAny<string>())
             ).Returns(Task.FromResult(creationResult));
             signInManager.UserManager.Setup(
                 manager => manager.AddToRoleAsync(It.IsAny<GirafUser>(), roleAsString)
@@ -554,232 +561,189 @@ namespace GirafRest.Test
             ).Returns(guardianIds);
             accountController.UserRepository.Setup(
                 repo => repo.GetUsersInDepartment(department.Key, guardianIds)
-            ).Returns()
+            ).Returns(guardians);
 
             // Arrange
             var response = accountController.Register(registrationDto);
             var result = response.Result as ObjectResult;
             var body = result.Value as SuccessResponse<GirafUserDTO>;
+            var newCitizen = capturedNewUsers[0];
 
             // Assert
             Assert.Equal(StatusCodes.Status201Created, result.StatusCode);
-            */
+            Assert.Equal(1, capturedNewUsers.Count);
+            Assert.Equal(1, newCitizen.Guardians.Count);
+            Assert.Equal(guardian, newCitizen.Guardians.First().Guardian);
+        }
 
-
-
-
-            /*
-            // Arrange
-            var signInManager = new FakeSignInManager();
-            var accountController = new MockAccountController(signInManager);
-            var userRepository = accountController.UserRepository;
-            var dto1 = new RegisterDTO()
-            {
-                Username = "Thomas",
-                DisplayName = "Thomas",
-                Password = "password",
-                DepartmentId = 1,
-                Role = GirafRoles.Citizen,
-            };
-            var dto2 = new RegisterDTO()
-            {
-                Username = "Daniel",
-                DisplayName = "Daniel",
-                Password = "password",
-                DepartmentId = 1,
-                Role = GirafRoles.Citizen,
-            };
-            var mockUser1 = new GirafUser()
-            {
-                UserName = "Thomas",
-                DisplayName = "Thomas",
-                Id = "Thomas22",
-                DepartmentKey = 1
-
-            };
-            var mockUser2 = new GirafUser()
-            {
-                UserName = "Daniel",
-                DisplayName = "Daniel",
-                Id = "Daniel23",
-                DepartmentKey = 2
-
-            };
-            
-            // Mock
-            userRepository.Setup(x => x.GetUserByUsername(dto1.Username)).Returns(mockUser1);
-            
-            // Act
-            var response = accountController.Register(dto1);
-            var objectResult = response.Result as ObjectResult;
-            var errorResponse = objectResult.Value as ErrorResponse;
-            
-            // Assert
-            Assert.Equal(StatusCodes.Status201Created, objectResult.StatusCode);
-            // fetch expected guardian from test data
-            var guardian = _testContext.MockUsers.FirstOrDefault(u => u.UserName == "Guardian in dep 2");
-            var newUser = _testContext.MockUsers.FirstOrDefault(u => u.UserName == "JohnDoe");
-            // check data
-            Assert.Equal(2, newUser.Guardians.Count());
-            Assert.Equal(guardian, newUser.Guardians.First().Guardian);
-            */
-        // }
-
-        /*
         [Fact]
         public void Register_NullDTO_MissingProperties()
         {
             // Arrange
-            var signInManager = new FakeSignInManager();
-            var accountController = new MockAccountController(signInManager);
-            
+            var signInManager = new MockSignInManager();
+            var accountController = new MockedAccountController(signInManager);
+
             // Act
             var response = accountController.Register(null);
-            var objectResult = response.Result as ObjectResult;
-            var errorResponse = objectResult.Value as ErrorResponse;
-            
+            var result = response.Result as ObjectResult;
+            var errorResponse = result.Value as ErrorResponse;
+
             // Assert
-            Assert.Equal(StatusCodes.Status400BadRequest, objectResult.StatusCode);
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
             Assert.Equal(ErrorCode.MissingProperties, errorResponse.ErrorCode);
         }
-        #endregion
 
-
-        #region ChangePassword
         [Fact]
         public void ChangePassword_ValidInput_Success()
         {
-            var ac = InitializeTest();
-            var mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
-            _testContext.MockUserManager.MockLoginAsUser(mockUser);
-
-            ChangePasswordDTO cpDTO = new ChangePasswordDTO()
+            // Arrange
+            var signInManager = new MockSignInManager();
+            var accountController = new MockedAccountController(signInManager);
+            var userId = "I identitfy as this ID because it is IDeal";
+            var user  = new GirafUser()
+            {
+                UserName = "Johnny Lawrence",
+                DisplayName = "Cobra Kai dojo"
+            };
+            var dto = new ChangePasswordDTO()
             {
                 OldPassword = "password",
-                NewPassword = "PASSWORD"
+                NewPassword = "P@ssw0rd"
             };
 
-            // var res = ac.ChangePasswordByOldPassword(mockUser.Id, cpDTO).Result as ObjectResult;
+            // Mock
+            accountController.UserRepository.Setup(
+                repo => repo.Get(userId)
+            ).Returns(user);
+            signInManager.UserManager.Setup(
+                manager => manager.ChangePasswordAsync(user, dto.OldPassword, dto.NewPassword)
+            ).Returns(Task.FromResult(IdentityResult.Success));
 
-            // Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
+            // Act
+            var response = accountController.ChangePasswordByOldPassword(userId, dto);
+            var result = response.Result as ObjectResult;
+
+            // Assert
+            Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
         }
+
 
         [Fact]
         public void ChangePassword_NullDTO_MissingProperties()
         {
             // Arrange
-            var signInManager = new FakeSignInManager();
-            var accountController = new MockAccountController(signInManager);
-            var userRepository = accountController.UserRepository;
-            var cpDTO = new ChangePasswordDTO();
-            var userid = "Username";
-            var mockuser = new GirafUser()
+            var signInManager = new MockSignInManager();
+            var accountController = new MockedAccountController(signInManager);
+            var userId = "I identitfy as this ID because it is IDeal";
+            var user  = new GirafUser()
             {
-                UserName = "Username",
-                DisplayName = "UsernameDisplay",
-                Id = "username22",
-                DepartmentKey = 2
-
+                UserName = "Johnny Lawrence",
+                DisplayName = "Cobra Kai dojo"
             };
-            
-            // Mock
-            userRepository.Setup(x => x.Get(userid)).Returns(mockuser);
-                
-            // Act
-            var response = accountController.ChangePasswordByOldPassword(userid, cpDTO);
-            var objectResult = response.Result as ObjectResult;
-            var errorResponse = objectResult.Value as ErrorResponse;
+            var dto = new ChangePasswordDTO();
 
-            Assert.Equal(StatusCodes.Status400BadRequest, objectResult.StatusCode);
-            Assert.Equal(ErrorCode.MissingProperties, errorResponse.ErrorCode);
+            // Mock
+            accountController.UserRepository.Setup(
+                repo => repo.Get(userId)
+            ).Returns(user);
+
+            // Act
+            var response = accountController.ChangePasswordByOldPassword(userId, dto);
+            var result = response.Result as ObjectResult;
+
+            // Assert
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
         }
 
         [Fact]
         public void ChangePassword_WrongOldPassword_PasswordNotUpdated()
         {
             // Arrange
-            var signInManager = new FakeSignInManager();
-            var accountController = new MockAccountController(signInManager);
-            var userRepository = accountController.UserRepository;
-            var girafService = accountController.GirafService;
-            var userid = "Username";
-            var mockuser = new GirafUser()
+            var signInManager = new MockSignInManager();
+            var accountController = new MockedAccountController(signInManager);
+            var userId = "I identitfy as this ID because it is IDeal";
+            var user  = new GirafUser()
             {
-                UserName = "Username",
-                DisplayName = "UsernameDisplay",
-                Id = "username22",
-                DepartmentKey = 2
-
+                UserName = "Johnny Lawrence",
+                DisplayName = "Cobra Kai dojo"
             };
-            ChangePasswordDTO cpDTO = new ChangePasswordDTO()
+            var dto = new ChangePasswordDTO()
             {
-                OldPassword = "drowssap",
-                NewPassword = "PASSWORD",
+                OldPassword = "password",
+                NewPassword = "P@ssw0rd"
             };
 
             // Mock
-            userRepository.Setup(x => x.Get(userid)).Returns(mockuser);
-           
+            accountController.UserRepository.Setup(
+                repo => repo.Get(userId)
+            ).Returns(user);
+            signInManager.UserManager.Setup(
+                manager => manager.ChangePasswordAsync(user, dto.OldPassword, dto.NewPassword)
+            ).Returns(Task.FromResult(IdentityResult.Failed()));
+
             // Act
-            var response = accountController.ChangePasswordByOldPassword(userid, cpDTO);
-            var objectResult = response.Result as ObjectResult;
-            var errorResponse = objectResult.Value as ErrorResponse;
-            
+            var response = accountController.ChangePasswordByOldPassword(userId, dto);
+            var result = response.Result as ObjectResult;
+
             // Assert
-            Assert.Equal(StatusCodes.Status500InternalServerError, objectResult.StatusCode);
-            Assert.Equal(ErrorCode.PasswordNotUpdated, errorResponse.ErrorCode);
+            Assert.Equal(StatusCodes.Status500InternalServerError, result.StatusCode);
         }
 
-        #endregion
-
-        #region DeleteUser
         [Fact]
         public void DeleteUser_NotFound_UserNotFound()
         {
             // Arrange
-            var signInManager = new FakeSignInManager();
-            var accountController = new MockAccountController(signInManager);
-            var userid = "Username";
-            
+            var signInManager = new MockSignInManager();
+            var accountController = new MockedAccountController(signInManager);
+            var userId = "I identitfy as this ID because it is IDeal";
+            var user  = new GirafUser()
+            {
+                UserName = "Johnny Lawrence",
+                DisplayName = "Cobra Kai dojo"
+            };
+
+            // Mock
+            accountController.UserRepository.Setup(
+                repo => repo.GetUserByID(userId)
+            ).Returns((GirafUser)default);
+
             // Act
-            var response = accountController.DeleteUser(userid);
-            var objectResult = response.Result as ObjectResult;
-            var errorresponse = objectResult.Value as ErrorResponse;
-            
+            var response = accountController.DeleteUser(userId);
+            var result = response.Result as ObjectResult;
+            var error = result.Value as ErrorResponse;
+
             // Assert
-            Assert.Equal(StatusCodes.Status404NotFound, objectResult.StatusCode);
-            Assert.Equal(ErrorCode.UserNotFound, errorresponse.ErrorCode);
+            Assert.Equal(StatusCodes.Status404NotFound, result.StatusCode);
+            Assert.Equal(ErrorCode.UserNotFound, error.ErrorCode);
         }
 
         [Fact]
         public void DeleteUser_ValidInput_Success()
         {
             // Arrange
-            var signInManager = new FakeSignInManager();
-            var accountController = new MockAccountController(signInManager);
-            var userRepository = accountController.UserRepository;
-            var userid = "Username";
-            var mockUser = new GirafUser()
+            var signInManager = new MockSignInManager();
+            var accountController = new MockedAccountController(signInManager);
+            var userId = "I identitfy as this ID because it is IDeal";
+            var user  = new GirafUser()
             {
-                UserName = "Username",
-                DisplayName = "UsernameDisplay",
-                Id = "username22",
-                DepartmentKey = 2
-
+                UserName = "Johnny Lawrence",
+                DisplayName = "Cobra Kai dojo"
             };
-            
-            // Mock
-            userRepository.Setup(x => x.GetUserByID(mockUser.Id)).Returns(mockUser);
-            
-            
-            // Act
-            var response = accountController.DeleteUser(mockUser.Id);
-            var objectResult = response.Result as ObjectResult;
-            var succesResponse = objectResult.Value as SuccessResponse;
 
-            Assert.Equal(StatusCodes.Status200OK, objectResult.StatusCode);
-        }   
-        #endregion
-        */
+            // Mock
+            accountController.UserRepository.Setup(
+                repo => repo.GetUserByID(userId)
+            ).Returns(user);
+            accountController.UserRepository.Setup(
+                repo => repo.Remove(user)
+            );
+
+            // Act
+            var response = accountController.DeleteUser(userId);
+            var result = response.Result as ObjectResult;
+
+            // Assert
+            Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
+        }
     }
 }
