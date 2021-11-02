@@ -51,7 +51,7 @@ namespace GirafRest.Test.Controllers
             unsorted_test_list.Add(Christoffer);
             //Act
             var sorted = unsorted_test_list.OrderBy(person => person.DisplayName); //Make an sorted version of the unsorted list
-             unsorted_test_list.Sort(); //sort the original list
+            unsorted_test_list.Sort(); //sort the original list
             
             //Assert
             CollectionAssert.AreEqual(sorted.ToList(), unsorted_test_list.ToList()); //check is they are equal in order
