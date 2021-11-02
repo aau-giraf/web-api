@@ -1,18 +1,8 @@
-using System.Linq;
-using GirafRest.Controllers;
-using GirafRest.Models;
-using GirafRest.Models.DTOs;
-using GirafRest.Models.Responses;
-using GirafRest.Services;
-using GirafRest.Test.Mocks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Xunit;
-
 namespace GirafRest.Test
 {
     public class AlternateNameControllerTest
     {
+        /*
         private UnitTestExtensions.TestContext _testContext;
         private const int ADMIN_DEP_ONE = 0;
 
@@ -411,5 +401,6 @@ namespace GirafRest.Test
         }
         
         #endregion
+    */
     }
 }
