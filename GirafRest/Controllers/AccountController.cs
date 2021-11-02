@@ -209,14 +209,13 @@ namespace GirafRest.Controllers
             /*if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "You do not have permission to edit this user"));
                 */
-            var result =  await _giraf._userManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+            var result =  await _signInManager.UserManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
             if (!result.Succeeded)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse(ErrorCode.PasswordNotUpdated, "Password was not updated"));
             }
 
             await _signInManager.SignInAsync(user, isPersistent: false);
-            _giraf._logger.LogInformation("User changed their password successfully.");
             return Ok(new SuccessResponse("Password was updated"));
         }
 

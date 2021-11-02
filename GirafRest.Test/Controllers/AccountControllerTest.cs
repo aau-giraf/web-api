@@ -146,18 +146,44 @@ namespace GirafRest.Test
             public Mock<IUserConfirmation<GirafUser>> IUserConfirmation { get; }
         }
 
+        public class OptionsJwtConfig : IOptions<JwtConfig>
+        {
+            public JwtConfig Value { get; }
+
+            public OptionsJwtConfig(JwtConfig config)
+            {
+                Value = config;
+            }
+        }
+
         public class MockedAccountController : AccountController
         {
             public MockedAccountController()
                 : this(new MockSignInManager())
             { }
 
+            public MockedAccountController(IOptions<JwtConfig> configuration) 
+                : this(
+                    new MockSignInManager(), 
+                    configuration
+                )
+            { }
+
             public MockedAccountController(MockSignInManager signInManager) 
+                : this(
+                    signInManager, 
+                    new OptionsJwtConfig(default)
+                )
+            { }
+
+            public MockedAccountController(
+                MockSignInManager signInManager,
+                IOptions<JwtConfig> configuration)
                 : this(
                     signInManager, 
                     new Mock<ILoggerFactory>(),
                     new Mock<IGirafService>(),
-                    new Mock<IOptions<JwtConfig>>(),
+                    configuration,
                     new Mock<IGirafUserRepository>(),
                     new Mock<IDepartmentRepository>(),
                     new Mock<IGirafRoleRepository>()
@@ -168,7 +194,7 @@ namespace GirafRest.Test
                 Mock<SignInManager<GirafUser>> signInManager,
                 Mock<ILoggerFactory> loggerFactory,
                 Mock<IGirafService> giraf,
-                Mock<IOptions<JwtConfig>> configuration,
+                IOptions<JwtConfig> configuration,
                 Mock<IGirafUserRepository> userRepository,
                 Mock<IDepartmentRepository> departmentRepository, 
                 Mock<IGirafRoleRepository> girafRoleRepository
@@ -177,7 +203,7 @@ namespace GirafRest.Test
                     signInManager.Object, 
                     loggerFactory.Object,
                     giraf.Object, 
-                    configuration.Object,
+                    configuration,
                     userRepository.Object,
                     departmentRepository.Object,
                     girafRoleRepository.Object
@@ -186,7 +212,6 @@ namespace GirafRest.Test
                 SignInManager = signInManager;
                 LoggerFactory = loggerFactory;
                 GirafService = giraf;
-                Configuration = configuration;
                 UserRepository = userRepository;
                 DepartmentRepository = departmentRepository;
                 GirafRoleRepository = girafRoleRepository;
@@ -205,7 +230,6 @@ namespace GirafRest.Test
             public Mock<SignInManager<GirafUser>> SignInManager { get; }
             public Mock<ILoggerFactory> LoggerFactory { get; }
             public Mock<IGirafService> GirafService { get; }
-            public Mock<IOptions<JwtConfig>> Configuration { get; }
             public Mock<IGirafUserRepository> UserRepository { get; }
             public Mock<IDepartmentRepository> DepartmentRepository { get; }
             public Mock<IGirafRoleRepository> GirafRoleRepository { get; }
@@ -260,7 +284,12 @@ namespace GirafRest.Test
             // Arrange
             var userManager = new MockUserManager();
             var signInManager = new MockSignInManager(userManager);
-            var accountController = new MockedAccountController(signInManager);
+            var jwtOptions = new OptionsJwtConfig(new JwtConfig() {
+                JwtKey = "",
+                JwtIssuer = "",
+                JwtExpireDays = 0,
+            });
+            var accountController = new MockedAccountController(signInManager, jwtOptions);
             var userRepository = accountController.UserRepository;
             var configuration = accountController.Configuration;
             var dto1 = new LoginDTO()

@@ -19,7 +19,7 @@ namespace GirafRest.Repositories
         public GirafUser GetUserByUsername(string username)
             => Context.Users.FirstOrDefault(u => u.UserName == username);
 
-        public List<GirafUser> GetUsersInDepartment(long departmentKey, IEnumerable<string> users)
+        public IEnumerable<GirafUser> GetUsersInDepartment(long departmentKey, IEnumerable<string> users)
         {
            return Context.Users
             .Where(user => 
