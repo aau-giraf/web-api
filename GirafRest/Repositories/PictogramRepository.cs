@@ -1,17 +1,22 @@
-using System.Collections.Generic;
-using System.Linq;
 using GirafRest.Models;
 using GirafRest.IRepositories;
 using GirafRest.Data;
 
 namespace GirafRest.Repositories
 {
+    /// <inheritdoc cref="GirafRest.IRepositories.IPictogramRepository"/>
     public class PictogramRepository : Repository<Pictogram>, IPictogramRepository
     {
-        public PictogramRepository(GirafDbContext context) : base(context)
-        {
+        /// <summary>
+        /// Domain specific repository implementation facade for the DBContext.
+        /// </summary>
+        /// <param name="context">The context to operate on</param>
+        public PictogramRepository(GirafDbContext context)
+            : base(context)
+        { }
 
-        }
-
-        Pictogram GetPictogramByID(long pictogramID) => return Context.Pictograms.FirstOrDefaultAsync(id => id.Id == picId);
+        /// <inheritdoc />
+        public Pictogram GetByID(long pictogramID)
+            => Get(pictogramID);
+    }
 }

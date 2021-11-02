@@ -1,19 +1,22 @@
-using System.Collections.Generic;
-using System.Linq;
 using GirafRest.Models;
 using GirafRest.IRepositories;
 using GirafRest.Data;
 
 namespace GirafRest.Repositories
 {
+    /// <inheritdoc cref="GirafRest.IRepositories.IGirafUserRepository" />
     public class GirafUserRepository : Repository<GirafUser>, IGirafUserRepository
     {
-        public GirafUserRepository(GirafDbContext context) : base(context)
-        {
+        /// <summary>
+        /// Domain specific repository implementation facade for the DBContext.    
+        /// </summary>
+        /// <param name="context">The context to operate on</param>
+        public GirafUserRepository(GirafDbContext context)
+            : base(context)
+        { }
 
-        }
-
-        GirafUser GetUserByID(long userID) 
-            => return Context.Users.FirstOrDefaultAsync(us => us.Id == userId);
+        /// <inheritdoc />
+        public GirafUser GetByID(string userID) 
+            => Get(userID);
     }
 }

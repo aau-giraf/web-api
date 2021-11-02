@@ -16,9 +16,15 @@ namespace GirafRest.Repositories
             Context = context;
         }
 
-        public TEntity Get(int id)
+        public TEntity Get(params object[] ids)
         {
-            return Context.Set<TEntity>().Find(id);
+            return Context.Set<TEntity>().Find(ids);
+        }
+
+        public bool TryGet(out TEntity entity, params object[] ids)
+        {
+            entity = Get(ids);
+            return entity != default;
         }
 
         public IEnumerable<TEntity> GetAll()
@@ -54,6 +60,16 @@ namespace GirafRest.Repositories
         public void RemoveRange(IEnumerable<TEntity> entities)
         {
             Context.Set<TEntity>().RemoveRange(entities);
+        }
+
+        public void Update(TEntity entity)
+        {
+            Context.Update(entity);
+        }
+
+        public void UpdateRange(IEnumerable<TEntity> entities)
+        {
+            Context.UpdateRange(entities);
         }
     }
 }
