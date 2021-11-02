@@ -94,11 +94,13 @@ namespace GirafRest.Controllers
             if (string.IsNullOrEmpty(model.Username))
                 return Unauthorized(new ErrorResponse(
                     ErrorCode.MissingProperties, "Missing username"));
-
+            
+            // check that the caller has suplied password in the request
             if (string.IsNullOrEmpty(model.Password))
                 return Unauthorized(new ErrorResponse(
                     ErrorCode.MissingProperties, "Missing password"));
-
+            
+            // check that the username exists in the database
             if (!_userRepository.ExistsUsername(model.Username))
                 return Unauthorized(new ErrorResponse(ErrorCode.InvalidCredentials, "Invalid credentials"));
 
@@ -198,17 +200,16 @@ namespace GirafRest.Controllers
         public async Task<ActionResult> ChangePasswordByOldPassword(string userId, [FromBody] ChangePasswordDTO model)
         {
             var user = _userRepository.Get(userId);
+            
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
+            
             if (model == null)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing model"));
+            
             if (model.OldPassword == null || model.NewPassword == null)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing old password or new password"));
-
-            // check access rights
-            /*if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "You do not have permission to edit this user"));
-                */
+            
             var result =  await _signInManager.UserManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
             if (!result.Succeeded)
             {
@@ -274,11 +275,7 @@ namespace GirafRest.Controllers
             var user = _userRepository.Get(userId);
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
-
-            // check access rights
-            /*if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return Unauthorized(new ErrorResponse(ErrorCode.NotAuthorized, "Unauthorized"));
-                */
+            
             var result = await _giraf._userManager.GeneratePasswordResetTokenAsync(user);
             return Ok(new SuccessResponse(result));
         }
@@ -296,19 +293,10 @@ namespace GirafRest.Controllers
         public async Task<ActionResult> DeleteUser(string userId)
         {
             var user = _userRepository.GetUserByID(userId);
+            
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
-
-            // tjek om man kan slette sig selv, før jeg kan bruge hasreaduseraccess (sig hvis logged in id = userid så fejl)
-            // A user cannot delete himself/herself
-            //var authenticatedUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
-            //if (authenticatedUser == null || (authenticatedUser.Id == userId))
-              //  return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "Permission error"));
-
-            // check access rights
-            /*if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have rights"));
-                */
+            
             _userRepository.Remove(user);
             _giraf._context.SaveChanges();
 
@@ -343,7 +331,6 @@ namespace GirafRest.Controllers
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim("departmentId", user.DepartmentKey?.ToString() ?? ""),
             };
-
             claims.AddRange(await GetRoleClaims(user));
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.Value.JwtKey));

@@ -240,30 +240,44 @@ namespace GirafRest.Test
 
         // When logging in, one is only allowed to login as users below them in the hierarchy. The hierarchy in order is: Admin, Department, Guardian, Citizen
         // Check if possible to login with mock credentials. All passwords are initialised (Data folder, DBInitializer.cs) to be "password"
-/*
+
         [Fact]
        public void Login_CredentialsOk_Success()
         {
             // Arrange
-            var signInManager = new MockSignInManager();
-            var accountController = new MockedAccountController(signInManager);
+            var userManager = new MockUserManager();
+            var signInManager = new MockSignInManager(userManager);
+            var jwtOptions = new OptionsJwtConfig(new JwtConfig() {
+                JwtKey = "SuperSuperSuperSUperSuperSUperSuperSecretKey",
+                JwtIssuer = "TestIssuer",
+                JwtExpireDays = 1,
+            });
+            var accountController = new MockedAccountController(signInManager,jwtOptions);
             var userRepository = accountController.UserRepository;
             var dto = new LoginDTO()
             {
                 Username = "Thomas",
                 Password = "password"
             };
-            var mockuser = new GirafUser()
+            var mockUser = new GirafUser()
             {
                 UserName = "Thomas",
                 DisplayName = "Thomas",
                 Id = "Thomas22",
                 DepartmentKey = 1
             };
+            var signInResult = SignInResult.Success;
+            Task.FromResult(signInResult);
+            var userRoles = new List<string>();
 
             // Mock
-            userRepository.Setup(x => x.ExistsUsername(dto.Username)).Returns(false);
-            userRepository.Setup(x => x.GetUserByUsername(dto.Username)).Returns(mockuser);
+            userRepository.Setup(x => x.ExistsUsername(dto.Username)).Returns(true);
+            userRepository.Setup(x => x.GetUserByUsername(dto.Username)).Returns(mockUser);
+            signInManager.Setup(x => x.PasswordSignInAsync(dto.Username, dto.Password, true, false))
+                .Returns(Task.FromResult(signInResult));
+            userRepository.Setup(x => x.GetUserByUsername(dto.Username)).Returns(mockUser);
+            userManager.Setup(x => x.GetRolesAsync(mockUser)).Returns(Task.FromResult<IList<string>>(userRoles));
+            
             // Act
             var response = accountController.Login(dto);
             var objectResult = response.Result as ObjectResult;
@@ -276,7 +290,7 @@ namespace GirafRest.Test
             Assert.NotNull(succesResponse.Data);
             Assert.True(succesResponse.Data.Length >= 40);
         }
-*/
+
         // Same user log in twice no problem
         [Fact]
         public void Login_SameUserLoginTwice_Success()
@@ -285,13 +299,13 @@ namespace GirafRest.Test
             var userManager = new MockUserManager();
             var signInManager = new MockSignInManager(userManager);
             var jwtOptions = new OptionsJwtConfig(new JwtConfig() {
-                JwtKey = "",
-                JwtIssuer = "",
-                JwtExpireDays = 0,
+                JwtKey = "SuperSuperSuperSUperSuperSUperSuperSecretKey",
+                JwtIssuer = "TestIssuer",
+                JwtExpireDays = 1,
             });
             var accountController = new MockedAccountController(signInManager, jwtOptions);
             var userRepository = accountController.UserRepository;
-            var configuration = accountController.Configuration;
+            
             var dto1 = new LoginDTO()
             {
                 Username = "Dawg",
@@ -334,25 +348,24 @@ namespace GirafRest.Test
             userRepository.Setup(x => x.GetUserByUsername(dto2.Username)).Returns(mockUser2);
             userManager.Setup(x => x.GetRolesAsync(mockUser1)).Returns(Task.FromResult<IList<string>>(userRoles));
             userManager.Setup(x => x.GetRolesAsync(mockUser2)).Returns(Task.FromResult<IList<string>>(userRoles));
-            //configuration.SetupGet(x => x.Value.JwtKey).Returns("SuperSUPERSuperSuperSuperSuperSuperSecretKey");
-           
+
             // Act
             var response1 = accountController.Login(dto1);
             var result1 = response1.Result as ObjectResult;
-            var body1 = result1.Value as ErrorResponse;
+            var body1 = result1.Value as SuccessResponse;
 
             var response2 = accountController.Login(dto1);
             var result2 = response2.Result as ObjectResult;
-            var body2 = result2.Value as ErrorResponse;
+            var body2 = result2.Value as SuccessResponse;
 
             // Assert
             // Check that both requests are successful
             Assert.Equal(StatusCodes.Status200OK, result1.StatusCode);
             Assert.Equal(StatusCodes.Status200OK, result2.StatusCode);
-
+            
             // Check that jwt token is not null and atleast contains 40 characters
-            // Assert.NotNull(bodyB.Data);
-            // Assert.True(bodyB.Data.Length >= 40);
+            Assert.NotNull(body2.Data);
+            Assert.True(body2.Data.Length >= 40);
         }
 
         [Fact]
