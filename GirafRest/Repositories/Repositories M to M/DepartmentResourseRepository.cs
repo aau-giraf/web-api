@@ -6,9 +6,9 @@ using GirafRest.Data;
 
 namespace GirafRest.Repositories
 {
-    public class WeekDayColorRepository : Repository<WeekDayColor>, IWeekDayColorRepository
+    public class DepartmentResourseRepository: Repository<DepartmentResource>, IDepartmentResourseRepository
     {
-        public WeekDayColorRepository(GirafDbContext context) : base(context)
+        public DepartmentResourseRepository(GirafDbContext context) : base(context)
         {
 
         }

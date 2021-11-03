@@ -1,9 +1,9 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using GirafRest.Models;
 
-namespace GirafRest
+
+namespace GirafRest.Models
 {
     public class PictogramRelation
     {
