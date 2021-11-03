@@ -38,9 +38,7 @@ namespace GirafRest.Controllers
         private readonly IOptions<JwtConfig> _configuration;
 
         private readonly IAuthenticationService _authentication;
-        
-        private readonly IUnitOfWork _unitOfWork;
-        
+
         private readonly IGirafUserRepository _userRepository;
 
         private readonly IDepartmentRepository _departmentRepository;
