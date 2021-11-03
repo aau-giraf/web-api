@@ -2,8 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace GirafRest.Models
-
+namespace GirafRest
 {
     /// <summary>
     /// Pivot table for many-many between <see cref="Guardian"/> and <see cref="Citizen"/>/>

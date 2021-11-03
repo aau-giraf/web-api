@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using GirafRest.IRepositories;
 using GirafRest.Data;
-using System.Threading.Tasks;
 
 namespace GirafRest.Repositories
 {
@@ -47,7 +46,7 @@ namespace GirafRest.Repositories
             Context.Set<TEntity>().AddRange(entities);
         }
 
-        public virtual void Remove(TEntity entity)
+        public void Remove(TEntity entity)
         {
             Context.Set<TEntity>().Remove(entity);
         }
@@ -56,6 +55,5 @@ namespace GirafRest.Repositories
         {
             Context.Set<TEntity>().RemoveRange(entities);
         }
-      
     }
 }

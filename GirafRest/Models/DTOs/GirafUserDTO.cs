@@ -22,11 +22,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// Super user role
         /// </summary>
-        SuperUser,
-        /// <summary>
-        /// Trustee role
-        /// </summary>
-        Trustee
+        SuperUser
     }
 
     /// <summary>

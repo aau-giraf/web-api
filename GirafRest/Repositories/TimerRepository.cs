@@ -3,8 +3,6 @@ using System.Linq;
 using GirafRest.Models;
 using GirafRest.IRepositories;
 using GirafRest.Data;
-using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
 
 namespace GirafRest.Repositories
 {
@@ -13,12 +11,5 @@ namespace GirafRest.Repositories
         public TimerRepository(GirafDbContext context) : base(context)
         {
         }
-
-        public Task<Timer> getActivitysTimerkey(Activity activity)
-        {
-            return Context.Timers.FirstOrDefaultAsync(t => t.Key == activity.TimerKey);
-
-        }
-
     }
 }
