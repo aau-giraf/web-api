@@ -20,7 +20,6 @@ namespace GirafRest.Controllers
     /// <summary>
     /// Manages Users, settings etc.
     /// </summary>
-    [Authorize]
     [Route("v1/[controller]")]
     public class UserController : Controller
     {
@@ -417,7 +416,6 @@ namespace GirafRest.Controllers
         /// or UserNasNoCitizens</returns>
         /// <param name="id">Identifier of the <see cref="GirafUser"/> to get citizens for</param>
         [HttpGet("{id}/citizens", Name = "GetCitizensOfUser")]
-        [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
         [ProducesResponseType(typeof(SuccessResponse<List<DisplayNameDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -463,7 +461,6 @@ namespace GirafRest.Controllers
         /// or UserHasNoGuardians </returns>
         /// <param name="id">Identifier for the citizen to get guardians for</param>
         [HttpGet("{id}/guardians", Name = "GetGuardiansOfUser")]
-        [Authorize]
         [ProducesResponseType(typeof(SuccessResponse<List<DisplayNameDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -505,7 +502,6 @@ namespace GirafRest.Controllers
         /// <returns>Success Reponse on Success else UserNotFound, NotAuthorized, UserNotFound, MissingProperties,
         /// or forbidden </returns>
         [HttpPost("{id}/citizens/{citizenId}")]
-        [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
         [ProducesResponseType(typeof(SuccessResponse<List<DisplayNameDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -542,7 +538,6 @@ namespace GirafRest.Controllers
         /// <param name="id">Identifier of the <see cref="GirafUser"/> to update settings for</param>
         /// <param name="options">reference to a <see cref="SettingDTO"/> containing the new settings</param>
         [HttpPut("{id}/settings")]
-        [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
         [ProducesResponseType(typeof(SuccessResponse<SettingDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]

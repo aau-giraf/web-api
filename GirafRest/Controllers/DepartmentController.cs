@@ -106,7 +106,6 @@ namespace GirafRest.Controllers
         /// <returns>The citizen names else DepartmentNotFound, NotAuthorised or DepartmentHasNoCitizens</returns>
         /// <param name="id">Id of <see cref="Department"/> to get citizens for</param>
         [HttpGet("{id}/citizens")]
-        [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
         [ProducesResponseType(typeof(SuccessResponse<List<DisplayNameDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -160,7 +159,6 @@ namespace GirafRest.Controllers
         /// else: MissingProperties, UserNotFound, NotAuthorised, InvalidProperties or CouldNotCreateDepartmentUser
         /// </returns>
         [HttpPost("")]
-        [Authorize]
         [ProducesResponseType(typeof(SuccessResponse<DepartmentDTO>), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -262,7 +260,6 @@ namespace GirafRest.Controllers
         /// Else: DepartmentNotFound, ResourceNotFound, NotAuthorized or DepartmentAlreadyOwnsResourc
         /// </returns>
         [HttpPost("{departmentId}/resource/{resourceId}")]
-        [Authorize]
         [Obsolete("Not used by the new WeekPlanner and might need to be changed or deleted (see future works)")]
         [ProducesResponseType(typeof(SuccessResponse<DepartmentDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -328,7 +325,6 @@ namespace GirafRest.Controllers
         /// <param name="nameDTO">Object handling new name.</param>
         /// <returns>Returns empty ok response.</returns>
         [HttpPut("{departmentId}/name")]
-        [Authorize]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -360,7 +356,6 @@ namespace GirafRest.Controllers
         /// <returns>Empty response on success else: NotAuthorised or DepartmentNotFound</returns>
         /// <param name="departmentId">Identifier of <see cref="Department"/> to delete</param>
         [HttpDelete("{departmentId}")]
-        [Authorize]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -389,7 +384,6 @@ namespace GirafRest.Controllers
         /// Else: ResourceNotFound, NotAuthorized or ResourceNotOwnedByDepartment
         /// </returns>
         [HttpDelete("resource/{resourceId}")]
-        [Authorize]
         [Obsolete("Not used by the new WeekPlanner and might need to be changed or deleted (see future works)")]
         [ProducesResponseType(typeof(SuccessResponse<DepartmentDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]

@@ -17,7 +17,6 @@ namespace GirafRest.Controllers
     /// <summary>
     /// Controller for managing <see cref="AlternateName"/>
     /// </summary>
-    [Authorize]
     [Route("v2/[Controller]")]
     public class AlternateNameController : Controller
     {
@@ -47,7 +46,6 @@ namespace GirafRest.Controllers
         /// <param name="picId">The id of the related pictogram</param>
         /// <returns></returns>
         [HttpGet("{userId}/{picId}")]
-        [Authorize]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType((StatusCodes.Status200OK))]
@@ -92,7 +90,6 @@ namespace GirafRest.Controllers
         /// <param name="an"></param>
         /// <returns>StatusCode containing relevant error or success with the created AltenateNaem</returns>
         [HttpPost("")]
-        [Authorize]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -159,7 +156,6 @@ namespace GirafRest.Controllers
         /// <param name="an">The AlternateNameDTO containing changes</param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        [Authorize]
         public async Task<ActionResult> EditAlternateName(int id, [FromBody] AlternateNameDTO an)
         {
             if (an == null)
