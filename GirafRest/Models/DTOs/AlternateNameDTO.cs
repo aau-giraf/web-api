@@ -27,7 +27,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// Empty constructor of HTTP bdody serialization
         /// </summary>
-        internal AlternateNameDTO() { }
+        public AlternateNameDTO() { }
 
         /// <summary>
         /// Basic constructor

@@ -39,7 +39,6 @@ namespace GirafRest.Controllers
             IAlternateNameRepository alternateNameRepository
         ) {
             _giraf = girafService;
-            _giraf._logger = lFactory.CreateLogger("AlternateName");
             _pictogramRepository = pictogramRepository;
             _girafUserRepository = girafUserRepository;
             _alternateNameRepository = alternateNameRepository;
@@ -56,8 +55,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType((StatusCodes.Status200OK))]
-        public ActionResult GetName(string userId, long picId)
-        {
+        public ActionResult GetName(string userId, long picId) {
             GirafUser user = _girafUserRepository.GetByID(userId);
             if (user == default) {
                 return this.ResourceNotFound(nameof(GirafUser), userId);
@@ -86,8 +84,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-        public async Task<ActionResult> CreateAlternateName([FromBody] AlternateNameDTO alternateName)
-        {
+        public async Task<ActionResult> CreateAlternateName([FromBody] AlternateNameDTO alternateName) {
             if (alternateName == default) {
                 return this.MissingObjectFromBody(nameof(AlternateName));
             }
@@ -129,8 +126,7 @@ namespace GirafRest.Controllers
         /// <param name="newAlternateName">The AlternateNameDTO containing changes</param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public async Task<ActionResult> EditAlternateName(int id, [FromBody] AlternateNameDTO newAlternateName)
-        {
+        public async Task<ActionResult> EditAlternateName(int id, [FromBody] AlternateNameDTO newAlternateName) {
             if (newAlternateName == default) {
                 return this.MissingObjectFromBody(nameof(AlternateNameDTO));
             }

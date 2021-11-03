@@ -1,25 +1,109 @@
+using System.Threading;
+using System.Threading.Tasks;
+using GirafRest.Controllers;
+using GirafRest.Interfaces;
+using GirafRest.IRepositories;
+using GirafRest.Models;
+using GirafRest.Models.DTOs;
+using GirafRest.Models.Responses;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Moq;
+using Xunit;
+
 namespace GirafRest.Test
 {
     public class AlternateNameControllerTest
     {
-        /*
-        private UnitTestExtensions.TestContext _testContext;
-        private const int ADMIN_DEP_ONE = 0;
+        public class MockedAlternateNameController : AlternateNameController {
+            public MockedAlternateNameController()
+                : this(
+                    new Mock<IGirafService>(),
+                    new Mock<ILoggerFactory>(),
+                    new Mock<IPictogramRepository>(),
+                    new Mock<IGirafUserRepository>(),
+                    new Mock<IAlternateNameRepository>()
+                ) { }
 
-        private AlternateNameController InitialiseTest()
-        {
-            _testContext = new UnitTestExtensions.TestContext();
-            var ac = new AlternateNameController(
-                new MockGirafService(_testContext.MockDbContext.Object,
-                    _testContext.MockUserManager), _testContext.MockLoggerFactory.Object,
-                new GirafAuthenticationService(_testContext.MockDbContext.Object, _testContext.MockRoleManager.Object,
-                    _testContext.MockUserManager));
-            _testContext.MockHttpContext = ac.MockHttpContext();
-            return ac;
+            public MockedAlternateNameController(
+                Mock<IGirafService> giraf,
+                Mock<ILoggerFactory> loggerFactory,
+                Mock<IPictogramRepository> pictogramRepository,
+                Mock<IGirafUserRepository> girafUserRepository,
+                Mock<IAlternateNameRepository> alternateNameRepository
+            ) : base(
+                giraf.Object,
+                loggerFactory.Object,
+                pictogramRepository.Object,
+                girafUserRepository.Object,
+                alternateNameRepository.Object
+            ) {
+                Giraf = giraf;
+                LoggerFactory = loggerFactory;
+                PictogramRepository = pictogramRepository;
+                GirafUserRepository = girafUserRepository;
+                AlternateNameRepository = alternateNameRepository;
+
+                // The following are primary mocks whcih are generic.
+                //   These are added to ease the development of tests.
+                var affectedRows = 1;
+                Giraf.Setup(
+                    service => service._context.SaveChangesAsync(It.IsAny<CancellationToken>())
+                ).Returns(Task.FromResult(affectedRows));
+            }
+
+            public Mock<IGirafService> Giraf { get; }
+            public Mock<ILoggerFactory> LoggerFactory { get; }
+            public Mock<IPictogramRepository> PictogramRepository { get; }
+            public Mock<IGirafUserRepository> GirafUserRepository { get; }
+            public Mock<IAlternateNameRepository> AlternateNameRepository { get; }
         }
 
-        #region PostAlternateName
+        [Fact]
+        public void PostAlternateName_CreateWithUserPictogram_Success() {
+            // Arrange
+            var controller = new MockedAlternateNameController();
+            var newAlternateName = new AlternateNameDTO() {
+                Citizen = "Danielsan",
+                Name = "Tommysan",
+                Pictogram = 420691337,
+            };
+            var user = new GirafUser() {
+                Id = newAlternateName.Citizen
+            };
+            var pictogram = new Pictogram() {
+                Id = newAlternateName.Pictogram
+            };
 
+            // Mock
+            controller.GirafUserRepository.Setup(
+                repo => repo.GetByID(newAlternateName.Citizen)
+            ).Returns(user);
+            controller.PictogramRepository.Setup(
+                repo => repo.GetByID(newAlternateName.Pictogram)
+            ).Returns(pictogram);
+            controller.AlternateNameRepository.Setup(
+                repo => repo.GetForUser(user.Id, pictogram.Id)
+            ).Returns((AlternateName)default);
+            controller.AlternateNameRepository.Setup(
+                repo => repo.Add(It.IsAny<AlternateName>())
+            );
+
+            // Act
+            var response = controller.CreateAlternateName(newAlternateName);
+            var result = response.Result as ObjectResult;
+            var body = result.Value as SuccessResponse<AlternateNameDTO>;
+
+            // Assert
+            Assert.Equal(StatusCodes.Status201Created, result.StatusCode);
+            Assert.Equal(newAlternateName.Citizen, body.Data.Citizen);
+            Assert.Equal(newAlternateName.Pictogram, body.Data.Pictogram);
+            Assert.Equal(newAlternateName.Name, body.Data.Name);
+        }
+
+
+        /*
         [Fact]
         public void PostAlternateName_CreateWithUserPictogram_Success()
         {
