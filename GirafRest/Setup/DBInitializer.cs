@@ -48,9 +48,6 @@ namespace GirafRest.Setup
                 //await SampleDataHandler.SerializeDataAsync(context, userManager);
                 return;
             }
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            Console.WriteLine("vibe check");
-            Console.ResetColor();
             // Get sample data
             SampleData sampleData = SampleDataHandler.DeserializeData();
             // Create departments
@@ -67,7 +64,6 @@ namespace GirafRest.Setup
             // Save changes
             await context.SaveChangesAsync();
 
-            Console.WriteLine("role check");
             // Adding citizens to a Guardian
             foreach (var user in context.Users)
             {
@@ -77,7 +73,6 @@ namespace GirafRest.Setup
                     user.AddCitizens(citizens);
                 }
             }
-            Console.WriteLine("role check");
             // Save changes
             await context.SaveChangesAsync();
         }
@@ -87,7 +82,6 @@ namespace GirafRest.Setup
         private static void CreatePictograms(int count)
         {
             System.Console.WriteLine($"Creating {count} pictograms");
-            Console.WriteLine($"vibe");
             DirectoryInfo dir = Directory.CreateDirectory("../pictograms");
           
             using FontFamily family = new FontFamily("Arial");
