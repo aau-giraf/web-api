@@ -11,8 +11,7 @@ namespace GirafRest.IRepositories
         bool ExistsUsername(string username);
         GirafUser GetUserByUsername(string username);
         IEnumerable<GirafUser> GetUsersInDepartment(long departmentKey, IEnumerable<string> users);
-        public GirafUser GetWithWeekSchedules(string id);
+
         GirafUser GetUserByID(string id);
     }
-
 }
