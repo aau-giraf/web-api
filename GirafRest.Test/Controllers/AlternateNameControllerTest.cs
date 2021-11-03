@@ -104,28 +104,7 @@ namespace GirafRest.Test
 
 
         /*
-        [Fact]
-        public void PostAlternateName_CreateWithUserPictogram_Success()
-        {
-            AlternateNameController ac = InitialiseTest();
-            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
-            _testContext.MockUserManager.MockLoginAsUser(mockUser);
 
-            AlternateNameDTO newAN = new AlternateNameDTO()
-            {
-                Citizen = mockUser.Id,
-                Name = "Kage",
-                Pictogram = _testContext.MockPictograms[1].Id
-            };
-
-            var res = ac.CreateAlternateName(newAN).Result as ObjectResult;
-            var body = res.Value as SuccessResponse<AlternateNameDTO>;
-            
-            Assert.Equal(StatusCodes.Status201Created, res.StatusCode);
-            Assert.Equal(newAN.Citizen,body.Data.Citizen);
-            Assert.Equal(newAN.Pictogram,body.Data.Pictogram);
-            Assert.Equal(newAN.Name,body.Data.Name);
-        }
         
         [Fact]
         public void PostAlternateName_CreateWithoutUser_Error()
@@ -486,5 +465,40 @@ namespace GirafRest.Test
         
         #endregion
     */
+
+        [Fact]
+        public void PutAlternateName_EditNotExistingAN_Error() {
+            // Arrange
+            var controller = new MockedAlternateNameController();
+            var newAlternateNameDTO = new AlternateNameDTO() {
+                Name = "hywmongous",
+                Citizen = "Brandhoej",
+                Pictogram = 420,
+            };
+            var oldAlternateName = new AlternateName() {
+                Id = 80085,
+                // Different from newAlternateNameDTO
+                PictogramId = 123,
+            };
+            var user = new GirafUser() {
+                Id = newAlternateNameDTO.Citizen,
+            };
+
+            // Mock
+            controller.GirafUserRepository.Setup(
+                repo => repo.Get(newAlternateNameDTO.Citizen)
+            ).Returns(user);
+            controller.AlternateNameRepository.Setup(
+                repo => repo.Get(oldAlternateName.Id)
+            ).Returns((AlternateName)default);
+
+            // Act
+            var response = controller.EditAlternateName(oldAlternateName.Id, newAlternateNameDTO);
+            var result = response.Result as ObjectResult;
+            var body = result.Value as SuccessResponse<AlternateNameDTO>;
+
+            // Assert
+            Assert.Equal(StatusCodes.Status404NotFound, result.StatusCode);
+        }
     }
 }
