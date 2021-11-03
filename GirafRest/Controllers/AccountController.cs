@@ -124,6 +124,7 @@ namespace GirafRest.Controllers
         ///  Error
         /// </returns>
         [HttpPost("register")]
+        [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -189,6 +190,7 @@ namespace GirafRest.Controllers
         /// Empty Response on success. Else: Missingproperties, PasswordNotUpdated or UserNotFound
         /// </returns>
         [HttpPut("password/{userId}")]
+        [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -264,6 +266,7 @@ namespace GirafRest.Controllers
         /// NotAuthorized if the  currently logged in user is not allowed to change the given users password
         /// </returns>
         [HttpGet("password-reset-token/{userId}")]
+        [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -283,6 +286,7 @@ namespace GirafRest.Controllers
         /// <param name="userId">id for identifying the given <see cref="GirafUser"/> to be deleted</param>
         /// <returns>Empty response on success else UserNotFound or NotAuthorized</returns>
         [HttpDelete("user/{userId}")]
+        [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

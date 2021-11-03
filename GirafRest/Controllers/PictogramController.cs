@@ -20,6 +20,7 @@ namespace GirafRest.Controllers
     /// Manages pictograms, CRUD-ish.
     /// </summary>
     [Route("v1/[controller]")]
+    [Authorize]
     public class PictogramController : Controller
     {
         private const string IMAGE_TYPE_PNG = "image/png";

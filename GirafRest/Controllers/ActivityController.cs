@@ -16,7 +16,7 @@ namespace GirafRest.Controllers
     /// <summary>
     /// Manages activities
     /// </summary>
-    
+    [Authorize]
     [Route("v2/[controller]")]
     public class ActivityController : Controller
     {
@@ -48,6 +48,7 @@ namespace GirafRest.Controllers
         /// <returns>Returns <see cref="ActivityDTO"/> for the requested activity on success else MissingProperties, 
         /// UserNotFound, NotAuthorized, WeekNotFound or InvalidDay.</returns>
         [HttpPost("{userId}/{weekplanName}/{weekYear}/{weekNumber}/{weekDayNmb}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -132,6 +133,7 @@ namespace GirafRest.Controllers
         /// <param name="activityId">id of the activity you want to delete.</param>
         /// <returns>Returns success response else UserNotFound, NotAuthorized or ActivityNotFound.</returns>
         [HttpDelete("{userId}/delete/{activityId}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -170,6 +172,7 @@ namespace GirafRest.Controllers
         /// <param name="activityId"></param>
         /// <returns>Returns <see cref="ActivityDTO"/></returns>
         [HttpGet("{userId}/{activityId}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> GetActivity(string userId, int activityId)
         {
@@ -196,6 +199,7 @@ namespace GirafRest.Controllers
         /// <param name="userId">an ID of the user to update activities for.</param>
         /// <returns>Returns <see cref="ActivityDTO"/> for the updated activity on success else MissingProperties or NotFound</returns>
         [HttpPut("{userId}/update")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
