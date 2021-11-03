@@ -418,53 +418,60 @@ namespace GirafRest.Test
             AlternateNameController ac = InitialiseTest();
             GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
             _testContext.MockUserManager.MockLoginAsUser(mockUser);
-            
+
             AlternateNameDTO newAN = new AlternateNameDTO()
             {
                 Citizen = mockUser.Id,
                 Name = "Kage",
                 Pictogram = _testContext.MockPictograms[1].Id
             };
-            
+
             var res = ac.EditAlternateName(0,newAN).Result as ObjectResult;
-            
+
             Assert.Equal(StatusCodes.Status400BadRequest,res.StatusCode);
         }
-        
+    */
         [Fact]
-        public void PutAlternateName_EditWithoutDTO_Error()
-        {
-            AlternateNameController ac = InitialiseTest();
-            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
-
-
-            AlternateNameDTO newAN = null;
-
-            var res = ac.EditAlternateName(0,newAN).Result as ObjectResult;
-    
-            Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
-        }
-        [Fact]
-        public void PutAlternateName_EditNotExistingAN_Error()
-        {
-            AlternateNameController ac = InitialiseTest();
-            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
-
-
-            AlternateNameDTO newAN = new AlternateNameDTO()
-            {
-                Citizen = mockUser.Id,
-                Name = "Kage",
-                Pictogram = _testContext.MockPictograms.First().Id
+        public void PutAlternateName_WithWrongPictogram_Error() {
+            // Arrange
+            var controller = new MockedAlternateNameController();
+            var oldAlternateName = new AlternateName() {
+                Id = 80085,
+            };
+            var newAlternateNameDTO = new AlternateNameDTO() {
+                Name = "hywmongous",
+                Citizen = "Brandhoej",
+                Pictogram = 420,
             };
 
-            var res = ac.EditAlternateName(-1,newAN).Result as ObjectResult;
-    
-            Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
+            // Mock
+
+            // Act
+            var response = controller.EditAlternateName(oldAlternateName.Id + 1, newAlternateNameDTO);
+            var result = response.Result as ObjectResult;
+            var body = result.Value as SuccessResponse<AlternateNameDTO>;
+
+            // Assert
+            Assert.Equal(StatusCodes.Status404NotFound, result.StatusCode);
         }
-        
-        #endregion
-    */
+
+        [Fact]
+        public void PutAlternateName_EditWithoutDTO_Error() {
+            // Arrange
+            var controller = new MockedAlternateNameController();
+            AlternateNameDTO newAlternateNameDTO = default;
+            var oldAlternateName = new AlternateName() {
+                Id = 80085,
+            };
+
+            // Act
+            var response = controller.EditAlternateName(oldAlternateName.Id, newAlternateNameDTO);
+            var result = response.Result as ObjectResult;
+            var body = result.Value as SuccessResponse<AlternateNameDTO>;
+
+            // Assert
+            Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
+        }
 
         [Fact]
         public void PutAlternateName_EditNotExistingAN_Error() {
