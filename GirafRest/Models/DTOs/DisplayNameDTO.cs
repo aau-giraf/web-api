@@ -1,4 +1,6 @@
-﻿namespace GirafRest.Models.DTOs
+﻿using GirafRest.Models.Enums;
+
+namespace GirafRest.Models.DTOs
 {
     /// <summary>
     /// DTO for DisplayName, used to avoid sending entire GirafUserDTO to avoid sending unnecessary information

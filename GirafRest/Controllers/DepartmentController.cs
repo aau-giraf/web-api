@@ -1,6 +1,7 @@
 using GirafRest.Extensions;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
+using GirafRest.Models.Enums;
 using GirafRest.Models.Responses;
 using GirafRest.Interfaces;
 using Microsoft.AspNetCore.Authorization;
