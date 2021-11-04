@@ -55,7 +55,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType((StatusCodes.Status200OK))]
-        public ActionResult GetName(string userId, long picId) {
+        public ActionResult Get(string userId, long picId) {
             GirafUser user = _girafUserRepository.GetByID(userId);
             if (user == default) {
                 return this.ResourceNotFound(nameof(GirafUser), userId);
@@ -84,7 +84,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
-        public async Task<ActionResult> CreateAlternateName([FromBody] AlternateNameDTO alternateName) {
+        public async Task<ActionResult> Create([FromBody] AlternateNameDTO alternateName) {
             if (alternateName == default) {
                 return this.MissingObjectFromBody(nameof(AlternateName));
             }
@@ -127,7 +127,7 @@ namespace GirafRest.Controllers
         /// <param name="newAlternateName">The AlternateNameDTO containing changes</param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public async Task<ActionResult> EditAlternateName(long id, [FromBody] AlternateNameDTO newAlternateName) {
+        public async Task<ActionResult> Edit(long id, [FromBody] AlternateNameDTO newAlternateName) {
             if (newAlternateName == default) {
                 return this.MissingObjectFromBody(nameof(AlternateNameDTO));
             }
@@ -150,7 +150,7 @@ namespace GirafRest.Controllers
                 return this.ResourceNotFound(nameof(AlternateName), id);
             }
 
-            Pictogram pictogram = this._pictogramRepository.Get(newAlternateName.Pictogram);
+            Pictogram pictogram = this._pictogramRepository.GetByID(newAlternateName.Pictogram);
             if (pictogram == default) {
                 return this.ResourceNotFound(nameof(Pictogram), newAlternateName.Pictogram);
             }
