@@ -198,5 +198,6 @@ namespace GirafRest.Services
 
             return ownedByDepartment;
         }
+
     }
 }

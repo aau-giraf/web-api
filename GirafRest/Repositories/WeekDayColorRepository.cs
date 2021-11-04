@@ -10,6 +10,7 @@ namespace GirafRest.Repositories
     {
         public WeekDayColorRepository(GirafDbContext context) : base(context)
         {
+
         }
     }
 }
