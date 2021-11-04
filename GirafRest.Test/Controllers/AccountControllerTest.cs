@@ -263,7 +263,7 @@ namespace GirafRest.Test
 
         #endregion
 
-       // #region Register
+        #region Register
         
         [Fact]
         public void Register_CorrectModelAndConditions_ReturnsCreatedWithDto()
@@ -505,7 +505,9 @@ namespace GirafRest.Test
             Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
             Assert.Equal(ErrorCode.MissingProperties, errorResponse.ErrorCode);
         }
-
+        #endregion register
+        
+        
         [Fact]
         public void ChangePassword_ValidInput_Success()
         {
