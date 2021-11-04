@@ -47,7 +47,6 @@ namespace GirafRest.Repositories
         {
             return Context.SaveChangesAsync();
         }
-
         /// <summary>
         /// Attempt to find the target user and check that he exists.
         /// </summary>

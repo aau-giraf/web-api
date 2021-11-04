@@ -308,7 +308,7 @@ namespace GirafRest.Controllers
 
 
             //Find the resource and check that it actually does exist - also verify that the resource is private
-            var resource = await _pictogramRepository.FindResource(resourceIdDTO);
+            var resource = await _pictogramRepository.FetchResourceWithId(resourceIdDTO);
 
             if (resource == null)
                 return NotFound(new ErrorResponse(ErrorCode.ResourceNotFound, "Resource not found"));
