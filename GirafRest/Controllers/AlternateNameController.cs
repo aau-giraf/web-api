@@ -127,13 +127,17 @@ namespace GirafRest.Controllers
         /// <param name="newAlternateName">The AlternateNameDTO containing changes</param>
         /// <returns></returns>
         [HttpPut("{id}")]
-        public async Task<ActionResult> EditAlternateName(int id, [FromBody] AlternateNameDTO newAlternateName) {
+        public async Task<ActionResult> EditAlternateName(long id, [FromBody] AlternateNameDTO newAlternateName) {
             if (newAlternateName == default) {
                 return this.MissingObjectFromBody(nameof(AlternateNameDTO));
             }
 
             if (string.IsNullOrEmpty(newAlternateName.Name)) {
                 return this.MissingPropertyFromRequest(nameof(newAlternateName.Name));
+            }
+
+            if (string.IsNullOrEmpty(newAlternateName.Citizen)) {
+                return this.MissingPropertyFromRequest(nameof(newAlternateName.Citizen));
             }
 
             GirafUser user = _girafUserRepository.Get(newAlternateName.Citizen);

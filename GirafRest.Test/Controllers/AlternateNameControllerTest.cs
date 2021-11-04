@@ -547,5 +547,40 @@ namespace GirafRest.Test
         
         #endregion
     */
+
+        [Fact]
+        public void PutAlternateName_EditNotExistingAN_Error() {
+            // Arrange
+            var controller = new MockedAlternateNameController();
+            var newAlternateNameDTO = new AlternateNameDTO() {
+                Name = "hywmongous",
+                Citizen = "Brandhoej",
+                Pictogram = 420,
+            };
+            var oldAlternateName = new AlternateName() {
+                Id = 80085,
+                // Different from newAlternateNameDTO
+                PictogramId = 123,
+            };
+            var user = new GirafUser() {
+                Id = newAlternateNameDTO.Citizen,
+            };
+
+            // Mock
+            controller.GirafUserRepository.Setup(
+                repo => repo.Get(newAlternateNameDTO.Citizen)
+            ).Returns(user);
+            controller.AlternateNameRepository.Setup(
+                repo => repo.Get(oldAlternateName.Id)
+            ).Returns((AlternateName)default);
+
+            // Act
+            var response = controller.EditAlternateName(oldAlternateName.Id, newAlternateNameDTO);
+            var result = response.Result as ObjectResult;
+            var body = result.Value as SuccessResponse<AlternateNameDTO>;
+
+            // Assert
+            Assert.Equal(StatusCodes.Status404NotFound, result.StatusCode);
+        }
     }
 }
