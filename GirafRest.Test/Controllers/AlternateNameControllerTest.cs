@@ -61,7 +61,7 @@ namespace GirafRest.Test
         }
 
         [Fact]
-        public void PostAlternateName_CreateWithUserPictogram_Success() {
+        public void CreateAlternateName_CreateWithUserPictogram_Success() {
             // Arrange
             var controller = new MockedAlternateNameController();
             var newAlternateName = new AlternateNameDTO() {
@@ -102,86 +102,168 @@ namespace GirafRest.Test
             Assert.Equal(newAlternateName.Name, body.Data.Name);
         }
 
-
-        /*
-
-        
         [Fact]
-        public void PostAlternateName_CreateWithoutUser_Error()
-        {
-            AlternateNameController ac = InitialiseTest();
-            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
-            _testContext.MockUserManager.MockLoginAsUser(mockUser);
-
-            AlternateNameDTO newAN = new AlternateNameDTO()
-            {
+        public void CreateAlternateName_CreateWithoutUser_Error() {
+            // Arrange
+            var controller = new MockedAlternateNameController();
+            var newAlternateName = new AlternateNameDTO() {
                 Citizen = "",
-                Name = "Kage",
-                Pictogram = _testContext.MockPictograms[1].Id
+                Name = "Tommysan",
+                Pictogram = 420691337,
+            };
+            var pictogram = new Pictogram() {
+                Id = newAlternateName.Pictogram
+            };
+             var user = new GirafUser() {
+                Id = newAlternateName.Citizen
             };
 
-            var res = ac.CreateAlternateName(newAN).Result as ObjectResult;
+            // Mock 
+            controller.GirafUserRepository.Setup(
+                repo => repo.GetByID(newAlternateName.Citizen)
+            ).Returns(user);
+            controller.PictogramRepository.Setup(
+                repo => repo.GetByID(newAlternateName.Pictogram)
+            ).Returns(pictogram);
+            controller.AlternateNameRepository.Setup(
+                repo => repo.GetForUser(user.Id, pictogram.Id)
+            ).Returns((AlternateName)default);
 
-            Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
+            controller.AlternateNameRepository.Setup(
+                repo => repo.Add(It.IsAny<AlternateName>())
+            );
+
+            // Act 
+            var response = controller.CreateAlternateName(newAlternateName);
+            var result = response.Result as ObjectResult;
+            var body = result.StatusCode;
+
+            // Assert 
+            Assert.Equal(StatusCodes.Status400BadRequest, body);
+
         }
 
         [Fact]
-        public void PostAlternateName_CreateWithoutPictogram_Error()
-        {
-            AlternateNameController ac = InitialiseTest();
-            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
-            _testContext.MockUserManager.MockLoginAsUser(mockUser);
-
-            AlternateNameDTO newAN = new AlternateNameDTO()
-            {
-                Citizen = mockUser.Id,
-                Name = "Kage",
+        public void CreateAlternateName_CreateWithoutPictogram_Error() {
+            // Arrange
+            var controller = new MockedAlternateNameController();
+            var newAlternateName = new AlternateNameDTO() {
+                Citizen = "Danielsan",
+                Name = "Tommysan",
                 Pictogram = -1
             };
+            var pictogram = new Pictogram() {
+                Id = newAlternateName.Pictogram
+            };
+             var user = new GirafUser() {
+                Id = newAlternateName.Citizen
+            };
 
-            var res = ac.CreateAlternateName(newAN).Result as ObjectResult;
+            // Mock 
+            controller.GirafUserRepository.Setup(
+                repo => repo.GetByID(newAlternateName.Citizen)
+            ).Returns(user);
+            
+            /*
+            controller.PictogramRepository.Setup(
+                repo => repo.GetByID(newAlternateName.Pictogram)
+            ).Returns(pictogram);
+            */
+            controller.AlternateNameRepository.Setup(
+                repo => repo.GetForUser(user.Id, pictogram.Id)
+            ).Returns((AlternateName)default);
 
-            Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
+            controller.AlternateNameRepository.Setup(
+                repo => repo.Add(It.IsAny<AlternateName>())
+            );
+
+            // Act 
+            var response = controller.CreateAlternateName(newAlternateName);
+            var result = response.Result as ObjectResult;
+            var body = result.StatusCode;
+
+            // Assert 
+            Assert.Equal(StatusCodes.Status404NotFound, body);
+
         }
-        
-        [Fact]
-        public void PostAlternateName_CreateWithoutName_Error()
-        {
-            AlternateNameController ac = InitialiseTest();
-            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
-            _testContext.MockUserManager.MockLoginAsUser(mockUser);
 
-            AlternateNameDTO newAN = new AlternateNameDTO()
-            {
-                Citizen = mockUser.Id,
+        [Fact]
+        public void  CreateAlternateName_CreateWithoutName_Error() {
+            // Arrange
+            var controller = new MockedAlternateNameController();
+            var newAlternateName = new AlternateNameDTO() {
+                Citizen = "Danielsan",
                 Name = null,
-                Pictogram = _testContext.MockPictograms[1].Id
+                Pictogram = 123453
+            };
+            var pictogram = new Pictogram() {
+                Id = newAlternateName.Pictogram
+            };
+             var user = new GirafUser() {
+                Id = newAlternateName.Citizen
             };
 
-            var res = ac.CreateAlternateName(newAN).Result as ObjectResult;
+            // Mock 
+            controller.GirafUserRepository.Setup(
+                repo => repo.GetByID(newAlternateName.Citizen)
+            ).Returns(user);
+            controller.PictogramRepository.Setup(
+                repo => repo.GetByID(newAlternateName.Pictogram)
+            ).Returns(pictogram);
+            controller.AlternateNameRepository.Setup(
+                repo => repo.GetForUser(user.Id, pictogram.Id)
+            ).Returns((AlternateName)default);
+            controller.AlternateNameRepository.Setup(
+                repo => repo.Add(It.IsAny<AlternateName>())
+            );
 
-            Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
+            // Act 
+            var response = controller.CreateAlternateName(newAlternateName);
+            var result = response.Result as ObjectResult;
+            var body = result.StatusCode;
+
+            // Assert 
+            Assert.Equal(StatusCodes.Status400BadRequest, body); 
         }
-        
+
         [Fact]
-        public void PostAlternateName_CreateAlreadyExists_Error()
-        {
-            AlternateNameController ac = InitialiseTest();
-            GirafUser mockUser = _testContext.MockUsers[ADMIN_DEP_ONE];
-            _testContext.MockUserManager.MockLoginAsUser(mockUser);
-
-            AlternateNameDTO newAN = new AlternateNameDTO()
-            {
-                Citizen = mockUser.Id,
-                Name = "Kage",
-                Pictogram = _testContext.MockPictograms.First().Id
+        public void CreateAlternateName_CreateAlreadyExists_Error(){
+            // Arrange
+            var controller = new MockedAlternateNameController();
+            var newAlternateName = new AlternateNameDTO() {
+                Citizen = "Danielsan",
+                Name = "Tommysan",
+                Pictogram = 123453
+            };
+            var pictogram = new Pictogram() {
+                Id = newAlternateName.Pictogram
+            };
+             var user = new GirafUser() {
+                Id = newAlternateName.Citizen
             };
 
-            var res = ac.CreateAlternateName(newAN).Result as ObjectResult;
-    
-            Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
+            // Mock 
+            controller.GirafUserRepository.Setup(
+                repo => repo.GetByID(newAlternateName.Citizen)
+            ).Returns(user);
+            controller.PictogramRepository.Setup(
+                repo => repo.GetByID(newAlternateName.Pictogram)
+            ).Returns(pictogram);
+            controller.AlternateNameRepository.Setup(
+                repo => repo.UserAlreadyHas(user.Id, pictogram.Id)
+            ).Returns(true);
+
+            // Act 
+            var response = controller.CreateAlternateName(newAlternateName);
+            var result = response.Result as ObjectResult;
+            var body = result.StatusCode;
+
+            // Assert 
+            Assert.Equal(StatusCodes.Status409Conflict, body);
         }
-        
+
+
+        /*
         [Fact]
         public void PostAlternateName_CreateWhileUnauthorized_Error()
         {

@@ -107,9 +107,10 @@ namespace GirafRest.Controllers
                 return this.ResourceNotFound(nameof(Pictogram), alternateName.Pictogram);
             }
 
-            if (_alternateNameRepository.GetForUser(user.Id, pictogram.Id) != default) {
+            if (_alternateNameRepository.UserAlreadyHas(user.Id, pictogram.Id)) {
                 return this.ResourceConflict(nameof(AlternateName), user.Id, pictogram.Id);
             }
+
 
             AlternateName newAlternateName = new AlternateName(user, pictogram, alternateName.Name);
             _alternateNameRepository.Add(newAlternateName);
