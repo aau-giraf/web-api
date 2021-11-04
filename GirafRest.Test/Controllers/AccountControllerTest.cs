@@ -20,6 +20,7 @@ using Microsoft.Extensions.Logging;
 using ILoggerFactory = Microsoft.Extensions.Logging.ILoggerFactory;
 using System.Threading;
 using System.Linq;
+using GirafRest.Models.Enums;
 using GirafRest.Test.RepositoryMocks;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 

@@ -5,6 +5,7 @@ using GirafRest.Models.Responses;
 using GirafRest.Services;
 using GirafRest.Interfaces;
 using GirafRest.IRepositories;
+using GirafRest.Models.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
