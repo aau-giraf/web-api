@@ -132,9 +132,8 @@ namespace GirafRest.Setup
                 options.Filters.Add<LogFilter>();
             });
             services.AddControllers().AddNewtonsoftJson();
-            //add dbcontext
-            services.AddEntityFrameworkMySql().AddDbContext<GirafDbContext>(options => options.UseMySql("name=ConnectionStrings:DefaultConnection"));
-            //add scoped repositories. Every single request gets it's own scoped repositories.
+            
+            // Add scoped repositories. Every single request gets it's own scoped repositories.
             services.AddScoped<IAlternateNameRepository,AlternateNameRepository>();
             services.AddScoped<IDepartmentRepository,DepartmentRepository>();
             services.AddScoped<IGirafRoleRepository, GirafRoleRepository>();
