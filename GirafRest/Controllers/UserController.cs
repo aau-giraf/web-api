@@ -2,6 +2,7 @@ using GirafRest.Extensions;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
+using GirafRest.Models.Enums;
 using GirafRest.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -69,6 +70,33 @@ namespace GirafRest.Controllers
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
             return Ok(new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, await _roleManager.findUserRole(_giraf._userManager, user))));
+        }
+
+        /// <summary>
+        /// Gets the role of the user with the given username.
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
+        [HttpGet("{username}/role", Name = "GetUserRole")]
+        [ProducesResponseType(typeof(SuccessResponse<GirafUserDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> GetUserRole(string username)
+        {
+            //Checks that the string isn't empty or null
+            if (string.IsNullOrEmpty(username))
+                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Username is not found"));
+
+            //Gets the user info
+            var user = _giraf._context.Users.FirstOrDefault(u => u.UserName == username);
+
+            //Checks that the user isn't null(not found) and throws an error if it isn't found
+            if(user == null)
+                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
+            
+            //Returns the role of the user as a list, should only contain one entry
+            return Ok(new SuccessResponse<GirafRoles>(await _roleManager.findUserRole(_giraf._userManager, user)));
         }
 
         /// <summary>

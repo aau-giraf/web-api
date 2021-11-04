@@ -35,6 +35,7 @@ namespace GirafRest
             try
             {
                 BuildWebHost(args).Run();
+                Console.WriteLine("webhost built");
             }
             catch (MySqlException e)
             {

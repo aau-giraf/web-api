@@ -1,7 +1,7 @@
 ﻿using GirafRest.Data;
 using GirafRest.Extensions;
 using GirafRest.Models;
-using GirafRest.Models.DTOs;
+using GirafRest.Models.Enums;
 using GirafRest.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
@@ -99,7 +99,7 @@ namespace GirafRest.Services
 
             if (authUserRole == GirafRoles.Guardian || authUserRole == GirafRoles.Department)
             {
-                if (!(roleToAdd == GirafRoles.Guardian || roleToAdd == GirafRoles.Citizen)
+                if (!(roleToAdd == GirafRoles.Guardian || roleToAdd == GirafRoles.Citizen || roleToAdd == GirafRoles.Trustee)
                     && departmentKey == authUser.DepartmentKey)
                 {
                     return false;

@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using GirafRest.Models.Enums;
 
 namespace GirafRest.Models.DTOs.AccountDTOs
 {

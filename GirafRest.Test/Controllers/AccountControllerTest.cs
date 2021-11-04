@@ -266,7 +266,7 @@ namespace GirafRest.Test
        // #region Register
         
         [Fact]
-        public void Register_CorrectModelAndConditions_ReturnsCreatedWithDto()
+        public void Register_CorrectModelAndConditions_Returns201_Success()
         {
             // Arrange
             var signInManager = new MockSignInManager();
@@ -322,7 +322,6 @@ namespace GirafRest.Test
             Assert.Equal(registrationDto.DepartmentId, body.Data.Department);
             Assert.Equal(registrationDto.DisplayName, body.Data.DisplayName);
         }
-
         [Fact]
         public void Register_ExistingUsername_CodeUserAlreadyExists()
         {
