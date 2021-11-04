@@ -1,4 +1,5 @@
 using GirafRest.Extensions;
+using GirafRest.Extensions;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
@@ -476,7 +477,7 @@ namespace GirafRest.Controllers
                 citizens.Add(new DisplayNameDTO { UserId = girafUser.Id, DisplayName = girafUser.DisplayName });
             }
 
-            //sort function for users in citizens
+            //sort function for users in citizens since the list needs to be sorted by name... issue#697
             citizens.Sort();
            
             if (!citizens.Any())
