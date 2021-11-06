@@ -57,18 +57,7 @@ namespace GirafRest.Repositories
             return Context.Users.Include(u => u.Resources).ThenInclude(dr => dr.Pictogram)
                 .FirstOrDefault(u => u.Id == id);
         }
-
-        /// <summary>
-        /// Check if the caller owns the resource.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public GirafUser CheckIfCallerOwnsResource(string id)
-        {
-            return Context.Users.Include(r => r.Resources).ThenInclude(dr => dr.Pictogram)
-                .FirstOrDefault(u => u.Id == id);
-        }
-
+        
         /// <summary>
         /// Gets citizen users with matching id.
         /// </summary>
@@ -118,17 +107,7 @@ namespace GirafRest.Repositories
         {
             return Context.Users.Include(u => u.Guardians).FirstOrDefault(u => u.Id == citizenId);
         }
-
-        /// <summary>
-        /// Gets first guardian with given id.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public GirafUser GetGuardianRelationship(string id)
-        {
-            return Context.Users.FirstOrDefault(u => u.Id == id);
-        }
-
+        
         /// <summary>
         /// Gets user settings and weekday color on the user with the given id. 
         /// </summary>

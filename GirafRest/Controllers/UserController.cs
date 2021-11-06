@@ -368,7 +368,7 @@ namespace GirafRest.Controllers
         public async Task<ActionResult> DeleteResource(string id, [FromBody] ResourceIdDTO resourceIdDTO)
         {
             //Check if the caller owns the resource
-            var user = _girafUserRepository.CheckIfCallerOwnsResource(id);
+            var user = _girafUserRepository.CheckIfUserExists(id);
 
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
@@ -496,7 +496,7 @@ namespace GirafRest.Controllers
         public async Task<ActionResult> AddGuardianCitizenRelationship(string id, string citizenId)
         {
             var citizen = _girafUserRepository.GetCitizenRelationship(id);
-            var guardian = _girafUserRepository.GetGuardianRelationship(citizenId);
+            var guardian = _girafUserRepository.GetUserWithId(citizenId);
 
             if (guardian == null || citizen == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));

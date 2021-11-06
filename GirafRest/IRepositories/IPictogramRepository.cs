@@ -18,7 +18,6 @@ namespace GirafRest.IRepositories
         /// <param name="name"></param>
         /// <param name="access"></param>
         public Task<int> AddPictogramWith_NO_ImageHash(string name, AccessLevel access);
-        Task<Pictogram> FindResource(ResourceIdDTO resourceIdDTO);
         Task<Pictogram> FetchResourceWithId(ResourceIdDTO resourceIdDTO);
     }
 }

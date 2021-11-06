@@ -34,11 +34,6 @@ namespace GirafRest.Repositories
             Context.Pictograms.Add(new Pictogram(name,access));
             return await Context.SaveChangesAsync();
         }
-        public Task<Pictogram> FindResource(ResourceIdDTO resourceIdDTO)
-        {
-            return Context.Pictograms.Where(pf => pf.Id == resourceIdDTO.Id).FirstOrDefaultAsync();
-        }
-        
         public Task<Pictogram> FetchResourceWithId(ResourceIdDTO resourceIdDTO)
         {
             return Context.Pictograms.Where(f => f.Id == resourceIdDTO.Id).FirstOrDefaultAsync();

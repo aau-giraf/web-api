@@ -56,6 +56,7 @@ namespace GirafRest.Test.Repositories
 
     public class PictogramRepositoryTest : FakePictogramRepositoryContext
     {
+        private const string PICTOGRAM_TITLE = "Unicorn";
         public PictogramRepositoryTest()
             : base(new DbContextOptionsBuilder<GirafDbContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString("N")).Options)
@@ -63,25 +64,20 @@ namespace GirafRest.Test.Repositories
         }
 
         [Fact]
-        public async Task FindResource()
+        public async Task FetchResourceWithId()
         {
             using (var context = new GirafDbContext(ContextOptions))
             {
                 var repository = new PictogramRepository(context);
-                
-                var pictogramDb = context.Pictograms.FirstOrDefault(u => u.Title == "Unicorn");
-                var expectedPictogramTitle = pictogramDb.Title;
                 
                 var resourceIdDTO = new ResourceIdDTO()
                 {
                     Id = 345567
                 };
                 
-                var resource = await repository.FindResource(resourceIdDTO);
-                //var title = resource.Title;
+                var resource = await repository.FetchResourceWithId(resourceIdDTO);
                 
-                //Assert.NotNull(title);
-                Assert.Equal("Unicorn", resource.Title);
+                Assert.Equal(PICTOGRAM_TITLE, resource.Title);
 
 
 

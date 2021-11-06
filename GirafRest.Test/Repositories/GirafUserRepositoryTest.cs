@@ -118,18 +118,6 @@ namespace GirafRest.Test.Repositories
         }
 
         [Theory]
-        [InlineData("3")]
-        public void CheckIfCallerOwnsResource(string id)
-        {
-            using (var context = new GirafDbContext(ContextOptions))
-            {
-                var repository = new GirafUserRepository(context);
-                var userName = repository.CheckIfCallerOwnsResource(id).UserName;
-                Assert.Equal(USERNAME_1, userName);
-            }
-        }
-
-        [Theory]
         [InlineData("4")]
         public void GetCitizensWithId(string id)
         {
@@ -207,20 +195,6 @@ namespace GirafRest.Test.Repositories
                 var repository = new GirafUserRepository(context);
 
                 var userName = repository.GetCitizenRelationship(UserId).UserName;
-                
-                Assert.Equal(USERNAME, userName);
-            }
-        }
-
-        [Theory]
-        [InlineData(UserId)]
-        public void GetGuardianRelationship(string id)
-        {
-            using (var context = new GirafDbContext(ContextOptions))
-            {
-                var repository = new GirafUserRepository(context);
-
-                var userName = repository.GetGuardianRelationship(UserId).UserName;
                 
                 Assert.Equal(USERNAME, userName);
             }

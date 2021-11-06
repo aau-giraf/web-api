@@ -19,13 +19,11 @@ namespace GirafRest.IRepositories
         void Update(GirafUser user);
         Task<int> SaveChangesAsync();
         GirafUser CheckIfUserExists(string id);
-        GirafUser CheckIfCallerOwnsResource(string id);
         GirafUser GetCitizensWithId(string id);
         GirafUser GetFirstCitizen(GuardianRelation citizen);
         GirafUser GetGuardianWithId(string id);
         GirafUser GetGuardianFromRelation(GuardianRelation guardian);
         GirafUser GetCitizenRelationship(string citizenId);
-        GirafUser GetGuardianRelationship(string id);
         GirafUser GetUserSettingsByWeekDayColor(string id);
         public bool CheckIfUsernameHasSameId(GirafUserDTO newUser, GirafUser user);
     }
