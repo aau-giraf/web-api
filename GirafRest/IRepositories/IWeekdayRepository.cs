@@ -8,6 +8,6 @@ namespace GirafRest.IRepositories
 {
     public interface IWeekdayRepository : IRepository<Weekday>
     {
-        public void Update(Weekday weekday);
+
     }
 }
