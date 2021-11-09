@@ -12,6 +12,6 @@ namespace GirafRest.IRepositories
         GirafUser GetUserByUsername(string username);
         IEnumerable<GirafUser> GetUsersInDepartment(long departmentKey, IEnumerable<string> users);
 
-        GirafUser GetUserByID(string id);
+        GirafUser GetUserWithId(string id);
     }
 }

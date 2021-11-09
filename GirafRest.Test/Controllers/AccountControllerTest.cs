@@ -619,7 +619,7 @@ namespace GirafRest.Test
 
             // Mock
             accountController.UserRepository.Setup(
-                repo => repo.GetUserByID(userId)
+                repo => repo.GetUserWithId(userId)
             ).Returns((GirafUser)default);
 
             // Act
@@ -647,7 +647,7 @@ namespace GirafRest.Test
 
             // Mock
             accountController.UserRepository.Setup(
-                repo => repo.GetUserByID(userId)
+                repo => repo.GetUserWithId(userId)
             ).Returns(user);
             accountController.UserRepository.Setup(
                 repo => repo.Remove(user)

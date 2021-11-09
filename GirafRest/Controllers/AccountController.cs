@@ -291,7 +291,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeleteUser(string userId)
         {
-            var user = _userRepository.GetUserByID(userId);
+            var user = _userRepository.GetUserWithId(userId);
             
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));

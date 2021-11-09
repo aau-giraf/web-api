@@ -15,6 +15,7 @@ namespace GirafRest.Repositories
 
         public bool ExistsUsername(string username)
             => Context.Users.Any(u => u.UserName == username);
+        
 
         public GirafUser GetUserByUsername(string username)
             => Context.Users.FirstOrDefault(u => u.UserName == username);
@@ -29,7 +30,7 @@ namespace GirafRest.Repositories
             .ToList();
         }
 
-        public GirafUser GetUserByID(string id)
+        public GirafUser GetUserWithId(string id)
             => Context.Users.FirstOrDefault(u => u.Id == id);
     }
 }
