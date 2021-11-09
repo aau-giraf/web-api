@@ -14,10 +14,10 @@ namespace GirafRest.IntegrationTest.Extensions
     {
         private static readonly string BASE_URL = "https://localhost:5000/";
 
-        public static async Task<string> GetTokenAsync(CustomWebApplicationFactory factory, string username)
+        public static async Task<string> GetTokenAsync(CustomWebApplicationFactory factory, string username, string password)
         {
             var client = factory.CreateClient();
-            var data = $"{{'username': '{username}', 'password': 'password'}}";
+            var data = $"{{'username': '{username}', 'password': '{password}'}}";
 
             HttpRequestMessage request = new HttpRequestMessage()
             {
@@ -32,9 +32,9 @@ namespace GirafRest.IntegrationTest.Extensions
             return content["data"].ToString();
         }
 
-        public static async Task<string> GetIdAsync(CustomWebApplicationFactory factory, string username)
+        public static async Task<string> GetIdAsync(CustomWebApplicationFactory factory, string username, string password)
         {
-            string token = await GetTokenAsync(factory, username);
+            string token = await GetTokenAsync(factory, username, password);
             var client = factory.CreateClient();
             HttpRequestMessage request = new HttpRequestMessage()
             {
@@ -49,16 +49,16 @@ namespace GirafRest.IntegrationTest.Extensions
             return content["data"]["id"].ToString();
         }
 
-        public static async Task<string> GetResetTokenAsync(CustomWebApplicationFactory factory, string username, string token)
+        public static async Task<string> GetResetTokenAsync(CustomWebApplicationFactory factory, string username, string password, string token, string tokenPassword)
         {
             var client = factory.CreateClient();
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v2/Account/password-reset-token/{await GetIdAsync(factory, username)}"),
+                RequestUri = new Uri($"{BASE_URL}v2/Account/password-reset-token/{await GetIdAsync(factory, username, password)}"),
                 Method = HttpMethod.Get
             };
 
-            request.Headers.Add("Authorization", $"Bearer {await GetTokenAsync(factory, token)}");
+            request.Headers.Add("Authorization", $"Bearer {await GetTokenAsync(factory, token, tokenPassword)}");
 
             var response = await client.SendAsync(request);
 
@@ -66,7 +66,7 @@ namespace GirafRest.IntegrationTest.Extensions
             return content["data"].ToString();
         }
 
-        public static async Task<string> RegisterAsync(CustomWebApplicationFactory factory, string username, string token)
+        public static async Task<string> RegisterAsync(CustomWebApplicationFactory factory, string username, string password, string token)
         {
             var client = factory.CreateClient();
             var data = $"{{'username': '{username}', 'displayname': '{username}', 'password': 'password', 'role': 'Citizen', 'departmentId': 2}}";
@@ -77,7 +77,7 @@ namespace GirafRest.IntegrationTest.Extensions
                 Content = new StringContent(data, Encoding.UTF8, "application/json")
             };
 
-            request.Headers.Add("Authorization", $"Bearer {await GetTokenAsync(factory, token)}");
+            request.Headers.Add("Authorization", $"Bearer {await GetTokenAsync(factory, token, password)}");
 
             var response = await client.SendAsync(request);
 
@@ -86,34 +86,16 @@ namespace GirafRest.IntegrationTest.Extensions
             return content["data"].ToString();
         }
 
-        public static async Task<string> LoginAsync(CustomWebApplicationFactory factory, string username)
-        {
-            var client = factory.CreateClient();
-            var data = $"{{'username': '{username}', 'password': 'password'}}";
-            HttpRequestMessage request = new HttpRequestMessage()
-            {
-                RequestUri = new Uri($"{BASE_URL}v2/Account/login"),
-                Method = HttpMethod.Post,
-                Content = new StringContent(data, Encoding.UTF8, "application/json")
-            };
-
-            var response = await client.SendAsync(request);
-
-            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
-
-            return content["data"].ToString();
-        }
-
-        public static async Task DeleteAsync(CustomWebApplicationFactory factory, string username, string token)
+        public static async Task DeleteAsync(CustomWebApplicationFactory factory, string username, string password, string token)
         {
             var client = factory.CreateClient();
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v2/Account/user/{await AccountExtension.GetIdAsync(factory, username)}"),
+                RequestUri = new Uri($"{BASE_URL}v2/Account/user/{await AccountExtension.GetIdAsync(factory, username, password)}"),
                 Method = HttpMethod.Delete
             };
 
-            request.Headers.Add("Authorization", $"Bearer {await AccountExtension.GetTokenAsync(factory, token)}");
+            request.Headers.Add("Authorization", $"Bearer {await AccountExtension.GetTokenAsync(factory, token, password)}");
 
             await client.SendAsync(request);
         }
