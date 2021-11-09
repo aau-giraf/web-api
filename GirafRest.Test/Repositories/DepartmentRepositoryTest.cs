@@ -30,18 +30,8 @@ namespace GirafRest.Test.Repositories
                     Key = 1,
                     Name = "dep1",
                 };
-                var dep2 = new Department()
-                {
-                    Key = 2,
-                    Name = "dep1",
-                };
-                var dep3 = new Department()
-                {
-                    Key = 3,
-                    Name = "dep1",
-                };
                 
-                context.AddRange(dep,dep2,dep3);
+                context.Add(dep);
                 context.SaveChanges();
 
             }
