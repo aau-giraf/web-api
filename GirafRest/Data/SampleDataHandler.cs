@@ -18,7 +18,7 @@ namespace GirafRest.Data
             $"{Path.DirectorySeparatorChar}" +
             $"Data" +
             $"{Path.DirectorySeparatorChar}" +
-            $"samples.json";
+            $"DB_data.dev.json";
 
         public SampleDataHandler() { }
         public SampleDataHandler(string path)

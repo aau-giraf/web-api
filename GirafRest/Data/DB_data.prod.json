@@ -1,0 +1,32 @@
+{
+  "UserList": [
+    {
+      "Name": "Ulrik",
+      "DisplayName": "TheLegend27",
+      "DepartmentName": "Egebakken",
+      "Role": "Guardian",
+      "Weeks": [],
+      "Password": "GIRAF"
+    }
+  ],
+
+  "DepartmentList": [
+    {
+      "Name": "Egebakken"
+    },
+    {
+      "Name": "Birken"
+    }
+  ],
+
+  "PictogramList": [
+    {
+      "Title": "Pictrogram",
+      "AccessLevel": "PUBLIC",
+      "ImageHash": "secure hash"
+    }
+  ],
+  "WeekdayList": [ ],
+  "WeekList": [ ],
+  "WeekTemplateList": [ ]
+}
