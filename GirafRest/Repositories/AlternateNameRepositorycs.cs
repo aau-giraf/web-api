@@ -20,7 +20,7 @@ namespace GirafRest.Repositories
         {
             // This is better than a predicate because the prictogramId is indexed.
             if (TryGet(out AlternateName entity, PictogramId) &&
-                entity.Citizen.Id == userId) {
+                entity.CitizenId == userId) {
                 return entity;
             }
             return default;
