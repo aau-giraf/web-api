@@ -28,6 +28,7 @@ namespace GirafRest.IntegrationTest.Tests
             _client = _factory.CreateClient();
         }
 
+        #region Account endpoints
         /// <summary>
         /// Testing setting password
         /// Endpoint: POST:/v2/Account/password/{userId}
@@ -108,7 +109,8 @@ namespace GirafRest.IntegrationTest.Tests
             HttpRequestMessage request = new HttpRequestMessage()
             {
                 RequestUri = new Uri($"{BASE_URL}v2/Account/login"),
-                Method = HttpMethod.Post
+                Method = HttpMethod.Post,
+                Content = new StringContent("{}", Encoding.UTF8, "application/json")
             };
 
             var response = await _client.SendAsync(request);
@@ -137,7 +139,7 @@ namespace GirafRest.IntegrationTest.Tests
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
             Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
-            Assert.Equal("MissingProperties", content["errorKey"]);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
         }
 
         /// <summary>
@@ -149,7 +151,393 @@ namespace GirafRest.IntegrationTest.Tests
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v2/Account/register"),
+                RequestUri = new Uri($"{BASE_URL}v2/Account/user/{await AccountExtension.GetIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}"),
+                Method = HttpMethod.Delete
+            };
+
+            var response = await _client.SendAsync(request);
+
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+        #endregion
+
+        #region Activity endpoints
+        /// <summary>
+        /// Testing creation of weekplanner activity without authentication token
+        /// Endpoint: POST:/v2/Activity/{user_id}/{weekplan_name}/{week_year}/{week_number}/{week_day_number}
+        /// </summary>
+        [Fact, Priority(6)]
+        public async void TestAuthPOSTWeekplannerActivityShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v2/Activity/{await AccountExtension.GetIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}/{_authorizationFixture.WeekplanName}/{_authorizationFixture.WeekYear}/{_authorizationFixture.WeekNumber}/{_authorizationFixture.WeekDayNumber}"),
+                Method = HttpMethod.Post,
+            };
+
+            var response = await _client.SendAsync(request);
+
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing DELETION of activity without authentication token
+        /// Endpoint: DELETE:/v2/Activity/{user_id}/delete/{activity_id}
+        /// </summary>
+        [Fact, Priority(7)]
+        public async void TestAuthDELETEActivityShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v2/Activity/{await AccountExtension.GetIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}/delete/{_authorizationFixture.ActivityId}"),
+                Method = HttpMethod.Delete,
+            };
+
+            var response = await _client.SendAsync(request);
+
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing PATCHING of activity or updating it without authentication token
+        /// Endpoint: PATCH:/v2/Activity/{user_id}/update
+        /// </summary>
+        [Fact, Priority(8)]
+        public async void TestAuthPATCHUpdateActivityShouldFail()
+        {
+            string data = "{'pictogram': {'id': 6}, 'id': 1}";
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v2/Activity/{await AccountExtension.GetIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}/update"),
+                Method = HttpMethod.Put,
+                Content = new StringContent(data, Encoding.UTF8, "application/json")
+            };
+
+            var response = await _client.SendAsync(request);
+
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+        #endregion
+
+        #region Department endpoints
+        /// <summary>
+        /// Testing creating new department
+        /// Endpoint: POST:/v1/Department
+        /// </summary>
+        [Fact, Priority(9)]
+        public async void TestAuthPOSTDepartmentShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/Department"),
+                Method = HttpMethod.Post
+            };
+
+            var response = await _client.SendAsync(request);
+
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing getting department citizens
+        /// Endpoint: GET:/v1/Department/{id}/citizens
+        /// </summary>
+        [Fact, Priority(10)]
+        public async void TestAuthGETDepartmentCitizensShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/Department/{_authorizationFixture.DepartmentId}/citizens"),
+                Method = HttpMethod.Get
+            };
+
+            var response = await _client.SendAsync(request);
+
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing GET on department
+        /// Endpoint: GET:/v1/Department
+        /// </summary>
+        [Fact, Priority(11)]
+        public async void TestAuthGETDepartmentSuccess()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/Department"),
+                Method = HttpMethod.Get
+            };
+
+            var response = await _client.SendAsync(request);
+
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Testing GET on department id
+        /// Endpoint: GET:/v1/Department/{id}
+        /// </summary>
+        [Fact, Priority(12)]
+        public async void TestAuthGETDepartmentIdShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/Department/{_authorizationFixture.DepartmentId}"),
+                Method = HttpMethod.Get
+            };
+
+            var response = await _client.SendAsync(request);
+
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Testing PUT on department id name
+        /// Endpoint: PUT:/v1/Department/{id}/name
+        /// </summary>
+        [Fact, Priority(13)]
+        public async void TestAuthPUTDepartmentIdShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/Department/{_authorizationFixture.DepartmentId}/name"),
+                Method = HttpMethod.Put
+            };
+
+            var response = await _client.SendAsync(request);
+
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing DELETE on department id
+        /// Endpoint: DELETE:/v1/Department/{id}
+        /// </summary>
+        [Fact, Priority(14)]
+        public async void TestAuthDELETEDepartmentIdShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/Department/{_authorizationFixture.DepartmentId}"),
+                Method = HttpMethod.Delete
+            };
+
+            var response = await _client.SendAsync(request);
+
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+        #endregion
+
+        #region Error endpoints
+        /// <summary>
+        /// Testing GET error
+        /// Endpoint: GET:/v1/Error
+        /// </summary>
+        [Fact, Priority(15)]
+        public async void TestAuthGETErrorShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/Error"),
+                Method = HttpMethod.Get
+            };
+
+            var response = await _client.SendAsync(request);
+
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal("UnknownError", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing POST error
+        /// Endpoint: POST:/v1/Error
+        /// </summary>
+        [Fact, Priority(16)]
+        public async void TestAuthPOSTErrorShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/Error"),
+                Method = HttpMethod.Post
+            };
+
+            var response = await _client.SendAsync(request);
+
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal("UnknownError", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing PUT error
+        /// Endpoint: PUT:/v1/Error
+        /// </summary>
+        [Fact, Priority(17)]
+        public async void TestAuthPUTErrorShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/Error"),
+                Method = HttpMethod.Put
+            };
+
+            var response = await _client.SendAsync(request);
+
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal("UnknownError", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing DELETE error
+        /// Endpoint: DELETE:/v1/Error
+        /// </summary>
+        [Fact, Priority(18)]
+        public async void TestAuthDELETEErrorShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/Error"),
+                Method = HttpMethod.Delete
+            };
+
+            var response = await _client.SendAsync(request);
+
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal("UnknownError", content["errorKey"]);
+        }
+        #endregion
+
+        #region Pictogram endpoints
+        /// <summary>
+        /// Testing getting all pictograms
+        /// Endpoint: GET:/v1/Pictogram
+        /// </summary>
+        [Fact, Priority(19)]
+        public async void TestAuthGETAllPictogramsShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/Pictogram"),
+                Method = HttpMethod.Get
+            };
+
+            var response = await _client.SendAsync(request);
+
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing creating new pictogram
+        /// Endpoint: POST:/v1/Pictogram
+        /// </summary>
+        [Fact, Priority(20)]
+        public async void TestAuthPOSTPictogramsShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/Pictogram"),
+                Method = HttpMethod.Post
+            };
+
+            var response = await _client.SendAsync(request);
+
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing getting pictogram by id with
+        /// Endpoint: GET:/v1/Pictogram/{id}
+        /// </summary>
+        [Fact, Priority(21)]
+        public async void TestAuthGETPictogramsByIdShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/Pictogram/0"),
+                Method = HttpMethod.Get
+            };
+
+            var response = await _client.SendAsync(request);
+
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing updating pictogram info
+        /// Endpoint: PUT:/v1/Pictogram/{id}
+        /// </summary>
+        [Fact, Priority(22)]
+        public async void TestAuthPUTUpdatePictogramsInfoShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/Pictogram/0"),
+                Method = HttpMethod.Put
+            };
+
+            var response = await _client.SendAsync(request);
+
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing deleting pictogram by id
+        /// Endpoint: DELETE:/v1/Pictogram/{id}
+        /// </summary>
+        [Fact, Priority(23)]
+        public async void TestAuthDELETEUpdatePictogramsInfoShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/Pictogram/0"),
                 Method = HttpMethod.Delete
             };
 
@@ -162,16 +550,16 @@ namespace GirafRest.IntegrationTest.Tests
         }
 
         /// <summary>
-        /// Testing account DELETION with authentication token
-        /// Endpoint: DELETE:/v2/Account/user/{id}
+        /// Testing getting pictogram image by id
+        /// Endpoint: GET:/v1/Pictogram/{id}/image
         /// </summary>
-        [Fact, Priority(5)]
-        public async void TestAuthPOSTWeekplannerActivityShouldFail()
+        [Fact, Priority(24)]
+        public async void TestAuthGETPictogramsInfoShouldFail()
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v2/Account/register"),
-                Method = HttpMethod.Delete
+                RequestUri = new Uri($"{BASE_URL}v1/Pictogram/0/image"),
+                Method = HttpMethod.Get
             };
 
             var response = await _client.SendAsync(request);
@@ -181,595 +569,535 @@ namespace GirafRest.IntegrationTest.Tests
             Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
             Assert.Equal("NotAuthorized", content["errorKey"]);
         }
-        /*
-                    """
-                    Activity endpoints
-                    """
-                    @order
-                    def test_auth_POST_weekplanner_activity_should_fail(self):
-                        """
-                        Testing creation of weekplanner activity without authentication token
-
-                        Endpoint: POST:/v2/Activity/{user_id}/{weekplan_name}/{week_year}/{week_number}/{week_day_number}
-                        """
-                        response = post(f'{BASE_URL}v2/Activity/{user_id}/{self.weekplan_Name}/{self.week_Year}/{self.week_Number}/{self.week_Day_Number}')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_DELETE_activity_should_fail(self):
-                        """
-                        Testing DELETION of activity without authentication token
-
-                        Endpoint: DELETE:/v2/Activity/{user_id}/delete/{activity_id}
-                        """
-                        response = delete(f'{BASE_URL}v2/Activity/{user_id}/delete/{self.activity_Id}')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_PATCH_update_activity_should_fail(self):
-                        """
-                        Testing PATCHING of activity or updating it without authentication token
-
-                        Endpoint: PATCH:/v2/Activity/{user_id}/update
-                        """
-                        data = {'pictogram': {'id': 6}, 'id': 1}
-                        response = put(f'{BASE_URL}v2/Activity/{user_id}/update', json=data)
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    """
-                    Department endpoints
-                    """
-                    @order
-                    def test_auth_POST_department_should_fail(self):
-                        """
-                        Testing creating new department
-
-                        Endpoint: POST:/v1/Department
-                        """
-                        response = post(f'{BASE_URL}v1/Department')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_GET_department_citizens_should_fail(self):
-                        """
-                        Testing getting department citizens
-
-                        Endpoint: GET:/v1/Department/{id}/citizens
-                        """
-                        response = get(f'{BASE_URL}v1/Department/{self.department_Id}/citizens')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_GET_department_succes(self):
-                        """
-                        Testing GET on department
-
-                        Endpoint: GET:/v1/Department
-                        """
-                        response = get(f'{BASE_URL}v1/Department')
-                        self.assertEqual(response.status_code, HTTPStatus.OK)
-
-
-                    @order
-                    def test_auth_GET_department_id_should_fail(self):
-                        """
-                        Testing GET on department id
-
-                        Endpoint: GET:/v1/Department/{id}
-                        """
-                        response = get(f'{BASE_URL}v1/Department/{self.department_Id}')
-
-                        self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
-
-                    @order
-                    def test_auth_PUT_department_id_name_should_fail(self):
-                        """
-                        Testing PUT on department id name
-
-                        Endpoint: PUT:/v1/Department/{id}/name
-                        """
-                        response = put(f'{BASE_URL}v1/Department/{self.department_Id}/name')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_DELETE_department_id_should_fail(self):
-                        """
-                        Testing DELETE on department id
-
-                        Endpoint: DELETE:/v1/Department/{id}
-                        """
-                        response = delete(f'{BASE_URL}v1/Department/{self.department_Id}')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    """
-                    Error endpoints
-                    """
-                    @order
-                    def test_auth_GET_error_should_fail(self):
-                        """
-                        Testing GET error
-
-                        Endpoint: GET:/v1/Error
-                        """
-                        response = get(f'{BASE_URL}v1/Error')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
-                        self.assertEqual(response_body['errorKey'], 'UnknownError')
-
-                    @order
-                    def test_auth_POST_error_should_fail(self):
-                        """
-                        Testing POST error
-
-                        Endpoint: POST:/v1/Error
-                        """
-                        response = post(f'{BASE_URL}v1/Error')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
-                        self.assertEqual(response_body['errorKey'], 'UnknownError')
-
-                    @order
-                    def test_auth_PUT_error_should_fail(self):
-                        """
-                        Testing PUT error
-
-                        Endpoint: PUT:/v1/Error
-                        """
-                        response = put(f'{BASE_URL}v1/Error')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
-                        self.assertEqual(response_body['errorKey'], 'UnknownError')
-
-                    @order
-                    def test_auth_DELETE_error_should_fail(self):
-                        """
-                        Testing DELETE error
-
-                        Endpoint: DELETE:/v1/Error
-                        """
-                        response = delete(f'{BASE_URL}v1/Error')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.BAD_REQUEST)
-                        self.assertEqual(response_body['errorKey'], 'UnknownError')
-
-                    """
-                    Pictogram endpoints
-                    """
-                    @order
-                    def test_auth_GET_all_pictograms_should_fail(self):
-                        """
-                        Testing getting all pictograms
-
-                        Endpoint: GET:/v1/Pictogram
-                        """
-                        response = get(f'{BASE_URL}v1/Pictogram')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_POST_pictogram_should_fail(self):
-                        """
-                        Testing creating new pictogram
-
-                        Endpoint: POST:/v1/Pictogram
-                        """
-                        response = post(f'{BASE_URL}v1/Pictogram')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_GET_pictogram_by_id_should_fail(self):
-                        """
-                        Testing getting pictogram by id with
-
-                        Endpoint: GET:/v1/Pictogram/{id}
-                        """
-                        response = get(f'{BASE_URL}v1/Pictogram/0')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_PUT_update_pictogram_info_should_fail(self):
-                        """
-                        Testing updating pictogram info
-
-                        Endpoint: PUT:/v1/Pictogram/{id}
-                        """
-                        response = put(f'{BASE_URL}v1/Pictogram/0')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_DELETE_pictogram_by_id_should_fail(self):
-                        """
-                        Testing deleting pictogram by id
-
-                        Endpoint: DELETE:/v1/Pictogram/{id}
-                        """
-                        response = delete(f'{BASE_URL}v1/Pictogram/0')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_GET_pictogram_image_by_id_should_fail(self):
-                        """
-                        Testing getting pictogram image by id
-
-                        Endpoint: GET:/v1/Pictogram/{id}/image
-                        """
-                        response = get(f'{BASE_URL}v1/Pictogram/0/image')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_PUT_pictogram_image_by_id_should_fail(self):
-                        """
-                        Testing updating pictogram image by id
-
-                        Endpoint: PUT:/v1/Pictogram/{id}/image
-                        """
-                        response = put(f'{BASE_URL}v1/Pictogram/0/image')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_GET_pictogram_image_raw_by_id_should_fail(self):
-                        """
-                        Testing getting raw pictogram image by id
-
-                        Endpoint: GET:/v1/Pictogram/{id}/image/raw
-                        """
-                        response = get(f'{BASE_URL}v1/Pictogram/0/image/raw')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    """
-                    Status endpoints
-                    """
-                    @order
-                    def test_auth_GET_status(self):
-                        """
-                        Testing getting API status
-
-                        Endpoint: GET:/v1/Status
-                        """
-                        response = get(f'{BASE_URL}v1/Status')
-                        self.assertEqual(response.status_code, HTTPStatus.OK)
-
-                    @order
-                    def test_auth_GET_database_status(self):
-                        """
-                        Testing getting API database status
-
-                        Endpoint: GET:/v1/Status/database
-                        """
-                        response = get(f'{BASE_URL}v1/Status/database')
-
-                        self.assertEqual(response.status_code, HTTPStatus.OK)
-
-
-                    @order
-                    def test_auth_GET_status_version(self):
-                        """
-                        Testing GET status version
-
-                        Endpoint: GET:/v1/Status/version-info
-                        """
-                        response = get(f'{BASE_URL}v1/Status/version-info')
-                        self.assertEqual(response.status_code, HTTPStatus.OK)
-
-                    """
-                    User endpoints
-                    """
-                    @order
-                    def test_auth_GET_user_should_fail(self):
-                        """
-                        Testing getting current user
-
-                        Endpoint: GET:/v1/User
-                        """
-                        response = get(f'{BASE_URL}v1/User')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_PUT_update_user_should_fail(self):
-                        """
-                        Testing updating user
-
-                        Endpoint: PUT:/v1/User/{id}
-                        """
-                        response = put(f'{BASE_URL}v1/User/0')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_GET_user_settings_by_user_id_should_fail(self):
-                        """
-                        Testing getting user settings by user id
-
-                        Endpoint: GET:/v1/User/{id}/settings
-                        """
-                        response = get(f'{BASE_URL}v1/User/0/settings')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_PUT_update_user_settings_by_user_id_should_fail(self):
-                        """
-                        Testing updating user settings by user id
-
-                        Endpoint: PUT:/v1/User/{id}/settings
-                        """
-                        response = put(f'{BASE_URL}v1/User/0/settings')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_GET_user_icon_by_user_id_should_fail(self):
-                        """
-                        Testing getting user icon by user id
-
-                        Endpoint: GET:/v1/User/{id}/icon
-                        """
-                        response = get(f'{BASE_URL}v1/User/0/icon')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_PUT_update_user_icon_by_user_id_should_fail(self):
-                        """
-                        Testing updating user icon by user id
-
-                        Endpoint: PUT:/v1/User/{id}/icon
-                        """
-                        response = put(f'{BASE_URL}v1/User/0/icon')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_DELETE_user_icon_by_user_id_should_fail(self):
-                        """
-                        Testing deleting user icon by user id
-
-                        Endpoint: DELETE:/v1/User/{id}/icon
-                        """
-                        response = delete(f'{BASE_URL}v1/User/0/icon')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_GET_user_icon_raw_by_user_id_should_fail(self):
-                        """
-                        Testing getting raw user icon by user id
-
-                        Endpoint: GET:/v1/User/{id}/icon/raw
-                        """
-                        response = get(f'{BASE_URL}v1/User/0/icon/raw')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_GET_user_citizens_by_user_id_should_fail(self):
-                        """
-                        Testing getting user citizens by user id
-
-                        Endpoint: GET:/v1/User/{userId}/citizens
-                        """
-                        response = get(f'{BASE_URL}v1/User/0/citizens')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_GET_user_guardians_by_user_id_should_fail(self):
-                        """
-                        Testing getting user guardians by user id
-
-                        Endpoint: GET:/v1/User/{userId}/guardians
-                        """
-                        response = get(f'{BASE_URL}v1/User/0/guardians')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_GET_user_id_should_fail(self):
-                        """
-                        Testing GET user Id
-
-                        Endpoint: GET:/v1/User/{id}
-                        """
-                        response = get(f'{BASE_URL}v1/User/{user_id}')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_POST_user_id_citizens_citizenid_should_fail(self):
-                        """
-                        Testing POST as guardian for citizen
-
-                        Endpoint: POST:/v1/User/{userId}/citizens/{citizenId}
-                        """
-                        response = post(f'{BASE_URL}v1/User/{user_id}/citizens/{self.citizen_Id}')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    """
-                    Week endpoints
-                    """
-                    @order
-                    def test_auth_GET_user_id_week_v2_should_fail(self):
-                        """
-                        Testing GET on user specific week v2
-
-                        Endpoint: GET:/v1/Week/{userId}/week
-                        """
-                        response = get(f'{BASE_URL}v1/Week/{user_id}/week')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_GET_user_id_week_v1_should_fail(self):
-                        """
-                        Testing GET on user specific week v1
-
-                        Endpoint: GET:/v1/Week/{userId}/weekName
-                        """
-                        response = get(f'{BASE_URL}v1/Week/{user_id}/weekName')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_GET_user_id_weekyear_weeknumber_should_fail(self):
-                        """
-                        Testing GET on user specific weekyear and number
-
-                        Endpoint: GET:/v1/Week/{userId}/{weekYear}/{weekNumber}
-                        """
-                        response = get(f'{BASE_URL}v1/Week/{user_id}/{self.week_Year}/{self.week_Number}')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_PUT_user_id_weekyear_weeknumber_should_fail(self):
-                        """
-                        Testing PUT on user specific weekyear and number
-
-                        Endpoint: PUT:/v1/Week/{userId}/{weekYear}/{weekNumber}
-                        """
-                        response = put(f'{BASE_URL}v1/Week/{user_id}/{self.week_Year}/{self.week_Number}')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_DELETE_user_id_weekyear_weeknumber_should_fail(self):
-                        """
-                        Testing DELETE on user specific weekyear and number
-
-                        Endpoint: DELETE:/v1/Week/{userId}/{weekYear}/{weekNumber}
-                        """
-                        response = delete(f'{BASE_URL}v1/Week/{user_id}/{self.week_Year}/{self.week_Number}')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    """
-                    WeekTemplate endpoints
-                    """
-                    @order
-                    def test_auth_GET_weektemplate_should_fail(self):
-                        """
-                        Testing GET on weektemplate
-
-                        Endpoint: GET:/v1/WeekTemplate
-                        """
-                        response = get(f'{BASE_URL}v1/WeekTemplate')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_POST_weektemplate_should_fail(self):
-                        """
-                        Testing POST on weektemplate
-
-                        Endpoint: POST:/v1/WeekTemplate
-                        """
-                        response = post(f'{BASE_URL}v1/WeekTemplate')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_GET_weektemplate_id_should_fail(self):
-                        """
-                        Testing GET on weektemplate id
-
-                        Endpoint: GET:/v1/WeekTemplate/{id}
-                        """
-                        response = get(f'{BASE_URL}v1/WeekTemplate')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_PUT_weektemplate_id_should_fail(self):
-                        """
-                        Testing PUT on weektemplate id
-
-                        Endpoint: PUT:/v1/WeekTemplate/{id}
-                        """
-                        response = put(f'{BASE_URL}v1/WeekTemplate/123')
-                        response_body = response.json()
-
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    @order
-                    def test_auth_DELETE_weektemplate_id_should_fail(self):
-                        """
-                        Testing DELETE on weektemplate id
-
-                        Endpoint: DELETE:/v1/WeekTemplate/{id}
-                        """
-                        response = delete(f'{BASE_URL}v1/WeekTemplate/123')
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                    """
-                    Other tests
-                    """
-                    @order
-                    def test_auth_expired_authorization_should_fail(self):
-                        """
-                        Testing arbitrary request with expired token
-
-                        Endpoint: GET:/v1/User
-                        """
-                        headers = {'Authorization': f'Bearer {self.EXPIRED_TOKEN}'}
-                        response = get(f'{BASE_URL}v1/User', headers=headers)
-                        response_body = response.json()
-                        self.assertEqual(response.status_code, HTTPStatus.UNAUTHORIZED)
-                        self.assertEqual(response_body['errorKey'], 'NotAuthorized')
-
-                */
+
+        /// <summary>
+        /// Testing updating pictogram image by id
+        /// Endpoint: PUT:/v1/Pictogram/{id}/image
+        /// </summary>
+        [Fact, Priority(25)]
+        public async void TestAuthPUTPictogramsImageByIdShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/Pictogram/0/image"),
+                Method = HttpMethod.Put
+            };
+
+            var response = await _client.SendAsync(request);
+
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing getting raw pictogram image by id
+        /// Endpoint: GET:/v1/Pictogram/{id}/image/raw
+        /// </summary>
+        [Fact, Priority(26)]
+        public async void TestAuthGETPictogramsImageRawByIdShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/Pictogram/0/image/raw"),
+                Method = HttpMethod.Get
+            };
+
+            var response = await _client.SendAsync(request);
+
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+        #endregion
+
+        #region Status endpoints
+        /// <summary>
+        /// Testing getting API status
+        /// Endpoint: GET:/v1/Status
+        /// </summary>
+        [Fact, Priority(27)]
+        public async void TestAuthGETStatus()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/Status"),
+                Method = HttpMethod.Get
+            };
+
+            var response = await _client.SendAsync(request);
+
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
+        }
+
+        /// <summary>
+        /// Testing getting API database status
+        /// Endpoint: GET:/v1/Status/database
+        /// </summary>
+        [Fact, Priority(28)]
+        public async void TestAuthGETDatabaseStatus()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/Status/database"),
+                Method = HttpMethod.Get
+            };
+
+            var response = await _client.SendAsync(request);
+
+            Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
+        }
+        #endregion
+
+        #region User endpoint
+        /// <summary>
+        /// Testing getting pictogram image by id
+        /// Endpoint: GET:/v1/Pictogram/{id}/image
+        /// </summary>
+        [Fact, Priority(29)]
+        public async void TestAuthGETUserShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/Pictogram/0/image"),
+                Method = HttpMethod.Get
+            };
+
+            var response = await _client.SendAsync(request);
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing updating user
+        /// Endpoint: PUT:/v1/User/{id}
+        /// </summary>
+        [Fact, Priority(30)]
+        public async void TestAuthPUTUserShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/Pictogram/0/image"),
+                Method = HttpMethod.Put
+            };
+
+            var response = await _client.SendAsync(request);
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing getting user settings by user id
+        /// Endpoint: GET:/v1/User/{id}/settings
+        /// </summary>
+        [Fact, Priority(31)]
+        public async void TestAuthGETUserSettingsByUserIdShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/User/0/settings"),
+                Method = HttpMethod.Get
+            };
+
+            var response = await _client.SendAsync(request);
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing updating user settings by user id
+        /// Endpoint: GET:/v1/User/{id}/settings
+        /// </summary>
+        [Fact, Priority(32)]
+        public async void TestAuthPUTUpdateUserSettingsByUserIdShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/User/0/settings"),
+                Method = HttpMethod.Put
+            };
+
+            var response = await _client.SendAsync(request);
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing getting user icon by user id
+        /// Endpoint: GET:/v1/User/{id}/icon
+        /// </summary>
+        [Fact, Priority(33)]
+        public async void TestAuthGETUserIconByUserIdShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/User/0/icon"),
+                Method = HttpMethod.Get
+            };
+
+            var response = await _client.SendAsync(request);
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing updating user icon by user id
+        /// Endpoint: PUT:/v1/User/{id}/icon
+        /// </summary>
+        [Fact, Priority(34)]
+        public async void TestAuthPUTUpdateUserIconByUserIdShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/User/0/icon"),
+                Method = HttpMethod.Put
+            };
+
+            var response = await _client.SendAsync(request);
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing deleting user icon by user id
+        /// Endpoint: DELETE:/v1/User/{id}/icon
+        /// </summary>
+        [Fact, Priority(35)]
+        public async void TestAuthDELETEUserIconByUserIdShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/User/0/icon"),
+                Method = HttpMethod.Delete
+            };
+
+            var response = await _client.SendAsync(request);
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing getting raw user icon by user id
+        /// Endpoint: GET:/v1/User/{id}/icon/raw
+        /// </summary>
+        [Fact, Priority(36)]
+        public async void TestAuthGETUserIconRawByUserIdShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/User/0/icon"),
+                Method = HttpMethod.Get
+            };
+
+            var response = await _client.SendAsync(request);
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing getting user citizens by user id
+        /// Endpoint: GET:/v1/User/{userId}/citizens
+        /// </summary>
+        [Fact, Priority(37)]
+        public async void TestAuthGETCitizenByUserIdShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/User/0/citizen"),
+                Method = HttpMethod.Get
+            };
+
+            var response = await _client.SendAsync(request);
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
+            Assert.Equal("NotFound", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing getting user guardians by user id
+        /// Endpoint: GET:/v1/User/{userId}/guardians
+        /// </summary>
+        [Fact, Priority(38)]
+        public async void TestAuthGETUserGuardiansByUserIdShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/User/0/guardians"),
+                Method = HttpMethod.Get
+            };
+
+            var response = await _client.SendAsync(request);
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing GET user Id
+        /// Endpoint: GET:/v1/User/{id}
+        /// </summary>
+        [Fact, Priority(39)]
+        public async void TestAuthGETUserIdShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/User/{AccountExtension.GetIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}"),
+                Method = HttpMethod.Get
+            };
+
+            var response = await _client.SendAsync(request);
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing POST as guardian for citizen
+        /// Endpoint: POST:/v1/User/{userId}/citizens/{citizenId}
+        /// </summary>
+        [Fact, Priority(40)]
+        public async void TestAuthPOSTUserIdCitizensCitizenIdShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/User/{AccountExtension.GetIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}/citizens/{_authorizationFixture.CitizenId}"),
+                Method = HttpMethod.Post
+            };
+
+            var response = await _client.SendAsync(request);
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+        #endregion
+
+        #region Week endpoints
+        /// <summary>
+        /// Testing GET on user specific week v1
+        /// Endpoint: GET:/v1/Week/{userId}/week
+        /// </summary>
+        [Fact, Priority(41)]
+        public async void TestAuthGETUserIdWeekV1ShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/Week/{AccountExtension.GetIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}/week"),
+                Method = HttpMethod.Get
+            };
+
+            var response = await _client.SendAsync(request);
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing GET on user specific weekyear and number
+        /// Endpoint: GET:/v1/Week/{userId}/{weekYear}/{weekNumber}
+        /// </summary>
+        [Fact, Priority(42)]
+        public async void TestAuthGETUserIdWeekyearWeeknumberShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/Week/{AccountExtension.GetIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}/{_authorizationFixture.WeekYear}/{_authorizationFixture.WeekNumber}"),
+                Method = HttpMethod.Get
+            };
+
+            var response = await _client.SendAsync(request);
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing PUT on user specific weekyear and number
+        /// Endpoint: PUT:/v1/Week/{userId}/{weekYear}/{weekNumber}
+        /// </summary>
+        [Fact, Priority(43)]
+        public async void TestAuthPUTUserIdWeekyearWeeknumberShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/Week/{AccountExtension.GetIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}/{_authorizationFixture.WeekYear}/{_authorizationFixture.WeekNumber}"),
+                Method = HttpMethod.Put
+            };
+
+            var response = await _client.SendAsync(request);
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing DELETE on user specific weekyear and number
+        /// Endpoint: DELETE:/v1/Week/{userId}/{weekYear}/{weekNumber}
+        /// </summary>
+        [Fact, Priority(44)]
+        public async void TestAuthDELETEUserIdWeekyearWeeknumberShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/Week/{AccountExtension.GetIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}/{_authorizationFixture.WeekYear}/{_authorizationFixture.WeekNumber}"),
+                Method = HttpMethod.Delete
+            };
+
+            var response = await _client.SendAsync(request);
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+        #endregion
+
+        #region WeekTemplate endpoints
+        /// <summary>
+        /// Testing GET on weektemplate
+        /// Endpoint: GET:/v1/WeekTemplate
+        /// </summary>
+        [Fact, Priority(45)]
+        public async void TestAuthGETWeektemplateShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/WeekTemplate"),
+                Method = HttpMethod.Get
+            };
+
+            var response = await _client.SendAsync(request);
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing POST on weektemplate
+        /// Endpoint: POST:/v1/WeekTemplate
+        /// </summary>
+        [Fact, Priority(46)]
+        public async void TestAuthPOSTWeektemplateShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/WeekTemplate"),
+                Method = HttpMethod.Post
+            };
+
+            var response = await _client.SendAsync(request);
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing GET on weektemplate id
+        /// Endpoint: GET:/v1/WeekTemplate/{id}
+        /// </summary>
+        [Fact, Priority(47)]
+        public async void TestAuthGETWeektemplateIdShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/WeekTemplate/123"),
+                Method = HttpMethod.Get
+            };
+
+            var response = await _client.SendAsync(request);
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing PUT on weektemplate id
+        /// Endpoint: PUT:/v1/WeekTemplate/{id}
+        /// </summary>
+        [Fact, Priority(48)]
+        public async void TestAuthPutWeektemplateIdShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/WeekTemplate/123"),
+                Method = HttpMethod.Put
+            };
+
+            var response = await _client.SendAsync(request);
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+
+        /// <summary>
+        /// Testing DELETE on weektemplate id
+        /// Endpoint: DELETE:/v1/WeekTemplate/{id}
+        /// </summary>
+        [Fact, Priority(49)]
+        public async void TestAuthDELETEWeektemplateIdShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/WeekTemplate/123"),
+                Method = HttpMethod.Delete
+            };
+
+            var response = await _client.SendAsync(request);
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+        #endregion
+
+        #region Other tests
+        /// <summary>
+        /// Testing arbitrary request with expired token
+        /// Endpoint: GET:/v1/User
+        /// </summary>
+        [Fact, Priority(50)]
+        public async void TestAuthExpiredAuthorizationShouldFail()
+        {
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/User"),
+                Method = HttpMethod.Get
+            };
+            request.Headers.Add("Authorization", $"Bearer {_authorizationFixture.ExpiredToken}");
+
+            var response = await _client.SendAsync(request);
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
+        }
+        #endregion
     }
 }
