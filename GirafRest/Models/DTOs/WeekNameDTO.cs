@@ -1,9 +1,12 @@
-﻿namespace GirafRest
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+
+namespace GirafRest
 {
     /// <summary>
     /// DTO for weekname, holding year, number and name
     /// </summary>
-    public class WeekNameDTO
+    public class WeekNameDTO : IComparable<WeekNameDTO>
     {
         /// <summary>
         /// A Name describing the week.
@@ -35,6 +38,19 @@
             this.Name = name;
             this.WeekYear = weekYear;
             this.WeekNumber = weekNumber;
+        }
+
+        public int CompareTo( WeekNameDTO other)
+        {
+            if (this.WeekYear.CompareTo(other.WeekYear) != 0)
+            {
+                return -1*this.WeekYear.CompareTo(other.WeekYear);
+            }else
+            {
+                return -1*this.WeekNumber.CompareTo(other.WeekNumber);
+            }
+               
+           
         }
     }
 }
