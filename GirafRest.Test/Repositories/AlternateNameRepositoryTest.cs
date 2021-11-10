@@ -6,6 +6,7 @@ using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 
 namespace GirafRest.Test.Repositories
 {
@@ -67,6 +68,31 @@ namespace GirafRest.Test.Repositories
                 //Assert
                 Assert.Equal(AlternateName, alternateName);
             }
+        }
+
+        [Fact]
+        public void GetForUser_PictogramHasAlternateNameForUser_ReturnsAlternateName()
+        {
+            // Arrange
+            var context = new Mock<GirafDbContext>();
+            var dbSet = new Mock<DbSet<AlternateName>>();
+            var expected = new AlternateName()
+            {
+                CitizenId = "1",
+                PictogramId = 1,
+                Name = "alterName"
+            };
+            var repository = new AlternateNameRepository(context.Object);
+
+            // Mock
+            context.Setup(x => x.Set<AlternateName>()).Returns(dbSet.Object);
+            dbSet.Setup(x => x.Find(expected.PictogramId)).Returns(expected);
+
+            // Act
+            var actual = repository.GetForUser(expected.CitizenId, expected.PictogramId);
+
+            // Assert
+            Assert.Equal(expected, actual);
         }
     }
 }
