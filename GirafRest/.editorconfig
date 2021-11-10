@@ -17,6 +17,9 @@ insert_final_newline = false
 
 #### .NET Coding Conventions ####
 
+# Suppress XML comments
+dotnet_diagnostic.CS1591.severity = none
+
 # Organize usings
 dotnet_separate_import_directive_groups = false
 dotnet_sort_system_directives_first = false
