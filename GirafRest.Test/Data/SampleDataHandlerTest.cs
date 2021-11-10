@@ -1,6 +1,6 @@
 ﻿using GirafRest.Data;
 using GirafRest.Models;
-using GirafRest.Setup;
+using GirafRest.Data.Samples;
 using System;
 using System.Collections.Generic;
 using System.IO;
