@@ -8,8 +8,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using GirafRest.Data.Samples;
 
-namespace GirafRest.Setup
+namespace GirafRest.Data
 {
     public class SampleDataHandler
     {
@@ -49,7 +50,7 @@ namespace GirafRest.Setup
         public async Task SerializeDataAsync(GirafDbContext context, UserManager<GirafUser> userManager)
         {
             SampleData data = new SampleData();
-
+            
             // Giraf users
             List<GirafUser> userList = await context.Users.ToListAsync();
             // Departments
@@ -146,26 +147,6 @@ namespace GirafRest.Setup
                 Formatting = Formatting.Indented
             });
             File.WriteAllText(jsonFile, jsonSamples);
-        }
-    }
-
-    public class SampleData
-    {
-        public List<SampleGirafUser> UserList { get; set; }
-        public List<SampleDepartment> DepartmentList { get; set; }
-        public List<SamplePictogram> PictogramList { get; set; }
-        public List<SampleWeekday> WeekdayList { get; set; }
-        public List<SampleWeek> WeekList { get; set; }
-        public List<SampleWeekTemplate> WeekTemplateList { get; set; }
-
-        public SampleData()
-        {
-            UserList = new List<SampleGirafUser>();
-            DepartmentList = new List<SampleDepartment>();
-            PictogramList = new List<SamplePictogram>();
-            WeekdayList = new List<SampleWeekday>();
-            WeekList = new List<SampleWeek>();
-            WeekTemplateList = new List<SampleWeekTemplate>();
         }
     }
 }

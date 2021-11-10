@@ -1,587 +1,74 @@
 {
     "UserList": [
         {
-            "Name": "Kurt",
-            "DisplayName": "Kurt Andersen",
-            "DepartmentName": "Tobias' stue for godt humør",
-            "Role": "Citizen",
+            "Name": "Citizen_User1",
+            "DisplayName": "bob",
+            "DepartmentName": "Egebakken",
+            "Role": "Guardian",
             "Weeks": [
                 "Normal Uge"
             ],
             "Password": "password"
         },
         {
-            "Name": "Tobias",
-            "DisplayName": "Tobias Tobiassss",
-            "DepartmentName": "Tobias' stue for godt humør",
-            "Role": "Department",
-            "Weeks": [],
-            "Password": "password"
-        },
-        {
-            "Name": "Decker",
-            "DisplayName": "Deck",
-            "DepartmentName": "Tobias' stue for godt humør",
-            "Role": "Citizen",
-            "Weeks": [],
-            "Password": "password"
-        },
-        {
-            "Name": "Graatand",
-            "DisplayName": "Harald Graatand",
-            "DepartmentName": "Tobias' stue for godt humør",
+            "Name": "Guardian_User1",
+            "DisplayName": "MYGUARDIAN1",
+            "DepartmentName": "Egebakken",
             "Role": "Guardian",
             "Weeks": [],
             "Password": "password"
         },
-        {
-            "Name": "Lee",
-            "DisplayName": "Mr. Lee",
-            "DepartmentName": "Bajer plejen",
-            "Role": "SuperUser",
-            "Weeks": [],
-            "Password": "password"
-        },
-        {
-            "Name": "Simon",
-            "DisplayName": "Simon Sim",
-            "DepartmentName": "Tobias' stue for godt humør",
-            "Role": "Citizen",
-            "Weeks": [],
-            "Password": "password"
-        }
+      {
+        "Name": "Citizen_User2",
+        "DisplayName": "ib",
+        "DepartmentName": "Birken",
+        "Role": "Citizen",
+        "Weeks": [],
+        "Password": "password"
+      },
+      {
+        "Name": "Guardian_User2",
+        "DisplayName": "MYGUARDIAN2",
+        "DepartmentName": "Birken",
+        "Role": "Guardian",
+        "Weeks": [],
+        "Password": "password"
+      },
+      {
+        "Name": "dev",
+        "DisplayName": "dev",
+        "DepartmentName": "Egebakken",
+        "Role": "Guardian",
+        "Weeks": [],
+        "Password": "dev"
+      }
     ],
     "DepartmentList": [
         {
-            "Name": "Bajer plejen"
+            "Name": "Egebakken"
         },
         {
-            "Name": "Tobias' stue for godt humør"
+            "Name": "Birken"
         }
     ],
     "PictogramList": [
         {
-            "Title": "Epik",
+            "Title": "Pictrogram1",
             "AccessLevel": "PUBLIC",
             "ImageHash": "secure hash"
         },
         {
-            "Title": "som",
+            "Title": "Pictogram2",
             "AccessLevel": "PUBLIC",
             "ImageHash": "secure hash"
         },
         {
-            "Title": "slut",
+            "Title": "other",
             "AccessLevel": "PUBLIC",
             "ImageHash": "secure hash"
         },
         {
-            "Title": "sjovt",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "simpelt",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "sig",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "selv",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "sejt",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "sammen",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "rød",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "respekt",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "sort",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "regnestykke1",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "q",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "pink",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "pege",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "parentes",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "parantes",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "ovenfor",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "orange",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "omdømme",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "ok",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "også",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "regnestykke",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "starte",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "stjerne",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "større end",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "cat15",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "cat14",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "cat13",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "cat12",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "cat11",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "cat10",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "cat9",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "cat8",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "cat7",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "cat6",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "cat5",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "cat4",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "cat3",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "cat2",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "cat1",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "cat0",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "tiders",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "terning",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "tegn",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "sølv",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "sætte",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "synssans",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "symbol",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "nærme",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "cat16",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "nuværende",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "nul",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "godt",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "geometriske",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "færdig",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "frihed",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "fredsdue",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "fra",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "former",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "fire",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "figurer",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "femininum",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "grå",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "fem",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "fantastisk",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "en",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "division",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "delmængde",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "bogstav",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "berøre",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "antal",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "alting",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "alle",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "alfabet",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "farve",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "gul",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "gylden",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "heldig",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "nnummer",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "nederste",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "mørkegrøn",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "mørkeblå",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "multiplikation",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "mindre arbejde",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "midterste",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "mere arbejde",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "med",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "maskulin",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "lægge",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "lysegrøn",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "line",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "lilla",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "langt",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "kvinde",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "komme",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "j",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "intet",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "hørelse",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "hvilken",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "hvid",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "hunkøn",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "numer",
-            "AccessLevel": "PUBLIC",
-            "ImageHash": "secure hash"
-        },
-        {
-            "Title": "cat17",
+            "Title": "TÆST",
             "AccessLevel": "PUBLIC",
             "ImageHash": "secure hash"
         }
@@ -784,15 +271,15 @@
     ],
     "WeekList": [
         {
-            "Name": "Normal Uge",
-            "ImageTitle": "Epik"
+            "Name": "dev_data_week_list",
+            "ImageTitle": "dev_title"
         }
     ],
     "WeekTemplateList": [
-        {
-            "Name": "SkabelonUge",
-            "ImageTitle": "Epik",
-            "DepartmentName": "Tobias' stue for godt humør"
-        }
+      {
+        "Name": "Dev_data_for_week_template",
+        "ImageTitle": "dev_data_title",
+        "DepartmentName": "Birken"
+      }
     ]
 }
