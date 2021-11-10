@@ -10,6 +10,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace GirafRest.Setup
 {
@@ -20,7 +21,7 @@ namespace GirafRest.Setup
     {
         #region Properties
 
-        public static SampleDataHandler SampleDataHandler { get; set; } = new SampleDataHandler();
+        private static SampleDataHandler SampleDataHandler { get; set; }
 
         #endregion
 
@@ -32,10 +33,29 @@ namespace GirafRest.Setup
         /// <param name="context">The database context.</param>
         /// <param name="userManager">The API for managing GirafUsers.</param>
         /// <param name="pictogramCount">The number of sample pictograms to generate.</param>
-        public static async Task Initialize(GirafDbContext context, UserManager<GirafUser> userManager, int pictogramCount)
+        public static async Task Initialize(GirafDbContext context, UserManager<GirafUser> userManager, int pictogramCount, string environmentName)
         {
             CreatePictograms(pictogramCount);
 
+            
+
+            switch (environmentName)
+            {
+                case "Development":
+                    SampleDataHandler = new SampleDataHandler("DB_data.dev.Json");
+                    break;
+
+                case "Staging":
+                    SampleDataHandler = new SampleDataHandler("DB_data.stag.Json");
+                    break;
+
+                case "Production":
+                    SampleDataHandler = new SampleDataHandler("DB_data.Prod.Json");
+                    break;
+
+                default:
+                    break;
+            }
             // Check if any data is in the database
             if (await context.Departments.AnyAsync())
             {
