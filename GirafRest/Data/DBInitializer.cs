@@ -35,7 +35,6 @@ namespace GirafRest.Data
             // Initialize static fields
             _context = context;
             _userManager = userManager;
-            _sampleDataHandler = new SampleDataHandler();
 
             // Verify that the database has already been created, before adding data to it
             _context.Database.EnsureCreated();
@@ -44,15 +43,15 @@ namespace GirafRest.Data
             switch (environmentName)
             {
                 case "Development":
-                    _sampleDataHandler = new SampleDataHandler("DB_data.dev.Json");
+                    _sampleDataHandler = new SampleDataHandler("DB_data.dev.json");
                     break;
 
                 case "Staging":
-                    _sampleDataHandler = new SampleDataHandler("DB_data.stag.Json");
+                    _sampleDataHandler = new SampleDataHandler("DB_data.stag.json");
                     break;
 
                 case "Production":
-                    _sampleDataHandler = new SampleDataHandler("DB_data.Prod.Json");
+                    _sampleDataHandler = new SampleDataHandler("DB_data.prod.json");
                     break;
 
                 default:

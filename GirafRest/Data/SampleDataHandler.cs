@@ -17,13 +17,11 @@ namespace GirafRest.Data
         private readonly string jsonFile = $"{Directory.GetCurrentDirectory()}" +
             $"{Path.DirectorySeparatorChar}" +
             $"Data" +
-            $"{Path.DirectorySeparatorChar}" +
-            $"DB_data.dev.json";
+            $"{Path.DirectorySeparatorChar}";
 
-        public SampleDataHandler() { }
         public SampleDataHandler(string path)
         {
-            jsonFile = path;
+            jsonFile += path;
         }
 
         public SampleData DeserializeData()
