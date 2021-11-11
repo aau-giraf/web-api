@@ -1,4 +1,4 @@
-using GirafRest.Models.DTOs;
+using GirafRest.Models.Enums;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -127,6 +127,15 @@ namespace GirafRest.Models
         public void AddGuardian(GirafUser guardian)
         {
             this.Guardians.Add(new GuardianRelation(guardian, this));
+        }
+
+        /// <summary>
+        /// Add specific Guardian to this
+        /// </summary>
+        /// <param name="trustee"></param>
+        public void AddTrustee(GirafUser trustee)
+        {
+            this.Guardians.Add(new GuardianRelation(trustee, this));
         }
 
         /// <summary>

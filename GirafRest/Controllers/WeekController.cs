@@ -91,8 +91,11 @@ namespace GirafRest.Controllers
             
             if (!user.WeekSchedule.Any())
                 return Ok(new SuccessResponse<IEnumerable<WeekNameDTO>>(Enumerable.Empty<WeekNameDTO>()));
+            // Sort Returnlist 
+            List<WeekNameDTO> returnlist = user.WeekSchedule.Select(w => new WeekNameDTO(w.WeekYear, w.WeekNumber, w.Name)).ToList();
+            returnlist.Sort();
 
-            return Ok(new SuccessResponse<IEnumerable<WeekNameDTO>>(user.WeekSchedule.Select(w => new WeekNameDTO(w.WeekYear, w.WeekNumber, w.Name))));
+            return Ok(new SuccessResponse<IEnumerable<WeekNameDTO>>(returnlist));
         }
 
         /// <summary>
