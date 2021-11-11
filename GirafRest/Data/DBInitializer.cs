@@ -58,20 +58,6 @@ namespace GirafRest.Data
                 default:
                     break;
             }
-            // Check if any data is in the database
-            if (await context.Departments.AnyAsync())
-            {
-                ///<summary>
-                ///SampleDataHandler creates a samples.json file by storing current database data in plaintext, in samples.json
-                ///Use only if samples.json does not exist in Data folder and only sample data exists in the database.
-                ///Passwords for users are written to the samples.json directly from the db, meaning they will be hashes. 
-                ///If you want more writeable passwords, manually set them in the samples.json.
-                ///</summary>
-                //await SampleDataHandler.SerializeDataAsync(context, userManager);
-                return;
-            }
-
-            CreatePictograms(pictogramCount);
 
             // Get sample data
             SampleData sampleData = _sampleDataHandler.DeserializeData();
