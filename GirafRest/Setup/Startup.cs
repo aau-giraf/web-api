@@ -265,8 +265,8 @@ namespace GirafRest.Setup
             roleManager.EnsureRoleSetup().Wait();
 
             // Fill some sample data into the database
-            //if (ProgramOptions.GenerateSampleData)
-                DBInitializer.Initialize(context, userManager, ProgramOptions.Pictograms).Wait();
+            if (ProgramOptions.GenerateSampleData)
+                DBInitializer.Initialize(context, userManager, ProgramOptions.Pictograms, env.EnvironmentName).Wait();
 
             app.Run((context2) =>
             {
