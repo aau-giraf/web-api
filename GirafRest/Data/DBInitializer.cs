@@ -10,9 +10,9 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using GirafRest.Data.Samples;
 
-namespace GirafRest.Setup
+namespace GirafRest.Data
 {
     /// <summary>
     /// A class for initializing the database with some sample data.
@@ -35,7 +35,7 @@ namespace GirafRest.Setup
         /// <param name="pictogramCount">The number of sample pictograms to generate.</param>
         public static async Task Initialize(GirafDbContext context, UserManager<GirafUser> userManager, int pictogramCount, string environmentName)
         {
-            CreatePictograms(pictogramCount);
+            context.Database.EnsureCreated();
 
             
 
@@ -68,6 +68,9 @@ namespace GirafRest.Setup
                 //await SampleDataHandler.SerializeDataAsync(context, userManager);
                 return;
             }
+
+            CreatePictograms(pictogramCount);
+
             // Get sample data
             SampleData sampleData = SampleDataHandler.DeserializeData();
             // Create departments
@@ -94,7 +97,7 @@ namespace GirafRest.Setup
                 }
             }
             // Save changes
-            await context.SaveChangesAsync();
+            await context.SaveChangesAsync();   
         }
 
         #region Generating pictograms

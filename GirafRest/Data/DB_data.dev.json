@@ -1,0 +1,285 @@
+{
+    "UserList": [
+        {
+            "Name": "Citizen_User1",
+            "DisplayName": "bob",
+            "DepartmentName": "Egebakken",
+            "Role": "Guardian",
+            "Weeks": [
+                "Normal Uge"
+            ],
+            "Password": "password"
+        },
+        {
+            "Name": "Guardian_User1",
+            "DisplayName": "MYGUARDIAN1",
+            "DepartmentName": "Egebakken",
+            "Role": "Guardian",
+            "Weeks": [],
+            "Password": "password"
+        },
+      {
+        "Name": "Citizen_User2",
+        "DisplayName": "ib",
+        "DepartmentName": "Birken",
+        "Role": "Citizen",
+        "Weeks": [],
+        "Password": "password"
+      },
+      {
+        "Name": "Guardian_User2",
+        "DisplayName": "MYGUARDIAN2",
+        "DepartmentName": "Birken",
+        "Role": "Guardian",
+        "Weeks": [],
+        "Password": "password"
+      },
+      {
+        "Name": "dev",
+        "DisplayName": "dev",
+        "DepartmentName": "Egebakken",
+        "Role": "Guardian",
+        "Weeks": [],
+        "Password": "dev"
+      }
+    ],
+    "DepartmentList": [
+        {
+            "Name": "Egebakken"
+        },
+        {
+            "Name": "Birken"
+        }
+    ],
+    "PictogramList": [
+        {
+            "Title": "Pictrogram1",
+            "AccessLevel": "PUBLIC",
+            "ImageHash": "secure hash"
+        },
+        {
+            "Title": "Pictogram2",
+            "AccessLevel": "PUBLIC",
+            "ImageHash": "secure hash"
+        },
+        {
+            "Title": "other",
+            "AccessLevel": "PUBLIC",
+            "ImageHash": "secure hash"
+        },
+        {
+            "Title": "TÆST",
+            "AccessLevel": "PUBLIC",
+            "ImageHash": "secure hash"
+        }
+    ],
+    "WeekdayList": [
+        {
+            "Day": 1,
+            "ActivityIconTitles": [
+                "Epik",
+                "antal",
+                "alting",
+                "alle",
+                "alfabet"
+            ],
+            "ActivityStates": [
+                "Completed",
+                "Completed",
+                "Completed",
+                "Completed",
+                "Completed"
+            ]
+        },
+        {
+            "Day": 2,
+            "ActivityIconTitles": [
+                "division",
+                "delmængde",
+                "bogstav",
+                "berøre"
+            ],
+            "ActivityStates": [
+                "Completed",
+                "Canceled",
+                "Active",
+                "Completed"
+            ]
+        },
+        {
+            "Day": 3,
+            "ActivityIconTitles": [
+                "femininum",
+                "fem",
+                "farve",
+                "fantastisk",
+                "en"
+            ],
+            "ActivityStates": [
+                "Active",
+                "Active",
+                "Active",
+                "Active",
+                "Completed"
+            ]
+        },
+        {
+            "Day": 4,
+            "ActivityIconTitles": [
+                "berøre",
+                "delmængde",
+                "bogstav",
+                "division"
+            ],
+            "ActivityStates": [
+                "Active",
+                "Active",
+                "Canceled",
+                "Active"
+            ]
+        },
+        {
+            "Day": 5,
+            "ActivityIconTitles": [
+                "delmængde",
+                "Epik"
+            ],
+            "ActivityStates": [
+                "Active",
+                "Active"
+            ]
+        },
+        {
+            "Day": 6,
+            "ActivityIconTitles": [
+                "berøre",
+                "division"
+            ],
+            "ActivityStates": [
+                "Canceled",
+                "Canceled"
+            ]
+        },
+        {
+            "Day": 7,
+            "ActivityIconTitles": [
+                "alting",
+                "berøre"
+            ],
+            "ActivityStates": [
+                "Active",
+                "Active"
+            ]
+        },
+        {
+            "Day": 1,
+            "ActivityIconTitles": [
+                "Epik",
+                "antal",
+                "alting",
+                "alle",
+                "alfabet"
+            ],
+            "ActivityStates": [
+                "Active",
+                "Active",
+                "Active",
+                "Active",
+                "Active"
+            ]
+        },
+        {
+            "Day": 2,
+            "ActivityIconTitles": [
+                "division",
+                "delmængde",
+                "bogstav",
+                "berøre"
+            ],
+            "ActivityStates": [
+                "Active",
+                "Active",
+                "Active",
+                "Active"
+            ]
+        },
+        {
+            "Day": 3,
+            "ActivityIconTitles": [
+                "femininum",
+                "fem",
+                "farve",
+                "fantastisk",
+                "en"
+            ],
+            "ActivityStates": [
+                "Active",
+                "Active",
+                "Active",
+                "Active",
+                "Active"
+            ]
+        },
+        {
+            "Day": 4,
+            "ActivityIconTitles": [
+                "berøre",
+                "delmængde",
+                "bogstav",
+                "division"
+            ],
+            "ActivityStates": [
+                "Active",
+                "Active",
+                "Active",
+                "Active"
+            ]
+        },
+        {
+            "Day": 5,
+            "ActivityIconTitles": [
+                "delmængde",
+                "Epik"
+            ],
+            "ActivityStates": [
+                "Active",
+                "Active"
+            ]
+        },
+        {
+            "Day": 6,
+            "ActivityIconTitles": [
+                "berøre",
+                "division"
+            ],
+            "ActivityStates": [
+                "Active",
+                "Active"
+            ]
+        },
+        {
+            "Day": 7,
+            "ActivityIconTitles": [
+                "alting",
+                "berøre"
+            ],
+            "ActivityStates": [
+                "Active",
+                "Active"
+            ]
+        }
+    ],
+    "WeekList": [
+        {
+            "Name": "dev_data_week_list",
+            "ImageTitle": "dev_title"
+        }
+    ],
+    "WeekTemplateList": [
+      {
+        "Name": "Dev_data_for_week_template",
+        "ImageTitle": "dev_data_title",
+        "DepartmentName": "Birken"
+      }
+    ]
+}
