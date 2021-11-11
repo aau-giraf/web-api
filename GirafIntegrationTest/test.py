@@ -17,12 +17,13 @@ def ConnectServer():
             try:
                 get(f'{BASE_URL}v1/Status')
                 result = True
-            except ConnectionError:
+            except ConnectionError as error:
                 sleep(5)
-                print('\033[91m' + 'Error:' + '\033[0m' + f' could not get response from server. Retrying {count}')
+                print(f'Response: {error} ')
+                print('\033[91m' + 'Error:' + '\033[0m' + f' could not get response from server. Retrying {count+1}')
     
     if (not result):
-        print(f'\033[91m' + 'Error:' + '\033[0m' + ' could not get response from server.\n Exiting...')
+        print('Exiting...')
         sys.exit(1)
 
 
