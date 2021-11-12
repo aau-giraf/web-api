@@ -18,11 +18,11 @@ namespace GirafRest.IntegrationTest.Tests
         private readonly CustomWebApplicationFactory _factory;
         private readonly AccountFixture _accountFixture;
         private const string BASE_URL = "https://localhost:5000/";
-        private readonly HttpClient client;
+        private readonly HttpClient _client;
         public AccountControllerTest(CustomWebApplicationFactory factory, AccountFixture accountFixture)
         {
             _factory = factory;
-            client = _factory.CreateClient();
+            _client = _factory.CreateClient();
             _accountFixture = accountFixture;
         }
 
@@ -36,7 +36,7 @@ namespace GirafRest.IntegrationTest.Tests
             HttpContent httpContent = new StringContent("{'username': 'Graatand', 'password': 'password'}",
                                     Encoding.UTF8,
                                     "application/json");
-            var response = await client.PostAsync($"{BASE_URL}v2/Account/login", httpContent);
+            var response = await _client.PostAsync($"{BASE_URL}v2/Account/login", httpContent);
             string data = await response.Content.ReadAsStringAsync();
             JObject content = JObject.Parse(data);
 
@@ -56,9 +56,9 @@ namespace GirafRest.IntegrationTest.Tests
                 RequestUri = new Uri($"{BASE_URL}v1/User/"),
                 Method = HttpMethod.Get
             };
-            request.Headers.Add("Authorization", $"Bearer {await AccountExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
 
-            var response = await client.SendAsync(request);
+            var response = await _client.SendAsync(request);
 
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
@@ -82,9 +82,9 @@ namespace GirafRest.IntegrationTest.Tests
                 Method = HttpMethod.Post,
                 Content = new StringContent(data, Encoding.UTF8, "application/json"),
             };
-            request.Headers.Add("Authorization", $"Bearer {await AccountExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
 
-            var response = await client.SendAsync(request);
+            var response = await _client.SendAsync(request);
 
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
@@ -108,9 +108,9 @@ namespace GirafRest.IntegrationTest.Tests
                 Method = HttpMethod.Post,
                 Content = new StringContent(data, Encoding.UTF8, "application/json"),
             };
-            request.Headers.Add("Authorization", $"Bearer {await AccountExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
 
-            var response = await client.SendAsync(request);
+            var response = await _client.SendAsync(request);
 
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
@@ -134,9 +134,9 @@ namespace GirafRest.IntegrationTest.Tests
                 Content = new StringContent(data, Encoding.UTF8, "application/json"),
             };
 
-            request.Headers.Add("Authorization", $"Bearer {await AccountExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
 
-            var response = await client.SendAsync(request);
+            var response = await _client.SendAsync(request);
 
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
@@ -160,7 +160,7 @@ namespace GirafRest.IntegrationTest.Tests
                 Content = new StringContent(data, Encoding.UTF8, "application/json"),
             };
 
-            var response = await client.SendAsync(request);
+            var response = await _client.SendAsync(request);
 
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
@@ -181,9 +181,9 @@ namespace GirafRest.IntegrationTest.Tests
                 Method = HttpMethod.Get,
             };
 
-            request.Headers.Add("Authorization", $"Bearer {await AccountExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
 
-            var response = await client.SendAsync(request);
+            var response = await _client.SendAsync(request);
 
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
@@ -205,9 +205,9 @@ namespace GirafRest.IntegrationTest.Tests
                 Method = HttpMethod.Get,
             };
 
-            request.Headers.Add("Authorization", $"Bearer {await AccountExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
 
-            var response = await client.SendAsync(request);
+            var response = await _client.SendAsync(request);
 
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
@@ -230,9 +230,9 @@ namespace GirafRest.IntegrationTest.Tests
                 Content = new StringContent(data, Encoding.UTF8, "application/json")
             };
 
-            request.Headers.Add("Authorization", $"Bearer {await AccountExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
 
-            var response = await client.SendAsync(request);
+            var response = await _client.SendAsync(request);
 
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
@@ -255,9 +255,9 @@ namespace GirafRest.IntegrationTest.Tests
                 Content = new StringContent(data, Encoding.UTF8, "application/json")
             };
 
-            request.Headers.Add("Authorization", $"Bearer {await AccountExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
 
-            var response = await client.SendAsync(request);
+            var response = await _client.SendAsync(request);
 
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
@@ -280,7 +280,7 @@ namespace GirafRest.IntegrationTest.Tests
                 Content = new StringContent(data, Encoding.UTF8, "application/json")
             };
 
-            var response = await client.SendAsync(request);
+            var response = await _client.SendAsync(request);
 
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
@@ -303,9 +303,9 @@ namespace GirafRest.IntegrationTest.Tests
                 Content = new StringContent(data, Encoding.UTF8, "application/json")
             };
 
-            request.Headers.Add("Authorization", $"Bearer {await AccountExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
 
-            var response = await client.SendAsync(request);
+            var response = await _client.SendAsync(request);
 
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
@@ -328,7 +328,7 @@ namespace GirafRest.IntegrationTest.Tests
                 Content = new StringContent(data, Encoding.UTF8, "application/json")
             };
 
-            var response = await client.SendAsync(request);
+            var response = await _client.SendAsync(request);
 
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
@@ -349,9 +349,9 @@ namespace GirafRest.IntegrationTest.Tests
                 Method = HttpMethod.Get
             };
 
-            request.Headers.Add("Authorization", $"Bearer {await AccountExtension.GetTokenAsync(_factory, _accountFixture.Citizen1Username, _accountFixture.Citizen1Password)}");
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _accountFixture.Citizen1Username, _accountFixture.Citizen1Password)}");
 
-            var response = await client.SendAsync(request);
+            var response = await _client.SendAsync(request);
 
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
@@ -373,9 +373,9 @@ namespace GirafRest.IntegrationTest.Tests
                 Method = HttpMethod.Get
             };
 
-            request.Headers.Add("Authorization", $"Bearer {await AccountExtension.GetTokenAsync(_factory, _accountFixture.Citizen1Username, _accountFixture.Citizen1Password)}");
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _accountFixture.Citizen1Username, _accountFixture.Citizen1Password)}");
 
-            var response = await client.SendAsync(request);
+            var response = await _client.SendAsync(request);
 
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
@@ -397,9 +397,9 @@ namespace GirafRest.IntegrationTest.Tests
                 Method = HttpMethod.Get
             };
 
-            request.Headers.Add("Authorization", $"Bearer {await AccountExtension.GetTokenAsync(_factory, _accountFixture.Citizen1Username, _accountFixture.Citizen1Password)}");
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _accountFixture.Citizen1Username, _accountFixture.Citizen1Password)}");
 
-            var response = await client.SendAsync(request);
+            var response = await _client.SendAsync(request);
 
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
@@ -423,7 +423,7 @@ namespace GirafRest.IntegrationTest.Tests
                 Content = new StringContent(data, Encoding.UTF8, "application/json")
             };
 
-            var response = await client.SendAsync(request);
+            var response = await _client.SendAsync(request);
 
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
@@ -441,13 +441,13 @@ namespace GirafRest.IntegrationTest.Tests
             var data = $"{{'username': '{_accountFixture.DepartmentUsername}', 'password': 'password'}}";
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v2/Account/user/{await AccountExtension.GetIdAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}"),
+                RequestUri = new Uri($"{BASE_URL}v2/Account/user/{await TestExtension.GetUserIdAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}"),
                 Method = HttpMethod.Delete
             };
 
-            request.Headers.Add("Authorization", $"Bearer {await AccountExtension.GetTokenAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Citizen2Password)}");
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Citizen2Password)}");
 
-            var response = await client.SendAsync(request);
+            var response = await _client.SendAsync(request);
 
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
@@ -464,13 +464,13 @@ namespace GirafRest.IntegrationTest.Tests
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v2/Account/user/{await AccountExtension.GetIdAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Citizen2Password)}"),
+                RequestUri = new Uri($"{BASE_URL}v2/Account/user/{await TestExtension.GetUserIdAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Citizen2Password)}"),
                 Method = HttpMethod.Delete
             };
 
-            request.Headers.Add("Authorization", $"Bearer {await AccountExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
 
-            var response = await client.SendAsync(request);
+            var response = await _client.SendAsync(request);
 
             Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
         }
@@ -490,7 +490,7 @@ namespace GirafRest.IntegrationTest.Tests
                 Content = new StringContent(data, Encoding.UTF8, "application/json")
             };
 
-            var response = await client.SendAsync(request);
+            var response = await _client.SendAsync(request);
 
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
@@ -505,19 +505,19 @@ namespace GirafRest.IntegrationTest.Tests
         [Fact, Priority(20)]
         public async void TestAccountCanUseDeletedCitizen2sToken()
         {
-            await AccountExtension.RegisterAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Citizen2Password, _accountFixture.GuardianUsername);
-            var Citizen2Token = await AccountExtension.GetTokenAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Citizen2Password);
-            await AccountExtension.DeleteAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Citizen2Password, _accountFixture.GuardianUsername);
+            await TestExtension.RegisterAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Citizen2Password, _accountFixture.GuardianUsername);
+            var Citizen2Token = await TestExtension.GetTokenAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Citizen2Password);
+            await TestExtension.DeleteAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Citizen2Password, _accountFixture.GuardianUsername);
 
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v1/User/{await AccountExtension.GetIdAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}"),
+                RequestUri = new Uri($"{BASE_URL}v1/User/{await TestExtension.GetUserIdAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}"),
                 Method = HttpMethod.Get
             };
 
             request.Headers.Add("Authorization", $"Bearer {Citizen2Token}");
 
-            var response = await client.SendAsync(request);
+            var response = await _client.SendAsync(request);
 
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
@@ -534,13 +534,13 @@ namespace GirafRest.IntegrationTest.Tests
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v2/Account/password-reset-token/{await AccountExtension.GetIdAsync(_factory, _accountFixture.Citizen1Username, _accountFixture.Citizen1Password)}"),
+                RequestUri = new Uri($"{BASE_URL}v2/Account/password-reset-token/{await TestExtension.GetUserIdAsync(_factory, _accountFixture.Citizen1Username, _accountFixture.Citizen1Password)}"),
                 Method = HttpMethod.Get
             };
 
-            request.Headers.Add("Authorization", $"Bearer {await AccountExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
 
-            var response = await client.SendAsync(request);
+            var response = await _client.SendAsync(request);
 
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
@@ -555,18 +555,18 @@ namespace GirafRest.IntegrationTest.Tests
         [Fact, Priority(22)]
         public async void TestAccountCanResetCitizen1Password()
         {
-            var data = $"{{'password': 'brand-new-password', 'token': '{await AccountExtension.GetResetTokenAsync(_factory, _accountFixture.Citizen1Username, _accountFixture.Citizen1Password, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}'}}";
+            var data = $"{{'password': 'brand-new-password', 'token': '{await TestExtension.GetResetTokenAsync(_factory, _accountFixture.Citizen1Username, _accountFixture.Citizen1Password, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}'}}";
 
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v2/Account/password/{await AccountExtension.GetIdAsync(_factory, _accountFixture.Citizen1Username, _accountFixture.Citizen1Password)}"),
+                RequestUri = new Uri($"{BASE_URL}v2/Account/password/{await TestExtension.GetUserIdAsync(_factory, _accountFixture.Citizen1Username, _accountFixture.Citizen1Password)}"),
                 Method = HttpMethod.Post,
                 Content = new StringContent(data, Encoding.UTF8, "application/json")
             };
 
-            request.Headers.Add("Authorization", $"Bearer {await AccountExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
 
-            var response = await client.SendAsync(request);
+            var response = await _client.SendAsync(request);
 
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
@@ -581,11 +581,11 @@ namespace GirafRest.IntegrationTest.Tests
         [Fact, Priority(23)]
         public async void TestAccountCantResetCitizen2Password()
         {
-            await AccountExtension.RegisterAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Citizen2Password, _accountFixture.GuardianUsername);
-            var Citizen2Id = await AccountExtension.GetIdAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Citizen2Password);
-            await AccountExtension.DeleteAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Citizen2Password, _accountFixture.GuardianUsername);
+            await TestExtension.RegisterAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Citizen2Password, _accountFixture.GuardianUsername);
+            var Citizen2Id = await TestExtension.GetUserIdAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Citizen2Password);
+            await TestExtension.DeleteAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Citizen2Password, _accountFixture.GuardianUsername);
 
-            var data = $"{{'password': 'brand-new-password', 'token': '{await AccountExtension.GetResetTokenAsync(_factory, _accountFixture.Citizen1Username, "brand-new-password", _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}'}}";
+            var data = $"{{'password': 'brand-new-password', 'token': '{await TestExtension.GetResetTokenAsync(_factory, _accountFixture.Citizen1Username, "brand-new-password", _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}'}}";
             
             HttpRequestMessage request = new HttpRequestMessage()
             {
@@ -594,9 +594,9 @@ namespace GirafRest.IntegrationTest.Tests
                 Content = new StringContent(data, Encoding.UTF8, "application/json")
             };
 
-            request.Headers.Add("Authorization", $"Bearer {await AccountExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
 
-            var response = await client.SendAsync(request);
+            var response = await _client.SendAsync(request);
 
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
@@ -615,14 +615,14 @@ namespace GirafRest.IntegrationTest.Tests
 
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v2/Account/password/{await AccountExtension.GetIdAsync(_factory, _accountFixture.Citizen1Username, "brand-new-password")}"),
+                RequestUri = new Uri($"{BASE_URL}v2/Account/password/{await TestExtension.GetUserIdAsync(_factory, _accountFixture.Citizen1Username, "brand-new-password")}"),
                 Method = HttpMethod.Post,
                 Content = new StringContent(data, Encoding.UTF8, "application/json")
             };
 
-            request.Headers.Add("Authorization", $"Bearer {await AccountExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
 
-            var response = await client.SendAsync(request);
+            var response = await _client.SendAsync(request);
 
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
@@ -641,14 +641,14 @@ namespace GirafRest.IntegrationTest.Tests
 
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v2/Account/password/{await AccountExtension.GetIdAsync(_factory, _accountFixture.Citizen1Username, "brand-new-password")}"),
+                RequestUri = new Uri($"{BASE_URL}v2/Account/password/{await TestExtension.GetUserIdAsync(_factory, _accountFixture.Citizen1Username, "brand-new-password")}"),
                 Method = HttpMethod.Put,
                 Content = new StringContent(data, Encoding.UTF8, "application/json")
             };
 
-            request.Headers.Add("Authorization", $"Bearer {await AccountExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}");
 
-            var response = await client.SendAsync(request);
+            var response = await _client.SendAsync(request);
 
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
@@ -663,18 +663,18 @@ namespace GirafRest.IntegrationTest.Tests
         [Fact, Priority(26)]
         public async void TestAccountCanSetCitizen1PasswordValidToken()
         {
-            var data = $"{{'oldPassword': 'brand-new-password', 'newPassword': '{await AccountExtension.GetResetTokenAsync(_factory, _accountFixture.Citizen1Username, "brand-new-password", _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}'}}";
+            var data = $"{{'oldPassword': 'brand-new-password', 'newPassword': '{await TestExtension.GetResetTokenAsync(_factory, _accountFixture.Citizen1Username, "brand-new-password", _accountFixture.GuardianUsername, _accountFixture.GuardianPassword)}'}}";
 
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v2/Account/password/{await AccountExtension.GetIdAsync(_factory, _accountFixture.Citizen1Username, "brand-new-password")}"),
+                RequestUri = new Uri($"{BASE_URL}v2/Account/password/{await TestExtension.GetUserIdAsync(_factory, _accountFixture.Citizen1Username, "brand-new-password")}"),
                 Method = HttpMethod.Put,
                 Content = new StringContent(data, Encoding.UTF8, "application/json")
             };
 
-            request.Headers.Add("Authorization", $"Bearer {await AccountExtension.GetTokenAsync(_factory, _accountFixture.DepartmentUsername, _accountFixture.DepartmentPassword)}");
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _accountFixture.DepartmentUsername, _accountFixture.DepartmentPassword)}");
 
-            var response = await client.SendAsync(request);
+            var response = await _client.SendAsync(request);
 
             Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
         }

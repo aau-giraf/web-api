@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace GirafRest.IntegrationTest.Extensions
 {
-    public static class AccountExtension
+    public static class TestExtension
     {
         private static readonly string BASE_URL = "https://localhost:5000/";
 
@@ -32,7 +32,7 @@ namespace GirafRest.IntegrationTest.Extensions
             return content["data"].ToString();
         }
 
-        public static async Task<string> GetIdAsync(CustomWebApplicationFactory factory, string username, string password)
+        public static async Task<string> GetUserIdAsync(CustomWebApplicationFactory factory, string username, string password)
         {
             string token = await GetTokenAsync(factory, username, password);
             var client = factory.CreateClient();
@@ -49,12 +49,27 @@ namespace GirafRest.IntegrationTest.Extensions
             return content["data"]["id"].ToString();
         }
 
+        public static async Task<long> GetDepartmentIdAsync(CustomWebApplicationFactory factory, string name)
+        {
+            var client = factory.CreateClient();
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/Department/"),
+                Method = HttpMethod.Get
+            };
+
+            var response = await client.SendAsync(request);
+
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+            return content["data"].FirstOrDefault(data => data["name"].ToString() == name)["id"].ToObject<long>();
+        }
+
         public static async Task<string> GetResetTokenAsync(CustomWebApplicationFactory factory, string username, string password, string token, string tokenPassword)
         {
             var client = factory.CreateClient();
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v2/Account/password-reset-token/{await GetIdAsync(factory, username, password)}"),
+                RequestUri = new Uri($"{BASE_URL}v2/Account/password-reset-token/{await GetUserIdAsync(factory, username, password)}"),
                 Method = HttpMethod.Get
             };
 
@@ -91,13 +106,28 @@ namespace GirafRest.IntegrationTest.Extensions
             var client = factory.CreateClient();
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v2/Account/user/{await AccountExtension.GetIdAsync(factory, username, password)}"),
+                RequestUri = new Uri($"{BASE_URL}v2/Account/user/{await GetUserIdAsync(factory, username, password)}"),
                 Method = HttpMethod.Delete
             };
 
-            request.Headers.Add("Authorization", $"Bearer {await AccountExtension.GetTokenAsync(factory, token, password)}");
+            request.Headers.Add("Authorization", $"Bearer {await GetTokenAsync(factory, token, password)}");
 
             await client.SendAsync(request);
+        }
+
+        public static async Task<long> GetPictogramIdAsync(CustomWebApplicationFactory factory, string pictogramTitle, string username, string password)
+        {
+            var client = factory.CreateClient();
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/Pictogram?query={pictogramTitle}"),
+                Method = HttpMethod.Get,
+            };
+            request.Headers.Add("Authorization", $"Bearer {await GetTokenAsync(factory, username, password)}");
+
+            var response = await client.SendAsync(request);
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+            return content["data"].FirstOrDefault(data => data["title"].ToString() == pictogramTitle)["id"].ToObject<long>();
         }
     }
 }

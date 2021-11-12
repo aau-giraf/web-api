@@ -40,7 +40,7 @@ namespace GirafRest.IntegrationTest.Tests
 
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v2/Account/password/{await AccountExtension.GetIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}"),
+                RequestUri = new Uri($"{BASE_URL}v2/Account/password/{await TestExtension.GetUserIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}"),
                 Method = HttpMethod.Post,
                 Content = new StringContent(data, Encoding.UTF8, "application/json"),
             };
@@ -64,7 +64,7 @@ namespace GirafRest.IntegrationTest.Tests
 
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v2/Account/password/{await AccountExtension.GetIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}"),
+                RequestUri = new Uri($"{BASE_URL}v2/Account/password/{await TestExtension.GetUserIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}"),
                 Method = HttpMethod.Put,
                 Content = new StringContent(data, Encoding.UTF8, "application/json"),
             };
@@ -86,7 +86,7 @@ namespace GirafRest.IntegrationTest.Tests
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v2/Account/password-reset-token/{await AccountExtension.GetIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}"),
+                RequestUri = new Uri($"{BASE_URL}v2/Account/password-reset-token/{await TestExtension.GetUserIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}"),
                 Method = HttpMethod.Get
             };
 
@@ -151,7 +151,7 @@ namespace GirafRest.IntegrationTest.Tests
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v2/Account/user/{await AccountExtension.GetIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}"),
+                RequestUri = new Uri($"{BASE_URL}v2/Account/user/{await TestExtension.GetUserIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}"),
                 Method = HttpMethod.Delete
             };
 
@@ -174,7 +174,7 @@ namespace GirafRest.IntegrationTest.Tests
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v2/Activity/{await AccountExtension.GetIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}/{_authorizationFixture.WeekplanName}/{_authorizationFixture.WeekYear}/{_authorizationFixture.WeekNumber}/{_authorizationFixture.WeekDayNumber}"),
+                RequestUri = new Uri($"{BASE_URL}v2/Activity/{await TestExtension.GetUserIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}/{_authorizationFixture.WeekplanName}/{_authorizationFixture.WeekYear}/{_authorizationFixture.WeekNumber}/{_authorizationFixture.WeekDayNumber}"),
                 Method = HttpMethod.Post,
             };
 
@@ -195,7 +195,7 @@ namespace GirafRest.IntegrationTest.Tests
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v2/Activity/{await AccountExtension.GetIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}/delete/{_authorizationFixture.ActivityId}"),
+                RequestUri = new Uri($"{BASE_URL}v2/Activity/{await TestExtension.GetUserIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}/delete/{_authorizationFixture.ActivityId}"),
                 Method = HttpMethod.Delete,
             };
 
@@ -217,7 +217,7 @@ namespace GirafRest.IntegrationTest.Tests
             string data = "{'pictogram': {'id': 6}, 'id': 1}";
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v2/Activity/{await AccountExtension.GetIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}/update"),
+                RequestUri = new Uri($"{BASE_URL}v2/Activity/{await TestExtension.GetUserIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}/update"),
                 Method = HttpMethod.Put,
                 Content = new StringContent(data, Encoding.UTF8, "application/json")
             };
@@ -861,7 +861,7 @@ namespace GirafRest.IntegrationTest.Tests
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v1/User/{AccountExtension.GetIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}"),
+                RequestUri = new Uri($"{BASE_URL}v1/User/{TestExtension.GetUserIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}"),
                 Method = HttpMethod.Get
             };
 
@@ -881,7 +881,7 @@ namespace GirafRest.IntegrationTest.Tests
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v1/User/{AccountExtension.GetIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}/citizens/{_authorizationFixture.CitizenId}"),
+                RequestUri = new Uri($"{BASE_URL}v1/User/{TestExtension.GetUserIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}/citizens/{_authorizationFixture.CitizenId}"),
                 Method = HttpMethod.Post
             };
 
@@ -903,7 +903,7 @@ namespace GirafRest.IntegrationTest.Tests
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v1/Week/{AccountExtension.GetIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}/week"),
+                RequestUri = new Uri($"{BASE_URL}v1/Week/{TestExtension.GetUserIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}/week"),
                 Method = HttpMethod.Get
             };
 
@@ -923,7 +923,7 @@ namespace GirafRest.IntegrationTest.Tests
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v1/Week/{AccountExtension.GetIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}/{_authorizationFixture.WeekYear}/{_authorizationFixture.WeekNumber}"),
+                RequestUri = new Uri($"{BASE_URL}v1/Week/{TestExtension.GetUserIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}/{_authorizationFixture.WeekYear}/{_authorizationFixture.WeekNumber}"),
                 Method = HttpMethod.Get
             };
 
@@ -943,7 +943,7 @@ namespace GirafRest.IntegrationTest.Tests
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v1/Week/{AccountExtension.GetIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}/{_authorizationFixture.WeekYear}/{_authorizationFixture.WeekNumber}"),
+                RequestUri = new Uri($"{BASE_URL}v1/Week/{TestExtension.GetUserIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}/{_authorizationFixture.WeekYear}/{_authorizationFixture.WeekNumber}"),
                 Method = HttpMethod.Put
             };
 
@@ -963,7 +963,7 @@ namespace GirafRest.IntegrationTest.Tests
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v1/Week/{AccountExtension.GetIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}/{_authorizationFixture.WeekYear}/{_authorizationFixture.WeekNumber}"),
+                RequestUri = new Uri($"{BASE_URL}v1/Week/{TestExtension.GetUserIdAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}/{_authorizationFixture.WeekYear}/{_authorizationFixture.WeekNumber}"),
                 Method = HttpMethod.Delete
             };
 

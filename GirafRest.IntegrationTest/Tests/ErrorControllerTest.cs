@@ -13,17 +13,15 @@ using Xunit;
 
 namespace GirafRest.IntegrationTest.Tests
 {
-    public class ErrorControllerTest : IClassFixture<CustomWebApplicationFactory>, IClassFixture<ErrorFixture>
+    public class ErrorControllerTest : IClassFixture<CustomWebApplicationFactory>
     {
         private readonly CustomWebApplicationFactory _factory;
-        private readonly ErrorFixture _errorFixture;
         private const string BASE_URL = "https://localhost:5000/";
         private readonly HttpClient client;
-        public ErrorControllerTest(CustomWebApplicationFactory factory, ErrorFixture errorFixture)
+        public ErrorControllerTest(CustomWebApplicationFactory factory)
         {
             _factory = factory;
             client = _factory.CreateClient();
-            _errorFixture = errorFixture;
         }
 
         /// <summary>
