@@ -1,11 +1,11 @@
-﻿using GirafRest.Models.Enums;
+using System;
 
 namespace GirafRest.Models.DTOs
 {
     /// <summary>
     /// DTO for DisplayName, used to avoid sending entire GirafUserDTO to avoid sending unnecessary information
     /// </summary>
-    public class DisplayNameDTO
+    public class DisplayNameDTO : IComparable<DisplayNameDTO>
     {
         /// <summary>
         /// DisplayName
@@ -38,6 +38,19 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         public DisplayNameDTO()
         {
+        }
+
+        public int CompareTo(DisplayNameDTO other)
+        {
+           if(other == null)
+            {
+                return 1;
+            }
+            else
+            {
+                return this.DisplayName.CompareTo(other.DisplayName);
+            }
+
         }
     }
 }
