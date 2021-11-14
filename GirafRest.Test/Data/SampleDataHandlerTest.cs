@@ -48,7 +48,7 @@ namespace GirafRest.Test
 
             List<SampleGirafUser> users = data.UserList;
             List<SampleDepartment> deps = data.DepartmentList;
-            List<SamplePictogram> pics = data.PictogramList;
+            List<SamplePictogram> pics = dataHandler.ReadSamplePictograms();
             List<SampleWeek> weeks = data.WeekList;
             List<SampleWeekTemplate> weekTemplates = data.WeekTemplateList;
             List<SampleWeekday> weekdays = data.WeekdayList;
