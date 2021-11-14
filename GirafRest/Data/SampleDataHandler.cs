@@ -18,6 +18,10 @@ namespace GirafRest.Data
             $"{Path.DirectorySeparatorChar}" +
             $"Data" +
             $"{Path.DirectorySeparatorChar}";
+        private readonly string pictogramsFile = $"{Directory.GetCurrentDirectory()}" +
+            $"{Path.DirectorySeparatorChar}" +
+            $"Data" +
+            $"{Path.DirectorySeparatorChar}pictograms.json";
 
         public SampleDataHandler(string path)
         {
@@ -30,6 +34,20 @@ namespace GirafRest.Data
             {
                 string jsonString = File.ReadAllText(jsonFile);
                 return JsonConvert.DeserializeObject<SampleData>(jsonString);
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e.StackTrace);
+            }
+
+            return null;
+        }
+
+        public List<SamplePictogram> ReadSamplePictograms() {
+            try
+            {
+                string jsonString = File.ReadAllText(pictogramsFile);
+                return JsonConvert.DeserializeObject<List<SamplePictogram>>(jsonString);
             }
             catch (FileNotFoundException e)
             {
@@ -88,9 +106,6 @@ namespace GirafRest.Data
             // Convert departments into sample data
             foreach (Department dep in departmentList)
                 data.DepartmentList.Add(new SampleDepartment(dep.Name));
-            // Convert pictograms into sample data
-            foreach (Pictogram pic in pictogramList)
-                data.PictogramList.Add(new SamplePictogram(pic.Title, pic.AccessLevel.ToString(), pic.ImageHash));
             // Convert weekdays into sample data
             foreach (Weekday day in weekdayList)
             {
