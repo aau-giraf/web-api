@@ -30,6 +30,7 @@ namespace GirafRest.Data
         /// <param name="context">The database _context.</param>
         /// <param name="userManager">The API for managing GirafUsers.</param>
         /// <param name="pictogramCount">The number of sample pictograms to generate.</param>
+        /// <param name="environmentName">The environment set for the current run</param>
         public static async Task Initialize(GirafDbContext context, UserManager<GirafUser> userManager, int pictogramCount, string environmentName)
         {
             // Initialize static fields
@@ -71,7 +72,7 @@ namespace GirafRest.Data
                 // Adding citizens to a Guardian
                 foreach (var user in _context.Users)
                 {
-                    if (_userManager.IsInRoleAsync(user, GirafRole.Guardian).Result)
+                    if (_userManager.IsInRoleAsync(user, GirafRole.Guardian).Result || _userManager.IsInRoleAsync(user, GirafRole.Trustee).Result)
                     {
                         var citizens = user.Department.Members.Where(m => _userManager.IsInRoleAsync(m, GirafRole.Citizen).Result).ToList();
                         user.AddCitizens(citizens);
@@ -82,8 +83,9 @@ namespace GirafRest.Data
 
             // Create pictograms if they do not exist
             if (!(await _context.Pictograms.AnyAsync())) {
+                List<SamplePictogram> pictograms = _sampleDataHandler.ReadSamplePictograms();
                 CreatePictograms(pictogramCount);
-                await AddSamplePictograms(sampleData.PictogramList);
+                await AddSamplePictograms(pictograms);
             }
 
             // Create week and weekdays if they do not exist
@@ -197,7 +199,7 @@ namespace GirafRest.Data
                 var x = await _userManager.CreateAsync(user, sampleUser.Password);
                 await _context.SaveChangesAsync();
 
-                if (x.Succeeded)
+                /*if (x.Succeeded)
                 {
                     var a = await _userManager.AddToRoleAsync(user, sampleUser.Role);
                     await _context.SaveChangesAsync();
@@ -206,7 +208,7 @@ namespace GirafRest.Data
                 }
                 else
                     throw new WarningException("Failed to create user " + user.UserName + " in usermanager");
-            }
+            */}
         }
         private static async Task<List<Pictogram>> AddSamplePictograms(List<SamplePictogram> samplePictogramsList)
         {
@@ -229,7 +231,6 @@ namespace GirafRest.Data
         private static async Task AddSampleWeekAndWeekdays(List<SampleWeek> sampleWeeks, List<SampleWeekday> sampleWeekdays, List<SampleGirafUser> sampleUsers)
         {
             Console.WriteLine("Adding weekdays to users");
-            List<Week> weekList = new List<Week>();
             List<Pictogram> pictograms = await _context.Pictograms.ToListAsync();
 
             foreach (SampleWeek sampleWeek in sampleWeeks)
@@ -239,8 +240,6 @@ namespace GirafRest.Data
                 Week week = new Week { Name = sampleWeek.Name, Thumbnail = thumbNail };
                 await AddDaysToWeekAndContext(sampleWeekdays, week, pictograms);
                 await _context.Weeks.AddAsync(week);
-                weekList.Add(week);
-                await _context.SaveChangesAsync();
 
                 foreach (GirafUser user in _context.Users)
                 {
@@ -250,7 +249,7 @@ namespace GirafRest.Data
                         {
                             if ((userWeek == week.Name) && (user.UserName == sampleUser.Name))
                             {
-                                user.WeekSchedule.Add(weekList.First(w => w.Name == userWeek));
+                                user.WeekSchedule.Add(week);
                             }
                         }
                     }
@@ -280,7 +279,6 @@ namespace GirafRest.Data
 
                 await AddDaysToWeekAndContext(sampleWeekdays, template, pictograms);
                 await _context.WeekTemplates.AddAsync(template);
-                await _context.SaveChangesAsync();
 
                 foreach (GirafUser user in _context.Users)
                 {
@@ -316,7 +314,6 @@ namespace GirafRest.Data
                 await _context.Weekdays.AddAsync(weekDay);
                 week.UpdateDay(weekDay);
             }
-            await _context.SaveChangesAsync();
         }
 
         #endregion
