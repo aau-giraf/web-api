@@ -19,6 +19,4 @@ Other than the branches being used for development and the trunk, there exists s
 
 ## License
 
-GNU GENERAL PUBLIC LICENSE V3
-
-Copyright [2020] [Aalborg University]
+MIT License Copyright (c) 2018-present Aalborg University
