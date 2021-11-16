@@ -24,5 +24,7 @@ MIT License Copyright (c) 2018-present Aalborg University
 ## Workflow status
 
 Dev - [![web-api dev Status](https://github.com/aau-giraf/web-api/workflows/Unit%20Test/badge.svg?branch=develop)](https://github.com/aau-giraf/web-api/actions)
+
 Dev - [![web-api dev Status](https://github.com/aau-giraf/web-api/workflows/Integration%20Test/badge.svg?branch=develop)](https://github.com/aau-giraf/web-api/actions)
-Dev - [![web-api dev Status](https://github-com/aau-giraf/web-api/workflows/Docker%20push/badge.svg?branch=develop)](https://github.com/aau-giraf/web-api/actions)
+
+Dev - [![web-api dev Status](https://github.com/aau-giraf/web-api/workflows/Docker%20push/badge.svg?branch=develop)](https://github.com/aau-giraf/web-api/actions)
