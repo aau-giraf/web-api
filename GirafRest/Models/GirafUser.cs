@@ -75,8 +75,8 @@ namespace GirafRest.Models
             this.WeekSchedule = new List<Week>();
             this.Citizens = new List<GuardianRelation>();
             this.Guardians = new List<GuardianRelation>();
-        }
-
+        } 
+        //
         private void InitialiseData()
         {
             this.Settings = new Setting();

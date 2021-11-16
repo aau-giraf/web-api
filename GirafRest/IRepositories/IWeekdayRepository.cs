@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace GirafRest.IRepositories
 {
-    public interface ITimerRepository : IRepository<GirafRest.Models.Timer>
+    public interface IWeekdayRepository : IRepository<GirafRest.Models.Weekday>
     {
-        public Task<Timer> getActivitysTimerkey(Activity activity);
+        public Task<int> DeleteSpecificWeekDay(Weekday oldDay);
     }
 }
