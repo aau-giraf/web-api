@@ -52,6 +52,12 @@ namespace GirafRest.Setup
             SampleData sampleData = SampleDataHandler.DeserializeData();
             // Create departments
             var departments = await AddSampleDepartments(context, sampleData.DepartmentList);
+            
+            // Create roles if they do not exist
+            if (!(await context.Roles.AnyAsync())) {
+                await AddSampleRoles(context, sampleData.RolesList);
+            }
+
             // Create users
             await AddSampleUsers(context, userManager, sampleData.UserList, departments);
             // Create pictograms
@@ -160,6 +166,15 @@ namespace GirafRest.Setup
             }
             await context.SaveChangesAsync();
             return departments;
+        }
+        private static async Task AddSampleRoles(GirafDbContext context, List<string> sampleRoles) {
+            Console.WriteLine("Adding roles...");
+            foreach (string sampleRole in sampleRoles)
+            {
+                await context.Database.ExecuteSqlRawAsync(
+                    "INSERT INTO AspNetRoles (Id, ConcurrencyStamp, Name, NormalizedName) VALUES ('" + sampleRole + "', '" + Guid.NewGuid().ToString() + "', '" + sampleRole + "', '" + sampleRole.ToUpper() + "');");
+                await context.SaveChangesAsync();
+            }
         }
         private static async Task AddSampleUsers(GirafDbContext context, UserManager<GirafUser> userManager, List<SampleGirafUser> sampleUsers, List<Department> departments123)
         {
