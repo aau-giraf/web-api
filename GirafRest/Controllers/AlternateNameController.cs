@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 using GirafRest.Models;
-using GirafRest.Services;
+using GirafRest.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;

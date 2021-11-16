@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GirafRest.Data;
 using GirafRest.Models;
+using GirafRest.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

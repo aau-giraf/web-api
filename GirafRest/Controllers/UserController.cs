@@ -1,8 +1,10 @@
 using GirafRest.Extensions;
+using GirafRest.Extensions;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
-using GirafRest.Services;
+using GirafRest.Models.Enums;
+using GirafRest.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -22,6 +24,7 @@ namespace GirafRest.Controllers
     /// </summary>
     [Authorize]
     [Route("v1/[controller]")]
+
     public class UserController : Controller
     {
         private const int IMAGE_CONTENT_TYPE_DEFINITION = 25;
@@ -69,6 +72,33 @@ namespace GirafRest.Controllers
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
             return Ok(new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, await _roleManager.findUserRole(_giraf._userManager, user))));
+        }
+
+        /// <summary>
+        /// Gets the role of the user with the given username.
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
+        [HttpGet("{username}/role", Name = "GetUserRole")]
+        [ProducesResponseType(typeof(SuccessResponse<GirafUserDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> GetUserRole(string username)
+        {
+            //Checks that the string isn't empty or null
+            if (string.IsNullOrEmpty(username))
+                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Username is not found"));
+
+            //Gets the user info
+            var user = _giraf._context.Users.FirstOrDefault(u => u.UserName == username);
+
+            //Checks that the user isn't null(not found) and throws an error if it isn't found
+            if(user == null)
+                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
+            
+            //Returns the role of the user as a list, should only contain one entry
+            return Ok(new SuccessResponse<GirafRoles>(await _roleManager.findUserRole(_giraf._userManager, user)));
         }
 
         /// <summary>
@@ -448,6 +478,9 @@ namespace GirafRest.Controllers
                 citizens.Add(new DisplayNameDTO { UserId = girafUser.Id, DisplayName = girafUser.DisplayName });
             }
 
+            //sort function for users in citizens since the list needs to be sorted by name... issue#697
+            citizens.Sort();
+           
             if (!citizens.Any())
             {
                 return NotFound(new ErrorResponse(ErrorCode.UserHasNoCitizens, "User does not have any citizens"));
@@ -529,7 +562,7 @@ namespace GirafRest.Controllers
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.Forbidden, "User does not have permission"));
 
             citizen.AddGuardian(guardian);
-
+            
             return Ok(new SuccessResponse("Added relation between guardian and citizen"));
         }
 

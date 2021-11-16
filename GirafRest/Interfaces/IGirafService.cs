@@ -6,7 +6,7 @@ using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace GirafRest.Services
+namespace GirafRest.Interfaces
 {
     /// <summary>
     /// The IGirafService interfaces defines all methods that are commonly used by the controllers.

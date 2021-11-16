@@ -4,6 +4,7 @@ using GirafRest.Extensions;
 using GirafRest.Filters;
 using GirafRest.Models;
 using GirafRest.Services;
+using GirafRest.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

@@ -3,6 +3,7 @@ using GirafRest.Models.DTOs;
 using GirafRest.Models.DTOs.AccountDTOs;
 using GirafRest.Models.Responses;
 using GirafRest.Services;
+using GirafRest.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -18,6 +19,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using GirafRest.Models.Enums;
 
 
 namespace GirafRest.Controllers
@@ -164,6 +166,7 @@ namespace GirafRest.Controllers
                     // save changes
                     await _giraf._context.SaveChangesAsync();
                 }
+                
                 await _giraf._userManager.AddToRoleAsync(user, UserRoleStr);
                 await _signInManager.SignInAsync(user, isPersistent: true);
                 _giraf._logger.LogInformation("User created a new account with password.");
@@ -373,6 +376,8 @@ namespace GirafRest.Controllers
                     return GirafRole.Department;
                 case GirafRoles.SuperUser:
                     return GirafRole.SuperUser;
+                case GirafRoles.Trustee:
+                    return GirafRole.Trustee;
                 default:
                     return null;
             }

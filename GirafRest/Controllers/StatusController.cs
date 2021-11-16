@@ -3,7 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using GirafRest.Models.Responses;
-using GirafRest.Services;
+using GirafRest.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
@@ -36,6 +36,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         public ActionResult Status()
         {
+            Console.WriteLine("return ok on status");
             return Ok(new SuccessResponse("GIRAF API is running!"));
         }
 
