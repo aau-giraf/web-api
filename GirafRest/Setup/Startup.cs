@@ -41,17 +41,24 @@ namespace GirafRest.Setup
         public Startup(IWebHostEnvironment env)
         {
             HostingEnvironment = env;
-            var coreEnvironement = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            if (coreEnvironement != null) env.EnvironmentName = coreEnvironement;
-            else env.EnvironmentName = "Development";
-
+            var coreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            if (coreEnvironment != null)
+            {
+                env.EnvironmentName = coreEnvironment;
+            }
+            else
+            {
+                env.EnvironmentName = "Development";
+            }
             //var builder = new ConfigurationBuilder().SetBasePath(env.ContentRootPath);
             var builder = new ConfigurationBuilder().SetBasePath(env.ContentRootPath);
             // delete all default configuration providers
             if (env.IsDevelopment())
                 builder.AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true);
+            else if (env.IsStaging())
+                builder.AddJsonFile("appsettings.Staging.json", optional: false, reloadOnChange: false);
             else if (env.IsProduction())
-                builder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
+                builder.AddJsonFile("appsettings.Production.json", optional: false, reloadOnChange: true);
             else
                 throw new NotSupportedException("No database option is supported by this Environment mode");
             builder.AddEnvironmentVariables();
