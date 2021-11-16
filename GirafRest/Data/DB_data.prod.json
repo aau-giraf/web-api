@@ -1,12 +1,20 @@
 {
   "UserList": [
     {
-      "Name": "Ulrik",
-      "DisplayName": "TheLegend27",
+      "Name": "egebakken",
+      "DisplayName": "Egebakken",
       "DepartmentName": "Egebakken",
       "Role": "Guardian",
       "Weeks": [],
-      "Password": "GIRAF"
+      "Password": "password"
+    },
+    {
+      "Name": "birken",
+      "DisplayName": "Birken",
+      "DepartmentName": "Birken",
+      "Role": "Guardian",
+      "Weeks": [],
+      "Password": "password"
     }
   ],
 
@@ -17,16 +25,5 @@
     {
       "Name": "Birken"
     }
-  ],
-
-  "PictogramList": [
-    {
-      "Title": "Pictrogram",
-      "AccessLevel": "PUBLIC",
-      "ImageHash": "secure hash"
-    }
-  ],
-  "WeekdayList": [ ],
-  "WeekList": [ ],
-  "WeekTemplateList": [ ]
+  ]
 }

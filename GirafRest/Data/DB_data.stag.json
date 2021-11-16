@@ -1,54 +1,60 @@
 {
   "UserList": [
     {
-      "Name": "Citizen_User1",
-      "DisplayName": "bob",
+      "Name": "bob_citizen",
+      "DisplayName": "Bob",
       "DepartmentName": "Egebakken",
       "Role": "Citizen",
       "Weeks": [
-        "Normal Uge"
+        "Bob's Week 30",
+        "Bob's Week 31",
+        "Bob's Week 32"
       ],
       "Password": "password"
     },
     {
-      "Name": "Trustee_User1",
-      "DisplayName": "MYGUARDIAN2",
-      "DepartmentName": "Birken",
-      "Role": "Guardian",
+      "Name": "ben_trustee",
+      "DisplayName": "Ben",
+      "DepartmentName": "Egebakken",
+      "Role": "Trustee",
       "Weeks": [],
       "Password": "password"
     },
     {
-      "Name": "Guardian_User2",
-      "DisplayName": "MYGUARDIAN1",
+      "Name": "paul_guardian",
+      "DisplayName": "Paul",
       "DepartmentName": "Egebakken",
       "Role": "Guardian",
       "Weeks": [],
       "Password": "password"
     },
     {
-      "Name": "Citizen_User2",
-      "DisplayName": "ib",
+      "Name": "jacob_citizen",
+      "DisplayName": "Jacob",
       "DepartmentName": "Birken",
       "Role": "Citizen",
-      "Weeks": [],
+      "Weeks": [
+        "Jacob's Week 30",
+        "Jacob's Week 31",
+        "Jacob's Week 32"
+      ],
       "Password": "password"
     },
     {
-      "Name": "Guardian_User3",
-      "DisplayName": "MYGUARDIAN2",
+      "Name": "jos_guardian",
+      "DisplayName": "Jos",
       "DepartmentName": "Birken",
       "Role": "Guardian",
       "Weeks": [],
       "Password": "password"
     },
     {
-      "Name": "dev",
-      "DisplayName": "dev",
-      "DepartmentName": "Egebakken",
-      "Role": "Guardian",
+      "Name": "gwen_trustee",
+      "DisplayName": "Gwen",
+      "DepartmentName": "Birken",
+      "Role": "Trustee",
       "Weeks": [],
-      "Password": "dev"
+      "Password": "password"
     }
   ],
   "DepartmentList": [
@@ -57,63 +63,6 @@
     },
     {
       "Name": "Birken"
-    }
-  ],
-  "PictogramList": [
-    {
-      "Title": "Pictrogram1",
-      "AccessLevel": "PUBLIC",
-      "ImageHash": "secure hash"
-    },
-    {
-      "Title": "Pictogram_",
-      "AccessLevel": "PUBLIC",
-      "ImageHash": "secure hash"
-    },
-    {
-      "Title": "data",
-      "AccessLevel": "PUBLIC",
-      "ImageHash": "secure hash"
-    },
-    {
-      "Title": "data1",
-      "AccessLevel": "PUBLIC",
-      "ImageHash": "secure hash"
-    },
-    {
-      "Title": "data2",
-      "AccessLevel": "PUBLIC",
-      "ImageHash": "secure hash"
-    },
-    {
-      "Title": "data3",
-      "AccessLevel": "PUBLIC",
-      "ImageHash": "secure hash"
-    },
-    {
-      "Title": "data4",
-      "AccessLevel": "PUBLIC",
-      "ImageHash": "secure hash"
-    },
-    {
-      "Title": "data5",
-      "AccessLevel": "PUBLIC",
-      "ImageHash": "secure hash"
-    },
-    {
-      "Title": "data6",
-      "AccessLevel": "PUBLIC",
-      "ImageHash": "secure hash"
-    },
-    {
-      "Title": "data7",
-      "AccessLevel": "PUBLIC",
-      "ImageHash": "secure hash"
-    },
-    {
-      "Title": "data8",
-      "AccessLevel": "PUBLIC",
-      "ImageHash": "secure hash"
     }
   ],
   "WeekdayList": [
@@ -138,9 +87,9 @@
       "Day": 2,
       "ActivityIconTitles": [
         "division",
-        "delmængde",
+        "delmÃ¦ngde",
         "bogstav",
-        "berøre"
+        "berÃ¸re"
       ],
       "ActivityStates": [
         "Completed",
@@ -150,178 +99,51 @@
       ]
     },
     {
-      "Day": 3,
-      "ActivityIconTitles": [
-        "femininum",
-        "fem",
-        "farve",
-        "fantastisk",
-        "en"
-      ],
-      "ActivityStates": [
-        "Active",
-        "Active",
-        "Active",
-        "Active",
-        "Completed"
-      ]
-    },
-    {
-      "Day": 4,
-      "ActivityIconTitles": [
-        "berøre",
-        "delmængde",
-        "bogstav",
-        "division"
-      ],
-      "ActivityStates": [
-        "Active",
-        "Active",
-        "Canceled",
-        "Active"
-      ]
-    },
-    {
-      "Day": 5,
-      "ActivityIconTitles": [
-        "delmængde",
-        "Epik"
-      ],
-      "ActivityStates": [
-        "Active",
-        "Active"
-      ]
-    },
-    {
-      "Day": 6,
-      "ActivityIconTitles": [
-        "berøre",
-        "division"
-      ],
-      "ActivityStates": [
-        "Canceled",
-        "Canceled"
-      ]
-    },
-    {
-      "Day": 7,
-      "ActivityIconTitles": [
-        "alting",
-        "berøre"
-      ],
-      "ActivityStates": [
-        "Active",
-        "Active"
-      ]
-    },
-    {
-      "Day": 1,
-      "ActivityIconTitles": [
-        "Epik",
-        "antal",
-        "alting",
-        "alle",
-        "alfabet"
-      ],
-      "ActivityStates": [
-        "Active",
-        "Active",
-        "Active",
-        "Active",
-        "Active"
-      ]
-    },
-    {
       "Day": 2,
       "ActivityIconTitles": [
         "division",
-        "delmængde",
+        "delmÃ¦ngde",
         "bogstav",
-        "berøre"
+        "berÃ¸re"
       ],
       "ActivityStates": [
+        "Completed",
+        "Canceled",
         "Active",
-        "Active",
-        "Active",
-        "Active"
-      ]
-    },
-    {
-      "Day": 3,
-      "ActivityIconTitles": [
-        "femininum",
-        "fem",
-        "farve",
-        "fantastisk",
-        "en"
-      ],
-      "ActivityStates": [
-        "Active",
-        "Active",
-        "Active",
-        "Active",
-        "Active"
-      ]
-    },
-    {
-      "Day": 4,
-      "ActivityIconTitles": [
-        "berøre",
-        "delmængde",
-        "bogstav",
-        "division"
-      ],
-      "ActivityStates": [
-        "Active",
-        "Active",
-        "Active",
-        "Active"
-      ]
-    },
-    {
-      "Day": 5,
-      "ActivityIconTitles": [
-        "delmængde",
-        "Epik"
-      ],
-      "ActivityStates": [
-        "Active",
-        "Active"
-      ]
-    },
-    {
-      "Day": 6,
-      "ActivityIconTitles": [
-        "berøre",
-        "division"
-      ],
-      "ActivityStates": [
-        "Active",
-        "Active"
-      ]
-    },
-    {
-      "Day": 7,
-      "ActivityIconTitles": [
-        "alting",
-        "berøre"
-      ],
-      "ActivityStates": [
-        "Active",
-        "Active"
+        "Completed"
       ]
     }
   ],
   "WeekList": [
     {
-      "Name": "dev_data_week_list",
-      "ImageTitle": "dev_title"
+      "Name": "Bob's Week 30",
+      "ImageTitle": "cat17"
+    },
+    {
+      "Name": "Bob's Week 31",
+      "ImageTitle": "cat16"
+    },
+    {
+      "Name": "Bob's Week 32",
+      "ImageTitle": "cat15"
+    },
+    {
+      "Name": "Jacob's Week 30",
+      "ImageTitle": "cat14"
+    },
+    {
+      "Name": "Jacob's Week 31",
+      "ImageTitle": "cat13"
+    },
+    {
+      "Name": "Jacob's Week 32",
+      "ImageTitle": "cat12"
     }
   ],
   "WeekTemplateList": [
     {
-      "Name": "Dev_data_for_week_template",
-      "ImageTitle": "dev_data_title",
+      "Name": "Dev_week_template",
+      "ImageTitle": "kvinde",
       "DepartmentName": "Birken"
     }
   ]
