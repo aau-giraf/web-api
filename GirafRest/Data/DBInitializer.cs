@@ -199,7 +199,7 @@ namespace GirafRest.Data
                 var x = await _userManager.CreateAsync(user, sampleUser.Password);
                 await _context.SaveChangesAsync();
 
-                /*if (x.Succeeded)
+                if (x.Succeeded)
                 {
                     var a = await _userManager.AddToRoleAsync(user, sampleUser.Role);
                     await _context.SaveChangesAsync();
@@ -208,7 +208,7 @@ namespace GirafRest.Data
                 }
                 else
                     throw new WarningException("Failed to create user " + user.UserName + " in usermanager");
-            */}
+            }
         }
         private static async Task<List<Pictogram>> AddSamplePictograms(List<SamplePictogram> samplePictogramsList)
         {
