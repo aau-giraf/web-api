@@ -266,9 +266,11 @@ namespace GirafRest.IntegrationTest.Tests
         [Fact, Priority(10)]
         public async void TestPictogramEnsureNewPictogramDeleted()
         {
+            var pictogram = await TestExtension.CreatePictogramAsync(_factory, _pictogramFixture.Fish, 3, _pictogramFixture.Citizen1Username, _pictogramFixture.Password);
+            await TestExtension.DeletePictogramAsync(_factory, pictogram["id"].ToObject<int>(), _pictogramFixture.Citizen1Username, _pictogramFixture.Password);
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v1/Pictogram/{await TestExtension.GetPictogramIdAsync(_factory, _pictogramFixture.FishRename, _pictogramFixture.Citizen1Username, _pictogramFixture.Password)}"),
+                RequestUri = new Uri($"{BASE_URL}v1/Pictogram/{pictogram["id"]}"),
                 Method = HttpMethod.Get,
             };
             request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _pictogramFixture.Citizen1Username, _pictogramFixture.Password)}");
@@ -290,7 +292,7 @@ namespace GirafRest.IntegrationTest.Tests
             var parameters = "query=Epik,page=1,pageSize=10";
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v1/Pictogram/{parameters}"),
+                RequestUri = new Uri($"{BASE_URL}v1/Pictogram?{parameters}"),
                 Method = HttpMethod.Get,
             };
             request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _pictogramFixture.Citizen1Username, _pictogramFixture.Password)}");

@@ -70,27 +70,23 @@ namespace GirafRest.Controllers
         {
             try
             {
+                // Get the solution folder
+                var gitpath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
+
+                // Check if it is in a build and not server
+                if (gitpath.Contains("bin"))
+                {
+                    gitpath = Path.GetFullPath(Path.Combine(gitpath, @"..\..\..\"));
+                }
+
                 // Get the hidden .git folder
-                var gitpath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName + "/.git/";
+                gitpath += ".git/";
 
                 // Get commit hash from the HEAD file in the .git folder.
                 var commitHash = System.IO.File.ReadLines(gitpath + "HEAD").First();
-
+                
                 // Return the response
                 return Ok(new SuccessResponse($"CommitHash: {commitHash}"));
-
-
-                // Previously, we retrieved the refs/head/branch, and then retrieved the commit hash.
-                // As the "HEAD" file now ONLY contains the commmit hash, this is no longer possible.
-                // This code is preserved in case future students wants to implement the behavior again.
-                /*
-                var pathToHead = System.IO.File.ReadLines(gitpath + "HEAD").First().Split(" ").Last();
-
-                var hash = System.IO.File.ReadLines(gitpath + pathToHead).First();
-                // this assumes that branches are not named with / however this should be enforced anyways
-                var branch = pathToHead.Split("/").Last();
-                return Ok(new SuccessResponse($"Branch: {branch} CommitHash: {hash}"));
-                */
             }
             catch (Exception e)
             {

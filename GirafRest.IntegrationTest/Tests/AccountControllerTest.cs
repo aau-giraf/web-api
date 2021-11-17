@@ -505,7 +505,7 @@ namespace GirafRest.IntegrationTest.Tests
         [Fact, Priority(20)]
         public async void TestAccountCanUseDeletedCitizen2sToken()
         {
-            await TestExtension.RegisterAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Citizen2Password, _accountFixture.GuardianUsername);
+            await TestExtension.RegisterAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Citizen2Password, _accountFixture.Citizen2Username, _accountFixture.GuardianUsername);
             var Citizen2Token = await TestExtension.GetTokenAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Citizen2Password);
             await TestExtension.DeleteAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Citizen2Password, _accountFixture.GuardianUsername);
 
@@ -581,7 +581,7 @@ namespace GirafRest.IntegrationTest.Tests
         [Fact, Priority(23)]
         public async void TestAccountCantResetCitizen2Password()
         {
-            await TestExtension.RegisterAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Citizen2Password, _accountFixture.GuardianUsername);
+            await TestExtension.RegisterAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Citizen2Password, _accountFixture.Citizen2Username, _accountFixture.GuardianUsername);
             var Citizen2Id = await TestExtension.GetUserIdAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Citizen2Password);
             await TestExtension.DeleteAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Citizen2Password, _accountFixture.GuardianUsername);
 
