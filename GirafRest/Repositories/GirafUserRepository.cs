@@ -123,7 +123,61 @@ namespace GirafRest.Repositories
         {
             return Context.Users.Any(u => u.UserName == newUser.Username && u.Id != user.Id);
         }
-    
+
+        public async Task<GirafUser> GetUserByUsername(string username)
+        {
+            return await Context.Users.FirstOrDefaultAsync(u => u.UserName == username);
+        }
+
+        public async Task<GirafUser> LoadUserWithResources(GirafUser usr)
+        {
+            return await Context.Users
+                //Get user by ID from database
+                .Where(u => u.Id == usr.Id)
+                //Then load his pictograms - both the relationship and the actual pictogram
+                .Include(u => u.Resources)
+                .ThenInclude(ur => ur.Pictogram)
+                //Then load his department and their pictograms
+                .Include(u => u.Department)
+                .ThenInclude(d => d.Resources)
+                .ThenInclude(dr => dr.Pictogram)
+                //And return it
+                .FirstOrDefaultAsync(); 
+        }
+
+        public async Task<GirafUser> LoadUserWithDepartment(GirafUser usr)
+        {
+            return await Context.Users
+                .Where(u => u.Id == usr.Id)
+                .Include(u => u.Department)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<GirafUser> LoadUserWithWeekSchedules(string id)
+        {
+            return await Context.Users
+                //First load the user from the database
+                .Where(u => u.Id.ToLower() == id.ToLower())
+                // then load his week schedule
+                .Include(u => u.WeekSchedule)
+                .ThenInclude(w => w.Thumbnail)
+                .Include(u => u.WeekSchedule)
+                .ThenInclude(w => w.Weekdays)
+                .ThenInclude(wd => wd.Activities)
+                .ThenInclude(e => e.Pictograms)
+                //And return it
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<GirafUser> LoadBasicUserDataAsync(GirafUser usr)
+        {
+            return await Context.Users
+                //Get user by ID from database
+                .Where(u => u.Id == usr.Id)
+                //And return it
+                .FirstOrDefaultAsync();
+        }
+        
 
 
 
@@ -140,5 +194,7 @@ namespace GirafRest.Repositories
 
 
 
-}
+
+
+    }
 }

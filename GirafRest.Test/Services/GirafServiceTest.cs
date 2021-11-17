@@ -34,9 +34,7 @@ namespace GirafRest.Test.Services
         {
             _testContext = new TestContext();
 
-            var gs = new GirafService(
-                    _testContext.MockDbContext.Object,
-                    _testContext.MockUserManager);
+            var gs = new GirafService(_testContext.MockUserManager);
 
             return gs;
         }

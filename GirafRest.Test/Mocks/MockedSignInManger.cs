@@ -1,4 +1,4 @@
-using GirafRest.Models;
+/*using GirafRest.Models;
 using GirafRest.Test.RepositoryMocks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
@@ -63,4 +63,4 @@ namespace GirafRest.Test.Mocks
         public Mock<IUserConfirmation<GirafUser>> IUserConfirmation { get; }
 
     }
-}
+}*/

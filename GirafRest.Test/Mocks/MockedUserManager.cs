@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 using Moq;
 namespace GirafRest.Test.RepositoryMocks
  {
-    public class MockedUserManager : Mock<UserManager<GirafUser>>
+    public class MockedUserManager : UserManager<GirafUser>
          {
              public MockedUserManager()
                  : this(new Mock<IUserStore<GirafUser>>())

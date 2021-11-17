@@ -28,6 +28,7 @@ namespace GirafRest.Interfaces
         {
             get;
         }
+        
         /// <summary>
         /// A reference to the user manager, used to fetch users.
         /// </summary>

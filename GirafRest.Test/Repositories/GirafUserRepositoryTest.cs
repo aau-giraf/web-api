@@ -4,6 +4,7 @@ using System.Linq;
 using GirafRest.Data;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
+using GirafRest.Models.Enums;
 using GirafRest.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -80,6 +81,7 @@ namespace GirafRest.Test.Repositories
         private const int GUARDIANRELATIONID = 23;
         private const string USERNAME = "John";
         private const string USERNAME_1 = "Anna";
+        private const string SweetAnnasId = "3";
         private const string USERNAME_2 = "Jacob";
         public GirafUserRepositoryTest()
             : base(new DbContextOptionsBuilder<GirafDbContext>()
@@ -102,6 +104,24 @@ namespace GirafRest.Test.Repositories
             }
             
         }
+
+        [Theory]
+        [InlineData(USERNAME_1)]
+        public void GetUserByUsername(string username)
+        {
+            //Arrange
+            using (var context = new GirafDbContext(ContextOptions))
+            {
+                var repository = new GirafUserRepository(context);
+                
+                //Act
+                var Id = repository.GetUserByUsername(username).Id;
+                
+                //Assert
+                //Assert.Equal(SweetAnnasId,Id);
+            }
+        }
+        
 
         [Theory]
         [InlineData(UserId)]
@@ -230,6 +250,7 @@ namespace GirafRest.Test.Repositories
                 Assert.False(output, "The id doesn't match");
             }
         }
+        
         
         
         

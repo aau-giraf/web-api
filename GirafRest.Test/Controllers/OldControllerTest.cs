@@ -1,4 +1,4 @@
-using System;
+/*using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -137,7 +137,7 @@ namespace GirafRest.Test
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(expectedError, body.ErrorCode);
-        }*/
+        }#1#
 
 
         /*[Theory]
@@ -158,7 +158,7 @@ namespace GirafRest.Test
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.NotNull(body.Data);
-        }*/
+        }#1#
 
 
         [Fact]
@@ -203,7 +203,7 @@ namespace GirafRest.Test
 
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(expectedError, body.ErrorCode);
-        }*/
+        }#1#
 
         /*[Theory]
         [InlineData(ADMIN_DEP_ONE, DEPARTMENT_USER_DEP_TWO)]
@@ -224,7 +224,7 @@ namespace GirafRest.Test
             var res = usercontroller.SetUserIcon(_testContext.MockUsers[userToEdit].Id).Result as ObjectResult;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
-        }*/
+        }#1#
 
         [Fact]
         public void DeleteUserIcon_ExistingIcon_Success()
@@ -269,7 +269,7 @@ namespace GirafRest.Test
             var body = res.Value as ErrorResponse;
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(expectedError, body.ErrorCode);
-        }*/
+        }#1#
 
         /*[Theory]
         [InlineData(ADMIN_DEP_ONE, DEPARTMENT_USER_DEP_TWO)]
@@ -291,7 +291,7 @@ namespace GirafRest.Test
             var res = usercontroller.DeleteUserIcon(_testContext.MockUsers[userToEdit].Id).Result as ObjectResult;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
-        }*/
+        }#1#
 
         #endregion
 
@@ -469,7 +469,7 @@ namespace GirafRest.Test
             var body = res.Value as ErrorResponse;
             Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
             Assert.Equal(expectedError, body.ErrorCode);
-        }*/
+        }#1#
 
         /*[Theory]
         [InlineData(ADMIN_DEP_ONE, CITIZEN_DEP_THREE)]
@@ -488,7 +488,7 @@ namespace GirafRest.Test
             var res = usercontroller.GetGuardians(_testContext.MockUsers[userToEdit].Id).Result as ObjectResult;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
-        }*/
+        }#1#
 
         #endregion
 
@@ -564,7 +564,7 @@ namespace GirafRest.Test
             var res = usercontroller.GetCitizens(_testContext.MockUsers[userToEdit].Id).Result as ObjectResult;
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
-        }*/
+        }#1#
 
         #endregion
 
@@ -727,7 +727,7 @@ namespace GirafRest.Test
 
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
             Assert.NotNull(body.Data);
-        }*/
+        }#1#
 
         #endregion
 
@@ -1207,7 +1207,7 @@ namespace GirafRest.Test
             var res =
                 usercontroller.UpdateUserSettings(_testContext.MockUsers[userToEdit].Id, dto).Result as ObjectResult;
             Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
-        }*/
+        }#1#
 
         [Theory]
         [InlineData(ADMIN_DEP_ONE, DEPARTMENT_USER_DEP_TWO, ErrorCode.RoleMustBeCitizien)]
@@ -1302,10 +1302,6 @@ namespace GirafRest.Test
         public Mock<IUserResourseRepository> UserResourseRepository { get; }
         public Mock<IPictogramRepository> PictogramRepository { get; }
 
-        [Fact]
-        public void Register()
-        {
-            
-        }
+        
     }
-}
+}*/

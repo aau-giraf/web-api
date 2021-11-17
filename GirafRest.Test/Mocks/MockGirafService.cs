@@ -12,12 +12,17 @@ using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Linq;
+using GirafRest.IRepositories;
+using GirafRest.Test.RepositoryMocks;
 using Microsoft.EntityFrameworkCore;
 
 namespace GirafRest.Test.Mocks
 {
-    class MockGirafService : IGirafService
+    public class MockGirafService : IGirafService
     {
+        private readonly IGirafUserRepository _girafUserRepository;
+        private readonly IUserResourseRepository _userResourseRepository;
+        private readonly IDepartmentResourseRepository _departmentResourseRepository;
         public ILogger _logger { get; set; }
 
         public GirafDbContext _context
@@ -39,9 +44,8 @@ namespace GirafRest.Test.Mocks
                 return Convert.ToBase64String(hash);
             }
         }
-        public MockGirafService(GirafDbContext context, MockUserManager userManager)
+        public MockGirafService( MockedUserManager userManager)
         {
-            _context = context;
             _userManager = userManager;
         }
 
@@ -50,8 +54,7 @@ namespace GirafRest.Test.Mocks
             if (user == null)
                 return Task.FromResult(false);
 
-            var ownsResource = _context.UserResources
-                .Any(ur => ur.Pictogram == pictogram && ur.Other == user);
+            var ownsResource = _userResourseRepository.CheckIfUserOwnsResource(pictogram, user);
 
             if (ownsResource)
                 return Task.FromResult(true);
@@ -64,9 +67,7 @@ namespace GirafRest.Test.Mocks
             if (user == null)
                 return Task.FromResult(false);
 
-            var ownsResource = _context.DepartmentResources
-                .Any(dr => dr.PictogramKey == pictogram.Id 
-                            && dr.OtherKey == user.DepartmentKey);
+            var ownsResource = _departmentResourseRepository.CheckIfUserOwnsResource(pictogram, user);
             
             if (ownsResource)
                 return Task.FromResult(true);
@@ -90,7 +91,7 @@ namespace GirafRest.Test.Mocks
 
         public Task<GirafUser> LoadUserWithWeekSchedules(string id)
         {
-            return Task.FromResult(_context.Users.FirstOrDefault(u => u.Id == id));
+            return Task.FromResult(_girafUserRepository.GetUserWithId(id));
         }
 
         public Task<GirafUser> LoadUserWithResources(ClaimsPrincipal principal)

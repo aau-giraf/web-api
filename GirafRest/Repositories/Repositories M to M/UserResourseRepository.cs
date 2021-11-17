@@ -31,5 +31,18 @@ namespace GirafRest.Repositories
         {
             Context.UserResources.Remove(relationship);
         }
+
+        public async Task<bool> CheckPrivateOwnership(Pictogram pictogram, GirafUser user)
+        {
+            return await Context.UserResources
+                .Where(ur => ur.PictogramKey == pictogram.Id && ur.OtherKey == user.Id)
+                .AnyAsync();
+        }
+
+        public bool CheckIfUserOwnsResource(Pictogram pictogram, GirafUser user)
+        {
+            return Context.UserResources
+                .Any(ur => ur.Pictogram == pictogram && ur.Other == user);
+        } 
     }
 }
