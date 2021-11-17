@@ -15,7 +15,7 @@ namespace GirafRest.Setup
     {
         private readonly string jsonFile = $"{Directory.GetCurrentDirectory()}" +
             $"{Path.DirectorySeparatorChar}" +
-            $"Data" +
+            $"Setup" +
             $"{Path.DirectorySeparatorChar}" +
             $"samples.json";
 
