@@ -27,18 +27,12 @@ namespace GirafRest.Controllers
     {
         private const int IMAGE_CONTENT_TYPE_DEFINITION = 25;
         private const string IMAGE_TYPE_PNG = "image/png";
-
-
-
         private readonly IGirafService _giraf;
         private readonly IGirafUserRepository _girafUserRepository;
         private readonly IImageRepository _imageRepository;
         private readonly IUserResourseRepository _userResourseRepository;
         private readonly IPictogramRepository _pictogramRepository;
-
         private readonly RoleManager<GirafRole> _roleManager;
-
-       
 
         /// <summary>
         /// Constructor for UserController
@@ -46,21 +40,27 @@ namespace GirafRest.Controllers
         /// <param name="giraf">Service Injection</param>
         /// <param name="loggerFactory">Service Injection</param>
         /// <param name="roleManager">Service Injection</param>
-        /// <param name="authentication">Service Injection</param>
+        /// <param name="girafUserRepository">Service Injection</param>
+        /// <param name="imageRepository">Service Injection</param>
+        /// <param name="userResourceRepository">Service Injection</param>
+        /// <param name="pictogramRepository">Service Injection</param>
         public UserController(
             IGirafService giraf,
             ILoggerFactory loggerFactory,
-            RoleManager<GirafRole> roleManager, IGirafUserRepository girafUserRepository, IImageRepository imageRepository, IUserResourseRepository userResourseRepository, IPictogramRepository pictogramRepository)
+            RoleManager<GirafRole> roleManager, 
+            IGirafUserRepository girafUserRepository, 
+            IImageRepository imageRepository, 
+            IUserResourseRepository userResourceRepository, 
+            IPictogramRepository pictogramRepository)
         {
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("User");
             _roleManager = roleManager;
             _girafUserRepository = girafUserRepository;
             _imageRepository = imageRepository;
-            _userResourseRepository = userResourseRepository;
+            _userResourseRepository = userResourceRepository;
             _pictogramRepository = pictogramRepository;
         }
-
 
         /// <summary>
         /// Find information about the currently authenticated user.
