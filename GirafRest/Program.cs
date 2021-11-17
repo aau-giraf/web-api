@@ -34,7 +34,6 @@ namespace GirafRest
             //Build the host from the given arguments.
             try
             {
-                Console.WriteLine("webhost starting");
                 BuildWebHost(args).Run();
                 Console.WriteLine("webhost built");
             }

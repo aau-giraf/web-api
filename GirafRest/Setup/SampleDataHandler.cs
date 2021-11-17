@@ -151,6 +151,7 @@ namespace GirafRest.Setup
 
     public class SampleData
     {
+        public List<string> RolesList { get; set; }
         public List<SampleGirafUser> UserList { get; set; }
         public List<SampleDepartment> DepartmentList { get; set; }
         public List<SamplePictogram> PictogramList { get; set; }
@@ -160,6 +161,7 @@ namespace GirafRest.Setup
 
         public SampleData()
         {
+            RolesList = new List<string>();
             UserList = new List<SampleGirafUser>();
             DepartmentList = new List<SampleDepartment>();
             PictogramList = new List<SamplePictogram>();
