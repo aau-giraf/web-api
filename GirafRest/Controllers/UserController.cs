@@ -30,7 +30,6 @@ namespace GirafRest.Controllers
         private const int IMAGE_CONTENT_TYPE_DEFINITION = 25;
         private const string IMAGE_TYPE_PNG = "image/png";
 
-
         private readonly IGirafService _giraf;
 
         private readonly RoleManager<GirafRole> _roleManager;
