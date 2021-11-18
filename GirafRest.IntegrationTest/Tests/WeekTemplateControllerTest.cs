@@ -218,9 +218,12 @@ namespace GirafRest.IntegrationTest.Tests
         [Fact, Priority(8)]
         public async void TestWeekTemplateEnsureTemplateIsDeleted()
         {
+            long id = await TestExtension.CreateWeekTemplateAsync(_factory, _weekTemplateFixture.GuardianUsername, _weekTemplateFixture.Password, _weekTemplateFixture.Templates[1]);
+            await TestExtension.DeleteWeekTemplateAsync(_factory, _weekTemplateFixture.GuardianUsername, _weekTemplateFixture.Password, id);
+
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v1/WeekTemplate/{await TestExtension.GetWeekTemplateIdAsync(_factory, _weekTemplateFixture.GuardianUsername, _weekTemplateFixture.Password, _weekTemplateFixture.templateName[1])}"),
+                RequestUri = new Uri($"{BASE_URL}v1/WeekTemplate/{id}"),
                 Method = HttpMethod.Get,
             };
             request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _weekTemplateFixture.GuardianUsername, _weekTemplateFixture.Password)}");

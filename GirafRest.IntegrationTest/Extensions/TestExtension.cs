@@ -192,5 +192,35 @@ namespace GirafRest.IntegrationTest.Extensions
 
             return content["data"].First(x => x["name"].ToString() == templateName)["templateId"].ToString();
         }
+
+        public static async Task<long> CreateWeekTemplateAsync(CustomWebApplicationFactory factory, string username, string password, string template)
+        {
+            var client = factory.CreateClient();
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/WeekTemplate"),
+                Method = HttpMethod.Post,
+                Content = new StringContent(template, Encoding.UTF8, "application/json")
+            };
+            request.Headers.Add("Authorization", $"Bearer {await GetTokenAsync(factory, username, password)}");
+
+            var response = await client.SendAsync(request);
+            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+
+            return content["data"]["id"].ToObject<long>();
+        }
+
+        public static async Task DeleteWeekTemplateAsync(CustomWebApplicationFactory factory, string username, string password, long id)
+        {
+            var client = factory.CreateClient();
+            HttpRequestMessage request = new HttpRequestMessage()
+            {
+                RequestUri = new Uri($"{BASE_URL}v1/WeekTemplate/{id}"),
+                Method = HttpMethod.Delete,
+            };
+            request.Headers.Add("Authorization", $"Bearer {await GetTokenAsync(factory, username, password)}");
+
+            var response = await client.SendAsync(request);
+        }
     }
 }
