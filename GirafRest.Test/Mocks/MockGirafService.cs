@@ -44,7 +44,7 @@ namespace GirafRest.Test.Mocks
                 return Convert.ToBase64String(hash);
             }
         }
-        public MockGirafService( MockedUserManager userManager)
+        public MockGirafService(MockedUserManager userManager)
         {
             _userManager = userManager;
         }

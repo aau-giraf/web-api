@@ -1,6 +1,7 @@
 using Xunit;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using GirafRest.Data;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
@@ -53,6 +54,14 @@ namespace GirafRest.Test.Repositories
                     Id = "4",
                     UserName = "Jacob"
                 };
+                
+                GirafUser userAmazing = new GirafUser()
+                {
+                    Id = "40",
+                    UserName =  "Aladdin",
+                    DisplayName = "display",
+                    DepartmentKey = 1
+                };
 
                 var guardianRelation = new GuardianRelation(user2, user3)
                 {
@@ -63,7 +72,7 @@ namespace GirafRest.Test.Repositories
                 };
                 
                 
-                context.AddRange(user, user2, user3, user4, guardianRelation);
+                context.AddRange(user, user2, user3, user4, userAmazing,guardianRelation);
 
 
 
@@ -83,6 +92,8 @@ namespace GirafRest.Test.Repositories
         private const string USERNAME_1 = "Anna";
         private const string SweetAnnasId = "3";
         private const string USERNAME_2 = "Jacob";
+        private const string ALADDIN = "Aladdin";
+        private const string ALADDIN_ID = "40";
         public GirafUserRepositoryTest()
             : base(new DbContextOptionsBuilder<GirafDbContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString("N")).Options){}
@@ -250,6 +261,72 @@ namespace GirafRest.Test.Repositories
                 Assert.False(output, "The id doesn't match");
             }
         }
+
+        [Fact]
+        public async Task LoadUserWithResources()
+        {
+            using (var context = new GirafDbContext(ContextOptions))
+            {
+                //Arrange
+                var repository = new GirafUserRepository(context);
+                var user = await context.Users.FirstOrDefaultAsync(x => x.Id == "3");
+                
+                var result = await repository.LoadUserWithResources(user);
+                
+                Assert.Equal("Anna", result.UserName);
+                
+            }
+        }
+
+        [Fact]
+        public async Task LoadUserWithDepartment()
+        {
+            using (var context = new GirafDbContext(ContextOptions))
+            {
+                //Arrange
+                var repository = new GirafUserRepository(context);
+                var user = await context.Users.FirstOrDefaultAsync(x => x.Id == ALADDIN_ID);
+                //Act
+                var result = await repository.LoadUserWithDepartment(user);
+                
+                Assert.Equal(ALADDIN, result.UserName);
+                
+            }
+        }
+
+        [Theory]
+        [InlineData("40")]
+        public async Task LoadUserWithWeekSchedules(string id)
+        {
+            using (var context = new GirafDbContext(ContextOptions))
+            {
+                //Arrange
+                var repository = new GirafUserRepository(context);
+                
+                //Act
+                var result = await repository.LoadUserWithWeekSchedules(id);
+                
+                Assert.Equal(id, result.Id);
+
+            }
+        }
+        [Fact]
+        public async Task LoadBasicUserDataAsync()
+        {
+            using (var context = new GirafDbContext(ContextOptions))
+            {
+                //Arrange
+                var repository = new GirafUserRepository(context);
+                var user = await context.Users.FirstOrDefaultAsync(x => x.Id == "40");
+                //Act
+                var result = await repository.LoadBasicUserDataAsync(user);
+                
+                Assert.Equal(ALADDIN, result.UserName);
+                
+            }
+        }
+        
+      
         
         
         

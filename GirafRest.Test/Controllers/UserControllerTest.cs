@@ -23,7 +23,7 @@ namespace GirafRest.Test
 {
     public class UserControllerTest
     {
-       
+        
         [Fact]
         public async Task GetUserRoleOK_Success()
         {

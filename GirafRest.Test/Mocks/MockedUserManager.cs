@@ -69,5 +69,9 @@ namespace GirafRest.Test.RepositoryMocks
              public Mock<IdentityErrorDescriber> IdentityErrorDescriber { get; }
              public Mock<IServiceProvider> ServiceProvider { get; }
              public Mock<ILogger<UserManager<GirafUser>>> Logger { get; }
+             
+             
          }
+    
+    
  } 
