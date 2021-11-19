@@ -1,4 +1,5 @@
 using System;
+using GirafRest.Models.Enums; 
 
 namespace GirafRest.Models.DTOs
 {
