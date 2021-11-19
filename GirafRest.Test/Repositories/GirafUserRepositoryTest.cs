@@ -8,16 +8,14 @@ using GirafRest.Models.DTOs;
 using GirafRest.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace GirafRest.Test.Repositories
 {
-    public class FakeGirafUserRepositoryContext
+    public class GirafUserRepositoryContext
     {
         private const int GUARDIANRELATIONID = 23;
-        protected FakeGirafUserRepositoryContext(DbContextOptions<GirafDbContext> contextOptions)
+        protected GirafUserRepositoryContext(DbContextOptions<GirafDbContext> contextOptions)
         {
             ContextOptions = contextOptions;
-
             Seed();
         }
 
@@ -37,56 +35,39 @@ namespace GirafRest.Test.Repositories
                     DisplayName = "UsernameDisplay",
                     Id = "1",
                     DepartmentKey = 2
-
-                };
-                var user2 = new GirafUser();
-                user2.Id = "2";
-                user2.UserName = "John Appleseed";
-
-                var user3 = new GirafUser();
-                user3.Id = "3";
-                user3.UserName = "Anna";
-                
-
-                var user4 = new GirafUser()
-                {
-                    Id = "4",
-                    UserName = "Jacob"
-                };
-
-                var guardianRelation = new GuardianRelation(user2, user3)
-                {
-                    Id = 23,
-                    Guardian = user2,
-                    Citizen = user3
-                    
                 };
                 
-                
-                context.AddRange(user, user2, user3, user4, guardianRelation);
-
-
-
+                context.Add(user);
                 context.SaveChanges();
-                
             }
-
         }
-
     }
 
-    public class GirafUserRepositoryTest : FakeGirafUserRepositoryContext
+    public class GirafUserRepositoryTest : GirafUserRepositoryContext
     {
         private const string UserId = "1";
-        private const int GUARDIANRELATIONID = 23;
         private const string USERNAME = "John";
-        private const string USERNAME_1 = "Anna";
-        private const string USERNAME_2 = "Jacob";
-        private  const long  DEPKEY= 2;
         public GirafUserRepositoryTest()
             : base(new DbContextOptionsBuilder<GirafDbContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString("N")).Options){}
-        
+
+        [Theory]
+        [InlineData(UserId)]
+        public void GetWithWeekSchedulesTest(string id)
+        {
+            //Arrange
+            using (var context = new GirafDbContext(ContextOptions))
+            {
+                var repository = new GirafUserRepository(context);
+
+                //Act
+                var username = repository.GetWithWeekSchedules(id).UserName;
+
+                //Assert
+                Assert.Equal(USERNAME, username);
+            }
+        }
+
         [Theory]
         [InlineData(UserId)]
         public void GetUserWithIdTest(string id)
@@ -100,9 +81,8 @@ namespace GirafRest.Test.Repositories
                 var userName = repository.GetUserWithId(id).UserName;
                 
                 //Assert
-                Assert.Equal(USERNAME,userName);
+                Assert.Equal(USERNAME, userName);
             }
-            
         }
 
         [Theory]
@@ -118,9 +98,8 @@ namespace GirafRest.Test.Repositories
                 bool response = repository.ExistsUsername(username);
                 
                 // Assert
-                Assert.Equal(true,response);
+                Assert.True(response);
             }
-
         }
 
         [Theory]
@@ -136,7 +115,7 @@ namespace GirafRest.Test.Repositories
                 bool response = repository.ExistsUsername(username);
 
                 // Assert
-                Assert.Equal(false, response);
+                Assert.False(response);
             }
         }
         
@@ -157,8 +136,5 @@ namespace GirafRest.Test.Repositories
                 Assert.Equal(USERNAME,response.UserName);
             }
         }
-        
     }
-    
-    
 }

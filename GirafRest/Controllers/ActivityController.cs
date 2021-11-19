@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading.Tasks;
+using GirafRest.IRepositories;
 
 namespace GirafRest.Controllers
 {
@@ -20,20 +21,48 @@ namespace GirafRest.Controllers
     [Route("v2/[controller]")]
     public class ActivityController : Controller
     {
-        private readonly IAuthenticationService _authentication;
-        private readonly IGirafService _giraf;
+        private readonly IGirafUserRepository _userRepository;
+        private readonly IAlternateNameRepository _alternateNameRepository;
+        private readonly IActivityRepository _activityRepository;
+        private readonly IWeekdayRepository _weekdayRepository;
+        private readonly IPictogramRepository _pictogramRepository;
+        private readonly IPictogramRelationRepository _pictogramRelationRepository;
+        private readonly ITimerRepository _timerRepository;
+
+        /// <summary>
+        /// A data-logger used to write messages to the console. Handled by asp.net's dependency injection.
+        /// </summary>
+        public ILogger _logger { get; set; }
 
         /// <summary>
         /// Constructor for Controller
         /// </summary>
-        /// <param name="giraf">Service Injection</param>
         /// <param name="loggerFactory">Service Injection</param>
-        /// <param name="authentication">Service Injection</param>
-        public ActivityController(IGirafService giraf, ILoggerFactory loggerFactory, IAuthenticationService authentication)
+        /// <param name="userRepository">Service Injection</param>
+        /// <param name="alternateNameRepository">Service Injection</param>
+        /// <param name="activityRepository">Service Injection</param>
+        /// <param name="weekdayRepository">Service Injection</param>
+        /// <param name="pictogramRepository">Service Injection</param>
+        /// <param name="pictogramRelationRepository">Service Injection</param>
+        /// <param name="timerRepository">Service Injection</param>
+        public ActivityController(
+            ILoggerFactory loggerFactory,
+            IGirafUserRepository userRepository,
+            IAlternateNameRepository alternateNameRepository,
+            IActivityRepository activityRepository,
+            IWeekdayRepository weekdayRepository,
+            IPictogramRepository pictogramRepository,
+            IPictogramRelationRepository pictogramRelationRepository,
+            ITimerRepository timerRepository)
         {
-            _giraf = giraf;
-            _giraf._logger = loggerFactory.CreateLogger("Activity");
-            _authentication = authentication;
+            _logger = loggerFactory.CreateLogger("Activity");
+            _userRepository = userRepository;
+            _alternateNameRepository = alternateNameRepository;
+            _activityRepository = activityRepository;
+            _weekdayRepository = weekdayRepository;
+            _pictogramRepository = pictogramRepository;
+            _pictogramRelationRepository = pictogramRelationRepository;
+            _timerRepository = timerRepository;
         }
 
         /// <summary>
@@ -59,13 +88,9 @@ namespace GirafRest.Controllers
             if (newActivity == null)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing new activity"));
 
-            GirafUser user = await _giraf.LoadUserWithWeekSchedules(userId);
+            GirafUser user = _userRepository.GetWithWeekSchedules(userId);
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "Missing user"));
-
-            // check access rights
-            if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
             var dbWeek = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber && string.Equals(w.Name, weekplanName));
             if (dbWeek == null)
@@ -78,11 +103,11 @@ namespace GirafRest.Controllers
             int order = dbWeekDay.Activities.Select(act => act.Order).DefaultIfEmpty(0).Max();
             order++;
 
+            AlternateName alternateName = _alternateNameRepository.SingleOrDefault(alternateName
+                => alternateName.Citizen == user
+                && alternateName.PictogramId == newActivity.Pictograms.First().Id);
 
-            AlternateName an = await _giraf._context.AlternateNames.FirstOrDefaultAsync(altnam =>
-                altnam.Citizen == user && altnam.PictogramId == newActivity.Pictograms.First().Id);
-
-            string title = an == null ? newActivity.Pictograms.First().Title : an.Name;
+            string title = alternateName == null ? newActivity.Pictograms.First().Title : alternateName.Name;
             
             Activity dbActivity = new Activity(
                 dbWeekDay,
@@ -94,19 +119,20 @@ namespace GirafRest.Controllers
                 title
             );
             dbWeekDay.Activities.Add(dbActivity);
-            _giraf._context.Activities.Add(dbActivity);
-            _giraf._context.Weekdays.Update(dbWeekDay);
+            
+            _activityRepository.Add(dbActivity);
+            _weekdayRepository.Update(dbWeekDay);
 
             foreach (var pictogram in newActivity.Pictograms)
             {
-                var dbPictogram = _giraf._context.Pictograms.FirstOrDefault(id => id.Id == pictogram.Id);
+                var dbPictogram = _pictogramRepository.Get(pictogram.Id);
                 if (dbPictogram != null && string.IsNullOrEmpty(dbPictogram.Title))
                 {
                     return BadRequest(new ErrorResponse(ErrorCode.InvalidProperties, "Invalid pictogram: Blank title"));
                 }
                 if (dbPictogram != null && !string.IsNullOrEmpty(dbPictogram.Title))
                 {
-                    _giraf._context.PictogramRelations.Add(new PictogramRelation(
+                    _pictogramRelationRepository.Add(new PictogramRelation(
                         dbActivity, dbPictogram
                     ));
                 }               
@@ -116,7 +142,13 @@ namespace GirafRest.Controllers
                 }
             }
 
-            await _giraf._context.SaveChangesAsync();
+            // Unsure if we should save from every used repository, or just one of them.
+            _userRepository.Save();
+            /*_alternateNameRepository.Save();
+            _activityRepository.Save();
+            _weekdayRepository.Save();
+            _pictogramRepository.Save();
+            _pictogramRelationRepository.Save();*/
 
             return StatusCode(
                 StatusCodes.Status201Created,
@@ -139,28 +171,26 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeleteActivity(string userId, long activityId)
         {
-            GirafUser user = await _giraf.LoadUserWithWeekSchedules(userId);
+            GirafUser user = _userRepository.GetWithWeekSchedules(userId);
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
-
-            // check access rights
-            if (!(await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
             // throws error if none of user's weeks' has the specific activity
             if (!user.WeekSchedule.Any(w => w.Weekdays.Any(wd => wd.Activities.Any(act => act.Key == activityId))))
                 return NotFound(new ErrorResponse(ErrorCode.ActivityNotFound, "Activity not found"));
 
-            Activity targetActivity = _giraf._context.Activities.First(act => act.Key == activityId);
+            Activity targetActivity = _activityRepository.Get(activityId);
 
             // deletion of pictogram relations
-            var pictogramRelations = _giraf._context.PictogramRelations
-                .Where(relation => relation.ActivityId == targetActivity.Key);
+            var pictogramRelations = _pictogramRelationRepository.Find(relation => relation.ActivityId == targetActivity.Key);
 
-            _giraf._context.PictogramRelations.RemoveRange(pictogramRelations);
+            _pictogramRelationRepository.RemoveRange(pictogramRelations);
+            _activityRepository.Remove(targetActivity);
 
-            _giraf._context.Activities.Remove(targetActivity);
-            await _giraf._context.SaveChangesAsync();
+            // Unsure if we should save from every used repository, or just one of them.
+            _userRepository.Save();
+            /*_activityRepository.Save();
+            _pictogramRelationRepository.Save();*/
 
             return Ok(new SuccessResponse("Activity deleted"));
         }
@@ -176,16 +206,8 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult> GetActivity(string userId, int activityId)
         {
-            var activity = await _giraf._context
-                .Activities
-                .Where(a => a.Key == activityId)
-                .FirstOrDefaultAsync();
-
-            var pictograms = _giraf._context
-                .PictogramRelations
-                .Include(pictogram => pictogram.Pictogram)
-                .Where(pr => pr.ActivityId == activityId)
-                .ToList();
+            var activity = _activityRepository.Get(activityId);
+            var pictograms = _pictogramRelationRepository.GetWithPictogram(activityId);
 
             activity.Pictograms = pictograms;
 
@@ -211,20 +233,15 @@ namespace GirafRest.Controllers
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing activity"));
             }
 
-            GirafUser user = await _giraf.LoadUserWithWeekSchedules(userId);
+            GirafUser user = _userRepository.GetWithWeekSchedules(userId);
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
-
-            // check access rights
-            if (!await _authentication.HasEditOrReadUserAccess(await _giraf._userManager.GetUserAsync(HttpContext.User), user))
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permissions"));
 
             // throws error if none of user's weeks' has the specific activity
             if (!user.WeekSchedule.Any(w => w.Weekdays.Any(wd => wd.Activities.Any(act => act.Key == activity.Id))))
                 return NotFound(new ErrorResponse(ErrorCode.ActivityNotFound, "Activity not found"));
 
-            Activity updateActivity = _giraf._context.Activities
-                .FirstOrDefault(a => a.Key == activity.Id);
+            Activity updateActivity = _activityRepository.Get(activity.Id);
             if (updateActivity == null)
                 return NotFound(new ErrorResponse(ErrorCode.ActivityNotFound, "Activity not found"));
 
@@ -233,22 +250,20 @@ namespace GirafRest.Controllers
             updateActivity.IsChoiceBoard = activity.IsChoiceBoard;
             updateActivity.ChoiceBoardName = activity.ChoiceBoardName;
             updateActivity.Title = activity.Title;
+
             // deletion of pictogram relations
-
-            var pictogramRelations = _giraf._context.PictogramRelations
-                .Where(relation => relation.ActivityId == activity.Id);
-
-            _giraf._context.PictogramRelations.RemoveRange(pictogramRelations);
+            IEnumerable<PictogramRelation> pictogramRelations = _pictogramRelationRepository.Find(relation => relation.ActivityId == activity.Id);
+            _pictogramRelationRepository.RemoveRange(pictogramRelations);
 
             List<WeekPictogramDTO> pictograms = new List<WeekPictogramDTO>();
 
             foreach (var pictogram in activity.Pictograms)
             {
-                var db_pictogram = _giraf._context.Pictograms.Single(id => id.Id == pictogram.Id);
+                Pictogram db_pictogram = _pictogramRepository.Get(pictogram.Id);
 
                 if (db_pictogram != null)
                 {
-                    _giraf._context.PictogramRelations.Add(new PictogramRelation(
+                    _pictogramRelationRepository.Add(new PictogramRelation(
                         updateActivity, db_pictogram
                     ));
                     pictograms.Add(new WeekPictogramDTO(db_pictogram));
@@ -261,7 +276,7 @@ namespace GirafRest.Controllers
 
             if (activity.Timer != null)
             {
-                Timer placeTimer = _giraf._context.Timers.FirstOrDefault(t => t.Key == updateActivity.TimerKey);
+                Timer placeTimer = _timerRepository.Get(updateActivity.TimerKey);
 
                 if (updateActivity.TimerKey == null)
                 {
@@ -292,16 +307,21 @@ namespace GirafRest.Controllers
             {
                 if (updateActivity.TimerKey != null)
                 {
-                    Timer placeTimer = _giraf._context.Timers.FirstOrDefault(t => t.Key == updateActivity.TimerKey);
+                    Timer placeTimer = _timerRepository.Get(updateActivity.TimerKey);
                     if (placeTimer != null)
                     {
-                        _giraf._context.Timers.Remove(placeTimer);
+                        _timerRepository.Remove(placeTimer);
                     }
                     updateActivity.TimerKey = null;
                 }
             }
 
-            await _giraf._context.SaveChangesAsync();
+            // Unsure if we should save from every used repository, or just one of them.
+            _userRepository.Save();
+            /*_activityRepository.Save();
+            _pictogramRelationRepository.Save();
+            _pictogramRepository.Save();
+            _timerRepository.Save();*/
 
             return Ok(new SuccessResponse<ActivityDTO>(new ActivityDTO(updateActivity, pictograms)));
         }
