@@ -11,5 +11,26 @@ namespace GirafRest.Repositories
         public GirafUserRepository(GirafDbContext context) : base(context)
         {
         }
+
+
+        public bool ExistsUsername(string username)
+            => Context.Users.Any(u => u.UserName == username);
+        
+
+        public GirafUser GetUserByUsername(string username)
+            => Context.Users.FirstOrDefault(u => u.UserName == username);
+
+        public IEnumerable<GirafUser> GetUsersInDepartment(long departmentKey, IEnumerable<string> users)
+        {
+           return Context.Users
+            .Where(user => 
+                // Checks if the user is a guardian
+                users.Any(currUser => currUser == user.Id) &&
+                user.DepartmentKey != null && user.DepartmentKey == departmentKey)
+            .ToList();
+        }
+
+        public GirafUser GetUserWithId(string id)
+            => Context.Users.FirstOrDefault(u => u.Id == id);
     }
 }

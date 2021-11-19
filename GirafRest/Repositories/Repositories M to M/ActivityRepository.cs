@@ -3,16 +3,14 @@ using System.Linq;
 using GirafRest.Models;
 using GirafRest.IRepositories;
 using GirafRest.Data;
-using System.Threading;
 
 namespace GirafRest.Repositories
 {
-    public class PictogramRepository : Repository<Pictogram>, IPictogramRepository
+    public class ActivityRepository : Repository<Activity>, IActivityRepository
     {
-        public PictogramRepository(GirafDbContext context) : base(context)
+        public ActivityRepository(GirafDbContext context) : base(context)
         {
+
         }
-        
     }
-    
 }
