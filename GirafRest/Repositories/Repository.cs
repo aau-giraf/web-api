@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using GirafRest.IRepositories;
 using GirafRest.Data;
+using System.Threading.Tasks;
 
 namespace GirafRest.Repositories
 {
@@ -16,9 +17,9 @@ namespace GirafRest.Repositories
             Context = context;
         }
 
-        public TEntity Get(int id)
+        public TEntity Get(params object[] ids)
         {
-            return Context.Set<TEntity>().Find(id);
+            return Context.Set<TEntity>().Find(ids);
         }
 
         public IEnumerable<TEntity> GetAll()
@@ -54,6 +55,21 @@ namespace GirafRest.Repositories
         public void RemoveRange(IEnumerable<TEntity> entities)
         {
             Context.Set<TEntity>().RemoveRange(entities);
+        }
+
+        public void Update(TEntity entity)
+        {
+            Context.Set<TEntity>().Update(entity);
+        }
+
+        public void UpdateRange(IEnumerable<TEntity> entities)
+        {
+            Context.Set<TEntity>().UpdateRange(entities);
+        }
+
+        public void Save()
+        {
+            Context.SaveChanges();
         }
     }
 }
