@@ -65,6 +65,12 @@ namespace GirafRest.Data
             // Create departments if they do not exist
             if (!(await _context.Departments.AnyAsync()))
                 await AddSampleDepartments(sampleData.DepartmentList);
+
+            if(!(await _context.Roles.AnyAsync()))
+            {
+                List<string> roles = _sampleDataHandler.ReadSampleRoles(); 
+                await AddSampleRoles(roles);
+            }
             
             // Create users if they do not exist
             if (!(await _context.Users.AnyAsync())) {
@@ -181,6 +187,16 @@ namespace GirafRest.Data
                 await _context.Departments.AddAsync(department);
             }
             await _context.SaveChangesAsync();
+        }
+        private static async Task AddSampleRoles(List<string> sampleRoles)
+        {
+            Console.WriteLine("Adding roles...");
+            foreach (string sampleRole in sampleRoles)
+            {
+                await _context.Database.ExecuteSqlRawAsync(
+                    "INSERT INTO AspNetRoles (Id, ConcurrencyStamp, Name, NormalizedName) VALUES ('" + sampleRole + "', '" + Guid.NewGuid().ToString() + "', '" + sampleRole + "', '" + sampleRole.ToUpper() + "');");
+                await _context.SaveChangesAsync();
+            }
         }
         private static async Task AddSampleUsers(List<SampleGirafUser> sampleUsers)
         {

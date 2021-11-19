@@ -53,8 +53,10 @@ namespace GirafRest.Setup
             // delete all default configuration providers
             if (env.IsDevelopment())
                 builder.AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true);
+            else if (env.IsStaging())
+                builder.AddJsonFile("appsettings.Staging.json", optional: false, reloadOnChange: false);
             else if (env.IsProduction())
-                builder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
+                builder.AddJsonFile("appsettings.Production.json", optional: false, reloadOnChange: true);
             else
                 throw new NotSupportedException("No database option is supported by this Environment mode");
             builder.AddEnvironmentVariables();
@@ -290,7 +292,7 @@ namespace GirafRest.Setup
 
             // Fill some sample data into the database
             if (ProgramOptions.GenerateSampleData)
-                DBInitializer.Initialize(context, userManager, ProgramOptions.Pictograms).Wait();
+                DBInitializer.Initialize(context, userManager, ProgramOptions.Pictograms, env.EnvironmentName).Wait();
 
             app.Run((context2) =>
             {

@@ -22,6 +22,10 @@ namespace GirafRest.Data
             $"{Path.DirectorySeparatorChar}" +
             $"Data" +
             $"{Path.DirectorySeparatorChar}pictograms.json";
+        private readonly string rolesFile = $"{Directory.GetCurrentDirectory()}" +
+           $"{Path.DirectorySeparatorChar}" +
+           $"Data" +
+           $"{Path.DirectorySeparatorChar}roles.json";
 
         public SampleDataHandler(string path)
         {
@@ -48,6 +52,21 @@ namespace GirafRest.Data
             {
                 string jsonString = File.ReadAllText(pictogramsFile);
                 return JsonConvert.DeserializeObject<List<SamplePictogram>>(jsonString);
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e.StackTrace);
+            }
+
+            return null;
+        }
+
+        public List<string> ReadSampleRoles()
+        {
+            try
+            {
+                string jsonString = File.ReadAllText(rolesFile);
+                return JsonConvert.DeserializeObject<List<string>>(jsonString);
             }
             catch (FileNotFoundException e)
             {
