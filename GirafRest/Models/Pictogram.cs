@@ -95,7 +95,7 @@ namespace GirafRest.Models
         /// <summary>
         /// DO NOT DELETE
         /// </summary>
-        public Pictogram(string title, AccessLevel accessLevel)
+        public Pictogram(string title, AccessLevel accessLevel) : this()
         {
             this.Title = title;
             this.AccessLevel = accessLevel;
@@ -107,7 +107,7 @@ namespace GirafRest.Models
         /// <param name="title">Image title</param>
         /// <param name="accessLevel">required accesslevel</param>
         /// <param name="imageHash">hash of image</param>
-        public Pictogram(string title, AccessLevel accessLevel, string imageHash)
+        public Pictogram(string title, AccessLevel accessLevel, string imageHash) : this()
         {
             this.Title = title;
             this.AccessLevel = accessLevel;
