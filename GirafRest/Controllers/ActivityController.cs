@@ -144,11 +144,11 @@ namespace GirafRest.Controllers
 
             // Unsure if we should save from every used repository, or just one of them.
             _userRepository.Save();
-            _alternateNameRepository.Save();
+            /*_alternateNameRepository.Save();
             _activityRepository.Save();
             _weekdayRepository.Save();
             _pictogramRepository.Save();
-            _pictogramRelationRepository.Save();
+            _pictogramRelationRepository.Save();*/
 
             return StatusCode(
                 StatusCodes.Status201Created,
@@ -189,8 +189,8 @@ namespace GirafRest.Controllers
 
             // Unsure if we should save from every used repository, or just one of them.
             _userRepository.Save();
-            _activityRepository.Save();
-            _pictogramRelationRepository.Save();
+            /*_activityRepository.Save();
+            _pictogramRelationRepository.Save();*/
 
             return Ok(new SuccessResponse("Activity deleted"));
         }
@@ -318,10 +318,10 @@ namespace GirafRest.Controllers
 
             // Unsure if we should save from every used repository, or just one of them.
             _userRepository.Save();
-            _activityRepository.Save();
+            /*_activityRepository.Save();
             _pictogramRelationRepository.Save();
             _pictogramRepository.Save();
-            _timerRepository.Save();
+            _timerRepository.Save();*/
 
             return Ok(new SuccessResponse<ActivityDTO>(new ActivityDTO(updateActivity, pictograms)));
         }
