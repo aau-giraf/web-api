@@ -1,4 +1,11 @@
 {
+    "RolesList": [
+        "Citizen",
+        "Guardian",
+        "Trustee",
+        "Department",
+        "SuperUser"
+    ],
     "UserList": [
         {
             "Name": "Kurt",
