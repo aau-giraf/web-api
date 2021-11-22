@@ -25,7 +25,6 @@ namespace GirafRest.Data
         public virtual DbSet<GuardianRelation> GuardianRelations { get; set; }
         public virtual DbSet<PictogramRelation> PictogramRelations { get; set; }
         public virtual DbSet<WeekDayColor> WeekDayColors { get; set; }
-        
         public virtual DbSet<AlternateName> AlternateNames { get; set; }
         public GirafDbContext() { }
 
