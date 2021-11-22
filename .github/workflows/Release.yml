@@ -42,9 +42,10 @@ jobs:
     - name: Test
       run: dotnet test --no-build
 
-      ##Creates a branch calle Release
-    - uses: peterjgrainger/action-create-branch@v2.0.1
-    - env:
+      #Creates a branch calle Release
+    - name: Create branch
+      uses: peterjgrainger/action-create-branch@v2.0.1
+      env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - with:
+      with:
         branch: 'Release'
