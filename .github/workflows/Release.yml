@@ -1,0 +1,49 @@
+name: Release
+
+on:
+  workflow_dispatch
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet: [ '3.1.201' ]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup API
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{matrix.dotnet}}
+
+      #Sets the environment to Staging so that it uses the correct data
+    - name: Environment setup
+      run:
+        export ASPNETCORE_ENVIRONMENT="´Staging"
+        bash scripts/ci-setup.sh ${{ secrets.IntegrationTestUser }} ${{ secrets.IntegrationTestPassword }}
+        dotnet tool install --global dotnet-ef
+        cd GirafRest
+        dotnet restore
+        dotnet ef database update
+        nohup dotnet run --sample-data > /dev/null 2>&1 &
+
+      #Gets the dependencies needed to run the tests
+    - name: Restore Dependencies
+      run: dotnet restore
+
+      #Builds the solution so that it can be tested
+    - name: Build
+      run: dotnet build --no-restore
+
+      #Runs the test suite in the solution, this includes unit and integration tests
+    - name: Test
+      run: dotnet test --no-build
+
+      ##Creates a branch calle Release
+    - uses: peterjgrainger/action-create-branch@v2.0.1
+    - env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - with:
+        branch: 'Release'
