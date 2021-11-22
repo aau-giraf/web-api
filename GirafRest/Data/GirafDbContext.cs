@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using GirafRest.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
+
 
 #pragma warning disable 1591
 namespace GirafRest.Data
@@ -26,12 +26,14 @@ namespace GirafRest.Data
         public virtual DbSet<PictogramRelation> PictogramRelations { get; set; }
         public virtual DbSet<WeekDayColor> WeekDayColors { get; set; }
         public virtual DbSet<AlternateName> AlternateNames { get; set; }
-        protected GirafDbContext() { }
+        public GirafDbContext() { }
 
         public GirafDbContext(DbContextOptions<GirafDbContext> options)
             : base(options)
         {
+           
         }
+        
 
         /// <summary>
         /// Configures entity to the needs of this project through the fluent API

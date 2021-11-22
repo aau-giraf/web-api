@@ -338,7 +338,7 @@ namespace GirafRest.Controllers
                         fs.Write(image);
                     }
                 }
-                catch (System.UnauthorizedAccessException uaex)
+                catch (System.UnauthorizedAccessException)
                 {
                     //Consider if the errorcode is the most appropriate one here
                     return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.Forbidden, "The server does not have permission to write this file"));
@@ -391,11 +391,11 @@ namespace GirafRest.Controllers
                 byte[] data = System.IO.File.ReadAllBytes(pictoPath);
                 return Ok(new SuccessResponse<byte[]>(data));
             }
-            catch (UnauthorizedAccessException uAEx)
+            catch (UnauthorizedAccessException)
             {
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "The server can not access the specified image"));
             }
-            catch (FileNotFoundException fNFex)
+            catch (FileNotFoundException)
             {
                 return StatusCode(StatusCodes.Status404NotFound, new ErrorResponse(ErrorCode.NotAuthorized, "The server can not find the specified image"));
             }
