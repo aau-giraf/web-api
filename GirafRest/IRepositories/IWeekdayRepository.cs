@@ -9,5 +9,6 @@ namespace GirafRest.IRepositories
     public interface IWeekdayRepository : IRepository<Weekday>
     {
         public void Update(Weekday weekday);
+        public Task<int> UpdateSpecificWeekDay(Weekday oldDay);
     }
 }
