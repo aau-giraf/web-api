@@ -24,6 +24,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
+using GirafRest.IRepositories;
+using GirafRest.Repositories;
 
 namespace GirafRest.Setup
 {
@@ -50,8 +53,10 @@ namespace GirafRest.Setup
             // delete all default configuration providers
             if (env.IsDevelopment())
                 builder.AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true);
+            else if (env.IsStaging())
+                builder.AddJsonFile("appsettings.Staging.json", optional: false, reloadOnChange: false);
             else if (env.IsProduction())
-                builder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: false);
+                builder.AddJsonFile("appsettings.Production.json", optional: false, reloadOnChange: true);
             else
                 throw new NotSupportedException("No database option is supported by this Environment mode");
             builder.AddEnvironmentVariables();
@@ -129,7 +134,28 @@ namespace GirafRest.Setup
                 options.Filters.Add<LogFilter>();
             });
             services.AddControllers().AddNewtonsoftJson();
-
+            services.AddEntityFrameworkMySql().AddDbContext<GirafDbContext>(options => options.UseMySql("name=ConnectionStrings:DefaultConnection"));
+            
+            // Add scoped repositories. Every single request gets it's own scoped repositories.
+            services.AddScoped<IAlternateNameRepository,AlternateNameRepository>();
+            services.AddScoped<IDepartmentRepository,DepartmentRepository>();
+            services.AddScoped<IGirafRoleRepository, GirafRoleRepository>();
+            services.AddScoped<IGirafUserRepository, GirafUserRepository>();
+            services.AddScoped<IPictogramRepository,PictogramRepository>();
+            services.AddScoped<ISettingRepository,SettingRepository>();
+            services.AddScoped<ITimerRepository,TimerRepository>();
+            services.AddScoped<IWeekBaseRepository,WeekBaseRepository>();
+            services.AddScoped<IWeekDayColorRepository, WeekDayColorRepository>();
+            services.AddScoped<IWeekRepository, WeekRepository>();
+            services.AddScoped<IWeekdayRepository, WeekdayRepository>();
+            services.AddScoped<IWeekTemplateRepository, WeekTemplateRepository>();
+            services.AddScoped<IActivityRepository,ActivityRepository>();
+            services.AddScoped<IDepartmentResourseRepository,DepartmentResourseRepository>();
+            services.AddScoped<IGuardianRelationRepository,GuardianRelationRepository>();
+            services.AddScoped<IPictogramRelationRepository,PictogramRelationRepository>();
+            services.AddScoped<IUserResourseRepository, UserResourseRepository>();
+            services.AddScoped<IImageRepository, ImageRepository>();
+           
             // Set up Cross-Origin Requests
             services.AddCors(o => o.AddPolicy("AllowAll", builder =>
             {
@@ -266,7 +292,7 @@ namespace GirafRest.Setup
 
             // Fill some sample data into the database
             if (ProgramOptions.GenerateSampleData)
-                DBInitializer.Initialize(context, userManager, ProgramOptions.Pictograms).Wait();
+                DBInitializer.Initialize(context, userManager, ProgramOptions.Pictograms, env.EnvironmentName).Wait();
 
             app.Run((context2) =>
             {

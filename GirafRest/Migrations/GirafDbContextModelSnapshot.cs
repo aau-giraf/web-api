@@ -418,6 +418,28 @@ namespace GirafRest.Migrations
                     b.ToTable("Weeks");
                 });
 
+            modelBuilder.Entity("GirafRest.Models.WeekDayColor", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("Day")
+                        .HasColumnType("int");
+
+                    b.Property<string>("HexColor")
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
+
+                    b.Property<long>("SettingId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SettingId");
+
+                    b.ToTable("WeekDayColors");
+                });
+
             modelBuilder.Entity("GirafRest.Models.WeekTemplate", b =>
                 {
                     b.Property<long>("Id")
@@ -485,28 +507,6 @@ namespace GirafRest.Migrations
                     b.HasIndex("PictogramId");
 
                     b.ToTable("PictogramRelations");
-                });
-
-            modelBuilder.Entity("GirafRest.WeekDayColor", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("Day")
-                        .HasColumnType("int");
-
-                    b.Property<string>("HexColor")
-                        .HasColumnType("longtext CHARACTER SET utf8mb4");
-
-                    b.Property<long>("SettingId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SettingId");
-
-                    b.ToTable("WeekDayColors");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -710,6 +710,15 @@ namespace GirafRest.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("GirafRest.Models.WeekDayColor", b =>
+                {
+                    b.HasOne("GirafRest.Models.Setting", "Setting")
+                        .WithMany("WeekDayColors")
+                        .HasForeignKey("SettingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("GirafRest.Models.WeekTemplate", b =>
                 {
                     b.HasOne("GirafRest.Models.Department", "Department")
@@ -749,15 +758,6 @@ namespace GirafRest.Migrations
                     b.HasOne("GirafRest.Models.Pictogram", "Pictogram")
                         .WithMany("Activities")
                         .HasForeignKey("PictogramId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("GirafRest.WeekDayColor", b =>
-                {
-                    b.HasOne("GirafRest.Models.Setting", "Setting")
-                        .WithMany("WeekDayColors")
-                        .HasForeignKey("SettingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

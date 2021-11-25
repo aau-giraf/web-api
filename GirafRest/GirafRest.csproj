@@ -17,10 +17,9 @@
     <Content Remove="wwwroot\admin\view\**" />
     <EmbeddedResource Remove="wwwroot\admin\view\**" />
     <None Remove="wwwroot\admin\view\**" />
-    <Compile Remove="Migrations\20200511090152_PictogramActivityRelationModel.Designer.cs" />
-    <Compile Remove="Migrations\20200511090152_PictogramActivityRelationModel.cs" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.18" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.1.8" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="3.3.0">
@@ -51,14 +50,12 @@
     <PackageReference Include="AspNetCoreRateLimit" Version="3.0.5" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="Migrations\20180228140854_Initial.cs" />
     <Compile Remove="Services\SharedMethods.cs" />
     <Compile Remove="Controllers\ChoiceController.cs" />
     <Compile Remove="Models\WeekPictogramDTO.cs" />
     <Compile Remove="Models\UpdatePictogramDTO.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Migrations\" />
     <Folder Include="wwwroot\DebugLogs\" />
     <Folder Include="Shared\" />
   </ItemGroup>

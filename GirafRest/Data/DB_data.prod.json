@@ -1,0 +1,29 @@
+{
+  "UserList": [
+    {
+      "Name": "egebakken",
+      "DisplayName": "Egebakken",
+      "DepartmentName": "Egebakken",
+      "Role": "Guardian",
+      "Weeks": [],
+      "Password": "password"
+    },
+    {
+      "Name": "birken",
+      "DisplayName": "Birken",
+      "DepartmentName": "Birken",
+      "Role": "Guardian",
+      "Weeks": [],
+      "Password": "password"
+    }
+  ],
+
+  "DepartmentList": [
+    {
+      "Name": "Egebakken"
+    },
+    {
+      "Name": "Birken"
+    }
+  ]
+}

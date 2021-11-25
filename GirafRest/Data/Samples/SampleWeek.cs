@@ -1,4 +1,4 @@
-﻿namespace GirafRest.Setup
+﻿namespace GirafRest.Data.Samples
 {
     public class SampleWeek
     {
