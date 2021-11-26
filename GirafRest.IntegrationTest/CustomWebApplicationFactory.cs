@@ -23,10 +23,14 @@ namespace GirafRest.IntegrationTest
         protected override IHostBuilder CreateHostBuilder()
         {
             var builder = Host.CreateDefaultBuilder()
-                              .ConfigureWebHostDefaults(x =>
-                              {
-                                  x.UseStartup<Startup>().UseTestServer();
-                              });
+                .UseDefaultServiceProvider(options =>
+                {
+                    options.ValidateScopes = false;
+                })
+                .ConfigureWebHostDefaults(x =>
+                {
+                    x.UseStartup<Startup>().UseTestServer();
+                });
             return builder;
         }
     }

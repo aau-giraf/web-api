@@ -7,9 +7,8 @@ namespace GirafRest.IntegrationTest.Setup
 {
     public class UserFixture
     {
-        public string SuperUserUsername;
-        public string DepartmentUsername;
         public string GuardianUsername;
+        public string GuardianDisplayName;
         public string NewGuardianUsername;
         public string Citizen1Username;
         public string Citizen2Username;
@@ -24,11 +23,10 @@ namespace GirafRest.IntegrationTest.Setup
         public string RawImage;
         public UserFixture()
         {
-            SuperUserUsername = "Lee";
-            DepartmentUsername = "Tobias";
-            GuardianUsername = "Graatand";
+            GuardianUsername = "Guardian-dev";
+            GuardianDisplayName = "dev-guardian";
             NewGuardianUsername = $"Testguardian{DateTime.Now.Ticks}";
-            Citizen1Username = "Kurt";
+            Citizen1Username = "Citizen-dev";
             Citizen2Username = $"Gunnar{DateTime.Now.Ticks}";
             Citizen3Username = $"Charlie{DateTime.Now.Ticks}";
             Password = "password";

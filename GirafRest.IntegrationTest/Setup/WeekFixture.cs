@@ -7,7 +7,7 @@ namespace GirafRest.IntegrationTest.Setup
     public class WeekFixture
     {
         public string CitizenUsername;
-        public string SuperUserUsername;
+        public string GuardianUsername;
         public string Password;
         public int WeekYear;
         public int Week1Number;
@@ -21,8 +21,8 @@ namespace GirafRest.IntegrationTest.Setup
         public WeekFixture()
         {
             CitizenUsername = $"Gunnar{DateTime.Now.Ticks}";
+            GuardianUsername = "Guardian-dev";
             Password = "password";
-            SuperUserUsername = "Lee";
             WeekYear = 2018;
             Week1Number = 11;
             Week2Number = 12;

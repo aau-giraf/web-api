@@ -35,7 +35,6 @@ namespace GirafRest.IntegrationTest.Tests
         [Fact, Priority(0)]
         public async void TestWeekTemplateCanGetAllTemplates()
         {
-            await TestExtension.RegisterAsync(_factory, _weekTemplateFixture.CitizenUsername, _weekTemplateFixture.Password, _weekTemplateFixture.CitizenUsername, _weekTemplateFixture.GuardianUsername, departmentId: 1);
             HttpRequestMessage request = new HttpRequestMessage()
             {
                 RequestUri = new Uri($"{BASE_URL}v1/WeekTemplate"),
@@ -48,7 +47,7 @@ namespace GirafRest.IntegrationTest.Tests
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.NotNull(content["data"]);
-            Assert.Equal("SkabelonUge", content["data"][0]["name"]);
+            Assert.Equal("Dev_week_template", content["data"][0]["name"]);
             Assert.Equal(1, content["data"][0]["templateId"].ToObject<int>());
         }
 
@@ -71,8 +70,8 @@ namespace GirafRest.IntegrationTest.Tests
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.NotNull(content["data"]);
-            Assert.Equal("SkabelonUge", content["data"]["name"]);
-            Assert.Equal(77, content["data"]["thumbnail"]["id"].ToObject<int>());
+            Assert.Equal("Dev_week_template", content["data"]["name"]);
+            Assert.Equal(104, content["data"]["thumbnail"]["id"].ToObject<int>());
             Assert.Equal(1, content["data"]["days"][0]["day"].ToObject<int>());
             Assert.Equal(6, content["data"]["days"][5]["day"].ToObject<int>());
         }
@@ -84,12 +83,13 @@ namespace GirafRest.IntegrationTest.Tests
         [Fact, Priority(2)]
         public async void TestWeekTemplateCanGetTemplateOutsideDepartmentShouldFail()
         {
+            await TestExtension.RegisterAsync(_factory, _weekTemplateFixture.Citizen2Username, _weekTemplateFixture.Password, _weekTemplateFixture.Citizen2Username, _weekTemplateFixture.GuardianUsername, departmentId: 2);
             HttpRequestMessage request = new HttpRequestMessage()
             {
                 RequestUri = new Uri($"{BASE_URL}v1/WeekTemplate/1"),
                 Method = HttpMethod.Get,
             };
-            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _weekTemplateFixture.CitizenUsername, _weekTemplateFixture.Password)}");
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _weekTemplateFixture.Citizen2Username, _weekTemplateFixture.Password)}");
 
             var response = await _client.SendAsync(request);
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());

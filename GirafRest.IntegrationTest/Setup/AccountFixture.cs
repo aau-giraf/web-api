@@ -10,22 +10,14 @@ namespace GirafRest.IntegrationTest.Setup
         public string GuardianUsername;
         public string Citizen2Username;
         public string Citizen1Username;
-        public string DepartmentUsername;
-        public string GuardianPassword;
-        public string Citizen2Password;
-        public string Citizen1Password;
-        public string DepartmentPassword;
+        public string Password;
 
         public AccountFixture()
         {
-            GuardianUsername = "Graatand";
+            GuardianUsername = "Guardian-dev";
             Citizen2Username = $"Grundenberger{DateTime.Now.Ticks}";
             Citizen1Username = $"Gunnar{DateTime.Now.Ticks}";
-            DepartmentUsername = "Tobias";
-            GuardianPassword = "password";
-            Citizen1Password = "password";
-            Citizen2Password = "password";
-            DepartmentPassword = "password";
+            Password = "password";
         }
     }
 }

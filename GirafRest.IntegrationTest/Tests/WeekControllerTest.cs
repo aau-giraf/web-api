@@ -35,7 +35,7 @@ namespace GirafRest.IntegrationTest.Tests
         [Fact, Priority(0)]
         public async void TestWeekCanGetNoWeeks()
         {
-            await TestExtension.RegisterAsync(_factory, _weekFixture.CitizenUsername, _weekFixture.Password, _weekFixture.CitizenUsername, _weekFixture.SuperUserUsername);
+            await TestExtension.RegisterAsync(_factory, _weekFixture.CitizenUsername, _weekFixture.Password, _weekFixture.CitizenUsername, _weekFixture.GuardianUsername, departmentId: 1);
             HttpRequestMessage request = new HttpRequestMessage()
             {
                 RequestUri = new Uri($"{BASE_URL}v1/Week/{await TestExtension.GetUserIdAsync(_factory, _weekFixture.CitizenUsername, _weekFixture.Password)}/weekName"),
@@ -64,7 +64,7 @@ namespace GirafRest.IntegrationTest.Tests
                 Method = HttpMethod.Put,
                 Content = new StringContent(_weekFixture.CorrectWeek, Encoding.UTF8, "application/json")
             };
-            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _weekFixture.SuperUserUsername, _weekFixture.Password)}");
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _weekFixture.GuardianUsername, _weekFixture.Password)}");
 
             var response = await _client.SendAsync(request);
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
@@ -134,7 +134,7 @@ namespace GirafRest.IntegrationTest.Tests
                 Method = HttpMethod.Put,
                 Content = new StringContent(_weekFixture.TooManyDaysWeek, Encoding.UTF8, "application/json")
             };
-            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _weekFixture.SuperUserUsername, _weekFixture.Password)}");
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _weekFixture.GuardianUsername, _weekFixture.Password)}");
 
             var response = await _client.SendAsync(request);
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
@@ -178,7 +178,7 @@ namespace GirafRest.IntegrationTest.Tests
                 Method = HttpMethod.Put,
                 Content = new StringContent(_weekFixture.BadEnumValueWeek, Encoding.UTF8, "application/json")
             };
-            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _weekFixture.SuperUserUsername, _weekFixture.Password)}");
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _weekFixture.GuardianUsername, _weekFixture.Password)}");
 
             var response = await _client.SendAsync(request);
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
@@ -222,7 +222,7 @@ namespace GirafRest.IntegrationTest.Tests
                 Method = HttpMethod.Put,
                 Content = new StringContent(_weekFixture.DifferentCorrectWeek, Encoding.UTF8, "application/json")
             };
-            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _weekFixture.SuperUserUsername, _weekFixture.Password)}");
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _weekFixture.GuardianUsername, _weekFixture.Password)}");
 
             var response = await _client.SendAsync(request);
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
@@ -268,7 +268,7 @@ namespace GirafRest.IntegrationTest.Tests
                 RequestUri = new Uri($"{BASE_URL}v1/Week/{await TestExtension.GetUserIdAsync(_factory, _weekFixture.CitizenUsername, _weekFixture.Password)}/{_weekFixture.WeekYear}/{_weekFixture.Week1Number}"),
                 Method = HttpMethod.Delete,
             };
-            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _weekFixture.SuperUserUsername, _weekFixture.Password)}");
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _weekFixture.GuardianUsername, _weekFixture.Password)}");
 
             var response = await _client.SendAsync(request);
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());

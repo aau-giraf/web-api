@@ -77,7 +77,7 @@ namespace GirafRest.IntegrationTest.Tests
         [Fact, Priority(2)]
         public async void TestUserCanGetCitizen2Id()
         {
-            await TestExtension.RegisterAsync(_factory, _userFixture.Citizen2Username, _userFixture.Password, _userFixture.Citizen2Username, _userFixture.GuardianUsername);
+            await TestExtension.RegisterAsync(_factory, _userFixture.Citizen2Username, _userFixture.Password, _userFixture.Citizen2Username, _userFixture.GuardianUsername, departmentId: 1);
             HttpRequestMessage request = new HttpRequestMessage()
             {
                 RequestUri = new Uri($"{BASE_URL}v1/User"),
@@ -99,7 +99,7 @@ namespace GirafRest.IntegrationTest.Tests
         [Fact, Priority(3)]
         public async void TestUserCanGetCitizen3Id()
         {
-            await TestExtension.RegisterAsync(_factory, _userFixture.Citizen3Username, _userFixture.Password, _userFixture.Citizen3Username, _userFixture.GuardianUsername);
+            await TestExtension.RegisterAsync(_factory, _userFixture.Citizen3Username, _userFixture.Password, _userFixture.Citizen3Username, _userFixture.GuardianUsername, departmentId: 1);
             HttpRequestMessage request = new HttpRequestMessage()
             {
                 RequestUri = new Uri($"{BASE_URL}v1/User"),
@@ -430,19 +430,19 @@ namespace GirafRest.IntegrationTest.Tests
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.NotNull(content["data"]);
-            Assert.Contains(content["data"], x => x["displayName"].ToString() == "Kurt Andersen");
+            Assert.Contains(content["data"], x => x["displayName"].ToString() == _userFixture.Citizen3Username);
         }
 
         /// <summary>
-        /// Testing getting Citizen1's guardians
+        /// Testing getting Citizen2's guardians
         /// Endpoint: GET:/v1/User/{userId}/guardians
         /// </summary>
         [Fact, Priority(18)]
-        public async void TestUserCanGetCitizen1Guardians()
+        public async void TestUserCanGetCitizen2Guardians()
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v1/User/{await TestExtension.GetUserIdAsync(_factory, _userFixture.Citizen1Username, _userFixture.Password)}/guardians"),
+                RequestUri = new Uri($"{BASE_URL}v1/User/{await TestExtension.GetUserIdAsync(_factory, _userFixture.Citizen2Username, _userFixture.Password)}/guardians"),
                 Method = HttpMethod.Get,
             };
             request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _userFixture.GuardianUsername, _userFixture.Password)}");
@@ -452,7 +452,7 @@ namespace GirafRest.IntegrationTest.Tests
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.NotNull(content["data"]);
-            Assert.Contains(content["data"], x => x["displayName"].ToString() == "Harald Graatand");
+            Assert.Contains(content["data"], x => x["displayName"].ToString() == _userFixture.GuardianDisplayName);
         }
 
         /// <summary>
@@ -517,96 +517,6 @@ namespace GirafRest.IntegrationTest.Tests
 
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
             Assert.Equal("Forbidden", content["errorKey"]);
-        }
-
-        /// <summary>
-        /// Testing changing settings as super user
-        /// Endpoint: PUT:/v1/User/{id}/settings
-        /// </summary>
-        [Fact, Priority(22)]
-        public async void TestUserCanChangeSettingsAsSuperUser()
-        {
-            HttpRequestMessage request = new HttpRequestMessage()
-            {
-                RequestUri = new Uri($"{BASE_URL}v1/User/{await TestExtension.GetUserIdAsync(_factory, _userFixture.Citizen2Username, _userFixture.Password)}/settings"),
-                Method = HttpMethod.Put,
-                Content = new StringContent(_userFixture.NewSetting[0], Encoding.UTF8, "application/json")
-            };
-            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _userFixture.SuperUserUsername, _userFixture.Password)}");
-
-            var response = await _client.SendAsync(request);
-            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.NotNull(content["data"]);
-            Assert.Equal(1, content["data"]["theme"].ToObject<int>());
-        }
-
-        /// <summary>
-        /// Testing changing settings as department
-        /// Endpoint: PUT:/v1/User/{id}/settings
-        /// </summary>
-        [Fact, Priority(23)]
-        public async void TestUserCanChangeSettingsAsDepartment()
-        {
-            HttpRequestMessage request = new HttpRequestMessage()
-            {
-                RequestUri = new Uri($"{BASE_URL}v1/User/{await TestExtension.GetUserIdAsync(_factory, _userFixture.Citizen2Username, _userFixture.Password)}/settings"),
-                Method = HttpMethod.Put,
-                Content = new StringContent(_userFixture.NewSetting[1], Encoding.UTF8, "application/json")
-            };
-            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _userFixture.DepartmentUsername, _userFixture.Password)}");
-
-            var response = await _client.SendAsync(request);
-            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.NotNull(content["data"]);
-            Assert.Equal(2, content["data"]["theme"].ToObject<int>());
-        }
-
-        /// <summary>
-        /// Testing changing Guardian settings as Super User
-        /// Endpoint: PUT:/v1/User/{id}/settings
-        /// </summary>
-        [Fact, Priority(24)]
-        public async void TestUserCanChangeGuardianSettingsAsSuperUserShouldFail()
-        {
-            HttpRequestMessage request = new HttpRequestMessage()
-            {
-                RequestUri = new Uri($"{BASE_URL}v1/User/{await TestExtension.GetUserIdAsync(_factory, _userFixture.GuardianUsername, _userFixture.Password)}/settings"),
-                Method = HttpMethod.Put,
-                Content = new StringContent(_userFixture.NewSetting[1], Encoding.UTF8, "application/json")
-            };
-            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _userFixture.SuperUserUsername, _userFixture.Password)}");
-
-            var response = await _client.SendAsync(request);
-            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
-
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.Equal("RoleMustBeCitizien", content["errorKey"]);
-        }
-
-        /// <summary>
-        /// Testing if a superuser can set a users icon
-        /// Endpoint: PUT:/v1/User/{id}/icon
-        /// </summary>
-        [Fact, Priority(25)]
-        public async void TestUserSuperuserCanGiveCitizenIcon()
-        {
-            var body = $"{{'userIcon': {_userFixture.RawImage}}}";
-            HttpRequestMessage request = new HttpRequestMessage()
-            {
-                RequestUri = new Uri($"{BASE_URL}v1/User/{await TestExtension.GetUserIdAsync(_factory, _userFixture.Citizen2Username, _userFixture.Password)}/icon"),
-                Method = HttpMethod.Put,
-                Content = new StringContent(body, Encoding.UTF8, "application/json")
-            };
-            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _userFixture.SuperUserUsername, _userFixture.Password)}");
-
-            var response = await _client.SendAsync(request);
-            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
 
         /// <summary>
@@ -715,90 +625,6 @@ namespace GirafRest.IntegrationTest.Tests
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.NotNull(content["data"]);
-        }
-
-        /// <summary>
-        /// Testing if a superuser can get the userIcon of another user
-        /// Endpoint: GET:/v1/User/{id}/icon
-        /// </summary>
-        [Fact, Priority(31)]
-        public async void TestUserSuperuserCanGetSpecificUserIcon()
-        {
-            HttpRequestMessage request = new HttpRequestMessage()
-            {
-                RequestUri = new Uri($"{BASE_URL}v1/User/{await TestExtension.GetUserIdAsync(_factory, _userFixture.Citizen2Username, _userFixture.Password)}/icon"),
-                Method = HttpMethod.Get,
-            };
-            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _userFixture.SuperUserUsername, _userFixture.Password)}");
-
-            var response = await _client.SendAsync(request);
-            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.NotNull(content["data"]);
-        }
-
-        /// <summary>
-        /// Testing if a superuser can delete the userIcon of another user
-        /// Endpoint: DELETE:/v1/User/{id}/icon
-        /// </summary>
-        [Fact, Priority(32)]
-        public async void TestUserSuperuserCanDeleteSpecificUserIcon()
-        {
-            HttpRequestMessage request = new HttpRequestMessage()
-            {
-                RequestUri = new Uri($"{BASE_URL}v1/User/{await TestExtension.GetUserIdAsync(_factory, _userFixture.Citizen2Username, _userFixture.Password)}/icon"),
-                Method = HttpMethod.Delete,
-            };
-            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _userFixture.SuperUserUsername, _userFixture.Password)}");
-
-            var response = await _client.SendAsync(request);
-            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.NotNull(content["data"]);
-        }
-
-        /// <summary>
-        /// Testing if guardian can add relation to existing citizen
-        /// Endpoint: POST:/v1/User/{userId}/citizens/{citizenId}
-        /// </summary>
-        [Fact, Priority(33)]
-        public async void TestUserGuardianAddRelationToUser()
-        {
-            await TestExtension.RegisterAsync(_factory, _userFixture.NewGuardianUsername, _userFixture.Password, "testG", _userFixture.SuperUserUsername, "Guardian", 2);
-
-            HttpRequestMessage request = new HttpRequestMessage()
-            {
-                RequestUri = new Uri($"{BASE_URL}v1/User/{await TestExtension.GetUserIdAsync(_factory, _userFixture.NewGuardianUsername, _userFixture.Password)}/citizens/{await TestExtension.GetUserIdAsync(_factory, _userFixture.Citizen2Username, _userFixture.Password)}"),
-                Method = HttpMethod.Post,
-            };
-            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _userFixture.NewGuardianUsername, _userFixture.Password)}");
-
-            var response = await _client.SendAsync(request);
-            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        }
-
-        /// <summary>
-        /// Deleting newly testing guardian
-        /// Endpoint: DELETE:/v2/Account/user/{userId}
-        /// </summary>
-        [Fact, Priority(34)]
-        public async void TestUserDeleteNewGuardian()
-        {
-            HttpRequestMessage request = new HttpRequestMessage()
-            {
-                RequestUri = new Uri($"{BASE_URL}v2/Account/user/{await TestExtension.GetUserIdAsync(_factory, _userFixture.NewGuardianUsername, _userFixture.Password)}"),
-                Method = HttpMethod.Delete,
-            };
-            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _userFixture.SuperUserUsername, _userFixture.Password)}");
-
-            var response = await _client.SendAsync(request);
-            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
     }
 }

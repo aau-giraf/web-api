@@ -23,14 +23,17 @@ namespace GirafRest.IntegrationTest.Setup
         'day': 'Friday', 'activities': [{{ 'pictograms': [{{ 'id': 3}}], 'order': 1, 'state': 'Active'}},
                                                            {{ 'pictograms': [{{ 'id': 8}}], 'order': 2, 'state': 'Active'}}]}}]}}"};
         public string[] templateName = { "Template1", "Template2" };
-        public string CitizenUsername;
         public string GuardianUsername;
         public string Password;
         public int TemplateId;
+        public string Citizen1Username;
+        public string Citizen2Username;
+
         public WeekTemplateFixture()
         {
-            CitizenUsername = $"Alice{DateTime.Now.Ticks}";
-            GuardianUsername = "Graatand";
+            Citizen1Username = "Citizen-dev";
+            Citizen2Username = $"Alice{DateTime.Now.Ticks}";
+            GuardianUsername = "Guardian-dev";
             Password = "password";
             TemplateId = 0;
         }
