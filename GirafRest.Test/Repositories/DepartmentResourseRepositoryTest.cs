@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GirafRest.Data;
 using GirafRest.Models;
+using GirafRest.Models.Enums;
 using GirafRest.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
@@ -33,7 +34,8 @@ namespace GirafRest.Test.Repositories
                 var department = new Department()
                 {
                     Members = new List<GirafUser>(),
-                    Resources = new List<DepartmentResource>()
+                    Resources = new List<DepartmentResource>(),
+                    Key = 1
                 };
                 var pictogram = new Pictogram()
                 {
@@ -41,17 +43,18 @@ namespace GirafRest.Test.Repositories
                     AccessLevel = AccessLevel.PUBLIC,
                     
                 };
-                var user = new GirafUser()
+                var dep = new Department()
                 {
-                    UserName = "Giraffe",
-                    Id = "1"
+                    Key = 1
                 };
+                var user = new GirafUser("Giraffe", "giraffe", department, GirafRoles.Citizen);
                 var departmentResource = new DepartmentResource(department, pictogram);
                 departmentResource.PictogramKey = 888;
-                pictogram.Id = 888; 
-                user.Department = new Department();
-                user.Department.Key = 0;
-                departmentResource.OtherKey = 0;
+                departmentResource.PictogramKey = 1;
+                pictogram.Id = 888;
+                
+               
+                
                 
 
 
@@ -73,22 +76,6 @@ namespace GirafRest.Test.Repositories
                 .UseInMemoryDatabase(Guid.NewGuid().ToString("N")).Options)
         {
         }
-
-        [Fact]
-        public async Task CheckProtectedOwnership()
-        {
-            using (var context = new GirafDbContext(ContextOptions))
-            {
-                var repository = new DepartmentResourseRepository(context);
-                //var departmentResource = await context.DepartmentResources.FirstOrDefaultAsync(u => u.PictogramKey == 888);
-                var pictogram = await context.Pictograms.FirstOrDefaultAsync(u => u.Title == "Bubblegum");
-                var user = await context.Users.FirstOrDefaultAsync(u => u.Id == "1");
-
-                var resultzeft = await repository.CheckProtectedOwnership(pictogram, user);
-                
-                Assert.Equal(true, resultzeft);
-
-            }
-        }
+        
     }
 }

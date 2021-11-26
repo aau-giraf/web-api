@@ -29,7 +29,7 @@ namespace GirafRest.Services
         /// <summary>
         /// Asp.net's user manager. Can be used to fetch user data from the request's cookie. Handled by asp.net's dependency injection.
         /// </summary>
-        public UserManager<GirafUser> _userManager { get; }
+        public UserManager<GirafUser> _userManager { get; set; }
         /// <summary>
         /// A data-logger used to write messages to the console. Handled by asp.net's dependency injection.
         /// </summary>

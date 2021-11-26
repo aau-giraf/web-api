@@ -24,10 +24,10 @@ namespace GirafRest.Repositories
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public GirafUser GetUserWithId(string id)
+        public async Task<GirafUser> GetUserWithId(string id)
         {
 
-            return Context.Users.FirstOrDefault(u => u.Id == id);
+            return await Context.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace GirafRest.Repositories
         /// Gets citizen users with matching id.
         /// </summary>
         /// <param name="id"></param>
-        /// <returns></returns>
+        /// <returns>Guardian User</returns>
         public GirafUser GetCitizensWithId(string id)
         {
             return Context.Users.Include(u => u.Citizens).FirstOrDefault(u => u.Id == id);
@@ -102,7 +102,7 @@ namespace GirafRest.Repositories
         /// Find the guardian with given citizen-id.
         /// </summary>
         /// <param name="citizenId"></param>
-        /// <returns></returns>
+        /// <returns>Citizen User</returns>
         public GirafUser GetCitizenRelationship(string citizenId)
         {
             return Context.Users.Include(u => u.Guardians).FirstOrDefault(u => u.Id == citizenId);
@@ -119,6 +119,7 @@ namespace GirafRest.Repositories
                 .FirstOrDefault(u => u.Id == id);
         }
 
+        //check whether user with that username already exist that does not have the same id
         public bool CheckIfUsernameHasSameId(GirafUserDTO newUser, GirafUser user)
         {
             return Context.Users.Any(u => u.UserName == newUser.Username && u.Id != user.Id);

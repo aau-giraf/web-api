@@ -97,7 +97,7 @@ namespace GirafRest.Controllers
 
             //Gets the user info
             var user = await _girafUserRepository.GetUserByUsername(username);
-
+            
             //Checks that the user isn't null(not found) and throws an error if it isn't found
             if(user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
@@ -121,7 +121,7 @@ namespace GirafRest.Controllers
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "User id not found"));
 
             //First attempt to fetch the user and check that he exists
-            var user = _girafUserRepository.GetUserWithId(id);
+            var user = await _girafUserRepository.GetUserWithId(id);
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
@@ -179,7 +179,7 @@ namespace GirafRest.Controllers
             if (newUser == null || newUser.Username == null || newUser.DisplayName == null)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing user, userName or displayName"));
 
-            var user = _girafUserRepository.GetUserWithId(id);
+            var user = await _girafUserRepository.GetUserWithId(id);
             // Get the roles the user is associated with
             var userRole = await _roleManager.findUserRole(_giraf._userManager, user);
             if (user == null)
@@ -213,19 +213,19 @@ namespace GirafRest.Controllers
         [HttpGet("{id}/icon", Name = "GetUserIcon")]
         [ProducesResponseType(typeof(SuccessResponse<ImageDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public Task<ActionResult> GetUserIcon(string id)
+        public async Task<ActionResult> GetUserIcon(string id)
         {
-            var user = _girafUserRepository.GetUserWithId(id);
+            var user = await _girafUserRepository.GetUserWithId(id);
             if (user == null)
-                return Task.FromResult<ActionResult>(
-                    NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found")));
+                return 
+                    NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
 
             if (user.UserIcon == null)
-                return Task.FromResult<ActionResult>(
-                    NotFound(new ErrorResponse(ErrorCode.UserHasNoIcon, "User has no icon")));
+                return 
+                    NotFound(new ErrorResponse(ErrorCode.UserHasNoIcon, "User has no icon"));
 
-            return Task.FromResult<ActionResult>(Ok(new SuccessResponse<ImageDTO>(new ImageDTO(user.UserIcon))));
+            return Ok(new SuccessResponse<ImageDTO>(new ImageDTO(user.UserIcon)));
         }
 
         /// <summary>
@@ -237,18 +237,18 @@ namespace GirafRest.Controllers
         [Produces(IMAGE_TYPE_PNG)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public Task<ActionResult> GetRawUserIcon(string id)
+        public async Task<ActionResult> GetRawUserIcon(string id)
         {
-            var user = _girafUserRepository.GetUserWithId(id);
+            var user = await _girafUserRepository.GetUserWithId(id);
 
             if (user == null)
-                return Task.FromResult<ActionResult>(NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found")));
+                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
             if (user.UserIcon == null)
-                return Task.FromResult<ActionResult>(NotFound(new ErrorResponse(ErrorCode.UserHasNoIcon, "User has no icon")));
+                return NotFound(new ErrorResponse(ErrorCode.UserHasNoIcon, "User has no icon"));
 
 
-            return Task.FromResult<ActionResult>(File(Convert.FromBase64String(System.Text.Encoding.UTF8.GetString(user.UserIcon)), IMAGE_TYPE_PNG));
+            return File(Convert.FromBase64String(System.Text.Encoding.UTF8.GetString(user.UserIcon)), IMAGE_TYPE_PNG);
         }
 
         /// <summary>
@@ -263,7 +263,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> SetUserIcon(string id)
         {
-            var user = _girafUserRepository.GetUserWithId(id);
+            var user = await _girafUserRepository.GetUserWithId(id);
 
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
@@ -271,6 +271,7 @@ namespace GirafRest.Controllers
             
 
             byte[] image = await _imageRepository.ReadRequestImage(HttpContext.Request.Body);
+            
 
             if (image.Length < IMAGE_CONTENT_TYPE_DEFINITION)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Image is corrupt"));
@@ -293,7 +294,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeleteUserIcon(string id)
         {
-            var user = _girafUserRepository.GetUserWithId(id);
+            var user = await _girafUserRepository.GetUserWithId(id);
             if (user.UserIcon == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserHasNoIcon, "User has no icon"));
 
@@ -419,15 +420,10 @@ namespace GirafRest.Controllers
             if (String.IsNullOrEmpty(id))
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing id"));
             var user = _girafUserRepository.GetCitizensWithId(id);
-            var authUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            //var authUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
             var citizens = new List<DisplayNameDTO>();
-
             
-
             var userRole = (await _roleManager.findUserRole(_giraf._userManager, user));
-            if (userRole != GirafRoles.Guardian)
-                return StatusCode(StatusCodes.Status403Forbidden,
-                    new ErrorResponse(ErrorCode.Forbidden, "User does not have permission"));
 
             foreach (var citizen in user.Citizens)
             {
@@ -496,19 +492,11 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> AddGuardianCitizenRelationship(string id, string citizenId)
         {
-            var citizen = _girafUserRepository.GetCitizenRelationship(id);
-            var guardian = _girafUserRepository.GetUserWithId(citizenId);
+            var citizen = _girafUserRepository.GetCitizenRelationship(citizenId);
+            var guardian = await _girafUserRepository.GetUserWithId(id);
 
             if (guardian == null || citizen == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
-
-
-
-            var citRole = _roleManager.findUserRole(_giraf._userManager, citizen).Result;
-            var guaRole = _roleManager.findUserRole(_giraf._userManager, guardian).Result;
-
-            if (citRole != GirafRoles.Citizen || guaRole != GirafRoles.Guardian)
-                return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.Forbidden, "User does not have permission"));
 
             citizen.AddGuardian(guardian);
 

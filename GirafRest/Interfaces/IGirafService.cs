@@ -35,9 +35,10 @@ namespace GirafRest.Interfaces
         UserManager<GirafUser> _userManager
         {
             get;
+            set;
         }
-        
-        
+
+
         /// <summary>
         /// Reads an image from the current request's body and return it as a byte array.
         /// </summary>

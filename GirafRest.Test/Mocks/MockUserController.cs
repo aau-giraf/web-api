@@ -1,8 +1,13 @@
+using System.Collections.Generic;
 using GirafRest.Controllers;
+using GirafRest.Data;
 using GirafRest.Interfaces;
 using GirafRest.IRepositories;
 using GirafRest.Models;
+using GirafRest.Models.DTOs;
+using GirafRest.Models.Enums;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -34,6 +39,10 @@ public class MockedUserController : UserController
         userResourseRepository.Object,
         pictogramRepository.Object)
     {
+        var userStoreMock = new Mock<IUserStore<GirafUser>>();
+        var userManagerMock = new Mock<UserManager<GirafUser>>(
+                userStoreMock.Object, null, null, null, null, null, null, null, null);
+        
         GirafService = giraf;
         LoggerFactory = loggerFactory;
         RoleManager = roleManager;
@@ -41,6 +50,16 @@ public class MockedUserController : UserController
         ImageRepository = imageRepository;
         UserResourseRepository = userResourseRepository;
         PictogramRepository = pictogramRepository;
+        
+        testUser = new GirafUser("bob", "Bob", new Department(), GirafRoles.Citizen);
+        guardianUser = new GirafUser("guard", "Guard", new Department(), GirafRoles.Guardian);
+        IList<string> guardRoles = new List<string>(){"Guardian"};
+        IList<string> roles = new List<string>(){"Citizen"};
+        userManagerMock.Setup(manager => manager.GetRolesAsync(testUser)).ReturnsAsync(roles);
+        userManagerMock.Setup(manager => manager.GetRolesAsync(guardianUser)).ReturnsAsync(guardRoles);
+        GirafService.Setup(service => service._userManager).Returns(userManagerMock.Object);
+        
+        
     }
 
     public static Mock<RoleManager<GirafRole>> GetMockRoleManager()
@@ -57,4 +76,9 @@ public class MockedUserController : UserController
     public Mock<IImageRepository> ImageRepository { get; }
     public Mock<IUserResourseRepository> UserResourseRepository { get; }
     public Mock<IPictogramRepository> PictogramRepository { get; }
+    
+    public GirafUser testUser { get; set; }
+    
+    public GirafUser guardianUser { get; }
+    
 }

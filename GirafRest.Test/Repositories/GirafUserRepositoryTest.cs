@@ -100,7 +100,7 @@ namespace GirafRest.Test.Repositories
         
         [Theory]
         [InlineData(UserId)]
-        public void GetUserWithIdTest(string id)
+        public async Task GetUserWithIdTest(string id)
         {
             //Arrange
             using (var context = new GirafDbContext(ContextOptions))
@@ -108,7 +108,8 @@ namespace GirafRest.Test.Repositories
                 var repository = new GirafUserRepository(context);
                 
                 //Act
-                var userName = repository.GetUserWithId(id).UserName;
+                var user = await repository.GetUserWithId(id);
+                var userName = user.UserName;
                 
                 //Assert
                 Assert.Equal(USERNAME,userName);
@@ -128,7 +129,7 @@ namespace GirafRest.Test.Repositories
                 //Act
                 var Id = repository.GetUserByUsername(username).Id;
                 
-                //Assert
+                
                 //Assert.Equal(SweetAnnasId,Id);
             }
         }

@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.Query;
 using System;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 
 namespace GirafRest.Test 
 { 

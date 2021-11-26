@@ -15,7 +15,7 @@ namespace GirafRest.IRepositories
     public interface IGirafUserRepository : IRepository<GirafUser> {
 
         
-        GirafUser GetUserWithId(string id);
+        Task<GirafUser> GetUserWithId(string id);
         void Update(GirafUser user);
         Task<int> SaveChangesAsync();
         GirafUser CheckIfUserExists(string id);
