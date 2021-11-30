@@ -27,16 +27,14 @@ namespace GirafRest.IRepositories
         GirafUser GetCitizenRelationship(string citizenId);
         GirafUser GetUserSettingsByWeekDayColor(string id);
         public bool CheckIfUsernameHasSameId(GirafUserDTO newUser, GirafUser user);
-        public Task<GirafUser> GetUserByUsername(string username);
         public Task<GirafUser> LoadUserWithResources(GirafUser usr);
         public Task<GirafUser> LoadUserWithDepartment(GirafUser usr);
         public Task<GirafUser> LoadUserWithWeekSchedules(string id);
         public Task<GirafUser> LoadBasicUserDataAsync(GirafUser usr);
         public GirafUser GetWithWeekSchedules(string id);
         bool ExistsUsername(string username);
-        GirafUser GetUserByUsername(string username);
+        Task<GirafUser> GetUserByUsername(string username);
         IEnumerable<GirafUser> GetUsersInDepartment(long departmentKey, IEnumerable<string> users);
-        GirafUser GetUserWithId(string id);
     }
     
 }

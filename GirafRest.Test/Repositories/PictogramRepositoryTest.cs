@@ -7,52 +7,13 @@ using GirafRest.Data;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Repositories;
+using GirafRest.Test.FakeRepositorysContext;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
 namespace GirafRest.Test.Repositories
 {
-    public class FakePictogramRepositoryContext
-    {
-        protected FakePictogramRepositoryContext(DbContextOptions<GirafDbContext> contextOptions)
-        {
-            ContextOptions = contextOptions;
-
-            Seed();
-        }
-
-        protected DbContextOptions<GirafDbContext> ContextOptions { get; }
-
-        public void Seed()
-        {
-            using (var context = new GirafDbContext(ContextOptions))
-            {
-                context.Database.EnsureDeleted();
-                context.Database.EnsureCreated();
-
-                //make new entities here
-                var pictogram = new Pictogram()
-                {
-                    Title = "Unicorn",
-                    AccessLevel = AccessLevel.PUBLIC,
-                    
-
-                };
-                pictogram.Id = 345567;
-
-
-
-                context.AddRange(pictogram);
-
-
-
-                context.SaveChanges();
-
-            }
-
-        }
-
-    }
+    
 
     public class PictogramRepositoryTest : FakePictogramRepositoryContext
     {

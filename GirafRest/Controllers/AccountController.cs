@@ -108,7 +108,7 @@ namespace GirafRest.Controllers
             if (!result.Succeeded)
                 return Unauthorized(new ErrorResponse(ErrorCode.InvalidCredentials, "Invalid Credentials"));
 
-            var loginUser = _userRepository.GetUserByUsername(model.Username);
+            var loginUser = await _userRepository.GetUserByUsername(model.Username);
             return Ok(new SuccessResponse(await GenerateJwtToken(loginUser)));
         }
 
@@ -291,7 +291,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeleteUser(string userId)
         {
-            var user = _userRepository.GetUserWithId(userId);
+            var user = await _userRepository.GetUserWithId(userId);
             
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));

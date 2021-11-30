@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using GirafRest.Models;
@@ -158,6 +159,16 @@ namespace GirafRest.Repositories
         public async Task<GirafUser> LoadUserWithWeekSchedules(string id)
         {
             return await Context.Users
+                //First load the user from the database
+                .Where(u => u.Id.ToLower() == id.ToLower())
+                // then load his week schedule
+                .Include(u => u.WeekSchedule)
+                .ThenInclude(w => w.Thumbnail)
+                .Include(u => u.WeekSchedule)
+                .ThenInclude(w => w.Weekdays)
+                .ThenInclude(wd => wd.Activities)
+                .ThenInclude(e => e.Pictograms)
+                //And return it
                 .FirstOrDefaultAsync();
         }
         
@@ -177,24 +188,15 @@ namespace GirafRest.Repositories
                 .ThenInclude(wd => wd.Activities)
                 .ThenInclude(e => e.Pictograms)
                 //And return it
-                .FirstOrDefaultAsync();
-        }
+                .FirstOrDefault();
 
         public async Task<GirafUser> LoadBasicUserDataAsync(GirafUser usr)
         {
-            return await Context.Users
-                //Get user by ID from database
-                .Where(u => u.Id == usr.Id)
-                //And return it
-                .FirstOrDefault();
+            return await Context.Users.Where(u => u.Id == usr.Id).FirstOrDefaultAsync();
         }
         
         public bool ExistsUsername(string username)
             => Context.Users.Any(u => u.UserName == username);
-        
-
-        public GirafUser GetUserByUsername(string username)
-            => Context.Users.FirstOrDefault(u => u.UserName == username);
 
         public IEnumerable<GirafUser> GetUsersInDepartment(long departmentKey, IEnumerable<string> users)
         {
@@ -205,8 +207,5 @@ namespace GirafRest.Repositories
                 user.DepartmentKey != null && user.DepartmentKey == departmentKey)
             .ToList();
         }
-
-        public GirafUser GetUserWithId(string id)
-            => Context.Users.FirstOrDefault(u => u.Id == id);
     }
 }

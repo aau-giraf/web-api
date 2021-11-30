@@ -2,9 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using GirafRest.Data;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
+using GirafRest.Models.Enums;
 using GirafRest.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -94,7 +96,7 @@ namespace GirafRest.Test.Repositories
 
         [Theory]
         [InlineData(UserId)]
-        public void GetWithWeekSchedulesTest(string id)
+        public async void GetWithWeekSchedulesTest(string id)
         {
             //Arrange
             using (var context = new GirafDbContext(ContextOptions))
@@ -114,30 +116,33 @@ namespace GirafRest.Test.Repositories
         [Theory]
         [InlineData(USERNAME_1)]
         public async Task GetUserByUsername(string username)
-
-                //Act
-                var username = repository.GetWithWeekSchedules(id).UserName;
+        {
+            using (var context = new GirafDbContext(ContextOptions))
+            {
+                var repository = new GirafUserRepository(context);
+                var user = await repository.GetUserByUsername(username);
+                var userName = user.UserName;
 
                 //Assert
-                Assert.Equal(USERNAME, username);
+                Assert.Equal("Anna", userName);
             }
         }
 
         [Theory]
         [InlineData(UserId)]
-        public void GetUserWithIdTest(string id)
+        public async Task GetUserWithIdTest(string id)
         {
             //Arrange
             using (var context = new GirafDbContext(ContextOptions))
             {
                 var repository = new GirafUserRepository(context);
-                
+
                 //Act
-                var user = await repository.GetUserByUsername(username);
-                var userId = user.Id;
-                
-                
-                Assert.Equal(SweetAnnasId,userId);
+                var user = await repository.GetUserWithId(id);
+                var userName = user.UserName;
+
+                //Assert
+                Assert.Equal(USERNAME, userName);
             }
         }
         
@@ -151,8 +156,6 @@ namespace GirafRest.Test.Repositories
                 var repository = new GirafUserRepository(context);
                 
                 var userName = repository.CheckIfUserExists(id).UserName;
-                
-                var userName = repository.GetUserWithId(id).UserName;
                 
                 //Assert
                 Assert.Equal(USERNAME, userName);
