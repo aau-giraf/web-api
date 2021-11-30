@@ -1,13 +1,10 @@
 using System.Collections.Generic;
 using GirafRest.Controllers;
-using GirafRest.Data;
 using GirafRest.Interfaces;
 using GirafRest.IRepositories;
 using GirafRest.Models;
-using GirafRest.Models.DTOs;
 using GirafRest.Models.Enums;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Moq;
 
@@ -77,7 +74,7 @@ public class MockedUserController : UserController
     public Mock<IUserResourseRepository> UserResourseRepository { get; }
     public Mock<IPictogramRepository> PictogramRepository { get; }
     
-    public GirafUser testUser { get; set; }
+    public GirafUser testUser { get; }
     
     public GirafUser guardianUser { get; }
     

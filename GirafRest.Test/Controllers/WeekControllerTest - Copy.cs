@@ -1,4 +1,4 @@
-﻿/*using GirafRest.Controllers;
+﻿using GirafRest.Controllers;
 using GirafRest.Models.DTOs.AccountDTOs;
 using GirafRest.Test.Mocks;
 using Microsoft.AspNetCore.Mvc;
@@ -110,4 +110,3 @@ namespace GirafRest.Test.CHANGETHISNAMESPACE
 
 
 }
-*/

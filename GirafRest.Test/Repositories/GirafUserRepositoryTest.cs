@@ -119,7 +119,7 @@ namespace GirafRest.Test.Repositories
 
         [Theory]
         [InlineData(USERNAME_1)]
-        public void GetUserByUsername(string username)
+        public async Task GetUserByUsername(string username)
         {
             //Arrange
             using (var context = new GirafDbContext(ContextOptions))
@@ -127,10 +127,11 @@ namespace GirafRest.Test.Repositories
                 var repository = new GirafUserRepository(context);
                 
                 //Act
-                var Id = repository.GetUserByUsername(username).Id;
+                var user = await repository.GetUserByUsername(username);
+                var userId = user.Id;
                 
                 
-                //Assert.Equal(SweetAnnasId,Id);
+                Assert.Equal(SweetAnnasId,userId);
             }
         }
         

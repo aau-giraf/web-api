@@ -1,16 +1,11 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
-using System.Text;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Options;
 using GirafRest.Models;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using static GirafRest.Test.UnitTestExtensions;
 using System.Linq;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace GirafRest.Test.Mocks
 {

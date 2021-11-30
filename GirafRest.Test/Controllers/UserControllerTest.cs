@@ -1,27 +1,13 @@
 using System.Collections.Generic;
-using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
-using GirafRest.Controllers;
-using GirafRest.Interfaces;
-using GirafRest.IRepositories;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Enums;
 using GirafRest.Models.Responses;
-using GirafRest.Repositories;
-using GirafRest.Services;
-using GirafRest.Test.Mocks;
-using GirafRest.Test.RepositoryMocks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using Moq;
-using System.Security.Claims;
-using System.Text;
 using Xunit;
-using GirafRest.Extensions;
 
 namespace GirafRest.Test
 {
@@ -34,14 +20,20 @@ namespace GirafRest.Test
         [Fact]
         public async Task GetUserWithId_200OK()
         {
+            //Arrange
             var controller = new MockedUserController();
             var repository = controller.GirafUserRepository;
-            repository.Setup(x => x.GetUserWithId(controller.testUser.Id)).ReturnsAsync(controller.testUser);
+            
+            //Mock
+            repository.Setup(x => x.GetUserWithId(controller.testUser.Id))
+                .ReturnsAsync(controller.testUser);
 
+            //Act
             var response = await controller.GetUser(controller.testUser.Id);
             var result = response as ObjectResult;
             var body = result.Value as SuccessResponse<GirafUserDTO>;
             
+            //Assert
             Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
             // check that we are logged in as the correct user
             Assert.Equal(controller.testUser.UserName, body.Data.Username);
@@ -51,15 +43,17 @@ namespace GirafRest.Test
         [Fact]
         public async Task GetUserRole_200OK()
         {
+            //Arrange
             var controller = new MockedUserController();
             
+            //Mock
             controller.GirafUserRepository.Setup(g => g.GetUserByUsername(controller.testUser.UserName))
                 .ReturnsAsync(controller.testUser);
-
+            //Act
             var response = await controller.GetUserRole(controller.testUser.UserName);
             var result = response as ObjectResult;
-
-            if (result != null) Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
+            //Assert
+            Assert.Equal(StatusCodes.Status200OK, result.StatusCode);
         }
 
         [Fact]
