@@ -9,5 +9,7 @@ namespace GirafRest.IRepositories
     public interface ITimerRepository : IRepository<GirafRest.Models.Timer>
     {
         public Task<Timer> getActivitysTimerkey(Activity activity);
+        public Task<Timer> getTimerWithKey(long? Key);
+
     }
 }

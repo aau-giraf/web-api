@@ -48,9 +48,8 @@ namespace GirafRest.Repositories
             Context.Weeks.Update(week);
             return await Context.SaveChangesAsync();
         }
-
-
-
+        //This and AddPictogramsToWeekday should actually be seperated in the correct repositories but they were together in the same class when i moved them, and SetWeekFromDTO calls AddpictoramstoWeekday
+        // I do not want to instantiate a repository in a repository, or rewrite them at the moment so here they are.
         /// <summary>
         /// From the given DTO, set the name, thumbnail and days of the given week object.
         /// </summary>
@@ -82,11 +81,11 @@ namespace GirafRest.Repositories
             foreach (var day in weekDTO.Days)
             {
                 var wkDay = new Weekday(day);
-                if (!await AddPictogramsToWeekday(wkDay, day))
+                if (!(await AddPictogramsToWeekday(wkDay, day)))
                 {
                     return new ErrorResponse(ErrorCode.ResourceNotFound, "Missing pictogram");
                 }
-                // this method should probably not be the model.
+
                 week.UpdateDay(wkDay);
             }
 
@@ -134,7 +133,7 @@ namespace GirafRest.Repositories
                     Timer timer = null;
                     if (activityDTO.Timer != null)
                     {
-                        timer = await Context.Timers.Where(t => t.Key == activityDTO.Timer.Key).FirstOrDefaultAsync();
+                        timer = await Context.Timers.FirstOrDefaultAsync(t => t.Key == activityDTO.Timer.Key);
                     }
 
                     if (pictograms.Any())
@@ -145,3 +144,4 @@ namespace GirafRest.Repositories
         }
     }
 }
+

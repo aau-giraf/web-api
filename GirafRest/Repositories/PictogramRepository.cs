@@ -38,6 +38,15 @@ namespace GirafRest.Repositories
         {
             return Context.Pictograms.Where(f => f.Id == resourceIdDTO.Id).FirstOrDefaultAsync();
         }
+        public Task<Pictogram> FindResource(ResourceIdDTO resourceIdDTO)
+        {
+            return Context.Pictograms.Where(pf => pf.Id == resourceIdDTO.Id).FirstOrDefaultAsync();
+        }
+        public Task<Pictogram> GetPictogramWithID(long Id)
+        {
+            return Context.Pictograms.FirstOrDefaultAsync(p => p.Id == Id);
+        }
+
 
 
     }

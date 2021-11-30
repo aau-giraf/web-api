@@ -14,6 +14,9 @@ namespace GirafRest.Repositories
             
         }
         public async Task<int> DeleteSpecificWeekDay(Weekday oldDay)
+
+        }
+        public async Task<int> UpdateSpecificWeekDay(Weekday oldDay)
         {
             Context.Weekdays.Update(oldDay);
             return await Context.SaveChangesAsync();

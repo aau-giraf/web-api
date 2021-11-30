@@ -1,3 +1,4 @@
+using GirafRest.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -31,7 +32,11 @@ namespace GirafRest.IRepositories
         public Task<GirafUser> LoadUserWithDepartment(GirafUser usr);
         public Task<GirafUser> LoadUserWithWeekSchedules(string id);
         public Task<GirafUser> LoadBasicUserDataAsync(GirafUser usr);
-
+        public GirafUser GetWithWeekSchedules(string id);
+        bool ExistsUsername(string username);
+        GirafUser GetUserByUsername(string username);
+        IEnumerable<GirafUser> GetUsersInDepartment(long departmentKey, IEnumerable<string> users);
+        GirafUser GetUserWithId(string id);
     }
     
 }

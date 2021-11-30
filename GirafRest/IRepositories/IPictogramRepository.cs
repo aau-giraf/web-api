@@ -1,3 +1,5 @@
+using GirafRest.Models;
+using GirafRest.Models.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
@@ -19,5 +21,7 @@ namespace GirafRest.IRepositories
         /// <param name="access"></param>
         public Task<int> AddPictogramWith_NO_ImageHash(string name, AccessLevel access);
         Task<Pictogram> FetchResourceWithId(ResourceIdDTO resourceIdDTO);
+        public Task<Pictogram> FindResource(ResourceIdDTO resourceIdDTO);
+        public Task<Pictogram> GetPictogramWithID(long Id);
     }
 }

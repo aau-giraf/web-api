@@ -17,6 +17,9 @@ insert_final_newline = false
 
 #### .NET Coding Conventions ####
 
+# Suppress XML comments
+dotnet_diagnostic.CS1591.severity = none
+
 # Organize usings
 dotnet_separate_import_directive_groups = false
 dotnet_sort_system_directives_first = false
@@ -107,6 +110,11 @@ csharp_style_unused_value_expression_statement_preference = discard_variable:sil
 
 # 'using' directive preferences
 csharp_using_directive_placement = outside_namespace:silent
+
+# await directive preferences 
+dotnet_code_quality.CA2007.exclude_async_void_methods = true
+dotnet_code_quality.CA2007.output_kind = DynamicallyLinkedLibrary
+
 
 #### C# Formatting Rules ####
 

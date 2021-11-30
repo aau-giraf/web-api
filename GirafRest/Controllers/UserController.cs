@@ -1,4 +1,5 @@
 using GirafRest.Extensions;
+using GirafRest.Extensions;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
@@ -23,6 +24,7 @@ namespace GirafRest.Controllers
     /// </summary>
     [Authorize]
     [Route("v1/[controller]")]
+
     public class UserController : Controller
     {
         private const int IMAGE_CONTENT_TYPE_DEFINITION = 25;
@@ -431,6 +433,9 @@ namespace GirafRest.Controllers
                 citizens.Add(new DisplayNameDTO { UserId = girafUser.Id, DisplayName = girafUser.DisplayName });
             }
 
+            //sort function for users in citizens since the list needs to be sorted by name... issue#697
+            citizens.Sort();
+           
             if (!citizens.Any())
             {
                 return NotFound(new ErrorResponse(ErrorCode.UserHasNoCitizens, "User does not have any citizens"));
@@ -499,7 +504,7 @@ namespace GirafRest.Controllers
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
             citizen.AddGuardian(guardian);
-
+            
             return Ok(new SuccessResponse("Added relation between guardian and citizen"));
         }
 

@@ -36,6 +36,7 @@ namespace GirafRest
             {
                 BuildWebHost(args).Run();
                 Console.WriteLine("webhost built");
+                
             }
             catch (MySqlException e)
             {
@@ -52,8 +53,9 @@ namespace GirafRest
         /// <see cref="Startup"/> sets the general environment (authentication, logging i.e)
         /// </summary>
         /// <returns>A <see cref="IWebHost"/> host fit for running the server.</returns>
-        public static IWebHost BuildWebHost(string[] args) =>
-        WebHost.CreateDefaultBuilder()
+        public static IWebHost BuildWebHost(string[] args)
+        {
+          return WebHost.CreateDefaultBuilder()
                .UseKestrel()
                .UseUrls($"http://+:{ProgramOptions.Port}")
                .UseIISIntegration()
@@ -68,5 +70,8 @@ namespace GirafRest
                 })
                .UseDefaultServiceProvider(options => options.ValidateScopes = false)
                .Build();
+            
+        }
+       
     }
 }

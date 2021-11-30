@@ -19,6 +19,7 @@ namespace GirafRest.Controllers
     /// <summary>
     /// Controller for managing Weeks, CRUD-ish
     /// </summary>
+    [Authorize]
     [Route("v1/[controller]")]
     public class WeekController : Controller
     {
@@ -35,7 +36,7 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="giraf">Service Injection</param>
         /// <param name="loggerFactory">Service Injection</param>
-        public WeekController(IGirafService giraf, ILoggerFactory loggerFactory, IWeekRepository weekRepository, ITimerRepository timerRepository,IPictogramRepository pictogramRepository,IWeekdayRepository weekdayRepository)
+        public WeekController(IGirafService giraf, ILoggerFactory loggerFactory, IWeekRepository weekRepository, ITimerRepository timerRepository, IPictogramRepository pictogramRepository, IWeekdayRepository weekdayRepository)
         {
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Week");
@@ -52,7 +53,6 @@ namespace GirafRest.Controllers
         /// <param name="userId">User identifier for the <see cref="GirafUser" /> to get schedules for/></param>
         /// refactored to repository
         [HttpGet("{userId}/week", Name = "GetListOfWeeksExclDaysOfUser")]
-        [Authorize]
         [ProducesResponseType(typeof(SuccessResponse<IEnumerable<WeekDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -71,7 +71,6 @@ namespace GirafRest.Controllers
             })));
         }
 
-
         /// <summary>
         /// Gets list of <see cref="WeekNameDTO"/> for all schedules belonging to the user with the provided id
         /// </summary>
@@ -79,7 +78,6 @@ namespace GirafRest.Controllers
         /// <param name="userId">User identifier for the <see cref="GirafUser" /> to get schedules for</param>
         /// refactored to repository
         [HttpGet("{userId}/weekName", Name = "GetListOfWeekNamesOfUser")]
-        [Authorize]
         [ProducesResponseType(typeof(SuccessResponse<IEnumerable<WeekNameDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -107,7 +105,6 @@ namespace GirafRest.Controllers
         /// <param name="userId">Identifier of the <see cref="GirafUser"/> to request schedule for</param>
         /// refactored to repository
         [HttpGet("{userId}/{weekYear}/{weekNumber}", Name = "GetWeekByWeekNrAndYearOfUser")]
-        [Authorize]
         [ProducesResponseType(typeof(SuccessResponse<WeekDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -203,7 +200,6 @@ namespace GirafRest.Controllers
         /// NotAuthorized or NotFound</returns>
         /// refactored to repository
         [HttpGet("{userId}/{weekYear}/{weekNumber}/{day}")]
-        [Authorize]
         [ProducesResponseType(typeof(SuccessResponse<WeekdayDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -221,15 +217,15 @@ namespace GirafRest.Controllers
 
             if (week == null)
             {
-                return NotFound(new ErrorResponse(ErrorCode.NotFound,"Week not found"));
+                return NotFound(new ErrorResponse(ErrorCode.NotFound, "Week not found"));
             }
 
-            Weekday weekday = week.Weekdays.Single(d => d.Day == (Days)day + 1);
+            Weekday weekday = week.Weekdays.SingleOrDefault(d => d.Day == (Days)day + 1);
             if (weekday == null)
             {
                 return NotFound(new ErrorResponse(ErrorCode.NotFound, "Weekday not found"));
             }
-            
+
             foreach (var activity in weekday.Activities)
             {
                 if (activity.TimerKey != null)
@@ -275,7 +271,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> UpdateWeek(string userId, int weekYear, int weekNumber, [FromBody]WeekDTO newWeek)
+        public async Task<ActionResult> UpdateWeek(string userId, int weekYear, int weekNumber, [FromBody] WeekDTO newWeek)
         {
             if (newWeek == null) return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing newWeek"));
 
@@ -284,11 +280,7 @@ namespace GirafRest.Controllers
 
             Week week = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber);
 
-            if (week == null)
-            {
-                week = new Week() { WeekYear = weekYear, WeekNumber = weekNumber };
-                user.WeekSchedule.Add(week);
-            }
+            if (week == null) return NotFound(new ErrorResponse(ErrorCode.WeekNotFound, "Week not found"));
 
             var errorCode = await _weekRepository.SetWeekFromDTO(newWeek, week);
             if (errorCode != null)
@@ -310,7 +302,6 @@ namespace GirafRest.Controllers
         /// NotAuthorized or NotFound</returns>
         /// refactored to repository
         [HttpPut("day/{userId}/{weekYear}/{weekNumber}")]
-        [Authorize]
         [ProducesResponseType(typeof(SuccessResponse<WeekdayDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -331,23 +322,23 @@ namespace GirafRest.Controllers
 
             if (week == null)
             {
-                return NotFound(new ErrorResponse(ErrorCode.NotFound,"Week not found"));
+                return NotFound(new ErrorResponse(ErrorCode.WeekNotFound, "Week not found"));
             }
-            
-            Weekday oldDay =week.Weekdays.Single(d => d.Day == weekdayDto.Day);
+
+            Weekday oldDay = week.Weekdays.Single(d => d.Day == weekdayDto.Day);
 
             oldDay.Activities.Clear();
-            if (!await _weekRepository.AddPictogramsToWeekday(oldDay,weekdayDto))
+            if (!await _weekRepository.AddPictogramsToWeekday(oldDay, weekdayDto))
             {
                 return NotFound(new ErrorResponse(ErrorCode.ResourceNotFound, "Missing pictogram"));
             }
 
-            await _weekdayRepository.DeleteSpecificWeekDay(oldDay);
-          
-            
+            await _weekdayRepository.UpdateSpecificWeekDay(oldDay);
+
+
             return Ok(new SuccessResponse<WeekdayDTO>(new WeekdayDTO(oldDay)));
         }
-        
+
 
         /// <summary>
         /// Deletes all information for the entire week with the given year and week number.
@@ -370,12 +361,10 @@ namespace GirafRest.Controllers
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
-          
-            if (user.WeekSchedule.Any(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber))
+
+            var week = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber);
+            if (week != null)
             {
-                var week = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber);
-                if (week == null)
-                    return NotFound(new ErrorResponse(ErrorCode.NoWeekScheduleFound, "No week schedule found"));
 
                 await _weekRepository.DeleteSpecificWeek(user, week);
                 return Ok(new SuccessResponse("Deleted info for entire week"));

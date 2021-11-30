@@ -1,24 +1,21 @@
-using Xunit;
+﻿using Xunit;
 using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using GirafRest.Data;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
-using GirafRest.Models.Enums;
 using GirafRest.Repositories;
 using Microsoft.EntityFrameworkCore;
 
-
 namespace GirafRest.Test.Repositories
 {
-    public class FakeGirafUserRepositoryContext
+    public class GirafUserRepositoryContext
     {
         private const int GUARDIANRELATIONID = 23;
-        protected FakeGirafUserRepositoryContext(DbContextOptions<GirafDbContext> contextOptions)
+        protected GirafUserRepositoryContext(DbContextOptions<GirafDbContext> contextOptions)
         {
             ContextOptions = contextOptions;
-
             Seed();
         }
 
@@ -38,7 +35,6 @@ namespace GirafRest.Test.Repositories
                     DisplayName = "UsernameDisplay",
                     Id = "1",
                     DepartmentKey = 2
-
                 };
                 var user2 = new GirafUser();
                 user2.Id = "2";
@@ -73,9 +69,6 @@ namespace GirafRest.Test.Repositories
                 
                 
                 context.AddRange(user, user2, user3, user4, userAmazing,guardianRelation);
-
-
-
                 context.SaveChanges();
                 
             }
@@ -84,7 +77,7 @@ namespace GirafRest.Test.Repositories
 
     }
 
-    public class GirafUserRepositoryTest : FakeGirafUserRepositoryContext
+    public class GirafUserRepositoryTest : GirafUserRepositoryContext
     {
         private const string UserId = "1";
         private const int GUARDIANRELATIONID = 23;
@@ -97,10 +90,11 @@ namespace GirafRest.Test.Repositories
         public GirafUserRepositoryTest()
             : base(new DbContextOptionsBuilder<GirafDbContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString("N")).Options){}
-        
+    
+
         [Theory]
         [InlineData(UserId)]
-        public async Task GetUserWithIdTest(string id)
+        public void GetWithWeekSchedulesTest(string id)
         {
             //Arrange
             using (var context = new GirafDbContext(ContextOptions))
@@ -120,6 +114,18 @@ namespace GirafRest.Test.Repositories
         [Theory]
         [InlineData(USERNAME_1)]
         public async Task GetUserByUsername(string username)
+
+                //Act
+                var username = repository.GetWithWeekSchedules(id).UserName;
+
+                //Assert
+                Assert.Equal(USERNAME, username);
+            }
+        }
+
+        [Theory]
+        [InlineData(UserId)]
+        public void GetUserWithIdTest(string id)
         {
             //Arrange
             using (var context = new GirafDbContext(ContextOptions))
@@ -146,6 +152,9 @@ namespace GirafRest.Test.Repositories
                 
                 var userName = repository.CheckIfUserExists(id).UserName;
                 
+                var userName = repository.GetUserWithId(id).UserName;
+                
+                //Assert
                 Assert.Equal(USERNAME, userName);
             }
         }
@@ -234,9 +243,44 @@ namespace GirafRest.Test.Repositories
         }
 
         [Theory]
-        [InlineData(UserId)]
-        public void GetUserSettingsByWeekDayColor(string id)
+        [InlineData(USERNAME)]
+        public void UserExists_Sucess_test(string username)
         {
+            // Arrange 
+            using (var context = new GirafDbContext(ContextOptions))
+            {
+                var repository = new GirafUserRepository(context);
+                
+                // Act
+                bool response = repository.ExistsUsername(username);
+                
+                // Assert
+                Assert.True(response);
+            }
+        }
+
+        [Theory]
+        [InlineData("NotEvenHere")]
+        public void UserExists_UserNotExists_test(string username)
+        {
+            // Arrange 
+            using (var context = new GirafDbContext(ContextOptions))
+            {
+                var repository = new GirafUserRepository(context);
+
+                // Act
+                bool response = repository.ExistsUsername(username);
+
+                // Assert
+                Assert.False(response);
+            }
+        }
+        
+        [Theory]
+        [InlineData(USERNAME)]
+        public void GetUserByUsername_Succes_test(string username)
+        {
+            // Arrange 
             using (var context = new GirafDbContext(ContextOptions))
             {
                 var repository = new GirafUserRepository(context);
@@ -327,18 +371,5 @@ namespace GirafRest.Test.Repositories
                 
             }
         }
-        
-      
-        
-        
-        
-        
-        
-            
-        
-        
-        
     }
-    
-    
 }

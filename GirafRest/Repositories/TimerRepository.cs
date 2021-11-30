@@ -19,6 +19,10 @@ namespace GirafRest.Repositories
             return Context.Timers.FirstOrDefaultAsync(t => t.Key == activity.TimerKey);
 
         }
+        public Task<Timer> getTimerWithKey(long? Key)
+        {
+            return Context.Timers.FirstOrDefaultAsync(t => t.Key == Key);
+        }
 
     }
 }
