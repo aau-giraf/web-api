@@ -1,4 +1,4 @@
-﻿/*using System.Linq;
+﻿using System.Linq;
 using GirafRest.Controllers;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
@@ -985,4 +985,4 @@ namespace GirafRest.Test
         }
         #endregion
     }
-}*/
+}
