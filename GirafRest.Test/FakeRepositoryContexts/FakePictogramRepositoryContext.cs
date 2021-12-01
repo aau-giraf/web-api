@@ -40,10 +40,17 @@ namespace GirafRest.Test.FakeRepositorysContext
                 PictogramRelation Relation5 = new PictogramRelation() { Pictogram = Pictogram4, PictogramId = 5, ActivityId = 5 };
                 PictogramRelation Relation6 = new PictogramRelation() { Pictogram = Pictogram5, PictogramId = 6, ActivityId = 6 };
 
+                var Pictogram6 = new Pictogram()
+                {
+                    Title = "Unicorn",
+                    AccessLevel = AccessLevel.PUBLIC,
+                    
 
+                };
+                Pictogram6.Id = 345567;
 
                 //add pictograms
-                context.AddRange(Pictogram1, Pictogram2, Pictogram3, Pictogram4, Pictogram5);
+                context.AddRange(Pictogram1, Pictogram2, Pictogram3, Pictogram4, Pictogram5, Pictogram6);
                 context.AddRange(Relation1, Relation2, Relation3, Relation4, Relation5, Relation6);
 
                 context.SaveChanges();

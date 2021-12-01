@@ -16,14 +16,12 @@ namespace GirafRest.Repositories
         {
         }
 
-        public Task<GirafUser> getAllWeeksOfUser(string userId)
-        {
+        public Task<GirafUser> getAllWeeksOfUser(string userId) { 
 
             return Context.Users.Include(u => u.WeekSchedule).FirstOrDefaultAsync(u => u.Id == userId);
         }
-
         /// <summary>
-        /// Method for loading user from context and eager loading fields requied to read their <b>week schedules</b>
+        /// Method for loading user from context and eager loading fields required to read their <b>week schedules</b>
         /// </summary>
         /// <param name="id">id of user to load.</param>
         /// <returns>A <see cref="GirafUser"/> with <b>all</b> related data.</returns>
@@ -66,6 +64,8 @@ namespace GirafRest.Repositories
         /// <returns>MissingProperties if thumbnail is missing.
         /// ResourceNotFound if any pictogram id is invalid.
         /// null otherwise.</returns>
+        /// The 2 functions where static for somereason when they where located in sharedmethods.
+        /// They should probably be changed to something simpler
         public async Task<ErrorResponse> SetWeekFromDTO(WeekBaseDTO weekDTO, WeekBase week)
         {
             var modelErrorCode = weekDTO.ValidateModel();
@@ -76,7 +76,8 @@ namespace GirafRest.Repositories
 
             week.Name = weekDTO.Name;
 
-            Pictogram thumbnail = await Context.Pictograms.FirstOrDefaultAsync(p => p.Id == weekDTO.Thumbnail.Id);
+            Pictogram thumbnail = Context.Pictograms
+                .FirstOrDefault(p => p.Id == weekDTO.Thumbnail.Id);
             if (thumbnail == null)
                 return new ErrorResponse(ErrorCode.MissingProperties, "Missing thumbnail");
 
@@ -121,7 +122,8 @@ namespace GirafRest.Repositories
 
                     foreach (var pictogram in activityDTO.Pictograms)
                     {
-                        var picto = await Context.Pictograms.FirstOrDefaultAsync(p => p.Id == pictogram.Id);
+                        var picto = await Context.Pictograms
+                            .Where(p => p.Id == pictogram.Id).FirstOrDefaultAsync();
 
                         if (picto != null)
                         {
@@ -145,10 +147,6 @@ namespace GirafRest.Repositories
             }
             return true;
         }
-
-
-
-
     }
 }
 
