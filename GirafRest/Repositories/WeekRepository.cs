@@ -20,6 +20,11 @@ namespace GirafRest.Repositories
 
             return Context.Users.Include(u => u.WeekSchedule).FirstOrDefaultAsync(u => u.Id == userId);
         }
+        /// <summary>
+        /// Method for loading user from context and eager loading fields required to read their <b>week schedules</b>
+        /// </summary>
+        /// <param name="id">id of user to load.</param>
+        /// <returns>A <see cref="GirafUser"/> with <b>all</b> related data.</returns>
         public async Task<GirafUser> LoadUserWithWeekSchedules(string id)
         {
             var user = await Context.Users

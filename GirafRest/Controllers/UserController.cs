@@ -343,13 +343,27 @@ namespace GirafRest.Controllers
 
             if (resource == null)
                 return NotFound(new ErrorResponse(ErrorCode.ResourceNotFound, "Resource not found"));
+            
+            if (resource.AccessLevel != AccessLevel.PRIVATE)
+                return BadRequest(new ErrorResponse(ErrorCode.ResourceMustBePrivate, "Resource must be private"));
 
+
+            //Check that the currently authenticated user owns the resource
+            var curUsr = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
+            var resourceOwnedByCaller = await _giraf.CheckPrivateOwnership(resource, curUsr);
+            if (!resourceOwnedByCaller)
+                return StatusCode(StatusCodes.Status403Forbidden,
+                    new ErrorResponse(ErrorCode.NotAuthorized, "User does not own resource"));
+
+            //Check if the target user already owns the resource
+            if (user.Resources.Any(ur => ur.PictogramKey == resourceIdDTO.Id))
+                return BadRequest(new ErrorResponse(ErrorCode.UserAlreadyOwnsResource, "User already owns resource"));
+            
             
             //Create the relation and save changes.
             var userResource = new UserResource(user, resource);
             await _userResourseRepository.AddAsync(userResource);
             
-
             // Get the roles the user is associated with
             GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
