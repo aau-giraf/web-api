@@ -32,12 +32,10 @@ namespace GirafRest.Services
         /// <summary>
         /// Constructor for GirafAuthenticationService
         /// </summary>
-        /// <param name="context">DBContext</param>
         /// <param name="roleManager">Role Manager to be used</param>
         /// <param name="userManager">User Manager to be used</param>
-        public GirafAuthenticationService(GirafDbContext context, RoleManager<GirafRole> roleManager, UserManager<GirafUser> userManager)
+        public GirafAuthenticationService(RoleManager<GirafRole> roleManager, UserManager<GirafUser> userManager)
         {
-            this._context = context;
             this._roleManager = roleManager;
             this._userManager = userManager;
         }

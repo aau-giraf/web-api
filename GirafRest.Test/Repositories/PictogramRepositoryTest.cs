@@ -1,23 +1,45 @@
-﻿using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
-using System.Text;
-using GirafRest.Data;
-using Xunit;
-using GirafRest.Repositories;
-using GirafRest.Models;
-using System.Threading;
+using System.IO;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using GirafRest.Data;
+using GirafRest.Models;
 using GirafRest.Models.DTOs;
+using GirafRest.Repositories;
 using GirafRest.Test.FakeRepositorysContext;
+using Microsoft.EntityFrameworkCore;
+using Xunit;
 
 namespace GirafRest.Test.Repositories
 {
+    
+
     public class PictogramRepositoryTest : FakePictogramRepositoryContext
     {
-        public PictogramRepositoryTest() : base(new DbContextOptionsBuilder<GirafDbContext>().UseInMemoryDatabase("Filename=TestPictogramRep.db").Options)
+        private const string PICTOGRAM_TITLE = "Unicorn";
+        public PictogramRepositoryTest() : base(
+            new DbContextOptionsBuilder<GirafDbContext>()
+            .UseInMemoryDatabase("Filename=TestPictogramRep.db").Options)
         {
 
+        }
+        [Fact]
+        public async Task FetchResourceWithId()
+        {
+            using (var context = new GirafDbContext(ContextOptions))
+            {
+                var repository = new PictogramRepository(context);
+                
+                var resourceIdDTO = new ResourceIdDTO()
+                {
+                    Id = 345567
+                };
+                
+                var resource = await repository.FetchResourceWithId(resourceIdDTO);
+                
+                Assert.Equal(PICTOGRAM_TITLE, resource.Title);
+            }
         }
         [Fact]
         // Tests whether you can get pictograms with from PictogramRelations and that different relations can share same pictograms.
@@ -95,16 +117,5 @@ namespace GirafRest.Test.Repositories
 
             }
         }
-      
-
-
-        
-
-        //public Task<Pictogram> FetchResourceWithId(ResourceIdDTO resourceIdDTO)
-        //{
-        //    return Context.Pictograms.Where(f => f.Id == resourceIdDTO.Id).FirstOrDefaultAsync();
-        //}
-
     }
-
 }
