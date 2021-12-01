@@ -1,4 +1,3 @@
-/*
 using System.Linq;
 using Xunit;
 using GirafRest.Models;
@@ -298,7 +297,7 @@ namespace GirafRest.Test
              *
              *  If the search ignores whether letters are written in capital then the search should always
              *  produce the same order.
-             #1#
+             */
             var pc = initializeTest();
             const string lowercaseSearchQuery = "casesensitive";
             var resForLowercase = pc.ReadPictograms(lowercaseSearchQuery, 1, 2).Result as ObjectResult;
@@ -323,7 +322,7 @@ namespace GirafRest.Test
              *
              *  If the search ignores whether letters are written in capital then the search should always
              *  produce the same order.
-             #1#
+             */
             var pc = initializeTest();
             const string startsWithQuery = "m";
             var resForStartsWithQuery = pc.ReadPictograms(startsWithQuery, 1, 2).Result as ObjectResult;
@@ -1052,7 +1051,7 @@ namespace GirafRest.Test
             _testContext.MockHttpContext.MockRequestImage(JPEG_FILEPATH);
             var img = pc.SetPictogramImage(PUBLIC_PICTOGRAM).Result;
             img = pc.SetPictogramImage(PUBLIC_PICTOGRAM).Result; /*The test will check if it is possible to update
-            an pictogram that already has an image#1#
+            an pictogram that already has an image*/
             _testContext.MockHttpContext.MockRequestImage(JPEG_FILEPATH);
 
             var res = pc.SetPictogramImage(PUBLIC_PICTOGRAM).Result as ObjectResult;
@@ -1329,4 +1328,3 @@ namespace GirafRest.Test
         #endregion
     }
 }
-*/

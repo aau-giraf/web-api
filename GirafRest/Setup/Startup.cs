@@ -24,9 +24,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using GirafRest.IRepositories;
 using GirafRest.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace GirafRest.Setup
 {
@@ -147,6 +147,7 @@ namespace GirafRest.Setup
             services.AddScoped<IWeekBaseRepository,WeekBaseRepository>();
             services.AddScoped<IWeekDayColorRepository, WeekDayColorRepository>();
             services.AddScoped<IWeekRepository, WeekRepository>();
+            services.AddScoped<IWeekdayRepository, WeekdayRepository>();
             services.AddScoped<IWeekTemplateRepository, WeekTemplateRepository>();
             services.AddScoped<IActivityRepository,ActivityRepository>();
             services.AddScoped<IDepartmentResourseRepository,DepartmentResourseRepository>();
@@ -154,7 +155,6 @@ namespace GirafRest.Setup
             services.AddScoped<IPictogramRelationRepository,PictogramRelationRepository>();
             services.AddScoped<IUserResourseRepository, UserResourseRepository>();
             services.AddScoped<IImageRepository, ImageRepository>();
-            services.AddScoped<IWeekdayRepository, WeekdayRepository>();
            
             // Set up Cross-Origin Requests
             services.AddCors(o => o.AddPolicy("AllowAll", builder =>
@@ -302,3 +302,4 @@ namespace GirafRest.Setup
         }
     }
 }
+
