@@ -16,10 +16,17 @@ namespace GirafRest.Repositories
         {
         }
 
-        public Task<GirafUser> getAllWeeksOfUser(string userId) { 
+        public Task<GirafUser> getAllWeeksOfUser(string userId)
+        {
 
             return Context.Users.Include(u => u.WeekSchedule).FirstOrDefaultAsync(u => u.Id == userId);
         }
+
+        /// <summary>
+        /// Method for loading user from context and eager loading fields requied to read their <b>week schedules</b>
+        /// </summary>
+        /// <param name="id">id of user to load.</param>
+        /// <returns>A <see cref="GirafUser"/> with <b>all</b> related data.</returns>
         public async Task<GirafUser> LoadUserWithWeekSchedules(string id)
         {
             var user = await Context.Users
@@ -48,9 +55,8 @@ namespace GirafRest.Repositories
             Context.Weeks.Update(week);
             return await Context.SaveChangesAsync();
         }
-
-
-
+        //This and AddPictogramsToWeekday should actually be seperated in the correct repositories but they were together in the same class when i moved them, and SetWeekFromDTO calls AddpictoramstoWeekday
+        // I do not want to instantiate a repository in a repository, or rewrite them at the moment so here they are.
         /// <summary>
         /// From the given DTO, set the name, thumbnail and days of the given week object.
         /// </summary>
@@ -60,8 +66,6 @@ namespace GirafRest.Repositories
         /// <returns>MissingProperties if thumbnail is missing.
         /// ResourceNotFound if any pictogram id is invalid.
         /// null otherwise.</returns>
-        /// The 2 functions where static for somereason when they where located in sharedmethods.
-        /// They should probably be changed to something simpler
         public async Task<ErrorResponse> SetWeekFromDTO(WeekBaseDTO weekDTO, WeekBase week)
         {
             var modelErrorCode = weekDTO.ValidateModel();
@@ -72,8 +76,7 @@ namespace GirafRest.Repositories
 
             week.Name = weekDTO.Name;
 
-            Pictogram thumbnail = Context.Pictograms
-                .FirstOrDefault(p => p.Id == weekDTO.Thumbnail.Id);
+            Pictogram thumbnail = await Context.Pictograms.FirstOrDefaultAsync(p => p.Id == weekDTO.Thumbnail.Id);
             if (thumbnail == null)
                 return new ErrorResponse(ErrorCode.MissingProperties, "Missing thumbnail");
 
@@ -82,11 +85,11 @@ namespace GirafRest.Repositories
             foreach (var day in weekDTO.Days)
             {
                 var wkDay = new Weekday(day);
-                if (!await AddPictogramsToWeekday(wkDay, day))
+                if (!(await AddPictogramsToWeekday(wkDay, day)))
                 {
                     return new ErrorResponse(ErrorCode.ResourceNotFound, "Missing pictogram");
                 }
-                // this method should probably not be the model.
+
                 week.UpdateDay(wkDay);
             }
 
@@ -118,8 +121,7 @@ namespace GirafRest.Repositories
 
                     foreach (var pictogram in activityDTO.Pictograms)
                     {
-                        var picto = await Context.Pictograms
-                            .Where(p => p.Id == pictogram.Id).FirstOrDefaultAsync();
+                        var picto = await Context.Pictograms.FirstOrDefaultAsync(p => p.Id == pictogram.Id);
 
                         if (picto != null)
                         {
@@ -134,7 +136,7 @@ namespace GirafRest.Repositories
                     Timer timer = null;
                     if (activityDTO.Timer != null)
                     {
-                        timer = await Context.Timers.Where(t => t.Key == activityDTO.Timer.Key).FirstOrDefaultAsync();
+                        timer = await Context.Timers.FirstOrDefaultAsync(t => t.Key == activityDTO.Timer.Key);
                     }
 
                     if (pictograms.Any())
@@ -143,5 +145,10 @@ namespace GirafRest.Repositories
             }
             return true;
         }
+
+
+
+
     }
 }
+

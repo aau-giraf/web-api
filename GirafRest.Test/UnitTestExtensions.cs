@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Text;
 using GirafRest.Data;
+using System;
 
 namespace GirafRest.Test
 {
@@ -505,13 +506,20 @@ namespace GirafRest.Test
             {
                 get
                 {
-                    if (mockUserResources == null)
-                        mockUserResources = new List<UserResource>() {
+                    try
+                    {
+                        if (mockUserResources == null)
+                            mockUserResources = new List<UserResource>() {
                             new UserResource(MockUsers[0], MockPictograms[3]),
                             new UserResource(MockUsers[1], MockPictograms[4])
                         };
 
-                    return mockUserResources;
+                        return mockUserResources;
+                    }catch(Exception ex)
+                    {
+                        throw ex;
+                    }
+                    
                 }
             }
 

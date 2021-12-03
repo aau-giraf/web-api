@@ -24,20 +24,25 @@ namespace GirafRest.Repositories
         {
             return Context.Pictograms.FirstOrDefaultAsync(p => p.Id == pictogramRelation.PictogramId);
         }
-        
+
         public Task<Pictogram> GetPictogramWithName(string name)
         {
             return Context.Pictograms.FirstOrDefaultAsync(r => r.Title == name);
         }
         public async Task<int> AddPictogramWith_NO_ImageHash(string name, AccessLevel access)
         {
-            Context.Pictograms.Add(new Pictogram(name,access));
+            Context.Pictograms.Add(new Pictogram(name, access));
             return await Context.SaveChangesAsync();
         }
-        public Task<Pictogram> FetchResourceWithId(ResourceIdDTO resourceIdDTO)
+        public Task<Pictogram> FindResource(ResourceIdDTO resourceIdDTO)
         {
-            return Context.Pictograms.Where(f => f.Id == resourceIdDTO.Id).FirstOrDefaultAsync();
+            return Context.Pictograms.Where(pf => pf.Id == resourceIdDTO.Id).FirstOrDefaultAsync();
         }
+        public Task<Pictogram> GetPictogramWithID(long Id)
+        {
+            return Context.Pictograms.FirstOrDefaultAsync(p => p.Id == Id);
+        }
+
 
 
     }

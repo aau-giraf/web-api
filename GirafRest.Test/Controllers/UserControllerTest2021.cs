@@ -2,6 +2,7 @@
 using Xunit;
 using GirafRest.Models.DTOs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using GirafRest.Models.Enums;
 
 
 namespace GirafRest.Test.Controllers
