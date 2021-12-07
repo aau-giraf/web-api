@@ -29,8 +29,7 @@ jobs:
         # secrets are located in repo aau-giraf/web-api:settings.secrets
         # "nohup" is used to run the dotnet application in the background 
         run: |
-          export ASPNETCORE_ENVIRONMENT="Production"
-          bash scripts/ci-setup.sh ${{ secrets.IntegrationTestUser }} ${{ secrets.IntegrationTestPassword }}
+          export ASPNETCORE_ENVIRONMENT="Development"
           dotnet tool install --global dotnet-ef
           cd GirafRest
           dotnet restore
