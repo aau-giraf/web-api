@@ -10,77 +10,101 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using GirafRest.Data.Samples;
 
-namespace GirafRest.Setup
+namespace GirafRest.Data
 {
     /// <summary>
     /// A class for initializing the database with some sample data.
     /// </summary>
     public static class DBInitializer
     {
-        #region Properties
-
-        public static SampleDataHandler SampleDataHandler { get; set; } = new SampleDataHandler();
-
-        #endregion
-
+        private static SampleDataHandler _sampleDataHandler { get; set; }
+        private static UserManager<GirafUser> _userManager { get; set; }
+        private static GirafDbContext _context { get; set; }
         #region Methods
 
         /// <summary>
         /// Runs specificed initialisations before the API is started.
         /// </summary>
-        /// <param name="context">The database context.</param>
+        /// <param name="context">The database _context.</param>
         /// <param name="userManager">The API for managing GirafUsers.</param>
         /// <param name="pictogramCount">The number of sample pictograms to generate.</param>
-        public static async Task Initialize(GirafDbContext context, UserManager<GirafUser> userManager, int pictogramCount)
+        /// <param name="environmentName">The environment set for the current run</param>
+        public static async Task Initialize(GirafDbContext context, UserManager<GirafUser> userManager, int pictogramCount, string environmentName)
         {
-            CreatePictograms(pictogramCount);
+            // Initialize static fields
+            _context = context;
+            _userManager = userManager;
 
-            // Check if any data is in the database
-            if (await context.Departments.AnyAsync())
-            {
-                ///<summary>
-                ///SampleDataHandler creates a samples.json file by storing current database data in plaintext, in samples.json
-                ///Use only if samples.json does not exist in Data folder and only sample data exists in the database.
-                ///Passwords for users are written to the samples.json directly from the db, meaning they will be hashes. 
-                ///If you want more writeable passwords, manually set them in the samples.json.
-                ///</summary>
-                //await SampleDataHandler.SerializeDataAsync(context, userManager);
-                return;
-            }
-            // Get sample data
-            SampleData sampleData = SampleDataHandler.DeserializeData();
-            // Create departments
-            var departments = await AddSampleDepartments(context, sampleData.DepartmentList);
+            // Verify that the database has already been created, before adding data to it
+            _context.Database.EnsureCreated();
             
-            // Create roles if they do not exist
-            if (!(await context.Roles.AnyAsync())) {
-                await AddSampleRoles(context, sampleData.RolesList);
-            }
 
-            // Create users
-            await AddSampleUsers(context, userManager, sampleData.UserList, departments);
-            // Create pictograms
-            var pictograms = await AddSamplePictograms(context, sampleData.PictogramList);
-            // Create week and weekdays
-            await AddSampleWeekAndWeekdays(context, sampleData.WeekList, sampleData.WeekdayList, sampleData.UserList, pictograms);
-            // Create week templates
-            await AddSampleWeekTemplate(context, sampleData.WeekTemplateList, sampleData.WeekdayList, sampleData.UserList, departments, pictograms);
-
-            // Save changes
-            await context.SaveChangesAsync();
-
-            // Adding citizens to a Guardian
-            foreach (var user in context.Users)
+            switch (environmentName)
             {
-                if (userManager.IsInRoleAsync(user, GirafRole.Guardian).Result)
-                {
-                    var citizens = user.Department.Members.Where(m => userManager.IsInRoleAsync(m, GirafRole.Citizen).Result).ToList();
-                    user.AddCitizens(citizens);
-                }
+                case "Development":
+                    _sampleDataHandler = new SampleDataHandler("DB_data.dev.json");
+                    break;
+
+                case "Staging":
+                    _sampleDataHandler = new SampleDataHandler("DB_data.stag.json");
+                    break;
+
+                case "Production":
+                    _sampleDataHandler = new SampleDataHandler("DB_data.prod.json");
+                    break;
+
+                default:
+                    break;
             }
+
+            // Get sample data
+            SampleData sampleData = _sampleDataHandler.DeserializeData();
+
+            // Create departments if they do not exist
+            if (!(await _context.Departments.AnyAsync()))
+                await AddSampleDepartments(sampleData.DepartmentList);
+
+            if(!(await _context.Roles.AnyAsync()))
+            {
+                List<string> roles = _sampleDataHandler.ReadSampleRoles(); 
+                await AddSampleRoles(roles);
+            }
+            
+            // Create users if they do not exist
+            if (!(await _context.Users.AnyAsync())) {
+                await AddSampleUsers(sampleData.UserList);
+                // Adding citizens to a Guardian
+                foreach (var user in _context.Users)
+                {
+                    if (_userManager.IsInRoleAsync(user, GirafRole.Guardian).Result || _userManager.IsInRoleAsync(user, GirafRole.Trustee).Result)
+                    {
+                        var citizens = user.Department.Members.Where(m => _userManager.IsInRoleAsync(m, GirafRole.Citizen).Result).ToList();
+                        user.AddCitizens(citizens);
+                    }
+                }
+                await _context.SaveChangesAsync();
+            }                
+
+            // Create pictograms if they do not exist
+            if (!(await _context.Pictograms.AnyAsync())) {
+                List<SamplePictogram> pictograms = _sampleDataHandler.ReadSamplePictograms();
+                CreatePictograms(pictogramCount);
+                await AddSamplePictograms(pictograms);
+            }
+
+            // Create week and weekdays if they do not exist
+            if (!(await _context.Weeks.AnyAsync()))
+                await AddSampleWeekAndWeekdays(sampleData.WeekList, sampleData.WeekdayList, sampleData.UserList);
+            
+            // Create week templates if they do not exist
+            if (!(await _context.WeekTemplates.AnyAsync()))
+                await AddSampleWeekTemplate(sampleData.WeekTemplateList, sampleData.WeekdayList, sampleData.UserList);
+
+            
             // Save changes
-            await context.SaveChangesAsync();
+            await _context.SaveChangesAsync();   
         }
 
         #region Generating pictograms
@@ -151,36 +175,33 @@ namespace GirafRest.Setup
         }
         #endregion
 
-        #region Sample data methods
+        #region Adding sample data
 
-        private static async Task<List<Department>> AddSampleDepartments(GirafDbContext context, List<SampleDepartment> sampleDeps)
+        private static async Task AddSampleDepartments(List<SampleDepartment> sampleDeps)
         {
             Console.WriteLine("Adding departments.");
-            List<Department> departments = new List<Department>();
 
             foreach (SampleDepartment sampleDepartment in sampleDeps)
             {
                 Department department = new Department { Name = sampleDepartment.Name };
-                departments.Add(department);
-                await context.Departments.AddAsync(department);
+                await _context.Departments.AddAsync(department);
             }
-            await context.SaveChangesAsync();
-            return departments;
+            await _context.SaveChangesAsync();
         }
-        private static async Task AddSampleRoles(GirafDbContext context, List<string> sampleRoles) {
+        private static async Task AddSampleRoles(List<string> sampleRoles)
+        {
             Console.WriteLine("Adding roles...");
             foreach (string sampleRole in sampleRoles)
             {
-                await context.Database.ExecuteSqlRawAsync(
+                await _context.Database.ExecuteSqlRawAsync(
                     "INSERT INTO AspNetRoles (Id, ConcurrencyStamp, Name, NormalizedName) VALUES ('" + sampleRole + "', '" + Guid.NewGuid().ToString() + "', '" + sampleRole + "', '" + sampleRole.ToUpper() + "');");
-                await context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
             }
         }
-        private static async Task AddSampleUsers(GirafDbContext context, UserManager<GirafUser> userManager, List<SampleGirafUser> sampleUsers, List<Department> departments123)
+        private static async Task AddSampleUsers(List<SampleGirafUser> sampleUsers)
         {
             Console.WriteLine("Adding users.");
-            List<GirafUser> users = new List<GirafUser>();
-            List<Department> departments = await context.Departments.ToListAsync();
+            List<Department> departments = await _context.Departments.ToListAsync();
 
             foreach (var sampleUser in sampleUsers)
             {
@@ -191,53 +212,52 @@ namespace GirafRest.Setup
                     DepartmentKey = departments.FirstOrDefault(d => d.Name == sampleUser.DepartmentName).Key
                 };
 
-                var x = await userManager.CreateAsync(user, sampleUser.Password);
+                var x = await _userManager.CreateAsync(user, sampleUser.Password);
+                await _context.SaveChangesAsync();
+
                 if (x.Succeeded)
                 {
-                    var a = await userManager.AddToRoleAsync(user, sampleUser.Role);
+                    var a = await _userManager.AddToRoleAsync(user, sampleUser.Role);
+                    await _context.SaveChangesAsync();
                     if (!a.Succeeded)
                         throw new Exception("Failed to add role " + sampleUser.Role + " to user " + user.UserName);
                 }
                 else
                     throw new WarningException("Failed to create user " + user.UserName + " in usermanager");
-                users.Add(user);
             }
         }
-        private static async Task<List<Pictogram>> AddSamplePictograms(GirafDbContext context, List<SamplePictogram> samplePictogramsList)
+        private static async Task<List<Pictogram>> AddSamplePictograms(List<SamplePictogram> samplePictogramsList)
         {
             System.Console.WriteLine("Adding pictograms.");
             List<Pictogram> pictograms = new List<Pictogram>();
             foreach (var samplePict in samplePictogramsList)
             {
-                var pictogram = new Pictogram(samplePict.Title, (AccessLevel)Enum.Parse(typeof(AccessLevel), samplePict.AccessLevel), samplePict.ImageHash);
-                pictogram.LastEdit = DateTime.Now;
-                await context.AddAsync(pictogram);
+                Pictogram pictogram = new Pictogram {
+                    Title = samplePict.Title, 
+                    AccessLevel = (AccessLevel)Enum.Parse(typeof(AccessLevel), samplePict.AccessLevel), 
+                    ImageHash = samplePict.ImageHash,
+                    LastEdit = DateTime.Now
+                };
+                await _context.AddAsync(pictogram);
                 pictograms.Add(pictogram);
             }
+            await _context.SaveChangesAsync();
             return pictograms;
         }
-        private static async Task AddSampleWeekAndWeekdays(GirafDbContext context, List<SampleWeek> sampleWeeks, List<SampleWeekday> sampleWeekdays, List<SampleGirafUser> sampleUsers, List<Pictogram> pictograms)
+        private static async Task AddSampleWeekAndWeekdays(List<SampleWeek> sampleWeeks, List<SampleWeekday> sampleWeekdays, List<SampleGirafUser> sampleUsers)
         {
             Console.WriteLine("Adding weekdays to users");
-            Pictogram thumbNail = null;
-            List<Week> weekList = new List<Week>();
+            List<Pictogram> pictograms = await _context.Pictograms.ToListAsync();
 
             foreach (SampleWeek sampleWeek in sampleWeeks)
             {
-                foreach (Pictogram pic in pictograms)
-                {
-                    if (pic.Title == sampleWeek.ImageTitle)
-                    {
-                        thumbNail = pic;
-                    }
-                }
+                Pictogram thumbNail = pictograms.FirstOrDefault(p => p.Title == sampleWeek.ImageTitle);
 
                 Week week = new Week { Name = sampleWeek.Name, Thumbnail = thumbNail };
-                await AddDaysToWeekAndContext(sampleWeekdays, week, context, pictograms);
-                await context.Weeks.AddAsync(week);
-                weekList.Add(week);
+                await AddDaysToWeekAndContext(sampleWeekdays, week, pictograms);
+                await _context.Weeks.AddAsync(week);
 
-                foreach (GirafUser user in context.Users)
+                foreach (GirafUser user in _context.Users)
                 {
                     foreach (SampleGirafUser sampleUser in sampleUsers)
                     {
@@ -245,40 +265,38 @@ namespace GirafRest.Setup
                         {
                             if ((userWeek == week.Name) && (user.UserName == sampleUser.Name))
                             {
-                                user.WeekSchedule.Add(weekList.First(w => w.Name == userWeek));
+                                user.WeekSchedule.Add(week);
                             }
                         }
                     }
                 }
             }
+            await _context.SaveChangesAsync();
         }
-        private static async Task AddSampleWeekTemplate(GirafDbContext context, List<SampleWeekTemplate> sampleTemplates, List<SampleWeekday> sampleWeekdays,
-            List<SampleGirafUser> sampleUsers, List<Department> departments, List<Pictogram> pictograms)
+        private static async Task AddSampleWeekTemplate(
+            List<SampleWeekTemplate> sampleTemplates, 
+            List<SampleWeekday> sampleWeekdays,
+            List<SampleGirafUser> sampleUsers)
         {
             Console.WriteLine("Adding templates");
-            Pictogram thumbNail = null;
+            List<Department> departments = await _context.Departments.ToListAsync();
+            List<Pictogram> pictograms = await _context.Pictograms.ToListAsync();
 
             foreach (SampleWeekTemplate sampleTemplate in sampleTemplates)
             {
-                foreach (Pictogram pic in pictograms)
-                {
-                    if (pic.Title == sampleTemplate.ImageTitle)
-                    {
-                        thumbNail = pic;
-                    }
-                }
+                Pictogram thumbNail = pictograms.FirstOrDefault(p => p.Title == sampleTemplate.ImageTitle);
 
-                var template = new WeekTemplate
+                WeekTemplate template = new WeekTemplate
                 {
                     Name = sampleTemplate.Name,
                     Thumbnail = thumbNail,
-                    Department = departments.First(d => d.Name == sampleTemplate.DepartmentName)
+                    DepartmentKey = departments.First(d => d.Name == sampleTemplate.DepartmentName).Key
                 };
 
-                await AddDaysToWeekAndContext(sampleWeekdays, template, context, pictograms);
-                await context.WeekTemplates.AddAsync(template);
+                await AddDaysToWeekAndContext(sampleWeekdays, template, pictograms);
+                await _context.WeekTemplates.AddAsync(template);
 
-                foreach (GirafUser user in context.Users)
+                foreach (GirafUser user in _context.Users)
                 {
                     foreach (SampleGirafUser sampleUser in sampleUsers)
                     {
@@ -286,36 +304,30 @@ namespace GirafRest.Setup
                         {
                             if ((userWeek == template.Name) && (user.UserName == sampleUser.Name))
                             {
-                                user.WeekSchedule.Add(await context.Weeks.FirstAsync(w => w.Name == userWeek));
+                                user.WeekSchedule.Add(await _context.Weeks.FirstAsync(w => w.Name == userWeek));
                             }
                         }
                     }
                 }
             }
+            await _context.SaveChangesAsync();
         }
-        private static async Task AddDaysToWeekAndContext(List<SampleWeekday> sampleDays, WeekBase week, GirafDbContext context, List<Pictogram> pictograms)
+        private static async Task AddDaysToWeekAndContext(List<SampleWeekday> sampleDays, WeekBase week, List<Pictogram> pictograms)
         {
             foreach (var sampleDay in sampleDays)
             {
                 Days day = sampleDay.Day;
                 List<List<Pictogram>> picts = new List<List<Pictogram>>();
-                Pictogram pic = null;
 
                 foreach (string actIcon in sampleDay.ActivityIconTitles)
                 {
-                    foreach (Pictogram pict in pictograms)
-                    {
-                        if (pict.Title == actIcon)
-                        {
-                            pic = pict;
-                        }
-                    }
+                    Pictogram pic = pictograms.FirstOrDefault(p => p.Title == actIcon);
                     picts.Add(new List<Pictogram>{ pic });
                 }
 
                 List<ActivityState> activityStates = (from activityState in sampleDay.ActivityStates select (ActivityState)Enum.Parse(typeof(ActivityState), activityState)).ToList<ActivityState>();
                 Weekday weekDay = new Weekday(day, picts, activityStates);
-                await context.Weekdays.AddAsync(weekDay);
+                await _context.Weekdays.AddAsync(weekDay);
                 week.UpdateDay(weekDay);
             }
         }

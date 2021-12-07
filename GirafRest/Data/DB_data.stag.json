@@ -1,0 +1,150 @@
+{
+  "UserList": [
+    {
+      "Name": "bob_citizen",
+      "DisplayName": "Bob",
+      "DepartmentName": "Egebakken",
+      "Role": "Citizen",
+      "Weeks": [
+        "Bob's Week 30",
+        "Bob's Week 31",
+        "Bob's Week 32"
+      ],
+      "Password": "password"
+    },
+    {
+      "Name": "ben_trustee",
+      "DisplayName": "Ben",
+      "DepartmentName": "Egebakken",
+      "Role": "Trustee",
+      "Weeks": [],
+      "Password": "password"
+    },
+    {
+      "Name": "paul_guardian",
+      "DisplayName": "Paul",
+      "DepartmentName": "Egebakken",
+      "Role": "Guardian",
+      "Weeks": [],
+      "Password": "password"
+    },
+    {
+      "Name": "jacob_citizen",
+      "DisplayName": "Jacob",
+      "DepartmentName": "Birken",
+      "Role": "Citizen",
+      "Weeks": [
+        "Jacob's Week 30",
+        "Jacob's Week 31",
+        "Jacob's Week 32"
+      ],
+      "Password": "password"
+    },
+    {
+      "Name": "jos_guardian",
+      "DisplayName": "Jos",
+      "DepartmentName": "Birken",
+      "Role": "Guardian",
+      "Weeks": [],
+      "Password": "password"
+    },
+    {
+      "Name": "gwen_trustee",
+      "DisplayName": "Gwen",
+      "DepartmentName": "Birken",
+      "Role": "Trustee",
+      "Weeks": [],
+      "Password": "password"
+    }
+  ],
+  "DepartmentList": [
+    {
+      "Name": "Egebakken"
+    },
+    {
+      "Name": "Birken"
+    }
+  ],
+  "WeekdayList": [
+    {
+      "Day": 1,
+      "ActivityIconTitles": [
+        "Epik",
+        "antal",
+        "alting",
+        "alle",
+        "alfabet"
+      ],
+      "ActivityStates": [
+        "Completed",
+        "Completed",
+        "Completed",
+        "Completed",
+        "Completed"
+      ]
+    },
+    {
+      "Day": 2,
+      "ActivityIconTitles": [
+        "division",
+        "delmængde",
+        "bogstav",
+        "berøre"
+      ],
+      "ActivityStates": [
+        "Completed",
+        "Canceled",
+        "Active",
+        "Completed"
+      ]
+    },
+    {
+      "Day": 2,
+      "ActivityIconTitles": [
+        "division",
+        "delmængde",
+        "bogstav",
+        "berøre"
+      ],
+      "ActivityStates": [
+        "Completed",
+        "Canceled",
+        "Active",
+        "Completed"
+      ]
+    }
+  ],
+  "WeekList": [
+    {
+      "Name": "Bob's Week 30",
+      "ImageTitle": "cat17"
+    },
+    {
+      "Name": "Bob's Week 31",
+      "ImageTitle": "cat16"
+    },
+    {
+      "Name": "Bob's Week 32",
+      "ImageTitle": "cat15"
+    },
+    {
+      "Name": "Jacob's Week 30",
+      "ImageTitle": "cat14"
+    },
+    {
+      "Name": "Jacob's Week 31",
+      "ImageTitle": "cat13"
+    },
+    {
+      "Name": "Jacob's Week 32",
+      "ImageTitle": "cat12"
+    }
+  ],
+  "WeekTemplateList": [
+    {
+      "Name": "Dev_week_template",
+      "ImageTitle": "kvinde",
+      "DepartmentName": "Birken"
+    }
+  ]
+}
