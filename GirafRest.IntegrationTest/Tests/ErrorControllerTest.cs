@@ -13,6 +13,7 @@ using Xunit;
 
 namespace GirafRest.IntegrationTest.Tests
 {
+    [Collection("Integration test")]
     public class ErrorControllerTest : IClassFixture<CustomWebApplicationFactory>
     {
         private readonly CustomWebApplicationFactory _factory;

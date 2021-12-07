@@ -13,7 +13,7 @@ using Newtonsoft.Json.Linq;
 namespace GirafRest.IntegrationTest.Tests
 {
     [TestCaseOrderer("GirafRest.IntegrationTest.Order.PriorityOrderer", "GirafRest.IntegrationTest")]
-    [Collection("Account Controller")]
+    [Collection("Integration test")]
     public class AuthorizationControllerTest : IClassFixture<CustomWebApplicationFactory>, IClassFixture<AuthorizationFixture>
     {
         private readonly CustomWebApplicationFactory _factory;

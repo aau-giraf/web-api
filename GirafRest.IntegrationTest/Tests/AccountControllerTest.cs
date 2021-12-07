@@ -11,7 +11,7 @@ using GirafRest.IntegrationTest.Order;
 namespace GirafRest.IntegrationTest.Tests
 {
     [TestCaseOrderer("GirafRest.IntegrationTest.Order.PriorityOrderer", "GirafRest.IntegrationTest")]
-    [Collection("Account Controller")]
+    [Collection("Integration test")]
     public class AccountControllerTest
     : IClassFixture<CustomWebApplicationFactory>, IClassFixture<AccountFixture>
     {

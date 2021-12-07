@@ -14,7 +14,7 @@ using Xunit;
 namespace GirafRest.IntegrationTest.Tests
 {
     [TestCaseOrderer("GirafRest.IntegrationTest.Order.PriorityOrderer", "GirafRest.IntegrationTest")]
-    [Collection("Week Controller")]
+    [Collection("Intgration test")]
     public class WeekTemplateControllerTest : IClassFixture<CustomWebApplicationFactory>, IClassFixture<WeekTemplateFixture>
     {
         private const string BASE_URL = "https://localhost:5000/";

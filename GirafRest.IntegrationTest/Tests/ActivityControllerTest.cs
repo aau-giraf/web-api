@@ -8,7 +8,7 @@ using Xunit;
 namespace GirafRest.IntegrationTest.Tests
 {
     [TestCaseOrderer("GirafRest.IntegrationTest.Order.PriorityOrderer", "GirafRest.IntegrationTest")]
-    [Collection("Account Controller")]
+    [Collection("Integration test")]
     public class ActivityControllerTest
     {
         // The below is taken from the python integration tests and havent been implemented since they are skipped

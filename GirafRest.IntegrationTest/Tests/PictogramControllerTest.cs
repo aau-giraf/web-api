@@ -15,7 +15,7 @@ using Xunit;
 namespace GirafRest.IntegrationTest.Tests
 {
     [TestCaseOrderer("GirafRest.IntegrationTest.Order.PriorityOrderer", "GirafRest.IntegrationTest")]
-    [Collection("Account Controller")]
+    [Collection("Intgration test")]
     public class PictogramControllerTest : IClassFixture<CustomWebApplicationFactory>, IClassFixture<PictogramFixture>
     {
         private readonly CustomWebApplicationFactory _factory;
