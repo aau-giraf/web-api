@@ -10,11 +10,31 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-18.04]
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.IntegrationTestPassword }}
+          MYSQL_DATABASE: 'giraf'
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET Core
-      uses: actions/setup-dotnet@v1.9.0
-      with:
-        dotnet-version: '3.1.201'
-    - name: Tests
-      run: dotnet test ./GirafRest.IntegrationTest/
+      - uses: actions/checkout@v2
+      - name: Set up API
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '3.1.201'
+      - name: Run API
+        # secrets are located in repo aau-giraf/web-api:settings.secrets
+        # "nohup" is used to run the dotnet application in the background 
+        run: |
+          export ASPNETCORE_ENVIRONMENT="Production"
+          bash scripts/ci-setup.sh ${{ secrets.IntegrationTestUser }} ${{ secrets.IntegrationTestPassword }}
+          dotnet tool install --global dotnet-ef
+          cd GirafRest
+          dotnet restore
+          dotnet ef database update
+          nohup dotnet run --sample-data > /dev/null 2>&1 &
+      - name: Tests
+        run: dotnet test ./GirafRest.IntegrationTest/
