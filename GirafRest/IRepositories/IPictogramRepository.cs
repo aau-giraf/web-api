@@ -1,11 +1,6 @@
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
-using GirafRest.Models;
-using GirafRest.Models.DTOs;
 
 namespace GirafRest.IRepositories
 {

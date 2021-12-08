@@ -52,7 +52,9 @@ namespace GirafRest.Controllers
         /// <param name="loggerFactory">Service Injection</param>
         /// <param name="giraf">Service Injection</param>
         /// <param name="configuration">Service Injection</param>
-        /// <param name="authentication">Service Injection</param>
+        /// <param name="userRepository">Service Injection</param>
+        /// <param name="departmentRepository">Service Injection</param>
+        /// <param name="girafRoleRepository">Service Injection</param>
         public AccountController(
             SignInManager<GirafUser> signInManager,
             ILoggerFactory loggerFactory,

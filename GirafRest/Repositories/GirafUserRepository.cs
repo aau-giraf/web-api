@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using GirafRest.Models;
 using GirafRest.IRepositories;
 using GirafRest.Data;
-using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using GirafRest.Models.DTOs;
 
@@ -173,9 +172,10 @@ namespace GirafRest.Repositories
         }
         
         /// Method for loading user from context and eager loading fields requied to read their <b>week schedules</b>
-        /// </summary>
+        /// <summary>
         /// <param name="id">id of user to load.</param>
         /// <returns>A <see cref="GirafUser"/> with <b>all</b> related data.</returns>
+        /// </summary>
         public GirafUser GetWithWeekSchedules(string id)
             => Context.Users
                 //First load the user from the database

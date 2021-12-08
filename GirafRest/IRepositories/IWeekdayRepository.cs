@@ -9,7 +9,6 @@ namespace GirafRest.IRepositories
     public interface IWeekdayRepository : IRepository<GirafRest.Models.Weekday>
     {
         public Task<int> DeleteSpecificWeekDay(Weekday oldDay);
-        public void Update(Weekday weekday);
         public Task<int> UpdateSpecificWeekDay(Weekday oldDay);
     }
 }

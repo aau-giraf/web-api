@@ -8,6 +8,6 @@ namespace GirafRest.IRepositories
 {
     public interface IPictogramRelationRepository : IRepository<PictogramRelation>
     {
-        public ICollection<PictogramRelation> GetWithPictogram(int activityID);
+        public ICollection<PictogramRelation> GetWithPictogram(long activityID);
     }
 }

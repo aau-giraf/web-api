@@ -5,6 +5,7 @@ using GirafRest.Models.Responses;
 using GirafRest.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GirafRest.Controllers
 {
@@ -12,6 +13,7 @@ namespace GirafRest.Controllers
     /// Status-endpoint; Getting status of HTTP, DB etc, for clients to see status
     /// </summary>
     [Route("v1/[controller]")]
+    [Authorize]
     public class StatusController : Controller
     {
         private readonly IGirafService _giraf;

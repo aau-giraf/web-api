@@ -36,6 +36,10 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="giraf">Service Injection</param>
         /// <param name="loggerFactory">Service Injection</param>
+        /// <param name="weekRepository">Service Injection</param>
+        /// <param name="timerRepository">Service Injection</param>
+        /// <param name="pictogramRepository">Service Injection</param>
+        /// <param name="weekdayRepository">Service Injection</param>
         public WeekController(IGirafService giraf, ILoggerFactory loggerFactory, IWeekRepository weekRepository, ITimerRepository timerRepository, IPictogramRepository pictogramRepository, IWeekdayRepository weekdayRepository)
         {
             _giraf = giraf;
@@ -280,7 +284,11 @@ namespace GirafRest.Controllers
 
             Week week = user.WeekSchedule.FirstOrDefault(w => w.WeekYear == weekYear && w.WeekNumber == weekNumber);
 
-            if (week == null) return NotFound(new ErrorResponse(ErrorCode.WeekNotFound, "Week not found"));
+            if (week == null)
+            {
+                week = new Week() { WeekYear = weekYear, WeekNumber = weekNumber};
+                user.WeekSchedule.Add(week);
+            }
 
             var errorCode = await _weekRepository.SetWeekFromDTO(newWeek, week);
             if (errorCode != null)

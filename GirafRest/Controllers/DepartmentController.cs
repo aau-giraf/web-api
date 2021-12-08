@@ -20,6 +20,7 @@ namespace GirafRest.Controllers
     /// <summary>
     /// Handles Department endpoints
     /// </summary>
+    [Authorize]
     [Route("v1/[controller]")]
     public class DepartmentController : Controller
     {
