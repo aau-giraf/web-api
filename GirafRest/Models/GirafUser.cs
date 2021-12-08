@@ -27,6 +27,15 @@ namespace GirafRest.Models
         /// </summary>
         public virtual ICollection<GuardianRelation> Citizens { get; set; }
 
+
+        /// <summary>
+        /// List of citizens in a relationship with the user. Is empty if the user is a citizen.
+        /// </summary>
+        public virtual ICollection<TrusteeRelation> Trustees { get; set; }
+
+        public virtual ICollection<TrusteeRelation> TrusteeCitizens { get; set; }
+
+
         /// <summary>
         /// Display name used for showing
         /// </summary>
@@ -75,6 +84,10 @@ namespace GirafRest.Models
             this.WeekSchedule = new List<Week>();
             this.Citizens = new List<GuardianRelation>();
             this.Guardians = new List<GuardianRelation>();
+
+            this.Trustees = new List<TrusteeRelation>();
+            this.TrusteeCitizens = new List<TrusteeRelation>();
+
         } 
         //
         private void InitialiseData()
@@ -85,7 +98,13 @@ namespace GirafRest.Models
             this.WeekSchedule = new List<Week>();
             this.Citizens = new List<GuardianRelation>();
             this.Guardians = new List<GuardianRelation>();
+
+            this.Trustees = new List<TrusteeRelation>();
+            this.TrusteeCitizens = new List<TrusteeRelation>();
+
         }
+
+        /* GURADIANS RELATIONS   */
 
         /// <summary>
         /// Iteratr citizens for calling AddCitizen
@@ -129,14 +148,62 @@ namespace GirafRest.Models
             this.Guardians.Add(new GuardianRelation(guardian, this));
         }
 
+
+        /* TRUSTEEE RELATIONS   */
+
         /// <summary>
-        /// Add specific Guardian to this
+        /// Iteratr citizens for calling AddCitizen
+        /// </summary>
+        /// <param name="citizens"></param>
+        public void AddTrusteeCitizens(List<GirafUser> citizens)
+        {
+            foreach (var citizen in citizens)
+            {
+                AddTrusteeCitizen(citizen);
+            }
+        }
+
+        /// <summary>
+        /// Add spesific Trustees to this
         /// </summary>
         /// <param name="trustee"></param>
         public void AddTrustee(GirafUser trustee)
         {
-            this.Guardians.Add(new GuardianRelation(trustee, this));
+            this.Trustees.Add(new TrusteeRelation(trustee, this)); 
         }
+
+        /// <summary>
+        /// Adding citizens 
+        /// </summary>
+        /// <param name="trusteecitizen">Citizen to add</param>
+        public void AddTrusteeCitizen(GirafUser trusteecitizen)
+        {
+            this.TrusteeCitizens.Add(new TrusteeRelation(this, trusteecitizen));
+        }
+
+
+        /// <summary>
+        /// Action for adding and referencing Trustees
+        /// </summary>
+        /// <param name="trustees"></param>
+        public void AddTrustees(List<GirafUser> trustees)
+        {
+            foreach (var trustee in trustees)
+            {
+                AddTrustee(trustee); 
+            }
+        }
+
+        /// <summary>
+        /// Add specific Guardian to this
+        /// </summary>
+        /// <param name="trustee"></param>
+        /* Removed because of old method
+        
+        public void AddTrustee(GirafUser trustee)
+        {
+            this.Guardians.Add(new GuardianRelation(trustee, this));
+        }*/
 
         /// <summary>
         /// Constructor for GirafUser

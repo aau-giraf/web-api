@@ -26,6 +26,8 @@ namespace GirafRest.Data
         public virtual DbSet<PictogramRelation> PictogramRelations { get; set; }
         public virtual DbSet<WeekDayColor> WeekDayColors { get; set; }
         public virtual DbSet<AlternateName> AlternateNames { get; set; }
+        public virtual  DbSet<TrusteeRelation> TrusteeRelations { get; set; }
+
         public GirafDbContext() { }
 
         public GirafDbContext(DbContextOptions<GirafDbContext> options)
@@ -129,6 +131,22 @@ namespace GirafRest.Data
                    .WithMany(c => c.Guardians)
                    .HasForeignKey(mg => mg.CitizenId)
                    .OnDelete(DeleteBehavior.Cascade);
+
+            //TRUSTEE 
+            builder.Entity<TrusteeRelation>()
+                .HasOne(tr => tr.Trustee)
+                .WithMany(t => t.TrusteeCitizens)
+                .HasForeignKey(to => to.TrusteeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
+            //Pivot table
+            builder.Entity<TrusteeRelation>()
+                .HasOne(tr => tr.Citizen)
+                .WithMany(c => c.Trustees)
+                .HasForeignKey(mg => mg.CitizenId)
+                .OnDelete(DeleteBehavior.Cascade);
+
 
             // The pivot tables for the many-many between an activity and pictograms
             builder.Entity<PictogramRelation>()
