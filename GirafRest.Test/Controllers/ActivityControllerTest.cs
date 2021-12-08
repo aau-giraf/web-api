@@ -794,16 +794,16 @@ namespace GirafRest.Test
                 }
             };
 
-            activityController.ActivityRepository.Setup(rep => rep.Get((int)activity.Key)).Returns(activity);
-            activityController.PictogramRelationRepository.Setup(rep => rep.GetWithPictogram((int)activity.Key)).Returns(pictogramRelations);
+            activityController.ActivityRepository.Setup(rep => rep.Get((long)activity.Key)).Returns(activity);
+            activityController.PictogramRelationRepository.Setup(rep => rep.GetWithPictogram((long)activity.Key)).Returns(pictogramRelations);
 
             // Act
-            ObjectResult actual = activityController.GetActivity("user1", (int)activity.Key)
+            ObjectResult actual = activityController.GetActivity("user1", (long)activity.Key)
                 .Result as ObjectResult;
 
             // Assert
-            activityController.ActivityRepository.Verify(rep => rep.Get((int)activity.Key), Times.Once);
-            activityController.PictogramRelationRepository.Verify(rep => rep.GetWithPictogram((int)activity.Key), Times.Once);
+            activityController.ActivityRepository.Verify(rep => rep.Get((long)activity.Key), Times.Once);
+            activityController.PictogramRelationRepository.Verify(rep => rep.GetWithPictogram((long)activity.Key), Times.Once);
             Assert.Equal(StatusCodes.Status200OK, actual.StatusCode);
             Assert.Equal(pictogramRelations.First().Pictogram.Title, (actual.Value as SuccessResponse<ActivityDTO>).Data.Pictograms.First().Title);
         }
