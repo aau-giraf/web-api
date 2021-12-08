@@ -12,7 +12,7 @@ using GirafRest.Models.DTOs;
 using System.Linq;
 namespace GirafRest.Test.Controllers
 {
-    public class WeekControllerTests2021
+    public class WeekControllerTests
     {
 
         [Fact]
@@ -459,27 +459,6 @@ namespace GirafRest.Test.Controllers
             Assert.Equal("User not found", errorResponse.Message);
         }
 
-        [Fact]
-
-        public async void test_UpdateWeek_WeekNotFound()
-        {
-            //Arrange
-            var weekController = new MockedWeekController();
-            var weekRepository = weekController.WeekRepository;
-
-            WeekDTO newWeek = new WeekDTO();
-            GirafUser user = new GirafUser() { UserName = "Platos" };
-            //Mock
-            weekRepository.Setup(x => x.LoadUserWithWeekSchedules("Platos")).Returns(Task.FromResult(user));
-            //Act
-            var response = await weekController.UpdateWeek("Platos", 2020, 21, newWeek);
-            var objectResult = response as ObjectResult;
-            var errorResponse = objectResult.Value as ErrorResponse;
-            //Assert
-            Assert.Equal(StatusCodes.Status404NotFound, objectResult.StatusCode);
-            Assert.Equal(ErrorCode.WeekNotFound, errorResponse.ErrorCode);
-            Assert.Equal("Week not found", errorResponse.Message);
-        }
         //Update week calls SetWeekFromDTO which returns multiple kinds of errors. SetWeekFromDTO should have it's own unittest.
         //As long as this test shows that updateweek can reach that return after SetWeekFromDTO has failed then this test will have forfilled its purpose
         [Fact]
