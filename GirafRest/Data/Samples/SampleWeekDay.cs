@@ -1,7 +1,7 @@
 ﻿using GirafRest.Models;
 using System.Collections.Generic;
 
-namespace GirafRest.Setup
+namespace GirafRest.Data.Samples
 {
     public class SampleWeekday
     {

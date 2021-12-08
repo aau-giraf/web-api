@@ -1,41 +1,30 @@
-# Giraf Backend
+# Web-api
+This repository contains the REST API which the weekplanner uses to connect with the database through, here the web-api, server and database make out the backend of the project.
 
-![Unit Tests](https://github.com/aau-giraf/web-api/workflows/Unit%20Test/badge.svg)
-![Integration Tests](https://github.com/aau-giraf/web-api/workflows/Integration%20Test/badge.svg)
-[![codecov](https://codecov.io/gh/aau-giraf/web-api/branch/develop/graph/badge.svg)](https://codecov.io/gh/aau-giraf/web-api)
+The web-api is written as a ASP.NET Core project and it is therefore written in C#. The current version of the project is .NET Core 3.1, ASP.NET Core 3.1 and EF Core 3.1, and it is not compatible with newer versions of these frameworks. The project consists of different controllers with endpoints for the requests made by the client, repositories for accessing the database through and models, which translates into the different entities/tables that are in the database.
 
+# Branches
+This repository uses the scaled trunkbased branching strategy, as explained here: [Github setup](https://github.com/aau-giraf/.github/blob/main/wiki/about/github.md). In this repository the "trunk" is named develop, and this is the branch that all developers should branch from when solving an issue. The naming convention for these branches are:
 
-This repository contains the backend API for the Giraf Project. The API is a .net-core project written in C#.
+| Issue type | Name                   | Example     |
+| :--------: | :--------------------- | :---------: |
+| User Story | feature/\<issue-number\> | feature/697 |
+| Task       | task/\<issue-number\>    | task/918    |
+| Bug fix    | bug-fix/\<issue-number\> | bug-fix/299 |
 
-## Build & Run Locally
-
-To run the project locally with a MySQL database follow the steps provided in the Wiki: 
-[Build and Run Locally](https://aau-giraf.github.io/wiki/development/rest_api_development/BuildAndRunLocally/)
-
-## Migrations (Only for developers of the API)
-If changes has been made to the database, new migrations should be added. Follow the guide in the Wiki on how to do migrations: 
-[Migrations](https://aau-giraf.github.io/wiki/development/rest_api_development/Database/)
-
-## Generate Client
-In order to generate a client-side API follow the guide in the Wiki on how to do so: 
-[Swagger Guide](https://aau-giraf.github.io/wiki/development/rest_api_development/Swagger/)
-
-## API Reference
-
-For API reference start the API and navigate to localhost:5000/swagger
-
-Descriptions are generated from method summaries etc. in the code.
-
-## Admin Panel
-The Admin panel is currently hosted together with the API and the login page is located at: `host/admin/login.html`
-Through the admin panel it is possible to adminstrate users and departments of Giraf and different roles in the system has different functionality and access rights.
-Note that it is possible to generate a reset link for users that you have access to. This link is intended to only work if accessed by an unauthorised user.
-For more information see the project report of group sw613f18
-
-## Contributors
-
-SW615f20, SW613f18 & SW615f17
+Other than the branches being used for development and the trunk, there exists some release branches, where the newest release branch is running on the PROD-environment. The release branches can only be created by members of the release group in the organization, and they should adhere to the following naming convention:
+- Naming is release-\<release-version\> fx release-1.0
+- A hot-fix on a release will increment the number after the dot (.)
+- A new release will increment the number before the dot (.)
 
 ## License
-MIT License
-Copyright (c) 2018-present Aalborg University
+
+MIT License Copyright (c) 2018-present Aalborg University
+
+## Workflow status
+
+Dev - [![web-api dev Status](https://github.com/aau-giraf/web-api/workflows/Unit%20Test/badge.svg?branch=develop)](https://github.com/aau-giraf/web-api/actions)
+
+Dev - [![web-api dev Status](https://github.com/aau-giraf/web-api/workflows/Integration%20Test/badge.svg?branch=develop)](https://github.com/aau-giraf/web-api/actions)
+
+Dev - [![web-api dev Status](https://github.com/aau-giraf/web-api/workflows/Docker%20push/badge.svg?branch=develop)](https://github.com/aau-giraf/web-api/actions)

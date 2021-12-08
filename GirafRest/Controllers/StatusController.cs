@@ -1,13 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using GirafRest.Models.Responses;
 using GirafRest.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.IO;
-using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
 namespace GirafRest.Controllers
 {
@@ -15,6 +13,7 @@ namespace GirafRest.Controllers
     /// Status-endpoint; Getting status of HTTP, DB etc, for clients to see status
     /// </summary>
     [Route("v1/[controller]")]
+    [Authorize]
     public class StatusController : Controller
     {
         private readonly IGirafService _giraf;
@@ -36,6 +35,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         public ActionResult Status()
         {
+            Console.WriteLine("return ok on status");
             return Ok(new SuccessResponse("GIRAF API is running!"));
         }
 

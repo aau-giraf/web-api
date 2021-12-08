@@ -1,6 +1,7 @@
 using GirafRest.Extensions;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
+using GirafRest.Models.Enums;
 using GirafRest.Models.Responses;
 using GirafRest.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -19,6 +20,7 @@ namespace GirafRest.Controllers
     /// <summary>
     /// Handles Department endpoints
     /// </summary>
+    [Authorize]
     [Route("v1/[controller]")]
     public class DepartmentController : Controller
     {

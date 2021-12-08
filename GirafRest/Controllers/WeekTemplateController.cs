@@ -18,6 +18,7 @@ namespace GirafRest.Controllers
     /// WeekTemplateController for CRUD og WeekTemplate
     /// </summary>
     [Route("v1/[controller]")]
+    [Authorize]
     public class WeekTemplateController : Controller
     {
         /// <summary>

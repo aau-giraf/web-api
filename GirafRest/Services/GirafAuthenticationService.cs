@@ -1,7 +1,7 @@
 ﻿using GirafRest.Data;
 using GirafRest.Extensions;
 using GirafRest.Models;
-using GirafRest.Models.DTOs;
+using GirafRest.Models.Enums;
 using GirafRest.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using System.Threading.Tasks;
@@ -32,12 +32,10 @@ namespace GirafRest.Services
         /// <summary>
         /// Constructor for GirafAuthenticationService
         /// </summary>
-        /// <param name="context">DBContext</param>
         /// <param name="roleManager">Role Manager to be used</param>
         /// <param name="userManager">User Manager to be used</param>
-        public GirafAuthenticationService(GirafDbContext context, RoleManager<GirafRole> roleManager, UserManager<GirafUser> userManager)
+        public GirafAuthenticationService(RoleManager<GirafRole> roleManager, UserManager<GirafUser> userManager)
         {
-            this._context = context;
             this._roleManager = roleManager;
             this._userManager = userManager;
         }
@@ -99,7 +97,7 @@ namespace GirafRest.Services
 
             if (authUserRole == GirafRoles.Guardian || authUserRole == GirafRoles.Department)
             {
-                if (!(roleToAdd == GirafRoles.Guardian || roleToAdd == GirafRoles.Citizen)
+                if (!(roleToAdd == GirafRoles.Guardian || roleToAdd == GirafRoles.Citizen || roleToAdd == GirafRoles.Trustee)
                     && departmentKey == authUser.DepartmentKey)
                 {
                     return false;

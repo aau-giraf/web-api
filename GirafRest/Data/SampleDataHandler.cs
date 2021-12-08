@@ -8,21 +8,28 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using GirafRest.Data.Samples;
 
-namespace GirafRest.Setup
+namespace GirafRest.Data
 {
     public class SampleDataHandler
     {
         private readonly string jsonFile = $"{Directory.GetCurrentDirectory()}" +
             $"{Path.DirectorySeparatorChar}" +
             $"Data" +
+            $"{Path.DirectorySeparatorChar}";
+        private readonly string pictogramsFile = $"{Directory.GetCurrentDirectory()}" +
             $"{Path.DirectorySeparatorChar}" +
-            $"samples.json";
+            $"Data" +
+            $"{Path.DirectorySeparatorChar}pictograms.json";
+        private readonly string rolesFile = $"{Directory.GetCurrentDirectory()}" +
+           $"{Path.DirectorySeparatorChar}" +
+           $"Data" +
+           $"{Path.DirectorySeparatorChar}roles.json";
 
-        public SampleDataHandler() { }
         public SampleDataHandler(string path)
         {
-            jsonFile = path;
+            jsonFile += path;
         }
 
         public SampleData DeserializeData()
@@ -31,6 +38,35 @@ namespace GirafRest.Setup
             {
                 string jsonString = File.ReadAllText(jsonFile);
                 return JsonConvert.DeserializeObject<SampleData>(jsonString);
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e.StackTrace);
+            }
+
+            return null;
+        }
+
+        public List<SamplePictogram> ReadSamplePictograms() {
+            try
+            {
+                string jsonString = File.ReadAllText(pictogramsFile);
+                return JsonConvert.DeserializeObject<List<SamplePictogram>>(jsonString);
+            }
+            catch (FileNotFoundException e)
+            {
+                Console.WriteLine(e.StackTrace);
+            }
+
+            return null;
+        }
+
+        public List<string> ReadSampleRoles()
+        {
+            try
+            {
+                string jsonString = File.ReadAllText(rolesFile);
+                return JsonConvert.DeserializeObject<List<string>>(jsonString);
             }
             catch (FileNotFoundException e)
             {
@@ -49,7 +85,7 @@ namespace GirafRest.Setup
         public async Task SerializeDataAsync(GirafDbContext context, UserManager<GirafUser> userManager)
         {
             SampleData data = new SampleData();
-
+            
             // Giraf users
             List<GirafUser> userList = await context.Users.ToListAsync();
             // Departments
@@ -89,9 +125,6 @@ namespace GirafRest.Setup
             // Convert departments into sample data
             foreach (Department dep in departmentList)
                 data.DepartmentList.Add(new SampleDepartment(dep.Name));
-            // Convert pictograms into sample data
-            foreach (Pictogram pic in pictogramList)
-                data.PictogramList.Add(new SamplePictogram(pic.Title, pic.AccessLevel.ToString(), pic.ImageHash));
             // Convert weekdays into sample data
             foreach (Weekday day in weekdayList)
             {
@@ -146,26 +179,6 @@ namespace GirafRest.Setup
                 Formatting = Formatting.Indented
             });
             File.WriteAllText(jsonFile, jsonSamples);
-        }
-    }
-
-    public class SampleData
-    {
-        public List<SampleGirafUser> UserList { get; set; }
-        public List<SampleDepartment> DepartmentList { get; set; }
-        public List<SamplePictogram> PictogramList { get; set; }
-        public List<SampleWeekday> WeekdayList { get; set; }
-        public List<SampleWeek> WeekList { get; set; }
-        public List<SampleWeekTemplate> WeekTemplateList { get; set; }
-
-        public SampleData()
-        {
-            UserList = new List<SampleGirafUser>();
-            DepartmentList = new List<SampleDepartment>();
-            PictogramList = new List<SamplePictogram>();
-            WeekdayList = new List<SampleWeekday>();
-            WeekList = new List<SampleWeek>();
-            WeekTemplateList = new List<SampleWeekTemplate>();
         }
     }
 }

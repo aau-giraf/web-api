@@ -1,4 +1,4 @@
-using GirafRest.Models.DTOs;
+using GirafRest.Models.Enums;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -75,8 +75,8 @@ namespace GirafRest.Models
             this.WeekSchedule = new List<Week>();
             this.Citizens = new List<GuardianRelation>();
             this.Guardians = new List<GuardianRelation>();
-        }
-
+        } 
+        //
         private void InitialiseData()
         {
             this.Settings = new Setting();
@@ -130,6 +130,15 @@ namespace GirafRest.Models
         }
 
         /// <summary>
+        /// Add specific Guardian to this
+        /// </summary>
+        /// <param name="trustee"></param>
+        public void AddTrustee(GirafUser trustee)
+        {
+            this.Guardians.Add(new GuardianRelation(trustee, this));
+        }
+
+        /// <summary>
         /// Constructor for GirafUser
         /// </summary>
         /// <param name="userName">Username</param>
@@ -150,7 +159,5 @@ namespace GirafRest.Models
         {
             InitialiseData();
         }
-
-
     }
 }

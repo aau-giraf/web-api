@@ -13,17 +13,21 @@ namespace GirafRest.Models
         /// </summary>
         public const string Citizen = "Citizen";
         /// <summary>
-        /// Constant for Guardian
-        /// </summary>
-        public const string Guardian = "Guardian";
-        /// <summary>
         /// Constant for Department
         /// </summary>
         public const string Department = "Department";
         /// <summary>
+        /// Constant for Guardian
+        /// </summary>
+        public const string Guardian = "Guardian";
+        /// <summary>
         /// Constant for SuperUser
         /// </summary>
         public const string SuperUser = "SuperUser";
+        /// <summary>
+        /// Constant for Trustee
+        /// </summary>
+        public const string Trustee = "Trustee";
         #endregion
 
         /// <summary>
