@@ -282,7 +282,7 @@ namespace GirafRest.Controllers
 
             if (week == null)
             {
-                week = new Week() { WeekYear = weekYear, WeekNumber = weekNumber };
+                week = new Week() { WeekYear = weekYear, WeekNumber = weekNumber};
                 user.WeekSchedule.Add(week);
             }
 

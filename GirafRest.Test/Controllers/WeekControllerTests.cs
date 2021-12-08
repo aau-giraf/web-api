@@ -470,21 +470,48 @@ namespace GirafRest.Test.Controllers
 
             WeekDTO newWeek = new WeekDTO();
             GirafUser user = new GirafUser() { UserName = "Platos" };
-            Week week = new Week() { WeekYear = 2020, WeekNumber = 21 };
+            Week week = new Week() { WeekYear = 2021, WeekNumber = 21 };
 
             user.WeekSchedule.Add(week);
             //Mock
             weekRepository.Setup(x => x.LoadUserWithWeekSchedules("Platos")).Returns(Task.FromResult(user));
             weekRepository.Setup(x => x.SetWeekFromDTO(newWeek, week)).Returns(Task.FromResult(new ErrorResponse(ErrorCode.Error, "Mocked error")));
             //Act
-            var response = await weekController.UpdateWeek("Platos", 2020, 21, newWeek);
+            var response = await weekController.UpdateWeek("Platos", 2021, 21, newWeek);
             var objectResult = response as ObjectResult;
             var errorResponse = objectResult.Value as ErrorResponse;
             //Assert
             Assert.Equal(StatusCodes.Status400BadRequest, objectResult.StatusCode);
             Assert.Equal(ErrorCode.Error, errorResponse.ErrorCode);
             Assert.Equal("Mocked error", errorResponse.Message);
+
         }
+        [Fact]
+        public async void test_UpdateWeek_SuccessWithEmptyWeek()
+        {
+            //Arrange
+            var weekController = new MockedWeekController();
+            var weekRepository = weekController.WeekRepository;
+
+            GirafUser user = new GirafUser() { UserName = "Platos" };
+            Week week = new Week() { WeekYear = 2021, WeekNumber = 21};
+            WeekDTO newWeek = new WeekDTO();
+          
+            //Mock
+            weekRepository.Setup(x => x.LoadUserWithWeekSchedules("Platos")).Returns(Task.FromResult(user));
+            weekRepository.Setup(x => x.SetWeekFromDTO(newWeek, week)).Returns(Task.FromResult(null as ErrorResponse));
+            //Act
+            var response = await weekController.UpdateWeek("Platos", 2021, 21, newWeek);
+            var objectResult = response as ObjectResult;
+            var successResponse = objectResult.Value as SuccessResponse<WeekDTO>;
+            //Assert
+            Assert.Equal(StatusCodes.Status200OK, objectResult.StatusCode);
+            Assert.NotNull(successResponse.Data);
+            Assert.Equal(21, successResponse.Data.WeekNumber);
+            Assert.Equal(2021, successResponse.Data.WeekYear);
+        }
+      
+
         [Fact]
         public async void test_UpdateWeek_Success()
         {
@@ -494,20 +521,22 @@ namespace GirafRest.Test.Controllers
 
             WeekDTO newWeek = new WeekDTO();
             GirafUser user = new GirafUser() { UserName = "Platos" };
-            Week week = new Week() { WeekYear = 2020, WeekNumber = 21, Name = "this week has a name for some reason" };
+            Week week = new Week() { WeekYear = 2021, WeekNumber = 21, Name = "this week has a name for some reason" };
 
             user.WeekSchedule.Add(week);
             //Mock
             weekRepository.Setup(x => x.LoadUserWithWeekSchedules("Platos")).Returns(Task.FromResult(user));
             weekRepository.Setup(x => x.SetWeekFromDTO(newWeek, week)).Returns(Task.FromResult(null as ErrorResponse));
+            
             //Act
-            var response = await weekController.UpdateWeek("Platos", 2020, 21, newWeek);
+            var response = await weekController.UpdateWeek("Platos", 2021, 21, newWeek);
             var objectResult = response as ObjectResult;
             var successResponse = objectResult.Value as SuccessResponse<WeekDTO>;
             //Assert
             Assert.Equal(StatusCodes.Status200OK, objectResult.StatusCode);
             Assert.NotNull(successResponse.Data);
             Assert.Equal("this week has a name for some reason", successResponse.Data.Name);
+
         }
         [Fact]
         public async void test_UpdateWeekDay_BadRequestMissingWeekday()
@@ -516,7 +545,7 @@ namespace GirafRest.Test.Controllers
             var weekController = new MockedWeekController();
             //Mock
             //Act
-            var response = await weekController.UpdateWeekday("Platos", 2020, 21, null);
+            var response = await weekController.UpdateWeekday("Platos", 2021, 21, null);
             var objectResult = response as ObjectResult;
             var errorResponse = objectResult.Value as ErrorResponse;
             //Assert
@@ -533,7 +562,7 @@ namespace GirafRest.Test.Controllers
             WeekdayDTO newWeekDay = new WeekdayDTO() { Day = Days.Wednesday };
             //Mock
             //Act
-            var response = await weekController.UpdateWeekday("Platos", 2020, 21, newWeekDay);
+            var response = await weekController.UpdateWeekday("Platos", 2021, 21, newWeekDay);
             var objectResult = response as ObjectResult;
             var errorResponse = objectResult.Value as ErrorResponse;
             //Assert
@@ -554,7 +583,7 @@ namespace GirafRest.Test.Controllers
             //Mock
             weekRepository.Setup(x => x.LoadUserWithWeekSchedules(user.UserName)).Returns(Task.FromResult(user));
             //Act
-            var response = await weekController.UpdateWeekday("Platos", 2020, 21, newWeekDay);
+            var response = await weekController.UpdateWeekday("Platos", 2021, 21, newWeekDay);
             var objectResult = response as ObjectResult;
             var errorResponse = objectResult.Value as ErrorResponse;
             //Assert
@@ -572,7 +601,7 @@ namespace GirafRest.Test.Controllers
 
             WeekdayDTO newWeekDay = new WeekdayDTO() { Day = Days.Wednesday };
             GirafUser user = new GirafUser() { UserName = "Platos" };
-            Week week = new Week() { WeekYear = 2020, WeekNumber = 21 };
+            Week week = new Week() { WeekYear = 2021, WeekNumber = 21 };
             Weekday day = new Weekday() { Day = Days.Wednesday };
 
             week.Weekdays.Add(day);
@@ -581,7 +610,7 @@ namespace GirafRest.Test.Controllers
             weekRepository.Setup(x => x.LoadUserWithWeekSchedules(user.UserName)).Returns(Task.FromResult(user));
             weekRepository.Setup(x => x.AddPictogramsToWeekday(day, newWeekDay)).Returns(Task.FromResult(false));
             //Act
-            var response = await weekController.UpdateWeekday("Platos", 2020, 21, newWeekDay);
+            var response = await weekController.UpdateWeekday("Platos", 2021, 21, newWeekDay);
             var objectResult = response as ObjectResult;
             var errorResponse = objectResult.Value as ErrorResponse;
             //Assert
@@ -598,7 +627,7 @@ namespace GirafRest.Test.Controllers
 
             WeekdayDTO newWeekDay = new WeekdayDTO() { Day = Days.Wednesday };
             GirafUser user = new GirafUser() { UserName = "Platos" };
-            Week week = new Week() { WeekYear = 2020, WeekNumber = 21 };
+            Week week = new Week() { WeekYear = 2021, WeekNumber = 21 };
             Weekday day = new Weekday() { Day = Days.Wednesday };
 
             week.Weekdays.Add(day);
@@ -607,7 +636,7 @@ namespace GirafRest.Test.Controllers
             weekRepository.Setup(x => x.LoadUserWithWeekSchedules(user.UserName)).Returns(Task.FromResult(user));
             weekRepository.Setup(x => x.AddPictogramsToWeekday(day, newWeekDay)).Returns(Task.FromResult(true));
             //Act
-            var response = await weekController.UpdateWeekday("Platos", 2020, 21, newWeekDay);
+            var response = await weekController.UpdateWeekday("Platos", 2021, 21, newWeekDay);
             var objectResult = response as ObjectResult;
             var successResponse = objectResult.Value as SuccessResponse<WeekdayDTO>;
             //Assert
@@ -622,7 +651,7 @@ namespace GirafRest.Test.Controllers
             var weekController = new MockedWeekController();
             //Mock
             //Act
-            var response = await weekController.DeleteWeek("Platos", 2010, 24);
+            var response = await weekController.DeleteWeek("Platos", 2021, 24);
             var objectResult = response as ObjectResult;
             var errorResponse = objectResult.Value as ErrorResponse;
             //Assert
@@ -642,7 +671,7 @@ namespace GirafRest.Test.Controllers
             //Mock
             weekRepository.Setup(x => x.getAllWeeksOfUser("Platos")).Returns(Task.FromResult(user));
             //Act
-            var response = await weekController.DeleteWeek("Platos", 2010, 24);
+            var response = await weekController.DeleteWeek("Platos", 2021, 24);
             var objectResult = response as ObjectResult;
             var errorResponse = objectResult.Value as ErrorResponse;
             //Assert
@@ -658,11 +687,11 @@ namespace GirafRest.Test.Controllers
             var weekRepository = weekController.WeekRepository;
 
             GirafUser user = new GirafUser() { UserName = "Platos" };
-            Week week = new Week() { WeekNumber = 24, WeekYear = 2010 };
+            Week week = new Week() { WeekNumber = 24, WeekYear = 2021 };
             //Mock
             weekRepository.Setup(x => x.getAllWeeksOfUser("Platos")).Returns(Task.FromResult(user));
             //Act
-            var response = await weekController.DeleteWeek("Platos", 2010, 24);
+            var response = await weekController.DeleteWeek("Platos", 2021, 24);
             var objectResult = response as ObjectResult;
             var errorResponse = objectResult.Value as ErrorResponse;
             //Assert
@@ -678,13 +707,13 @@ namespace GirafRest.Test.Controllers
             var weekRepository = weekController.WeekRepository;
 
             GirafUser user = new GirafUser() { UserName = "Platos" };
-            Week week = new Week() { WeekNumber = 24, WeekYear = 2010 };
+            Week week = new Week() { WeekNumber = 24, WeekYear = 2021 };
 
             user.WeekSchedule.Add(week);
             //Mock
             weekRepository.Setup(x => x.getAllWeeksOfUser("Platos")).Returns(Task.FromResult(user));
             //Act
-            var response = await weekController.DeleteWeek("Platos", 2010, 24);
+            var response = await weekController.DeleteWeek("Platos", 2021, 24);
             var objectResult = response as ObjectResult;
             var successResponse = objectResult.Value as SuccessResponse;
             //Assert
