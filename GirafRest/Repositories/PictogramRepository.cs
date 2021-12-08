@@ -1,10 +1,8 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GirafRest.Models;
 using GirafRest.IRepositories;
 using GirafRest.Data;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using GirafRest.Models.DTOs;
 
