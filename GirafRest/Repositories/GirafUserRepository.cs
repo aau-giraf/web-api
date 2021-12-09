@@ -21,6 +21,14 @@ namespace GirafRest.Repositories
         }
 
         /// <summary>
+        /// Fetches the first or default (null) User by ID
+        /// </summary>
+        /// <param name="userID">The ID of the user to fetch</param>
+        /// <returns>The User instance or default</returns>
+        public GirafUser GetByID(string userID) 
+            => Get(userID);
+
+        /// <summary>
         /// Gets first user.
         /// </summary>
         /// <param name="id"></param>
