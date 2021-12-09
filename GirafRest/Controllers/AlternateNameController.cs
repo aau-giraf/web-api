@@ -114,8 +114,7 @@ namespace GirafRest.Controllers
 
             AlternateName newAlternateName = new AlternateName(user, pictogram, alternateName.Name);
             _alternateNameRepository.Add(newAlternateName);
-
-            await _giraf._context.SaveChangesAsync();
+            _alternateNameRepository.Save();
 
             return this.ResourceCreated(new AlternateNameDTO(newAlternateName));
         }
@@ -150,7 +149,7 @@ namespace GirafRest.Controllers
                 return this.ResourceNotFound(nameof(AlternateName), id);
             }
 
-            Pictogram pictogram = this._pictogramRepository.GetByID(newAlternateName.Pictogram);
+            Pictogram pictogram = _pictogramRepository.GetByID(newAlternateName.Pictogram);
             if (pictogram == default) {
                 return this.ResourceNotFound(nameof(Pictogram), newAlternateName.Pictogram);
             }
@@ -162,9 +161,8 @@ namespace GirafRest.Controllers
             }
 
             oldAlternateName.Name = newAlternateName.Name;
-            this._alternateNameRepository.Update(oldAlternateName);
-
-            await _giraf._context.SaveChangesAsync();
+            _alternateNameRepository.Update(oldAlternateName);
+            _alternateNameRepository.Save();
 
             return this.RequestSucceeded(newAlternateName);
         }
