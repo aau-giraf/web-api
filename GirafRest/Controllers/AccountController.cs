@@ -172,7 +172,7 @@ namespace GirafRest.Controllers
                     else if (model.Role == GirafRoles.Guardian)
                         AddCitizensToGuardian(user);
                     // save changes
-                    await _giraf._context.SaveChangesAsync();
+                    _departmentRepository.Save();
                 }
                 await _signInManager.UserManager.AddToRoleAsync(user, UserRoleStr);
                 await _signInManager.SignInAsync(user, isPersistent: true);
@@ -299,7 +299,7 @@ namespace GirafRest.Controllers
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
             
             _userRepository.Remove(user);
-            _giraf._context.SaveChanges();
+            _userRepository.Save();
 
             return Ok(new SuccessResponse("User deleted"));
         }
