@@ -503,6 +503,11 @@ namespace GirafRest.Controllers
         /// <param name="citizenId">Citizen id</param>
         /// <returns>Success Reponse on Success else UserNotFound, NotAuthorized, UserNotFound, MissingProperties,
         /// or forbidden </returns>
+        /// 
+
+
+        // TRUSTEE tilføjes
+
         [HttpPost("{id}/citizens/{citizenId}")]
         [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.SuperUser)]
         [ProducesResponseType(typeof(SuccessResponse<List<DisplayNameDTO>>), StatusCodes.Status200OK)]

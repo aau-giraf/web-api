@@ -162,6 +162,8 @@ namespace GirafRest.Controllers
             //Create a new user with the supplied information
             var user = new GirafUser(model.Username, model.DisplayName, department, model.Role);
 
+            /* Tilføje trustee rolle*/
+
             var result  = await _signInManager.UserManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
@@ -354,6 +356,11 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <returns>The role as a string</returns>
         /// <param name="role">A given role as enum that should be converted to a string</param>
+        /// 
+
+
+        // TRUSTEE tilføjes
+
         private string GirafRoleFromEnumToString(GirafRoles role)
         {
             switch (role)
@@ -370,6 +377,8 @@ namespace GirafRest.Controllers
                     return null;
             }
         }
+
+        //Tilføj trustee methoder
 
         private void AddGuardiansToCitizens(GirafUser citizen)
         {
