@@ -20,6 +20,7 @@ namespace GirafRest.Controllers
     /// <summary>
     /// Manages pictograms, CRUD-ish.
     /// </summary>
+    [Authorize]
     [Route("v1/[controller]")]
     public class PictogramController : Controller
     {

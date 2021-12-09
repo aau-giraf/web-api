@@ -13,8 +13,8 @@ namespace GirafRest.Controllers
     /// <summary>
     /// Status-endpoint; Getting status of HTTP, DB etc, for clients to see status
     /// </summary>
-    [Route("v1/[controller]")]
     [Authorize]
+    [Route("v1/[controller]")]
     public class StatusController : Controller
     {
         private readonly IGirafService _giraf;
