@@ -125,7 +125,7 @@ namespace GirafRest.Controllers
         ///  Error
         /// </returns>
         [HttpPost("register")]
-        [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
+        [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian + "," + GirafRole.Trustee)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -161,18 +161,22 @@ namespace GirafRest.Controllers
 
             //Create a new user with the supplied information
             var user = new GirafUser(model.Username, model.DisplayName, department, model.Role);
+            //Adding the citizen to a trustee may be implemented here.
 
-            /* Tilføje trustee rolle*/
+       
 
             var result  = await _signInManager.UserManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
                 if (department != null)
                 {
+                    //AddGuardiansToCitizens(user);
                     if (model.Role == GirafRoles.Citizen)
-                        AddGuardiansToCitizens(user);
+                        AddTrusteeToCitizens(user);
                     else if (model.Role == GirafRoles.Guardian)
                         AddCitizensToGuardian(user);
+                    else if (model.Role == GirafRoles.Trustee)
+                        AddCitizensToTrustee(user);
                     // save changes
                     await _giraf._context.SaveChangesAsync();
                 }
@@ -359,7 +363,6 @@ namespace GirafRest.Controllers
         /// 
 
 
-        // TRUSTEE tilføjes
 
         private string GirafRoleFromEnumToString(GirafRoles role)
         {
@@ -373,12 +376,34 @@ namespace GirafRest.Controllers
                     return GirafRole.Department;
                 case GirafRoles.SuperUser:
                     return GirafRole.SuperUser;
+                case GirafRoles.Trustee:
+                    return GirafRole.Trustee;
                 default:
                     return null;
             }
         }
 
-        //Tilføj trustee methoder
+    
+
+
+        private void AddCitizensToTrustee(GirafUser trustee)
+        {
+            var citizens = _girafRoleRepository.GetAllCitizens();
+            var citizensInDepartment = _userRepository.GetUsersInDepartment((long)trustee.DepartmentKey, citizens);
+            foreach (var citizen in citizensInDepartment)
+            {
+                trustee.AddCitizen(citizen);
+            }
+        }
+        private void AddTrusteeToCitizens(GirafUser citizen)
+        {
+            var trustees = _girafRoleRepository.GetAllTrustees();
+            var trusteesInDepartment = _userRepository.GetUsersInDepartment((long)citizen.DepartmentKey, trustees);
+            foreach (var trustee in trusteesInDepartment)
+            {
+                citizen.AddTrustee(trustee);
+            }
+        }
 
         private void AddGuardiansToCitizens(GirafUser citizen)
         {

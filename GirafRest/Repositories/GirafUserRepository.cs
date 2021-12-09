@@ -207,5 +207,10 @@ namespace GirafRest.Repositories
                 user.DepartmentKey != null && user.DepartmentKey == departmentKey)
             .ToList();
         }
+
+        public GirafUser GetTrusteeWithId(string id)
+        {
+            return Context.Users.Include(u => u.Trustees).FirstOrDefault(u => u.Id == id);
+        }
     }
 }

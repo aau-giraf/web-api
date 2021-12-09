@@ -14,6 +14,8 @@ namespace GirafRest.IRepositories
         GirafUser GetCitizensWithId(string id);
         GirafUser GetFirstCitizen(GuardianRelation citizen);
         GirafUser GetGuardianWithId(string id);
+
+        GirafUser GetTrusteeWithId(string id);
         GirafUser GetGuardianFromRelation(GuardianRelation guardian);
         GirafUser GetCitizenRelationship(string citizenId);
         GirafUser GetUserSettingsByWeekDayColor(string id);

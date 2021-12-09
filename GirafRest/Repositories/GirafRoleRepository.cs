@@ -31,5 +31,15 @@ namespace GirafRest.Repositories
 
         public IEnumerable<string> GetAllCitizens()
             => GetUsersWithRole(GetCitizenRoleId());
+
+        public string GetTrusteeRoleId()
+           => Context.Roles
+                .Where(r => r.Name == GirafRole.Trustee)
+                .Select(c => c.Id).FirstOrDefault();
+        
+
+        public IEnumerable<string> GetAllTrustees()
+           => GetUsersWithRole(GetTrusteeRoleId());
+        
     }
 }
