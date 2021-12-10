@@ -1,10 +1,9 @@
+using GirafRest.Data;
+using GirafRest.IRepositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using GirafRest.IRepositories;
-using GirafRest.Data;
-using System.Threading.Tasks;
 
 namespace GirafRest.Repositories
 {
@@ -60,6 +59,7 @@ namespace GirafRest.Repositories
         public void Update(TEntity entity)
         {
             Context.Set<TEntity>().Update(entity);
+            Context.SaveChangesAsync();
         }
 
         public void UpdateRange(IEnumerable<TEntity> entities)

@@ -1,13 +1,11 @@
+using GirafRest.Data;
+using GirafRest.IRepositories;
+using GirafRest.Models;
+using GirafRest.Models.DTOs;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using GirafRest.Models;
-using GirafRest.IRepositories;
-using GirafRest.Data;
-using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
-using GirafRest.Models.DTOs;
-
 
 namespace GirafRest.Repositories
 {
@@ -16,7 +14,6 @@ namespace GirafRest.Repositories
     /// </summary>
     public class GirafUserRepository : Repository<GirafUser>, IGirafUserRepository
     {
-
         public GirafUserRepository(GirafDbContext context) : base(context)
         {
         }
@@ -28,7 +25,6 @@ namespace GirafRest.Repositories
         /// <returns></returns>
         public async Task<GirafUser> GetUserWithId(string id)
         {
-
             return await Context.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
 
@@ -49,6 +45,7 @@ namespace GirafRest.Repositories
         {
             return Context.SaveChangesAsync();
         }
+
         /// <summary>
         /// Attempt to find the target user and check that he exists.
         /// </summary>
@@ -59,7 +56,7 @@ namespace GirafRest.Repositories
             return Context.Users.Include(u => u.Resources).ThenInclude(dr => dr.Pictogram)
                 .FirstOrDefault(u => u.Id == id);
         }
-        
+
         /// <summary>
         /// Gets citizen users with matching id.
         /// </summary>
@@ -109,9 +106,9 @@ namespace GirafRest.Repositories
         {
             return Context.Users.Include(u => u.Guardians).FirstOrDefault(u => u.Id == citizenId);
         }
-        
+
         /// <summary>
-        /// Gets user settings and weekday color on the user with the given id. 
+        /// Gets user settings and weekday color on the user with the given id.
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -145,7 +142,7 @@ namespace GirafRest.Repositories
                 .ThenInclude(d => d.Resources)
                 .ThenInclude(dr => dr.Pictogram)
                 //And return it
-                .FirstOrDefaultAsync(); 
+                .FirstOrDefaultAsync();
         }
 
         public async Task<GirafUser> LoadUserWithDepartment(GirafUser usr)
@@ -171,7 +168,7 @@ namespace GirafRest.Repositories
                 //And return it
                 .FirstOrDefaultAsync();
         }
-        
+
         /// Method for loading user from context and eager loading fields requied to read their <b>week schedules</b>
         /// </summary>
         /// <param name="id">id of user to load.</param>
@@ -194,18 +191,18 @@ namespace GirafRest.Repositories
         {
             return await Context.Users.Where(u => u.Id == usr.Id).FirstOrDefaultAsync();
         }
-        
+
         public bool ExistsUsername(string username)
             => Context.Users.Any(u => u.UserName == username);
 
         public IEnumerable<GirafUser> GetUsersInDepartment(long departmentKey, IEnumerable<string> users)
         {
-           return Context.Users
-            .Where(user => 
-                // Checks if the user is a guardian
-                users.Any(currUser => currUser == user.Id) &&
-                user.DepartmentKey != null && user.DepartmentKey == departmentKey)
-            .ToList();
+            return Context.Users
+             .Where(user =>
+                 // Checks if the user is a guardian
+                 users.Any(currUser => currUser == user.Id) &&
+                 user.DepartmentKey != null && user.DepartmentKey == departmentKey)
+             .ToList();
         }
     }
 }

@@ -1,53 +1,114 @@
-using System.Collections.Generic;
+using GirafRest.Data;
+using GirafRest.IRepositories;
+using GirafRest.Models;
+using GirafRest.Models.DTOs;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
-using GirafRest.Models;
-using GirafRest.IRepositories;
-using GirafRest.Data;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using GirafRest.Models.DTOs;
 
 namespace GirafRest.Repositories
 {
+    /// <inheritdoc cref="IPictogramRepository"/>
+
     /// <summary>
     /// Repository for the pictogram model.
     /// </summary>
     public class PictogramRepository : Repository<Pictogram>, IPictogramRepository
     {
+        /// <summary>
+        /// Domain specific repository implementation facade for the DBContext.
+        /// </summary>
+        /// <param name="context">The context to operate on</param>
         public PictogramRepository(GirafDbContext context) : base(context)
         {
-
         }
+
+        /// <inheritdoc />
+        public Pictogram GetByID(long pictogramID) => Get(pictogramID);
 
         public Task<Pictogram> getPictogramMatchingRelation(PictogramRelation pictogramRelation)
         {
             return Context.Pictograms.FirstOrDefaultAsync(p => p.Id == pictogramRelation.PictogramId);
         }
-        
+
         public Task<Pictogram> GetPictogramWithName(string name)
         {
             return Context.Pictograms.FirstOrDefaultAsync(r => r.Title == name);
         }
+
         public async Task<int> AddPictogramWith_NO_ImageHash(string name, AccessLevel access)
         {
-            Context.Pictograms.Add(new Pictogram(name,access));
+            Context.Pictograms.Add(new Pictogram(name, access));
             return await Context.SaveChangesAsync();
         }
+
         public Task<Pictogram> FetchResourceWithId(ResourceIdDTO resourceIdDTO)
         {
             return Context.Pictograms.Where(f => f.Id == resourceIdDTO.Id).FirstOrDefaultAsync();
         }
+
         public Task<Pictogram> FindResource(ResourceIdDTO resourceIdDTO)
         {
             return Context.Pictograms.Where(pf => pf.Id == resourceIdDTO.Id).FirstOrDefaultAsync();
         }
+
         public Task<Pictogram> GetPictogramWithID(long Id)
         {
             return Context.Pictograms.FirstOrDefaultAsync(p => p.Id == Id);
         }
 
+        public IQueryable<Pictogram> fetchPictogramsFromDepartmentStartsWithQuery(string query, GirafUser user)
+        {
+            return Context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query)
+                && pictogram.Title.ToLower().Replace(" ", string.Empty).StartsWith(query)
+                || string.IsNullOrEmpty(query))
+                && (pictogram.AccessLevel == AccessLevel.PUBLIC
+                || pictogram.Users.Any(ur => ur.OtherKey == user.Id)
+                || pictogram.Departments.Any(dr => dr.OtherKey == user.DepartmentKey)));
+        }
 
+        public IQueryable<Pictogram> fetchPictogramsFromDepartmentsContainsQuery(string query, GirafUser user)
+        {
+            return Context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query)
+                && pictogram.Title.ToLower().Replace(" ", string.Empty).Contains(query)
+                || string.IsNullOrEmpty(query))
+                && (pictogram.AccessLevel == AccessLevel.PUBLIC
+                || pictogram.Users.Any(ur => ur.OtherKey == user.Id)
+                || pictogram.Departments.Any(dr => dr.OtherKey == user.DepartmentKey)));
+        }
 
+        public IQueryable<Pictogram> fetchPictogramsUserNotPartOfDepartmentStartsWithQuery(string query, GirafUser user)
+        {
+            return Context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query)
+                && pictogram.Title.ToLower().Replace(" ", string.Empty).StartsWith(query)
+                || string.IsNullOrEmpty(query))
+                && (pictogram.AccessLevel == AccessLevel.PUBLIC
+                || pictogram.Users.Any(ur => ur.OtherKey == user.Id)));
+        }
+
+        public IQueryable<Pictogram> fetchPictogramsUserNotPartOfDepartmentContainsQuery(string query, GirafUser user)
+        {
+            return Context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query)
+                && pictogram.Title.ToLower().Replace(" ", string.Empty).Contains(query)
+                || string.IsNullOrEmpty(query))
+                && (pictogram.AccessLevel == AccessLevel.PUBLIC
+                || pictogram.Users.Any(ur => ur.OtherKey == user.Id)));
+        }
+
+        public IQueryable<Pictogram> fetchPictogramsNoUserLoggedInStartsWithQuery(string query)
+        {
+            return Context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query)
+                && pictogram.Title.ToLower().Replace(" ", string.Empty).StartsWith(query)
+                || string.IsNullOrEmpty(query))
+                && (pictogram.AccessLevel == AccessLevel.PUBLIC));
+        }
+
+        public IQueryable<Pictogram> fetchPictogramsNoUserLoggedInContainsQuery(string query)
+        {
+            return Context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query)
+                && pictogram.Title.ToLower().Replace(" ", string.Empty).Contains(query)
+                || string.IsNullOrEmpty(query))
+                && (pictogram.AccessLevel == AccessLevel.PUBLIC));
+        }
     }
 }
