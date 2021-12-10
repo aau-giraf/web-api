@@ -172,8 +172,10 @@ namespace GirafRest.Controllers
                 {
                     //AddGuardiansToCitizens(user);
                     if (model.Role == GirafRoles.Citizen)
+                    {
+                        AddGuardiansToCitizens(user);
                         AddTrusteeToCitizens(user);
-                    else if (model.Role == GirafRoles.Guardian)
+                    }  else if (model.Role == GirafRoles.Guardian)
                         AddCitizensToGuardian(user);
                     else if (model.Role == GirafRoles.Trustee)
                         AddCitizensToTrustee(user);
