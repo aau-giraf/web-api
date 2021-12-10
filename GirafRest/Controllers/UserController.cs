@@ -425,7 +425,7 @@ namespace GirafRest.Controllers
         /// or UserNasNoCitizens</returns>
         /// <param name="id">Identifier of the <see cref="GirafUser"/> to get citizens for</param>
         [HttpGet("{id}/citizens", Name = "GetCitizensOfUser")]
-        [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," +GirafRole.SuperUser)]
+        [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + "," +GirafRole.SuperUser+ "," + GirafRole.Trustee)]
         [ProducesResponseType(typeof(SuccessResponse<List<DisplayNameDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
