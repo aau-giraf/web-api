@@ -161,11 +161,12 @@ namespace GirafRest.Controllers
 
             //Create a new user with the supplied information
             var user = new GirafUser(model.Username, model.DisplayName, department, model.Role);
+
             //Adding the citizen to a trustee may be implemented here.
 
-       
 
             var result  = await _signInManager.UserManager.CreateAsync(user, model.Password);
+
             if (result.Succeeded)
             {
                 if (department != null)
@@ -173,8 +174,8 @@ namespace GirafRest.Controllers
                     //AddGuardiansToCitizens(user);
                     if (model.Role == GirafRoles.Citizen)
                     {
-                        AddGuardiansToCitizens(user);
                         AddTrusteeToCitizens(user);
+                        AddGuardiansToCitizens(user);
                     }  else if (model.Role == GirafRoles.Guardian)
                         AddCitizensToGuardian(user);
                     else if (model.Role == GirafRoles.Trustee)
@@ -385,16 +386,13 @@ namespace GirafRest.Controllers
             }
         }
 
-    
-
-
         private void AddCitizensToTrustee(GirafUser trustee)
         {
             var citizens = _girafRoleRepository.GetAllCitizens();
             var citizensInDepartment = _userRepository.GetUsersInDepartment((long)trustee.DepartmentKey, citizens);
             foreach (var citizen in citizensInDepartment)
             {
-                trustee.AddCitizen(citizen);
+                trustee.AddTrusteeCitizen(citizen);
             }
         }
         private void AddTrusteeToCitizens(GirafUser citizen)

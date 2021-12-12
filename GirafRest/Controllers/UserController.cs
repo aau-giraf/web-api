@@ -398,8 +398,6 @@ namespace GirafRest.Controllers
             var resource = await _pictogramRepository.FetchResourceWithId(resourceIdDTO);
             if (resource == null) return NotFound(new ErrorResponse(ErrorCode.ResourceNotFound, "Resource not found"));
 
-
-
             //Fetch the relationship from the database and check that it exists
             var relationship = await _userResourseRepository.FetchRelationshipFromDb(resource, user);
             if (relationship == null)
@@ -437,6 +435,7 @@ namespace GirafRest.Controllers
             var user = _girafUserRepository.GetCitizensWithId(id);
             //var authUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
             var citizens = new List<DisplayNameDTO>();
+            var tcitizens = new List<DisplayNameDTO>();
             
             var userRole = (await _roleManager.findUserRole(_giraf._userManager, user));
 
@@ -446,13 +445,22 @@ namespace GirafRest.Controllers
                 citizens.Add(new DisplayNameDTO { UserId = girafUser.Id, DisplayName = girafUser.DisplayName });
             }
 
+            foreach (var tcitizen in user.TrusteeCitizens)
+            {
+                var girafUser = _girafUserRepository.GetFirstTrusteeCitizen(tcitizen);
+                tcitizens.Add(new DisplayNameDTO { UserId = girafUser.Id, DisplayName = girafUser.DisplayName });
+
+            }
+
             //sort function for users in citizens since the list needs to be sorted by name... issue#697
             citizens.Sort();
+            tcitizens.Sort();
+
            
             if (!citizens.Any())
             {
-                return NotFound(new ErrorResponse(ErrorCode.UserHasNoCitizens, "User does not have any citizens"));
-            }
+               return NotFound(new ErrorResponse(ErrorCode.UserHasNoCitizens, "User does not have any citizens"));
+            } 
 
             return Ok(new SuccessResponse<List<DisplayNameDTO>>(citizens.ToList<DisplayNameDTO>()));
         }
@@ -506,7 +514,7 @@ namespace GirafRest.Controllers
         /// 
 
 
-        // TRUSTEE tilføjes
+        // TRUSTEE tilf?jes
 
         [HttpPost("{id}/trusteecitizens/{citizenId}")]
         [Authorize(Roles = GirafRole.Department + "," + GirafRole.Trustee + "," +GirafRole.SuperUser)]

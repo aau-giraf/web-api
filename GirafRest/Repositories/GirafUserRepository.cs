@@ -220,5 +220,19 @@ namespace GirafRest.Repositories
         {
             return Context.Users.Include(u => u.Trustees).FirstOrDefault(u => u.Id == id);
         }
+
+        public GirafUser GetFirstTrusteeCitizen(TrusteeRelation citizen)
+        {
+            return Context.Users.FirstOrDefault(u => u.Id == citizen.CitizenId);
+
+        }
+
+        public GirafUser GetTrusteeFromRelation(TrusteeRelation trustee)
+        {
+            return Context.Users.FirstOrDefault(u => u.Id == trustee.TrusteeId);
+        }
+
+
+        
     }
 }

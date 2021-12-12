@@ -17,10 +17,13 @@ namespace GirafRest.IRepositories
         GirafUser CheckIfUserExists(string id);
         GirafUser GetCitizensWithId(string id);
         GirafUser GetFirstCitizen(GuardianRelation citizen);
+        GirafUser GetFirstTrusteeCitizen(TrusteeRelation citizen);
+
         GirafUser GetGuardianWithId(string id);
 
         GirafUser GetTrusteeWithId(string id);
         GirafUser GetGuardianFromRelation(GuardianRelation guardian);
+        GirafUser GetTrusteeFromRelation(TrusteeRelation trustee);
         GirafUser GetCitizenRelationship(string citizenId);
         GirafUser GetUserSettingsByWeekDayColor(string id);
         public bool CheckIfUsernameHasSameId(GirafUserDTO newUser, GirafUser user);
