@@ -144,11 +144,6 @@ namespace GirafRest.Controllers
 
             // Unsure if we should save from every used repository, or just one of them.
             _userRepository.Save();
-            /*_alternateNameRepository.Save();
-            _activityRepository.Save();
-            _weekdayRepository.Save();
-            _pictogramRepository.Save();
-            _pictogramRelationRepository.Save();*/
 
             return StatusCode(
                 StatusCodes.Status201Created,
@@ -189,8 +184,6 @@ namespace GirafRest.Controllers
 
             // Unsure if we should save from every used repository, or just one of them.
             _userRepository.Save();
-            /*_activityRepository.Save();
-            _pictogramRelationRepository.Save();*/
 
             return Ok(new SuccessResponse("Activity deleted"));
         }
@@ -204,7 +197,7 @@ namespace GirafRest.Controllers
         [HttpGet("{userId}/{activityId}")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult> GetActivity(string userId, int activityId)
+        public async Task<ActionResult> GetActivity(string userId, long activityId)
         {
             var activity = _activityRepository.Get(activityId);
             var pictograms = _pictogramRelationRepository.GetWithPictogram(activityId);

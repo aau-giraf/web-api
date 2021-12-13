@@ -21,6 +21,12 @@ namespace GirafRest.Repositories
             return Context.Set<TEntity>().Find(ids);
         }
 
+        public bool TryGet(out TEntity entity, params object[] ids)
+        {
+            entity = Get(ids);
+            return entity != default;
+        }
+
         public IEnumerable<TEntity> GetAll()
         {
             return Context.Set<TEntity>().ToList();

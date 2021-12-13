@@ -1,23 +1,18 @@
 using GirafRest.Models;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq.Expressions;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using GirafRest.Interfaces;
-using GirafRest.Models;
 using GirafRest.Models.DTOs;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 
 namespace GirafRest.IRepositories
 {
-    public interface IGirafUserRepository : IRepository<GirafUser> {
-
-        
+    public interface IGirafUserRepository : IRepository<GirafUser> { 
+        /// <summary>
+        /// Fetches the first or default (null) User by ID
+        /// </summary>
+        /// <param name="userID">The ID of the user to fetch</param>
+        /// <returns>The User instance or default</returns>
+        GirafUser GetByID(string userID);       
         Task<GirafUser> GetUserWithId(string id);
-        void Update(GirafUser user);
         Task<int> SaveChangesAsync();
         GirafUser CheckIfUserExists(string id);
         GirafUser GetCitizensWithId(string id);

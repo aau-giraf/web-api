@@ -5,24 +5,31 @@ using GirafRest.Models.Responses;
 using GirafRest.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
+using GirafRest.Data;
 
 namespace GirafRest.Controllers
 {
     /// <summary>
     /// Status-endpoint; Getting status of HTTP, DB etc, for clients to see status
     /// </summary>
+    [Authorize]
     [Route("v1/[controller]")]
     public class StatusController : Controller
     {
         private readonly IGirafService _giraf;
 
+        // SHOULD BE REMOVED AFTER REFACTORING OF THIS CONTROLLER HAS BEEN COMPLETED!
+        private readonly GirafDbContext _context;
+
         /// <summary>
         /// Constructor for StatusController
         /// </summary>
         /// <param name="giraf">Service Injection</param>
-        public StatusController(IGirafService giraf)
+        public StatusController(IGirafService giraf, GirafDbContext context)
         {
             _giraf = giraf;
+            _context = context;
         }
 
         /// <summary>
@@ -48,7 +55,7 @@ namespace GirafRest.Controllers
         {
             try
             {
-                _giraf._context.Users.FirstOrDefault();
+                _context.Users.FirstOrDefault();
                 return Ok(new SuccessResponse("Connection to database"));
             }
             catch (System.Exception e)
