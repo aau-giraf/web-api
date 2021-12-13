@@ -1,9 +1,10 @@
+using GirafRest.Data;
+using GirafRest.IRepositories;
+using GirafRest.Models;
+using GirafRest.Models.DTOs;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using GirafRest.Models;
-using GirafRest.IRepositories;
-using GirafRest.Data;
 using System.Threading.Tasks;
 
 namespace GirafRest.Repositories
@@ -29,7 +30,6 @@ namespace GirafRest.Repositories
         /// <returns></returns>
         public async Task<GirafUser> GetUserWithId(string id)
         {
-
             return await Context.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
 
@@ -50,6 +50,7 @@ namespace GirafRest.Repositories
         {
             return Context.SaveChangesAsync();
         }
+
         /// <summary>
         /// Attempt to find the target user and check that he exists.
         /// </summary>
@@ -192,25 +193,28 @@ namespace GirafRest.Repositories
                 //And return it
                 .FirstOrDefault();
 
-
         public bool ExistsUsername(string username)
             => Context.Users.Any(u => u.UserName == username);
-
 
         public GirafUser GetUserByUsername(string username)
             => Context.Users.FirstOrDefault(u => u.UserName == username);
 
         public IEnumerable<GirafUser> GetUsersInDepartment(long departmentKey, IEnumerable<string> users)
         {
-           return Context.Users
-            .Where(user =>
-                // Checks if the user is a guardian
-                users.Any(currUser => currUser == user.Id) &&
-                user.DepartmentKey != null && user.DepartmentKey == departmentKey)
-            .ToList();
+            return Context.Users
+             .Where(user =>
+                 // Checks if the user is a guardian
+                 users.Any(currUser => currUser == user.Id) &&
+                 user.DepartmentKey != null && user.DepartmentKey == departmentKey)
+             .ToList();
         }
 
         public GirafUser GetUserWithId(string id)
             => Context.Users.FirstOrDefault(u => u.Id == id);
+
+        public Task<GirafUser> GetUserWithIdOrUsername(DisplayNameDTO member)
+        {
+            return Context.Users.Where(u => u.UserName == member.DisplayName || u.Id == member.UserId).FirstOrDefaultAsync();
+        }
     }
 }
