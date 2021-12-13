@@ -89,10 +89,7 @@ namespace GirafRest.Controllers
             return userPictograms == null
                 ? NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, "User has no pictograms"))
                 : this.RequestSucceeded(new SuccessResponse<List<WeekPictogramDTO>>(userPictograms.OfType<Pictogram>()
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-                .Select(_p => new WeekPictogramDTO(_p))
-                .ToList()));
+                .Skip((page - 1) * pageSize).Take(pageSize).Select(_p => new WeekPictogramDTO(_p)).ToList()));
         }
 
         /// <summary>
@@ -273,30 +270,23 @@ namespace GirafRest.Controllers
         {
             var usr = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
             if (usr == null)
+            {
                 return Unauthorized(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
+            }
             //Fetch the pictogram from the database and check that it exists
             var pict = _pictogramRepository.GetByID(id);
 
             if (pict == null)
+            {
                 return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, "Pictogram not found"));
+            }
 
             if (!CheckOwnership(pict, usr).Result)
+            {
                 return this.MissingPropertyFromRequest(nameof(pict));
+            }
 
-            // Before we can remove a pictogram we must delete all its relations
-            var userRessourceRelations = _giraf._context.UserResources.Where(ur => ur.PictogramKey == pict.Id);
-            _giraf._context.UserResources.RemoveRange(userRessourceRelations);
-
-            var depRessourceRelations = _giraf._context.DepartmentResources
-                                                .Where(ur => ur.PictogramKey == pict.Id);
-            _giraf._context.DepartmentResources.RemoveRange(depRessourceRelations);
-
-            var pictogramRelations = _giraf._context.PictogramRelations
-                                                .Where(relation => relation.PictogramId == pict.Id);
-
-            _giraf._context.PictogramRelations.RemoveRange(pictogramRelations);
-
-            await _giraf._context.SaveChangesAsync();
+            await _pictogramRepository.RemoveRelations(pict);
 
             // Now we can safely delete the pictogram
             _pictogramRepository.Remove(pict);
@@ -327,16 +317,22 @@ namespace GirafRest.Controllers
             GirafUser user = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
 
             if (user == null)
+            {
                 return Unauthorized(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
+            }
 
             //Attempt to fetch the pictogram from the database.
             Pictogram pictogram = _pictogramRepository.GetByID(id);
 
             if (pictogram == null)
+            {
                 return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, "Pictogram not found"));
+            }
 
             if (!CheckOwnership(pictogram, user).Result)
+            {
                 return this.MissingPropertyFromRequest(nameof(pictogram));
+            }
 
             //Update the image
             byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body);
@@ -353,7 +349,7 @@ namespace GirafRest.Controllers
                         fs.Write(image);
                     }
                 }
-                catch (System.UnauthorizedAccessException)
+                catch (UnauthorizedAccessException)
                 {
                     //Consider if the errorcode is the most appropriate one here
                     return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.Forbidden, "The server does not have permission to write this file"));
@@ -383,17 +379,25 @@ namespace GirafRest.Controllers
             var picto = _pictogramRepository.GetByID(id);
 
             if (picto == null)
+            {
                 return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, "Pictogram not found"));
+            }
 
             var usr = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
             if (usr == null)
+            {
                 return Unauthorized(new ErrorResponse(ErrorCode.NotAuthorized, "User not authorized"));
+            }
 
             if (picto.ImageHash == null)
+            {
                 return NotFound(new ErrorResponse(ErrorCode.PictogramHasNoImage, "Pictogram has no image"));
+            }
 
             if (!CheckOwnership(picto, usr).Result)
+            {
                 return this.MissingPropertyFromRequest(nameof(picto));
+            }
 
             var pictoPath = $"{imagePath}{picto.Id}.png";
 

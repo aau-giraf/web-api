@@ -58,6 +58,21 @@ namespace GirafRest.Repositories
             return Context.Pictograms.FirstOrDefaultAsync(p => p.Id == Id);
         }
 
+        public async Task RemoveRelations(Pictogram pict)
+        {
+            // Before we can remove a pictogram we must delete all its relations
+            var userRessourceRelations = Context.UserResources.Where(ur => ur.PictogramKey == pict.Id);
+            Context.UserResources.RemoveRange(userRessourceRelations);
+
+            var depRessourceRelations = Context.DepartmentResources.Where(ur => ur.PictogramKey == pict.Id);
+            Context.DepartmentResources.RemoveRange(depRessourceRelations);
+
+            var pictogramRelations = Context.PictogramRelations.Where(relation => relation.PictogramId == pict.Id);
+            Context.PictogramRelations.RemoveRange(pictogramRelations);
+
+            await Context.SaveChangesAsync();
+        }
+
         public IEnumerable<Pictogram> fetchPictogramsFromDepartmentStartsWithQuery(string query, GirafUser user)
         {
             return Context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query)
