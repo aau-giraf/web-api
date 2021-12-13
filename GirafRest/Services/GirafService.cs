@@ -35,12 +35,20 @@ namespace GirafRest.Services
         /// </summary>
         /// <param name="context">Reference to the database context.</param>
         /// <param name="userManager">Reference to asp.net's user-manager.</param>
-        public GirafService(GirafDbContext context, UserManager<GirafUser> userManager)
+        /// <param name="girafUserRepository">Service Injection</param>
+        /// <param name="userResourseRepository">Service Injection</param>
+        /// <param name="departmentResourseRepository">Service Injection</param>
+        public GirafService(UserManager<GirafUser> userManager,
+            IGirafUserRepository girafUserRepository,
+            IUserResourseRepository userResourseRepository,
+            IDepartmentResourseRepository departmentResourseRepository)
         {
-            this._context = context;
-            this._userManager = userManager;
+            _userManager = userManager;
+            _girafUserRepository = girafUserRepository;
+            _userResourseRepository = userResourseRepository;
+            _departmentResourseRepository = departmentResourseRepository;
         }
-        
+
         public async Task<byte[]> ReadRequestImage(Stream bodyStream)
         {
             byte[] image;
@@ -142,7 +150,7 @@ namespace GirafRest.Services
                 .FirstOrDefaultAsync();
         }
 
-        
+
         /// <summary>
         /// Checks if the user owns the given <paramref name="pictogram"/>.
         /// </summary>
@@ -162,7 +170,7 @@ namespace GirafRest.Services
 
             return ownedByUser;
         }
-        
+
         /// <summary>
         /// Creates a MD5 hash used for hashing pictures, and returns the hash as a string.
         /// </summary>

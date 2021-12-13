@@ -62,7 +62,6 @@ namespace GirafRest.Repositories
         /// </summary>
         /// <param name="weekDTO">The DTO from which values are read.</param>
         /// <param name="week">The week object to which values are written.</param>
-        /// <param name="_giraf">An instance of the GirafService from which the database will be accessed when reading the DTO.</param>
         /// <returns>MissingProperties if thumbnail is missing.
         /// ResourceNotFound if any pictogram id is invalid.
         /// null otherwise.</returns>
@@ -109,7 +108,6 @@ namespace GirafRest.Repositories
         /// <returns>True if all pictograms and choices were found and added, and false otherwise.</returns>
         /// <param name="to">Pictograms and choices will be added to this object.</param>
         /// <param name="from">Pictograms and choices will be read from this object.</param>
-        /// <param name="_giraf">IGirafService for injection.</param>
         public async Task<bool> AddPictogramsToWeekday(Weekday to, WeekdayDTO from)
         {
             if (from.Activities != null)

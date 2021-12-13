@@ -1,25 +1,28 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GirafRest.Models;
 using GirafRest.IRepositories;
 using GirafRest.Data;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using GirafRest.Models.DTOs;
 
 namespace GirafRest.Repositories
 {
-    /// <summary>
-    /// Repository for the pictogram model.
-    /// </summary>
+    /// <inheritdoc cref="GirafRest.IRepositories.IPictogramRepository"/>
     public class PictogramRepository : Repository<Pictogram>, IPictogramRepository
     {
-        public PictogramRepository(GirafDbContext context) : base(context)
-        {
+        /// <summary>
+        /// Domain specific repository implementation facade for the DBContext.
+        /// </summary>
+        /// <param name="context">The context to operate on</param>
+        public PictogramRepository(GirafDbContext context)
+            : base(context)
+        { }
 
-        }
-
+        /// <inheritdoc />
+        public Pictogram GetByID(long pictogramID)
+            => Get(pictogramID);
+        
         public Task<Pictogram> getPictogramMatchingRelation(PictogramRelation pictogramRelation)
         {
             return Context.Pictograms.FirstOrDefaultAsync(p => p.Id == pictogramRelation.PictogramId);
@@ -42,8 +45,5 @@ namespace GirafRest.Repositories
         {
             return Context.Pictograms.FirstOrDefaultAsync(p => p.Id == Id);
         }
-
-
-
     }
 }

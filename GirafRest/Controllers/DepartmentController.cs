@@ -14,12 +14,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GirafRest.Data;
 
 namespace GirafRest.Controllers
 {
     /// <summary>
     /// Handles Department endpoints
     /// </summary>
+    [Authorize]
     [Route("v1/[controller]")]
     public class DepartmentController : Controller
     {
@@ -28,6 +30,9 @@ namespace GirafRest.Controllers
         private readonly RoleManager<GirafRole> _roleManager;
         private readonly IGirafUserRepository _userRepository;
         private readonly IDepartmentRepository _departmentRepository;
+
+        // SHOULD BE REMOVED AFTER REFACTORING OF THIS CONTROLLER HAS BEEN COMPLETED!
+        private readonly GirafDbContext _context;
 
         /// <summary>
         /// Initializes new DepartmentController, injecting services
@@ -59,7 +64,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> Get()
         {
-            var departmentNameDTOs = await _giraf._context.Departments.Select(d => new DepartmentNameDTO(d.Key, d.Name)).ToListAsync();
+            var departmentNameDTOs = await _context.Departments.Select(d => new DepartmentNameDTO(d.Key, d.Name)).ToListAsync();
 
             if (departmentNameDTOs.Count == 0)
                 return NotFound(new ErrorResponse(ErrorCode.NotFound, "No departments found"));
@@ -89,7 +94,7 @@ namespace GirafRest.Controllers
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
             //.Include is used to get information on members aswell when getting the Department
-            var department = _giraf._context.Departments
+            var department = _context.Departments
                 .Where(dep => dep.Key == id);
 
             var depa = await department
@@ -115,14 +120,14 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> GetCitizenNamesAsync(long id)
         {
-            var department = _giraf._context.Departments.FirstOrDefault(dep => dep.Key == id);
+            var department = _context.Departments.FirstOrDefault(dep => dep.Key == id);
 
             if (department == null)
                 return NotFound(new ErrorResponse(ErrorCode.DepartmentNotFound, "Department not found"));
 
             var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
 
-            currentUser = _giraf._context.Users.Include(a => a.Department)
+            currentUser = _context.Users.Include(a => a.Department)
                                                .FirstOrDefault(d => d.UserName == currentUser.UserName);
 
             var isSuperUser = await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser);
@@ -131,21 +136,21 @@ namespace GirafRest.Controllers
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
             // Get all citizens
-            var roleCitizenId = _giraf._context.Roles.Where(r => r.Name == GirafRole.Citizen)
+            var roleCitizenId = _context.Roles.Where(r => r.Name == GirafRole.Citizen)
                                                      .Select(c => c.Id).FirstOrDefault();
 
             if (roleCitizenId == null)
                 return NotFound(new ErrorResponse(ErrorCode.DepartmentHasNoCitizens, "Department has no citizens"));
 
             // get all users where id of role is in roleCitizenId
-            var userIds = _giraf._context.UserRoles.Where(u => u.RoleId == roleCitizenId)
+            var userIds = _context.UserRoles.Where(u => u.RoleId == roleCitizenId)
                                 .Select(r => r.UserId).Distinct();
 
             if (!userIds.Any())
                 return NotFound(new ErrorResponse(ErrorCode.DepartmentHasNoCitizens, "Department has no citizens"));
 
             // get a list of the name of all citizens in the department
-            var usersNamesInDepartment = _giraf._context.Users
+            var usersNamesInDepartment = _context.Users
                 .Where(u => userIds.Any(ui => ui == u.Id) && u.DepartmentKey == department.Key)
                 .Select(u =>
                     new DisplayNameDTO(u.DisplayName, GirafRoles.Citizen, u.Id)
@@ -193,7 +198,7 @@ namespace GirafRest.Controllers
                 {
                     foreach (var mem in depDTO.Members)
                     {
-                        var usr = await _giraf._context.Users
+                        var usr = await _context.Users
                             .Where(u => u.UserName == mem.DisplayName || u.Id == mem.UserId)
                             .FirstOrDefaultAsync();
                         if (usr == null)
@@ -209,7 +214,7 @@ namespace GirafRest.Controllers
                 {
                     foreach (var reso in depDTO.Resources)
                     {
-                        var res = await _giraf._context.Pictograms
+                        var res = await _context.Pictograms
                             .Where(p => p.Id == reso)
                             .FirstOrDefaultAsync();
                         if (res == null)
@@ -218,12 +223,12 @@ namespace GirafRest.Controllers
                                 "The list of resources contained an invalid resource id: " + reso
                             ));
                         var dr = new DepartmentResource(department, res);
-                        await _giraf._context.DepartmentResources.AddAsync(dr);
+                        await _context.DepartmentResources.AddAsync(dr);
                     }
                 }
 
-                _giraf._context.Departments.Add(department);
-                _giraf._context.SaveChanges();
+                _context.Departments.Add(department);
+                _context.SaveChanges();
 
                 //Create a new user with the supplied information
 
@@ -239,7 +244,7 @@ namespace GirafRest.Controllers
                 await _giraf._userManager.AddToRoleAsync(departmentUser, GirafRole.Department);
 
                 //Save the changes and return the entity
-                await _giraf._context.SaveChangesAsync();
+                await _context.SaveChangesAsync();
 
                 var members = DepartmentDTO.FindMembers(department.Members, _roleManager, _giraf);
                 return CreatedAtRoute(
@@ -274,7 +279,7 @@ namespace GirafRest.Controllers
             var usr = await _giraf.LoadUserWithResources(HttpContext.User);
 
             //Fetch the department and check that it exists no need to load ressources already on user
-            var department = await _giraf._context.Departments.Where(d => d.Key == departmentId)
+            var department = await _context.Departments.Where(d => d.Key == departmentId)
                                          .Include(d => d.Members)
                                          .FirstOrDefaultAsync();
             if (department == null)
@@ -282,7 +287,7 @@ namespace GirafRest.Controllers
 
 
             //Fetch the resource with the given id, check that it exists and that the user owns it.
-            var resource = await _giraf._context.Pictograms.Where(f => f.Id == resourceId).FirstOrDefaultAsync();
+            var resource = await _context.Pictograms.Where(f => f.Id == resourceId).FirstOrDefaultAsync();
             if (resource == null)
                 return NotFound(new ErrorResponse(ErrorCode.ResourceNotFound, "Resource not found"));
 
@@ -292,7 +297,7 @@ namespace GirafRest.Controllers
                     new ErrorResponse(ErrorCode.NotAuthorized, "User does not own the resource"));
 
             //Check if the department already owns the resource
-            var alreadyOwned = await _giraf._context.DepartmentResources
+            var alreadyOwned = await _context.DepartmentResources
                                            .Where(depres => depres.OtherKey == departmentId
                                                   && depres.PictogramKey == resourceId)
                 .AnyAsync();
@@ -300,22 +305,22 @@ namespace GirafRest.Controllers
                 return BadRequest(new ErrorResponse(ErrorCode.DepartmentAlreadyOwnsResource, "Resource is already in department"));
 
             //Remove resource from user
-            var usrResource = await _giraf._context.UserResources
+            var usrResource = await _context.UserResources
                                           .Where(ur => ur.PictogramKey == resource.Id && ur.OtherKey == usr.Id)
                                           .FirstOrDefaultAsync();
             if (usrResource == null)
                 return NotFound(new ErrorResponse(ErrorCode.ResourceNotFound, "Resource not found"));
 
             usr.Resources.Remove(usrResource);
-            await _giraf._context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
             //Change resource AccessLevel to Protected from Private
             resource.AccessLevel = AccessLevel.PROTECTED;
 
             //Create a relationship between the department and the resource.
             var dr = new DepartmentResource(usr.Department, resource);
-            await _giraf._context.DepartmentResources.AddAsync(dr);
-            await _giraf._context.SaveChangesAsync();
+            await _context.DepartmentResources.AddAsync(dr);
+            await _context.SaveChangesAsync();
 
             //Return Ok and the department - the resource is now visible in deparment.Resources
             var members = DepartmentDTO.FindMembers(department.Members, _roleManager, _giraf);
@@ -339,7 +344,7 @@ namespace GirafRest.Controllers
             if (!_authentication.HasEditDepartmentAccess(requestingUser, departmentId).Result)
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
-            var department = _giraf._context.Departments
+            var department = _context.Departments
                 .FirstOrDefault(d => d.Key == departmentId);
             if (department == null)
                 return NotFound(new ErrorResponse(ErrorCode.DepartmentNotFound, "Department not found"));
@@ -349,7 +354,7 @@ namespace GirafRest.Controllers
 
             department.Name = nameDTO.Name;
 
-            _giraf._context.SaveChanges();
+            _context.SaveChanges();
 
             return Ok(new SuccessResponse("Name of department changed"));
         }
@@ -369,13 +374,13 @@ namespace GirafRest.Controllers
             if (!_authentication.HasEditDepartmentAccess(requestingUser, departmentId).Result)
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
-            var department = _giraf._context.Departments
+            var department = _context.Departments
                 .FirstOrDefault(d => d.Key == departmentId);
             if (department == null)
                 return NotFound(new ErrorResponse(ErrorCode.DepartmentNotFound, "Department not found"));
 
-            _giraf._context.Remove(department);
-            _giraf._context.SaveChanges();
+            _context.Remove(department);
+            _context.SaveChanges();
 
             return Ok(new SuccessResponse("Department deleted"));
         }
@@ -398,14 +403,14 @@ namespace GirafRest.Controllers
             var usr = await _giraf.LoadUserWithResources(HttpContext.User);
 
             //Fetch the department and check that it exists. No need to fetch dep ressources they are already on user
-            var department = await _giraf._context.Departments.Where(d => d.Key == usr.DepartmentKey)
+            var department = await _context.Departments.Where(d => d.Key == usr.DepartmentKey)
                                          .Include(d => d.Members)
                                          .FirstOrDefaultAsync();
             if (department == null)
                 return NotFound(new ErrorResponse(ErrorCode.DepartmentNotFound, "Department not found"));
 
             //Fetch the resource with the given id, check that it exists.
-            var resource = await _giraf._context.Pictograms
+            var resource = await _context.Pictograms
                 .Where(f => f.Id == resourceId)
                 .FirstOrDefaultAsync();
             if (resource == null)
@@ -417,7 +422,7 @@ namespace GirafRest.Controllers
                     new ErrorResponse(ErrorCode.NotAuthorized, "User does not own resource"));
 
             //Check if the department already owns the resource and remove if so.
-            var drrelation = await _giraf._context.DepartmentResources
+            var drrelation = await _context.DepartmentResources
                                          .Where(dr => dr.PictogramKey == resource.Id && dr.OtherKey == department.Key)
                 .FirstOrDefaultAsync();
             if (drrelation == null)
@@ -425,7 +430,7 @@ namespace GirafRest.Controllers
                     new ErrorResponse(ErrorCode.ResourceNotOwnedByDepartment, "Resource not owned by department"));
 
             usr.Department.Resources.Remove(drrelation);
-            await _giraf._context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
             //Return Ok and the department - the resource is now visible in deparment.Resources
             var members = DepartmentDTO.FindMembers(department.Members, _roleManager, _giraf);

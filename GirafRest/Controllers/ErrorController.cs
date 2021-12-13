@@ -9,6 +9,7 @@ namespace GirafRest.Controllers
     /// <summary>
     /// Handles errors
     /// </summary>
+    [Authorize]
     [Route("v1/[controller]")]
     public class ErrorController : Controller
     {

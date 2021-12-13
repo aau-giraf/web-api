@@ -13,14 +13,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using GirafRest.Data;
 
 namespace GirafRest.Controllers
 {
     /// <summary>
     /// Manages pictograms, CRUD-ish.
     /// </summary>
-    [Route("v1/[controller]")]
     [Authorize]
+    [Route("v1/[controller]")]
     public class PictogramController : Controller
     {
         private const string IMAGE_TYPE_PNG = "image/png";
@@ -31,18 +32,23 @@ namespace GirafRest.Controllers
 
         private readonly string imagePath;
 
+        // SHOULD BE REMOVED AFTER REFACTORING OF THIS CONTROLLER HAS BEEN COMPLETED!
+        private readonly GirafDbContext _context;
+
         /// <summary>
         /// Constructor for controller
         /// </summary>
         /// <param name="girafController">Service Injection</param>
         /// <param name="lFactory">Service Injection</param>
         /// <param name="hostingEnvironment">Service Injection</param>
-        public PictogramController(IGirafService girafController, ILoggerFactory lFactory, IHostEnvironment hostingEnvironment)
+        public PictogramController(IGirafService girafController, ILoggerFactory lFactory, IHostEnvironment hostingEnvironment, GirafDbContext context)
         {
             _giraf = girafController;
             _giraf._logger = lFactory.CreateLogger("Pictogram");
             _hostingEnvironment = hostingEnvironment;
             imagePath = _hostingEnvironment.ContentRootPath + "/../pictograms/";
+            // SHOULD BE REMOVED AFTER REFACTORING OF THIS CONTROLLER HAS BEEN COMPLETED!
+            _context = context;
         }
 
 
@@ -102,7 +108,7 @@ namespace GirafRest.Controllers
             try
             {
                 //Fetch the pictogram and check that it actually exists
-                var pictogram = await _giraf._context.Pictograms
+                var pictogram = await _context.Pictograms
                     .Where(p => p.Id == id)
                     .FirstOrDefaultAsync();
                 if (pictogram == null)
@@ -184,8 +190,8 @@ namespace GirafRest.Controllers
                 new DepartmentResource(user.Department, pict);
             }
 
-            await _giraf._context.Pictograms.AddAsync(pict);
-            await _giraf._context.SaveChangesAsync();
+            await _context.Pictograms.AddAsync(pict);
+            await _context.SaveChangesAsync();
 
             return CreatedAtRoute(
                 "GetPictogram",
@@ -224,7 +230,7 @@ namespace GirafRest.Controllers
             if (usr == null)
                 return Unauthorized(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
             //Fetch the pictogram from the database and check that it exists
-            var pict = await _giraf._context.Pictograms
+            var pict = await _context.Pictograms
                 .Where(pic => pic.Id == id)
                 .FirstOrDefaultAsync();
             if (pict == null)
@@ -237,8 +243,8 @@ namespace GirafRest.Controllers
             pictogram.Id = id;
             //Update the existing database entry and save the changes.
             pict.Merge(pictogram);
-            _giraf._context.Pictograms.Update(pict);
-            await _giraf._context.SaveChangesAsync();
+            _context.Pictograms.Update(pict);
+            await _context.SaveChangesAsync();
 
             return Ok(new SuccessResponse<WeekPictogramDTO>(new WeekPictogramDTO(pict)));
         }
@@ -260,7 +266,7 @@ namespace GirafRest.Controllers
             if (usr == null)
                 return Unauthorized(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
             //Fetch the pictogram from the database and check that it exists
-            var pict = await _giraf._context.Pictograms.Where(pic => pic.Id == id).FirstOrDefaultAsync();
+            var pict = await _context.Pictograms.Where(pic => pic.Id == id).FirstOrDefaultAsync();
             if (pict == null)
                 return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, "Pictogram not found"));
 
@@ -269,23 +275,23 @@ namespace GirafRest.Controllers
                     new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
             // Before we can remove a pictogram we must delete all its relations
-            var userRessourceRelations = _giraf._context.UserResources.Where(ur => ur.PictogramKey == pict.Id);
-            _giraf._context.UserResources.RemoveRange(userRessourceRelations);
+            var userRessourceRelations = _context.UserResources.Where(ur => ur.PictogramKey == pict.Id);
+            _context.UserResources.RemoveRange(userRessourceRelations);
 
-            var depRessourceRelations = _giraf._context.DepartmentResources
+            var depRessourceRelations = _context.DepartmentResources
                                                 .Where(ur => ur.PictogramKey == pict.Id);
-            _giraf._context.DepartmentResources.RemoveRange(depRessourceRelations);
+            _context.DepartmentResources.RemoveRange(depRessourceRelations);
 
-            var pictogramRelations = _giraf._context.PictogramRelations
+            var pictogramRelations = _context.PictogramRelations
                                                 .Where(relation => relation.PictogramId == pict.Id);
 
-            _giraf._context.PictogramRelations.RemoveRange(pictogramRelations);
+            _context.PictogramRelations.RemoveRange(pictogramRelations);
 
-            await _giraf._context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
 
             // Now we can safely delete the pictogram
-            _giraf._context.Pictograms.Remove(pict);
-            await _giraf._context.SaveChangesAsync();
+            _context.Pictograms.Remove(pict);
+            await _context.SaveChangesAsync();
             return Ok(new SuccessResponse("Pictogram deleted"));
         }
         #endregion
@@ -311,7 +317,7 @@ namespace GirafRest.Controllers
                 return Unauthorized(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
             //Attempt to fetch the pictogram from the database.
-            Pictogram pictogram = await _giraf._context
+            Pictogram pictogram = await _context
                 .Pictograms
                 .Where(p => p.Id == id)
                 .FirstOrDefaultAsync();
@@ -347,7 +353,7 @@ namespace GirafRest.Controllers
                 pictogram.ImageHash = _giraf.GetHash(image);
             }
 
-            await _giraf._context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             return Ok(new SuccessResponse<WeekPictogramDTO>(new WeekPictogramDTO(pictogram)));
         }
         /// <summary>
@@ -364,7 +370,7 @@ namespace GirafRest.Controllers
         public async Task<ActionResult> ReadPictogramImage(long id)
         {
             //Fetch the pictogram and check that it actually exists and has an image.
-            var picto = await _giraf._context
+            var picto = await _context
                 .Pictograms
                 .Where(pictogram => pictogram.Id == id)
                 .FirstOrDefaultAsync();
@@ -422,7 +428,7 @@ namespace GirafRest.Controllers
             if (usr == null)
                 return Unauthorized(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
-            var picto = await _giraf._context
+            var picto = await _context
                 .Pictograms
                 .Where(pictogram => pictogram.Id == id)
                 .FirstOrDefaultAsync();
@@ -534,7 +540,7 @@ namespace GirafRest.Controllers
         #region DatabaseQueries
         private IQueryable<Pictogram> fetchPictogramsFromDepartmentStartsWithQuery(string query,GirafUser user)
         {
-            return _giraf._context.Pictograms.Where(
+            return _context.Pictograms.Where(
                     pictogram => (!string.IsNullOrEmpty(query) &&
                                   pictogram.Title.ToLower().Replace(" ", string.Empty).StartsWith(query)
                                   || string.IsNullOrEmpty(query))
@@ -545,7 +551,7 @@ namespace GirafRest.Controllers
 
         private IQueryable<Pictogram> fetchPictogramsFromDepartmentsContainsQuery(string query,GirafUser user)
         {
-            return _giraf._context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query) 
+            return _context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query) 
                                                            && pictogram.Title.ToLower().Replace(" ", string.Empty).Contains(query) 
                                                            || string.IsNullOrEmpty(query)) 
                                                           && (pictogram.AccessLevel == AccessLevel.PUBLIC 
@@ -555,7 +561,7 @@ namespace GirafRest.Controllers
 
         private IQueryable<Pictogram> fetchPictogramsUserNotPartOfDepartmentStartsWithQuery(string query,GirafUser user)
         {
-            return _giraf._context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query)
+            return _context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query)
                                                                   && pictogram.Title.ToLower()
                                                                       .Replace(" ", string.Empty).StartsWith(query)
                                                                   || string.IsNullOrEmpty(query))
@@ -566,7 +572,7 @@ namespace GirafRest.Controllers
         
         private IQueryable<Pictogram> fetchPictogramsUserNotPartOfDepartmentContainsQuery(string query,GirafUser user)
         {
-            return _giraf._context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query)
+            return _context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query)
                                                                   && pictogram.Title.ToLower()
                                                                       .Replace(" ", string.Empty).Contains(query)
                                                                   || string.IsNullOrEmpty(query))
@@ -577,7 +583,7 @@ namespace GirafRest.Controllers
 
         private IQueryable<Pictogram> fetchPictogramsNoUserLoggedInStartsWithQuery(string query)
         {
-            return _giraf._context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query)
+            return _context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query)
                                                                   && pictogram.Title.ToLower()
                                                                       .Replace(" ", string.Empty).StartsWith(query)
                                                                   || string.IsNullOrEmpty(query))
@@ -586,7 +592,7 @@ namespace GirafRest.Controllers
         
         private IQueryable<Pictogram> fetchPictogramsNoUserLoggedInContainsQuery(string query)
         {
-            return _giraf._context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query)
+            return _context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query)
                                                                   && pictogram.Title.ToLower()
                                                                       .Replace(" ", string.Empty).Contains(query)
                                                                   || string.IsNullOrEmpty(query))

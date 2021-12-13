@@ -1,14 +1,14 @@
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace GirafRest.IRepositories
 {
+    /// <summary>
+    /// Domain specific repository for pictograms
+    /// </summary>
     public interface IPictogramRepository : IRepository<Models.Pictogram>
-    {
+    {        
         public Task<Pictogram> getPictogramMatchingRelation(PictogramRelation pictogramRelation);
         public Task<Pictogram> GetPictogramWithName(string name);
         /// <summary>
@@ -20,5 +20,11 @@ namespace GirafRest.IRepositories
         public Task<int> AddPictogramWith_NO_ImageHash(string name, AccessLevel access);
         public Task<Pictogram> FindResource(ResourceIdDTO resourceIdDTO);
         public Task<Pictogram> GetPictogramWithID(long Id);
+        /// <summary>
+        /// Fetches the first or default (null) Pictogram by ID
+        /// </summary>
+        /// <param name="pictogramID">The ID of the pictogram to fetch</param>
+        /// <returns>The Pictogram instance or default</returns>
+        Models.Pictogram GetByID(long pictogramID);
     }
 }

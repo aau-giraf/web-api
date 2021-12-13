@@ -72,7 +72,9 @@ namespace GirafRest.Models.Responses
         UserMustBeInDepartment,
         WeekNotFound,
         ActivityNotFound,
-        AlternateNameAlreadyExists
+        AlternateNameAlreadyExists,
+        MissingBodyObject,
+        ConflictingResource,
     }
 #pragma warning restore 1591
 }

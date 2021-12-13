@@ -14,7 +14,7 @@ namespace GirafRest.Repositories
 
         }
 
-        public ICollection<PictogramRelation> GetWithPictogram(int activityID)
+        public ICollection<PictogramRelation> GetWithPictogram(long activityID)
             => Context.PictogramRelations
                 .Include(pictogram => pictogram.Pictogram)
                 .Where(pr => pr.ActivityId == activityID)
