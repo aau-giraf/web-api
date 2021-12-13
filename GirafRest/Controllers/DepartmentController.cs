@@ -1,10 +1,10 @@
 using GirafRest.Extensions;
+using GirafRest.Interfaces;
+using GirafRest.IRepositories;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Enums;
 using GirafRest.Models.Responses;
-using GirafRest.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -26,8 +26,8 @@ namespace GirafRest.Controllers
         private readonly IGirafService _giraf;
 
         private readonly RoleManager<GirafRole> _roleManager;
-
-        private readonly IAuthenticationService _authentication;
+        private readonly IGirafUserRepository _userRepository;
+        private readonly IDepartmentRepository _departmentRepository;
 
         /// <summary>
         /// Initializes new DepartmentController, injecting services
@@ -35,16 +35,19 @@ namespace GirafRest.Controllers
         /// <param name="giraf">Injection of GirafService</param>
         /// <param name="loggerFactory">Injection of logger</param>
         /// <param name="roleManager">Injection of RoleManager</param>
-        /// <param name="authentication">Injection of Authentication</param>
+        /// <param name="userRepository">Injection of User Repository</param>
+        /// <param name="departmentRepository">Injection of Department Repository</param>
         public DepartmentController(IGirafService giraf,
             ILoggerFactory loggerFactory,
             RoleManager<GirafRole> roleManager,
-            IAuthenticationService authentication)
+            IGirafUserRepository userRepository,
+            IDepartmentRepository departmentRepository)
         {
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Department");
             _roleManager = roleManager;
-            _authentication = authentication;
+            _userRepository = userRepository;
+            _departmentRepository = departmentRepository;
         }
 
         /// <summary>
@@ -107,7 +110,6 @@ namespace GirafRest.Controllers
         /// <returns>The citizen names else DepartmentNotFound, NotAuthorised or DepartmentHasNoCitizens</returns>
         /// <param name="id">Id of <see cref="Department"/> to get citizens for</param>
         [HttpGet("{id}/citizens")]
-        [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
         [ProducesResponseType(typeof(SuccessResponse<List<DisplayNameDTO>>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -161,14 +163,13 @@ namespace GirafRest.Controllers
         /// else: MissingProperties, UserNotFound, NotAuthorised, InvalidProperties or CouldNotCreateDepartmentUser
         /// </returns>
         [HttpPost("")]
-        [Authorize]
         [ProducesResponseType(typeof(SuccessResponse<DepartmentDTO>), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
 
-        public async Task<ActionResult> Post([FromBody]DepartmentDTO depDTO)
+        public async Task<ActionResult> Post([FromBody] DepartmentDTO depDTO)
         {
             try
             {
@@ -263,7 +264,6 @@ namespace GirafRest.Controllers
         /// Else: DepartmentNotFound, ResourceNotFound, NotAuthorized or DepartmentAlreadyOwnsResourc
         /// </returns>
         [HttpPost("{departmentId}/resource/{resourceId}")]
-        [Authorize]
         [Obsolete("Not used by the new WeekPlanner and might need to be changed or deleted (see future works)")]
         [ProducesResponseType(typeof(SuccessResponse<DepartmentDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -329,7 +329,6 @@ namespace GirafRest.Controllers
         /// <param name="nameDTO">Object handling new name.</param>
         /// <returns>Returns empty ok response.</returns>
         [HttpPut("{departmentId}/name")]
-        [Authorize]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -361,7 +360,6 @@ namespace GirafRest.Controllers
         /// <returns>Empty response on success else: NotAuthorised or DepartmentNotFound</returns>
         /// <param name="departmentId">Identifier of <see cref="Department"/> to delete</param>
         [HttpDelete("{departmentId}")]
-        [Authorize]
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -390,7 +388,6 @@ namespace GirafRest.Controllers
         /// Else: ResourceNotFound, NotAuthorized or ResourceNotOwnedByDepartment
         /// </returns>
         [HttpDelete("resource/{resourceId}")]
-        [Authorize]
         [Obsolete("Not used by the new WeekPlanner and might need to be changed or deleted (see future works)")]
         [ProducesResponseType(typeof(SuccessResponse<DepartmentDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
