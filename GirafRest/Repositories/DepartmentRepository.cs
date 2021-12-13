@@ -1,9 +1,9 @@
+using GirafRest.Data;
+using GirafRest.IRepositories;
+using GirafRest.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using GirafRest.Models;
-using GirafRest.IRepositories;
-using GirafRest.Data;
-using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace GirafRest.Repositories
@@ -14,7 +14,14 @@ namespace GirafRest.Repositories
         {
         }
 
-        public Department GetDepartmentById(long departmentId) 
-            => Context.Departments.FirstOrDefault(dep => dep.Key == departmentId);
+        public Department GetDepartmentById(long departmentId)
+        {
+            return Context.Departments.FirstOrDefault(dep => dep.Key == departmentId);
+        }
+
+        public Task<List<DepartmentNameDTO>> GetDepartmentNames()
+        {
+            return Context.Departments.Select(dep => new DepartmentNameDTO(dep.Key, dep.Name)).ToListAsync();
+        }
     }
 }
