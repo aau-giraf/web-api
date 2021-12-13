@@ -3,6 +3,7 @@ using GirafRest.IRepositories;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -57,7 +58,7 @@ namespace GirafRest.Repositories
             return Context.Pictograms.FirstOrDefaultAsync(p => p.Id == Id);
         }
 
-        public IQueryable<Pictogram> fetchPictogramsFromDepartmentStartsWithQuery(string query, GirafUser user)
+        public IEnumerable<Pictogram> fetchPictogramsFromDepartmentStartsWithQuery(string query, GirafUser user)
         {
             return Context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query)
                 && pictogram.Title.ToLower().Replace(" ", string.Empty).StartsWith(query)
@@ -67,7 +68,7 @@ namespace GirafRest.Repositories
                 || pictogram.Departments.Any(dr => dr.OtherKey == user.DepartmentKey)));
         }
 
-        public IQueryable<Pictogram> fetchPictogramsFromDepartmentsContainsQuery(string query, GirafUser user)
+        public IEnumerable<Pictogram> fetchPictogramsFromDepartmentsContainsQuery(string query, GirafUser user)
         {
             return Context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query)
                 && pictogram.Title.ToLower().Replace(" ", string.Empty).Contains(query)
@@ -77,7 +78,7 @@ namespace GirafRest.Repositories
                 || pictogram.Departments.Any(dr => dr.OtherKey == user.DepartmentKey)));
         }
 
-        public IQueryable<Pictogram> fetchPictogramsUserNotPartOfDepartmentStartsWithQuery(string query, GirafUser user)
+        public IEnumerable<Pictogram> fetchPictogramsUserNotPartOfDepartmentStartsWithQuery(string query, GirafUser user)
         {
             return Context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query)
                 && pictogram.Title.ToLower().Replace(" ", string.Empty).StartsWith(query)
@@ -103,7 +104,7 @@ namespace GirafRest.Repositories
                 && (pictogram.AccessLevel == AccessLevel.PUBLIC));
         }
 
-        public IQueryable<Pictogram> fetchPictogramsNoUserLoggedInContainsQuery(string query)
+        public IEnumerable<Pictogram> fetchPictogramsNoUserLoggedInContainsQuery(string query)
         {
             return Context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query)
                 && pictogram.Title.ToLower().Replace(" ", string.Empty).Contains(query)

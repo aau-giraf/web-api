@@ -5,7 +5,6 @@ using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
@@ -495,7 +494,7 @@ namespace GirafRest.Controllers
         /// Read all pictograms available to the current user (or only the PUBLIC ones if no user is authorized).
         /// </summary>
         /// <returns>A list of said pictograms.</returns>
-        private async Task<IQueryable<Pictogram>> ReadAllPictograms(string query)
+        private async Task<IEnumerable<Pictogram>> ReadAllPictograms(string query)
         {
             //In this method .AsNoTracking is used due to a bug in EntityFramework Core, where we are not allowed to call a constructor in .Select
             //i.e. convert the pictograms to PictogramDTOs.
@@ -528,25 +527,22 @@ namespace GirafRest.Controllers
             }
         }
 
-        private IQueryable<Pictogram> fetchingPictogramsFromDepartment(string query, GirafUser user)
+        private IEnumerable<Pictogram> fetchingPictogramsFromDepartment(string query, GirafUser user)
         {
             return _pictogramRepository.fetchPictogramsFromDepartmentStartsWithQuery(query, user)
-                .Union(_pictogramRepository.fetchPictogramsFromDepartmentsContainsQuery(query, user))
-                .AsNoTracking();
+                .Union(_pictogramRepository.fetchPictogramsFromDepartmentsContainsQuery(query, user));
         }
 
-        private IQueryable<Pictogram> fetchingPictogramsUserNotInDepartment(string query, GirafUser user)
+        private IEnumerable<Pictogram> fetchingPictogramsUserNotInDepartment(string query, GirafUser user)
         {
             return _pictogramRepository.fetchPictogramsUserNotPartOfDepartmentStartsWithQuery(query, user)
-                .Union(_pictogramRepository.fetchPictogramsUserNotPartOfDepartmentContainsQuery(query, user))
-                .AsNoTracking();
+                .Union(_pictogramRepository.fetchPictogramsUserNotPartOfDepartmentContainsQuery(query, user));
         }
 
-        private IQueryable<Pictogram> fetchPictogramsNoUserLoggedIn(string query)
+        private IEnumerable<Pictogram> fetchPictogramsNoUserLoggedIn(string query)
         {
             return _pictogramRepository.fetchPictogramsNoUserLoggedInStartsWithQuery(query)
-                .Union(_pictogramRepository.fetchPictogramsNoUserLoggedInContainsQuery(query))
-                .AsNoTracking();
+                .Union(_pictogramRepository.fetchPictogramsNoUserLoggedInContainsQuery(query));
         }
 
         #endregion helpers

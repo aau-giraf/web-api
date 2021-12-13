@@ -1,6 +1,6 @@
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace GirafRest.IRepositories
@@ -30,16 +30,16 @@ namespace GirafRest.IRepositories
 
         public Task<Pictogram> GetPictogramWithID(long Id);
 
-        public IQueryable<Pictogram> fetchPictogramsFromDepartmentStartsWithQuery(string query, GirafUser user);
+        public IEnumerable<Pictogram> fetchPictogramsFromDepartmentStartsWithQuery(string query, GirafUser user);
 
-        public IQueryable<Pictogram> fetchPictogramsFromDepartmentsContainsQuery(string query, GirafUser user);
+        public IEnumerable<Pictogram> fetchPictogramsFromDepartmentsContainsQuery(string query, GirafUser user);
 
-        public IQueryable<Pictogram> fetchPictogramsUserNotPartOfDepartmentStartsWithQuery(string query, GirafUser user);
+        public IEnumerable<Pictogram> fetchPictogramsUserNotPartOfDepartmentStartsWithQuery(string query, GirafUser user);
 
-        public IQueryable<Pictogram> fetchPictogramsUserNotPartOfDepartmentContainsQuery(string query, GirafUser user);
+        public IEnumerable<Pictogram> fetchPictogramsUserNotPartOfDepartmentContainsQuery(string query, GirafUser user);
 
-        public IQueryable<Pictogram> fetchPictogramsNoUserLoggedInStartsWithQuery(string query);
+        public IEnumerable<Pictogram> fetchPictogramsNoUserLoggedInStartsWithQuery(string query);
 
-        public IQueryable<Pictogram> fetchPictogramsNoUserLoggedInContainsQuery(string query);
+        public IEnumerable<Pictogram> fetchPictogramsNoUserLoggedInContainsQuery(string query);
     }
 }
