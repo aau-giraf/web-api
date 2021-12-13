@@ -1,21 +1,23 @@
-
-using GirafRest.Models.Responses;
+﻿using GirafRest.Models.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
-namespace GirafRest.Controllers {
+namespace GirafRest.Controllers
+{
     /// <summary>
     /// Extensions for the base controller
     /// </summary>
-    public static class BaseControllerExtensions {
+    public static class BaseControllerExtensions
+    {
         /// <summary>
         /// The request could not be process because a crucial object from the HTTP body
         /// </summary>
         /// <param name="controller">this reference</param>
         /// <param name="type">The <see cref="System.Type"/> name of the missing object</param>
         /// <returns>an <see cref="ObjectResult"/> with code <see cref="StatusCodes.Status400BadRequest"/> and <see cref="ErrorCode.MissingProperties"/></returns>
-        public static ObjectResult MissingObjectFromBody(this ControllerBase controller, string type) {
+        public static ObjectResult MissingObjectFromBody(this ControllerBase controller, string type)
+        {
             return controller.StatusCode(
                 StatusCodes.Status400BadRequest,
                 new ErrorResponse(
@@ -31,7 +33,8 @@ namespace GirafRest.Controllers {
         /// <param name="controller">this reference</param>
         /// <param name="property">The name of the missing property</param>
         /// <returns>an <see cref="ObjectResult"/> with code <see cref="StatusCodes.Status400BadRequest"/> and <see cref="ErrorCode.MissingProperties"/></returns>
-        public static ObjectResult MissingPropertyFromRequest(this ControllerBase controller, string property) {
+        public static ObjectResult MissingPropertyFromRequest(this ControllerBase controller, string property)
+        {
             return controller.StatusCode(
                 StatusCodes.Status400BadRequest,
                 new ErrorResponse(
@@ -47,9 +50,11 @@ namespace GirafRest.Controllers {
         /// <param name="controller">this reference</param>
         /// <param name="properties">the invalid properties</param>
         /// <returns>an <see cref="ObjectResult"/> with code <see cref="StatusCodes.Status400BadRequest"/> and <see cref="ErrorCode.InvalidProperties"/></returns>
-        public static ObjectResult InvalidPropertiesFromRequest(this ControllerBase controller, params object[] properties) {
+        public static ObjectResult InvalidPropertiesFromRequest(this ControllerBase controller, params object[] properties)
+        {
             string message = "some properties are invalid";
-            if (properties.Length > 0) {
+            if (properties.Length > 0)
+            {
                 string property = ConvertToString(properties);
                 message = $"the properties {property} are invalid";
             }
@@ -67,10 +72,12 @@ namespace GirafRest.Controllers {
         /// <param name="ids">the ids used to query the resource (eg. userId)</param>
         /// <returns>an <see cref="ObjectResult"/> with code <see cref="StatusCodes.Status404NotFound"/> and <see cref="ErrorCode.NotFound"/></returns>
 
-        public static ObjectResult ResourceNotFound(this ControllerBase controller, string resource, params object[] ids) {
+        public static ObjectResult ResourceNotFound(this ControllerBase controller, string resource, params object[] ids)
+        {
             string id = ConvertToString(ids);
             string message = $"could not find {resource}";
-            if (!string.IsNullOrEmpty(id)) {
+            if (!string.IsNullOrEmpty(id))
+            {
                 message += $" with id(s): '{id}'";
             }
             return controller.StatusCode(
@@ -86,10 +93,12 @@ namespace GirafRest.Controllers {
         /// <param name="resource">The <see cref="System.Type"/> name of the missing object</param>
         /// <param name="ids">the ids used to query the resource (eg. userId)</param>
         /// <returns>an <see cref="ObjectResult"/> with code <see cref="StatusCodes.Status409Conflict"/> and <see cref="ErrorCode.ConflictingResource"/></returns>
-        public static ObjectResult ResourceConflict(this ControllerBase controller, string resource, params object[] ids) {
+        public static ObjectResult ResourceConflict(this ControllerBase controller, string resource, params object[] ids)
+        {
             string id = ConvertToString(ids);
             string message = $"Conflicting resource for {resource}";
-            if (!string.IsNullOrEmpty(id)) {
+            if (!string.IsNullOrEmpty(id))
+            {
                 message += $" with id(s): '{id}'";
             }
             return controller.StatusCode(
@@ -109,7 +118,8 @@ namespace GirafRest.Controllers {
         /// <param name="resource">The created resource</param>
         /// <typeparam name="T">The type of resource</typeparam>
         /// <returns>an <see cref="ObjectResult"/> with code <see cref="StatusCodes.Status201Created"/></returns>
-        public static ObjectResult ResourceCreated<T>(this ControllerBase controller, T resource) {
+        public static ObjectResult ResourceCreated<T>(this ControllerBase controller, T resource)
+        {
             return controller.StatusCode(
                 StatusCodes.Status201Created,
                 new SuccessResponse<T>(resource)
@@ -127,14 +137,16 @@ namespace GirafRest.Controllers {
         /// <param name="resource">The requested resource</param>
         /// <typeparam name="T"></typeparam>
         /// <returns>an appropriate <see cref="ObjectResult"/> for HTTP code <see cref="StatusCodes.Status200OK"/></returns>
-        public static ObjectResult RequestSucceeded<T>(this ControllerBase controller, T resource = default) {
+        public static ObjectResult RequestSucceeded<T>(this ControllerBase controller, T resource = default)
+        {
             return controller.StatusCode(
                 StatusCodes.Status200OK,
                 new SuccessResponse<T>(resource)
             );
         }
 
-        private static string ConvertToString(params object[] objs) {
+        private static string ConvertToString(params object[] objs)
+        {
             return string.Join(
                 ", ",
                 new List<object>(objs)

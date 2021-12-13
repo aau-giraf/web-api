@@ -52,9 +52,7 @@ namespace GirafRest.Controllers
         /// <param name="loggerFactory">Service Injection</param>
         /// <param name="giraf">Service Injection</param>
         /// <param name="configuration">Service Injection</param>
-        /// <param name="userRepository">Service Injection</param>
-        /// <param name="departmentRepository">Service Injection</param>
-        /// <param name="girafRoleRepository">Service Injection</param>
+        /// <param name="authentication">Service Injection</param>
         public AccountController(
             SignInManager<GirafUser> signInManager,
             ILoggerFactory loggerFactory,
@@ -172,7 +170,7 @@ namespace GirafRest.Controllers
                     else if (model.Role == GirafRoles.Guardian)
                         AddCitizensToGuardian(user);
                     // save changes
-                    _departmentRepository.Save();
+                    await _giraf._context.SaveChangesAsync();
                 }
                 await _signInManager.UserManager.AddToRoleAsync(user, UserRoleStr);
                 await _signInManager.SignInAsync(user, isPersistent: true);
@@ -299,7 +297,7 @@ namespace GirafRest.Controllers
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
             
             _userRepository.Remove(user);
-            _userRepository.Save();
+            _giraf._context.SaveChanges();
 
             return Ok(new SuccessResponse("User deleted"));
         }

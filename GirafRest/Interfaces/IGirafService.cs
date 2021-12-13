@@ -54,6 +54,20 @@ namespace GirafRest.Interfaces
         Task<GirafUser> LoadBasicUserDataAsync(ClaimsPrincipal principal);
 
         /// <summary>
+        /// Loads the user with week schedules.
+        /// </summary>
+        /// <returns>The user with week schedules.</returns>
+        /// <param name="id">Identifier of <see cref="GirafUser"/></param>
+        // Task<GirafUser> LoadUserWithWeekSchedules(string id);
+
+        /// <summary>
+        /// Loads the image of the request body.
+        /// </summary>
+        /// <param name="bodyStream">A stream from which the request body may be read.</param>
+        /// <returns>The image as a byte array.</returns>
+        //Task<byte[]> ReadRequestImage(Stream bodyStream);
+
+        /// <summary>
         /// Loads the user with resources.
         /// </summary>
         /// <returns>The user with resources.</returns>

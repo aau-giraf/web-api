@@ -39,18 +39,9 @@ namespace GirafRest.Services
         /// The most general constructor for GirafService. This constructor is used by both the other constructors and the unit tests.
         /// </summary>
         /// <param name="userManager">Reference to asp.net's user-manager.</param>
-        /// <param name="girafUserRepository">Service Injection</param>
-        /// <param name="userResourseRepository">Service Injection</param>
-        /// <param name="departmentResourseRepository">Service Injection</param>
-        public GirafService(UserManager<GirafUser> userManager,
-            IGirafUserRepository girafUserRepository,
-            IUserResourseRepository userResourseRepository,
-            IDepartmentResourseRepository departmentResourseRepository)
+        public GirafService(UserManager<GirafUser> userManager)
         {
-            _userManager = userManager;
-            _girafUserRepository = girafUserRepository;
-            _userResourseRepository = userResourseRepository;
-            _departmentResourseRepository = departmentResourseRepository;
+            this._userManager = userManager;
         }
         public async Task<byte[]> ReadRequestImage(Stream bodyStream)
         {

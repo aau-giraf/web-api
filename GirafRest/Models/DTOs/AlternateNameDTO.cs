@@ -7,6 +7,7 @@ namespace GirafRest.Models.DTOs
     /// </summary>
     public class AlternateNameDTO
     {
+        
         /// <summary>
         /// The unique id of the alternatename
         /// </summary>
@@ -25,24 +26,27 @@ namespace GirafRest.Models.DTOs
         public string Name { get; set; }
 
         /// <summary>
-        /// Empty constructor of HTTP bdody serialization
+        /// Empty constructor for JSON reasons?
         /// </summary>
-        public AlternateNameDTO() { }
-
+        public AlternateNameDTO()
+        {
+            
+        }
         /// <summary>
         /// Basic constructor
         /// </summary>
-        /// <param name="alternameName">The AlternateName object to create the DTO from</param>
-        public AlternateNameDTO(AlternateName alternameName)
+        /// <param name="an">The AlternateName object to create the DTO from</param>
+        public AlternateNameDTO(AlternateName an)
         {
-            if (alternameName == default) {
-                throw new System.ArgumentException("");
+            if (an == null)
+            {
+                return;
             }
 
-            Id = alternameName.Id;
-            Citizen = alternameName.CitizenId;
-            Pictogram = alternameName.PictogramId;
-            Name = alternameName.Name;
+            Id = an.Id;
+            Citizen = an.CitizenId;
+            Pictogram = an.PictogramId;
+            Name = an.Name;
         }
     }
 }
