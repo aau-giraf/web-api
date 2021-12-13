@@ -22,7 +22,7 @@ jobs:
       #Sets the environment to Staging so that it uses the correct data
     - name: Environment setup
       run:
-        export ASPNETCORE_ENVIRONMENT="´Staging"
+        export ASPNETCORE_ENVIRONMENT="Staging"
         bash scripts/ci-setup.sh ${{ secrets.IntegrationTestUser }} ${{ secrets.IntegrationTestPassword }}
         dotnet tool install --global dotnet-ef
         cd GirafRest
