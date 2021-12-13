@@ -1,3 +1,4 @@
+/*
 using Moq;
 using Xunit;
 using GirafRest.Models;
@@ -290,3 +291,4 @@ namespace GirafRest.Test
         #endregion
     }
 }
+*/
