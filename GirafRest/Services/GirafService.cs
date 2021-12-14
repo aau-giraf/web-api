@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using GirafRest.Data;
 using GirafRest.Models;
 using GirafRest.Interfaces;
+using GirafRest.IRepositories;
+using GirafRest.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -17,6 +19,9 @@ namespace GirafRest.Services
     /// </summary>
     public class GirafService : IGirafService
     {
+        private readonly IGirafUserRepository _girafUserRepository;
+        private readonly IUserResourseRepository _userResourseRepository;
+        private readonly IDepartmentResourseRepository _departmentResourseRepository;
         /// <summary>
         /// A reference to the database context - used to access the database and query for data. Handled by asp.net's dependency injection.
         /// </summary>
@@ -24,7 +29,7 @@ namespace GirafRest.Services
         /// <summary>
         /// Asp.net's user manager. Can be used to fetch user data from the request's cookie. Handled by asp.net's dependency injection.
         /// </summary>
-        public UserManager<GirafUser> _userManager { get; }
+        public UserManager<GirafUser> _userManager { get; set; }
         /// <summary>
         /// A data-logger used to write messages to the console. Handled by asp.net's dependency injection.
         /// </summary>
@@ -33,99 +38,20 @@ namespace GirafRest.Services
         /// <summary>
         /// The most general constructor for GirafService. This constructor is used by both the other constructors and the unit tests.
         /// </summary>
-        /// <param name="context">Reference to the database context.</param>
         /// <param name="userManager">Reference to asp.net's user-manager.</param>
-        public GirafService(GirafDbContext context, UserManager<GirafUser> userManager)
+        /// <param name="girafUserRepository">Service Injection</param>
+        /// <param name="userResourseRepository">Service Injection</param>
+        /// <param name="departmentResourseRepository">Service Injection</param>
+        public GirafService(UserManager<GirafUser> userManager,
+            IGirafUserRepository girafUserRepository,
+            IUserResourseRepository userResourseRepository,
+            IDepartmentResourseRepository departmentResourseRepository)
         {
-            this._context = context;
-            this._userManager = userManager;
+            _userManager = userManager;
+            _girafUserRepository = girafUserRepository;
+            _userResourseRepository = userResourseRepository;
+            _departmentResourseRepository = departmentResourseRepository;
         }
-
-        /// <summary>
-        /// Method for loading user from context and eager loading <b>resources</b> fields
-        /// </summary>
-        /// <param name="principal">The security claim - i.e. the information about the currently authenticated user.</param>
-        /// <returns>A <see cref="GirafUser"/> with <b>all</b> related data.</returns>
-        public async Task<GirafUser> LoadUserWithResources(System.Security.Claims.ClaimsPrincipal principal)
-        {
-            if (principal == null) return null;
-            var usr = (await _userManager.GetUserAsync(principal));
-            if (usr == null) return null;
-            return await _context.Users
-                //Get user by ID from database
-                .Where(u => u.Id == usr.Id)
-                //Then load his pictograms - both the relationship and the actual pictogram
-                .Include(u => u.Resources)
-                    .ThenInclude(ur => ur.Pictogram)
-                //Then load his department and their pictograms
-                .Include(u => u.Department)
-                    .ThenInclude(d => d.Resources)
-                        .ThenInclude(dr => dr.Pictogram)
-                //And return it
-                .FirstOrDefaultAsync();
-        }
-
-        /// <summary>
-        /// Method for loading user from context and eager loading <b>resources</b> fields
-        /// </summary>
-        /// <param name="principal">The security claim - i.e. the information about the currently authenticated user.</param>
-        /// <returns>A <see cref="GirafUser"/> with <b>all</b> related data.</returns>
-        public async Task<GirafUser> LoadUserWithDepartment(System.Security.Claims.ClaimsPrincipal principal)
-        {
-            if (principal == null) return null;
-            var usr = (await _userManager.GetUserAsync(principal));
-            if (usr == null) return null;
-            return await _context.Users
-                .Where(u => u.Id == usr.Id)
-                .Include(u => u.Department)
-                .FirstOrDefaultAsync();
-        }
-
-        /// <summary>
-        /// Method for loading user from context and eager loading fields requied to read their <b>week schedules</b>
-        /// </summary>
-        /// <param name="id">id of user to load.</param>
-        /// <returns>A <see cref="GirafUser"/> with <b>all</b> related data.</returns>
-        public async Task<GirafUser> LoadUserWithWeekSchedules(string id)
-        {
-            var user = await _context.Users
-                //First load the user from the database
-                .Where(u => u.Id.ToLower() == id.ToLower())
-                // then load his week schedule
-                .Include(u => u.WeekSchedule)
-                .ThenInclude(w => w.Thumbnail)
-                .Include(u => u.WeekSchedule)
-                .ThenInclude(w => w.Weekdays)
-                .ThenInclude(wd => wd.Activities)
-                .ThenInclude(e => e.Pictograms)
-                //And return it
-                .FirstOrDefaultAsync();
-
-            return user;
-        }
-
-        /// <summary>
-        /// Method for loading user from context, but including no fields. No reference types will be available.
-        /// </summary>
-        /// <param name="principal">The security claim - i.e. the information about the currently authenticated user.</param>
-        /// <returns>A <see cref="GirafUser"/> without any related data.</returns>
-        public async Task<GirafUser> LoadBasicUserDataAsync(System.Security.Claims.ClaimsPrincipal principal)
-        {
-            if (principal == null) return null;
-            var usr = (await _userManager.GetUserAsync(principal));
-            if (usr == null) return null;
-            return await _context.Users
-                //Get user by ID from database
-                .Where(u => u.Id == usr.Id)
-                //And return it
-                .FirstOrDefaultAsync();
-        }
-
-        /// <summary>
-        /// Reads an image from the current request's body and return it as a byte array.
-        /// </summary>
-        /// <param name="bodyStream">A byte-stream from the body of the request.</param>
-        /// <returns>The image found in the request represented as a byte array.</returns>
         public async Task<byte[]> ReadRequestImage(Stream bodyStream)
         {
             byte[] image;
@@ -148,6 +74,58 @@ namespace GirafRest.Services
         }
 
         /// <summary>
+        /// Method for loading user from context and eager loading <b>resources</b> fields
+        /// </summary>
+        /// <param name="principal">The security claim - i.e. the information about the currently authenticated user.</param>
+        /// <returns>A <see cref="GirafUser"/> with <b>all</b> related data.</returns>
+        public async Task<GirafUser> LoadUserWithResources(System.Security.Claims.ClaimsPrincipal principal)
+        {
+            if (principal == null) return null;
+            var usr = (await _userManager.GetUserAsync(principal));
+            if (usr == null) return null;
+            return await _girafUserRepository.LoadUserWithResources(usr);
+        }
+
+        /// <summary>
+        /// Method for loading user from context and eager loading <b>resources</b> fields
+        /// </summary>
+        /// <param name="principal">The security claim - i.e. the information about the currently authenticated user.</param>
+        /// <returns>A <see cref="GirafUser"/> with <b>all</b> related data.</returns>
+        public async Task<GirafUser> LoadUserWithDepartment(System.Security.Claims.ClaimsPrincipal principal)
+        {
+            if (principal == null) return null;
+            var usr = (await _userManager.GetUserAsync(principal));
+            if (usr == null) return null;
+            return await _girafUserRepository.LoadUserWithDepartment(usr);
+        }
+
+        /// <summary>
+        /// Method for loading user from context and eager loading fields requied to read their <b>week schedules</b>
+        /// </summary>
+        /// <param name="id">id of user to load.</param>
+        /// <returns>A <see cref="GirafUser"/> with <b>all</b> related data.</returns>
+        public async Task<GirafUser> LoadUserWithWeekSchedules(string id)
+        {
+            var user = await _girafUserRepository.LoadUserWithWeekSchedules(id);
+
+            return user;
+        }
+
+        /// <summary>
+        /// Method for loading user from context, but including no fields. No reference types will be available.
+        /// </summary>
+        /// <param name="principal">The security claim - i.e. the information about the currently authenticated user.</param>
+        /// <returns>A <see cref="GirafUser"/> without any related data.</returns>
+        public async Task<GirafUser> LoadBasicUserDataAsync(System.Security.Claims.ClaimsPrincipal principal)
+        {
+            if (principal == null) return null;
+            var usr = (await _userManager.GetUserAsync(principal));
+            if (usr == null) return null;
+            return await _girafUserRepository.LoadBasicUserDataAsync(usr);
+        }
+
+        
+        /// <summary>
         /// Checks if the user owns the given <paramref name="pictogram"/>.
         /// </summary>
         /// <param name="pictogram">The pictogram to check the ownership for.</param>
@@ -160,9 +138,7 @@ namespace GirafRest.Services
 
             //The pictogram was not public, check if the user owns it.
             if (user == null) return false;
-            var ownedByUser = await _context.UserResources
-                .Where(ur => ur.PictogramKey == pictogram.Id && ur.OtherKey == user.Id)
-                .AnyAsync();
+            var ownedByUser = await _userResourseRepository.CheckPrivateOwnership(pictogram, user);
 
             return ownedByUser;
         }
@@ -196,11 +172,10 @@ namespace GirafRest.Services
             if (user == null) return false;
 
             //The pictogram was not owned by user, check if his department owns it.
-            var ownedByDepartment = await _context.DepartmentResources
-                .Where(dr => dr.PictogramKey == resource.Id && dr.OtherKey == user.Department.Key)
-                .AnyAsync();
+            var ownedByDepartment = await _departmentResourseRepository.CheckProtectedOwnership(resource, user);
 
             return ownedByDepartment;
         }
+
     }
 }

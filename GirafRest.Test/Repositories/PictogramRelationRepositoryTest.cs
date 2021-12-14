@@ -47,7 +47,7 @@ namespace GirafRest.Test.Repositories
 
     public class PictogramRelationRepositoryTest : PictogramRelationRepositoryContext
     {
-        private const int Id = 1;
+        private const long Id = 1;
         public PictogramRelationRepositoryTest()
             : base(new DbContextOptionsBuilder<GirafDbContext>()
                 .UseInMemoryDatabase(Guid.NewGuid().ToString("N")).Options)
@@ -55,7 +55,7 @@ namespace GirafRest.Test.Repositories
 
         [Theory]
         [InlineData(Id)]
-        public void GetWithPictogramTest(int id)
+        public void GetWithPictogramTest(long id)
         {
             //Arrange
             using (var context = new GirafDbContext(ContextOptions))

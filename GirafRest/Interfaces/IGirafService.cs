@@ -28,13 +28,23 @@ namespace GirafRest.Interfaces
         {
             get;
         }
+        
         /// <summary>
         /// A reference to the user manager, used to fetch users.
         /// </summary>
         UserManager<GirafUser> _userManager
         {
             get;
+            set;
         }
+
+
+        /// <summary>
+        /// Reads an image from the current request's body and return it as a byte array.
+        /// </summary>
+        /// <param name="bodyStream">A byte-stream from the body of the request.</param>
+        /// <returns>The image found in the request represented as a byte array.</returns>
+        Task<byte[]> ReadRequestImage(Stream bodyStream);
 
         /// <summary>
         /// Loads only the user with the given username, excluding any associated data.
@@ -42,20 +52,6 @@ namespace GirafRest.Interfaces
         /// <param name="principal">A reference to HttpContext.User</param>
         /// <returns>The loaded user.</returns>
         Task<GirafUser> LoadBasicUserDataAsync(ClaimsPrincipal principal);
-
-        /// <summary>
-        /// Loads the user with week schedules.
-        /// </summary>
-        /// <returns>The user with week schedules.</returns>
-        /// <param name="id">Identifier of <see cref="GirafUser"/></param>
-        Task<GirafUser> LoadUserWithWeekSchedules(string id);
-
-        /// <summary>
-        /// Loads the image of the request body.
-        /// </summary>
-        /// <param name="bodyStream">A stream from which the request body may be read.</param>
-        /// <returns>The image as a byte array.</returns>
-        Task<byte[]> ReadRequestImage(Stream bodyStream);
 
         /// <summary>
         /// Loads the user with resources.
@@ -92,5 +88,7 @@ namespace GirafRest.Interfaces
         /// <param name="image">Input image</param>
         /// <returns>The hash as a string</returns>
         string GetHash(byte[] image);
+
+        public Task<GirafUser> LoadUserWithWeekSchedules(string id);
     }
 }

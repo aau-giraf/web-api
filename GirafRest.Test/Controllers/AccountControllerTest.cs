@@ -74,10 +74,10 @@ namespace GirafRest.Test
 
             // Mock
             userRepository.Setup(x => x.ExistsUsername(dto.Username)).Returns(true);
-            userRepository.Setup(x => x.GetUserByUsername(dto.Username)).Returns(mockUser);
+            userRepository.Setup(x => x.GetUserByUsername(dto.Username)).ReturnsAsync(mockUser);
             signInManager.Setup(x => x.PasswordSignInAsync(dto.Username, dto.Password, true, false))
                 .Returns(Task.FromResult(signInResult));
-            userRepository.Setup(x => x.GetUserByUsername(dto.Username)).Returns(mockUser);
+            userRepository.Setup(x => x.GetUserByUsername(dto.Username)).ReturnsAsync(mockUser);
             userManager.Setup(x => x.GetRolesAsync(mockUser)).Returns(Task.FromResult<IList<string>>(userRoles));
             
             // Act
@@ -146,8 +146,8 @@ namespace GirafRest.Test
                 .Returns(Task.FromResult(signInResult));
             signInManager.Setup(x => x.PasswordSignInAsync(dto2.Username, dto2.Password, true, false))
                 .Returns(Task.FromResult(signInResult));
-            userRepository.Setup(x => x.GetUserByUsername(dto1.Username)).Returns(mockUser1);
-            userRepository.Setup(x => x.GetUserByUsername(dto2.Username)).Returns(mockUser2);
+            userRepository.Setup(x => x.GetUserByUsername(dto1.Username)).ReturnsAsync(mockUser1);
+            userRepository.Setup(x => x.GetUserByUsername(dto2.Username)).ReturnsAsync(mockUser2);
             userManager.Setup(x => x.GetRolesAsync(mockUser1)).Returns(Task.FromResult<IList<string>>(userRoles));
             userManager.Setup(x => x.GetRolesAsync(mockUser2)).Returns(Task.FromResult<IList<string>>(userRoles));
 
@@ -620,7 +620,7 @@ namespace GirafRest.Test
             // Mock
             accountController.UserRepository.Setup(
                 repo => repo.GetUserWithId(userId)
-            ).Returns((GirafUser)default);
+            ).ReturnsAsync((GirafUser)default);
 
             // Act
             var response = accountController.DeleteUser(userId);
@@ -648,7 +648,7 @@ namespace GirafRest.Test
             // Mock
             accountController.UserRepository.Setup(
                 repo => repo.GetUserWithId(userId)
-            ).Returns(user);
+            ).ReturnsAsync(user);
             accountController.UserRepository.Setup(
                 repo => repo.Remove(user)
             );

@@ -6,6 +6,8 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using GirafRest.IRepositories;
 
 namespace GirafRest.Filters
 {
@@ -14,8 +16,10 @@ namespace GirafRest.Filters
     /// </summary>
     public class LogFilter : IActionFilter
     {
+        private readonly IGirafUserRepository _girafUserRepository;
+        
         IGirafService _giraf;
-
+        
         /// <summary>
         /// Initialize for LogFilter
         /// </summary>
@@ -40,19 +44,20 @@ namespace GirafRest.Filters
         /// Post-execution hook, writing to log file
         /// </summary>
         /// <param name="context">Context in which is executed</param>
-        public void OnActionExecuted(ActionExecutedContext context)
+        public async void OnActionExecuted(ActionExecutedContext context)
         {
             string path = "Logs/log-" + DateTime.Now.Year + DateTime.Now.Month.ToString().PadLeft(2, '0') + DateTime.Now.Day.ToString().PadLeft(2, '0') + ".txt";
             var controller = context.Controller as Controller;
             string userId = controller.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            var user = _giraf._context.Users.FirstOrDefault(u => u.Id == userId)?.UserName;
+            var user = await _girafUserRepository.GetUserWithId(userId);
+            var userName = user?.UserName;
             string p = context.HttpContext.Request.Path;
             string verb = context.HttpContext.Request.Method;
             var action = context.ActionDescriptor.DisplayName;
             var error = ((context.Result as ObjectResult)?.Value as ErrorResponse)?.ErrorCode.ToString();
             string[] lines = new string[]
             {
-                $"{DateTime.UtcNow:o}; {user}; {userId}; {verb}; {p}; {error}"
+                $"{DateTime.UtcNow:o}; {userName}; {userId}; {verb}; {p}; {error}"
             };
             lock (filelock)
             {
