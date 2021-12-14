@@ -10,12 +10,10 @@ namespace GirafRest.IRepositories
     {
         string GetGuardianRoleId();
         string GetCitizenRoleId();
-
         string GetTrusteeRoleId();
         IEnumerable<string> GetUsersWithRole(string role);
         IEnumerable<string> GetAllGuardians();
         IEnumerable<string> GetAllCitizens();
-
         IEnumerable<string> GetAllTrustees();
     }
 }

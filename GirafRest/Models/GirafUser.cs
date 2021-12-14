@@ -84,7 +84,6 @@ namespace GirafRest.Models
             this.WeekSchedule = new List<Week>();
             this.Citizens = new List<GuardianRelation>();
             this.Guardians = new List<GuardianRelation>();
-
             this.Trustees = new List<TrusteeRelation>();
             this.TrusteeCitizens = new List<TrusteeRelation>();
 
@@ -98,7 +97,6 @@ namespace GirafRest.Models
             this.WeekSchedule = new List<Week>();
             this.Citizens = new List<GuardianRelation>();
             this.Guardians = new List<GuardianRelation>();
-
             this.Trustees = new List<TrusteeRelation>();
             this.TrusteeCitizens = new List<TrusteeRelation>();
 

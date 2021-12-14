@@ -147,6 +147,7 @@ namespace GirafRest.Setup
             services.AddScoped<IActivityRepository,ActivityRepository>();
             services.AddScoped<IDepartmentResourseRepository,DepartmentResourseRepository>();
             services.AddScoped<IGuardianRelationRepository,GuardianRelationRepository>();
+            services.AddScoped<ITrusteeRelationRepository, TrusteeRelationRepository>();
             services.AddScoped<IPictogramRelationRepository,PictogramRelationRepository>();
             services.AddScoped<IUserResourseRepository, UserResourseRepository>();
             services.AddScoped<IImageRepository, ImageRepository>();

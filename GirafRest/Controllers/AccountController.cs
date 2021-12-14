@@ -395,13 +395,13 @@ namespace GirafRest.Controllers
                 trustee.AddTrusteeCitizen(citizen);
             }
         }
-        private void AddTrusteeToCitizens(GirafUser citizen)
+        private void AddTrusteeToCitizens(GirafUser truseecitizen)
         {
             var trustees = _girafRoleRepository.GetAllTrustees();
-            var trusteesInDepartment = _userRepository.GetUsersInDepartment((long)citizen.DepartmentKey, trustees);
+            var trusteesInDepartment = _userRepository.GetUsersInDepartment((long)truseecitizen.DepartmentKey, trustees);
             foreach (var trustee in trusteesInDepartment)
             {
-                citizen.AddTrustee(trustee);
+                truseecitizen.AddTrustee(trustee);
             }
         }
 

@@ -144,7 +144,7 @@ namespace GirafRest.Data
             builder.Entity<TrusteeRelation>()
                 .HasOne(tr => tr.Citizen)
                 .WithMany(c => c.Trustees)
-                .HasForeignKey(mg => mg.CitizenId)
+                .HasForeignKey(tg => tg.CitizenId)
                 .OnDelete(DeleteBehavior.Cascade);
 
 
