@@ -74,8 +74,17 @@ namespace GirafRest.Controllers
         {
             try
             {
+                // Get the solution folder
+                var gitpath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
+
+                // Check if it is in a build and not server
+                if (gitpath.Contains("bin"))
+                {
+                    gitpath = Path.GetFullPath(Path.Combine(gitpath, @"..\..\..\"));
+                }
+
                 // Get the hidden .git folder
-                var gitpath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName + "/.git/";
+                gitpath += ".git/";
 
                 // Get commit hash from the HEAD file in the .git folder.
                 var commitHash = System.IO.File.ReadLines(gitpath + "HEAD").First();
