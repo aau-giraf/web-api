@@ -102,7 +102,7 @@ namespace GirafRest.Repositories
                 || pictogram.Users.Any(ur => ur.OtherKey == user.Id)));
         }
 
-        public IQueryable<Pictogram> fetchPictogramsUserNotPartOfDepartmentContainsQuery(string query, GirafUser user)
+        public IEnumerable<Pictogram> fetchPictogramsUserNotPartOfDepartmentContainsQuery(string query, GirafUser user)
         {
             return Context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query)
                 && pictogram.Title.ToLower().Replace(" ", string.Empty).Contains(query)
@@ -111,7 +111,7 @@ namespace GirafRest.Repositories
                 || pictogram.Users.Any(ur => ur.OtherKey == user.Id)));
         }
 
-        public IQueryable<Pictogram> fetchPictogramsNoUserLoggedInStartsWithQuery(string query)
+        public IEnumerable<Pictogram> fetchPictogramsNoUserLoggedInStartsWithQuery(string query)
         {
             return Context.Pictograms.Where(pictogram => (!string.IsNullOrEmpty(query)
                 && pictogram.Title.ToLower().Replace(" ", string.Empty).StartsWith(query)
