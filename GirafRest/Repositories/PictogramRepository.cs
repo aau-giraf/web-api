@@ -1,10 +1,10 @@
+using GirafRest.Data;
+using GirafRest.IRepositories;
+using GirafRest.Models;
+using GirafRest.Models.DTOs;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
-using GirafRest.Models;
-using GirafRest.IRepositories;
-using GirafRest.Data;
-using Microsoft.EntityFrameworkCore;
-using GirafRest.Models.DTOs;
 
 namespace GirafRest.Repositories
 {
@@ -22,7 +22,7 @@ namespace GirafRest.Repositories
         /// <inheritdoc />
         public Pictogram GetByID(long pictogramID)
             => Get(pictogramID);
-        
+
         public Task<Pictogram> getPictogramMatchingRelation(PictogramRelation pictogramRelation)
         {
             return Context.Pictograms.FirstOrDefaultAsync(p => p.Id == pictogramRelation.PictogramId);
@@ -36,6 +36,10 @@ namespace GirafRest.Repositories
         {
             Context.Pictograms.Add(new Pictogram(name, access));
             return await Context.SaveChangesAsync();
+        }
+        public Task<Pictogram> FetchResourceWithId(ResourceIdDTO resourceIdDTO)
+        {
+            return Context.Pictograms.Where(f => f.Id == resourceIdDTO.Id).FirstOrDefaultAsync();
         }
         public Task<Pictogram> FindResource(ResourceIdDTO resourceIdDTO)
         {

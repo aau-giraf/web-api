@@ -8,7 +8,7 @@ namespace GirafRest.IRepositories
     /// Domain specific repository for pictograms
     /// </summary>
     public interface IPictogramRepository : IRepository<Models.Pictogram>
-    {        
+    {
         public Task<Pictogram> getPictogramMatchingRelation(PictogramRelation pictogramRelation);
         public Task<Pictogram> GetPictogramWithName(string name);
         /// <summary>
@@ -18,6 +18,7 @@ namespace GirafRest.IRepositories
         /// <param name="name"></param>
         /// <param name="access"></param>
         public Task<int> AddPictogramWith_NO_ImageHash(string name, AccessLevel access);
+        Task<Pictogram> FetchResourceWithId(ResourceIdDTO resourceIdDTO);
         public Task<Pictogram> FindResource(ResourceIdDTO resourceIdDTO);
         public Task<Pictogram> GetPictogramWithID(long Id);
         /// <summary>
