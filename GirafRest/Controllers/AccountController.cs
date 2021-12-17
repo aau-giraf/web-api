@@ -1,16 +1,15 @@
-﻿using GirafRest.Models;
+﻿using GirafRest.Interfaces;
+using GirafRest.IRepositories;
+using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.DTOs.AccountDTOs;
+using GirafRest.Models.Enums;
 using GirafRest.Models.Responses;
 using GirafRest.Services;
-using GirafRest.Interfaces;
-using GirafRest.IRepositories;
-using GirafRest.Models.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -86,7 +85,7 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult> Login([FromBody]LoginDTO model)
+        public async Task<ActionResult> Login([FromBody] LoginDTO model)
         {
             if (model == null)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing model"));
@@ -95,12 +94,12 @@ namespace GirafRest.Controllers
             if (string.IsNullOrEmpty(model.Username))
                 return Unauthorized(new ErrorResponse(
                     ErrorCode.MissingProperties, "Missing username"));
-            
+
             // check that the caller has suplied password in the request
             if (string.IsNullOrEmpty(model.Password))
                 return Unauthorized(new ErrorResponse(
                     ErrorCode.MissingProperties, "Missing password"));
-            
+
             // check that the username exists in the database
             if (!_userRepository.ExistsUsername(model.Username))
                 return Unauthorized(new ErrorResponse(ErrorCode.InvalidCredentials, "Invalid credentials"));
@@ -152,7 +151,7 @@ namespace GirafRest.Controllers
 
             if (model.DepartmentId == null)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Did not find any Department ID",
-                    "No Id found")); 
+                    "No Id found"));
             Department department = _departmentRepository.GetDepartmentById((long)model.DepartmentId);
 
             // Check that the department with the specified id exists
@@ -162,7 +161,7 @@ namespace GirafRest.Controllers
             //Create a new user with the supplied information
             var user = new GirafUser(model.Username, model.DisplayName, department, model.Role);
 
-            var result  = await _signInManager.UserManager.CreateAsync(user, model.Password);
+            var result = await _signInManager.UserManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
                 if (department != null)
@@ -201,17 +200,17 @@ namespace GirafRest.Controllers
         public async Task<ActionResult> ChangePasswordByOldPassword(string userId, [FromBody] ChangePasswordDTO model)
         {
             var user = _userRepository.Get(userId);
-            
+
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
-            
+
             if (model == null)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing model"));
-            
+
             if (model.OldPassword == null || model.NewPassword == null)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing old password or new password"));
-            
-            var result =  await _signInManager.UserManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
+
+            var result = await _signInManager.UserManager.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
             if (!result.Succeeded)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse(ErrorCode.PasswordNotUpdated, "Password was not updated"));
@@ -247,7 +246,7 @@ namespace GirafRest.Controllers
             if (model.Token == null || model.Password == null)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing token or password"));
 
-            
+
             var result = await _giraf._userManager.ResetPasswordAsync(user, model.Token, model.Password);
             if (!result.Succeeded)
                 return Unauthorized(new ErrorResponse(ErrorCode.InvalidProperties, "Invalid token"));
@@ -276,7 +275,7 @@ namespace GirafRest.Controllers
             var user = _userRepository.Get(userId);
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
-            
+
             var result = await _giraf._userManager.GeneratePasswordResetTokenAsync(user);
             return Ok(new SuccessResponse(result));
         }
@@ -294,10 +293,10 @@ namespace GirafRest.Controllers
         public async Task<ActionResult> DeleteUser(string userId)
         {
             var user = _userRepository.GetUserWithId(userId);
-            
+
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
-            
+
             _userRepository.Remove(user);
             _userRepository.Save();
 

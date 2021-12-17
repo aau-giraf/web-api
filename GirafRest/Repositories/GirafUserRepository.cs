@@ -24,16 +24,6 @@ namespace GirafRest.Repositories
             => Get(userID);
 
         /// <summary>
-        /// Gets first user.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public async Task<GirafUser> GetUserWithId(string id)
-        {
-            return await Context.Users.FirstOrDefaultAsync(u => u.Id == id);
-        }
-
-        /// <summary>
         /// Updates user.
         /// </summary>
         /// <param name="user"></param>
@@ -129,11 +119,6 @@ namespace GirafRest.Repositories
             return Context.Users.Any(u => u.UserName == newUser.Username && u.Id != user.Id);
         }
 
-        public async Task<GirafUser> GetUserByUsername(string username)
-        {
-            return await Context.Users.FirstOrDefaultAsync(u => u.UserName == username);
-        }
-
         public async Task<GirafUser> LoadUserWithResources(GirafUser usr)
         {
             return await Context.Users
@@ -215,6 +200,11 @@ namespace GirafRest.Repositories
         public Task<GirafUser> GetUserWithIdOrUsername(DisplayNameDTO member)
         {
             return Context.Users.Where(u => u.UserName == member.DisplayName || u.Id == member.UserId).FirstOrDefaultAsync();
+        }
+
+        public async Task<GirafUser> LoadBasicUserDataAsync(GirafUser usr)
+        {
+            return await Context.Users.Where(u => u.Id == usr.Id).FirstOrDefaultAsync();
         }
     }
 }

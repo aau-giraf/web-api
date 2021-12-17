@@ -14,7 +14,6 @@ namespace GirafRest.IRepositories
         /// <returns>The User instance or default</returns>
         GirafUser GetByID(string userID);
 
-        Task<GirafUser> GetUserWithId(string id);
 
         Task<int> SaveChangesAsync();
 
