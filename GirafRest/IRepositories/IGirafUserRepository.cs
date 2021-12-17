@@ -1,20 +1,12 @@
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq.Expressions;
-using System.Security.Claims;
 using System.Threading.Tasks;
-using GirafRest.Interfaces;
-using GirafRest.Models;
-using GirafRest.Models.DTOs;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 
 namespace GirafRest.IRepositories
 {
-    public interface IGirafUserRepository : IRepository<GirafUser> {
+    public interface IGirafUserRepository : IRepository<GirafUser>
+    {
 
         /// <summary>
         /// Fetches the first or default (null) User by ID
@@ -61,7 +53,7 @@ namespace GirafRest.IRepositories
 
         IEnumerable<GirafUser> GetUsersInDepartment(long departmentKey, IEnumerable<string> users);
 
-        GirafUser GetUserWithId(string id);
+        //GirafUser GetUserWithId(string id);
 
         Task<GirafUser> GetUserWithIdOrUsername(DisplayNameDTO member);
     }
