@@ -1,12 +1,12 @@
+using GirafRest.Data;
+using GirafRest.IRepositories;
+using GirafRest.Models;
+using GirafRest.Models.DTOs;
+using GirafRest.Models.Responses;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using GirafRest.Models;
-using GirafRest.IRepositories;
-using GirafRest.Data;
-using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
-using GirafRest.Models.Responses;
-using GirafRest.Models.DTOs;
 
 namespace GirafRest.Repositories
 {
