@@ -20,10 +20,10 @@ namespace GirafRest.Repositories
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<GirafUser> GetUserWithId(string id)
-        {
-            return await Context.Users.FirstOrDefaultAsync(u => u.Id == id);
-        }
+        //public async Task<GirafUser> GetUserWithId(string id)
+        //{
+        //    return await Context.Users.FirstOrDefaultAsync(u => u.Id == id);
+        //}
 
         /// Fetches the first or default (null) User by ID
         /// </summary>
@@ -206,7 +206,7 @@ namespace GirafRest.Repositories
              .ToList();
         }
 
-        //public GirafUser GetUserWithId(string id) => Context.Users.FirstOrDefault(u => u.Id == id);
+        public GirafUser GetUserWithId(string id) => Context.Users.FirstOrDefault(u => u.Id == id);
 
         public Task<GirafUser> GetUserWithIdOrUsername(DisplayNameDTO member)
         {
