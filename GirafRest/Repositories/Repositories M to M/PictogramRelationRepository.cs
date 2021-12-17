@@ -1,9 +1,9 @@
+using GirafRest.Data;
+using GirafRest.IRepositories;
+using GirafRest.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
-using GirafRest.Models;
-using GirafRest.IRepositories;
-using GirafRest.Data;
-using Microsoft.EntityFrameworkCore;
 
 namespace GirafRest.Repositories
 {
@@ -14,7 +14,7 @@ namespace GirafRest.Repositories
 
         }
 
-        public ICollection<PictogramRelation> GetWithPictogram(int activityID)
+        public ICollection<PictogramRelation> GetWithPictogram(long activityID)
             => Context.PictogramRelations
                 .Include(pictogram => pictogram.Pictogram)
                 .Where(pr => pr.ActivityId == activityID)
