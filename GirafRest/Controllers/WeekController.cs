@@ -35,10 +35,6 @@ namespace GirafRest.Controllers
         /// </summary>
         /// <param name="giraf">Service Injection</param>
         /// <param name="loggerFactory">Service Injection</param>
-        /// <param name="weekRepository">Service Injection</param>
-        /// <param name="timerRepository">Service Injection</param>
-        /// <param name="pictogramRepository">Service Injection</param>
-        /// <param name="weekdayRepository">Service Injection</param>
         public WeekController(IGirafService giraf, ILoggerFactory loggerFactory, IWeekRepository weekRepository, ITimerRepository timerRepository, IPictogramRepository pictogramRepository, IWeekdayRepository weekdayRepository)
         {
             _giraf = giraf;

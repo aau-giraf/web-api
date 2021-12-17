@@ -8,6 +8,7 @@ using GirafRest.Controllers;
 using GirafRest.Models.Responses;
 using GirafRest.Test.Mocks;
 using static GirafRest.Test.UnitTestExtensions;
+using Xunit.Abstractions;
 using System.Linq;
 using GirafRest.Services;
 using static GirafRest.Test.UnitTestExtensions.TestContext;

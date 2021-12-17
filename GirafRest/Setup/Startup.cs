@@ -1,6 +1,7 @@
 using AspNetCoreRateLimit;
 using GirafRest.Data;
 using GirafRest.Extensions;
+using GirafRest.Filters;
 using GirafRest.Models;
 using GirafRest.Services;
 using GirafRest.Interfaces;
@@ -25,6 +26,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GirafRest.IRepositories;
 using GirafRest.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace GirafRest.Setup
 {
@@ -46,6 +48,7 @@ namespace GirafRest.Setup
             if (coreEnvironement != null) env.EnvironmentName = coreEnvironement;
             else env.EnvironmentName = "Development";
 
+            //var builder = new ConfigurationBuilder().SetBasePath(env.ContentRootPath);
             var builder = new ConfigurationBuilder().SetBasePath(env.ContentRootPath);
             // delete all default configuration providers
             if (env.IsDevelopment())
@@ -128,10 +131,13 @@ namespace GirafRest.Setup
             services.AddMvc(options =>
             {
                 options.EnableEndpointRouting = false;
+                options.Filters.Add<LogFilter>();
             });
             services.AddControllers().AddNewtonsoftJson();
 
             #region repository dependency injection
+            services.AddEntityFrameworkMySql().AddDbContext<GirafDbContext>(options => options.UseMySql("name=ConnectionStrings:DefaultConnection"));
+
             // Add scoped repositories. Every single request gets it's own scoped repositories.
             services.AddScoped<IAlternateNameRepository,AlternateNameRepository>();
             services.AddScoped<IDepartmentRepository,DepartmentRepository>();
@@ -151,7 +157,9 @@ namespace GirafRest.Setup
             services.AddScoped<IUserResourseRepository, UserResourseRepository>();
             services.AddScoped<IImageRepository, ImageRepository>();
             services.AddScoped<IWeekdayRepository, WeekdayRepository>();
-           #endregion
+            #endregion
+
+
             // Set up Cross-Origin Requests
             services.AddCors(o => o.AddPolicy("AllowAll", builder =>
             {
@@ -163,11 +171,7 @@ namespace GirafRest.Setup
             // Register the Swagger generator, defining one or more Swagger documents
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "The Giraf REST API",
-                    Version = "v1"
-                });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "The Giraf REST API", Version = "v1" });
                 var basePath = AppContext.BaseDirectory;
                 var xmlPath = Path.Combine(basePath, "GirafRest.xml");
                 c.IncludeXmlComments(xmlPath);
@@ -275,7 +279,6 @@ namespace GirafRest.Setup
 
             //Configures Identity, i.e. user management
             app.UseAuthentication();
-            app.UseAuthorization();
 
             //Overrides the default behaviour on unauthorized to simply return Unauthorized when accessing an
             //[Authorize] endpoint without logging in.

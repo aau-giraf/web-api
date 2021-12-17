@@ -16,12 +16,20 @@ namespace GirafRest.Repositories
         }
 
         /// <summary>
+        /// Gets first user.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<GirafUser> GetUserWithId(string id)
+        {
+            return await Context.Users.FirstOrDefaultAsync(u => u.Id == id);
+        }
+
         /// Fetches the first or default (null) User by ID
         /// </summary>
         /// <param name="userID">The ID of the user to fetch</param>
         /// <returns>The User instance or default</returns>
-        public GirafUser GetByID(string userID)
-            => Get(userID);
+        public GirafUser GetByID(string userID) => Get(userID);
 
         /// <summary>
         /// Updates user.
@@ -160,10 +168,9 @@ namespace GirafRest.Repositories
         }
 
         /// Method for loading user from context and eager loading fields requied to read their <b>week schedules</b>
-        /// <summary>
+        /// </summary>
         /// <param name="id">id of user to load.</param>
         /// <returns>A <see cref="GirafUser"/> with <b>all</b> related data.</returns>
-        /// </summary>
         public GirafUser GetWithWeekSchedules(string id)
             => Context.Users
                 //First load the user from the database
@@ -177,6 +184,11 @@ namespace GirafRest.Repositories
                 .ThenInclude(e => e.Pictograms)
                 //And return it
                 .FirstOrDefault();
+
+        public async Task<GirafUser> LoadBasicUserDataAsync(GirafUser usr)
+        {
+            return await Context.Users.Where(u => u.Id == usr.Id).FirstOrDefaultAsync();
+        }
 
         public bool ExistsUsername(string username)
             => Context.Users.Any(u => u.UserName == username);
@@ -194,17 +206,11 @@ namespace GirafRest.Repositories
              .ToList();
         }
 
-        public GirafUser GetUserWithId(string id)
-            => Context.Users.FirstOrDefault(u => u.Id == id);
+        //public GirafUser GetUserWithId(string id) => Context.Users.FirstOrDefault(u => u.Id == id);
 
         public Task<GirafUser> GetUserWithIdOrUsername(DisplayNameDTO member)
         {
             return Context.Users.Where(u => u.UserName == member.DisplayName || u.Id == member.UserId).FirstOrDefaultAsync();
-        }
-
-        public async Task<GirafUser> LoadBasicUserDataAsync(GirafUser usr)
-        {
-            return await Context.Users.Where(u => u.Id == usr.Id).FirstOrDefaultAsync();
         }
     }
 }

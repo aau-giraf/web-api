@@ -35,18 +35,9 @@ namespace GirafRest.Services
         /// </summary>
         /// <param name="context">Reference to the database context.</param>
         /// <param name="userManager">Reference to asp.net's user-manager.</param>
-        /// <param name="girafUserRepository">Service Injection</param>
-        /// <param name="userResourseRepository">Service Injection</param>
-        /// <param name="departmentResourseRepository">Service Injection</param>
-        public GirafService(UserManager<GirafUser> userManager,
-            IGirafUserRepository girafUserRepository,
-            IUserResourseRepository userResourseRepository,
-            IDepartmentResourseRepository departmentResourseRepository)
+        public GirafService(UserManager<GirafUser> userManager)
         {
-            _userManager = userManager;
-            _girafUserRepository = girafUserRepository;
-            _userResourseRepository = userResourseRepository;
-            _departmentResourseRepository = departmentResourseRepository;
+            this._userManager = userManager;
         }
 
         public async Task<byte[]> ReadRequestImage(Stream bodyStream)

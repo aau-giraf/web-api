@@ -1,12 +1,21 @@
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
+using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq.Expressions;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using GirafRest.Interfaces;
+using GirafRest.Models;
+using GirafRest.Models.DTOs;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 
 namespace GirafRest.IRepositories
 {
-    public interface IGirafUserRepository : IRepository<GirafUser>
-    {
+    public interface IGirafUserRepository : IRepository<GirafUser> {
+
         /// <summary>
         /// Fetches the first or default (null) User by ID
         /// </summary>
@@ -14,6 +23,9 @@ namespace GirafRest.IRepositories
         /// <returns>The User instance or default</returns>
         GirafUser GetByID(string userID);
 
+        Task<GirafUser> GetUserWithId(string id);
+
+        void Update(GirafUser user);
 
         Task<int> SaveChangesAsync();
 
@@ -31,17 +43,17 @@ namespace GirafRest.IRepositories
 
         GirafUser GetUserSettingsByWeekDayColor(string id);
 
-        public bool CheckIfUsernameHasSameId(GirafUserDTO newUser, GirafUser user);
+        bool CheckIfUsernameHasSameId(GirafUserDTO newUser, GirafUser user);
 
-        public Task<GirafUser> LoadUserWithResources(GirafUser usr);
+        Task<GirafUser> LoadUserWithResources(GirafUser usr);
 
-        public Task<GirafUser> LoadUserWithDepartment(GirafUser usr);
+        Task<GirafUser> LoadUserWithDepartment(GirafUser usr);
 
-        public Task<GirafUser> LoadUserWithWeekSchedules(string id);
+        Task<GirafUser> LoadUserWithWeekSchedules(string id);
 
-        public Task<GirafUser> LoadBasicUserDataAsync(GirafUser usr);
+        Task<GirafUser> LoadBasicUserDataAsync(GirafUser usr);
 
-        public GirafUser GetWithWeekSchedules(string id);
+        GirafUser GetWithWeekSchedules(string id);
 
         bool ExistsUsername(string username);
 

@@ -9,6 +9,7 @@ namespace GirafRest.IRepositories
     {
         Task<int> AddAsync(UserResource userResource);
         Task<UserResource> FetchRelationshipFromDb(Pictogram resource, GirafUser user);
+        void Remove(UserResource relationship);
         public Task<bool> CheckPrivateOwnership(Pictogram pictogram, GirafUser user);
         public bool CheckIfUserOwnsResource(Pictogram pictogram, GirafUser user);
     }
