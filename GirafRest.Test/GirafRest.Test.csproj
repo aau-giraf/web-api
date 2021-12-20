@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,34 +12,34 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.10" />
-    <PackageReference Include="MSTest.TestFramework" Version="2.2.7" />
+    <PackageReference Include="MSTest.TestFramework" Version="2.2.8" />
     <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.3.*" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
-    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="3.2.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="6.0.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Moq" Version="4.14.5" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.1.8" />
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.15.0" />
+    <PackageReference Include="Moq" Version="4.16.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="6.0.1" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.20.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0">
 
     </PackageReference>
-    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="3.7.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="3.1.8" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.0.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.8">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="3.1.8">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.1">
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.Design" Version="1.1.6" />
     <PackageReference Include="Microsoft.VisualStudio.Web.BrowserLink" Version="2.2.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.8" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="3.1.8">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -58,7 +58,7 @@
 	<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.0.0" />
   </ItemGroup>
   <ItemGroup>
-	<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="3.0.0" />
+	<PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="6.0.1" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Playlists\Choice.playlist" />
