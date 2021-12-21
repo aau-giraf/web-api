@@ -445,16 +445,16 @@ namespace GirafRest.Controllers
                 citizens.Add(new DisplayNameDTO { UserId = girafUser.Id, DisplayName = girafUser.DisplayName });
             }
 
-            foreach (var tcitizen in user.TrusteeCitizens)
+            /*foreach (var tcitizen in user.TrusteeCitizens)
             {
                 var girafUser = _girafUserRepository.GetFirstTrusteeCitizen(tcitizen);
                 tcitizens.Add(new DisplayNameDTO { UserId = girafUser.Id, DisplayName = girafUser.DisplayName });
 
             }
-
+*/
             //sort function for users in citizens since the list needs to be sorted by name... issue#697
             citizens.Sort();
-            tcitizens.Sort();
+            //tcitizens.Sort();
 
            
             if (!citizens.Any())
@@ -514,7 +514,7 @@ namespace GirafRest.Controllers
         /// 
 
 
-        // TRUSTEE tilf?jes
+        // TRUSTEE tilføjes
 
         [HttpPost("{id}/trusteecitizens/{citizenId}")]
         [Authorize(Roles = GirafRole.Department + "," + GirafRole.Trustee + "," +GirafRole.SuperUser)]
