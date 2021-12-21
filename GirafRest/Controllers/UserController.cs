@@ -416,7 +416,7 @@ namespace GirafRest.Controllers
             return Ok(new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, userRole)));
         }
 
-        /// <summary>
+        /// <summary> (THIS METHOD ONLY GET GUARDIANS USER - Can be rewriting to as get Trustees users)
         /// Gets the citizens of the user with the provided id. The provided user must be a guardian
         /// </summary>
         /// <returns>List of <see cref="DisplayNameDTO"/> on success else MissingProperties, NotAuthorized, Forbidden,
@@ -435,28 +435,16 @@ namespace GirafRest.Controllers
             var user = _girafUserRepository.GetCitizensWithId(id);
             //var authUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
             var citizens = new List<DisplayNameDTO>();
-            var tcitizens = new List<DisplayNameDTO>();
-            
-            var userRole = (await _roleManager.findUserRole(_giraf._userManager, user));
-
+           
             foreach (var citizen in user.Citizens)
             {
                 var girafUser = _girafUserRepository.GetFirstCitizen(citizen);
                 citizens.Add(new DisplayNameDTO { UserId = girafUser.Id, DisplayName = girafUser.DisplayName });
             }
 
-            /*foreach (var tcitizen in user.TrusteeCitizens)
-            {
-                var girafUser = _girafUserRepository.GetFirstTrusteeCitizen(tcitizen);
-                tcitizens.Add(new DisplayNameDTO { UserId = girafUser.Id, DisplayName = girafUser.DisplayName });
-
-            }
-*/
             //sort function for users in citizens since the list needs to be sorted by name... issue#697
             citizens.Sort();
-            //tcitizens.Sort();
-
-           
+                       
             if (!citizens.Any())
             {
                return NotFound(new ErrorResponse(ErrorCode.UserHasNoCitizens, "User does not have any citizens"));
@@ -482,8 +470,6 @@ namespace GirafRest.Controllers
             var user = _girafUserRepository.GetGuardianWithId(id);
             if (user == null)
                 return BadRequest(new ErrorResponse(ErrorCode.InvalidProperties, "Missing id"));
-
-
 
             var userRole = (await _roleManager.findUserRole(_giraf._userManager, user));
             if (userRole != GirafRoles.Citizen)
@@ -512,29 +498,7 @@ namespace GirafRest.Controllers
         /// <returns>Success Reponse on Success else UserNotFound, NotAuthorized, UserNotFound, MissingProperties,
         /// or forbidden </returns>
         /// 
-
-
-        // TRUSTEE tilføjes
-
-        [HttpPost("{id}/trusteecitizens/{citizenId}")]
-        [Authorize(Roles = GirafRole.Department + "," + GirafRole.Trustee + "," +GirafRole.SuperUser)]
-        [ProducesResponseType(typeof(SuccessResponse<List<DisplayNameDTO>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> AddTrusteeCitizenRelationship(string id, string citizenId)
-        {
-            var citizen = _girafUserRepository.GetCitizenRelationship(citizenId);
-            var trustee = await _girafUserRepository.GetUserWithId(id);
-
-            if (trustee == null || citizen == null)
-                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
-            citizen.AddTrustee(trustee);
-
-            return Ok(new SuccessResponse("Added relation between trustee and citizen"));
-        }
-
-
-        [HttpPost("{id}/citizens/{citizenId}")]
+         [HttpPost("{id}/citizens/{citizenId}")]
          [Authorize(Roles = GirafRole.Department + "," + GirafRole.Guardian + ","+ GirafRole.SuperUser)]
          [ProducesResponseType(typeof(SuccessResponse<List<DisplayNameDTO>>), StatusCodes.Status200OK)]
          [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -551,7 +515,34 @@ namespace GirafRest.Controllers
 
              return Ok(new SuccessResponse("Added relation between guardian and citizen"));
          }
-         
+
+
+        /// <summary> (THIS METHOD IS NOT USED)
+        /// Adds relation between the authenticated user (trutee) and an existing citizen.
+        /// </summary>
+        /// <param name="id">Trustee id</param>
+        /// <param name="citizenId">Citizen id</param>
+        /// <returns>Success Reponse on Success else UserNotFound, NotAuthorized, UserNotFound, MissingProperties,
+        /// or forbidden </returns>
+        /// 
+        [HttpPost("{id}/trusteecitizens/{citizenId}")]
+        [Authorize(Roles = GirafRole.Department + "," + GirafRole.Trustee + "," + GirafRole.SuperUser)]
+        [ProducesResponseType(typeof(SuccessResponse<List<DisplayNameDTO>>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> AddTrusteeCitizenRelationship(string id, string citizenId)
+        {
+            var citizen = _girafUserRepository.GetCitizenRelationship(citizenId);
+            var trustee = await _girafUserRepository.GetUserWithId(id);
+
+            if (trustee == null || citizen == null)
+                return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
+            citizen.AddTrustee(trustee);
+
+            return Ok(new SuccessResponse("Added relation between trustee and citizen"));
+        }
+
+
         /// <summary>
         /// Updates the user settings for the user with the provided id
         /// </summary>

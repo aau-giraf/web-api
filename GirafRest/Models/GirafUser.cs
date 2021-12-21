@@ -84,11 +84,11 @@ namespace GirafRest.Models
             this.WeekSchedule = new List<Week>();
             this.Citizens = new List<GuardianRelation>();
             this.Guardians = new List<GuardianRelation>();
-            this.Trustees = new List<TrusteeRelation>();
             this.TrusteeCitizens = new List<TrusteeRelation>();
+            this.Trustees = new List<TrusteeRelation>();
 
         } 
-        //
+
         private void InitialiseData()
         {
             this.Settings = new Setting();
@@ -97,12 +97,9 @@ namespace GirafRest.Models
             this.WeekSchedule = new List<Week>();
             this.Citizens = new List<GuardianRelation>();
             this.Guardians = new List<GuardianRelation>();
-            this.Trustees = new List<TrusteeRelation>();
             this.TrusteeCitizens = new List<TrusteeRelation>();
-
+            this.Trustees = new List<TrusteeRelation>();
         }
-
-        /* GURADIANS RELATIONS   */
 
         /// <summary>
         /// Iteratr citizens for calling AddCitizen
@@ -146,11 +143,8 @@ namespace GirafRest.Models
             this.Guardians.Add(new GuardianRelation(guardian, this));
         }
 
-
-        /* TRUSTEEE RELATIONS   */
-
         /// <summary>
-        /// Iteratr citizens for calling AddCitizen
+        /// Iteratr citizens for calling AddTrusteeCitizen
         /// </summary>
         /// <param name="citizens"></param>
         public void AddTrusteeCitizens(List<GirafUser> citizens)
@@ -191,17 +185,6 @@ namespace GirafRest.Models
                 AddTrustee(trustee); 
             }
         }
-
-        /// <summary>
-        /// Add specific Guardian to this
-        /// </summary>
-        /// <param name="trustee"></param>
-        /* Removed because of old method
-        
-        public void AddTrustee(GirafUser trustee)
-        {
-            this.Guardians.Add(new GuardianRelation(trustee, this));
-        }*/
 
         /// <summary>
         /// Constructor for GirafUser
