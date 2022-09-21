@@ -87,6 +87,7 @@ namespace GirafRest.Setup
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddApplicationInsightsTelemetry();
+            services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
 
             #region RateLimit
             // needed to load configuration from appsettings.json

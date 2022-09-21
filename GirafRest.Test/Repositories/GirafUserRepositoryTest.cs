@@ -38,19 +38,23 @@ namespace GirafRest.Test.Repositories
                     Id = "1",
                     DepartmentKey = 2
                 };
-                var user2 = new GirafUser();
-                user2.Id = "2";
-                user2.UserName = "John Appleseed";
-                
-                
-                var user3 = new GirafUser();
-                user3.Id = "3";
-                user3.UserName = "Anna";
-
+                var user2 = new GirafUser()
+                {
+                    Id = "2",
+                    UserName = "John Appleseed",
+                    DisplayName = ""
+                };
+                var user3 = new GirafUser()
+                {
+                    Id = "3",
+                    UserName = "Anna",
+                    DisplayName = ""
+                };
                 var user4 = new GirafUser()
                 {
                     Id = "4",
-                    UserName = "Jacob"
+                    UserName = "Jacob",
+                    DisplayName = ""
                 };
                 
                 GirafUser userAmazing = new GirafUser()

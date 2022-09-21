@@ -27,7 +27,7 @@ namespace GirafRest.Extensions
         public static void AddMySql(this IServiceCollection services, IConfigurationRoot Configuration)
         {
             //Setup the connection to the sql server
-            services.AddDbContext<GirafDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<GirafDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(new Version())));
         }
 
         /// <summary>

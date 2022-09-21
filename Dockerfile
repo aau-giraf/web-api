@@ -1,6 +1,6 @@
-# Using microsoft dotnet software development kit as 
+# Using microsoft .NET 6.0 software development kit as 
 # the build envionment.
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build-env
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
 WORKDIR /app
 
 # Copy the project to the container
@@ -11,8 +11,8 @@ RUN dotnet publish -c Release -o out
 
 #------------------------------------------#
 
-# Use microsoft ASP.NET Core 3.1 as the runtime envionment
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS runtime-env
+# Use microsoft ASP.NET 6.0 as the runtime envionment
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime-env
 WORKDIR /srv
 
 # COPY the built files from the build environment into a local container
