@@ -54,6 +54,7 @@ namespace GirafRest.Test.Repositories
                 var user2 = new GirafUser();
                 user2.Id = "2";
                 user2.UserName = "John Appleseed";
+                user2.DisplayName = "";
                 
                 var newPictogram = new Pictogram()
                 {
