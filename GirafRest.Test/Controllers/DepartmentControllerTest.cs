@@ -19,6 +19,8 @@ using System.Linq;
 using GirafRest.Models.Enums;
 using GirafRest.Test.RepositoryMocks;
 using System.Collections.Generic;
+using System.Security.Claims;
+
 namespace GirafRest.Test
 {
     public class DepartmentControllerTest
@@ -63,6 +65,7 @@ namespace GirafRest.Test
         )
               
             {
+                _giraf = girafService;
                 _departmentRepository = departmentRepository;
             }
 
@@ -71,11 +74,6 @@ namespace GirafRest.Test
         public void DepartmentController_Should_Get_All_Deparments()
         {
             //arranging
-            List<DepartmentNameDTO> DepartmentDtos_returned_by_rep = new List<DepartmentNameDTO>();
-            DepartmentDtos_returned_by_rep.Add(new DepartmentNameDTO(2, "Dalhaven"));
-            DepartmentDtos_returned_by_rep.Add(new DepartmentNameDTO(1, "BjælkeHytten"));
-            DepartmentDtos_returned_by_rep.Add(new DepartmentNameDTO(3, "Satelitten"));
-
 
             List<DepartmentNameDTO> DepartmentDtos_expected = new List<DepartmentNameDTO>();
             DepartmentDtos_expected.Add(new DepartmentNameDTO(2, "Dalhaven"));
@@ -87,7 +85,7 @@ namespace GirafRest.Test
             //mocking
             var departmentRep = departmentController._departmentRepository;
             departmentRep.Setup(repo => repo.GetDepartmentNames()).
-                Returns(Task.FromResult<List<DepartmentNameDTO>>(DepartmentDtos_returned_by_rep));
+                Returns(Task.FromResult<List<DepartmentNameDTO>>(DepartmentDtos_expected));
 
             // Acting 
             var response = departmentController.Get();
@@ -99,5 +97,21 @@ namespace GirafRest.Test
 
 
         }
+        [Fact]
+        public void DepartmentController_Should_Get_By_ID()
+        {
+            // arranging
+            var user = new ClaimsPrincipal(new Claim("dencker", "1");
+
+            //mock
+
+        
+            
+        
+        }
+
+
+
+
     }
 }
