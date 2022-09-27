@@ -31,6 +31,7 @@ GirafRest.Test/obj/*
 out
 *.db
 *.user
+*.sln
 appsettings.json
 
 scripts/*.bak
