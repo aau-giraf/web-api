@@ -106,7 +106,7 @@ namespace GirafRest.Test
             
 
             // arranging
-            var user = new GirafUser("sus","amogus",new Department(),GirafRoles.Guardian);
+            var user = new GirafUser("thomas","thomas",new Department(),GirafRoles.Guardian);
             user.Department.Key = 1;
             var departmentController = new MockedDepartmentController();
             var principal = new ClaimsPrincipal(new ClaimsIdentity(null, "user"));
