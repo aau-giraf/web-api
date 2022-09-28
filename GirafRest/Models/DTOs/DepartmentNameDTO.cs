@@ -22,6 +22,18 @@
             this.ID = id;
             this.Name = name;
         }
+        public override bool Equals(object obj)
+        {
+
+            if (obj == null)
+                return false;
+            if (obj.GetType() != typeof(DepartmentNameDTO))
+                return false;
+
+            DepartmentNameDTO dto = (DepartmentNameDTO)obj;
+            return this.ID == dto.ID && this.Name == dto.Name;  
+        }
+
 
         /// <summary>
         /// Empty constructor for JSON Generation
