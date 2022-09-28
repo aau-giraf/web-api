@@ -30,7 +30,7 @@ namespace GirafRest.Test
         public class MockedDepartmentController : DepartmentController
         {
             public readonly Mock<IGirafService> _giraf;
-
+            public readonly Mock<RoleManager<GirafRole>> _rolemanager
             public readonly Mock<IDepartmentRepository> _departmentRepository;
             public readonly Mock<IGirafUserRepository> _userRepository;
             public readonly Mock<IGirafRoleRepository> _roleRepository;
@@ -43,6 +43,7 @@ namespace GirafRest.Test
             this(
                     new Mock<IGirafService>(),
                     new Mock<ILoggerFactory>(),
+                    new Mock<RoleManager<GirafRole>>(),
                     new Mock<IGirafUserRepository>(),
                     new Mock<IDepartmentRepository>(),
                     new Mock<IGirafRoleRepository>(),
@@ -51,6 +52,7 @@ namespace GirafRest.Test
             public MockedDepartmentController(
                     Mock<IGirafService> girafService,
                     Mock<ILoggerFactory> logger,
+                    Mock<RoleManager<GirafRole>> role,
                     Mock<IGirafUserRepository> userRep,
                 
                     Mock<IDepartmentRepository> departmentRepository,
@@ -59,7 +61,7 @@ namespace GirafRest.Test
         ) : base(
             girafService.Object,
             logger.Object,
-            new MockRoleManager(),
+            role.Object,
             userRep.Object,
             departmentRepository.Object,
             girafRoleRepository.Object,
@@ -67,6 +69,7 @@ namespace GirafRest.Test
         )
               
             {
+                _rolemanager = role;
                 _giraf = girafService;
                 _departmentRepository = departmentRepository;
             }
@@ -102,18 +105,33 @@ namespace GirafRest.Test
         [Fact]
         public void DepartmentController_Should_Get_By_ID()
         {
-
-            
-
             // arranging
             var user = new GirafUser("thomas","thomas",new Department(),GirafRoles.Guardian);
             user.Department.Key = 1;
+            
+            List<DisplayNameDTO> displayNameDTOs = new List<DisplayNameDTO>();
+            displayNameDTOs.Add(new DisplayNameDTO("Daniel", GirafRoles.Guardian, 1));
+            displayNameDTOs.Add(new DisplayNameDTO("Christian", GirafRoles.Citizen, 2));
+            displayNameDTOs.Add(new DisplayNameDTO("Manfred", GirafRoles.Trustee, 3));
+
+            var department = new Department();
+            department.Key = 1;
+            department.Name = "DenckerHaven"
+
             var departmentController = new MockedDepartmentController();
             var principal = new ClaimsPrincipal(new ClaimsIdentity(null, "user"));
             var userManager = new Mock<UserManager<GirafUser>>();
+            
+
             //mock
             userManager.Setup(repo=>repo.GetUserAsync(principal)).Returns(Task.FromResult<GirafUser>(user));
             userManager.Setup(repo => repo.IsInRoleAsync(user, GirafRole.SuperUser)).Returns(Task.FromResult<bool>(false));
+
+            var departmentRep = departmentController._departmentRepository;
+            var depa = departmentRep.Setup(repo=>repo.GetDepartmentMembers(user.Department.Key))
+                .Returns(Task.FromResult<Department>(department));
+           
+
 
             //acting 
 
