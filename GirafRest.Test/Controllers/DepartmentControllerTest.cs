@@ -130,8 +130,8 @@ namespace GirafRest.Test
             var deparmentdto = new Mock<DepartmentDTO>();
 
 
-            
             //mock
+
             userManager.Setup(repo=>repo.GetUserAsync(principal)).Returns(Task.FromResult<GirafUser>(user));
             userManager.Setup(repo => repo.IsInRoleAsync(user, GirafRole.SuperUser)).Returns(Task.FromResult<bool>(false));
 
@@ -140,8 +140,9 @@ namespace GirafRest.Test
             deparmentdto.Setup(repo => repo.FindMembers(It.IsAny<List<GirafUser>>(),
                 It.IsAny<RoleManager<GirafRole>>(), departmentController._giraf.Object)).Returns(displayNameDTOs);
             //acting 
-            var response = departmentController.Get();
-            var objectResult = response as ObjectResult;
+            var response = departmentController.Get(1);
+                
+            var objectResult = response.Result as ObjectResult;
             var actualDTO = objectResult.Value as DepartmentDTO;
 
 

@@ -11,6 +11,7 @@ namespace GirafRest.IRepositories
         /// </summary>
         /// <param name="userID">The ID of the user to fetch</param>
         /// <returns>The User instance or default</returns>
+        
         GirafUser GetByID(string userID);       
         Task<GirafUser> GetUserWithId(string id);
         Task<int> SaveChangesAsync();
