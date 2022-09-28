@@ -25,6 +25,7 @@ namespace GirafRest.Controllers
         private readonly IGirafService _giraf;
 
         private readonly RoleManager<GirafRole> _roleManager;
+        private readonly DepartmentDTO _departmentdto = new DepartmentDTO();
         private readonly IDepartmentRepository _departmentRepository;
         private readonly IGirafUserRepository _userRepository;
         private readonly IGirafRoleRepository _roleRepository;
@@ -108,7 +109,7 @@ namespace GirafRest.Controllers
                 return this.ResourceNotFound(nameof(Department), depa);
             }
 
-            var members = DepartmentDTO.FindMembers(depa.Result.Members, _roleManager, _giraf);
+            var members = _departmentdto.FindMembers(depa.Result.Members, _roleManager, _giraf);
             return Ok(new SuccessResponse<DepartmentDTO>(new DepartmentDTO(depa.Result, members)));
         }
 
@@ -258,7 +259,7 @@ namespace GirafRest.Controllers
                 //Save the changes and return the entity
                 await _giraf._context.SaveChangesAsync();
 
-                var members = DepartmentDTO.FindMembers(department.Members, _roleManager, _giraf);
+                var members = _departmentdto.FindMembers(department.Members, _roleManager, _giraf);
                 return CreatedAtRoute("GetDepartment", new { id = department.Key }, new SuccessResponse<DepartmentDTO>(new DepartmentDTO(department, members)));
             }
             catch (Exception e)
