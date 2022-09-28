@@ -17,9 +17,11 @@ using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Linq;
 using GirafRest.Models.Enums;
-using GirafRest.Test.RepositoryMocks;
 using System.Collections.Generic;
 using System.Security.Claims;
+using GirafRest.Models;
+using Microsoft.AspNetCore.Identity;
+using static GirafRest.Test.UnitTestExtensions;
 
 namespace GirafRest.Test
 {
@@ -100,14 +102,22 @@ namespace GirafRest.Test
         [Fact]
         public void DepartmentController_Should_Get_By_ID()
         {
-            // arranging
-            var user = new ClaimsPrincipal(new Claim("dencker", "1");
 
-            //mock
-
-        
             
-        
+
+            // arranging
+            var user = new GirafUser("sus","amogus",new Department(),GirafRoles.Guardian);
+            user.Department.Key = 1;
+            var departmentController = new MockedDepartmentController();
+            var principal = new ClaimsPrincipal(new ClaimsIdentity(null, "user"));
+            var userManager = new Mock<UserManager<GirafUser>>();
+            //mock
+            userManager.Setup(repo=>repo.GetUserAsync(principal)).Returns(Task.FromResult<GirafUser>(user));
+            userManager.Setup(repo => repo.IsInRoleAsync(user, GirafRole.SuperUser)).Returns(Task.FromResult<bool>(false));
+
+            //acting 
+
+
         }
 
 
