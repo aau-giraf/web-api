@@ -71,6 +71,11 @@ namespace GirafRest.Test
                
                 _giraf = girafService;
                 _departmentRepository = departmentRepository;
+
+                //setting up 
+                this.ControllerContext = new ControllerContext();
+                this.ControllerContext.HttpContext = new DefaultHttpContext();
+
             }
 
         }
@@ -126,8 +131,6 @@ namespace GirafRest.Test
             department.Name = "DenckerHaven";
             department.Members = girafUsers;
             var departmentController = new MockedDepartmentController();
-            departmentController.ControllerContext = new ControllerContext();
-            departmentController.ControllerContext.HttpContext = new DefaultHttpContext();
 
             var principal = new ClaimsPrincipal(new ClaimsIdentity(null, "user"));
             var userManager = new MockUserManagerDepartment();
@@ -148,7 +151,6 @@ namespace GirafRest.Test
                 It.IsAny<RoleManager<GirafRole>>(), departmentController._giraf.Object)).Returns(displayNameDTOs);
             //acting 
             var response = departmentController.Get(1);
-
             var objectResult = response.Result as ObjectResult;
             var actualDTO = objectResult.Value as SuccessResponse<DepartmentDTO>;
 
