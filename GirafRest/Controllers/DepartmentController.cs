@@ -25,7 +25,7 @@ namespace GirafRest.Controllers
         private readonly IGirafService _giraf;
 
         private readonly RoleManager<GirafRole> _roleManager;
-        private readonly DepartmentDTO _departmentdto = new DepartmentDTO();
+        public DepartmentDTO _departmentdto { get; set; } = new DepartmentDTO();
         private readonly IDepartmentRepository _departmentRepository;
         private readonly IGirafUserRepository _userRepository;
         private readonly IGirafRoleRepository _roleRepository;

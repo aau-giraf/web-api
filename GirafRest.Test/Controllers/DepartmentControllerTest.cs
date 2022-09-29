@@ -22,6 +22,7 @@ using System.Security.Claims;
 using GirafRest.Models;
 using Microsoft.AspNetCore.Identity;
 using static GirafRest.Test.UnitTestExtensions;
+using Microsoft.AspNetCore.Http;
 
 namespace GirafRest.Test
 {
@@ -34,15 +35,13 @@ namespace GirafRest.Test
             public readonly Mock<IGirafUserRepository> _userRepository;
             public readonly Mock<IGirafRoleRepository> _roleRepository;
             public readonly Mock<IPictogramRepository> _pictogramRepository;
-
-
+     
 
             public MockedDepartmentController()
                 :
             this(
                     new Mock<IGirafService>(),
                     new Mock<ILoggerFactory>(),
-
                     new Mock<IGirafUserRepository>(),
                     new Mock<IDepartmentRepository>(),
                     new Mock<IGirafRoleRepository>(),
@@ -51,7 +50,6 @@ namespace GirafRest.Test
             public MockedDepartmentController(
                     Mock<IGirafService> girafService,
                     Mock<ILoggerFactory> logger,
-                
                     Mock<IGirafUserRepository> userRep,
                 
                     Mock<IDepartmentRepository> departmentRepository,
@@ -69,11 +67,15 @@ namespace GirafRest.Test
         )
               
             {
+                girafService.SetupAllProperties();
+               
                 _giraf = girafService;
                 _departmentRepository = departmentRepository;
             }
 
         }
+
+
         [Fact]
         public void DepartmentController_Should_Get_All_Deparments()
         {
@@ -122,18 +124,23 @@ namespace GirafRest.Test
             var department = new Department();
             department.Key = 1;
             department.Name = "DenckerHaven";
-   
+            department.Members = girafUsers;
             var departmentController = new MockedDepartmentController();
+            departmentController.ControllerContext = new ControllerContext();
+            departmentController.ControllerContext.HttpContext = new DefaultHttpContext();
+
             var principal = new ClaimsPrincipal(new ClaimsIdentity(null, "user"));
-            var userManager = new Mock<UserManager<GirafUser>>();
+            var userManager = new MockUserManagerDepartment();
             var departmentRep = departmentController._departmentRepository;
             var deparmentdto = new Mock<DepartmentDTO>();
-
+            userManager.MockLoginAsUser(user); 
+            
+            departmentController._giraf.Object._userManager = userManager;
+            departmentController._departmentdto = deparmentdto.Object;
 
             //mock
 
-            userManager.Setup(repo=>repo.GetUserAsync(principal)).Returns(Task.FromResult<GirafUser>(user));
-            userManager.Setup(repo => repo.IsInRoleAsync(user, GirafRole.SuperUser)).Returns(Task.FromResult<bool>(false));
+
 
             departmentRep.Setup(repo=>repo.GetDepartmentMembers((long)user.DepartmentKey))
                 .Returns(Task.FromResult<Department>(department));
@@ -141,14 +148,15 @@ namespace GirafRest.Test
                 It.IsAny<RoleManager<GirafRole>>(), departmentController._giraf.Object)).Returns(displayNameDTOs);
             //acting 
             var response = departmentController.Get(1);
-                
+
             var objectResult = response.Result as ObjectResult;
-            var actualDTO = objectResult.Value as DepartmentDTO;
+            var actualDTO = objectResult.Value as SuccessResponse<DepartmentDTO>;
 
 
             var expected = new DepartmentDTO(department, displayNameDTOs);
 
-            Assert.Equal(actualDTO, expected);
+            Assert.Equal(expected.Name ,actualDTO.Data.Name);
+            Assert.Equal(expected.Id, actualDTO.Data.Id);
 
 
         }
