@@ -160,9 +160,9 @@ namespace GirafRest.Controllers
 
             // get a list of the name of all citizens in the department
             var citizens = _roleRepository.GetAllCitizens();
-            var usersNamesInDepartment = _userRepository.GetUsersInDepartment(department.Key, citizens).Select(u => new DisplayNameDTO(u.DisplayName, GirafRoles.Citizen, u.Id)).ToList();
-
-            return Ok(new SuccessResponse<List<DisplayNameDTO>>(usersNamesInDepartment));
+            var usersNamesInDepartment = _userRepository.GetUsersInDepartment(department.Key, citizens);
+            var girafToDisplayNameDTO = usersNamesInDepartment.Select(u => new DisplayNameDTO(u.DisplayName, GirafRoles.Citizen, u.Id)).ToList();
+            return Ok(new SuccessResponse<List<DisplayNameDTO>>(girafToDisplayNameDTO));
         }
 
         /// <summary>

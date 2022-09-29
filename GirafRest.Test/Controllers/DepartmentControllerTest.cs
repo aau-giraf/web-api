@@ -23,6 +23,7 @@ using GirafRest.Models;
 using Microsoft.AspNetCore.Identity;
 using static GirafRest.Test.UnitTestExtensions;
 using Microsoft.AspNetCore.Http;
+using Ubiety.Dns.Core;
 
 namespace GirafRest.Test
 {
@@ -71,7 +72,8 @@ namespace GirafRest.Test
                
                 _giraf = girafService;
                 _departmentRepository = departmentRepository;
-
+                _roleRepository = girafRoleRepository;
+                _userRepository = userRep;
                 //setting up 
                 this.ControllerContext = new ControllerContext();
                 this.ControllerContext.HttpContext = new DefaultHttpContext();
@@ -142,29 +144,73 @@ namespace GirafRest.Test
             departmentController._departmentdto = deparmentdto.Object;
 
             //mock
-
-
-
             departmentRep.Setup(repo=>repo.GetDepartmentMembers((long)user.DepartmentKey))
                 .Returns(Task.FromResult<Department>(department));
             deparmentdto.Setup(repo => repo.FindMembers(It.IsAny<List<GirafUser>>(),
                 It.IsAny<RoleManager<GirafRole>>(), departmentController._giraf.Object)).Returns(displayNameDTOs);
+
             //acting 
             var response = departmentController.Get(1);
             var objectResult = response.Result as ObjectResult;
             var actualDTO = objectResult.Value as SuccessResponse<DepartmentDTO>;
-
-
+            
             var expected = new DepartmentDTO(department, displayNameDTOs);
 
+            //Assert
             Assert.Equal(expected.Name ,actualDTO.Data.Name);
             Assert.Equal(expected.Id, actualDTO.Data.Id);
-
-
         }
 
+        [Fact]
+        public void DepartmentController_should_get_citizens_by_id()
+        {
+            //Arranging
+            var user = new GirafUser("thomas","thomas",new Department(),GirafRoles.Guardian);
+            user.DepartmentKey = 1;
 
+            List<GirafUser> girafUsers  = new List<GirafUser>();
+            girafUsers.Add(new GirafUser("thomas", "thomas", new Department(), GirafRoles.Guardian));
+            girafUsers.Add(new GirafUser("Christian", "Christian", new Department(), GirafRoles.Citizen));
+            girafUsers.Add(new GirafUser("Manfred", "Manfred", new Department(), GirafRoles.Trustee));
 
+            List<DisplayNameDTO> displayNameDTOs = new List<DisplayNameDTO>();
+            displayNameDTOs.Add(new DisplayNameDTO("Christian", GirafRoles.Citizen, "2"));
 
+            var userListids = new List<string>();
+            userListids.Add("2");
+            var userids = userListids.AsQueryable();
+
+            var department = new Department();
+            department.Key = 1;
+            department.Name = "DenckerHaven";
+            department.Members = girafUsers;
+
+            var departmentController = new MockedDepartmentController();
+
+            var userManager = new MockUserManagerDepartment();
+            var departmentRep = departmentController._departmentRepository;
+            var departmentRole = departmentController._roleRepository;
+            var departmentUser = departmentController._userRepository;
+            userManager.MockLoginAsUser(user);
+
+            departmentController._giraf.Object._userManager = userManager;
+
+            //mock
+            departmentRep.Setup(repo => repo.GetDepartmentById(department.Key)).Returns(department);
+            departmentRep.Setup(repo => repo.GetUserByDepartment(department, user)).Returns(user);
+            departmentRep.Setup(repo => repo.GetCitizenRoleID()).Returns(GirafRole.Citizen);
+            departmentRep.Setup(repo => repo.GetUsersWithRoleID(GirafRole.Citizen)).Returns(userids);
+            departmentRole.Setup(repo => repo.GetAllCitizens()).Returns(userids);
+            departmentUser.Setup(repo => repo.GetUsersInDepartment(department.Key, userids)).Returns(girafUsers);
+
+            //act 
+            var response = departmentController.GetCitizenNamesAsync(department.Key);
+            var objectResult = response.Result as ObjectResult;
+            var list = objectResult.Value as SuccessResponse <List<DisplayNameDTO>>;
+
+            //assert
+            Assert.True(displayNameDTOs.SequenceEqual(list.Data));
+
+        }
     }
 }
