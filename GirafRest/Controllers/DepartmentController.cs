@@ -234,7 +234,7 @@ namespace GirafRest.Controllers
                         }
 
                         var dr = new DepartmentResource(department, res);
-                        await _giraf._context.DepartmentResources.AddAsync(dr);
+                        await _departmentRepository.AddDepartmentResource(dr);
                     }
                 }
                 await _departmentRepository.AddDepartment(department);

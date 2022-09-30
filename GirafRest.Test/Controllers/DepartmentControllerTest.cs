@@ -182,14 +182,12 @@ namespace GirafRest.Test
             var user = new GirafUser("thomas","thomas",new Department(),GirafRoles.Guardian);
             user.DepartmentKey = 1;
 
-
             var department = new Department();
             department.Key = 1;
             department.Name = "DenckerHaven";
 
             List<GirafUser> girafUsers  = new List<GirafUser>();
             girafUsers.Add(new GirafUser("Christian", "Christian", department, GirafRoles.Citizen));
-            
             girafUsers[0].Id = "2";
 
             List<DisplayNameDTO> displayNameDTOs = new List<DisplayNameDTO>();
@@ -234,6 +232,7 @@ namespace GirafRest.Test
             var girafService = departmentController._giraf;
             var HttpContext = departmentController.ControllerContext.HttpContext;
             var depRep = departmentController._departmentRepository;
+            var picRep = departmentController._pictogramRepository;
             var testContext = new TestContext(); 
             var dep = new Department();
             dep.Key = 1;
@@ -245,7 +244,61 @@ namespace GirafRest.Test
             girafService.Setup(repo => repo.LoadBasicUserDataAsync(HttpContext.User)).Returns(Task.FromResult<GirafUser>(authenticatedUser));
             depRep.Setup(repo => repo.Update(dep)).Returns(Task.CompletedTask);
             depRep.Setup(repo => repo.AddDepartment(dep)).Returns(Task.CompletedTask);
+            picRep.Setup(repo => repo.GetPictogramWithID(It.IsAny<long>())).Returns(Task.FromResult<Pictogram>(new Pictogram()));
+            
+        
+        
+       }
 
+        [Fact]
+        public void Department_Name_Should_Change()
+        {
+            //Arranging
+            var departmentController = new MockedDepartmentController();
+            var departmentRep = departmentController._departmentRepository;
+
+            DepartmentNameDTO departmentNameDTO = new DepartmentNameDTO();
+            departmentNameDTO.Name = "Mansestuen";
+
+            var department = new Department();
+            department.Key = 1;
+            department.Name = "DenckerHaven";
+
+            //Mock
+            departmentRep.Setup(repo => repo.GetDepartmentById(department.Key)).Returns(department);
+            departmentRep.Setup(repo => repo.Update(department)).Returns(Task.CompletedTask);
+
+            //act
+            var response = departmentController.ChangeDepartmentName(department.Key, departmentNameDTO);
+            var objectResult = response.Result as ObjectResult;
+            var newName = objectResult.Value as SuccessResponse <string>;
+
+            //assert
+            Assert.True(newName.Data.Equals("Name of department changed"));
+        }
+
+        [Fact]
+        public void Department_should_get_deleted()
+        {
+            //Arranging
+            var departmentController = new MockedDepartmentController();
+            var departmentRep = departmentController._departmentRepository;
+
+            var department = new Department();
+            department.Key = 1;
+            department.Name = "DenckerHaven";
+
+            //Mock
+            departmentRep.Setup(repo => repo.GetDepartmentById(department.Key)).Returns(department);
+            departmentRep.Setup(repo => repo.RemoveDepartment(department)).Returns(Task.CompletedTask);
+
+            //act
+            var response = departmentController.DeleteDepartment(department.Key);
+            var objectResult = response.Result as ObjectResult;
+            var res = objectResult.Value as SuccessResponse<string>;
+
+            //assert
+            Assert.True(res.Data.Equals("Department deleted"));
 
         }
     }
