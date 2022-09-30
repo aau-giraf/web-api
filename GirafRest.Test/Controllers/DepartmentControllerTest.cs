@@ -168,10 +168,15 @@ namespace GirafRest.Test
             var user = new GirafUser("thomas","thomas",new Department(),GirafRoles.Guardian);
             user.DepartmentKey = 1;
 
+
+            var department = new Department();
+            department.Key = 1;
+            department.Name = "DenckerHaven";
+
             List<GirafUser> girafUsers  = new List<GirafUser>();
-            girafUsers.Add(new GirafUser("thomas", "thomas", new Department(), GirafRoles.Guardian));
-            girafUsers.Add(new GirafUser("Christian", "Christian", new Department(), GirafRoles.Citizen));
-            girafUsers.Add(new GirafUser("Manfred", "Manfred", new Department(), GirafRoles.Trustee));
+            girafUsers.Add(new GirafUser("Christian", "Christian", department, GirafRoles.Citizen));
+            
+            girafUsers[0].Id = "2";
 
             List<DisplayNameDTO> displayNameDTOs = new List<DisplayNameDTO>();
             displayNameDTOs.Add(new DisplayNameDTO("Christian", GirafRoles.Citizen, "2"));
@@ -179,11 +184,6 @@ namespace GirafRest.Test
             var userListids = new List<string>();
             userListids.Add("2");
             var userids = userListids.AsQueryable();
-
-            var department = new Department();
-            department.Key = 1;
-            department.Name = "DenckerHaven";
-            department.Members = girafUsers;
 
             var departmentController = new MockedDepartmentController();
 
