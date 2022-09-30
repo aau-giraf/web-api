@@ -46,7 +46,17 @@ namespace GirafRest.Repositories
         {
             return Context.Users.Include(a => a.Department).FirstOrDefault(d => d.UserName == currentUser.UserName);
         }
+        public async Task AddDepartment(Department department)
+        {
+            Context.Departments.Add(department);
+            Context.SaveChanges();
 
+        }
+
+        public async Task AddDepartmentResource(DepartmentResource dr)
+        {
+            await Context.DepartmentResources.AddAsync(dr);
+        }
         public string GetCitizenRoleID()
         {
             return Context.Roles.Where(r => r.Name == GirafRole.Citizen).Select(c => c.Id).FirstOrDefault();

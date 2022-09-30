@@ -36,13 +36,26 @@ namespace GirafRest.Test
             public readonly Mock<IGirafUserRepository> _userRepository;
             public readonly Mock<IGirafRoleRepository> _roleRepository;
             public readonly Mock<IPictogramRepository> _pictogramRepository;
-     
 
+
+            public MockedDepartmentController(RoleManager<GirafRole> rolemanager)
+                :
+            this(
+                    new Mock<IGirafService>(),
+                    new Mock<ILoggerFactory>(),
+                    rolemanager,
+                    new Mock<IGirafUserRepository>(),
+                    new Mock<IDepartmentRepository>(),
+                    new Mock<IGirafRoleRepository>(),
+                    new Mock<IPictogramRepository>()
+                )
+            { }
             public MockedDepartmentController()
                 :
             this(
                     new Mock<IGirafService>(),
                     new Mock<ILoggerFactory>(),
+                    new MockRoleManager(new List<GirafRoles>()),
                     new Mock<IGirafUserRepository>(),
                     new Mock<IDepartmentRepository>(),
                     new Mock<IGirafRoleRepository>(),
@@ -51,16 +64,16 @@ namespace GirafRest.Test
             public MockedDepartmentController(
                     Mock<IGirafService> girafService,
                     Mock<ILoggerFactory> logger,
+                    RoleManager<GirafRole> rolemanager,
                     Mock<IGirafUserRepository> userRep,
-                
+
                     Mock<IDepartmentRepository> departmentRepository,
                     Mock<IGirafRoleRepository> girafRoleRepository,
                     Mock<IPictogramRepository> pictogramRepository
         ) : base(
             girafService.Object,
             logger.Object,
-
-            new MockRoleManager(new List<GirafRoles>()),
+            rolemanager,   
             userRep.Object,
             departmentRepository.Object,
             girafRoleRepository.Object,
@@ -74,6 +87,7 @@ namespace GirafRest.Test
                 _departmentRepository = departmentRepository;
                 _roleRepository = girafRoleRepository;
                 _userRepository = userRep;
+                _pictogramRepository = pictogramRepository;
                 //setting up 
                 this.ControllerContext = new ControllerContext();
                 this.ControllerContext.HttpContext = new DefaultHttpContext();
@@ -210,6 +224,28 @@ namespace GirafRest.Test
 
             //assert
             Assert.True(displayNameDTOs.SequenceEqual(list.Data));
+
+        }
+        [Fact]
+        public void Should_Create_New_Department()
+        {
+            //Arranging
+            var departmentController = new MockedDepartmentController(new MockRoleManager(new List<GirafRoles> { GirafRoles.SuperUser}));
+            var girafService = departmentController._giraf;
+            var HttpContext = departmentController.ControllerContext.HttpContext;
+            var depRep = departmentController._departmentRepository;
+            var testContext = new TestContext(); 
+            var dep = new Department();
+            dep.Key = 1;
+            dep.Name = "DenckerHaven";
+            var depDTO = new DepartmentDTO(dep, new List<DisplayNameDTO> { new DisplayNameDTO("luscus", GirafRoles.Citizen, "2") });
+            
+            var authenticatedUser = new GirafUser("dencker","dencker",new Department(),GirafRoles.SuperUser);
+            //mock
+            girafService.Setup(repo => repo.LoadBasicUserDataAsync(HttpContext.User)).Returns(Task.FromResult<GirafUser>(authenticatedUser));
+            depRep.Setup(repo => repo.Update(dep)).Returns(Task.CompletedTask);
+            depRep.Setup(repo => repo.AddDepartment(dep)).Returns(Task.CompletedTask);
+
 
         }
     }

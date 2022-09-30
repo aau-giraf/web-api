@@ -13,9 +13,13 @@ namespace GirafRest.IRepositories
 
         Task<Department> GetDepartmentMembers(long departmentId);
 
+        Task AddDepartmentResource(DepartmentResource dr);
         Task RemoveDepartment(Department department);
 
         Task Update(Department department);
+
+        Task AddDepartment(Department department);
+
 
         GirafUser GetUserByDepartment(Department department, GirafUser currentUser);
 
