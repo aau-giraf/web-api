@@ -260,7 +260,7 @@ namespace GirafRest.Test
                 It.IsAny<UserManager<GirafUser>>(),
                 It.IsAny<GirafUser>()
                 )).Returns(Task.FromResult<GirafRoles>(GirafRoles.SuperUser));
-            userRep.Setup(repo => repo.GetUserWithId("2")).Returns(Task.FromResult<GirafUser>(girafUsers[0]));
+            userRep.Setup(repo => repo.GetUserWithId(It.IsAny<string>())).Returns(Task.FromResult<GirafUser>(girafUsers[0]));
             picRep.Setup(repo => repo.GetPictogramWithID(It.IsAny<long>())).Returns(Task.FromResult<Pictogram>(new Pictogram()));
             depRep.Setup(repo => repo.AddDepartmentResource(It.IsAny<DepartmentResource>())).Returns(Task.CompletedTask);
             depDto.Setup(repo => repo.FindMembers(It.IsAny<List<GirafUser>>(),

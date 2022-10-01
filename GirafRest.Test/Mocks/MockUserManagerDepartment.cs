@@ -35,6 +35,10 @@ namespace GirafRest.Test.Mocks
         {
             return Task.FromResult< IdentityResult >(IdentityResult.Success);
         }
+        public override async Task<IdentityResult> AddToRoleAsync(GirafUser user, string role)
+        {
+            return IdentityResult.Success;
+        }
 
     }
 
