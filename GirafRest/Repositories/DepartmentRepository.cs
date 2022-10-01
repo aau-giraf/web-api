@@ -1,10 +1,13 @@
 using GirafRest.Data;
 using GirafRest.IRepositories;
 using GirafRest.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GirafRest.Extensions;
+using GirafRest.Models.Enums;
 
 namespace GirafRest.Repositories
 {
@@ -56,6 +59,13 @@ namespace GirafRest.Repositories
         public async Task AddDepartmentResource(DepartmentResource dr)
         {
             await Context.DepartmentResources.AddAsync(dr);
+        }
+
+        public async  Task<GirafRoles> GetUserRole(RoleManager<GirafRole> roleManager,
+            UserManager<GirafUser> userManager,
+            GirafUser user)
+        {
+            return await roleManager.findUserRole(userManager, user);
         }
         public string GetCitizenRoleID()
         {

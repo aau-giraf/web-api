@@ -13,7 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using GirafRest.Extensions;
 namespace GirafRest.Controllers
 {
     /// <summary>
@@ -194,7 +194,7 @@ namespace GirafRest.Controllers
                     return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
                 }
 
-                var userRole = await _roleManager.findUserRole(_giraf._userManager, authenticatedUser);
+                var userRole = await _departmentRepository.GetUserRole(_roleManager, _giraf._userManager, authenticatedUser);
                 if (userRole != GirafRoles.SuperUser)
                 {
                     return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User is not a super user"));

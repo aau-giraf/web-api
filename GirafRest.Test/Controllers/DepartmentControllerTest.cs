@@ -23,7 +23,6 @@ using GirafRest.Models;
 using Microsoft.AspNetCore.Identity;
 using static GirafRest.Test.UnitTestExtensions;
 using Microsoft.AspNetCore.Http;
-using Ubiety.Dns.Core;
 
 namespace GirafRest.Test
 {
@@ -233,22 +232,47 @@ namespace GirafRest.Test
             var HttpContext = departmentController.ControllerContext.HttpContext;
             var depRep = departmentController._departmentRepository;
             var picRep = departmentController._pictogramRepository;
-            var testContext = new TestContext(); 
+            var depDto = new Mock<DepartmentDTO>();
+            var userRep = departmentController._userRepository;
+            departmentController._departmentdto = depDto.Object;
+            var testContext = new TestContext();
+            var userManager = new MockUserManagerDepartment();
+            
+            girafService.Object._userManager = userManager;
+
             var dep = new Department();
+       
             dep.Key = 1;
             dep.Name = "DenckerHaven";
-            var depDTO = new DepartmentDTO(dep, new List<DisplayNameDTO> { new DisplayNameDTO("luscus", GirafRoles.Citizen, "2") });
-            
+            var girafUsers = new List<GirafUser>() { new GirafUser("luscus", "luscus", dep, GirafRoles.Citizen) };
+            girafUsers[0].Id = "2";
+            dep.Members = girafUsers;
+
+            var displayNameDTOS = new List<DisplayNameDTO> { new DisplayNameDTO("luscus", GirafRoles.Citizen, "2") };
+            var depDTO = new DepartmentDTO(dep, displayNameDTOS);
+            var departmentUser = new GirafUser (depDTO.Name,depDTO.Name,dep,GirafRoles.Department) { IsDepartment = true };
             var authenticatedUser = new GirafUser("dencker","dencker",new Department(),GirafRoles.SuperUser);
             //mock
             girafService.Setup(repo => repo.LoadBasicUserDataAsync(HttpContext.User)).Returns(Task.FromResult<GirafUser>(authenticatedUser));
             depRep.Setup(repo => repo.Update(dep)).Returns(Task.CompletedTask);
             depRep.Setup(repo => repo.AddDepartment(dep)).Returns(Task.CompletedTask);
+            depRep.Setup(repo => repo.GetUserRole(It.IsAny<RoleManager<GirafRole>>(),
+                It.IsAny<UserManager<GirafUser>>(),
+                It.IsAny<GirafUser>()
+                )).Returns(Task.FromResult<GirafRoles>(GirafRoles.SuperUser));
+            userRep.Setup(repo => repo.GetUserWithId("2")).Returns(Task.FromResult<GirafUser>(girafUsers[0]));
             picRep.Setup(repo => repo.GetPictogramWithID(It.IsAny<long>())).Returns(Task.FromResult<Pictogram>(new Pictogram()));
-            
-        
-        
-       }
+            depRep.Setup(repo => repo.AddDepartmentResource(It.IsAny<DepartmentResource>())).Returns(Task.CompletedTask);
+            depDto.Setup(repo => repo.FindMembers(It.IsAny<List<GirafUser>>(),
+                It.IsAny<RoleManager<GirafRole>>(), departmentController._giraf.Object)).Returns(displayNameDTOS);
+            //act
+            var response = departmentController.Post(depDTO);
+            var result = response.Result as CreatedAtRouteResult;
+            var val = result.Value as SuccessResponse<DepartmentDTO>;
+
+            //assert
+            Assert.Equal(val.Data.Name, depDTO.Name);
+        }
 
         [Fact]
         public void Department_Name_Should_Change()
