@@ -19,7 +19,6 @@ namespace GirafRest.IRepositories
         Task RemoveDepartment(Department department);
 
         Task<GirafRoles> GetUserRole(RoleManager<GirafRole> roleManager, UserManager<GirafUser> userManager, GirafUser user);
-
         Task Update(Department department);
 
         Task AddDepartment(Department department);

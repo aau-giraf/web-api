@@ -1,4 +1,3 @@
-using GirafRest.Extensions;
 using GirafRest.Interfaces;
 using GirafRest.IRepositories;
 using GirafRest.Models;
@@ -13,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GirafRest.Extensions;
 namespace GirafRest.Controllers
 {
     /// <summary>
@@ -102,15 +100,15 @@ namespace GirafRest.Controllers
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
             }
 
-            var depa = _departmentRepository.GetDepartmentMembers(id);
+            var department = _departmentRepository.GetDepartmentMembers(id);
 
-            if (depa == null)
+            if (department == null)
             {
-                return this.ResourceNotFound(nameof(Department), depa);
+                return this.ResourceNotFound(nameof(Department), department);
             }
 
-            var members = _departmentdto.FindMembers(depa.Result.Members, _roleManager, _giraf);
-            return Ok(new SuccessResponse<DepartmentDTO>(new DepartmentDTO(depa.Result, members)));
+            var members = _departmentdto.FindMembers(department.Result.Members, _roleManager, _giraf);
+            return Ok(new SuccessResponse<DepartmentDTO>(new DepartmentDTO(department.Result, members)));
         }
 
         /// <summary>
@@ -243,8 +241,6 @@ namespace GirafRest.Controllers
                 //Create a new user with the supplied information
 
                 var departmentUser = new GirafUser(depDTO.Name, depDTO.Name, department, GirafRoles.Department) { IsDepartment = true };
-
-                //department.Members.Add(user);
 
                 var identityUser = await _giraf._userManager.CreateAsync(departmentUser, "0000");
 

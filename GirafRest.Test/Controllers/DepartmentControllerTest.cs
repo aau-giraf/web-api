@@ -17,7 +17,6 @@ using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Linq;
 using GirafRest.Models.Enums;
-using System.Collections.Generic;
 using System.Security.Claims;
 using GirafRest.Models;
 using Microsoft.AspNetCore.Identity;
@@ -124,7 +123,7 @@ namespace GirafRest.Test
 
         }
         [Fact]
-        public void DepartmentController_Should_Get_By_ID()
+        public void DepartmentController_Should_Get_departments_By_ID()
         {
             // arranging
             var user = new GirafUser("thomas","thomas",new Department(),GirafRoles.Guardian);
