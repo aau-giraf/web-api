@@ -53,5 +53,16 @@ namespace GirafRest.Models.DTOs
             }
 
         }
+        public override bool Equals(object obj)
+        {
+
+            if (obj == null)
+                return false;
+            if (obj.GetType() != typeof(DisplayNameDTO))
+                return false;
+
+            DisplayNameDTO dto = (DisplayNameDTO)obj;
+            return this.DisplayName == dto.DisplayName && this.UserRole == dto.UserRole && this.UserId == dto.UserId;
+        }
     }
 }

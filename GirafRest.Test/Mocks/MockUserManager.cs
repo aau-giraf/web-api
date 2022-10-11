@@ -6,6 +6,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using static GirafRest.Test.UnitTestExtensions;
 using System.Linq;
+using Moq;
 
 namespace GirafRest.Test.Mocks
 {
@@ -21,7 +22,12 @@ namespace GirafRest.Test.Mocks
             _testContext = testContext;
             _signInManager = new MockSignInManager(this, _testContext);
         }
+        public MockUserManager() : base(new Mock<IUserStore< GirafUser >>().Object, null, null, null, null, null, null, null, null)
+            {
 
+            }
+            
+           
         public void MockLoginAsUser(GirafUser user)
         {
             currentUser = user;

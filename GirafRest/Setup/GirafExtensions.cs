@@ -70,7 +70,7 @@ namespace GirafRest.Extensions
         /// <returns>
         /// Instance of GirafRole enum
         /// </returns>
-        public static async Task<GirafRoles> findUserRole(
+        public static  async Task<GirafRoles> findUserRole(
             this RoleManager<GirafRole> roleManager,
             UserManager<GirafUser> userManager,
             GirafUser user)
