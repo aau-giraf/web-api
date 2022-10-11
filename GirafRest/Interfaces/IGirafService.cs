@@ -27,7 +27,6 @@ namespace GirafRest.Interfaces
         GirafDbContext _context
         {
             get;
-
         }
         
         /// <summary>
