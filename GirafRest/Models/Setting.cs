@@ -66,6 +66,11 @@ namespace GirafRest.Models
         public bool PictogramText { get; set; }
 
         /// <summary>
+        /// Flag for indicating if popups should be enabled or not
+        /// </summary>
+        public bool ShowPopup { get; set; }
+
+        /// <summary>
         /// Flag for indicating whether or not to show timer buttons
         /// </summary>
         public bool LockTimerControl { get; set; }
@@ -93,6 +98,7 @@ namespace GirafRest.Models
             this.GreyScale = newOptions?.GreyScale ?? this.GreyScale;
             this.LockTimerControl = newOptions?.LockTimerControl ?? this.LockTimerControl;
             this.PictogramText = newOptions?.PictogramText ?? this.PictogramText;
+            this.ShowPopup = newOptions?.ShowPopup ?? this.ShowPopup;
             if (newOptions.WeekDayColors != null)
                 updateWeekDayColors(newOptions.WeekDayColors);
         }
@@ -143,6 +149,7 @@ namespace GirafRest.Models
             TimerSeconds = 900;
             GreyScale = false;
             PictogramText = false;
+            ShowPopup = false;
             LockTimerControl = true;
 
         }
