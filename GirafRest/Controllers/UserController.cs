@@ -48,10 +48,10 @@ namespace GirafRest.Controllers
         public UserController(
             IGirafService giraf,
             ILoggerFactory loggerFactory,
-            RoleManager<GirafRole> roleManager, 
-            IGirafUserRepository girafUserRepository, 
-            IImageRepository imageRepository, 
-            IUserResourseRepository userResourceRepository, 
+            RoleManager<GirafRole> roleManager,
+            IGirafUserRepository girafUserRepository,
+            IImageRepository imageRepository,
+            IUserResourseRepository userResourceRepository,
             IPictogramRepository pictogramRepository)
         {
             _giraf = giraf;
@@ -98,11 +98,11 @@ namespace GirafRest.Controllers
 
             //Gets the user info
             var user = await _girafUserRepository.GetUserByUsername(username);
-            
+
             //Checks that the user isn't null(not found) and throws an error if it isn't found
             if(user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
-            
+
             //Returns the role of the user as a list, should only contain one entry
             return Ok(new SuccessResponse<GirafRoles>(await _roleManager.findUserRole(_giraf._userManager, user)));
         }
@@ -126,8 +126,8 @@ namespace GirafRest.Controllers
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
-          
-           
+
+
             return Ok(new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, await _roleManager.findUserRole(_giraf._userManager, user))));
         }
 
@@ -151,11 +151,11 @@ namespace GirafRest.Controllers
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
-            
+
             // Get the role the user is associated with
             var userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
-            //Returns the user settings if the user is a citizen otherwise returns an error (only citizens has settings). 
+            //Returns the user settings if the user is a citizen otherwise returns an error (only citizens has settings).
             if (userRole == GirafRoles.Citizen)
                 return Ok(new SuccessResponse<SettingDTO>(new SettingDTO(user.Settings)));
             else
@@ -186,7 +186,7 @@ namespace GirafRest.Controllers
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
-            
+
             // check whether user with that username already exist that does not have the same id
             if (_girafUserRepository.CheckIfUsernameHasSameId(newUser, user))
                 return Conflict(new ErrorResponse(ErrorCode.UserAlreadyExists, "Username already exists"));
@@ -199,7 +199,7 @@ namespace GirafRest.Controllers
             if (!String.IsNullOrEmpty(newUser.DisplayName))
                 user.DisplayName = newUser.DisplayName;
 
-            // save and return 
+            // save and return
             _girafUserRepository.Update(user);
             await _girafUserRepository.SaveChangesAsync();
             return Ok(new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, userRole)));
@@ -218,12 +218,12 @@ namespace GirafRest.Controllers
         {
             var user = await _girafUserRepository.GetUserWithId(id);
             if (user == null)
-                return 
+                return
                     NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
 
             if (user.UserIcon == null)
-                return 
+                return
                     NotFound(new ErrorResponse(ErrorCode.UserHasNoIcon, "User has no icon"));
 
             return Ok(new SuccessResponse<ImageDTO>(new ImageDTO(user.UserIcon)));
@@ -269,10 +269,10 @@ namespace GirafRest.Controllers
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
-            
+
 
             byte[] image = await _imageRepository.ReadRequestImage(HttpContext.Request.Body);
-            
+
 
             if (image.Length < IMAGE_CONTENT_TYPE_DEFINITION)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Image is corrupt"));
@@ -299,7 +299,7 @@ namespace GirafRest.Controllers
             if (user.UserIcon == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserHasNoIcon, "User has no icon"));
 
-            
+
 
             user.UserIcon = null;
             await _girafUserRepository.SaveChangesAsync();
@@ -342,7 +342,7 @@ namespace GirafRest.Controllers
 
             if (resource == null)
                 return NotFound(new ErrorResponse(ErrorCode.ResourceNotFound, "Resource not found"));
-            
+
             if (resource.AccessLevel != AccessLevel.PRIVATE)
                 return BadRequest(new ErrorResponse(ErrorCode.ResourceMustBePrivate, "Resource must be private"));
 
@@ -357,12 +357,12 @@ namespace GirafRest.Controllers
             //Check if the target user already owns the resource
             if (user.Resources.Any(ur => ur.PictogramKey == resourceIdDTO.Id))
                 return BadRequest(new ErrorResponse(ErrorCode.UserAlreadyOwnsResource, "User already owns resource"));
-            
-            
+
+
             //Create the relation and save changes.
             var userResource = new UserResource(user, resource);
             await _userResourseRepository.AddAsync(userResource);
-            
+
             // Get the roles the user is associated with
             GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
@@ -435,11 +435,8 @@ namespace GirafRest.Controllers
             if (String.IsNullOrEmpty(id))
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing id"));
             var user = _girafUserRepository.GetCitizensWithId(id);
-            //var authUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
             var citizens = new List<DisplayNameDTO>();
             
-            var userRole = (await _roleManager.findUserRole(_giraf._userManager, user));
-
             foreach (var citizen in user.Citizens)
             {
                 var girafUser = _girafUserRepository.GetFirstCitizen(citizen);
@@ -448,11 +445,6 @@ namespace GirafRest.Controllers
 
             //sort function for users in citizens since the list needs to be sorted by name... issue#697
             citizens.Sort();
-           
-            if (!citizens.Any())
-            {
-                return NotFound(new ErrorResponse(ErrorCode.UserHasNoCitizens, "User does not have any citizens"));
-            }
 
             return Ok(new SuccessResponse<List<DisplayNameDTO>>(citizens.ToList<DisplayNameDTO>()));
         }
@@ -476,7 +468,6 @@ namespace GirafRest.Controllers
                 return BadRequest(new ErrorResponse(ErrorCode.InvalidProperties, "Missing id"));
 
 
-
             var userRole = (await _roleManager.findUserRole(_giraf._userManager, user));
             if (userRole != GirafRoles.Citizen)
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.Forbidden, "User does not have permission"));
@@ -486,11 +477,6 @@ namespace GirafRest.Controllers
             {
                 var girafUser = _girafUserRepository.GetGuardianFromRelation(guardian);
                 guardians.Add(new DisplayNameDTO { UserId = girafUser.Id, DisplayName = girafUser.DisplayName });
-            }
-
-            if (!guardians.Any())
-            {
-                return NotFound(new ErrorResponse(ErrorCode.UserHasNoGuardians, "User has no guardians"));
             }
 
             return Ok(new SuccessResponse<List<DisplayNameDTO>>(guardians));
@@ -517,7 +503,7 @@ namespace GirafRest.Controllers
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
             citizen.AddGuardian(guardian);
-            
+
             return Ok(new SuccessResponse("Added relation between guardian and citizen"));
         }
 
@@ -525,7 +511,7 @@ namespace GirafRest.Controllers
         /// Updates the user settings for the user with the provided id
         /// </summary>
         /// <returns>The updated user settings as a <see cref="SettingDTO"/> on success else UserNotFound,
-        /// MissingSettings, NotAuthorized, MissingProperties, InvalidProperties, ColorMustHaveUniqueDay, 
+        /// MissingSettings, NotAuthorized, MissingProperties, InvalidProperties, ColorMustHaveUniqueDay,
         /// IvalidDay, InvalidHexValues or RoleMustBeCitizien </returns>
         /// <param name="id">Identifier of the <see cref="GirafUser"/> to update settings for</param>
         /// <param name="options">reference to a <see cref="SettingDTO"/> containing the new settings</param>
