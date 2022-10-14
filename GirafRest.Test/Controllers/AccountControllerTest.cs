@@ -8,6 +8,7 @@ using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
 using Microsoft.Extensions.Options;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GirafRest.Interfaces;
@@ -22,6 +23,8 @@ using System.Threading;
 using System.Linq;
 using GirafRest.Models.Enums;
 using GirafRest.Test.RepositoryMocks;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Assert = Xunit.Assert;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace GirafRest.Test
@@ -266,12 +269,17 @@ namespace GirafRest.Test
 
         #region Register
         
-        [Fact]
-        public void Register_CorrectModelAndConditions_Returns201_Success()
+        [Theory]
+        [InlineData(GirafRoles.SuperUser)]
+        [InlineData(GirafRoles.Guardian)]
+        [InlineData(GirafRoles.Trustee)]
+        [InlineData(GirafRoles.Citizen)]
+        public void Register_CorrectModelAndConditions_Returns201_Success(GirafRoles role)
         {
             // Arrange
             var signInManager = new MockSignInManager();
             var accountController = new MockedAccountController(signInManager);
+            
             var department = new Department()
             {
                 Key = 1,
@@ -282,18 +290,15 @@ namespace GirafRest.Test
                 //   no weird braking changes, i manually initialize it.
                 WeekTemplates = new List<WeekTemplate>()
             };
+            
             var registrationDto = new RegisterDTO() 
             {
                 Username = "Andreas",
                 DisplayName = "Brandhoej",
                 Password = "P@ssw0rd",
-                Role = GirafRoles.SuperUser,
+                Role = role,
                 DepartmentId = department.Key,
             };
-            var creationResult = IdentityResult.Success;
-            var roleResult = IdentityResult.Success;
-            var roleAsString = "SuperUser";
-            var request = new Mock<HttpRequest>();
 
             // Mock
             accountController.UserRepository.Setup(
@@ -304,10 +309,10 @@ namespace GirafRest.Test
             ).Returns(department);
             signInManager.UserManager.Setup(
                 manager => manager.CreateAsync(It.IsAny<GirafUser>(), It.IsAny<string>())
-            ).Returns(Task.FromResult(creationResult));
+            ).Returns(Task.FromResult(IdentityResult.Success));
             signInManager.UserManager.Setup(
-                manager => manager.AddToRoleAsync(It.IsAny<GirafUser>(), roleAsString)
-            ).Returns(Task.FromResult(roleResult));
+                manager => manager.AddToRoleAsync(It.IsAny<GirafUser>(), role.ToString())
+            ).Returns(Task.FromResult(IdentityResult.Success));
             signInManager.Setup(
                 manager => manager.SignInAsync(It.IsAny<GirafUser>(), true, null)
             ).Returns(Task.CompletedTask);
@@ -323,6 +328,7 @@ namespace GirafRest.Test
             Assert.Equal(registrationDto.DepartmentId, body.Data.Department);
             Assert.Equal(registrationDto.DisplayName, body.Data.DisplayName);
         }
+        
         [Fact]
         public void Register_ExistingUsername_CodeUserAlreadyExists()
         {
