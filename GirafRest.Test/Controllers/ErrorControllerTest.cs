@@ -5,10 +5,6 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.Features;
-using Newtonsoft.Json.Linq;
-using Microsoft.AspNetCore.Authorization;
-using GirafRest.Models.Responses;
-using System;
 
 
 namespace GirafRest.Test.Controllers
@@ -54,7 +50,6 @@ namespace GirafRest.Test.Controllers
             Assert.Equal(response is UnauthorizedObjectResult, true);
             Assert.Equal(StatusCodeResult, status);
        }
-       //Copy the method above until all Error handling actions are testable.
 
         [Fact]
        public void Forbidden403_Test()
@@ -94,20 +89,19 @@ namespace GirafRest.Test.Controllers
        }
 
         [Fact]
-       public void NotFound404_Test() //FAILED test
+       public void NotFound404_Test() //This test fails
        {
             // Arrange
-            
-            var status = ((int)ErrorCode.NotFound);
+            var status = StatusCodes.Status404NotFound;
             var mockFeatureCollection = new Mock<IFeatureCollection>();
             mockFeatureCollection.Setup(f => f.Get<IStatusCodeReExecuteFeature>())
                 .Returns
                 (
                     new StatusCodeReExecuteFeature()
                     {
-                        OriginalPath = "",
-                        OriginalPathBase = "",
-                        OriginalQueryString = ""
+                        OriginalPath = "Path",
+                        OriginalPathBase = "Base",
+                        OriginalQueryString = "String"
                     }
                 );
 
@@ -122,23 +116,16 @@ namespace GirafRest.Test.Controllers
                 ControllerContext = controllerContext
             };
 
-
             // Act
-            var response = controller.StatusCodeEndpoint(status);
-            var result = response as NotFoundObjectResult;
-            // var result = JObject.Parse(response.ToString());
-            var statusCodeResult = result.StatusCode;
-
             // var response = controller.StatusCodeEndpoint(status);
-            // var statusCodeResult = response.GetType().GetProperty("StatusCode").GetValue(response, null);
-            // var message = Assert.Throws<InvalidOperationException>(() => controller.NotFound());
+            // var result = response as NotFoundObjectResult;
+            // var statusCodeResult = result.StatusCode;
+
+            var response = controller.StatusCodeEndpoint(status);
+            var statusCodeResult = response.GetType().GetProperty("StatusCode").GetValue(response, null);
 
             // Assert
-
-            Assert.Equal(status, statusCodeResult);
-            // Assert.Equal("Not found", message.Message);
-            // Assert.Equal("UnknownError", result["errorKey"]);
-            // Assert.Null(result);
+            Assert.Equal(statusCodeResult, status);
             
             
        }
@@ -179,7 +166,6 @@ namespace GirafRest.Test.Controllers
             var statusCodeResult = result.StatusCode;
 
             // Assert
-            // Assert.Equal(response is NotFoundObjectResult, true);
             Assert.Equal(statusCodeResult, actual);
        }
 
