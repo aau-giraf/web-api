@@ -176,6 +176,7 @@ namespace GirafRest.Models.DTOs
             this.LockTimerControl = options.LockTimerControl;
             this.PictogramText = options.PictogramText;
             this.WeekDayColors = SetWeekDayColorsFromModel(options.WeekDayColors);
+            this.ShowPopup = options.ShowPopup;
         }
 
         /// <summary>
