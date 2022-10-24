@@ -384,7 +384,7 @@ namespace GirafRest.Controllers
         /// Add guardians to registered user
         /// </summary>
         /// <param name="user">The registered user</param>
-        private void AddGuardiansToUser(GirafUser user) //AddUserToGuardians
+        private void AddGuardiansToUser(GirafUser user)
         {
             var guardians = _girafRoleRepository.GetAllGuardians();
             var guardiansInDepartment = _userRepository.GetUsersInDepartment((long)user.DepartmentKey, guardians);
@@ -398,7 +398,7 @@ namespace GirafRest.Controllers
         /// Add citizens to registered guardian
         /// </summary>
         /// <param name="guardian">The registered guardian</param>
-        private void AddCitizensToGuardian(GirafUser guardian) //AddGuardianToCitizens
+        private void AddCitizensToGuardian(GirafUser guardian)
         {
             // Add a relation to all the newly created guardians citizens
             var citizens = _girafRoleRepository.GetAllCitizens();
