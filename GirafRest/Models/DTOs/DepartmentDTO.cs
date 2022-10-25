@@ -58,7 +58,7 @@ namespace GirafRest.Models.DTOs
         /// Find belonging members
         /// </summary>
         /// <returns>List of matching users</returns>
-        public static List<DisplayNameDTO> FindMembers(IEnumerable<GirafUser> users, RoleManager<GirafRole> roleManager, IGirafService girafService)
+        public virtual List<DisplayNameDTO> FindMembers(IEnumerable<GirafUser> users, RoleManager<GirafRole> roleManager, IGirafService girafService)
         {
             return new List<DisplayNameDTO>(
                 users.Select(m => new DisplayNameDTO(
