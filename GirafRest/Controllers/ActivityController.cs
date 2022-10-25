@@ -116,7 +116,8 @@ namespace GirafRest.Controllers
                 ActivityState.Normal,
                 null,
                 false,
-                title
+                title,
+                "Choiceboard"
             );
             dbWeekDay.Activities.Add(dbActivity);
             

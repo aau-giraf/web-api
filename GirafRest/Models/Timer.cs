@@ -20,7 +20,6 @@ namespace GirafRest.Models
         /// </summary>
         public long StartTime { get; set; }
 
-
         /// <summary>
         /// The progress of the timer in miliseconds.
         /// </summary>

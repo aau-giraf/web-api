@@ -134,13 +134,13 @@ namespace GirafRest.Repositories
                     }
 
                     Timer timer = null;
-                    if (activityDTO.Timer != null)
-                    {
-                        timer = await Context.Timers.FirstOrDefaultAsync(t => t.Key == activityDTO.Timer.Key);
-                    }
+//                    if (activityDTO.Timer != null)
+//                    {
+//                        timer = await Context.Timers.FirstOrDefaultAsync(t => t.Key == activityDTO.Timer.Key);
+//                    }
 
                     if (pictograms.Any())
-                        to.Activities.Add(new Activity(to, pictograms, activityDTO.Order, activityDTO.State, timer, activityDTO.IsChoiceBoard, activityDTO.Title));
+                        to.Activities.Add(new Activity(to, pictograms, activityDTO.Order, activityDTO.State, timer, activityDTO.IsChoiceBoard, activityDTO.Title, activityDTO.ChoiceBoardName));
                 }
             }
             return true;

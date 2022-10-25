@@ -81,7 +81,7 @@ namespace GirafRest.Models
             for (int i = 0; i < pictograms.Count; i++)
             {
                 string title = pictograms[i].First().Title;
-                this.Activities.Add(new Activity(this, pictograms[i], i, activityStates[i], null, false,title));
+                this.Activities.Add(new Activity(this, pictograms[i], i, activityStates[i], null, false, title, "choiceBoard"));
             }
         }
 
