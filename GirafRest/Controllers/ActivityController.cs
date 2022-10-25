@@ -267,6 +267,34 @@ namespace GirafRest.Controllers
                 }
             }
 
+            // Unsure if we should save from every used repository, or just one of them.
+            _userRepository.Save();
+            _activityRepository.Save();
+            _pictogramRelationRepository.Save();
+            _pictogramRepository.Save();
+
+
+            return Ok(new SuccessResponse<ActivityDTO>(new ActivityDTO(updateActivity, pictograms)));
+        }
+
+        /// <summary>
+        /// Updates an activitys timmer with a given id.
+        /// </summary>
+        /// <param name="activity">a serialized version of the activity that will be updated.</param>
+        /// <param name="userId">an ID of the user to update activities for.</param>
+        /// <returns>Returns <see cref="ActivityDTO"/> for the updated activity on success else MissingProperties or NotFound</returns>
+        [HttpPut("{userId}/updatetimer")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> UpdateTimer([FromBody] ActivityDTO activity, string userId)
+        {
+            Activity updateActivity = _activityRepository.Get(activity.Id);
+            if (updateActivity == null)
+                return NotFound(new ErrorResponse(ErrorCode.ActivityNotFound, "Activity not found"));
+
             if (activity.Timer != null)
             {
                 Timer placeTimer = _timerRepository.Get(updateActivity.TimerKey);
@@ -312,30 +340,12 @@ namespace GirafRest.Controllers
             // Unsure if we should save from every used repository, or just one of them.
             _userRepository.Save();
             _activityRepository.Save();
-            _pictogramRelationRepository.Save();
-            _pictogramRepository.Save();
+            //_pictogramRelationRepository.Save();
+            //_pictogramRepository.Save();
             _timerRepository.Save();
-
-            return Ok(new SuccessResponse<ActivityDTO>(new ActivityDTO(updateActivity, pictograms)));
+           
+            return Ok(new SuccessResponse<ActivityDTO>(new ActivityDTO(updateActivity, activity.Pictograms.ToList())));
         }
-
-        ///// <summary>
-        ///// Updates an activity with a given id.
-        ///// </summary>
-        ///// <param name="activity">a serialized version of the activity that will be updated.</param>
-        ///// <param name="userId">an ID of the user to update activities for.</param>
-        ///// <returns>Returns <see cref="ActivityDTO"/> for the updated activity on success else MissingProperties or NotFound</returns>
-        //[HttpPut("{userId}/update")]
-        //[Authorize]
-        //[ProducesResponseType(StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //[ProducesResponseType(StatusCodes.Status403Forbidden)]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]
-        //public async Task<ActionResult> UpdateActivity([FromBody] TimerDTO timer , string userId)
-        //{
-
-        //    return Ok(new SuccessResponse<TimerDTO>(new TimerDTO(timer)));
-        //}
     }
 
 
