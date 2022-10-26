@@ -335,9 +335,6 @@ namespace GirafRest.Migrations
                     b.Property<bool>("LockTimerControl")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<int?>("NrOfActivitiesToDisplay")
-                        .HasColumnType("int");
-
                     b.Property<int?>("NrOfDaysToDisplay")
                         .HasColumnType("int");
 
@@ -346,9 +343,6 @@ namespace GirafRest.Migrations
 
                     b.Property<bool>("PictogramText")
                         .HasColumnType("tinyint(1)");
-
-                    b.Property<int?>("ShowOnlyActivities")
-                        .HasColumnType("int");
 
                     b.Property<bool>("ShowPopup")
                         .HasColumnType("tinyint(1)");
