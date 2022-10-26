@@ -28,12 +28,13 @@ artifacts/
 GirafRest.Test/bin/*
 GirafRest.Test/obj/*
 
+
+
 out
 *.db
 *.user
 *.sln
-appsettings.json
-
+appsettings.Development.json
 scripts/*.bak
 
 *.pyc
