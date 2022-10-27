@@ -173,7 +173,7 @@ namespace GirafRest.Controllers
                             AddGuardiansToUser(user);
                             break;
                         case GirafRoles.Guardian:
-                            AddCitizensToGuardian(user);
+                            AddCitizensToUser(user);
                             break;
                         case GirafRoles.Trustee:
                             AddGuardiansToUser(user);
@@ -395,17 +395,16 @@ namespace GirafRest.Controllers
         }
         
         /// <summary>
-        /// Add citizens to registered guardian
+        /// Add citizens to registered user
         /// </summary>
-        /// <param name="guardian">The registered guardian</param>
-        private void AddCitizensToGuardian(GirafUser guardian)
+        /// <param name="user">The registered user</param>
+        private void AddCitizensToUser(GirafUser user)
         {
-            // Add a relation to all the newly created guardians citizens
             var citizens = _girafRoleRepository.GetAllCitizens();
-            var citizensInDepartment = _userRepository.GetUsersInDepartment((long)guardian.DepartmentKey, citizens);
+            var citizensInDepartment = _userRepository.GetUsersInDepartment((long)user.DepartmentKey, citizens);
             foreach (var citizen in citizensInDepartment)
             {
-                guardian.AddCitizen(citizen);
+                user.AddCitizen(citizen);
             }
         }
     }
