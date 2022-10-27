@@ -5,13 +5,10 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.Features;
-using System.Net.Http;
-using System;
 
 
 namespace GirafRest.Test.Controllers
 {
-    
     public class ErrorControllerTest
     {
         [Fact]
@@ -64,43 +61,6 @@ namespace GirafRest.Test.Controllers
                 (
                     new StatusCodeReExecuteFeature()
                     {
-                        OriginalPath = "Hej",
-                        OriginalPathBase = "Base",
-                        OriginalQueryString = "Query"
-                    }
-                );
-
-            var httpContext = new DefaultHttpContext(mockFeatureCollection.Object);
-            var controllerContext = new ControllerContext()
-            {
-                HttpContext = httpContext,
-            };
-            
-            var controller = new ErrorController()
-            {
-                ControllerContext = controllerContext
-            };
-
-            // Act
-            var response = controller.StatusCodeEndpoint(status);
-            var statusCodeResult = response.GetType().GetProperty("StatusCode").GetValue(response, null);
-
-            // Assert
-            Assert.Equal(statusCodeResult, status);
-        
-       }
-
-        [Fact (Skip = "This test gets System.NullReference Execption at response variable")]
-       public void NotFound404_Test()
-       {
-            // Arrange
-            var status = StatusCodes.Status404NotFound;
-            var mockFeatureCollection = new Mock<IFeatureCollection>();
-            mockFeatureCollection.Setup(f => f.Get<IStatusCodeReExecuteFeature>())
-                .Returns
-                (
-                    new StatusCodeReExecuteFeature()
-                    {
                         OriginalPath = "Path",
                         OriginalPathBase = "Base",
                         OriginalQueryString = "String"
@@ -119,17 +79,11 @@ namespace GirafRest.Test.Controllers
             };
 
             // Act
-            // var response = controller.StatusCodeEndpoint(status);
-            // var result = response as NotFoundObjectResult;
-            // var statusCodeResult = result.StatusCode;
-
             var response = controller.StatusCodeEndpoint(status);
             var statusCodeResult = response.GetType().GetProperty("StatusCode").GetValue(response, null);
 
             // Assert
             Assert.Equal(statusCodeResult, status);
-            
-            
        }
 
         [Fact]
@@ -182,9 +136,9 @@ namespace GirafRest.Test.Controllers
                 (
                     new StatusCodeReExecuteFeature()
                     {
-                        OriginalPath = "Hej",
+                        OriginalPath = "Path",
                         OriginalPathBase = "Base",
-                        OriginalQueryString = "Query"
+                        OriginalQueryString = "String"
                     }
                 );
 
@@ -205,7 +159,6 @@ namespace GirafRest.Test.Controllers
 
             // Assert
             Assert.Equal(statusCodeResult, status);
-        
        }
     }
 }
