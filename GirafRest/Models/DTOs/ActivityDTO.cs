@@ -49,7 +49,7 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// Constructor
         /// </summary>
-        public ActivityDTO(long id, List<WeekPictogramDTO> pictograms, int order, ActivityState state, bool isChoiceBoard, string title, string choiceBoardName)
+        public ActivityDTO(long id, List<WeekPictogramDTO> pictograms, int order, ActivityState state, bool isChoiceBoard, string title, string choiceBoardName = "ChoiceBoard")
         {
             this.Id = id;
             this.Pictograms = pictograms;
