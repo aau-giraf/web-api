@@ -17,7 +17,7 @@ namespace GirafRest.Test.Controllers
             // Arrange
             int status = StatusCodes.Status401Unauthorized;
             var mockFeatureCollection = new Mock<IFeatureCollection>();
-            mockFeatureCollection.Setup(FeatureCollection => FeatureCollection.Get<IStatusCodeReExecuteFeature>())
+            mockFeatureCollection.Setup(feature => feature.Get<IStatusCodeReExecuteFeature>()) //feature is a parameter from IFeatureCollection
                 .Returns
                 (
                     new StatusCodeReExecuteFeature()
@@ -56,7 +56,7 @@ namespace GirafRest.Test.Controllers
             // Arrange
             int status = StatusCodes.Status403Forbidden;
             var mockFeatureCollection = new Mock<IFeatureCollection>();
-            mockFeatureCollection.Setup(FeatureCollection => FeatureCollection.Get<IStatusCodeReExecuteFeature>())
+            mockFeatureCollection.Setup(feature => feature.Get<IStatusCodeReExecuteFeature>())
                 .Returns
                 (
                     new StatusCodeReExecuteFeature()
@@ -93,7 +93,7 @@ namespace GirafRest.Test.Controllers
             int status = 0;
             int actual = StatusCodes.Status400BadRequest;
             var mockFeatureCollection = new Mock<IFeatureCollection>();
-            mockFeatureCollection.Setup(FeatureCollection => FeatureCollection.Get<IStatusCodeReExecuteFeature>())
+            mockFeatureCollection.Setup(feature => feature.Get<IStatusCodeReExecuteFeature>())
                 .Returns
                 (
                     new StatusCodeReExecuteFeature()
@@ -131,7 +131,7 @@ namespace GirafRest.Test.Controllers
             // Arrange
             int status = 300;
             var mockFeatureCollection = new Mock<IFeatureCollection>();
-            mockFeatureCollection.Setup(FeatureCollection => FeatureCollection.Get<IStatusCodeReExecuteFeature>())
+            mockFeatureCollection.Setup(feature => feature.Get<IStatusCodeReExecuteFeature>())
                 .Returns
                 (
                     new StatusCodeReExecuteFeature()
