@@ -90,8 +90,7 @@ namespace GirafRest.Test.Controllers
        public void BadRequest400_Test()
        {
             // Arrange
-            int status = 0;
-            int actual = StatusCodes.Status400BadRequest;
+            int status = StatusCodes.Status400BadRequest;
             var mockFeatureCollection = new Mock<IFeatureCollection>();
             mockFeatureCollection.Setup(feature => feature.Get<IStatusCodeReExecuteFeature>())
                 .Returns
@@ -118,11 +117,10 @@ namespace GirafRest.Test.Controllers
 
             // Act
             var response = controller.StatusCodeEndpoint(status);
-            var result = response as BadRequestObjectResult;
-            var statusCodeResult = result.StatusCode;
+            var statusCodeResult = response.GetType().GetProperty("StatusCode").GetValue(response, null);
 
             // Assert
-            Assert.Equal(statusCodeResult, actual);
+            Assert.Equal(statusCodeResult, status);
        }
 
          [Fact]
