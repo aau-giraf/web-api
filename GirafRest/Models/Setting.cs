@@ -50,19 +50,10 @@ namespace GirafRest.Models
         /// </summary>
         [Required]
         public Theme Theme { get; set; }
-        
-        /// <summary>
-        /// Flag to indicate whether citizen should see one or more days or only activities
-        /// </summary>
-        public int? ShowOnlyActivities { get; set; }
         /// <summary>
         /// defines the number of days to display for a user in a weekschedule
         /// </summary>
         public int? NrOfDaysToDisplay { get; set; }
-        /// <summary>
-        /// Defines the number of activities to display for a user in a weekschedule
-        /// </summary>
-        public int? NrOfActivitiesToDisplay { get; set; }
 
         /// <summary>
         /// Flag for indicating whether or not greyscale is enabled
@@ -103,9 +94,7 @@ namespace GirafRest.Models
             this.TimerSeconds = newOptions?.TimerSeconds ?? this.TimerSeconds;
             this.ActivitiesCount = newOptions?.ActivitiesCount ?? this.ActivitiesCount;
             this.Theme = newOptions?.Theme ?? this.Theme;
-            this.ShowOnlyActivities = newOptions?.ShowOnlyActivities ?? this.ShowOnlyActivities;
             this.NrOfDaysToDisplay = newOptions?.NrOfDaysToDisplay ?? this.NrOfDaysToDisplay;
-            this.NrOfActivitiesToDisplay = newOptions?.NrOfActivitiesToDisplay ?? this.NrOfActivitiesToDisplay;
             this.GreyScale = newOptions?.GreyScale ?? this.GreyScale;
             this.LockTimerControl = newOptions?.LockTimerControl ?? this.LockTimerControl;
             this.PictogramText = newOptions?.PictogramText ?? this.PictogramText;
@@ -156,9 +145,7 @@ namespace GirafRest.Models
             CancelMark = CancelMark.Cross;
             DefaultTimer = DefaultTimer.pieChart;
             Theme = Theme.girafYellow;
-            ShowOnlyActivities = 0;
             NrOfDaysToDisplay = 7;
-            NrOfActivitiesToDisplay = 0;
             TimerSeconds = 900;
             GreyScale = false;
             PictogramText = false;

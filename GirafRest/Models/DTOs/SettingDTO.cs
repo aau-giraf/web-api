@@ -133,17 +133,9 @@ namespace GirafRest.Models.DTOs
         [Required]
         public Theme Theme { get; set; }
         /// <summary>
-        /// Flag to indicate whether citizen should see one or more days or only activities
-        /// </summary>
-        public int? ShowOnlyActivities { get; set; }
-        /// <summary>
         /// defines the number of days to display for a user in a weekschedule
         /// </summary>
         public int? NrOfDaysToDisplay { get; set; }
-        /// <summary>
-        /// Defines the number of activities to display for a user in a weekschedule
-        /// </summary>
-        public int? NrOfActivitiesToDisplay { get; set; }
         /// <summary>
         /// Flag for indicating whether or not greyscale is enabled
         /// </summary>
@@ -179,9 +171,7 @@ namespace GirafRest.Models.DTOs
             this.TimerSeconds = options.TimerSeconds;
             this.ActivitiesCount = options.ActivitiesCount;
             this.Theme = options.Theme;
-            this.ShowOnlyActivities = options.ShowOnlyActivities;
             this.NrOfDaysToDisplay = options.NrOfDaysToDisplay;
-            this.NrOfActivitiesToDisplay = options.NrOfActivitiesToDisplay;
             this.GreyScale = options.GreyScale;
             this.LockTimerControl = options.LockTimerControl;
             this.PictogramText = options.PictogramText;
