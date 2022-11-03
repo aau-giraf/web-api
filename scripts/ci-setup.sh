@@ -6,9 +6,9 @@ jwt_key="kfrj2fjn90f93nhf93urfg93urgb93urgdfklgnhurbn894hbg8u4brg84brg84rhg487rh
 jwt_iss="AAU"
 limit=2000
 
-cp GirafRest/appsettings.template.json GirafRest/appsettings.json
+cp GirafRest/appsettings.template.json GirafRest/appsettings.Development.json
 
-sed -i "s/$default_con/$new_con/g" GirafRest/appsettings.json
-sed -i "s/<jwt-key>/$jwt_key/g" GirafRest/appsettings.json
-sed -i "s/<jwt-issuer>/$jwt_iss/g" GirafRest/appsettings.json
-sed -i "s/\"Limit\": 20/\"Limit\": $limit/g" GirafRest/appsettings.json
+sed -i "s/$default_con/$new_con/g" GirafRest/appsettings.Development.json
+sed -i "s/<jwt-key>/$jwt_key/g" GirafRest/appsettings.Development.json
+sed -i "s/<jwt-issuer>/$jwt_iss/g" GirafRest/appsettings.Development.json
+sed -i "s/\"Limit\": 20/\"Limit\": $limit/g" GirafRest/appsettings.Development.json
