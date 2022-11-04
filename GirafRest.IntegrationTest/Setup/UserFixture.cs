@@ -33,7 +33,7 @@ namespace GirafRest.IntegrationTest.Setup
 
             GrayscaleTheme = $@"{{'orientation': 1, 'completeMark': 2, 'cancelMark': 2, 'defaultTimer': 2,
                                'timerSeconds': 900, 'activitiesCount': '{null}', 'theme': 2, 'nrOfDaysToDisplay': 7,
-                               'greyScale': '{true}', 'lockTimerControl': '{true}', 'pictogramText': '{true}', 'weekDayColors':
+                               'greyScale': '{true}', 'lockTimerControl': '{true}', 'pictogramText': '{true}', 'showPopup': '{true}', 'weekDayColors':
                                    [{{ 'hexColor': '#08a045', 'day': 1}}, {{ 'hexColor': '#540d6e', 'day': 2}},
                                     {{ 'hexColor': '#f77f00', 'day': 3}}, {{ 'hexColor': '#004777', 'day': 4}},
                                     {{ 'hexColor': '#f9c80e', 'day': 5}}, {{ 'hexColor': '#db2b39', 'day': 6}},

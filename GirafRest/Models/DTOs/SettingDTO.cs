@@ -148,6 +148,11 @@ namespace GirafRest.Models.DTOs
         /// Flag for indicating whether or not pictogram text is enabled
         /// </summary>
         public bool PictogramText { get; set; }
+        /// <summary>
+        /// Flag for indicating whether or not popup is enabled
+        /// </summary>
+        public bool ShowPopup { get; set; }
+
 
         /// <summary>
         /// List of weekday colors
@@ -171,6 +176,7 @@ namespace GirafRest.Models.DTOs
             this.LockTimerControl = options.LockTimerControl;
             this.PictogramText = options.PictogramText;
             this.WeekDayColors = SetWeekDayColorsFromModel(options.WeekDayColors);
+            this.ShowPopup = options.ShowPopup;
         }
 
         /// <summary>

@@ -1,291 +1,328 @@
-/*using Moq;
-using Xunit;
-using GirafRest.Models;
-using GirafRest.Models.DTOs;
-using System.Collections.Generic;
 using GirafRest.Controllers;
-using GirafRest.Models.Responses;
-using GirafRest.Test.Mocks;
-using static GirafRest.Test.UnitTestExtensions;
-using System.Linq;
-using GirafRest.Services;
-using static GirafRest.Test.UnitTestExtensions.TestContext;
+using GirafRest.Models.DTOs.AccountDTOs;
 using Microsoft.AspNetCore.Mvc;
+using Moq;
+using Xunit;
+using GirafRest.Services;
+using GirafRest.Models.DTOs;
+using GirafRest.Models.Responses;
+using Microsoft.Extensions.Options;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using GirafRest.Interfaces;
+using GirafRest.IRepositories;
+using GirafRest.Test.Mocks;
+using Microsoft.Extensions.Logging;
+using System.Threading;
+using System.Linq;
+using GirafRest.Models.Enums;
+using System.Security.Claims;
+using GirafRest.Models;
+using Microsoft.AspNetCore.Identity;
+using static GirafRest.Test.UnitTestExtensions;
 using Microsoft.AspNetCore.Http;
 
 namespace GirafRest.Test
 {
     public class DepartmentControllerTest
     {
-#pragma warning disable IDE0051 // Remove unused private members
-        private TestContext _testContext;
-
-        private const int DEPARTMENT_ONE = 1;
-        private const int DEPARTMENT_TWO = 2;
-        private const int DEPARTMENT_TEN = 10;
-        private const int RESOURCE_ONE = 1;
-        private const int RESOURCE_THREE = 3;
-        private const int RESOURCE_FIVE = 5;
-        private const int NONEXISTING = 999;
-        private const int ADMIN_DEP_ONE = 0;
-        private const int DEPARTMENT_TWO_USER = 6;
-        private const int DEPARTMENT_TWO_OBJECT = 1;
-        private const int CITIZEN_NO_DEPARTMENT = 9;
-        private const int CITIZEN_DEP_THREE = 3;
-#pragma warning restore IDE0051 // Remove unused private members
-
-        public DepartmentControllerTest() {}
-
-        private DepartmentController initializeTest()
+        public class MockedDepartmentController : DepartmentController
         {
-            _testContext = new TestContext();
-
-            var dc = new DepartmentController(
-                new MockGirafService(
-                    _testContext.MockDbContext.Object,
-                    _testContext.MockUserManager),
-                _testContext.MockLoggerFactory.Object,
-                _testContext.MockRoleManager.Object,
-                new GirafAuthenticationService(_testContext.MockDbContext.Object, _testContext.MockRoleManager.Object,
-                    _testContext.MockUserManager));
-
-            _testContext.MockHttpContext = dc.MockHttpContext();
-            _testContext.MockHttpContext.MockClearQueries();
-
-            return dc;
-        }
-
-        #region Get
-
-        [Fact]
-        public void Get_GetExistingDepartmentByID_Success()
-        {
-            var dc = initializeTest();
-
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserGuardianDepartment1]);
-
-            var res = dc.Get(DEPARTMENT_ONE).Result as ObjectResult;
-            var body = res.Value as SuccessResponse<DepartmentDTO>;
+            public readonly Mock<IGirafService> _giraf;
+            public readonly Mock<IDepartmentRepository> _departmentRepository;
+            public readonly Mock<IGirafUserRepository> _userRepository;
+            public readonly Mock<IGirafRoleRepository> _roleRepository;
+            public readonly Mock<IPictogramRepository> _pictogramRepository;
 
 
-            Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
-            //Check data
-            Assert.Equal(_testContext.MockDepartments[0].Name, body.Data.Name);
-            Assert.Equal(_testContext.MockDepartments[0].Members.Count, body.Data.Members.Count);
-        }
+            public MockedDepartmentController(RoleManager<GirafRole> rolemanager)
+                :
+            this(
+                    new Mock<IGirafService>(),
+                    new Mock<ILoggerFactory>(),
+                    rolemanager,
+                    new Mock<IGirafUserRepository>(),
+                    new Mock<IDepartmentRepository>(),
+                    new Mock<IGirafRoleRepository>(),
+                    new Mock<IPictogramRepository>()
+                )
+            { }
+            public MockedDepartmentController()
+                :
+            this(
+                    new Mock<IGirafService>(),
+                    new Mock<ILoggerFactory>(),
+                    new MockRoleManager(new List<GirafRoles>()),
+                    new Mock<IGirafUserRepository>(),
+                    new Mock<IDepartmentRepository>(),
+                    new Mock<IGirafRoleRepository>(),
+                    new Mock<IPictogramRepository>()
+                ) { }
+            public MockedDepartmentController(
+                    Mock<IGirafService> girafService,
+                    Mock<ILoggerFactory> logger,
+                    RoleManager<GirafRole> rolemanager,
+                    Mock<IGirafUserRepository> userRep,
 
-        [Fact]
-        public void Get_GetNonExistingDepartmentByID_NotFound()
-        {
-            var dc = initializeTest();
-            AddEmptyDepartmentList();
-
-
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[UserGuardianDepartment1]);
-
-            var res = dc.Get(DEPARTMENT_ONE).Result as ObjectResult;
-
-            var body = res.Value as ErrorResponse;
-
-            Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
-            Assert.Equal(ErrorCode.NotFound, body.ErrorCode);
-        }
-
-        [Fact]
-        public void Get_AllDepartmentNames_Success()
-        {
-            var dc = initializeTest();
-            var res = dc.Get().Result as ObjectResult;
-            var body = res.Value as SuccessResponse<List<DepartmentNameDTO>>;
-
-            Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
-            // check data
-            Assert.Equal(_testContext.MockDepartments.Count(), body.Data.Count());
-
-            for (int i = 0; i < body.Data.Count; i++)
+                    Mock<IDepartmentRepository> departmentRepository,
+                    Mock<IGirafRoleRepository> girafRoleRepository,
+                    Mock<IPictogramRepository> pictogramRepository
+        ) : base(
+            girafService.Object,
+            logger.Object,
+            rolemanager,   
+            userRep.Object,
+            departmentRepository.Object,
+            girafRoleRepository.Object,
+            pictogramRepository.Object
+        )
+              
             {
-                Assert.Equal(_testContext.MockDepartments[i].Name, body.Data[i].Name);
-                Assert.Equal(_testContext.MockDepartments[i].Key, body.Data[i].ID);
+                girafService.SetupAllProperties();
+               
+                _giraf = girafService;
+                _departmentRepository = departmentRepository;
+                _roleRepository = girafRoleRepository;
+                _userRepository = userRep;
+                _pictogramRepository = pictogramRepository;
+                //setting up 
+                this.ControllerContext = new ControllerContext();
+                this.ControllerContext.HttpContext = new DefaultHttpContext();
+
             }
+
         }
 
-        [Fact]
-        public void Get_AllDepartmentNames_NotFound()
-        {
-            var dc = initializeTest();
-            AddEmptyDepartmentList();
-            var res = dc.Get().Result as ObjectResult;
-            var body = res.Value as ErrorResponse;
 
-            Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
-            Assert.Equal(ErrorCode.NotFound, body.ErrorCode);
+        [Fact]
+        public void DepartmentController_Should_Get_All_Deparments()
+        {
+            //arranging
+            var _departmentdto = new DepartmentDTO();
+            List<DepartmentNameDTO> DepartmentDtos_expected = new List<DepartmentNameDTO>();
+            DepartmentDtos_expected.Add(new DepartmentNameDTO(2, "Dalhaven"));
+            DepartmentDtos_expected.Add(new DepartmentNameDTO(1, "BjælkeHytten"));
+            DepartmentDtos_expected.Add(new DepartmentNameDTO(3, "Satelitten"));
+
+            var departmentController = new MockedDepartmentController();
+
+            //mocking
+            var departmentRep = departmentController._departmentRepository;
+            departmentRep.Setup(repo => repo.GetDepartmentNames()).
+                Returns(Task.FromResult<List<DepartmentNameDTO>>(DepartmentDtos_expected));
+
+            // Acting 
+            var response = departmentController.Get();
+            var objectResult = response as ObjectResult;
+            var list = objectResult.Value as SuccessResponse<List<DepartmentNameDTO>>;
+
+            //Assert
+            Assert.True(DepartmentDtos_expected.SequenceEqual(list.Data));
+
+
         }
-
-        #endregion
-
-        #region Post
-
         [Fact]
-        public void Post_NewDepartmentValidDTO_Success()
+        public void DepartmentController_Should_Get_departments_By_ID()
         {
-            var dc = initializeTest();
-            var name = "dep1";
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-
-            var depDTO = new DepartmentDTO(new Department()
-            {
-                Name = name
-            }, new List<DisplayNameDTO>());
-
-            var res = dc.Post(depDTO).Result as ObjectResult;
-            var body = res.Value as SuccessResponse<DepartmentDTO>;
-
-            Assert.Equal(StatusCodes.Status201Created, res.StatusCode);
-            Assert.Equal(name, body.Data.Name);
-        }
-
-        [Fact]
-        public void Post_NewDepartmentInvalidDTO_MissingProperties()
-        {
-            var dc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var depDTO = new DepartmentDTO(new Department()
-            {
-            }, new List<DisplayNameDTO>());
-
-            var res = dc.Post(depDTO).Result as ObjectResult;
-            var body = res.Value as ErrorResponse;
-
-            Assert.Equal(StatusCodes.Status400BadRequest, res.StatusCode);
-            Assert.Equal(ErrorCode.MissingProperties, body.ErrorCode);
-        }
-
-        #endregion
-
-        #region AddResource
-
-        [Fact]
-        [System.Obsolete]
-        public void AddResource_ValidDepartmentValidResource_Success()
-        {
-            var dc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = dc.AddResource(DEPARTMENT_ONE, RESOURCE_THREE).Result as ObjectResult;
-            var body = res.Value as SuccessResponse<DepartmentDTO>;
-
-            Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
-            Assert.True(body.Data.Resources.Any(r => r == RESOURCE_THREE));
-        }
-
-        [Fact]
-        [System.Obsolete]
-        public void AddResource_InvalidDepartmentValidResource_DepartmentNotFound()
-        {
-            var dc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = dc.AddResource(DEPARTMENT_TEN, RESOURCE_THREE).Result as ObjectResult;
-            var body = res.Value as ErrorResponse;
-
-            Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
-            Assert.Equal(ErrorCode.DepartmentNotFound, body.ErrorCode);
-        }
-
-        [Fact]
-        [System.Obsolete]
-        public void AddResource_ValidDepartmentNonExistingResourceInDTO_ResourceNotFound()
-        {
-            var dc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = dc.AddResource(DEPARTMENT_ONE, NONEXISTING).Result as ObjectResult;
-            var body = res.Value as ErrorResponse;
-
-            Assert.Equal(StatusCodes.Status404NotFound, res.StatusCode);
-            Assert.Equal(ErrorCode.ResourceNotFound, body.ErrorCode);
-        }
-
-        [Fact]
-        [System.Obsolete]
-        public void AddResource_ValidDepartmentValidDTONoLogin_Unauthorized()
-        {
-            var dc = initializeTest();
-            var res = dc.AddResource(DEPARTMENT_ONE, RESOURCE_ONE).Result as ObjectResult;
-            var body = res.Value as ErrorResponse;
-
-            Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
-            Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
-        }
-
-        #endregion
-
-        #region RemoveResource
-
-        [Fact]
-        [System.Obsolete]
-        public void RemoveResource_RemoveExistingResource_Success()
-        {
-            var dc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[ADMIN_DEP_ONE]);
-            var res = dc.RemoveResource(RESOURCE_FIVE).Result as ObjectResult;
-            var body = res.Value as SuccessResponse<DepartmentDTO>;
-
-            Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
-            // Check that ressource no longer exist
-            Assert.True(!(body.Data.Resources.Any(r => r == RESOURCE_FIVE)));
-        }
-
-        [Fact]
-        [System.Obsolete]
-        public void RemoveResource_RemoveResourceWrongDepartment_NotAuthorized()
-        {
-            var dc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[3]);
-            var res = dc.RemoveResource(RESOURCE_FIVE).Result as ObjectResult;
-            var body = res.Value as ErrorResponse;
+            // arranging
+            var user = new GirafUser("thomas","thomas",new Department(),GirafRoles.Guardian);
             
-            Assert.Equal(StatusCodes.Status403Forbidden, res.StatusCode);
-            Assert.Equal(ErrorCode.NotAuthorized, body.ErrorCode);
+            user.DepartmentKey = 1;
+
+            List<DisplayNameDTO> displayNameDTOs = new List<DisplayNameDTO>();
+            displayNameDTOs.Add(new DisplayNameDTO("thomas", GirafRoles.Guardian, "1"));
+            displayNameDTOs.Add(new DisplayNameDTO("Christian", GirafRoles.Citizen, "2"));
+            displayNameDTOs.Add(new DisplayNameDTO("Manfred", GirafRoles.Trustee, "3"));
+
+            List<GirafUser> girafUsers  = new List<GirafUser>();
+            girafUsers.Add(new GirafUser("thomas", "thomas", new Department(), GirafRoles.Guardian));
+            girafUsers.Add(new GirafUser("Christian", "Christian", new Department(), GirafRoles.Citizen));
+            girafUsers.Add(new GirafUser("Manfred", "Manfred", new Department(), GirafRoles.Trustee));
+
+            var department = new Department();
+            department.Key = 1;
+            department.Name = "DenckerHaven";
+            department.Members = girafUsers;
+            var departmentController = new MockedDepartmentController();
+
+            var principal = new ClaimsPrincipal(new ClaimsIdentity(null, "user"));
+            var userManager = new MockUserManagerDepartment();
+            var departmentRep = departmentController._departmentRepository;
+            var deparmentdto = new Mock<DepartmentDTO>();
+            userManager.MockLoginAsUser(user); 
+            
+            departmentController._giraf.Object._userManager = userManager;
+            departmentController._departmentdto = deparmentdto.Object;
+
+            //mock
+            departmentRep.Setup(repo=>repo.GetDepartmentMembers((long)user.DepartmentKey))
+                .Returns(Task.FromResult<Department>(department));
+            deparmentdto.Setup(repo => repo.FindMembers(It.IsAny<List<GirafUser>>(),
+                It.IsAny<RoleManager<GirafRole>>(), departmentController._giraf.Object)).Returns(displayNameDTOs);
+
+            //acting 
+            var response = departmentController.Get(1);
+            var objectResult = response.Result as ObjectResult;
+            var actualDTO = objectResult.Value as SuccessResponse<DepartmentDTO>;
+            
+            var expected = new DepartmentDTO(department, displayNameDTOs);
+
+            //Assert
+            Assert.Equal(expected.Name ,actualDTO.Data.Name);
+            Assert.Equal(expected.Id, actualDTO.Data.Id);
         }
 
         [Fact]
-        public void AddDepartment_ValidDTO_Success()
+        public void DepartmentController_should_get_citizens_by_id()
         {
-            var dc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[0]);
-            var depName = "Børnehave Toften";
-            var res = dc.Post(new DepartmentDTO() {Name = depName}).Result as ObjectResult;
-            var body = res.Value as SuccessResponse<DepartmentDTO>;
+            //Arranging
+            var user = new GirafUser("thomas","thomas",new Department(),GirafRoles.Guardian);
+            user.DepartmentKey = 1;
 
-            Assert.Equal(StatusCodes.Status201Created, res.StatusCode);
-            // Check that there now exist a børnehave named toften
-            Assert.Equal(depName, body.Data.Name);
+            var department = new Department();
+            department.Key = 1;
+            department.Name = "DenckerHaven";
+
+            List<GirafUser> girafUsers  = new List<GirafUser>();
+            girafUsers.Add(new GirafUser("Christian", "Christian", department, GirafRoles.Citizen));
+            girafUsers[0].Id = "2";
+
+            List<DisplayNameDTO> displayNameDTOs = new List<DisplayNameDTO>();
+            displayNameDTOs.Add(new DisplayNameDTO("Christian", GirafRoles.Citizen, "2"));
+
+            var userListids = new List<string>();
+            userListids.Add("2");
+            var userids = userListids.AsQueryable();
+
+            var departmentController = new MockedDepartmentController();
+
+            var userManager = new MockUserManagerDepartment();
+            var departmentRep = departmentController._departmentRepository;
+            var departmentRole = departmentController._roleRepository;
+            var departmentUser = departmentController._userRepository;
+            userManager.MockLoginAsUser(user);
+
+            departmentController._giraf.Object._userManager = userManager;
+
+            //mock
+            departmentRep.Setup(repo => repo.GetDepartmentById(department.Key)).Returns(department);
+            departmentRep.Setup(repo => repo.GetUserByDepartment(department, user)).Returns(user);
+            departmentRep.Setup(repo => repo.GetCitizenRoleID()).Returns(GirafRole.Citizen);
+            departmentRep.Setup(repo => repo.GetUsersWithRoleID(GirafRole.Citizen)).Returns(userids);
+            departmentRole.Setup(repo => repo.GetAllCitizens()).Returns(userids);
+            departmentUser.Setup(repo => repo.GetUsersInDepartment(department.Key, userids)).Returns(girafUsers);
+
+            //act 
+            var response = departmentController.GetCitizenNamesAsync(department.Key);
+            var objectResult = response.Result as ObjectResult;
+            var list = objectResult.Value as SuccessResponse <List<DisplayNameDTO>>;
+
+            //assert
+            Assert.True(displayNameDTOs.SequenceEqual(list.Data));
+
+        }
+        [Fact]
+        public void Should_Create_New_Department()
+        {
+            //Arranging
+            var departmentController = new MockedDepartmentController(new MockRoleManager(new List<GirafRoles> { GirafRoles.SuperUser}));
+            var girafService = departmentController._giraf;
+            var HttpContext = departmentController.ControllerContext.HttpContext;
+            var depRep = departmentController._departmentRepository;
+            var picRep = departmentController._pictogramRepository;
+            var depDto = new Mock<DepartmentDTO>();
+            var userRep = departmentController._userRepository;
+            departmentController._departmentdto = depDto.Object;
+            var testContext = new TestContext();
+            var userManager = new MockUserManagerDepartment();
+            
+            girafService.Object._userManager = userManager;
+
+            var dep = new Department();
+       
+            dep.Key = 1;
+            dep.Name = "DenckerHaven";
+            var girafUsers = new List<GirafUser>() { new GirafUser("luscus", "luscus", dep, GirafRoles.Citizen) };
+            girafUsers[0].Id = "2";
+            dep.Members = girafUsers;
+
+            var displayNameDTOS = new List<DisplayNameDTO> { new DisplayNameDTO("luscus", GirafRoles.Citizen, "2") };
+            var depDTO = new DepartmentDTO(dep, displayNameDTOS);
+            var departmentUser = new GirafUser (depDTO.Name,depDTO.Name,dep,GirafRoles.Department) { IsDepartment = true };
+            var authenticatedUser = new GirafUser("dencker","dencker",new Department(),GirafRoles.SuperUser);
+            //mock
+            girafService.Setup(repo => repo.LoadBasicUserDataAsync(HttpContext.User)).Returns(Task.FromResult<GirafUser>(authenticatedUser));
+            depRep.Setup(repo => repo.Update(dep)).Returns(Task.CompletedTask);
+            depRep.Setup(repo => repo.AddDepartment(dep)).Returns(Task.CompletedTask);
+            depRep.Setup(repo => repo.GetUserRole(It.IsAny<RoleManager<GirafRole>>(),
+                It.IsAny<UserManager<GirafUser>>(),
+                It.IsAny<GirafUser>()
+                )).Returns(Task.FromResult<GirafRoles>(GirafRoles.SuperUser));
+            userRep.Setup(repo => repo.GetUserWithId(It.IsAny<string>())).Returns(Task.FromResult<GirafUser>(girafUsers[0]));
+            picRep.Setup(repo => repo.GetPictogramWithID(It.IsAny<long>())).Returns(Task.FromResult<Pictogram>(new Pictogram()));
+            depRep.Setup(repo => repo.AddDepartmentResource(It.IsAny<DepartmentResource>())).Returns(Task.CompletedTask);
+            depDto.Setup(repo => repo.FindMembers(It.IsAny<List<GirafUser>>(),
+                It.IsAny<RoleManager<GirafRole>>(), departmentController._giraf.Object)).Returns(displayNameDTOS);
+            //act
+            var response = departmentController.Post(depDTO);
+            var result = response.Result as CreatedAtRouteResult;
+            var val = result.Value as SuccessResponse<DepartmentDTO>;
+
+            //assert
+            Assert.Equal(val.Data.Name, depDTO.Name);
         }
 
         [Fact]
-        public void GetAllCitizensFromDepartment_Success()
+        public void Department_Name_Should_Change()
         {
-            var dc = initializeTest();
-            _testContext.MockUserManager.MockLoginAsUser(_testContext.MockUsers[DEPARTMENT_TWO_USER]);
-            var departmentTwoId = _testContext.MockDepartments[DEPARTMENT_TWO_OBJECT].Key;
-            var res = dc.GetCitizenNamesAsync(departmentTwoId).Result as ObjectResult;
-            var body = res.Value as SuccessResponse<List<DisplayNameDTO>>;
+            //Arranging
+            var departmentController = new MockedDepartmentController();
+            var departmentRep = departmentController._departmentRepository;
 
-            Assert.Equal(StatusCodes.Status200OK, res.StatusCode);
-            // Check that we found all citizens in department
-            var countCitizens = 1;
-            Assert.Equal(countCitizens, body.Data.Count);
+            DepartmentNameDTO departmentNameDTO = new DepartmentNameDTO();
+            departmentNameDTO.Name = "Mansestuen";
+
+            var department = new Department();
+            department.Key = 1;
+            department.Name = "DenckerHaven";
+
+            //Mock
+            departmentRep.Setup(repo => repo.GetDepartmentById(department.Key)).Returns(department);
+            departmentRep.Setup(repo => repo.Update(department)).Returns(Task.CompletedTask);
+
+            //act
+            var response = departmentController.ChangeDepartmentName(department.Key, departmentNameDTO);
+            var objectResult = response.Result as ObjectResult;
+            var newName = objectResult.Value as SuccessResponse <string>;
+
+            //assert
+            Assert.True(newName.Data.Equals("Name of department changed"));
         }
 
-        #endregion
-
-        #region Helpers
-
-        private void AddEmptyDepartmentList()
+        [Fact]
+        public void Department_should_get_deleted()
         {
-            _testContext.MockDbContext.Reset();
-            var emptyDep = CreateMockDbSet(new List<Department>());
-            _testContext.MockDbContext.Setup(c => c.Departments).Returns(emptyDep.Object);
-        }
+            //Arranging
+            var departmentController = new MockedDepartmentController();
+            var departmentRep = departmentController._departmentRepository;
 
-        #endregion
+            var department = new Department();
+            department.Key = 1;
+            department.Name = "DenckerHaven";
+
+            //Mock
+            departmentRep.Setup(repo => repo.GetDepartmentById(department.Key)).Returns(department);
+            departmentRep.Setup(repo => repo.RemoveDepartment(department)).Returns(Task.CompletedTask);
+
+            //act
+            var response = departmentController.DeleteDepartment(department.Key);
+            var objectResult = response.Result as ObjectResult;
+            var res = objectResult.Value as SuccessResponse<string>;
+
+            //assert
+            Assert.True(res.Data.Equals("Department deleted"));
+
+        }
     }
-}*/
+}
