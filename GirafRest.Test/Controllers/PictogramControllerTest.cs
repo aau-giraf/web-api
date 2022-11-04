@@ -13,6 +13,9 @@ using System.IO;
 using GirafRest.Models.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting.Internal;
+using Castle.Core.Logging;
+using Moq;
+using GirafRest.Interfaces;
 
 namespace GirafRest.Test
 {   
@@ -60,12 +63,10 @@ namespace GirafRest.Test
             _testContext = new TestContext();
            
             var pc = new PictogramController(
-                new MockGirafService(
-                    _testContext.MockDbContext.Object,
-                    _testContext.MockUserManager
-                ), 
+                _testContext.MockGirafService.Object,
                 _testContext.MockLoggerFactory.Object,
-                _hostEnv
+                _hostEnv,
+                _testContext.MockDbContext.Object
                 );
             _testContext.MockHttpContext = pc.MockHttpContext();
             _testContext.MockHttpContext.MockQuery("limit", int.MaxValue.ToString());
