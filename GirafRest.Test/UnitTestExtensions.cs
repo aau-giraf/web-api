@@ -14,6 +14,7 @@ using System.IO;
 using System.Text;
 using GirafRest.Data;
 using System;
+using GirafRest.Interfaces;
 
 namespace GirafRest.Test
 {
@@ -646,6 +647,7 @@ namespace GirafRest.Test
             public readonly MockUserManager MockUserManager;
             public Mock<HttpContext> MockHttpContext { get; set; }
             public Mock<ILoggerFactory> MockLoggerFactory { get; private set; }
+            public Mock<IGirafService> MockGirafService { get; private set; }
 
             public readonly Mock<MockRoleManager> MockRoleManager;
 
@@ -664,6 +666,8 @@ namespace GirafRest.Test
                 MockRoleManager = CreateMockRoleManager();
                 MockRoleManager.Setup(m => m.Roles).Returns(MockRoles.AsQueryable());
                 ;
+
+                MockGirafService = new Mock<IGirafService>();
             }
 
             private Mock<GirafDbContext> CreateMockDbContext()
