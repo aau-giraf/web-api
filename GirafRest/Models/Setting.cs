@@ -85,6 +85,11 @@ namespace GirafRest.Models
         public bool LockTimerControl { get; set; }
 
         /// <summary>
+        /// Flag for indicating if settings should be enabled or not for a citizen
+        /// </summary>
+        public bool ShowSettingsForCitizen { get; set; }
+
+        /// <summary>
         /// Each day in a weekschedule has a hexcolor associated
         /// </summary>
         /// <value>The week day colors.</value>
@@ -110,6 +115,7 @@ namespace GirafRest.Models
             this.ShowPopup = newOptions?.ShowPopup ?? this.ShowPopup;
             this.NrOfActivitiesToDisplay = newOptions?.NrOfActivitiesToDisplay ?? this.NrOfActivitiesToDisplay;
             this.ShowOnlyActivities = newOptions?.ShowOnlyActivities ?? this.ShowOnlyActivities;
+            this.ShowSettingsForCitizen = newOptions?.ShowSettingsForCitizen ?? this.ShowSettingsForCitizen;
             if (newOptions.WeekDayColors != null)
                 updateWeekDayColors(newOptions.WeekDayColors);
         }
@@ -164,6 +170,7 @@ namespace GirafRest.Models
             PictogramText = false;
             ShowPopup = false;
             LockTimerControl = true;
+            ShowSettingsForCitizen = false;
 
         }
     }

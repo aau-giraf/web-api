@@ -160,6 +160,10 @@ namespace GirafRest.Models.DTOs
         /// Flag to indicate whether citizen should see one or more days or only activities
         /// </summary>
         public bool ShowOnlyActivities { get; set; }
+        /// <summary>
+        /// Flag for indicating whether or not settings are shown to a citizen
+        /// </summary>
+        public bool ShowSettingsForCitizen { get; set; }
 
         /// <summary>
         /// List of weekday colors
@@ -184,6 +188,7 @@ namespace GirafRest.Models.DTOs
             this.GreyScale = options.GreyScale;
             this.LockTimerControl = options.LockTimerControl;
             this.PictogramText = options.PictogramText;
+            this.ShowSettingsForCitizen = options.ShowSettingsForCitizen;
             this.WeekDayColors = SetWeekDayColorsFromModel(options.WeekDayColors);
         }
 
