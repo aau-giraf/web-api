@@ -27,7 +27,7 @@ namespace GirafRest.IntegrationTest.Setup
                                     "y9uYW1laWRlbnRpZmllciI6Ijg0MTJkOTk1LWIzODEtNGY4My1iZDI1LWU5ODY2NzBiNTdkOSIsImV4cCI6MT" +
                                     "UyNTMwMzQyNSwiaXNzIjoibm90bWUiLCJhdWQiOiJub3RtZSJ9.8KXRRqF3B5s8tUki7u5j0TqK-189QIpApd" +
                                     "OC6aSxOms";
-            Username = "Guardian-dev";
+            Username = "guardian-dev";
             Password = "password";
             WeekplanName = "Normal Uge";
             WeekYear = 0;
