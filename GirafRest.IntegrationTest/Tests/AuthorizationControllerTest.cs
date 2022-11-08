@@ -35,7 +35,7 @@ namespace GirafRest.IntegrationTest.Tests
         /// Endpoint: POST:/v2/Account/password/{userId}
         /// </summary>
         [Fact, Priority(0)]
-        public async void TestAuthPOSTAccountSetPasswordShouldFail() //No work
+        public async void TestAuthPOSTAccountSetPasswordShouldFail()
         {
             var data = "{ 'unrelated': 'unrelated'}";
 
@@ -59,7 +59,7 @@ namespace GirafRest.IntegrationTest.Tests
         /// Endpoint: PUT:/ v2 / Account / password /{ userId}
         /// </summary>
         [Fact, Priority(1)]
-        public async void TestAuthPUTAccountChangePasswordShouldFail() //No work
+        public async void TestAuthPUTAccountChangePasswordShouldFail() 
         {
             var data = "{ 'unrelated': 'unrelated'}";
 
@@ -83,7 +83,7 @@ namespace GirafRest.IntegrationTest.Tests
         /// Endpoint: GET:/v2/Account/password-reset-token/{userId}
         /// </summary>
         [Fact, Priority(2)]
-        public async void TestAuthGETAccountPasswordResetTokenShouldFail() //No work
+        public async void TestAuthGETAccountPasswordResetTokenShouldFail() 
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
@@ -148,7 +148,7 @@ namespace GirafRest.IntegrationTest.Tests
         /// Endpoint: DELETE:/v2/Account/user/{id}
         /// </summary>
         [Fact, Priority(5)]
-        public async void TestAuthDELETEAccountLoginShouldFail() //No work
+        public async void TestAuthDELETEAccountLoginShouldFail() 
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
@@ -171,7 +171,7 @@ namespace GirafRest.IntegrationTest.Tests
         /// Endpoint: POST:/v2/Activity/{user_id}/{weekplan_name}/{week_year}/{week_number}/{week_day_number}
         /// </summary>
         [Fact, Priority(6)]
-        public async void TestAuthPOSTWeekplannerActivityShouldFail() //No work
+        public async void TestAuthPOSTWeekplannerActivityShouldFail() 
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
@@ -192,7 +192,7 @@ namespace GirafRest.IntegrationTest.Tests
         /// Endpoint: DELETE:/v2/Activity/{user_id}/delete/{activity_id}
         /// </summary>
         [Fact, Priority(7)]
-        public async void TestAuthDELETEActivityShouldFail() //No work
+        public async void TestAuthDELETEActivityShouldFail() 
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
@@ -213,7 +213,7 @@ namespace GirafRest.IntegrationTest.Tests
         /// Endpoint: PATCH:/v2/Activity/{user_id}/update
         /// </summary>
         [Fact, Priority(8)]
-        public async void TestAuthPATCHUpdateActivityShouldFail() //No work
+        public async void TestAuthPATCHUpdateActivityShouldFail() 
         {
             string data = "{'pictogram': {'id': 6}, 'id': 1}";
             HttpRequestMessage request = new HttpRequestMessage()
@@ -238,7 +238,7 @@ namespace GirafRest.IntegrationTest.Tests
         /// Endpoint: POST:/v1/Department
         /// </summary>
         [Fact, Priority(9)]
-        public async void TestAuthPOSTDepartmentShouldFail() //No work
+        public async void TestAuthPOSTDepartmentShouldFail() 
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
@@ -259,7 +259,7 @@ namespace GirafRest.IntegrationTest.Tests
         /// Endpoint: GET:/v1/Department/{id}/citizens
         /// </summary>
         [Fact, Priority(10)]
-        public async void TestAuthGETDepartmentCitizensShouldFail() //No work
+        public async void TestAuthGETDepartmentCitizensShouldFail() 
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
@@ -301,11 +301,11 @@ namespace GirafRest.IntegrationTest.Tests
         /// Endpoint: GET:/v1/Department/{id}
         /// </summary>
         [Fact, Priority(12)]
-        public async void TestAuthGETDepartmentIdShouldFail() //Test is not meaningful, as the end point only returns 404 if the user is not found. 
+        public async void TestAuthGETDepartmentIdShouldFail()
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v1/Department/{_authorizationFixture.DepartmentId}"),
+                RequestUri = new Uri($"{BASE_URL}v1/Department/{_authorizationFixture.WrongDepartmentId}"),
                 Method = HttpMethod.Get
             };
             request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _authorizationFixture.Username, _authorizationFixture.Password)}");
@@ -314,7 +314,8 @@ namespace GirafRest.IntegrationTest.Tests
 
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
-            Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
+            Assert.Equal(System.Net.HttpStatusCode.Forbidden, response.StatusCode);
+            Assert.Equal("NotAuthorized", content["errorKey"]);
         }
 
         /// <summary>
@@ -322,12 +323,12 @@ namespace GirafRest.IntegrationTest.Tests
         /// Endpoint: PUT:/v1/Department/{id}/name
         /// </summary>
         [Fact, Priority(13)]
-        public async void TestAuthPUTDepartmentIdShouldFail() //No work
+        public async void TestAuthPUTDepartmentIdShouldFail() 
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
                 RequestUri = new Uri($"{BASE_URL}v1/Department/{_authorizationFixture.DepartmentId}/name"),
-                Content = JsonContent.Create(new DepartmentNameDTO(1, "Din mor")),
+                Content = JsonContent.Create(new DepartmentNameDTO(1, "test")),
                 Method = HttpMethod.Put
             };
 
@@ -344,7 +345,7 @@ namespace GirafRest.IntegrationTest.Tests
         /// Endpoint: DELETE:/v1/Department/{id}
         /// </summary>
         [Fact, Priority(14)]
-        public async void TestAuthDELETEDepartmentIdShouldFail() //No work
+        public async void TestAuthDELETEDepartmentIdShouldFail() 
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
@@ -623,7 +624,7 @@ namespace GirafRest.IntegrationTest.Tests
         /// Endpoint: GET:/v1/Status
         /// </summary>
         [Fact, Priority(27)]
-        public async void TestAuthGETStatus() //No work
+        public async void TestAuthGETStatus() 
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
@@ -642,7 +643,7 @@ namespace GirafRest.IntegrationTest.Tests
         /// Endpoint: GET:/v1/Status/database
         /// </summary>
         [Fact, Priority(28)]
-        public async void TestAuthGETDatabaseStatus() //No work
+        public async void TestAuthGETDatabaseStatus() 
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {

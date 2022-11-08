@@ -18,6 +18,7 @@ namespace GirafRest.IntegrationTest.Setup
         public int WeekDayNumber;
         public int ActivityId;
         public int DepartmentId;
+        public int WrongDepartmentId;
         public string CitizenId;
 
         public AuthorizationFixture()
@@ -35,6 +36,7 @@ namespace GirafRest.IntegrationTest.Setup
             WeekDayNumber = 1;
             ActivityId = 1;  // Might need to be existing activity id. choose 2
             DepartmentId = 1;  // Might need another number
+            WrongDepartmentId = 9872536;
             CitizenId = "Jane Doe";
         }
     }

@@ -106,7 +106,7 @@ namespace GirafRest.Controllers
 
             if (department == null)
             {
-                return this.ResourceNotFound(nameof(Department), department);
+                return this.ResourceNotFound(nameof(Department));
             }
 
             var members = _departmentdto.FindMembers(department.Result.Members, _roleManager, _giraf);
