@@ -130,7 +130,7 @@ namespace GirafRest.Controllers
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
-
+            //Checks if user has proper authorization to get another user.
             if (!(await _authentication.HasEditOrReadUserAccess(
                 await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
                 return new ForbidResult();
