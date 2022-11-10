@@ -1,4 +1,6 @@
-﻿using GirafRest.IntegrationTest.Order;
+﻿using GirafRest.IntegrationTest.Extensions;
+using GirafRest.IntegrationTest.Order;
+using GirafRest.IntegrationTest.Setup;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -12,16 +14,19 @@ namespace GirafRest.IntegrationTest.Tests
 {
     [TestCaseOrderer("GirafRest.IntegrationTest.Order.PriorityOrderer", "GirafRest.IntegrationTest")]
     [Collection("Intgration test")]
-    public class StatusControllerTest : IClassFixture<CustomWebApplicationFactory>
+    public class StatusControllerTest : IClassFixture<CustomWebApplicationFactory>, IClassFixture<AccountFixture>
     {
         private const string BASE_URL = "https://localhost:5000/";
         private CustomWebApplicationFactory _factory;
         private HttpClient _client;
-        public StatusControllerTest(CustomWebApplicationFactory factory)
+        private readonly AccountFixture _accountFixture;
+        public StatusControllerTest(CustomWebApplicationFactory factory, AccountFixture accountFixture)
         {
             _factory = factory;
             _client = factory.CreateClient();
+            _accountFixture = accountFixture;
         }
+
 
         /// <summary>
         /// Testing GET for status on web-api
@@ -32,10 +37,10 @@ namespace GirafRest.IntegrationTest.Tests
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v1/status"),
+                RequestUri = new Uri($"{BASE_URL}v1/status/"),
                 Method = HttpMethod.Get,
             };
-
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.Password)}");
             var response = await _client.SendAsync(request);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -53,7 +58,7 @@ namespace GirafRest.IntegrationTest.Tests
                 RequestUri = new Uri($"{BASE_URL}v1/status/database"),
                 Method = HttpMethod.Get,
             };
-
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.Password)}");
             var response = await _client.SendAsync(request);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -71,7 +76,7 @@ namespace GirafRest.IntegrationTest.Tests
                 RequestUri = new Uri($"{BASE_URL}v1/status/version-info"),
                 Method = HttpMethod.Get,
             };
-
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.Password)}");
             var response = await _client.SendAsync(request);
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
             
