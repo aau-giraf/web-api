@@ -34,7 +34,6 @@ namespace GirafRest.Controllers
         private readonly IUserResourseRepository _userResourseRepository;
         private readonly IPictogramRepository _pictogramRepository;
         private readonly RoleManager<GirafRole> _roleManager;
-        private readonly IAuthenticationService _authentication;
 
         /// <summary>
         /// Constructor for UserController
@@ -46,7 +45,6 @@ namespace GirafRest.Controllers
         /// <param name="imageRepository">Service Injection</param>
         /// <param name="userResourceRepository">Service Injection</param>
         /// <param name="pictogramRepository">Service Injection</param>
-        /// <param name="authentication"></param>
         public UserController(
             IGirafService giraf,
             ILoggerFactory loggerFactory,
@@ -54,8 +52,7 @@ namespace GirafRest.Controllers
             IGirafUserRepository girafUserRepository, 
             IImageRepository imageRepository, 
             IUserResourseRepository userResourceRepository, 
-            IPictogramRepository pictogramRepository, 
-            IAuthenticationService authentication)
+            IPictogramRepository pictogramRepository)
         {
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("User");
@@ -64,7 +61,6 @@ namespace GirafRest.Controllers
             _imageRepository = imageRepository;
             _userResourseRepository = userResourceRepository;
             _pictogramRepository = pictogramRepository;
-            _authentication = authentication;
         }
 
         /// <summary>
@@ -130,11 +126,8 @@ namespace GirafRest.Controllers
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
-            //Checks if user has proper authorization to get another user.
-            if (!(await _authentication.HasEditOrReadUserAccess(
-                await _giraf._userManager.GetUserAsync(HttpContext.User), user)))
-                return new ForbidResult();
-
+          
+           
             return Ok(new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, await _roleManager.findUserRole(_giraf._userManager, user))));
         }
 
