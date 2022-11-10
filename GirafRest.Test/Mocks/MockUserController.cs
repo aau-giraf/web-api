@@ -17,7 +17,8 @@ public class MockedUserController : UserController
         new Mock<IGirafUserRepository>(),
         new Mock<IImageRepository>(),
         new Mock<IUserResourseRepository>(),
-        new Mock<IPictogramRepository>())
+        new Mock<IPictogramRepository>(),
+        new Mock<IAuthenticationService>())
     { }
 
     public MockedUserController(
@@ -27,14 +28,16 @@ public class MockedUserController : UserController
         Mock<IGirafUserRepository> girafUserRepository,
         Mock<IImageRepository> imageRepository,
         Mock<IUserResourseRepository> userResourseRepository,
-        Mock<IPictogramRepository> pictogramRepository) : base(
+        Mock<IPictogramRepository> pictogramRepository,
+        Mock<IAuthenticationService> authenticationService) : base(
         giraf.Object,
         loggerFactory.Object,
         roleManager.Object,
         girafUserRepository.Object,
         imageRepository.Object,
         userResourseRepository.Object,
-        pictogramRepository.Object)
+        pictogramRepository.Object,
+        authenticationService.Object)
     {
         var userStoreMock = new Mock<IUserStore<GirafUser>>();
         var userManagerMock = new Mock<UserManager<GirafUser>>(
