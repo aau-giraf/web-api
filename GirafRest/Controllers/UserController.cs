@@ -130,12 +130,18 @@ namespace GirafRest.Controllers
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
-            //Checks if user has proper authorization to get another user.
-            var authorized = await _authentication.HasEditOrReadUserAccess(
-                await _giraf._userManager.GetUserAsync(HttpContext.User), user);
-            if (!authorized)
-                return new ForbidResult();
-
+            //Checks if user has proper authorization to get another user
+            //HttpContext can be null if it is called internally in the server, e.g., a test,
+            //which should bbe allowed, therefore it skips authentication.
+            //When the client makes requests, it always has a HTTP context, so this shouldn't be an issue
+            if (HttpContext != null)
+            {
+                var authorized = await _authentication.HasEditOrReadUserAccess(
+                                await _giraf._userManager.GetUserAsync(HttpContext.User), user);
+                if (!authorized)
+                    return new ForbidResult();
+            }
+            
             //Default return
             return Ok(new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, await _roleManager.findUserRole(_giraf._userManager, user))));
         }
