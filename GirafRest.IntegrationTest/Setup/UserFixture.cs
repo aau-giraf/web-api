@@ -32,8 +32,8 @@ namespace GirafRest.IntegrationTest.Setup
             Password = "password";
 
             GrayscaleTheme = $@"{{'orientation': 1, 'completeMark': 2, 'cancelMark': 2, 'defaultTimer': 2,
-                               'timerSeconds': 900, 'activitiesCount': '{null}', 'theme': 2, 'nrOfDaysToDisplayPortait': 1,
-                               'displayDaysRelativePortait': '{true}', 'nrOfDaysToDisplayLandscape': 7, 'displayDaysRelativeLandscape': '{false}',
+                               'timerSeconds': 900, 'activitiesCount': '{null}', 'theme': 2, 'nrOfDaysToDisplayPortrait': 1,
+                               'displayDaysRelativePortrait': '{true}', 'nrOfDaysToDisplayLandscape': 7, 'displayDaysRelativeLandscape': '{false}',
                                'greyScale': '{true}', 'lockTimerControl': '{true}', 'pictogramText': '{true}', 'showPopup': '{true}', 'weekDayColors':
                                    [{{ 'hexColor': '#08a045', 'day': 1}}, {{ 'hexColor': '#540d6e', 'day': 2}},
                                     {{ 'hexColor': '#f77f00', 'day': 3}}, {{ 'hexColor': '#004777', 'day': 4}},
@@ -41,7 +41,7 @@ namespace GirafRest.IntegrationTest.Setup
                                     {{ 'hexColor': '#ffffff', 'day': 7}}]}}";
             TimerOneHour = $@"{{'orientation': 1, 'completeMark': 2, 'cancelMark': 2, 'defaultTimer': 2,
                               'timerSeconds': 3600, 'activitiesCount': '{null}', 'theme': 1, 'colorThemeWeekSchedules': 1,
-                              'nrOfDaysToDisplayPortait': 1, 'displayDaysRelativePortait': '{true}', 'nrOfDaysToDisplayLandscape': 7, 
+                              'nrOfDaysToDisplayPortrait': 1, 'displayDaysRelativePortrait': '{true}', 'nrOfDaysToDisplayLandscape': 7, 
                               'displayDaysRelativeLandscape': '{false}',
                               'greyScale': '{true}', 'lockTimerControl': '{true}', 'pictogramText': '{true}', 'weekDayColors':
                                   [{{ 'hexColor': '#08A045', 'day': 1}}, {{ 'hexColor': '#540D6E', 'day': 2}},
@@ -49,8 +49,8 @@ namespace GirafRest.IntegrationTest.Setup
                                    {{ 'hexColor': '#F9C80E', 'day': 5}}, {{ 'hexColor': '#DB2B39', 'day': 6}},
                                    {{ 'hexColor': '#FFFFFF', 'day': 7}}]}}";
             MultipleSettings = $@"{{'orientation': 2, 'completeMark': 2, 'cancelMark': 1, 'defaultTimer': 2,
-                                 'timerSeconds': 60, 'activitiesCount': 3, 'theme': 3, 'nrOfDaysToDisplayPortait': 2, 
-                                 'displayDaysRelativePortait': '{true}', 'nrOfDaysToDisplayLandscape': 5, 'displayDaysRelativeLandscape': '{false}',
+                                 'timerSeconds': 60, 'activitiesCount': 3, 'theme': 3, 'nrOfDaysToDisplayPortrait': 2, 
+                                 'displayDaysRelativePortrait': '{true}', 'nrOfDaysToDisplayLandscape': 5, 'displayDaysRelativeLandscape': '{false}',
                                  'greyScale': '{true}', 'lockTimerControl': '{true}', 'pictogramText': '{true}',
                                  'weekDayColors':
                                      [{{ 'hexColor': '#FF00FF', 'day': 1}}, {{ 'hexColor': '#540D6E', 'day': 2}},

@@ -69,7 +69,7 @@ namespace GirafRest.Models
         public bool DisplayDaysRelativeLandscape { get; set; }
 
         /// <summary>
-        /// true: if the first day shown in the weekplanner in portait mode
+        /// true: if the first day shown in the weekplanner in portrait mode
         /// should be today
         /// false: if the first day shown in the weekplanner in portrait mode
         /// should be monday
