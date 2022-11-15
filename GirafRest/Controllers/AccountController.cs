@@ -167,11 +167,18 @@ namespace GirafRest.Controllers
             {
                 if (department != null)
                 {
-                    if (model.Role == GirafRoles.Citizen)
-                        AddGuardiansToCitizens(user);
-                    else if (model.Role == GirafRoles.Guardian)
-                        AddCitizensToGuardian(user);
-                    // save changes
+                    switch (model.Role)
+                    {
+                        case GirafRoles.Citizen:
+                            AddGuardiansToUser(user);
+                            break;
+                        case GirafRoles.Guardian:
+                            AddCitizensToUser(user);
+                            break;
+                        case GirafRoles.Trustee:
+                            AddGuardiansToUser(user);
+                            break;
+                    }
                     _departmentRepository.Save();
                 }
                 await _signInManager.UserManager.AddToRoleAsync(user, UserRoleStr);
@@ -362,6 +369,8 @@ namespace GirafRest.Controllers
                     return GirafRole.Citizen;
                 case GirafRoles.Guardian:
                     return GirafRole.Guardian;
+                case GirafRoles.Trustee:
+                    return GirafRole.Trustee;
                 case GirafRoles.Department:
                     return GirafRole.Department;
                 case GirafRoles.SuperUser:
@@ -371,24 +380,31 @@ namespace GirafRest.Controllers
             }
         }
 
-        private void AddGuardiansToCitizens(GirafUser citizen)
+        /// <summary>
+        /// Add guardians to registered user
+        /// </summary>
+        /// <param name="user">The registered user</param>
+        private void AddGuardiansToUser(GirafUser user)
         {
             var guardians = _girafRoleRepository.GetAllGuardians();
-            var guardiansInDepartment = _userRepository.GetUsersInDepartment((long)citizen.DepartmentKey, guardians);
+            var guardiansInDepartment = _userRepository.GetUsersInDepartment((long)user.DepartmentKey, guardians);
             foreach (var guardian in guardiansInDepartment)
             {
-                citizen.AddGuardian(guardian);
+                user.AddGuardian(guardian);
             }
         }
-
-        private void AddCitizensToGuardian(GirafUser guardian)
+        
+        /// <summary>
+        /// Add citizens to registered user
+        /// </summary>
+        /// <param name="user">The registered user</param>
+        private void AddCitizensToUser(GirafUser user)
         {
-            // Add a relation to all the newly created guardians citizens
             var citizens = _girafRoleRepository.GetAllCitizens();
-            var citizensInDepartment = _userRepository.GetUsersInDepartment((long)guardian.DepartmentKey, citizens);
+            var citizensInDepartment = _userRepository.GetUsersInDepartment((long)user.DepartmentKey, citizens);
             foreach (var citizen in citizensInDepartment)
             {
-                guardian.AddCitizen(citizen);
+                user.AddCitizen(citizen);
             }
         }
     }

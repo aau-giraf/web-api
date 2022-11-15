@@ -44,4 +44,5 @@ GirafIntegrationTest/cookie
 
 pictograms/
 GirafRest/wwwroot/DebugLogs/*
+GirafRest/appsettings.Development.json
 GirafRest.Test/coverage.json

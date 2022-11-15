@@ -190,6 +190,7 @@ namespace GirafRest.Models.DTOs
             this.PictogramText = options.PictogramText;
             this.ShowSettingsForCitizen = options.ShowSettingsForCitizen;
             this.WeekDayColors = SetWeekDayColorsFromModel(options.WeekDayColors);
+            this.ShowPopup = options.ShowPopup;
         }
 
         /// <summary>
