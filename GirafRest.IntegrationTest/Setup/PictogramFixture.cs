@@ -10,9 +10,9 @@ namespace GirafRest.IntegrationTest.Setup
         public string LAST_EDIT_TIMESTAMP;
 
         public string Pictograms;
-        public string Fish;
-        public string FishName;
-        public string FishRename;
+        public string Pictogram;
+        public string PictogramTitle;
+        public string PictogramRename;
         public string RawImage;
         public string Citizen1Username;
         public string Password;
@@ -23,18 +23,20 @@ namespace GirafRest.IntegrationTest.Setup
             Pictograms = @$"
             {{
                 'data': [
-                    {{'id': 1, 'lastEdit': '{LAST_EDIT_TIMESTAMP}', 'title': 'som', 'accessLevel': 1, 'imageHash': 'secure hash', 'imageUrl': '/v1/pictogram/1/image/raw'}},
-                    {{'id': 2, 'lastEdit': '{LAST_EDIT_TIMESTAMP}', 'title': 'alfabet', 'accessLevel': 1, 'imageHash': 'secure hash', 'imageUrl': '/v1/pictogram/2/image/raw'}},
-                    {{'id': 5, 'lastEdit': '{LAST_EDIT_TIMESTAMP}', 'title': 'antal', 'accessLevel': 1,'imageHash': 'secure hash', 'imageUrl': '/v1/pictogram/5/image/raw'}},
-                    {{'id': 8, 'lastEdit': '{LAST_EDIT_TIMESTAMP}', 'title': 'delmængde', 'accessLevel': 1,'imageHash': 'secure hash', 'imageUrl': '/v1/pictogram/8/image/raw'}}
+                    {{'id': 1, 'lastEdit': '{LAST_EDIT_TIMESTAMP}', 'title': 'Epik', 'accessLevel': 1, 'imageHash': 'secure hash', 'imageUrl': '/v1/pictogram/1/image/raw'}},
+                    {{'id': 2, 'lastEdit': '{LAST_EDIT_TIMESTAMP}', 'title': 'som', 'accessLevel': 1, 'imageHash': 'secure hash', 'imageUrl': '/v1/pictogram/2/image/raw'}},
+                    {{'id': 5, 'lastEdit': '{LAST_EDIT_TIMESTAMP}', 'title': 'simpelt', 'accessLevel': 1,'imageHash': 'secure hash', 'imageUrl': '/v1/pictogram/5/image/raw'}},
+                    {{'id': 8, 'lastEdit': '{LAST_EDIT_TIMESTAMP}', 'title': 'sejt', 'accessLevel': 1,'imageHash': 'secure hash', 'imageUrl': '/v1/pictogram/8/image/raw'}}
                 ]
             }}";
-            FishName = $"fish{DateTime.Now.Ticks}";
-            Fish = $"{{ 'accessLevel': 0, 'title': '{FishName}', 'id': -1, 'lastEdit': '2099-03-19T10:40:26.587Z'}}";
-            FishRename = $"cursed_{FishName}";
-            RawImage = "ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñÇÿÿõ×ÿÿñÇÿÿÿÿÿÿÿÿÿÿÿÿÿÿøÿÿüÿÿþ?ÿÿü?ÿÿøÿÿøÿÿà?ÿÿÿ";
             Citizen1Username = "Citizen-dev";
             Password = "password";
+
+            ///Information about a new pictogram to be added in the integration PictogramControllerTest 
+            PictogramTitle = $"New pictogram created: {DateTime.Now.Ticks}";
+            Pictogram = $"{{ 'accessLevel': 0, 'title': '{PictogramTitle}', 'id': -1, 'lastEdit': '2099-03-19T10:40:26.587Z'}}";
+            PictogramRename = $"Pictogram is now renamed: {PictogramTitle}";
+            RawImage = "Some raw image"; 
         }
     }
 }
