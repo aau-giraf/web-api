@@ -61,7 +61,6 @@
 
         public override bool Equals(object obj)
         {
-
             if (obj == null)
                 return false;
             if (obj.GetType() != typeof(TimerDTO))
@@ -69,9 +68,6 @@
 
             TimerDTO dto = (TimerDTO)obj;
             return this.StartTime == dto.StartTime && this.Progress == dto.Progress && this.FullLength == dto.FullLength && this.Paused == dto.Paused && this.Key == dto.Key;
-
-
         }
-
     }
 }

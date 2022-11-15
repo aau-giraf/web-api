@@ -986,17 +986,16 @@ namespace GirafRest.Test
         #endregion
 
         [Fact]
-        public void Update_timer_should_update_timer()
+        public void UpdateTimer_Should_Update_Timer()
         {
             //Arrange
-            var userid = "sus";
+            var userid = "gunner";
             var activityController = new MockActivityController();
             Timer timer = new Timer() { FullLength = 1000, Paused = true };
             var timerDTO = new TimerDTO(timer);
 
             Activity activity = new Activity();
             activity.Timer = timer;
-    
 
             List<PictogramRelation> pictogramRelations = new List<PictogramRelation>()
             {
