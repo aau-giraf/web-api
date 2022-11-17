@@ -130,6 +130,13 @@ namespace GirafRest.Controllers
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
+            //Checks usersRole if citizen & if ID matches.
+            var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            var userRole = await _roleManager.findUserRole(_giraf._userManager, currentUser);
+            if (userRole == GirafRoles.Citizen)
+                if (currentUser.Id != id) 
+                    return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
+
             //Checks if user has proper authorization to get another user
             //HttpContext can be null if it is called internally in the server, e.g., a test,
             //which should bbe allowed, therefore it skips authentication.
@@ -291,6 +298,13 @@ namespace GirafRest.Controllers
 
             if (image.Length < IMAGE_CONTENT_TYPE_DEFINITION)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Image is corrupt"));
+
+         ////Checks usersRole if citizen & if ID matches.
+            var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            var userRole = await _roleManager.findUserRole(_giraf._userManager, currentUser);
+            if (userRole == GirafRoles.Citizen)
+                if (currentUser.Id != id) 
+                    return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
             user.UserIcon = image;
             await _girafUserRepository.SaveChangesAsync();
