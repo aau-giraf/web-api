@@ -133,9 +133,29 @@ namespace GirafRest.Models.DTOs
         [Required]
         public Theme Theme { get; set; }
         /// <summary>
-        /// Defines the number of days to display for a user in a weekschedule
+        /// Defines the number of days to display in portrait mode for a user in a weekplan
         /// </summary>
-        public int? NrOfDaysToDisplay { get; set; }
+        public int? NrOfDaysToDisplayPortrait { get; set; }
+        /// <summary>
+        /// Defines the number of days to display in landscape mode for a user in a weekplan
+        /// </summary>
+        public int? NrOfDaysToDisplayLandscape { get; set; }
+
+        /// <summary>
+        /// true: if the first day shown in the weekplanner in landscape mode
+        /// should be today
+        /// false: if the first day shown in the weekplanner in landscape mode
+        /// should be monday
+        /// </summary>
+        public bool DisplayDaysRelativeLandscape { get; set; }
+
+        /// <summary>
+        /// true: if the first day shown in the weekplanner in portrait mode
+        /// should be today
+        /// false: if the first day shown in the weekplanner in portrait mode
+        /// should be monday
+        /// </summary>
+        public bool DisplayDaysRelativePortrait { get; set; }
         /// <summary>
         /// Flag for indicating whether or not greyscale is enabled
         /// </summary>
@@ -183,8 +203,11 @@ namespace GirafRest.Models.DTOs
             this.ActivitiesCount = options.ActivitiesCount;
             this.Theme = options.Theme;
             this.ShowOnlyActivities = options.ShowOnlyActivities;
-            this.NrOfDaysToDisplay = options.NrOfDaysToDisplay;
             this.NrOfActivitiesToDisplay = options.NrOfActivitiesToDisplay;
+            this.NrOfDaysToDisplayPortrait = options.NrOfDaysToDisplayPortrait;
+            this.DisplayDaysRelativePortrait = options.DisplayDaysRelativePortrait;
+            this.NrOfDaysToDisplayLandscape = options.NrOfDaysToDisplayLandscape;
+            this.DisplayDaysRelativeLandscape = options.DisplayDaysRelativeLandscape;
             this.GreyScale = options.GreyScale;
             this.LockTimerControl = options.LockTimerControl;
             this.PictogramText = options.PictogramText;
