@@ -132,9 +132,13 @@ namespace GirafRest.Controllers
 
             //Checks usersRole if citizen & if ID matches.
             var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            if (currentUser == null)
+            {
+                return this.ResourceNotFound(nameof(User));
+            }
             var userRole = await _roleManager.findUserRole(_giraf._userManager, currentUser);
             if (userRole == GirafRoles.Citizen)
-                if (currentUser.Id != id) 
+                if (currentUser?.Id != id) 
                     return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
             //Checks if user has proper authorization to get another user
