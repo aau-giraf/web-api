@@ -372,11 +372,6 @@ namespace GirafRest.Controllers
             if (resource == null)
                 return NotFound(new ErrorResponse(ErrorCode.ResourceNotFound, "Resource not found"));
             
-            if (resource.AccessLevel != AccessLevel.PRIVATE)
-                return BadRequest(new ErrorResponse(ErrorCode.ResourceMustBePrivate, "Resource must be private"));
-
-
-            //Check that the currently authenticated user owns the resource
             var curUsr = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
             var resourceOwnedByCaller = await _giraf.CheckPrivateOwnership(resource, curUsr);
             if (!resourceOwnedByCaller)
