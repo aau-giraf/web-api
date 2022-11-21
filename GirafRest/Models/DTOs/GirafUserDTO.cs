@@ -38,6 +38,11 @@ namespace GirafRest.Models.DTOs
         public string DisplayName { get; set; }
 
         /// <summary>
+        /// Icon for user
+        /// </summary>
+        public virtual byte[] UserIcon { get; set; }
+
+        /// <summary>
         /// The key of the user's department.
         /// </summary>
         public long? Department { get; private set; }
@@ -62,6 +67,7 @@ namespace GirafRest.Models.DTOs
             Username = user.UserName;
             DisplayName = user.DisplayName;
             RoleName = userRole.ToString();
+            UserIcon = user.UserIcon;
             Role = userRole;
 
             //Check if a user is in a department, add null as key if not.

@@ -75,7 +75,7 @@ namespace GirafRest.Models
             this.WeekSchedule = new List<Week>();
             this.Citizens = new List<GuardianRelation>();
             this.Guardians = new List<GuardianRelation>();
-        } 
+        }
         //
         private void InitialiseData()
         {
@@ -145,11 +145,13 @@ namespace GirafRest.Models
         /// <param name="displayName">Display name</param>
         /// <param name="department">Department</param>
         /// <param name="role">Role for user</param>
-        public GirafUser(string userName, string displayName, Department department, GirafRoles role) : base(userName)
+        /// <param name="userIcon">Profile picture of user</param>
+        public GirafUser(string userName, string displayName, Department department, GirafRoles role, byte[] userIcon = null) : base(userName)
         {
             InitialiseData(role);
             DisplayName = displayName;
             DepartmentKey = department?.Key ?? -1;
+            UserIcon = userIcon;
         }
 
         /// <summary>
