@@ -488,7 +488,7 @@ namespace GirafRest.IntegrationTest.Tests
 
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v1/User/{await TestExtension.GetUserIdAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.Password)}"),
+                RequestUri = new Uri($"{BASE_URL}v1/user/{await TestExtension.GetUserIdAsync(_factory, _accountFixture.GuardianUsername, _accountFixture.Password)}"),
                 Method = HttpMethod.Get
             };
 
@@ -499,7 +499,7 @@ namespace GirafRest.IntegrationTest.Tests
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
             Assert.Equal(System.Net.HttpStatusCode.Forbidden, response.StatusCode);
-            Assert.Equal("NotAuthorized", content["errorKey"].ToString());
+            Assert.Equal("Forbidden", content["errorKey"].ToString());
         }
 
         /// <summary>

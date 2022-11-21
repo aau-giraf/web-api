@@ -4,6 +4,7 @@ using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Enums;
 using GirafRest.Models.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +18,7 @@ namespace GirafRest.Controllers
     /// <summary>
     /// Handles Department endpoints
     /// </summary>
+    [Authorize]
     [Route("v1/[controller]")]
     public class DepartmentController : Controller
     {
@@ -90,7 +92,7 @@ namespace GirafRest.Controllers
 
             if (currentUser == null)
             {
-                return this.ResourceNotFound(nameof(User), currentUser);
+                return this.ResourceNotFound(nameof(User));
             }
 
             var isSuperUser = await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser);
@@ -104,7 +106,7 @@ namespace GirafRest.Controllers
 
             if (department == null)
             {
-                return this.ResourceNotFound(nameof(Department), department);
+                return this.ResourceNotFound(nameof(Department));
             }
 
             var members = _departmentdto.FindMembers(department.Result.Members, _roleManager, _giraf);
@@ -280,9 +282,10 @@ namespace GirafRest.Controllers
             var requestingUser = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
 
             var department = _departmentRepository.GetDepartmentById(departmentId);
+            
             if (department == null)
             {
-                return this.ResourceNotFound(nameof(Department), department, departmentId);
+                return this.ResourceNotFound(nameof(Department),  departmentId);
             }
 
             if (nameDTO == null || string.IsNullOrEmpty(nameDTO.Name))
