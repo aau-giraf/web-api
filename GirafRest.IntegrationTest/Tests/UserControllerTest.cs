@@ -132,7 +132,7 @@ namespace GirafRest.IntegrationTest.Tests
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
-            Assert.Equal("NotAuthorized", content["errorKey"]);
+            Assert.Equal("Forbidden", content["errorKey"]);
         }
 
         /// <summary>
