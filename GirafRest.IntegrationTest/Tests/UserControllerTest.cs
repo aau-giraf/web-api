@@ -383,10 +383,13 @@ namespace GirafRest.IntegrationTest.Tests
             Assert.Equal(3, content["data"]["activitiesCount"]);
             Assert.Equal(3, content["data"]["theme"]);
             Assert.Equal(2, content["data"]["nrOfDaysToDisplay"]);
+            Assert.Equal(0, content["data"]["nrOfActivitiesToDisplay"]);
             Assert.True(content["data"]["greyScale"].ToObject<bool>());
             Assert.True(content["data"]["lockTimerControl"].ToObject<bool>());
             Assert.True(content["data"]["pictogramText"].ToObject<bool>());
             Assert.True(content["data"]["showPopup"].ToObject<bool>());
+            Assert.False(content["data"]["showOnlyActivities"].ToObject<bool>());
+            Assert.False(content["data"]["showSettingsForCitizen"].ToObject<bool>());
             Assert.Equal("#FF00FF", content["data"]["weekDayColors"][0]["hexColor"]);
             Assert.Equal(1, content["data"]["weekDayColors"][0]["day"]);
         }
