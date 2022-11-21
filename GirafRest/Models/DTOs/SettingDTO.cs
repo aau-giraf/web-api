@@ -137,6 +137,22 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         public int? NrOfDaysToDisplay { get; set; }
         /// <summary>
+        /// Defines the number of days to display in landscape mode for a user in a weekplan
+        /// </summary>
+        public int? NrOfDaysToDisplayLandscape { get; set; }
+        /// <summary>
+        /// Defines the number of days to display in portrait mode for a user in a weekplan
+        /// </summary>
+        public int? NrOfDaysToDisplayPortrait { get; set; }
+        /// <summary>
+        /// Flag for indicating whether or not to display the days relative to portrait mode
+        /// </summary>        
+        public bool? DisplayDaysRelativePortrait { get; set; }
+        /// <summary>
+        /// Flag for indicating whether or not to display the days relative to landscape mode
+        /// </summary> 
+        public bool? DisplayDaysRelativeLandscape { get; set; }
+        /// <summary>
         /// Flag for indicating whether or not greyscale is enabled
         /// </summary>
         public bool GreyScale { get; set; }

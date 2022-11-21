@@ -55,16 +55,37 @@ namespace GirafRest.Models
         /// Flag to indicate whether citizen should see one or more days or only activities
         /// </summary>
         public bool ShowOnlyActivities { get; set; }
+        
         /// <summary>
         /// Defines the number of activities to display for a user in a weekschedule
         /// </summary>
         public int? NrOfActivitiesToDisplay { get; set; }
+        
+        /// <summary>
+        /// Defines the number of days to display in landscape mode for a user in a weekplan
+        /// </summary>
+        public int? NrOfDaysToDisplayLandscape { get; set; }
 
         /// <summary>
-        /// defines the number of days to display for a user in a weekschedule
+        /// Defines the number of days to display in portrait mode for a user in a weekplan
+        /// </summary>
+        public int? NrOfDaysToDisplayPortrait { get; set; }
+
+        /// <summary>
+        /// Flag for indicating whether or not to display the days relative to portrait mode
+        /// </summary>        
+        public bool? DisplayDaysRelativePortrait { get; set; }
+        
+        /// <summary>
+        /// Flag for indicating whether or not to display the days relative to landscape mode
+        /// </summary> 
+        public bool? DisplayDaysRelativeLandscape { get; set; }
+        
+        /// <summary>
+        /// Defines the number of days to display for a user in a weekschedule
         /// </summary>
         public int? NrOfDaysToDisplay { get; set; }
-
+        
         /// <summary>
         /// Flag for indicating whether or not greyscale is enabled
         /// </summary>
