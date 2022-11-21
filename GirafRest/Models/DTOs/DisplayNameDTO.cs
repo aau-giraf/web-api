@@ -23,15 +23,20 @@ namespace GirafRest.Models.DTOs
         /// </summary>
         public string UserId { get; set; }
 
+        /// <summary>
+        /// The users profile picture.
+        /// </summary>
+        public virtual byte[] UserIcon { get; set; }
 
         /// <summary>
         /// Constructor
         /// </summary>
-        public DisplayNameDTO(string displayName, GirafRoles userRole, string userId)
+        public DisplayNameDTO(string displayName, GirafRoles userRole, string userId, byte[] userIcon = null)
         {
             DisplayName = displayName;
             UserRole = userRole.ToString();
             UserId = userId;
+            UserIcon = userIcon;
         }
 
         /// <summary>
@@ -43,7 +48,7 @@ namespace GirafRest.Models.DTOs
 
         public int CompareTo(DisplayNameDTO other)
         {
-           if(other == null)
+            if (other == null)
             {
                 return 1;
             }
