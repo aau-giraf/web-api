@@ -626,11 +626,7 @@ namespace GirafRest.Controllers
             {
                 return ErrorCode.InvalidProperties;
             }
-            if (options.NrOfDaysToDisplayPortrait < 1 || options.NrOfDaysToDisplayPortrait > 7)
-            {
-                return ErrorCode.InvalidProperties;
-            }
-            if (options.NrOfDaysToDisplayLandscape < 1 || options.NrOfDaysToDisplayLandscape > 7)
+            if (options.NrOfDaysToDisplay < 1 || options.NrOfDaysToDisplay > 7)
             {
                 return ErrorCode.InvalidProperties;
             }
