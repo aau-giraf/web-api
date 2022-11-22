@@ -80,7 +80,7 @@ namespace GirafRest.Models
         /// <param name="choiceBoard"></param>
         /// <param name="title"></param>
         /// <param name="choiceBoardName"></param>
-        public Activity(Weekday weekday, List<Pictogram> pictograms, int order, ActivityState state, Timer timer, bool choiceBoard, string title, string choiceBoardName = "ChoiceBoard" )
+        public Activity(Weekday weekday, List<Pictogram> pictograms, int order, ActivityState state, Timer timer, bool choiceBoard, string title, string choiceBoardName = "ChoiceBoard")
         {
             this.Other = weekday;
             this.Order = order;
