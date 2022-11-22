@@ -132,7 +132,7 @@ namespace GirafRest.IntegrationTest.Tests
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
-            Assert.Equal("NotAuthorized", content["errorKey"]);
+            Assert.Equal("Forbidden", content["errorKey"]);
         }
 
         /// <summary>
@@ -382,11 +382,14 @@ namespace GirafRest.IntegrationTest.Tests
             Assert.Equal(60, content["data"]["timerSeconds"]);
             Assert.Equal(3, content["data"]["activitiesCount"]);
             Assert.Equal(3, content["data"]["theme"]);
-            Assert.Equal(2, content["data"]["nrOfDaysToDisplay"]);
+            Assert.Equal(2, content["data"]["nrOfDaysToDisplayPortrait"]);
+            Assert.True(content["data"]["displayDaysRelativePortrait"].ToObject<bool>());
+            Assert.Equal(5, content["data"]["nrOfDaysToDisplayLandscape"]);
+            Assert.False(content["data"]["displayDaysRelativeLandscape"].ToObject<bool>());
             Assert.True(content["data"]["greyScale"].ToObject<bool>());
             Assert.True(content["data"]["lockTimerControl"].ToObject<bool>());
             Assert.True(content["data"]["pictogramText"].ToObject<bool>());
-            Assert.True(content["data"]["showPopup"].ToObject<bool>());
+            Assert.False(content["data"]["showPopup"].ToObject<bool>());
             Assert.Equal("#FF00FF", content["data"]["weekDayColors"][0]["hexColor"]);
             Assert.Equal(1, content["data"]["weekDayColors"][0]["day"]);
         }

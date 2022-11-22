@@ -292,6 +292,13 @@ namespace GirafRest.Controllers
             if (image.Length < IMAGE_CONTENT_TYPE_DEFINITION)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Image is corrupt"));
 
+         ////Checks usersRole if citizen & if ID matches.
+            var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            var userRole = await _roleManager.findUserRole(_giraf._userManager, currentUser);
+            if (userRole == GirafRoles.Citizen)
+                if (currentUser.Id != id) 
+                    return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
+
             user.UserIcon = image;
             await _girafUserRepository.SaveChangesAsync();
 
@@ -358,11 +365,6 @@ namespace GirafRest.Controllers
             if (resource == null)
                 return NotFound(new ErrorResponse(ErrorCode.ResourceNotFound, "Resource not found"));
 
-            if (resource.AccessLevel != AccessLevel.PRIVATE)
-                return BadRequest(new ErrorResponse(ErrorCode.ResourceMustBePrivate, "Resource must be private"));
-
-
-            //Check that the currently authenticated user owns the resource
             var curUsr = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
             var resourceOwnedByCaller = await _giraf.CheckPrivateOwnership(resource, curUsr);
             if (!resourceOwnedByCaller)
