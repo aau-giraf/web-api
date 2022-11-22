@@ -5,12 +5,13 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.Features;
-
+using GirafRest.Test.Mocks;
 
 namespace GirafRest.Test.Controllers
 {
     public class ErrorControllerTest
     {
+
         [Fact]
        public void Unauthorized401_Test()
        {
@@ -182,7 +183,7 @@ namespace GirafRest.Test.Controllers
                 HttpContext = httpContext,
             };
 
-            var controller = new ErrorController()
+            var controller = new MockErrorController()
             {
                 ControllerContext = controllerContext
             };

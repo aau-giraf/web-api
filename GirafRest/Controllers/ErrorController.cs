@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
 
 namespace GirafRest.Controllers
 {
@@ -21,6 +22,7 @@ namespace GirafRest.Controllers
         [AcceptVerbs("POST", "GET", "PUT", "DELETE", "PATCH")]
         public ActionResult StatusCodeEndpoint([FromQuery] int statusCode)
         {
+            
             var statusCodeReExecuteFeature = HttpContext.Features.Get<IStatusCodeReExecuteFeature>();
 
             var OriginalURL = "";
