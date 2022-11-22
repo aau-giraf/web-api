@@ -172,7 +172,7 @@ namespace GirafRest.Models
             NrOfDaysToDisplayPortrait = 1;
             DisplayDaysRelativePortrait = true;
             NrOfDaysToDisplayLandscape = 7;
-            DisplayDaysRelativePortrait = false;
+            DisplayDaysRelativeLandscape = false;
             TimerSeconds = 900;
             GreyScale = false;
             PictogramText = false;
