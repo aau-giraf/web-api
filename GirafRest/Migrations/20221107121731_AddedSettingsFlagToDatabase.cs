@@ -4,7 +4,7 @@
 
 namespace GirafRest.Migrations
 {
-    public partial class AddedShowSettingsForCitizenToSettingsTable : Migration
+    public partial class AddedSettingsFlagToDatabase : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

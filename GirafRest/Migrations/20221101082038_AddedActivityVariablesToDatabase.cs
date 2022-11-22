@@ -4,7 +4,7 @@
 
 namespace GirafRest.Migrations
 {
-    public partial class AddedShowOnlyActivitiesAndNrOfActivitiesToDisplayToSettingsTable : Migration
+    public partial class AddedActivityVariablesToDatabase : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

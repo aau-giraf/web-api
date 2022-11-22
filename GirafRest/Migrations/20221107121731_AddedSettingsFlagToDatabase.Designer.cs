@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GirafRest.Migrations
 {
     [DbContext(typeof(GirafDbContext))]
-    [Migration("20221101082038_AddedShowOnlyActivitiesAndNrOfActivitiesToDisplayToSettingsTable")]
-    partial class AddedShowOnlyActivitiesAndNrOfActivitiesToDisplayToSettingsTable
+    [Migration("20221107121731_AddedSettingsFlagToDatabase")]
+    partial class AddedSettingsFlagToDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -353,6 +353,9 @@ namespace GirafRest.Migrations
                         .HasColumnType("tinyint(1)");
 
                     b.Property<bool>("ShowPopup")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<bool>("ShowSettingsForCitizen")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<int>("Theme")
