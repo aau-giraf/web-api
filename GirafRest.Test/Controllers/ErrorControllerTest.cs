@@ -158,5 +158,41 @@ namespace GirafRest.Test.Controllers
             // Assert
             Assert.Equal(statusCodeResult, status);
        }
+
+        [Fact]
+        public void NotFoundError_Test()
+        {
+            // Arrange
+            int status = 404;
+            var mockFeatureCollection = new Mock<IFeatureCollection>();
+            mockFeatureCollection.Setup(feature => feature.Get<IStatusCodeReExecuteFeature>())
+                .Returns
+                (
+                    new StatusCodeReExecuteFeature()
+                    {
+                        OriginalPath = "Path",
+                        OriginalPathBase = "Base",
+                        OriginalQueryString = "String"
+                    }
+                );
+
+            var httpContext = new DefaultHttpContext(mockFeatureCollection.Object);
+            var controllerContext = new ControllerContext()
+            {
+                HttpContext = httpContext,
+            };
+
+            var controller = new ErrorController()
+            {
+                ControllerContext = controllerContext
+            };
+
+            // Act
+            var response = controller.StatusCodeEndpoint(status);
+            var statusCodeResult = response.GetType().GetProperty("StatusCode").GetValue(response, null);
+
+            // Assert
+            Assert.Equal(statusCodeResult, status);
+        }
     }
 }
