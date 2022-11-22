@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GirafRest.Migrations
 {
     [DbContext(typeof(GirafDbContext))]
-    [Migration("20221101082038_AddedActivityVariablesToDatabase")]
-    partial class AddedActivityVariablesToDatabase
+    [Migration("20221101082038_AddedActivityVariablesToDB")]
+    partial class AddedActivityVariablesToDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

@@ -4,12 +4,18 @@
 
 namespace GirafRest.Migrations
 {
-    public partial class AddedSettingsFlagToDatabase : Migration
+    public partial class AddedActivityVariablesToDB : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AddColumn<int>(
+                name: "NrOfActivitiesToDisplay",
+                table: "Setting",
+                type: "int",
+                nullable: true);
+
             migrationBuilder.AddColumn<bool>(
-                name: "ShowSettingsForCitizen",
+                name: "ShowOnlyActivities",
                 table: "Setting",
                 type: "tinyint(1)",
                 nullable: false,
@@ -19,7 +25,11 @@ namespace GirafRest.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "ShowSettingsForCitizen",
+                name: "NrOfActivitiesToDisplay",
+                table: "Setting");
+
+            migrationBuilder.DropColumn(
+                name: "ShowOnlyActivities",
                 table: "Setting");
         }
     }
