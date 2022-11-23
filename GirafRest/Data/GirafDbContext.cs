@@ -79,6 +79,12 @@ namespace GirafRest.Data
                 .HasForeignKey(dr => dr.PictogramKey)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // Configure a One-to-One relationship between user and setting
+            builder.Entity<GirafUser>()
+                .HasOne<Setting>(u => u.Settings)
+                .WithOne()
+                .HasForeignKey<GirafUser>(u => u.SettingsKey);
+
             //Configure a One-to-Many relationship between user and department
             builder.Entity<GirafUser>()
                 .HasOne<Department>(u => u.Department)

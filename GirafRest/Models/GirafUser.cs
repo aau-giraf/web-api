@@ -59,6 +59,9 @@ namespace GirafRest.Models
         /// </summary>
         public virtual ICollection<UserResource> Resources { get; set; }
 
+        [ForeignKey("Setting")]
+        public long? SettingsKey { get; set; }
+
         /// <summary>
         /// Settings object for user
         /// </summary>

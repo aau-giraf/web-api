@@ -42,7 +42,8 @@ namespace GirafRest.Test.RepositoryMocks
                     configuration,
                     new Mock<IGirafUserRepository>(),
                     new Mock<IDepartmentRepository>(),
-                    new Mock<IGirafRoleRepository>()
+                    new Mock<IGirafRoleRepository>(),
+                    new Mock<ISettingRepository>()
                 )
             { }
             
@@ -53,7 +54,8 @@ namespace GirafRest.Test.RepositoryMocks
                 IOptions<JwtConfig> configuration,
                 Mock<IGirafUserRepository> userRepository,
                 Mock<IDepartmentRepository> departmentRepository, 
-                Mock<IGirafRoleRepository> girafRoleRepository
+                Mock<IGirafRoleRepository> girafRoleRepository,
+                Mock<ISettingRepository> settingRepository
                 ) 
                 : base(
                     signInManager.Object, 
@@ -62,7 +64,8 @@ namespace GirafRest.Test.RepositoryMocks
                     configuration,
                     userRepository.Object,
                     departmentRepository.Object,
-                    girafRoleRepository.Object
+                    girafRoleRepository.Object,
+                    settingRepository.Object
                 )
             {
                 SignInManager = signInManager;

@@ -14,7 +14,7 @@ namespace GirafRest.Models
         /// Settingskey
         /// </summary>
         [Key]
-        public long Key { get; private set; }
+        public long Key { get; set; }
 
         /// <summary>
         /// Preferred appearence of phone; Portrait or Landscape mode.

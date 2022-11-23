@@ -231,7 +231,8 @@ namespace GirafRest.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.HasIndex("SettingsKey");
+                    b.HasIndex("SettingsKey")
+                        .IsUnique();
 
                     b.HasIndex("Id", "UserName")
                         .IsUnique()
@@ -679,8 +680,8 @@ namespace GirafRest.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("GirafRest.Models.Setting", "Settings")
-                        .WithMany()
-                        .HasForeignKey("SettingsKey");
+                        .WithOne()
+                        .HasForeignKey("GirafRest.Models.GirafUser", "SettingsKey");
 
                     b.Navigation("Department");
 

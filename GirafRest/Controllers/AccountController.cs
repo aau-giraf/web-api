@@ -38,6 +38,7 @@ namespace GirafRest.Controllers
         private readonly IGirafUserRepository _userRepository;
         private readonly IDepartmentRepository _departmentRepository;
         private readonly IGirafRoleRepository _girafRoleRepository;
+        private readonly ISettingRepository _settingRepository;
 
         /// <summary>
         /// Constructor for AccountController
@@ -49,6 +50,7 @@ namespace GirafRest.Controllers
         /// <param name="userRepository">Service Injection</param>
         /// <param name="departmentRepository">Service Injection</param>
         /// <param name="girafRoleRepository">Service Injection</param>
+        /// <param name="settingRepository">Service Injection</param>
         public AccountController(
             SignInManager<GirafUser> signInManager,
             ILoggerFactory loggerFactory,
@@ -56,7 +58,8 @@ namespace GirafRest.Controllers
             IOptions<JwtConfig> configuration,
             IGirafUserRepository userRepository,
             IDepartmentRepository departmentRepository,
-            IGirafRoleRepository girafRoleRepository)
+            IGirafRoleRepository girafRoleRepository,
+            ISettingRepository settingRepository)
         {
             _signInManager = signInManager;
             _giraf = giraf;
@@ -65,6 +68,7 @@ namespace GirafRest.Controllers
             _userRepository = userRepository;
             _departmentRepository = departmentRepository;
             _girafRoleRepository = girafRoleRepository;
+            _settingRepository = settingRepository;
         }
 
         /// <summary>
@@ -297,6 +301,14 @@ namespace GirafRest.Controllers
 
             _userRepository.Remove(user);
             _userRepository.Save();
+
+            // gigantic hack, remove when relation between user and setting is fixed
+            if (user.SettingsKey is not null)
+            {
+                user.Settings.Key = (long)user.SettingsKey;
+                _settingRepository.Remove(user.Settings);
+                _settingRepository.Save();
+            }
 
             return Ok(new SuccessResponse("User deleted"));
         }
