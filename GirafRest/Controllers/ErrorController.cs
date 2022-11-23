@@ -22,8 +22,7 @@ namespace GirafRest.Controllers
         [AcceptVerbs("POST", "GET", "PUT", "DELETE", "PATCH")]
         public ActionResult StatusCodeEndpoint([FromQuery] int statusCode)
         {
-            
-            
+               
             var statusCodeReExecuteFeature = HttpContext.
                 Features.
                 Get<IStatusCodeReExecuteFeature>();
