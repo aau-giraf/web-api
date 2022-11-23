@@ -1,5 +1,4 @@
 using GirafRest.Controllers;
-using GirafRest.Test.Mocks;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
@@ -159,44 +158,8 @@ namespace GirafRest.Test.Controllers
                 Assert.Equal(statusCodeResult, status);
             }
 
-            //[Fact]
-            //public void NotFoundError_Test()
-            //{
-            //    // Arrange
-            //    int status = 404;
-            //    var mockFeatureCollection = new Mock<IFeatureCollection>();
-            //    mockFeatureCollection.Setup(feature => feature.Get<IStatusCodeReExecuteFeature>())
-            //        .Returns
-            //        (
-            //            new StatusCodeReExecuteFeature()
-            //            {
-            //                OriginalPath = "Path",
-            //                OriginalPathBase = "Base",
-            //                OriginalQueryString = "String"
-            //            }
-            //        );
-
-            //    var httpContext = new DefaultHttpContext(mockFeatureCollection.Object);
-            //    var controllerContext = new ControllerContext()
-            //    {
-            //        HttpContext = httpContext,
-            //    };
-
-            //    var controller = new MockErrorController()
-            //    {
-            //        ControllerContext = controllerContext
-            //    };
-
-            //    // Act
-            //    var response = controller.StatusCodeEndpoint(status);
-            //    var statusCodeResult = response.GetType().GetProperty("StatusCode").GetValue(response, null);
-
-            //    // Assert
-            //    Assert.Equal(statusCodeResult, status);
-            //}
-
             [Fact]
-            public void NotFoundErrorTest_Test()
+            public void NotFoundError_Test()
             {
                 // Arrange
                 int status = 404;
