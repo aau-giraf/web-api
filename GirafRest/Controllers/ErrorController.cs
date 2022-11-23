@@ -23,7 +23,10 @@ namespace GirafRest.Controllers
         public ActionResult StatusCodeEndpoint([FromQuery] int statusCode)
         {
             
-            var statusCodeReExecuteFeature = HttpContext.Features.Get<IStatusCodeReExecuteFeature>();
+            
+            var statusCodeReExecuteFeature = HttpContext.
+                Features.
+                Get<IStatusCodeReExecuteFeature>();
 
             var OriginalURL = "";
 

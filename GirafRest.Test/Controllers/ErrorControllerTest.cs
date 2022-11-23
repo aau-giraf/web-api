@@ -199,16 +199,17 @@ namespace GirafRest.Test.Controllers
             // Arrange
             int status = 404;
             var request = new Mock<HttpRequest>();
-            request.Setup(x => x.Scheme).Returns("http");
-            request.Setup(x => x.Host).Returns(HostString.FromUriComponent("http://localhost:8080"));
-            request.Setup(x => x.PathBase).Returns(PathString.FromUriComponent("/api"));
-            var httpContext = Mock.Of<HttpContext>(_ =>
-                _.Request == request.Object
-            );
+
+            request.Setup(x => x.Method).Returns("GET");
+            var Features = new Mock<IFeatureCollection>();
+            
+            var httpContext = new Mock<HttpContext>();
+            httpContext.Setup(x => x.Request).Returns(request.Object);
+            httpContext.Setup(x => x.Features).Returns(Features.Object);
 
             var controllerContext = new ControllerContext()
             {
-                HttpContext = httpContext,
+                HttpContext = httpContext.Object,
             };
 
             var controller = new ErrorController()
