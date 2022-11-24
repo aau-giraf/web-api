@@ -1,4 +1,4 @@
-﻿using GirafRest.Models.DTOs;
+using GirafRest.Models.DTOs;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -76,7 +76,6 @@ namespace GirafRest.Models
         /// should be monday
         /// </summary>
         public bool DisplayDaysRelativePortrait { get; set; }
-
         /// Flag to indicate whether citizen should see one or more days or only activities
         /// </summary>
         public bool ShowOnlyActivities { get; set; }
