@@ -1,162 +1,194 @@
-using Xunit;
 using GirafRest.Controllers;
-using Moq;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.Features;
-
+using Microsoft.AspNetCore.Mvc;
+using Moq;
+using Xunit;
 
 namespace GirafRest.Test.Controllers
 {
     public class ErrorControllerTest
     {
-        [Fact]
-       public void Unauthorized401_Test()
-       {
-            // Arrange
-            int status = StatusCodes.Status401Unauthorized;
-            var mockFeatureCollection = new Mock<IFeatureCollection>();
-            mockFeatureCollection.Setup(feature => feature.Get<IStatusCodeReExecuteFeature>()) //feature is a parameter from IFeatureCollection
-                .Returns
-                (
-                    new StatusCodeReExecuteFeature()
-                    {
-                        OriginalPath = "Path",
-                        OriginalPathBase = "Base",
-                        OriginalQueryString = "String"
-                    }
-                );
-
-            var httpContext = new DefaultHttpContext(mockFeatureCollection.Object);
-            var controllerContext = new ControllerContext()
+        public class MockedErrorController : ErrorController
+        {
+            [Fact]
+            public void Unauthorized401_Test()
             {
-                HttpContext = httpContext,
-            };
-            
-            var controller = new ErrorController()
+                // Arrange
+                int status = StatusCodes.Status401Unauthorized;
+                var mockFeatureCollection = new Mock<IFeatureCollection>();
+                mockFeatureCollection.Setup(feature => feature.Get<IStatusCodeReExecuteFeature>()) //feature is a parameter from IFeatureCollection
+                    .Returns
+                    (
+                        new StatusCodeReExecuteFeature()
+                        {
+                            OriginalPath = "Path",
+                            OriginalPathBase = "Base",
+                            OriginalQueryString = "String"
+                        }
+                    );
+
+                var httpContext = new DefaultHttpContext(mockFeatureCollection.Object);
+                var controllerContext = new ControllerContext()
+                {
+                    HttpContext = httpContext,
+                };
+
+                var controller = new ErrorController()
+                {
+                    ControllerContext = controllerContext
+                };
+
+                // Act
+                var response = controller.StatusCodeEndpoint(status);
+                var result = response as UnauthorizedObjectResult;
+                var StatusCodeResult = result.StatusCode;
+
+                // Assert
+                Assert.Equal(response is UnauthorizedObjectResult, true);
+                Assert.Equal(StatusCodeResult, status);
+            }
+
+            [Fact]
+            public void Forbidden403_Test()
             {
-                ControllerContext = controllerContext
-            };
+                // Arrange
+                int status = StatusCodes.Status403Forbidden;
+                var mockFeatureCollection = new Mock<IFeatureCollection>();
+                mockFeatureCollection.Setup(feature => feature.Get<IStatusCodeReExecuteFeature>())
+                    .Returns
+                    (
+                        new StatusCodeReExecuteFeature()
+                        {
+                            OriginalPath = "Path",
+                            OriginalPathBase = "Base",
+                            OriginalQueryString = "String"
+                        }
+                    );
 
+                var httpContext = new DefaultHttpContext(mockFeatureCollection.Object);
+                var controllerContext = new ControllerContext()
+                {
+                    HttpContext = httpContext,
+                };
 
-            // Act
-            var response = controller.StatusCodeEndpoint(status);
-            var result = response as UnauthorizedObjectResult;
-            var StatusCodeResult = result.StatusCode;
+                var controller = new ErrorController()
+                {
+                    ControllerContext = controllerContext
+                };
 
-            // Assert
-            Assert.Equal(response is UnauthorizedObjectResult, true);
-            Assert.Equal(StatusCodeResult, status);
-       }
+                // Act
+                var response = controller.StatusCodeEndpoint(status);
+                var statusCodeResult = response.GetType().GetProperty("StatusCode").GetValue(response, null);
 
-        [Fact]
-       public void Forbidden403_Test()
-       {
-            // Arrange
-            int status = StatusCodes.Status403Forbidden;
-            var mockFeatureCollection = new Mock<IFeatureCollection>();
-            mockFeatureCollection.Setup(feature => feature.Get<IStatusCodeReExecuteFeature>())
-                .Returns
-                (
-                    new StatusCodeReExecuteFeature()
-                    {
-                        OriginalPath = "Path",
-                        OriginalPathBase = "Base",
-                        OriginalQueryString = "String"
-                    }
-                );
+                // Assert
+                Assert.Equal(statusCodeResult, status);
+            }
 
-            var httpContext = new DefaultHttpContext(mockFeatureCollection.Object);
-            var controllerContext = new ControllerContext()
+            [Fact]
+            public void BadRequest400_Test()
             {
-                HttpContext = httpContext,
-            };
-            
-            var controller = new ErrorController()
+                // Arrange
+                int status = StatusCodes.Status400BadRequest;
+                var mockFeatureCollection = new Mock<IFeatureCollection>();
+                mockFeatureCollection.Setup(feature => feature.Get<IStatusCodeReExecuteFeature>())
+                    .Returns
+                    (
+                        new StatusCodeReExecuteFeature()
+                        {
+                            OriginalPath = "Path",
+                            OriginalPathBase = "Base",
+                            OriginalQueryString = "String"
+                        }
+                    );
+
+                var httpContext = new DefaultHttpContext(mockFeatureCollection.Object);
+                var controllerContext = new ControllerContext()
+                {
+                    HttpContext = httpContext,
+                };
+
+                var controller = new ErrorController()
+                {
+                    ControllerContext = controllerContext
+                };
+
+                // Act
+                var response = controller.StatusCodeEndpoint(status);
+                var statusCodeResult = response.GetType().GetProperty("StatusCode").GetValue(response, null);
+
+                // Assert
+                Assert.Equal(statusCodeResult, status);
+            }
+
+            [Fact]
+            public void UnknownError_Test()
             {
-                ControllerContext = controllerContext
-            };
+                // Arrange
+                int status = 300;
+                var mockFeatureCollection = new Mock<IFeatureCollection>();
+                mockFeatureCollection.Setup(feature => feature.Get<IStatusCodeReExecuteFeature>())
+                    .Returns
+                    (
+                        new StatusCodeReExecuteFeature()
+                        {
+                            OriginalPath = "Path",
+                            OriginalPathBase = "Base",
+                            OriginalQueryString = "String"
+                        }
+                    );
 
-            // Act
-            var response = controller.StatusCodeEndpoint(status);
-            var statusCodeResult = response.GetType().GetProperty("StatusCode").GetValue(response, null);
+                var httpContext = new DefaultHttpContext(mockFeatureCollection.Object);
+                var controllerContext = new ControllerContext()
+                {
+                    HttpContext = httpContext,
+                };
 
-            // Assert
-            Assert.Equal(statusCodeResult, status);
-       }
+                var controller = new ErrorController()
+                {
+                    ControllerContext = controllerContext
+                };
 
-        [Fact]
-       public void BadRequest400_Test()
-       {
-            // Arrange
-            int status = StatusCodes.Status400BadRequest;
-            var mockFeatureCollection = new Mock<IFeatureCollection>();
-            mockFeatureCollection.Setup(feature => feature.Get<IStatusCodeReExecuteFeature>())
-                .Returns
-                (
-                    new StatusCodeReExecuteFeature()
-                    {
-                        OriginalPath = "Path",
-                        OriginalPathBase = "Base",
-                        OriginalQueryString = "String"
-                    }
-                );
+                // Act
+                var response = controller.StatusCodeEndpoint(status);
+                var statusCodeResult = response.GetType().GetProperty("StatusCode").GetValue(response, null);
 
-            var httpContext = new DefaultHttpContext(mockFeatureCollection.Object);
-            var controllerContext = new ControllerContext()
+                // Assert
+                Assert.Equal(statusCodeResult, status);
+            }
+
+            [Fact]
+            public void NotFoundError_Test()
             {
-                HttpContext = httpContext,
-            };
-            
-            var controller = new ErrorController()
-            {
-                ControllerContext = controllerContext
-            };
+                // Arrange
+                int status = 404;
+                var request = new Mock<HttpRequest>();
 
+                request.Setup(x => x.Method).Returns("GET");
+                var Features = new Mock<IFeatureCollection>();
 
-            // Act
-            var response = controller.StatusCodeEndpoint(status);
-            var statusCodeResult = response.GetType().GetProperty("StatusCode").GetValue(response, null);
+                var httpContext = new Mock<HttpContext>();
+                httpContext.Setup(x => x.Request).Returns(request.Object);
+                httpContext.Setup(x => x.Features).Returns(Features.Object);
 
-            // Assert
-            Assert.Equal(statusCodeResult, status);
-       }
+                var controllerContext = new ControllerContext()
+                {
+                    HttpContext = httpContext.Object,
+                };
 
-         [Fact]
-       public void UnknownError_Test()
-       {
-            // Arrange
-            int status = 300;
-            var mockFeatureCollection = new Mock<IFeatureCollection>();
-            mockFeatureCollection.Setup(feature => feature.Get<IStatusCodeReExecuteFeature>())
-                .Returns
-                (
-                    new StatusCodeReExecuteFeature()
-                    {
-                        OriginalPath = "Path",
-                        OriginalPathBase = "Base",
-                        OriginalQueryString = "String"
-                    }
-                );
+                var controller = new MockedErrorController()
+                {
+                    ControllerContext = controllerContext
+                };
 
-            var httpContext = new DefaultHttpContext(mockFeatureCollection.Object);
-            var controllerContext = new ControllerContext()
-            {
-                HttpContext = httpContext,
-            };
-            
-            var controller = new ErrorController()
-            {
-                ControllerContext = controllerContext
-            };
+                // Act
+                var response = controller.StatusCodeEndpoint(status);
+                var statusCodeResult = response.GetType().GetProperty("StatusCode").GetValue(response, null);
 
-            // Act
-            var response = controller.StatusCodeEndpoint(status);
-            var statusCodeResult = response.GetType().GetProperty("StatusCode").GetValue(response, null);
-
-            // Assert
-            Assert.Equal(statusCodeResult, status);
-       }
+                // Assert
+                Assert.Equal(statusCodeResult, status);
+            }
+        }
     }
 }
