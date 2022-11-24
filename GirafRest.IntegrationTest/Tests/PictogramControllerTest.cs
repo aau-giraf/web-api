@@ -30,13 +30,13 @@ namespace GirafRest.IntegrationTest.Tests
         }
 
         /// <summary>
-        /// Testing getting all pictograms
+        /// Testing getting multiple pictograms
         /// Endpoint: GET:/v1/Pictogram
         /// </summary>
         [Fact, Priority(0)]
-        public async void TestPictogramCanGetAllPictograms()
+        public async void TestPictogramCanGetMultiplePictograms()
         {
-            var parameters = "page=1,pageSize=10";
+            var parameters = "page=1&pageSize=10";
             HttpRequestMessage request = new HttpRequestMessage()
             {
                 RequestUri = new Uri($"{BASE_URL}v1/Pictogram?{parameters}"),
@@ -94,7 +94,7 @@ namespace GirafRest.IntegrationTest.Tests
             {
                 RequestUri = new Uri($"{BASE_URL}v1/Pictogram"),
                 Method = HttpMethod.Post,
-                Content = new StringContent(_pictogramFixture.Fish, Encoding.UTF8, "application/json")
+                Content = new StringContent(_pictogramFixture.Pictogram, Encoding.UTF8, "application/json")
             };
             request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _pictogramFixture.Citizen1Username, _pictogramFixture.Password)}");
 
@@ -112,7 +112,7 @@ namespace GirafRest.IntegrationTest.Tests
         [Fact, Priority(3)]
         public async void TestPictogramCanAddPrivatePictogram()
         {
-            var data = JObject.Parse(_pictogramFixture.Fish);
+            var data = JObject.Parse(_pictogramFixture.Pictogram);
             data["accessLevel"] = 3;
             HttpRequestMessage request = new HttpRequestMessage()
             {
@@ -140,7 +140,7 @@ namespace GirafRest.IntegrationTest.Tests
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v1/Pictogram/{await TestExtension.GetPictogramIdAsync(_factory, _pictogramFixture.FishName, _pictogramFixture.Citizen1Username, _pictogramFixture.Password)}"),
+                RequestUri = new Uri($"{BASE_URL}v1/Pictogram/{await TestExtension.GetPictogramIdAsync(_factory, _pictogramFixture.PictogramTitle, _pictogramFixture.Citizen1Username, _pictogramFixture.Password)}"),
                 Method = HttpMethod.Get,
             };
             request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _pictogramFixture.Citizen1Username, _pictogramFixture.Password)}");
@@ -150,7 +150,7 @@ namespace GirafRest.IntegrationTest.Tests
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.NotNull(content["data"]);
-            Assert.Equal(_pictogramFixture.FishName, content["data"]["title"]);
+            Assert.Equal(_pictogramFixture.PictogramTitle, content["data"]["title"]);
         }
 
         /// <summary>
@@ -160,13 +160,13 @@ namespace GirafRest.IntegrationTest.Tests
         [Fact, Priority(5)]
         public async void TestPictogramCanUpdateNewPictogram()
         {
-            var data = JObject.Parse(_pictogramFixture.Fish);
-            data["title"] = _pictogramFixture.FishRename;
+            var data = JObject.Parse(_pictogramFixture.Pictogram);
+            data["title"] = _pictogramFixture.PictogramRename;
             data["accessLevel"] = 3;
 
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v1/Pictogram/{await TestExtension.GetPictogramIdAsync(_factory, _pictogramFixture.FishName, _pictogramFixture.Citizen1Username, _pictogramFixture.Password)}"),
+                RequestUri = new Uri($"{BASE_URL}v1/Pictogram/{await TestExtension.GetPictogramIdAsync(_factory, _pictogramFixture.PictogramTitle, _pictogramFixture.Citizen1Username, _pictogramFixture.Password)}"),
                 Method = HttpMethod.Put,
                 Content = new StringContent(data.ToString(), Encoding.UTF8, "application/json")
             };
@@ -186,7 +186,7 @@ namespace GirafRest.IntegrationTest.Tests
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v1/Pictogram/{await TestExtension.GetPictogramIdAsync(_factory, _pictogramFixture.FishRename, _pictogramFixture.Citizen1Username, _pictogramFixture.Password)}"),
+                RequestUri = new Uri($"{BASE_URL}v1/Pictogram/{await TestExtension.GetPictogramIdAsync(_factory, _pictogramFixture.PictogramRename, _pictogramFixture.Citizen1Username, _pictogramFixture.Password)}"),
                 Method = HttpMethod.Get,
             };
             request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _pictogramFixture.Citizen1Username, _pictogramFixture.Password)}");
@@ -196,7 +196,7 @@ namespace GirafRest.IntegrationTest.Tests
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.NotNull(content["data"]);
-            Assert.Equal(_pictogramFixture.FishRename, content["data"]["title"]);
+            Assert.Equal(_pictogramFixture.PictogramRename, content["data"]["title"]);
         }
 
         /// <summary>
@@ -229,7 +229,7 @@ namespace GirafRest.IntegrationTest.Tests
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v1/Pictogram/{await TestExtension.GetPictogramIdAsync(_factory, _pictogramFixture.FishRename, _pictogramFixture.Citizen1Username, _pictogramFixture.Password)}/image"),
+                RequestUri = new Uri($"{BASE_URL}v1/Pictogram/{await TestExtension.GetPictogramIdAsync(_factory, _pictogramFixture.PictogramRename, _pictogramFixture.Citizen1Username, _pictogramFixture.Password)}/image"),
                 Method = HttpMethod.Put,
                 Content = new StringContent(_pictogramFixture.RawImage, Encoding.UTF8, "application/json")
             };
@@ -249,7 +249,7 @@ namespace GirafRest.IntegrationTest.Tests
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v1/Pictogram/{await TestExtension.GetPictogramIdAsync(_factory, _pictogramFixture.FishRename, _pictogramFixture.Citizen1Username, _pictogramFixture.Password)}"),
+                RequestUri = new Uri($"{BASE_URL}v1/Pictogram/{await TestExtension.GetPictogramIdAsync(_factory, _pictogramFixture.PictogramRename, _pictogramFixture.Citizen1Username, _pictogramFixture.Password)}"),
                 Method = HttpMethod.Delete,
             };
             request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _pictogramFixture.Citizen1Username, _pictogramFixture.Password)}");
@@ -266,7 +266,7 @@ namespace GirafRest.IntegrationTest.Tests
         [Fact, Priority(10)]
         public async void TestPictogramEnsureNewPictogramDeleted()
         {
-            var pictogram = await TestExtension.CreatePictogramAsync(_factory, _pictogramFixture.Fish, 3, _pictogramFixture.Citizen1Username, _pictogramFixture.Password);
+            var pictogram = await TestExtension.CreatePictogramAsync(_factory, _pictogramFixture.Pictogram, 3, _pictogramFixture.Citizen1Username, _pictogramFixture.Password);
             await TestExtension.DeletePictogramAsync(_factory, pictogram["id"].ToObject<int>(), _pictogramFixture.Citizen1Username, _pictogramFixture.Password);
             HttpRequestMessage request = new HttpRequestMessage()
             {

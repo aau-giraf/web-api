@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace GirafRest.Migrations
 {
-    public partial class AddedShowPopupColumnToSettingsTable : Migration
+    public partial class AddedPopupFlagToDB : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
