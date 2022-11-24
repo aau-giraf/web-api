@@ -34,6 +34,11 @@ namespace GirafRest.Models.DTOs.AccountDTOs
         public long? DepartmentId { get; set; }
 
         /// <summary>
+        /// The users profile picture.
+        /// </summary>
+        public virtual byte[] UserIcon { get; set; }
+
+        /// <summary>
         /// Signup role
         /// </summary>
         [Required]
