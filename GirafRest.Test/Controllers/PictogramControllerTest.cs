@@ -23,6 +23,7 @@ namespace GirafRest.Test
     public class PictogramControllerTest
     {
         
+<<<<<<< HEAD
 
         [Fact]
         public async Task ReadPictograms_Success()
@@ -56,6 +57,8 @@ namespace GirafRest.Test
 
         }
 
+=======
+>>>>>>> d3c0634243e4b90e733db78de52104b88e63492a
         [Fact]
         public async Task ReadPictogram_Success()
         {
