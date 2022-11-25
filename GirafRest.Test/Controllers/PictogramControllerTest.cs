@@ -21,28 +21,7 @@ namespace GirafRest.Test
 {
     public class PictogramControllerTest
     {
-        [Fact]
-        public async Task ReadPictograms_Success()
-        {
-            var controller = new MockedUserController();
-            var repository = controller.GirafUserRepository;
-
-            //Mock
-            repository.Setup(x => x.GetUserWithId(controller.testUser.Id))
-                .ReturnsAsync(controller.testUser);
-
-            var response = await controller.GetUser(controller.testUser.Id);
-            var result = response as ObjectResult;
-            var body = result.Value as SuccessResponse<GirafUserDTO>;
-
-        }
-
-        [Fact]
-        public async Task ReadPictograms_Fail()
-        {
-
-        }
-
+        
         [Fact]
         public async Task ReadPictogram_Success()
         {
