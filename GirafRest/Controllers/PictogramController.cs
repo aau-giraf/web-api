@@ -498,7 +498,7 @@ namespace GirafRest.Controllers
         /// Read all pictograms available to the current user (or only the PUBLIC ones if no user is authorized).
         /// </summary>
         /// <returns>A list of said pictograms.</returns>
-        private async Task<IEnumerable<Pictogram>> ReadAllPictograms(string query)
+        public async Task<IEnumerable<Pictogram>> ReadAllPictograms(string query)
         {
             //In this method .AsNoTracking is used due to a bug in EntityFramework Core, where we are not allowed to call a constructor in .Select
             //i.e. convert the pictograms to PictogramDTOs.

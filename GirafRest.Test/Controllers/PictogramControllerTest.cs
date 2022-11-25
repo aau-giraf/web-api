@@ -16,24 +16,37 @@ using Castle.Core.Logging;
 using Moq;
 using GirafRest.Interfaces;
 using System.Threading.Tasks;
+using System.Security.Claims;
 
 namespace GirafRest.Test
 {
     public class PictogramControllerTest
     {
+        
+
         [Fact]
         public async Task ReadPictograms_Success()
         {
-            var controller = new MockedUserController();
-            var repository = controller.GirafUserRepository;
+            var pictogramController = new MockedPictogramController();
+            var userController = new MockedUserController();
+            var repository = userController.GirafUserRepository;
+            var pictogramRepository = pictogramController.PictogramRepository;
 
-            //Mock
-            repository.Setup(x => x.GetUserWithId(controller.testUser.Id))
-                .ReturnsAsync(controller.testUser);
+            List<IEnumerable<Pictogram>> pictograms = new List<IEnumerable<Pictogram>>();
+            pictograms.Add(new Pictogram(pictogramController.testPictogram.Title, pictogramController.testPictogram.AccessLevel) as IEnumerable<Pictogram>);
 
-            var response = await controller.GetUser(controller.testUser.Id);
+            //Mock user
+            var user = pictogramController.guardianUser;
+            user.Department = new Department();
+
+            //pictogramRepository.Setup(repo => repo.fetchPictogramsNoUserLoggedInContainsQuery("testPictogram"));
+
+            
+            var response = await pictogramController.ReadPictograms("testPictogram");
             var result = response as ObjectResult;
-            var body = result.Value as SuccessResponse<GirafUserDTO>;
+            var body = result.Value as SuccessResponse<WeekPictogramDTO>;
+
+            Assert.Equal(StatusCodes.Status200OK, result.StatusCode.Value);
 
         }
 
@@ -127,7 +140,27 @@ namespace GirafRest.Test
         [Fact]
         public async Task ReadAllPictograms_Success()
         {
+            var pictogramController = new MockedPictogramController();
+            var userController = new MockedUserController();
+            var repository = userController.GirafUserRepository;
+            var pictogramRepository = pictogramController.PictogramRepository;
+            var giraf = pictogramController.GirafService;
 
+           
+
+            //Mock user
+            var user = pictogramController.guardianUser;
+            user.Department = new Department();
+
+            giraf.Setup(s => s.LoadUserWithDepartment(new ClaimsPrincipal())).ReturnsAsync(user);
+            
+
+
+            var response = await pictogramController.ReadAllPictograms("testPictogram");
+            var result = response as ObjectResult;
+            var body = result.Value as SuccessResponse<PictogramDTO>;
+
+            Assert.Equal(StatusCodes.Status200OK, result.StatusCode.Value);
         }
         [Fact]
         public async Task ReadAllPictograms_Fail()
