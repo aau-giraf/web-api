@@ -914,5 +914,40 @@ namespace GirafRest.Test
             Assert.Equal(newActivity.Title, (actual.Value as SuccessResponse<ActivityDTO>).Data.Title);
         }
         #endregion
+
+        [Fact]
+        public void UpdateTimer_Should_Update_Timer()
+        {
+            //Arrange
+            var userid = "gunner";
+            var activityController = new MockActivityController();
+            Timer timer = new Timer() { FullLength = 1000, Paused = true };
+            var timerDTO = new TimerDTO(timer);
+
+            Activity activity = new Activity();
+            activity.Timer = timer;
+
+            List<PictogramRelation> pictogramRelations = new List<PictogramRelation>()
+            {
+                new PictogramRelation()
+                {
+                    ActivityId = activity.Key
+                }
+            };
+            activity.Pictograms = pictogramRelations;
+
+            var activityDTO = new ActivityDTO(activity);
+            //Mock
+            activityController.ActivityRepository.Setup(rep => rep.Get((long)activity.Key)).Returns(activity);
+            activityController.TimerRepository.Setup(rep => rep.Get(activity.TimerKey)).Returns(timer);
+
+            //Act
+            var response = activityController.UpdateTimer(activityDTO, userid);
+            var objectResult = response.Result as ObjectResult;
+            var actual = objectResult.Value as SuccessResponse<ActivityDTO>;
+
+            //Assert
+            Assert.Equal(actual.Data.Timer, timerDTO);
+        }
     }
 }

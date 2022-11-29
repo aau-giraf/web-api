@@ -106,6 +106,7 @@ string userId, string weekplanName, int weekYear, int weekNumber, int weekDayNmb
 
             string title = newActivity.Title == null ? newActivity.Pictograms.First().Title : newActivity.Title;
             
+
             Activity dbActivity = new Activity(
                 dbWeekDay,
                 null,
@@ -117,7 +118,7 @@ string userId, string weekplanName, int weekYear, int weekNumber, int weekDayNmb
                 "Choiceboard"
             );
             dbWeekDay.Activities.Add(dbActivity);
-            
+
             _activityRepository.Add(dbActivity);
             _weekdayRepository.Update(dbWeekDay);
 
@@ -133,7 +134,7 @@ string userId, string weekplanName, int weekYear, int weekNumber, int weekDayNmb
                     _pictogramRelationRepository.Add(new PictogramRelation(
                         dbActivity, dbPictogram
                     ));
-                }               
+                }
                 else
                 {
                     return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, "Pictogram not found"));
@@ -265,6 +266,34 @@ string userId, string weekplanName, int weekYear, int weekNumber, int weekDayNmb
                 }
             }
 
+            // Unsure if we should save from every used repository, or just one of them.
+            _userRepository.Save();
+            _activityRepository.Save();
+            _pictogramRelationRepository.Save();
+            _pictogramRepository.Save();
+
+
+            return Ok(new SuccessResponse<ActivityDTO>(new ActivityDTO(updateActivity, pictograms)));
+        }
+
+        /// <summary>
+        /// Updates an activitys timmer with a given id.
+        /// </summary>
+        /// <param name="activity">a serialized version of the activity that will be updated.</param>
+        /// <param name="userId">an ID of the user to update activities for.</param>
+        /// <returns>Returns <see cref="ActivityDTO"/> for the updated activity on success else MissingProperties or NotFound</returns>
+        [HttpPut("{userId}/updatetimer")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult> UpdateTimer([FromBody] ActivityDTO activity, string userId)
+        {
+            Activity updateActivity = _activityRepository.Get(activity.Id);
+            if (updateActivity == null)
+                return NotFound(new ErrorResponse(ErrorCode.ActivityNotFound, "Activity not found"));
+
             if (activity.Timer != null)
             {
                 Timer placeTimer = _timerRepository.Get(updateActivity.TimerKey);
@@ -309,12 +338,14 @@ string userId, string weekplanName, int weekYear, int weekNumber, int weekDayNmb
 
             // Unsure if we should save from every used repository, or just one of them.
             _userRepository.Save();
-            /*_activityRepository.Save();
-            _pictogramRelationRepository.Save();
-            _pictogramRepository.Save();
-            _timerRepository.Save();*/
-
-            return Ok(new SuccessResponse<ActivityDTO>(new ActivityDTO(updateActivity, pictograms)));
+            _activityRepository.Save();
+            //_pictogramRelationRepository.Save();
+            //_pictogramRepository.Save();
+            _timerRepository.Save();
+           
+            return Ok(new SuccessResponse<ActivityDTO>(new ActivityDTO(updateActivity, activity.Pictograms.ToList())));
         }
     }
+
+
 }
