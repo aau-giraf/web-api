@@ -71,7 +71,8 @@ namespace GirafRest.Test
 
                 pictogramRepository.Setup(repo => repo.AddPictogramWith_NO_ImageHash("testPictogram", AccessLevel.PUBLIC));
                 pictogramRepository.Setup(repo => repo.fetchPictogramsUserNotPartOfDepartmentContainsQuery("testPictogram", guardianUser)).Returns(pictograms);
-
+                this.ControllerContext = new ControllerContext();
+                this.ControllerContext.HttpContext = new DefaultHttpContext();
 
             }
 
@@ -173,14 +174,28 @@ namespace GirafRest.Test
         [Fact]
         public async Task ReadAllPictograms_Success()
         {
+            //arranging
+
+            //here we setup the different stuff we need
             var pictogramController = new MockedPictogramController();
             var userController = new MockedUserController();
             var repository = userController.GirafUserRepository;
             var pictogramRepository = pictogramController.PictogramRepository;
             var giraf = pictogramController.GirafService;
-            var pictogramController1 = new Mock<PictogramController>();
+            var HttpContext = pictogramController.ControllerContext.HttpContext;
+            var logger = new Mock<ILogger>();
 
+            //here we create the data we need to return from our functions in the function
+            //these are also our expected pictograms
+            var expected_pictogram1 = new Pictogram() { Id = 5 };
+            var expected_pictogram2 = new Pictogram() { Id = 6 };
+            var expected_pictogram3 = new Pictogram() { Id = 7 };
+            var expected_pictograms = new List<Pictogram>();
+            expected_pictograms.Add(expected_pictogram1);
+            expected_pictograms.Add(expected_pictogram1);
+            expected_pictograms.Add(expected_pictogram1);
 
+            //here we create the data we need to return from our functions in the function
             var pictogram1 = new Pictogram() { Id = 1 };
             var pictogram2 = new Pictogram() { Id = 2 };
             var pictogram3 = new Pictogram() { Id = 3 };
@@ -188,22 +203,56 @@ namespace GirafRest.Test
             pictograms.Add(pictogram1);
             pictograms.Add(pictogram2);
             pictograms.Add(pictogram3);
+            var user = new GirafUser()
+            {
+                UserName = "user1",
+                DisplayName = "user1",
+                Id = "u1",
+                DepartmentKey = 1,
+                Department = new Department(),
+            };
+            //mocking
+            //here we moq functions we depend on in the function we are trying to test with the moq framework
+            // Dont EVER moq the controller functions them self you are supposed to test them, not give them a predfined output!
 
 
-            pictogramController1.Setup(x =>
-            x.ReadAllPictograms(It.IsAny<string>())).Returns(Task.FromResult<IEnumerable<Pictogram>>(pictograms));
+
+            //  the syntax can be hard to understand
+            //  but basically says "when this function gets called gets called, return this value.
+
+            giraf.Setup(x => x.LoadUserWithDepartment(HttpContext.User)).Returns(Task.FromResult(user));
+
+            //mocking fetchPictogramsNoUserLoggedIn
+
+            pictogramRepository.Setup(x => x.fetchPictogramsNoUserLoggedInStartsWithQuery(It.IsAny<string>())).Returns(pictograms);
+            pictogramRepository.Setup(x => x.fetchPictogramsNoUserLoggedInContainsQuery(It.IsAny<string>())).Returns(pictograms);
+            //mocking fetchingPictogramsUserNotInDepartment
+            pictogramRepository.Setup(x => x.fetchPictogramsUserNotPartOfDepartmentStartsWithQuery(It.IsAny<string>(), user)).Returns(pictograms);
+            pictogramRepository.Setup( x=> x.fetchPictogramsUserNotPartOfDepartmentContainsQuery(It.IsAny<string>(), user)).Returns(pictograms);
+            //mocking fetchingPictogramsFromDepartment
 
 
-            //Mock user
-            var user = pictogramController.guardianUser;
-            var response = await pictogramController.ReadAllPictograms("");
-            var result = response as ObjectResult;
-            var body = result.Value as SuccessResponse<PictogramDTO>;
+            pictogramRepository.Setup(x => x.fetchPictogramsFromDepartmentStartsWithQuery(It.IsAny<string>(), user)).Returns(expected_pictograms);
+            pictogramRepository.Setup(x=> x.fetchPictogramsFromDepartmentsContainsQuery(It.IsAny<string>(), user)).Returns(expected_pictograms);
+
+
+            giraf.Setup(x => x._logger).Returns(logger.Object);
+            
+
+            //now we actually test it :D
+            //  here we get a list of pictograms_result
+            var pictograms_result = await pictogramController.ReadAllPictograms("");
+
+            foreach (var (expected, actual) in expected_pictograms.Zip(pictograms_result, (x, y) => (x, y))) {
+              
+                Assert.Equal(expected.Id, actual.Id);
+            }
 
 
 
-            Assert.Equal(StatusCodes.Status200OK, result.StatusCode.Value);
         }
+
+
         [Fact]
         public async Task ReadAllPictograms_Fail()
         {
