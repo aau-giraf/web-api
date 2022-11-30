@@ -177,12 +177,12 @@ namespace GirafRest.Controllers
             if (pictogram.AccessLevel == AccessLevel.PRIVATE)
             {
                 //Add relation between pictogram and current user
-                new UserResource(user, pict);
+                user.Resources.Add(new UserResource(user, pict));
             }
             else if (pictogram.AccessLevel == AccessLevel.PROTECTED)
             {
                 //Add the pictogram to the user's department
-                new DepartmentResource(user.Department, pict);
+                user.Department.Resources.Add(new DepartmentResource(user.Department, pict));
             }
 
             return CreatedAtRoute(

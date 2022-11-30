@@ -25,7 +25,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Ubiety.Dns.Core;
+using SQLitePCL;
 
 namespace GirafRest.Test
 {
@@ -104,6 +105,47 @@ namespace GirafRest.Test
         [Fact]
         public async Task CreatePictogram_Success()
         {
+            //arranging
+            var pictogramcontroller = new MockedPictogramController();
+            var girafService = pictogramcontroller.GirafService;
+            var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
+
+            var department = new Department();
+            department.Key = 1;
+            department.Name = "DenckerHaven";
+            department.Resources = new List<DepartmentResource>();
+
+
+            var girafUsers = new List<GirafUser>() { new GirafUser("Manfred", "Manfred", department, GirafRoles.Citizen) };
+            girafUsers[0].Id = "2";
+            girafUsers[0].Department = department;
+            department.Members = girafUsers;
+            
+
+            Pictogram pictoPRO = new Pictogram("pro", AccessLevel.PROTECTED);
+            Pictogram pictoPRIV = new Pictogram("priv", AccessLevel.PRIVATE);
+
+            var proDTO = new PictogramDTO(pictoPRO);
+            var privDTO = new PictogramDTO(pictoPRIV);
+
+            var proWeekDTO = new WeekPictogramDTO(pictoPRO);
+            var privWeekDTO = new WeekPictogramDTO(pictoPRIV);
+
+            //mock
+            girafService.Setup(repo => repo.LoadUserWithResources(HttpContext.User)).Returns(Task.FromResult<GirafUser>(girafUsers[0]));
+
+            //act
+            var response1 = pictogramcontroller.CreatePictogram(privDTO);
+            var result1 = response1.Result as CreatedAtRouteResult;
+            var val1 = result1.Value as SuccessResponse<WeekPictogramDTO>;
+
+            var response2 = pictogramcontroller.CreatePictogram(proDTO);
+            var result2 = response2.Result as CreatedAtRouteResult;
+            var val2 = result2.Value as SuccessResponse<WeekPictogramDTO>;
+
+            //assert 
+            Assert.Equal(val1.Data.Title, privWeekDTO.Title);
+            Assert.Equal(val2.Data.Title, proWeekDTO.Title);
 
         }
         [Fact]
