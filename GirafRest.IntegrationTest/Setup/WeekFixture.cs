@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using GirafRest.IntegrationTest.Extensions;
 using System;
 using System.Linq;
 
 namespace GirafRest.IntegrationTest.Setup
 {
-    public class WeekFixture
+    public class WeekFixture : IDisposable
     {
         public string CitizenUsername;
         public string GuardianUsername;
@@ -31,6 +31,11 @@ namespace GirafRest.IntegrationTest.Setup
             DifferentCorrectWeek = Week($"[{ Enumerable.Range(1, 7).Aggregate("", (p, c) => $"{p + DifferentDay(c)},")}]");
             TooManyDaysWeek = Week($"[{ Enumerable.Range(1, 7).Aggregate("", (p, c) => $"{p + Day(c)},")}, {Day(3)}]");
             BadEnumValueWeek = Week($"[{ Enumerable.Range(1, 7).Aggregate("", (p, c) => $"{p + Day(c*10)},")}]");
+        }
+
+        public void Dispose()
+        {
+            TestExtension.DeleteAccountAsync(new CustomWebApplicationFactory(), CitizenUsername, Password, GuardianUsername, Password).Wait();
         }
 
         private string Day(int dayNumber)

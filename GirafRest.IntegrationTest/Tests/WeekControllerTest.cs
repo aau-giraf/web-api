@@ -21,6 +21,7 @@ namespace GirafRest.IntegrationTest.Tests
         private CustomWebApplicationFactory _factory;
         private HttpClient _client;
         private WeekFixture _weekFixture;
+        
         public WeekControllerTest(CustomWebApplicationFactory factory, WeekFixture weekFixture)
         {
             _factory = factory;
@@ -35,7 +36,7 @@ namespace GirafRest.IntegrationTest.Tests
         [Fact, Priority(0)]
         public async void TestWeekCanGetNoWeeks()
         {
-            await TestExtension.RegisterAsync(_factory, _weekFixture.CitizenUsername, _weekFixture.Password, _weekFixture.CitizenUsername, _weekFixture.GuardianUsername, departmentId: 1);
+            await TestExtension.RegisterAccountAsync(_factory, _weekFixture.CitizenUsername, _weekFixture.Password, _weekFixture.CitizenUsername, _weekFixture.GuardianUsername, departmentId: 1);
             HttpRequestMessage request = new HttpRequestMessage()
             {
                 RequestUri = new Uri($"{BASE_URL}v1/Week/{await TestExtension.GetUserIdAsync(_factory, _weekFixture.CitizenUsername, _weekFixture.Password)}/weekName"),

@@ -166,7 +166,6 @@ namespace GirafRest.Controllers
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
-
             // Get the role the user is associated with
             var userRole = await _roleManager.findUserRole(_giraf._userManager, user);
 
@@ -201,11 +200,9 @@ namespace GirafRest.Controllers
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
-
             // check whether user with that username already exist that does not have the same id
             if (_girafUserRepository.CheckIfUsernameHasSameId(newUser, user))
                 return Conflict(new ErrorResponse(ErrorCode.UserAlreadyExists, "Username already exists"));
-
 
             // update fields if they are not null
             if (!String.IsNullOrEmpty(newUser.Username))
@@ -262,7 +259,6 @@ namespace GirafRest.Controllers
 
             if (user.UserIcon == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserHasNoIcon, "User has no icon"));
-
 
             return File(Convert.FromBase64String(System.Text.Encoding.UTF8.GetString(user.UserIcon)), IMAGE_TYPE_PNG);
         }
@@ -565,8 +561,6 @@ namespace GirafRest.Controllers
             if (user.Settings == null)
                 return NotFound(new ErrorResponse(ErrorCode.MissingSettings, "User settings not found"));
 
-
-
             if (!ModelState.IsValid)
                 return BadRequest(new ErrorResponse(
                     ErrorCode.MissingProperties,
@@ -588,7 +582,6 @@ namespace GirafRest.Controllers
                 // Validate Correct format of WeekDayColorDTOs. A color must be set for each day
                 if (options.WeekDayColors.GroupBy(d => d.Day).Any(g => g.Count() != 1))
                     return BadRequest(new ErrorResponse(ErrorCode.ColorMustHaveUniqueDay, "Colors are not set"));
-
 
                 // check if all days in weekdaycolours is valid
                 if (options.WeekDayColors.Any(w => !Enum.IsDefined(typeof(Days), w.Day)))

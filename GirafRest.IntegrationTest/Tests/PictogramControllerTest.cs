@@ -267,7 +267,7 @@ namespace GirafRest.IntegrationTest.Tests
         public async void TestPictogramEnsureNewPictogramDeleted()
         {
             var pictogram = await TestExtension.CreatePictogramAsync(_factory, _pictogramFixture.Pictogram, 3, _pictogramFixture.Citizen1Username, _pictogramFixture.Password);
-            await TestExtension.DeletePictogramAsync(_factory, pictogram["id"].ToObject<int>(), _pictogramFixture.Citizen1Username, _pictogramFixture.Password);
+            await TestExtension.DeletePictogramAsync(_factory, pictogram["id"].ToObject<long>(), _pictogramFixture.Citizen1Username, _pictogramFixture.Password);
             HttpRequestMessage request = new HttpRequestMessage()
             {
                 RequestUri = new Uri($"{BASE_URL}v1/Pictogram/{pictogram["id"]}"),

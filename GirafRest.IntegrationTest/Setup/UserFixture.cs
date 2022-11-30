@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using GirafRest.IntegrationTest.Extensions;
+using System;
 
 namespace GirafRest.IntegrationTest.Setup
 {
-    public class UserFixture
+    public class UserFixture : IDisposable
     {
         public string GuardianUsername;
         public string GuardianDisplayName;
@@ -21,6 +19,8 @@ namespace GirafRest.IntegrationTest.Setup
         public string[] NewSetting = {"{'orientation': 1, 'completeMark': 2, 'cancelMark': 1, 'defaultTimer': 2, 'theme': 1}",
                             "{ 'orientation': 1, 'completeMark': 2, 'cancelMark': 1, 'defaultTimer': 2, 'theme': 2}"};
         public string RawImage;
+        public string PictogramTitle;
+        
         public UserFixture()
         {
             GuardianUsername = "Guardian-dev";
@@ -56,6 +56,20 @@ namespace GirafRest.IntegrationTest.Setup
                                       {{ 'hexColor': '#FFFFFF', 'day': 7}}]}}";
             RawImage = "ÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿÿñÇÿÿõ×ÿÿñÇÿÿÿÿÿÿÿ" +
                         "ÿÿÿÿÿÿÿøÿÿüÿÿþ?ÿÿü?ÿÿøÿÿøÿÿà?ÿÿÿ";
+            PictogramTitle = $"wednesday{DateTime.Now.Ticks}";
+        }
+        
+        public void Dispose()
+        {
+            CustomWebApplicationFactory customWebApplicationFactory = new CustomWebApplicationFactory();
+            
+            // delete pictogram
+            var pictogramId = TestExtension.GetPictogramIdAsync(customWebApplicationFactory, PictogramTitle, Citizen2Username, Password).Result;
+            TestExtension.DeletePictogramAsync(customWebApplicationFactory, pictogramId, Citizen2Username, Password).Wait();
+            
+            // delete accounts
+            TestExtension.DeleteAccountAsync(customWebApplicationFactory, Citizen2Username, Password, GuardianUsername, Password).Wait();
+            TestExtension.DeleteAccountAsync(customWebApplicationFactory, Citizen3Username, Password, GuardianUsername, Password).Wait();
         }
     }
 }

@@ -22,7 +22,6 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-
 namespace GirafRest.Controllers
 {
     /// <summary>
@@ -33,18 +32,14 @@ namespace GirafRest.Controllers
     public class AccountController : Controller
     {
         private readonly SignInManager<GirafUser> _signInManager;
-
         private readonly IGirafService _giraf;
-
         private readonly IOptions<JwtConfig> _configuration;
-
         private readonly IAuthenticationService _authentication;
-
         private readonly IGirafUserRepository _userRepository;
-
         private readonly IDepartmentRepository _departmentRepository;
-
         private readonly IGirafRoleRepository _girafRoleRepository;
+        private readonly ISettingRepository _settingRepository;
+
         /// <summary>
         /// Constructor for AccountController
         /// </summary>
@@ -55,6 +50,7 @@ namespace GirafRest.Controllers
         /// <param name="userRepository">Service Injection</param>
         /// <param name="departmentRepository">Service Injection</param>
         /// <param name="girafRoleRepository">Service Injection</param>
+        /// <param name="settingRepository">Service Injection</param>
         public AccountController(
             SignInManager<GirafUser> signInManager,
             ILoggerFactory loggerFactory,
@@ -62,8 +58,8 @@ namespace GirafRest.Controllers
             IOptions<JwtConfig> configuration,
             IGirafUserRepository userRepository,
             IDepartmentRepository departmentRepository,
-            IGirafRoleRepository girafRoleRepository
-        )
+            IGirafRoleRepository girafRoleRepository,
+            ISettingRepository settingRepository)
         {
             _signInManager = signInManager;
             _giraf = giraf;
@@ -72,6 +68,7 @@ namespace GirafRest.Controllers
             _userRepository = userRepository;
             _departmentRepository = departmentRepository;
             _girafRoleRepository = girafRoleRepository;
+            _settingRepository = settingRepository;
         }
 
         /// <summary>
@@ -106,7 +103,6 @@ namespace GirafRest.Controllers
                 return Unauthorized(new ErrorResponse(ErrorCode.InvalidCredentials, "Invalid credentials"));
 
             var result = await _signInManager.PasswordSignInAsync(model.Username, model.Password, true, lockoutOnFailure: false);
-
             if (!result.Succeeded)
                 return Unauthorized(new ErrorResponse(ErrorCode.InvalidCredentials, "Invalid Credentials"));
 
@@ -254,7 +250,6 @@ namespace GirafRest.Controllers
             if (model.Token == null || model.Password == null)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing token or password"));
 
-
             var result = await _giraf._userManager.ResetPasswordAsync(user, model.Token, model.Password);
             if (!result.Succeeded)
                 return Unauthorized(new ErrorResponse(ErrorCode.InvalidProperties, "Invalid token"));
@@ -301,12 +296,19 @@ namespace GirafRest.Controllers
         public async Task<ActionResult> DeleteUser(string userId)
         {
             var user = await _userRepository.GetUserWithId(userId);
-
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
             _userRepository.Remove(user);
             _userRepository.Save();
+
+            // gigantic hack, remove when relation between user and setting is fixed
+            if (user.SettingsKey is not null)
+            {
+                user.Settings.Key = (long)user.SettingsKey;
+                _settingRepository.Remove(user.Settings);
+                _settingRepository.Save();
+            }
 
             return Ok(new SuccessResponse("User deleted"));
         }
