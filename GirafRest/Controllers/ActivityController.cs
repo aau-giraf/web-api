@@ -82,7 +82,8 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult> PostActivity([FromBody] ActivityDTO newActivity, string userId, string weekplanName, int weekYear, int weekNumber, int weekDayNmb)
+        public async Task<ActionResult> PostActivity([FromBody] ActivityDTO newActivity, 
+string userId, string weekplanName, int weekYear, int weekNumber, int weekDayNmb)
         {
             Days weekDay = (Days)weekDayNmb;
             if (newActivity == null)
@@ -103,11 +104,8 @@ namespace GirafRest.Controllers
             int order = dbWeekDay.Activities.Select(act => act.Order).DefaultIfEmpty(0).Max();
             order++;
 
-            AlternateName alternateName = _alternateNameRepository.SingleOrDefault(alternateName
-                => alternateName.Citizen == user
-                && alternateName.PictogramId == newActivity.Pictograms.First().Id);
-
-            string title = alternateName == null ? newActivity.Pictograms.First().Title : alternateName.Name;
+            string title = newActivity.Title == null ? newActivity.Pictograms.First().Title : newActivity.Title;
+            
 
             Activity dbActivity = new Activity(
                 dbWeekDay,
