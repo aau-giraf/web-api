@@ -27,6 +27,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Ubiety.Dns.Core;
 using SQLitePCL;
+using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace GirafRest.Test
 {
@@ -119,8 +120,7 @@ namespace GirafRest.Test
             var girafUsers = new List<GirafUser>() { new GirafUser("Manfred", "Manfred", department, GirafRoles.Citizen) };
             girafUsers[0].Id = "2";
             girafUsers[0].Department = department;
-            department.Members = girafUsers;
-            
+            department.Members = girafUsers;            
 
             Pictogram pictoPRO = new Pictogram("pro", AccessLevel.PROTECTED);
             Pictogram pictoPRIV = new Pictogram("priv", AccessLevel.PRIVATE);
@@ -151,19 +151,284 @@ namespace GirafRest.Test
         [Fact]
         public async Task CreatePictogram_Fail()
         {
+            //arrange
+            var pictogramcontroller = new MockedPictogramController();
+            var girafService = pictogramcontroller.GirafService;
+            var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
 
+            GirafUser usrNULL = new GirafUser();
+            usrNULL = null;
+
+            Pictogram pictoPRIV = new Pictogram("priv", AccessLevel.PRIVATE);
+            var privDTO = new PictogramDTO(pictoPRIV);
+
+            //mock 
+            girafService.Setup(repo => repo.LoadUserWithResources(HttpContext.User)).Returns(Task.FromResult<GirafUser>(usrNULL));
+
+            //act
+            //if user is NULL
+            var response = pictogramcontroller.CreatePictogram(privDTO);
+            var result = response.Result as ObjectResult;
+            var actual = result.Value as ErrorResponse;
+            var expected = ErrorCode.NotFound;
+
+            //assert 
+            Assert.Equal(expected, actual.ErrorCode);
+        }
+
+        [Fact]
+        public async Task CreatePictogram_Fail2()
+        {
+            //arrange
+            var pictogramcontroller = new MockedPictogramController();
+            var girafService = pictogramcontroller.GirafService;
+            var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
+
+            var usr = new GirafUser("Jan", "Jan", new Department(), GirafRoles.SuperUser);
+            usr.Id = "2";
+
+            Pictogram pictoNULL = null;
+            var privDTONULL = new PictogramDTO(pictoNULL);
+
+            Pictogram pictoNoTitle = new Pictogram("", AccessLevel.PROTECTED);
+            var pictoDTO_NT = new PictogramDTO(pictoNoTitle);
+
+            Pictogram pictoInvalidAL = new Pictogram("priv", 0);
+            var pictoDTO_IAL = new PictogramDTO(pictoInvalidAL);
+
+            Pictogram pictoPRIV = new Pictogram("priv", AccessLevel.PRIVATE);
+            var privDTO = new PictogramDTO(pictoPRIV);
+
+            //mock 
+            girafService.Setup(repo => repo.LoadUserWithResources(HttpContext.User)).Returns(Task.FromResult<GirafUser>(usr));
+
+            //act
+            //if pictogram is NULL
+            var response1 = pictogramcontroller.CreatePictogram(privDTONULL);
+            var result1 = response1.Result as ObjectResult;
+            var actual1 = result1.Value as ErrorResponse;
+            var expected1 = ErrorCode.InvalidProperties;
+
+            //if pictogram has no title
+            var response2 = pictogramcontroller.CreatePictogram(pictoDTO_NT);
+            var result2 = response2.Result as ObjectResult;
+            var actual2 = result2.Value as ErrorResponse;
+            var expected2 = ErrorCode.InvalidProperties;
+
+            //if pictogram has invalid access level
+            var response3 = pictogramcontroller.CreatePictogram(pictoDTO_IAL);
+            var result3 = response3.Result as ObjectResult;
+            var actual3 = result3.Value as ErrorResponse;
+            var expected3 = ErrorCode.MissingProperties;
+
+            //assert 
+            Assert.Equal(expected1, actual1.ErrorCode);
+            Assert.Equal(expected2, actual2.ErrorCode);
+            Assert.Equal(expected3, actual3.ErrorCode);
         }
         [Fact]
         public async Task UpdatePictogramInfo_Success()
         {
+            //arrange
+            var pictogramcontroller = new MockedPictogramController();
+            var girafService = pictogramcontroller.GirafService;
+            var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
+            var pictoRep = pictogramcontroller.PictogramRepository;
+
+            var usr = new GirafUser("Jan", "Jan", new Department(), GirafRoles.SuperUser);
+            usr.Id = "1";
+
+            Pictogram picto = new Pictogram("foo", AccessLevel.PROTECTED);
+            picto.Id = 1;
+            var pictoDTO = new PictogramDTO(picto);
+
+            Pictogram picto2 = new Pictogram("bar", AccessLevel.PUBLIC);
+            picto2.Id = 2;
+
+            // mock
+            girafService.Setup(repo => repo.LoadBasicUserDataAsync(HttpContext.User)).Returns(Task.FromResult<GirafUser>(usr));
+            pictoRep.Setup(repo => repo.GetByID(picto2.Id)).Returns(picto2);
+            pictoRep.Setup(repo => repo.Update(picto2));
+
+            //act 
+            var response = pictogramcontroller.UpdatePictogramInfo(picto2.Id, pictoDTO);
+            var result= response.Result as ObjectResult;
+            var val = result.Value as SuccessResponse<WeekPictogramDTO>;
+
+            //assert
+            Assert.Equal(val.Data.Title, picto.Title);
 
         }
         [Fact]
         public async Task UpdatePictogramInfo_Fail()
         {
+            //arrange
+            var pictogramcontroller = new MockedPictogramController();
+            var girafService = pictogramcontroller.GirafService;
+            var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
+            var pictoRep = pictogramcontroller.PictogramRepository;
+            
+            var usr = new GirafUser("Jan", "Jan", new Department(), GirafRoles.SuperUser);
 
+            Pictogram pictoNull = null;
+
+            var pictoDTO = new PictogramDTO(pictoNull);
+
+            Pictogram picto = new Pictogram("bar", AccessLevel.PUBLIC);
+            picto.Id = 2;
+
+            //mock
+            girafService.Setup(repo => repo.LoadBasicUserDataAsync(HttpContext.User)).Returns(Task.FromResult<GirafUser>(usr));
+            pictoRep.Setup(repo => repo.GetByID(picto.Id)).Returns(picto);
+            pictoRep.Setup(repo => repo.Update(picto));
+
+            //act
+            //if user is null
+            var response = pictogramcontroller.UpdatePictogramInfo(picto.Id, pictoDTO);
+            var result = response.Result as ObjectResult;
+            var actual = result.Value as ErrorResponse;
+            var expected = ErrorCode.MissingProperties;
+
+            //assert 
+            //if pictogram is null
+            Assert.Equal(expected, actual.ErrorCode);
+        }
+
+        [Fact]
+        public async Task UpdatePictogram_Fail2()
+        {
+            //arrange
+            var pictogramcontroller = new MockedPictogramController();
+            var girafService = pictogramcontroller.GirafService;
+            var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
+            var pictoRep = pictogramcontroller.PictogramRepository;
+
+            GirafUser usrNULL = new GirafUser();
+            usrNULL = null;
+
+            Pictogram picto = new Pictogram("foo", AccessLevel.PROTECTED);
+            picto.Id = 1;
+            var pictoDTO = new PictogramDTO(picto);
+
+            Pictogram picto2 = new Pictogram("bar", AccessLevel.PUBLIC);
+            picto2.Id = 2;
+
+            // mock
+            girafService.Setup(repo => repo.LoadBasicUserDataAsync(HttpContext.User)).Returns(Task.FromResult<GirafUser>(usrNULL));
+            pictoRep.Setup(repo => repo.GetByID(picto2.Id)).Returns(picto2);
+            pictoRep.Setup(repo => repo.Update(picto2));
+
+            //act
+            var response = pictogramcontroller.UpdatePictogramInfo(picto2.Id, pictoDTO);
+            var result = response.Result as ObjectResult;
+            var actual = result.Value as ErrorResponse;
+            var expected = ErrorCode.UserNotFound;
+
+
+            //assert
+            //if user is null
+            Assert.Equal(expected, actual.ErrorCode);
         }
         [Fact]
+        public async Task UpdatePictogramInfo_Fail3()
+        {
+            //arrange
+            var pictogramcontroller = new MockedPictogramController();
+            var girafService = pictogramcontroller.GirafService;
+            var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
+            var pictoRep = pictogramcontroller.PictogramRepository;
+
+            var usr = new GirafUser("Jan", "Jan", new Department(), GirafRoles.SuperUser);
+
+            Pictogram pictoAccess = new Pictogram("foo", 0);
+            var pictoDTO = new PictogramDTO(pictoAccess);
+
+            Pictogram picto = new Pictogram("bar", AccessLevel.PUBLIC);
+            picto.Id = 2;
+
+            //mock
+            girafService.Setup(repo => repo.LoadBasicUserDataAsync(HttpContext.User)).Returns(Task.FromResult<GirafUser>(usr));
+            pictoRep.Setup(repo => repo.GetByID(picto.Id)).Returns(picto);
+            pictoRep.Setup(repo => repo.Update(picto));
+
+            //act
+            //if user is null
+            var response = pictogramcontroller.UpdatePictogramInfo(picto.Id, pictoDTO);
+            var result = response.Result as ObjectResult;
+            var actual = result.Value as ErrorResponse;
+            var expected = ErrorCode.MissingProperties;
+
+            //assert 
+            //if pictogram is access level does not exist
+            Assert.Equal(expected, actual.ErrorCode);
+        }
+        [Fact]
+        public async Task UpdatePictogramInfo_Fail4()
+        {
+            //arrange
+            var pictogramcontroller = new MockedPictogramController();
+            var girafService = pictogramcontroller.GirafService;
+            var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
+            var pictoRep = pictogramcontroller.PictogramRepository;
+
+            var usr = new GirafUser("Jan", "Jan", new Department(), GirafRoles.SuperUser);
+
+            Pictogram pictoAccess = new Pictogram("foo", AccessLevel.PRIVATE);
+            var pictoDTO = new PictogramDTO(pictoAccess);
+
+            Pictogram picto = null;
+
+            var Randomid = 1;
+
+            //mock
+            girafService.Setup(repo => repo.LoadBasicUserDataAsync(HttpContext.User)).Returns(Task.FromResult<GirafUser>(usr));
+            pictoRep.Setup(repo => repo.GetByID(Randomid)).Returns(picto);
+            pictoRep.Setup(repo => repo.Update(picto));
+
+            //act
+            var response = pictogramcontroller.UpdatePictogramInfo(Randomid, pictoDTO);
+            var result = response.Result as ObjectResult;
+            var actual = result.Value as ErrorResponse;
+            var expected = ErrorCode.PictogramNotFound;
+
+            //assert 
+            //if pictogram is null(the second one)
+            Assert.Equal(expected, actual.ErrorCode);
+        }
+        [Fact]
+        public async Task UpdatePictogramInfo_Fail5()
+        {
+            //arrange
+            var pictogramcontroller = new MockedPictogramController();
+            var girafService = pictogramcontroller.GirafService;
+            var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
+            var pictoRep = pictogramcontroller.PictogramRepository;
+
+            var usr = new GirafUser("Jan", "Jan", new Department(), GirafRoles.SuperUser);
+
+            Pictogram pictoPRO = new Pictogram("foo", AccessLevel.PROTECTED);
+            var pictoDTO = new PictogramDTO(pictoPRO);
+
+            Pictogram picto = new Pictogram("bar", AccessLevel.PRIVATE);
+            picto.Id = 2;
+
+            //mock
+            girafService.Setup(repo => repo.LoadBasicUserDataAsync(HttpContext.User)).Returns(Task.FromResult<GirafUser>(usr));
+            pictoRep.Setup(repo => repo.GetByID(picto.Id)).Returns(picto);
+            pictoRep.Setup(repo => repo.Update(picto));
+
+            //act
+            //if user is null
+            var response = pictogramcontroller.UpdatePictogramInfo(picto.Id, pictoDTO);
+            var result = response.Result as ObjectResult;
+            var actual = result.Value as ErrorResponse;
+            var expected = ErrorCode.MissingProperties;
+
+            //assert 
+            //if user does not own pictogram
+            Assert.Equal(expected, actual.ErrorCode);
+        }
+            [Fact]
         public async Task DeletePictogram_Success()
         {
 
@@ -173,36 +438,7 @@ namespace GirafRest.Test
         {
 
         }
-        [Fact]
-        public async Task SetPictogramImage_Success()
-        {
 
-        }
-        [Fact]
-        public async Task SetPictogramImage_Fail()
-        {
-
-        }
-        [Fact]
-        public async Task ReadPictogramImage_Success()
-        {
-
-        }
-        [Fact]
-        public async Task ReadPictogramImage_Fail()
-        {
-
-        }
-        [Fact]
-        public async Task ReadRawpictogram_Success()
-        {
-
-        }
-        [Fact]
-        public async Task ReadRawPictogram_Fail()
-        {
-
-        }
         [Fact]
         public async Task CheckOwnership_Success()
         {

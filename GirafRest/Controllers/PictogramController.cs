@@ -156,7 +156,7 @@ namespace GirafRest.Controllers
                 return NotFound(new ErrorResponse(ErrorCode.NotFound, "User not found"));
 
             if (pictogram == null)
-                return BadRequest(new ErrorResponse(ErrorCode.MissingProperties,
+                return BadRequest(new ErrorResponse(ErrorCode.InvalidProperties,
                     "Could not read pictogram DTO. Please make sure not to include image data in this request. " +
                     "Use POST localhost/v1/pictogram/{id}/image instead."));
 
@@ -216,7 +216,7 @@ namespace GirafRest.Controllers
                     "Use POST localhost/v1/pictogram/{id}/image instead."));
             }
 
-            if (pictogram.AccessLevel == null)
+            if (pictogram.AccessLevel == null || !Enum.IsDefined(typeof(AccessLevel), pictogram.AccessLevel))
             {
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing access level"));
             }
