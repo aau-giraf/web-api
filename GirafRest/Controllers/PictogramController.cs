@@ -107,35 +107,28 @@ namespace GirafRest.Controllers
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-        public ActionResult ReadPictogram(long id)
+        public async Task<ActionResult> ReadPictogram(long id)
         {
-            try
+            //Fetch the pictogram and check that it actually exists
+            var pictogram = _pictogramRepository.GetByID(id);
+
+            if (pictogram == null)
             {
-                //Fetch the pictogram and check that it actually exists
-                var pictogram = _pictogramRepository.GetByID(id);
-
-                if (pictogram == null)
-                {
-                    return this.ResourceNotFound(nameof(Pictogram), id);
-                }
-
-                var usr = _giraf.LoadBasicUserDataAsync(HttpContext.User);
-                if (usr == null)
-                    return Unauthorized(new ErrorResponse(ErrorCode.UserNotFound, "No user authorized"));
-
-                var ownsResource = false;
-
-                if (ownsResource)
-                    return Ok(new SuccessResponse<WeekPictogramDTO>(new WeekPictogramDTO(pictogram)));
-                else
-                    return this.MissingPropertyFromRequest(nameof(pictogram));
+                return this.ResourceNotFound(nameof(Pictogram), id);
             }
-            catch (Exception e)
+
+            var usr = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
+            if (usr == null)
             {
-                var exceptionMessage = $"Exception occured in read:\n{e}";
-                _giraf._logger.LogError(exceptionMessage);
-                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse(ErrorCode.Error, "An error happened while reading", e.Message));
+                return Unauthorized(new ErrorResponse(ErrorCode.UserNotFound, "No user authorized"));
             }
+
+            if (!CheckOwnership(pictogram, usr).Result)
+            {
+                return this.MissingPropertyFromRequest(nameof(pictogram));
+            }
+
+            return Ok(new SuccessResponse<WeekPictogramDTO>(new WeekPictogramDTO(pictogram)));
         }
 
         /// <summary>
