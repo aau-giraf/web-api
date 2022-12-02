@@ -21,6 +21,7 @@ namespace GirafRest.IntegrationTest.Tests
         private CustomWebApplicationFactory _factory;
         private HttpClient _client;
         private UserFixture _userFixture;
+
         public UserControllerTest(CustomWebApplicationFactory factory, UserFixture userFixture)
         {
             _factory = factory;
@@ -77,7 +78,7 @@ namespace GirafRest.IntegrationTest.Tests
         [Fact, Priority(2)]
         public async void TestUserCanGetCitizen2Id()
         {
-            await TestExtension.RegisterAsync(_factory, _userFixture.Citizen2Username, _userFixture.Password, _userFixture.Citizen2Username, _userFixture.GuardianUsername, departmentId: 1);
+            await TestExtension.RegisterAccountAsync(_factory, _userFixture.Citizen2Username, _userFixture.Password, _userFixture.Citizen2Username, _userFixture.GuardianUsername, departmentId: 1);
             HttpRequestMessage request = new HttpRequestMessage()
             {
                 RequestUri = new Uri($"{BASE_URL}v1/User"),
@@ -99,7 +100,7 @@ namespace GirafRest.IntegrationTest.Tests
         [Fact, Priority(3)]
         public async void TestUserCanGetCitizen3Id()
         {
-            await TestExtension.RegisterAsync(_factory, _userFixture.Citizen3Username, _userFixture.Password, _userFixture.Citizen3Username, _userFixture.GuardianUsername, departmentId: 1);
+            await TestExtension.RegisterAccountAsync(_factory, _userFixture.Citizen3Username, _userFixture.Password, _userFixture.Citizen3Username, _userFixture.GuardianUsername, departmentId: 1);
             HttpRequestMessage request = new HttpRequestMessage()
             {
                 RequestUri = new Uri($"{BASE_URL}v1/User"),
@@ -132,7 +133,7 @@ namespace GirafRest.IntegrationTest.Tests
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
             Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
-            Assert.Equal("NotAuthorized", content["errorKey"]);
+            Assert.Equal("Forbidden", content["errorKey"]);
         }
 
         /// <summary>
@@ -208,8 +209,8 @@ namespace GirafRest.IntegrationTest.Tests
         [Fact, Priority(8)]
         public async void TestUserCanAddPictogramToCitizen3AsCitizen2()
         {
-            var pictogram = $"{{ 'accessLevel': 3, 'title': 'wednesday', 'id': 5, 'lastEdit': '2018-03-19T10:40:26.587Z'}}";
-            TestExtension.CreatePictogramAsync(_factory, pictogram, 3, _userFixture.Citizen2Username, _userFixture.Password);
+            var pictogram = $"{{ 'accessLevel': 3, 'title': '{_userFixture.PictogramTitle}', 'id': 5, 'lastEdit': '2018-03-19T10:40:26.587Z'}}";
+            await TestExtension.CreatePictogramAsync(_factory, pictogram, 3, _userFixture.Citizen2Username, _userFixture.Password);
 
             var body = $"{{ 'id': '{JObject.Parse(pictogram)["id"]}'}}";
 
@@ -383,10 +384,13 @@ namespace GirafRest.IntegrationTest.Tests
             Assert.Equal(3, content["data"]["activitiesCount"]);
             Assert.Equal(3, content["data"]["theme"]);
             Assert.Equal(2, content["data"]["nrOfDaysToDisplay"]);
+            Assert.Equal(0, content["data"]["nrOfActivitiesToDisplay"]);
             Assert.True(content["data"]["greyScale"].ToObject<bool>());
             Assert.True(content["data"]["lockTimerControl"].ToObject<bool>());
             Assert.True(content["data"]["pictogramText"].ToObject<bool>());
-            Assert.True(content["data"]["showPopup"].ToObject<bool>());
+            Assert.False(content["data"]["showPopup"].ToObject<bool>());
+            Assert.False(content["data"]["showOnlyActivities"].ToObject<bool>());
+            Assert.False(content["data"]["showSettingsForCitizen"].ToObject<bool>());
             Assert.Equal("#FF00FF", content["data"]["weekDayColors"][0]["hexColor"]);
             Assert.Equal(1, content["data"]["weekDayColors"][0]["day"]);
         }

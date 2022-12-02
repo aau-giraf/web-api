@@ -10,14 +10,13 @@ namespace GirafRest.IntegrationTest.Setup
         public string ExpiredToken;
         public string Username;
         public string Password;
-        public string GuardianUsername;
-        public string GuardianPassword;
         public string WeekplanName;
         public int WeekYear;
         public int WeekNumber;
         public int WeekDayNumber;
         public int ActivityId;
         public int DepartmentId;
+        public int WrongDepartmentId;
         public string CitizenId;
 
         public AuthorizationFixture()
@@ -27,7 +26,7 @@ namespace GirafRest.IntegrationTest.Setup
                                     "y9uYW1laWRlbnRpZmllciI6Ijg0MTJkOTk1LWIzODEtNGY4My1iZDI1LWU5ODY2NzBiNTdkOSIsImV4cCI6MT" +
                                     "UyNTMwMzQyNSwiaXNzIjoibm90bWUiLCJhdWQiOiJub3RtZSJ9.8KXRRqF3B5s8tUki7u5j0TqK-189QIpApd" +
                                     "OC6aSxOms";
-            Username = "Guardian-dev";
+            Username = "guardian-dev";
             Password = "password";
             WeekplanName = "Normal Uge";
             WeekYear = 0;
@@ -35,6 +34,7 @@ namespace GirafRest.IntegrationTest.Setup
             WeekDayNumber = 1;
             ActivityId = 1;  // Might need to be existing activity id. choose 2
             DepartmentId = 1;  // Might need another number
+            WrongDepartmentId = 9872536;
             CitizenId = "Jane Doe";
         }
     }

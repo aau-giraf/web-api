@@ -3,6 +3,7 @@ using System;
 using GirafRest.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GirafRest.Migrations
 {
     [DbContext(typeof(GirafDbContext))]
-    partial class GirafDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221006105822_AddedPopupFlagToDB")]
+    partial class AddedPopupFlagToDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -231,8 +233,7 @@ namespace GirafRest.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.HasIndex("SettingsKey")
-                        .IsUnique();
+                    b.HasIndex("SettingsKey");
 
                     b.HasIndex("Id", "UserName")
                         .IsUnique()
@@ -336,9 +337,6 @@ namespace GirafRest.Migrations
                     b.Property<bool>("LockTimerControl")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<int?>("NrOfActivitiesToDisplay")
-                        .HasColumnType("int");
-
                     b.Property<int?>("NrOfDaysToDisplay")
                         .HasColumnType("int");
 
@@ -348,13 +346,7 @@ namespace GirafRest.Migrations
                     b.Property<bool>("PictogramText")
                         .HasColumnType("tinyint(1)");
 
-                    b.Property<bool>("ShowOnlyActivities")
-                        .HasColumnType("tinyint(1)");
-
                     b.Property<bool>("ShowPopup")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<bool>("ShowSettingsForCitizen")
                         .HasColumnType("tinyint(1)");
 
                     b.Property<int>("Theme")
@@ -689,8 +681,8 @@ namespace GirafRest.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("GirafRest.Models.Setting", "Settings")
-                        .WithOne()
-                        .HasForeignKey("GirafRest.Models.GirafUser", "SettingsKey");
+                        .WithMany()
+                        .HasForeignKey("SettingsKey");
 
                     b.Navigation("Department");
 

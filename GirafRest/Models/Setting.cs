@@ -14,7 +14,7 @@ namespace GirafRest.Models
         /// Settingskey
         /// </summary>
         [Key]
-        public long Key { get; private set; }
+        public long Key { get; set; }
 
         /// <summary>
         /// Preferred appearence of phone; Portrait or Landscape mode.
@@ -50,11 +50,22 @@ namespace GirafRest.Models
         /// </summary>
         [Required]
         public Theme Theme { get; set; }
+        
         /// <summary>
-        /// defines the number of days to display for a user in a weekschedule
+        /// Flag to indicate whether citizen should see one or more days or only activities
+        /// </summary>
+        public bool ShowOnlyActivities { get; set; }
+        
+        /// <summary>
+        /// Defines the number of activities to display for a user in a weekschedule
+        /// </summary>
+        public int? NrOfActivitiesToDisplay { get; set; }
+        
+        /// <summary>
+        /// Defines the number of days to display for a user in a weekschedule
         /// </summary>
         public int? NrOfDaysToDisplay { get; set; }
-
+        
         /// <summary>
         /// Flag for indicating whether or not greyscale is enabled
         /// </summary>
@@ -74,6 +85,11 @@ namespace GirafRest.Models
         /// Flag for indicating whether or not to show timer buttons
         /// </summary>
         public bool LockTimerControl { get; set; }
+
+        /// <summary>
+        /// Flag for indicating if settings should be enabled or not for a citizen
+        /// </summary>
+        public bool ShowSettingsForCitizen { get; set; }
 
         /// <summary>
         /// Each day in a weekschedule has a hexcolor associated
@@ -99,6 +115,9 @@ namespace GirafRest.Models
             this.LockTimerControl = newOptions?.LockTimerControl ?? this.LockTimerControl;
             this.PictogramText = newOptions?.PictogramText ?? this.PictogramText;
             this.ShowPopup = newOptions?.ShowPopup ?? this.ShowPopup;
+            this.NrOfActivitiesToDisplay = newOptions?.NrOfActivitiesToDisplay ?? this.NrOfActivitiesToDisplay;
+            this.ShowOnlyActivities = newOptions?.ShowOnlyActivities ?? this.ShowOnlyActivities;
+            this.ShowSettingsForCitizen = newOptions?.ShowSettingsForCitizen ?? this.ShowSettingsForCitizen;
             if (newOptions.WeekDayColors != null)
                 updateWeekDayColors(newOptions.WeekDayColors);
         }
@@ -145,12 +164,15 @@ namespace GirafRest.Models
             CancelMark = CancelMark.Cross;
             DefaultTimer = DefaultTimer.pieChart;
             Theme = Theme.girafYellow;
+            ShowOnlyActivities = false;
+            NrOfActivitiesToDisplay = 0;
             NrOfDaysToDisplay = 7;
             TimerSeconds = 900;
             GreyScale = false;
             PictogramText = false;
             ShowPopup = false;
             LockTimerControl = true;
+            ShowSettingsForCitizen = false;
 
         }
     }

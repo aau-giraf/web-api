@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using GirafRest.IntegrationTest.Extensions;
+using System;
 
 namespace GirafRest.IntegrationTest.Setup
 {
-    public class AccountFixture
+    public class AccountFixture : IDisposable
     {
         public string GuardianUsername;
         public string Citizen2Username;
         public string Citizen1Username;
         public string Password;
+        public string BrandNewPassword;
 
         public AccountFixture()
         {
@@ -18,6 +17,12 @@ namespace GirafRest.IntegrationTest.Setup
             Citizen2Username = $"Grundenberger{DateTime.Now.Ticks}";
             Citizen1Username = $"Gunnar{DateTime.Now.Ticks}";
             Password = "password";
+            BrandNewPassword = "brand-new-password";
+        }
+
+        public void Dispose()
+        {
+            TestExtension.DeleteAccountAsync(new CustomWebApplicationFactory(), Citizen1Username, Password, GuardianUsername, Password).Wait();
         }
     }
 }
