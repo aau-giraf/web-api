@@ -4,30 +4,16 @@ using GirafRest.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using GirafRest.Controllers;
-
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
 using Microsoft.AspNetCore.Http;
-
 using Moq;
 using GirafRest.Interfaces;
 using System.Threading.Tasks;
-
 using GirafRest.IRepositories;
-
 using GirafRest.Models.Enums;
-
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Ubiety.Dns.Core;
-using SQLitePCL;
-using static Microsoft.ApplicationInsights.MetricDimensionNames.TelemetryContext;
 
 namespace GirafRest.Test
 {
@@ -78,7 +64,6 @@ namespace GirafRest.Test
             public Mock<IImageRepository> ImageRepository { get; }
             public Mock<IUserResourseRepository> UserResourseRepository { get; }
             public Mock<IPictogramRepository> PictogramRepository { get; }
-
             public GirafUser testUser { get; }
 
             public GirafUser guardianUser { get; }
@@ -356,7 +341,6 @@ namespace GirafRest.Test
 
             //assert
             Assert.Equal(val.Data.Title, picto.Title);
-
         }
         [Fact]
         public async Task UpdatePictogramInfo_Fail_Pictogram_Null()
@@ -718,8 +702,6 @@ namespace GirafRest.Test
                 Assert.Equal(expected.Id, actual.Id);
             }
         }
-        
-        
         [Fact]
         public async Task ReadAllPictograms_Sucess_User()
         {
@@ -755,9 +737,7 @@ namespace GirafRest.Test
             GirafUser user = null;
             //mocking
 
-
             giraf.Setup(x => x.LoadUserWithDepartment(HttpContext.User)).Returns(Task.FromResult<GirafUser>(user));
-
 
             pictogramRepository.Setup(x => x.fetchPictogramsNoUserLoggedInStartsWithQuery(It.IsAny<string>())).Returns(expected_pictograms);
             pictogramRepository.Setup(x => x.fetchPictogramsNoUserLoggedInContainsQuery(It.IsAny<string>())).Returns(expected_pictograms);
@@ -779,8 +759,6 @@ namespace GirafRest.Test
                 Assert.Equal(expected.Id, actual.Id);
             }
         }
-
-
         [Fact]
         public async Task ReadAllPictograms_Fail()
         {
@@ -823,9 +801,7 @@ namespace GirafRest.Test
             };
             //mocking
 
-
             giraf.Setup(x => x.LoadUserWithDepartment(HttpContext.User)).Returns(Task.FromResult<GirafUser>(user));
-
 
             pictogramRepository.Setup(x => x.fetchPictogramsNoUserLoggedInStartsWithQuery(It.IsAny<string>())).Returns(pictograms);
             pictogramRepository.Setup(x => x.fetchPictogramsNoUserLoggedInContainsQuery(It.IsAny<string>())).Returns(pictograms);
