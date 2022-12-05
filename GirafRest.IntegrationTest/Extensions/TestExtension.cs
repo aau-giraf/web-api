@@ -1,8 +1,5 @@
-﻿using GirafRest.IntegrationTest.Setup;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -81,7 +78,7 @@ namespace GirafRest.IntegrationTest.Extensions
             return content["data"].ToString();
         }
 
-        public static async Task<string> RegisterAsync(CustomWebApplicationFactory factory, string username, string password, string displayName, string token, string role = "Citizen", long departmentId = 2)
+        public static async Task<string> RegisterAccountAsync(CustomWebApplicationFactory factory, string username, string password, string displayName, string token, string role = "Citizen", long departmentId = 2)
         {
             var client = factory.CreateClient();
             var data = $"{{'username': '{username}', 'displayname': '{displayName}', 'password': '{password}', 'role': '{role}', 'departmentId': {departmentId}}}";
@@ -101,7 +98,7 @@ namespace GirafRest.IntegrationTest.Extensions
             return content["data"].ToString();
         }
 
-        public static async Task DeleteAsync(CustomWebApplicationFactory factory, string username, string password, string token)
+        public static async Task DeleteAccountAsync(CustomWebApplicationFactory factory, string username, string password, string token, string tokenPassword)
         {
             var client = factory.CreateClient();
             HttpRequestMessage request = new HttpRequestMessage()
@@ -110,7 +107,7 @@ namespace GirafRest.IntegrationTest.Extensions
                 Method = HttpMethod.Delete
             };
 
-            request.Headers.Add("Authorization", $"Bearer {await GetTokenAsync(factory, token, password)}");
+            request.Headers.Add("Authorization", $"Bearer {await GetTokenAsync(factory, token, tokenPassword)}");
 
             await client.SendAsync(request);
         }
@@ -148,7 +145,7 @@ namespace GirafRest.IntegrationTest.Extensions
             return content["data"];
         }
 
-        public static async Task DeletePictogramAsync(CustomWebApplicationFactory factory, int id, string username, string password)
+        public static async Task DeletePictogramAsync(CustomWebApplicationFactory factory, long id, string username, string password)
         {
             var client = factory.CreateClient();
             HttpRequestMessage request = new HttpRequestMessage()

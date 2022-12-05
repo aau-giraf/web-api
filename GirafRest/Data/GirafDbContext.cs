@@ -2,7 +2,6 @@
 using GirafRest.Models;
 using Microsoft.EntityFrameworkCore;
 
-
 #pragma warning disable 1591
 namespace GirafRest.Data
 {
@@ -26,6 +25,7 @@ namespace GirafRest.Data
         public virtual DbSet<PictogramRelation> PictogramRelations { get; set; }
         public virtual DbSet<WeekDayColor> WeekDayColors { get; set; }
         public virtual DbSet<AlternateName> AlternateNames { get; set; }
+
         public GirafDbContext() { }
 
         public GirafDbContext(DbContextOptions<GirafDbContext> options)
@@ -33,7 +33,6 @@ namespace GirafRest.Data
         {
            
         }
-        
 
         /// <summary>
         /// Configures entity to the needs of this project through the fluent API
@@ -79,6 +78,12 @@ namespace GirafRest.Data
                 .WithMany(r => r.Users)
                 .HasForeignKey(dr => dr.PictogramKey)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Configure a One-to-One relationship between user and setting
+            builder.Entity<GirafUser>()
+                .HasOne<Setting>(u => u.Settings)
+                .WithOne()
+                .HasForeignKey<GirafUser>(u => u.SettingsKey);
 
             //Configure a One-to-Many relationship between user and department
             builder.Entity<GirafUser>()
@@ -146,7 +151,6 @@ namespace GirafRest.Data
                 .HasForeignKey(pr => pr.PictogramId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-
             // Configure a one-to-many relationship setting and weekdaycolors
             builder.Entity<Setting>()
                    .HasMany(gr => gr.WeekDayColors)
@@ -171,7 +175,6 @@ namespace GirafRest.Data
                 .WithMany()
                 .HasForeignKey(an => an.CitizenId)
                 .OnDelete(DeleteBehavior.Cascade);
-
         }
     }
 }

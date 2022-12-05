@@ -10,8 +10,6 @@ namespace GirafRest.IntegrationTest.Setup
         public string ExpiredToken;
         public string Username;
         public string Password;
-        public string GuardianUsername;
-        public string GuardianPassword;
         public string WeekplanName;
         public int WeekYear;
         public int WeekNumber;

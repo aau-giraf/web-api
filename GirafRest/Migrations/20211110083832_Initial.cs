@@ -65,7 +65,10 @@ namespace GirafRest.Migrations
                     TimerSeconds = table.Column<int>(nullable: true),
                     ActivitiesCount = table.Column<int>(nullable: true),
                     Theme = table.Column<int>(nullable: false),
-                    NrOfDaysToDisplay = table.Column<int>(nullable: true),
+                    NrOfDaysToDisplayPortrait = table.Column<int>(nullable: true),
+                    DisplayDaysRelativePortrait = table.Column<bool>(nullable: false),
+                    NrOfDaysToDisplayLandscape = table.Column<int>(nullable: true),
+                    DisplayDaysRelativeLandscape = table.Column<bool>(nullable: false),
                     GreyScale = table.Column<bool>(nullable: false),
                     PictogramText = table.Column<bool>(nullable: false),
                     LockTimerControl = table.Column<bool>(nullable: false)

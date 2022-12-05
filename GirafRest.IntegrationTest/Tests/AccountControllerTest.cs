@@ -482,9 +482,9 @@ namespace GirafRest.IntegrationTest.Tests
         [Fact, Priority(20)]
         public async void TestAccountCanUseDeletedCitizen2sToken()
         {
-            await TestExtension.RegisterAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Password, _accountFixture.Citizen2Username, _accountFixture.GuardianUsername);
+            await TestExtension.RegisterAccountAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Password, _accountFixture.Citizen2Username, _accountFixture.GuardianUsername);
             var Citizen2Token = await TestExtension.GetTokenAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Password);
-            await TestExtension.DeleteAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Password, _accountFixture.GuardianUsername);
+            await TestExtension.DeleteAccountAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Password, _accountFixture.GuardianUsername, _accountFixture.Password);
 
             HttpRequestMessage request = new HttpRequestMessage()
             {
@@ -532,7 +532,7 @@ namespace GirafRest.IntegrationTest.Tests
         [Fact, Priority(22)]
         public async void TestAccountCanResetCitizen1Password()
         {
-            var data = $"{{'password': 'brand-new-password', 'token': '{await TestExtension.GetResetTokenAsync(_factory, _accountFixture.Citizen1Username, _accountFixture.Password, _accountFixture.GuardianUsername, _accountFixture.Password)}'}}";
+            var data = $"{{'password': '{_accountFixture.BrandNewPassword}', 'token': '{await TestExtension.GetResetTokenAsync(_factory, _accountFixture.Citizen1Username, _accountFixture.Password, _accountFixture.GuardianUsername, _accountFixture.Password)}'}}";
 
             HttpRequestMessage request = new HttpRequestMessage()
             {
@@ -558,15 +558,15 @@ namespace GirafRest.IntegrationTest.Tests
         [Fact, Priority(23)]
         public async void TestAccountCantResetCitizen2Password()
         {
-            await TestExtension.RegisterAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Password, _accountFixture.Citizen2Username, _accountFixture.GuardianUsername);
-            var Citizen2Id = await TestExtension.GetUserIdAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Password);
-            await TestExtension.DeleteAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Password, _accountFixture.GuardianUsername);
+            await TestExtension.RegisterAccountAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Password, _accountFixture.Citizen2Username, _accountFixture.GuardianUsername);
+            var citizen2Id = await TestExtension.GetUserIdAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Password);
+            await TestExtension.DeleteAccountAsync(_factory, _accountFixture.Citizen2Username, _accountFixture.Password, _accountFixture.GuardianUsername, _accountFixture.Password);
 
-            var data = $"{{'password': 'brand-new-password', 'token': '{await TestExtension.GetResetTokenAsync(_factory, _accountFixture.Citizen1Username, "brand-new-password", _accountFixture.GuardianUsername, _accountFixture.Password)}'}}";
+            var data = $"{{'password': '{_accountFixture.BrandNewPassword}', 'token': '{await TestExtension.GetResetTokenAsync(_factory, _accountFixture.Citizen1Username, _accountFixture.BrandNewPassword, _accountFixture.GuardianUsername, _accountFixture.Password)}'}}";
             
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v2/Account/password/{Citizen2Id}"),
+                RequestUri = new Uri($"{BASE_URL}v2/Account/password/{citizen2Id}"),
                 Method = HttpMethod.Post,
                 Content = new StringContent(data, Encoding.UTF8, "application/json")
             };
@@ -588,11 +588,11 @@ namespace GirafRest.IntegrationTest.Tests
         [Fact, Priority(24)]
         public async void TestAccountCanResetCitizen1PasswordInvalidTokenShouldFail()
         {
-            var data = $"{{'password': 'brand-new-password', 'token': 'invalid-token'}}";
+            var data = $"{{'password': '{_accountFixture.BrandNewPassword}', 'token': 'invalid-token'}}";
 
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v2/Account/password/{await TestExtension.GetUserIdAsync(_factory, _accountFixture.Citizen1Username, "brand-new-password")}"),
+                RequestUri = new Uri($"{BASE_URL}v2/Account/password/{await TestExtension.GetUserIdAsync(_factory, _accountFixture.Citizen1Username, _accountFixture.BrandNewPassword)}"),
                 Method = HttpMethod.Post,
                 Content = new StringContent(data, Encoding.UTF8, "application/json")
             };
@@ -614,11 +614,11 @@ namespace GirafRest.IntegrationTest.Tests
         [Fact, Priority(25)]
         public async void TestAccountCanSetCitizen1PasswordInvalidTokenShouldFail()
         {
-            var data = $"{{'password': 'brand-new-password', 'token': 'invalid-token'}}";
+            var data = $"{{'password': '{_accountFixture.BrandNewPassword}', 'token': 'invalid-token'}}";
 
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v2/Account/password/{await TestExtension.GetUserIdAsync(_factory, _accountFixture.Citizen1Username, "brand-new-password")}"),
+                RequestUri = new Uri($"{BASE_URL}v2/Account/password/{await TestExtension.GetUserIdAsync(_factory, _accountFixture.Citizen1Username, _accountFixture.BrandNewPassword)}"),
                 Method = HttpMethod.Put,
                 Content = new StringContent(data, Encoding.UTF8, "application/json")
             };
@@ -634,17 +634,17 @@ namespace GirafRest.IntegrationTest.Tests
         }
 
         /// <summary>
-        /// Testing setting Citizen1's password with an invalid token
+        /// Testing setting Citizen1's password with an valid token
         /// Endpoint: POST:/v2/Account/password/{userId}
         /// </summary>
         [Fact, Priority(26)]
         public async void TestAccountCanSetCitizen1PasswordValidToken()
         {
-            var data = $"{{'oldPassword': 'brand-new-password', 'newPassword': '{await TestExtension.GetResetTokenAsync(_factory, _accountFixture.Citizen1Username, "brand-new-password", _accountFixture.GuardianUsername, _accountFixture.Password)}'}}";
+            var data = $"{{'oldPassword': '{_accountFixture.BrandNewPassword}', 'newPassword': '{_accountFixture.Password}'}}";
 
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v2/Account/password/{await TestExtension.GetUserIdAsync(_factory, _accountFixture.Citizen1Username, "brand-new-password")}"),
+                RequestUri = new Uri($"{BASE_URL}v2/Account/password/{await TestExtension.GetUserIdAsync(_factory, _accountFixture.Citizen1Username, _accountFixture.BrandNewPassword)}"),
                 Method = HttpMethod.Put,
                 Content = new StringContent(data, Encoding.UTF8, "application/json")
             };
