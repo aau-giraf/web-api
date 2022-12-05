@@ -99,6 +99,7 @@ namespace GirafRest.Controllers
         /// Else: PictogramNotFound, UserNotFound, Error, or NotAuthorized
         /// </returns>
         [HttpGet("{id}", Name = "GetPictogram")]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(SuccessResponse<WeekPictogramDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -435,9 +436,9 @@ namespace GirafRest.Controllers
             if (picto == null)
                 return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, "Pictogram not found"));
 
-            if (picto.AccessLevel != AccessLevel.PUBLIC){
+            if (picto.AccessLevel == AccessLevel.PUBLIC){
                 return PhysicalFile($"{imagePath}{picto.Id}.png", IMAGE_TYPE_PNG);
-            }   
+            }
             
             var usr = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
             if (usr == null)
