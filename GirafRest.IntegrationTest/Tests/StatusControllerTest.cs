@@ -6,21 +6,25 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using GirafRest.IntegrationTest.Extensions;
+using GirafRest.IntegrationTest.Setup;
 using Xunit;
 
 namespace GirafRest.IntegrationTest.Tests
 {
     [TestCaseOrderer("GirafRest.IntegrationTest.Order.PriorityOrderer", "GirafRest.IntegrationTest")]
     [Collection("Intgration test")]
-    public class StatusControllerTest : IClassFixture<CustomWebApplicationFactory>
+    public class StatusControllerTest : IClassFixture<CustomWebApplicationFactory>, IClassFixture<StatusFixture>
     {
         private const string BASE_URL = "https://localhost:5000/";
         private CustomWebApplicationFactory _factory;
         private HttpClient _client;
-        public StatusControllerTest(CustomWebApplicationFactory factory)
+        private StatusFixture _statusFixture;
+        public StatusControllerTest(CustomWebApplicationFactory factory, StatusFixture statusFixture)
         {
             _factory = factory;
             _client = factory.CreateClient();
+            _statusFixture = statusFixture;
         }
 
         /// <summary>
@@ -35,7 +39,8 @@ namespace GirafRest.IntegrationTest.Tests
                 RequestUri = new Uri($"{BASE_URL}v1/status"),
                 Method = HttpMethod.Get,
             };
-
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _statusFixture.Username, _statusFixture.Password)}");
+                
             var response = await _client.SendAsync(request);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -53,6 +58,7 @@ namespace GirafRest.IntegrationTest.Tests
                 RequestUri = new Uri($"{BASE_URL}v1/status/database"),
                 Method = HttpMethod.Get,
             };
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _statusFixture.Username, _statusFixture.Password)}");
 
             var response = await _client.SendAsync(request);
 
@@ -71,9 +77,11 @@ namespace GirafRest.IntegrationTest.Tests
                 RequestUri = new Uri($"{BASE_URL}v1/status/version-info"),
                 Method = HttpMethod.Get,
             };
+            request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, "guardian-dev", "password")}");
 
             var response = await _client.SendAsync(request);
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
+            
             
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.NotNull(content["data"]);

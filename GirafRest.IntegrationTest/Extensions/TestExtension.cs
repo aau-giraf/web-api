@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace GirafRest.IntegrationTest.Extensions
 {
     public static class TestExtension
