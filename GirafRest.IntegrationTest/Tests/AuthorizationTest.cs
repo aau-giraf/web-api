@@ -492,27 +492,6 @@ namespace GirafRest.IntegrationTest.Tests
         }
 
         /// <summary>
-        /// Testing getting pictogram by id with
-        /// Endpoint: GET:/v1/Pictogram/{id}
-        /// </summary>
-        [Fact, Priority(21)]
-        public async void TestAuthGETPictogramsByIdShouldFail()
-        {
-            HttpRequestMessage request = new HttpRequestMessage()
-            {
-                RequestUri = new Uri($"{BASE_URL}v1/Pictogram/0"),
-                Method = HttpMethod.Get
-            };
-
-            var response = await _client.SendAsync(request);
-
-            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
-
-            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
-            Assert.Equal("NotAuthorized", content["errorKey"]);
-        }
-
-        /// <summary>
         /// Testing updating pictogram info
         /// Endpoint: PUT:/v1/Pictogram/{id}
         /// </summary>
@@ -555,27 +534,6 @@ namespace GirafRest.IntegrationTest.Tests
         }
 
         /// <summary>
-        /// Testing getting pictogram image by id
-        /// Endpoint: GET:/v1/Pictogram/{id}/image
-        /// </summary>
-        [Fact, Priority(24)]
-        public async void TestAuthGETPictogramsInfoShouldFail()
-        {
-            HttpRequestMessage request = new HttpRequestMessage()
-            {
-                RequestUri = new Uri($"{BASE_URL}v1/Pictogram/0/image"),
-                Method = HttpMethod.Get
-            };
-
-            var response = await _client.SendAsync(request);
-
-            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
-
-            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
-            Assert.Equal("NotAuthorized", content["errorKey"]);
-        }
-
-        /// <summary>
         /// Testing updating pictogram image by id
         /// Endpoint: PUT:/v1/Pictogram/{id}/image
         /// </summary>
@@ -586,27 +544,6 @@ namespace GirafRest.IntegrationTest.Tests
             {
                 RequestUri = new Uri($"{BASE_URL}v1/Pictogram/0/image"),
                 Method = HttpMethod.Put
-            };
-
-            var response = await _client.SendAsync(request);
-
-            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
-
-            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, response.StatusCode);
-            Assert.Equal("NotAuthorized", content["errorKey"]);
-        }
-
-        /// <summary>
-        /// Testing getting raw pictogram image by id
-        /// Endpoint: GET:/v1/Pictogram/{id}/image/raw
-        /// </summary>
-        [Fact, Priority(26)]
-        public async void TestAuthGETPictogramsImageRawByIdShouldFail()
-        {
-            HttpRequestMessage request = new HttpRequestMessage()
-            {
-                RequestUri = new Uri($"{BASE_URL}v1/Pictogram/0/image/raw"),
-                Method = HttpMethod.Get
             };
 
             var response = await _client.SendAsync(request);
@@ -661,14 +598,14 @@ namespace GirafRest.IntegrationTest.Tests
         #region User endpoint
         /// <summary>
         /// Testing getting pictogram image by id
-        /// Endpoint: GET:/v1/Pictogram/{id}/image
+        /// Endpoint: GET:/v1/User/{id}
         /// </summary>
         [Fact, Priority(29)]
         public async void TestAuthGETUserShouldFail()
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v1/Pictogram/0/image"),
+                RequestUri = new Uri($"{BASE_URL}v1/User/0"),
                 Method = HttpMethod.Get
             };
 
@@ -688,7 +625,7 @@ namespace GirafRest.IntegrationTest.Tests
         {
             HttpRequestMessage request = new HttpRequestMessage()
             {
-                RequestUri = new Uri($"{BASE_URL}v1/Pictogram/0/image"),
+                RequestUri = new Uri($"{BASE_URL}v1/User/0"),
                 Method = HttpMethod.Put
             };
 
