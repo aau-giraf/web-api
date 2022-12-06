@@ -86,10 +86,13 @@ namespace GirafRest.Controllers
             var userPictograms = (await ReadAllPictograms(query)).AsEnumerable();
 
             // This does not occur only when user has no pictograms, but when any error is caught in the previous call
-            return userPictograms == null
-                ? NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, "User has no pictograms"))
-                : this.RequestSucceeded(new SuccessResponse<List<WeekPictogramDTO>>(userPictograms.OfType<Pictogram>()
-                .Skip((page - 1) * pageSize).Take(pageSize).Select(_p => new WeekPictogramDTO(_p)).ToList()));
+            if (userPictograms == null)
+            {
+                return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, "User has no pictograms"));
+               
+            }
+            return Ok(new SuccessResponse<List<WeekPictogramDTO>>(userPictograms.OfType<Pictogram>()
+                   .Skip((page - 1) * pageSize).Take(pageSize).Select(_p => new WeekPictogramDTO(_p)).ToList()));
         }
 
         /// <summary>

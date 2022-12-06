@@ -14,6 +14,7 @@ using GirafRest.IRepositories;
 using GirafRest.Models.Enums;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System;
 
 namespace GirafRest.Test
 {
@@ -823,6 +824,133 @@ namespace GirafRest.Test
                 Assert.Equal(expected.Id, actual.Id);
             }
         }
+
+        [Fact]
+        public async Task ReadPictograms_Sucess()
+        {
+            //arranging
+
+            //here we setup the different stuff we need
+            var pictogramController = new MockedPictogramController();
+            var userController = new MockedUserController();
+            var repository = userController.GirafUserRepository;
+            var pictogramRepository = pictogramController.PictogramRepository;
+            var giraf = pictogramController.GirafService;
+            var HttpContext = pictogramController.ControllerContext.HttpContext;
+            var logger = new Mock<ILogger>();
+
+            //here we create the data we need to return from our functions in the function
+            var pictogram1 = new Pictogram() { Id = 1 };
+            var pictogram2 = new Pictogram() { Id = 2 };
+            var pictogram3 = new Pictogram() { Id = 3 };
+            var pictograms = new List<Pictogram>();
+            pictograms.Add(pictogram1);
+            pictograms.Add(pictogram2);
+            pictograms.Add(pictogram3);
+            var user = new GirafUser()
+            {
+                UserName = "user1",
+                DisplayName = "user1",
+                Id = "u1",
+                DepartmentKey = 1,
+                Department = null,
+            };
+            var weekPictorgramDTOs = new List<WeekPictogramDTO>();
+            weekPictorgramDTOs.Add(new WeekPictogramDTO(pictogram1));
+            weekPictorgramDTOs.Add(new WeekPictogramDTO(pictogram2));
+            weekPictorgramDTOs.Add(new WeekPictogramDTO(pictogram3));
+
+            //mocking
+
+            giraf.Setup(x => x.LoadUserWithDepartment(HttpContext.User)).Returns(Task.FromResult<GirafUser>(user));
+
+            pictogramRepository.Setup(x => x.fetchPictogramsNoUserLoggedInStartsWithQuery(It.IsAny<string>())).Returns(pictograms);
+            pictogramRepository.Setup(x => x.fetchPictogramsNoUserLoggedInContainsQuery(It.IsAny<string>())).Returns(pictograms);
+
+            pictogramRepository.Setup(x => x.fetchPictogramsUserNotPartOfDepartmentStartsWithQuery(It.IsAny<string>(), user)).Returns(pictograms);
+            pictogramRepository.Setup(x => x.fetchPictogramsUserNotPartOfDepartmentContainsQuery(It.IsAny<string>(), user)).Returns(pictograms);
+
+            pictogramRepository.Setup(x => x.fetchPictogramsFromDepartmentStartsWithQuery(It.IsAny<string>(), user)).Returns(pictograms);
+            pictogramRepository.Setup(x => x.fetchPictogramsFromDepartmentsContainsQuery(It.IsAny<string>(), user)).Returns(pictograms);
+
+            giraf.Setup(x => x._logger).Returns(logger.Object);
+
+            //  here we get a list of pictograms_result
+
+            var response = pictogramController.ReadPictograms(It.IsAny<string>(),1, pictograms.Count());
+            var result = response.Result as ObjectResult;
+            var actual_pictograms = result.Value as SuccessResponse<List<WeekPictogramDTO>>;
+
+            Assert.Equal(actual_pictograms.Data.Count(), pictograms.Count());
+            foreach (var (expected, actual) in actual_pictograms.Data.Zip(pictograms, (x, y) => (x, y)))
+            {
+
+                Assert.Equal(expected.Id, actual.Id);
+            }
+        }
+
+
+
+        [Fact]
+        public async Task ReadPictograms_Failure_On_Exception_Throwed()
+        {
+            //arranging
+
+            //here we setup the different stuff we need
+            var pictogramController = new MockedPictogramController();
+            var userController = new MockedUserController();
+            var repository = userController.GirafUserRepository;
+            var pictogramRepository = pictogramController.PictogramRepository;
+            var giraf = pictogramController.GirafService;
+            var HttpContext = pictogramController.ControllerContext.HttpContext;
+            var logger = new Mock<ILogger>();
+
+            //here we create the data we need to return from our functions in the function
+            var pictogram1 = new Pictogram() { Id = 1 };
+            var pictogram2 = new Pictogram() { Id = 2 };
+            var pictogram3 = new Pictogram() { Id = 3 };
+            var pictograms = new List<Pictogram>();
+            pictograms.Add(pictogram1);
+            pictograms.Add(pictogram2);
+            pictograms.Add(pictogram3);
+            var user = new GirafUser()
+            {
+                UserName = "user1",
+                DisplayName = "user1",
+                Id = "u1",
+                DepartmentKey = 1,
+                Department = null,
+            };
+            var weekPictorgramDTOs = new List<WeekPictogramDTO>();
+            weekPictorgramDTOs.Add(new WeekPictogramDTO(pictogram1));
+            weekPictorgramDTOs.Add(new WeekPictogramDTO(pictogram2));
+            weekPictorgramDTOs.Add(new WeekPictogramDTO(pictogram3));
+
+            //mocking
+
+            giraf.Setup(x => x.LoadUserWithDepartment(HttpContext.User)).Returns(Task.FromResult<GirafUser>(user));
+
+            pictogramRepository.Setup(x => x.fetchPictogramsNoUserLoggedInStartsWithQuery(It.IsAny<string>())).Throws(new Exception("failure "));
+            pictogramRepository.Setup(x => x.fetchPictogramsNoUserLoggedInContainsQuery(It.IsAny<string>())).Throws(new Exception("failure "));
+
+            pictogramRepository.Setup(x => x.fetchPictogramsUserNotPartOfDepartmentStartsWithQuery(It.IsAny<string>(), user)).Throws(new Exception("failure "));
+            pictogramRepository.Setup(x => x.fetchPictogramsUserNotPartOfDepartmentContainsQuery(It.IsAny<string>(), user)).Throws(new Exception("failure "));
+
+            pictogramRepository.Setup(x => x.fetchPictogramsFromDepartmentStartsWithQuery(It.IsAny<string>(), user)).Throws(new Exception("failure "));
+            pictogramRepository.Setup(x => x.fetchPictogramsFromDepartmentsContainsQuery(It.IsAny<string>(), user)).Throws(new Exception("failure "));
+
+            giraf.Setup(x => x._logger).Returns(logger.Object);
+
+            //  here we get a list of pictograms_result
+
+            var response = pictogramController.ReadPictograms(It.IsAny<string>(), 0, pictograms.Count());
+            var result = response.Result as ObjectResult;
+            var actual_error = result.Value as ErrorResponse;
+            var expected_error = ErrorCode.PictogramNotFound;
+
+            Assert.Equal(actual_error, actual_error);
+        }
+
 
     }
 
