@@ -93,7 +93,7 @@ namespace GirafRest.Controllers
                     commitHash = System.IO.File.ReadLines(gitpath + "HEAD").First();
                 }
                 //This occurs when function is run by GitHub Actions
-                catch (DirectoryNotFoundException e)
+                catch (DirectoryNotFoundException)
                 {
                     return StatusCode(StatusCodes.Status204NoContent,$"Could not find directory." );
                 }
@@ -101,7 +101,6 @@ namespace GirafRest.Controllers
                 
                 // Return the response
                 return Ok(new SuccessResponse($"CommitHash: {commitHash}"));
-
                 
                 // Previously, we retrieved the refs/head/branch, and then retrieved the commit hash.
                 // As the "HEAD" file now ONLY contains the commmit hash, this is no longer possible.
