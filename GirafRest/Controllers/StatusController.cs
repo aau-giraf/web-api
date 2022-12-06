@@ -76,7 +76,7 @@ namespace GirafRest.Controllers
             {
                 // Get the solution folder
                 var gitpath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
-
+                string commitHash;
                 // Check if it is in a build and not server
                 if (gitpath.Contains("bin"))
                 {
@@ -87,7 +87,15 @@ namespace GirafRest.Controllers
                 gitpath += ".git/";
 
                 // Get commit hash from the HEAD file in the .git folder.
-                var commitHash = System.IO.File.ReadLines(gitpath + "HEAD").First();
+                try
+                {
+                     commitHash = System.IO.File.ReadLines(gitpath + "HEAD").First();
+                }
+                catch (Exception e)
+                {
+                    throw e;
+                }
+                
 
                 // Return the response
                 return Ok(new SuccessResponse($"CommitHash: {commitHash}"));
