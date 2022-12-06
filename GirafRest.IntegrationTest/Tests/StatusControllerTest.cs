@@ -80,12 +80,19 @@ namespace GirafRest.IntegrationTest.Tests
             request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, "guardian-dev", "password")}");
 
             var response = await _client.SendAsync(request);
-            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
             
-            Assert.Equal("hej",content["data"].ToString());
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             
-            Assert.NotNull(content["data"]);
+            Assert.NotEqual(HttpStatusCode.InternalServerError, response.StatusCode);
+            switch (response.StatusCode)
+            {
+                case HttpStatusCode.OK:
+                    //Checking it actually returns something if the status code is OK
+                    var content = JObject.Parse(await response.Content?.ReadAsStringAsync());
+                    Assert.NotNull(content["data"]);
+                    break;
+                    // If not OK and not an InternalServerError it should not return anything
+            }
+            
         }
     }
 }

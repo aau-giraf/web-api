@@ -75,28 +75,30 @@ namespace GirafRest.Controllers
             try
             {
                 // Get the solution folder
-                var gitpath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
+                string gitpath;
                 string commitHash;
-                // Check if it is in a build and not server
-                if (gitpath.Contains("bin"))
-                {
-                    gitpath = Path.GetFullPath(Path.Combine(gitpath, @"..\..\..\"));
-                }
 
-                // Get the hidden .git folder
-                gitpath += ".git/";
-
-                // Get commit hash from the HEAD file in the .git folder.
                 try
                 {
-                     commitHash = System.IO.File.ReadLines(gitpath + "HEAD").First();
+                    gitpath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
+                    // Check if it is in a build and not server
+                    if (gitpath.Contains("bin"))
+                    {
+                        gitpath = Path.GetFullPath(Path.Combine(gitpath, @"..\..\..\"));
+                    }
+
+                    // Get the hidden .git folder
+                    gitpath += ".git/";
+                    // Get commit hash from the HEAD file in the .git folder.
+                    commitHash = System.IO.File.ReadLines(gitpath + "HEAD").First();
                 }
-                catch (Exception e)
+                //This occurs when function is run by GitHub Actions
+                catch (DirectoryNotFoundException e)
                 {
-                    throw e;
+                    return StatusCode(StatusCodes.Status204NoContent,$"Could not find directory." );
                 }
+                // Could potentially add more exceptions to the catch to not return internal server error and be more descriptive
                 
-                throw new Exception("hejsa");
                 // Return the response
                 return Ok(new SuccessResponse($"CommitHash: {commitHash}"));
 
@@ -115,8 +117,7 @@ namespace GirafRest.Controllers
             }
             catch (Exception e)
             {
-                return Ok(new SuccessResponse($"CommitHash: {e.Message}"));
-                //return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse(ErrorCode.Error, $"Exception: " + e.ToString()));
+                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse(ErrorCode.Error, $"Exception: " + e.ToString()));
             }
         }
     }
