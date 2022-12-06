@@ -96,11 +96,11 @@ namespace GirafRest.Controllers
                     throw e;
                 }
                 
-
+                throw new Exception("hejsa");
                 // Return the response
                 return Ok(new SuccessResponse($"CommitHash: {commitHash}"));
 
-
+                
                 // Previously, we retrieved the refs/head/branch, and then retrieved the commit hash.
                 // As the "HEAD" file now ONLY contains the commmit hash, this is no longer possible.
                 // This code is preserved in case future students wants to implement the behavior again.
@@ -115,7 +115,8 @@ namespace GirafRest.Controllers
             }
             catch (Exception e)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse(ErrorCode.Error, $"Exception: " + e.ToString()));
+                return Ok(new SuccessResponse($"CommitHash: {e.Message}"));
+                //return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse(ErrorCode.Error, $"Exception: " + e.ToString()));
             }
         }
     }

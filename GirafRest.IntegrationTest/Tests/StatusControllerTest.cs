@@ -82,8 +82,9 @@ namespace GirafRest.IntegrationTest.Tests
             var response = await _client.SendAsync(request);
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
             
-            
+            Assert.Equal("hej",content["data"].ToString());
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            
             Assert.NotNull(content["data"]);
         }
     }
