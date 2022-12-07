@@ -71,8 +71,9 @@ namespace GirafRest.Test
 
             public Pictogram testPictogram { get; }
         }
+
+
         [Fact]
-        
         public async Task ReadPictogram_Success()
         {
             //arrange
@@ -101,6 +102,8 @@ namespace GirafRest.Test
             //assert
             Assert.Equal(val.Data.Id, pictoWeek.Id);
         }
+
+
         [Fact]
         public async Task ReadPictogram_Fail_Pictogram_Null()
         {
@@ -131,6 +134,8 @@ namespace GirafRest.Test
             //assert
             Assert.Equal(expected, actual.ErrorCode);
         }
+
+
         [Fact]
         public async Task ReadPictogram_Fail_User_Null()
         {
@@ -161,6 +166,8 @@ namespace GirafRest.Test
             //assert
             Assert.Equal(expected, actual.ErrorCode);
         }
+
+
         [Fact]
         public async Task ReadPictogram_Fail_Accesslevel()
         {
@@ -190,6 +197,8 @@ namespace GirafRest.Test
             //assert
             Assert.Equal(expected, actual.ErrorCode);
         }
+
+
         [Fact]
         public async Task CreatePictogram_Success()
         {
@@ -233,6 +242,8 @@ namespace GirafRest.Test
             Assert.Equal(val1.Data.Title, privWeekDTO.Title);
             Assert.Equal(val2.Data.Title, proWeekDTO.Title);
         }
+
+
         [Fact]
         public async Task CreatePictogram_Fail_User_Null()
         {
@@ -260,6 +271,7 @@ namespace GirafRest.Test
             //assert 
             Assert.Equal(expected, actual.ErrorCode);
         }
+
 
         [Fact]
         public async Task CreatePictogram_Fail_Pictogram_Null()
@@ -311,6 +323,8 @@ namespace GirafRest.Test
             Assert.Equal(expected2, actual2.ErrorCode);
             Assert.Equal(expected3, actual3.ErrorCode);
         }
+
+
         [Fact]
         public async Task UpdatePictogramInfo_Success()
         {
@@ -343,6 +357,8 @@ namespace GirafRest.Test
             //assert
             Assert.Equal(val.Data.Title, picto.Title);
         }
+
+
         [Fact]
         public async Task UpdatePictogramInfo_Fail_Pictogram_Null()
         {
@@ -378,6 +394,7 @@ namespace GirafRest.Test
             Assert.Equal(expected, actual.ErrorCode);
         }
 
+
         [Fact]
         public async Task UpdatePictogram_Fail_User_Null()
         {
@@ -412,6 +429,8 @@ namespace GirafRest.Test
             //if user is null
             Assert.Equal(expected, actual.ErrorCode);
         }
+
+
         [Fact]
         public async Task UpdatePictogramInfo_Fail_Pictogram_Accesslevel()
         {
@@ -445,6 +464,8 @@ namespace GirafRest.Test
             //if pictogram is access level does not exist
             Assert.Equal(expected, actual.ErrorCode);
         }
+        
+        
         [Fact]
         public async Task UpdatePictogramInfo_Pictogram_Null_2()
         {
@@ -478,6 +499,8 @@ namespace GirafRest.Test
             //if pictogram is null(the second one)
             Assert.Equal(expected, actual.ErrorCode);
         }
+
+
         [Fact]
         public async Task UpdatePictogramInfo_Fail_Ownership()
         {
@@ -511,7 +534,9 @@ namespace GirafRest.Test
             //if user does not own pictogram
             Assert.Equal(expected, actual.ErrorCode);
         }
-            [Fact]
+
+
+        [Fact]
         public async Task DeletePictogram_Success()
         {
             //arrange
@@ -540,6 +565,8 @@ namespace GirafRest.Test
             //assert
             Assert.True(val.Data.Equals("Pictogram deleted"));
         }
+
+
         [Fact]
         public async Task DeletePictogram_Fail_User_Null()
         {
@@ -571,6 +598,7 @@ namespace GirafRest.Test
             Assert.Equal(expected, actual.ErrorCode);
         }
 
+
         [Fact]
         public async Task DeletePictogram_Fail_Pictogram_Null()
         {
@@ -601,6 +629,8 @@ namespace GirafRest.Test
             //assert
             Assert.Equal(expected, actual.ErrorCode);
         }
+
+
         [Fact]
         public async Task DeletePictogram_Fail_Accesslevel()
         {
@@ -631,6 +661,8 @@ namespace GirafRest.Test
             //assert
             Assert.Equal(expected, actual.ErrorCode);
         }
+
+
         [Fact]
         public async Task ReadAllPictograms_Success()
         {
@@ -703,6 +735,8 @@ namespace GirafRest.Test
                 Assert.Equal(expected.Id, actual.Id);
             }
         }
+
+
         [Fact]
         public async Task ReadAllPictograms_Sucess_User()
         {
@@ -760,6 +794,8 @@ namespace GirafRest.Test
                 Assert.Equal(expected.Id, actual.Id);
             }
         }
+
+
         [Fact]
         public async Task ReadAllPictograms_Fail()
         {
@@ -824,6 +860,7 @@ namespace GirafRest.Test
                 Assert.Equal(expected.Id, actual.Id);
             }
         }
+
 
         [Fact]
         public async Task ReadPictograms_Sucess()
@@ -890,7 +927,6 @@ namespace GirafRest.Test
         }
 
 
-
         [Fact]
         public async Task ReadPictograms_Failure_On_Exception_Throwed()
         {
@@ -950,11 +986,6 @@ namespace GirafRest.Test
 
             Assert.Equal(actual_error, actual_error);
         }
-
-
-
-
-
 
     }
 
