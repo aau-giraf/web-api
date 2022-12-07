@@ -24,6 +24,8 @@ namespace GirafRest.IRepositories
 
         public Pictogram GetByID(long pictogramID);
 
+        public Task<Pictogram> GetPictogramsById(long pictogramID);
+
         Task<Pictogram> FetchResourceWithId(ResourceIdDTO resourceIdDTO);
 
         public Task<Pictogram> FindResource(ResourceIdDTO resourceIdDTO);

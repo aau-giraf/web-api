@@ -3,6 +3,7 @@ using GirafRest.IRepositories;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Hosting;
@@ -20,6 +21,7 @@ namespace GirafRest.Controllers
     /// </summary>
     [Route("v1/[controller]")]
     public class PictogramController : Controller
+    
     {
         private const string IMAGE_TYPE_PNG = "image/png";
 
@@ -105,6 +107,7 @@ namespace GirafRest.Controllers
         /// Else: PictogramNotFound, UserNotFound, Error, or NotAuthorized
         /// </returns>
         [HttpGet("{id}", Name = "GetPictogram")]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(SuccessResponse<WeekPictogramDTO>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -317,6 +320,7 @@ namespace GirafRest.Controllers
                 return Unauthorized(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
             }
 
+
             //Attempt to fetch the pictogram from the database.
             Pictogram pictogram = _pictogramRepository.GetByID(id);
 
@@ -365,6 +369,7 @@ namespace GirafRest.Controllers
         /// <returns>A The image else: PictogramNotFound, NotAuthorized, PictogramHasNoImage,
         /// or NotAuthorized </returns>
         [HttpGet("{id}/image")]
+        [AllowAnonymous]
         [ProducesResponseType(typeof(SuccessResponse<byte[]>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -379,10 +384,15 @@ namespace GirafRest.Controllers
                 return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, "Pictogram not found"));
             }
 
-            var usr = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
-            if (usr == null)
+
+            if (picto.AccessLevel != AccessLevel.PUBLIC)
             {
-                return Unauthorized(new ErrorResponse(ErrorCode.NotAuthorized, "User not authorized"));
+                var usr = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
+                if (usr == null)
+                    return Unauthorized(new ErrorResponse(ErrorCode.NotAuthorized, "User not authorized"));
+                if (!CheckOwnership(picto, usr).Result)
+                    return StatusCode(StatusCodes.Status403Forbidden,
+                        new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
             }
 
             if (picto.ImageHash == null)
@@ -390,10 +400,8 @@ namespace GirafRest.Controllers
                 return NotFound(new ErrorResponse(ErrorCode.PictogramHasNoImage, "Pictogram has no image"));
             }
 
-            if (!CheckOwnership(picto, usr).Result)
-            {
-                return this.MissingPropertyFromRequest(nameof(picto));
-            }
+
+
 
             var pictoPath = $"{imagePath}{picto.Id}.png";
 
@@ -421,6 +429,7 @@ namespace GirafRest.Controllers
         /// <returns>The raw pictogram image.</returns>
         /// <param name="id">Identifier.</param>
         [HttpGet("{id}/image/raw")]
+        [AllowAnonymous]
         [Produces(IMAGE_TYPE_PNG)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -429,20 +438,24 @@ namespace GirafRest.Controllers
         public async Task<ActionResult> ReadRawPictogramImage(long id)
         {
             // fetch current authenticated user
-            var usr = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
 
-            if (usr == null)
-            {
-                return this.ResourceNotFound(nameof(User), usr);
-            }
 
-            var picto = _pictogramRepository.GetByID(id);
+            var picto = await _pictogramRepository.GetPictogramsById(id);
+
 
             if (picto == null)
             {
                 return this.ResourceNotFound(nameof(Pictogram), id);
             }
 
+            if (picto.AccessLevel == AccessLevel.PUBLIC){
+                return PhysicalFile($"{imagePath}{picto.Id}.png", IMAGE_TYPE_PNG);
+            }
+            
+            var usr = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
+            if (usr == null)
+                return Unauthorized(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
+            
             if (picto.ImageHash == null)
             {
                 return NotFound(new ErrorResponse(ErrorCode.PictogramHasNoImage, "Pictogram has no image"));

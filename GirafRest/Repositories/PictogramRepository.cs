@@ -32,6 +32,14 @@ namespace GirafRest.Repositories
             return Context.Pictograms.FirstOrDefaultAsync(p => p.Id == pictogramRelation.PictogramId);
         }
 
+        public Task<Pictogram> GetPictogramsById(long pictogramID)
+        {
+            return Context
+                .Pictograms
+                .Where(pictogram => pictogram.Id == pictogramID)
+                .FirstOrDefaultAsync();
+        }
+
         public Task<Pictogram> GetPictogramWithName(string name)
         {
             return Context.Pictograms.FirstOrDefaultAsync(r => r.Title == name);
