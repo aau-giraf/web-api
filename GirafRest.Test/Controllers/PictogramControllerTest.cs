@@ -66,12 +66,9 @@ namespace GirafRest.Test
             public Mock<IUserResourseRepository> UserResourseRepository { get; }
             public Mock<IPictogramRepository> PictogramRepository { get; }
             public GirafUser testUser { get; }
-
             public GirafUser guardianUser { get; }
-
             public Pictogram testPictogram { get; }
         }
-
 
         [Fact]
         public async Task ReadPictogram_Success()
@@ -102,7 +99,6 @@ namespace GirafRest.Test
             //assert
             Assert.Equal(val.Data.Id, pictoWeek.Id);
         }
-
 
         [Fact]
         public async Task ReadPictogram_Fail_Pictogram_Null()
@@ -135,7 +131,6 @@ namespace GirafRest.Test
             Assert.Equal(expected, actual.ErrorCode);
         }
 
-
         [Fact]
         public async Task ReadPictogram_Fail_User_Null()
         {
@@ -167,7 +162,6 @@ namespace GirafRest.Test
             Assert.Equal(expected, actual.ErrorCode);
         }
 
-
         [Fact]
         public async Task ReadPictogram_Fail_Accesslevel()
         {
@@ -197,7 +191,6 @@ namespace GirafRest.Test
             //assert
             Assert.Equal(expected, actual.ErrorCode);
         }
-
 
         [Fact]
         public async Task CreatePictogram_Success()
@@ -243,7 +236,6 @@ namespace GirafRest.Test
             Assert.Equal(val2.Data.Title, proWeekDTO.Title);
         }
 
-
         [Fact]
         public async Task CreatePictogram_Fail_User_Null()
         {
@@ -271,7 +263,6 @@ namespace GirafRest.Test
             //assert 
             Assert.Equal(expected, actual.ErrorCode);
         }
-
 
         [Fact]
         public async Task CreatePictogram_Fail_Pictogram_Null()
@@ -324,7 +315,6 @@ namespace GirafRest.Test
             Assert.Equal(expected3, actual3.ErrorCode);
         }
 
-
         [Fact]
         public async Task UpdatePictogramInfo_Success()
         {
@@ -357,7 +347,6 @@ namespace GirafRest.Test
             //assert
             Assert.Equal(val.Data.Title, picto.Title);
         }
-
 
         [Fact]
         public async Task UpdatePictogramInfo_Fail_Pictogram_Null()
@@ -394,7 +383,6 @@ namespace GirafRest.Test
             Assert.Equal(expected, actual.ErrorCode);
         }
 
-
         [Fact]
         public async Task UpdatePictogram_Fail_User_Null()
         {
@@ -430,7 +418,6 @@ namespace GirafRest.Test
             Assert.Equal(expected, actual.ErrorCode);
         }
 
-
         [Fact]
         public async Task UpdatePictogramInfo_Fail_Pictogram_Accesslevel()
         {
@@ -464,7 +451,6 @@ namespace GirafRest.Test
             //if pictogram is access level does not exist
             Assert.Equal(expected, actual.ErrorCode);
         }
-        
         
         [Fact]
         public async Task UpdatePictogramInfo_Pictogram_Null_2()
@@ -500,7 +486,6 @@ namespace GirafRest.Test
             Assert.Equal(expected, actual.ErrorCode);
         }
 
-
         [Fact]
         public async Task UpdatePictogramInfo_Fail_Ownership()
         {
@@ -535,7 +520,6 @@ namespace GirafRest.Test
             Assert.Equal(expected, actual.ErrorCode);
         }
 
-
         [Fact]
         public async Task DeletePictogram_Success()
         {
@@ -565,7 +549,6 @@ namespace GirafRest.Test
             //assert
             Assert.True(val.Data.Equals("Pictogram deleted"));
         }
-
 
         [Fact]
         public async Task DeletePictogram_Fail_User_Null()
@@ -598,7 +581,6 @@ namespace GirafRest.Test
             Assert.Equal(expected, actual.ErrorCode);
         }
 
-
         [Fact]
         public async Task DeletePictogram_Fail_Pictogram_Null()
         {
@@ -609,7 +591,6 @@ namespace GirafRest.Test
             var pictoRep = pictogramcontroller.PictogramRepository;
 
             var usr = new GirafUser("Jan", "Jan", new Department(), GirafRoles.SuperUser);
-
             Pictogram picto = null;
             var randomint = 2;
 
@@ -629,7 +610,6 @@ namespace GirafRest.Test
             //assert
             Assert.Equal(expected, actual.ErrorCode);
         }
-
 
         [Fact]
         public async Task DeletePictogram_Fail_Accesslevel()
@@ -662,12 +642,10 @@ namespace GirafRest.Test
             Assert.Equal(expected, actual.ErrorCode);
         }
 
-
         [Fact]
         public async Task ReadAllPictograms_Success()
         {
             //arranging
-
             //here we setup the different stuff we need
             var pictogramController = new MockedPictogramController();
             var userController = new MockedUserController();
@@ -709,18 +687,14 @@ namespace GirafRest.Test
 
             //  the syntax can be hard to understand
             //  but basically says "when this function gets called gets called, return this value.
-
             giraf.Setup(x => x.LoadUserWithDepartment(HttpContext.User)).Returns(Task.FromResult(user));
-
             //mocking fetchPictogramsNoUserLoggedIn
-
             pictogramRepository.Setup(x => x.fetchPictogramsNoUserLoggedInStartsWithQuery(It.IsAny<string>())).Returns(pictograms);
             pictogramRepository.Setup(x => x.fetchPictogramsNoUserLoggedInContainsQuery(It.IsAny<string>())).Returns(pictograms);
             //mocking fetchingPictogramsUserNotInDepartment
             pictogramRepository.Setup(x => x.fetchPictogramsUserNotPartOfDepartmentStartsWithQuery(It.IsAny<string>(), user)).Returns(pictograms);
             pictogramRepository.Setup( x=> x.fetchPictogramsUserNotPartOfDepartmentContainsQuery(It.IsAny<string>(), user)).Returns(pictograms);
             //mocking fetchingPictogramsFromDepartment
-
             pictogramRepository.Setup(x => x.fetchPictogramsFromDepartmentStartsWithQuery(It.IsAny<string>(), user)).Returns(expected_pictograms);
             pictogramRepository.Setup(x=> x.fetchPictogramsFromDepartmentsContainsQuery(It.IsAny<string>(), user)).Returns(expected_pictograms);
 
@@ -730,18 +704,16 @@ namespace GirafRest.Test
             //  here we get a list of pictograms_result
             var pictograms_result = await pictogramController.ReadAllPictograms("");
 
-            foreach (var (expected, actual) in expected_pictograms.Zip(pictograms_result, (x, y) => (x, y))) {
-              
+            foreach (var (expected, actual) in expected_pictograms.Zip(pictograms_result, (x, y) => (x, y))) 
+            {
                 Assert.Equal(expected.Id, actual.Id);
             }
         }
-
 
         [Fact]
         public async Task ReadAllPictograms_Sucess_User()
         {
             //arranging
-
             //here we setup the different stuff we need
             var pictogramController = new MockedPictogramController();
             var userController = new MockedUserController();
@@ -773,16 +745,12 @@ namespace GirafRest.Test
             //mocking
 
             giraf.Setup(x => x.LoadUserWithDepartment(HttpContext.User)).Returns(Task.FromResult<GirafUser>(user));
-
             pictogramRepository.Setup(x => x.fetchPictogramsNoUserLoggedInStartsWithQuery(It.IsAny<string>())).Returns(expected_pictograms);
             pictogramRepository.Setup(x => x.fetchPictogramsNoUserLoggedInContainsQuery(It.IsAny<string>())).Returns(expected_pictograms);
-
             pictogramRepository.Setup(x => x.fetchPictogramsUserNotPartOfDepartmentStartsWithQuery(It.IsAny<string>(), user)).Returns(pictograms);
             pictogramRepository.Setup(x => x.fetchPictogramsUserNotPartOfDepartmentContainsQuery(It.IsAny<string>(), user)).Returns(pictograms);
-
             pictogramRepository.Setup(x => x.fetchPictogramsFromDepartmentStartsWithQuery(It.IsAny<string>(), user)).Returns(pictograms);
             pictogramRepository.Setup(x => x.fetchPictogramsFromDepartmentsContainsQuery(It.IsAny<string>(), user)).Returns(pictograms);
-
             giraf.Setup(x => x._logger).Returns(logger.Object);
 
             //  here we get a list of pictograms_result
@@ -790,17 +758,14 @@ namespace GirafRest.Test
 
             foreach (var (expected, actual) in expected_pictograms.Zip(pictograms_result, (x, y) => (x, y)))
             {
-
                 Assert.Equal(expected.Id, actual.Id);
             }
         }
-
 
         [Fact]
         public async Task ReadAllPictograms_Fail()
         {
             //arranging
-
             //here we setup the different stuff we need
             var pictogramController = new MockedPictogramController();
             var userController = new MockedUserController();
@@ -837,18 +802,13 @@ namespace GirafRest.Test
                 Department = null,
             };
             //mocking
-
             giraf.Setup(x => x.LoadUserWithDepartment(HttpContext.User)).Returns(Task.FromResult<GirafUser>(user));
-
             pictogramRepository.Setup(x => x.fetchPictogramsNoUserLoggedInStartsWithQuery(It.IsAny<string>())).Returns(pictograms);
             pictogramRepository.Setup(x => x.fetchPictogramsNoUserLoggedInContainsQuery(It.IsAny<string>())).Returns(pictograms);
-
             pictogramRepository.Setup(x => x.fetchPictogramsUserNotPartOfDepartmentStartsWithQuery(It.IsAny<string>(), user)).Returns(expected_pictograms);
             pictogramRepository.Setup(x => x.fetchPictogramsUserNotPartOfDepartmentContainsQuery(It.IsAny<string>(), user)).Returns(expected_pictograms);
-
             pictogramRepository.Setup(x => x.fetchPictogramsFromDepartmentStartsWithQuery(It.IsAny<string>(), user)).Returns(pictograms);
             pictogramRepository.Setup(x => x.fetchPictogramsFromDepartmentsContainsQuery(It.IsAny<string>(), user)).Returns(pictograms);
-
             giraf.Setup(x => x._logger).Returns(logger.Object);
 
             //  here we get a list of pictograms_result
@@ -860,7 +820,6 @@ namespace GirafRest.Test
                 Assert.Equal(expected.Id, actual.Id);
             }
         }
-
 
         [Fact]
         public async Task ReadPictograms_Sucess()
@@ -898,22 +857,16 @@ namespace GirafRest.Test
             weekPictorgramDTOs.Add(new WeekPictogramDTO(pictogram3));
 
             //mocking
-
             giraf.Setup(x => x.LoadUserWithDepartment(HttpContext.User)).Returns(Task.FromResult<GirafUser>(user));
-
             pictogramRepository.Setup(x => x.fetchPictogramsNoUserLoggedInStartsWithQuery(It.IsAny<string>())).Returns(pictograms);
             pictogramRepository.Setup(x => x.fetchPictogramsNoUserLoggedInContainsQuery(It.IsAny<string>())).Returns(pictograms);
-
             pictogramRepository.Setup(x => x.fetchPictogramsUserNotPartOfDepartmentStartsWithQuery(It.IsAny<string>(), user)).Returns(pictograms);
             pictogramRepository.Setup(x => x.fetchPictogramsUserNotPartOfDepartmentContainsQuery(It.IsAny<string>(), user)).Returns(pictograms);
-
             pictogramRepository.Setup(x => x.fetchPictogramsFromDepartmentStartsWithQuery(It.IsAny<string>(), user)).Returns(pictograms);
             pictogramRepository.Setup(x => x.fetchPictogramsFromDepartmentsContainsQuery(It.IsAny<string>(), user)).Returns(pictograms);
-
             giraf.Setup(x => x._logger).Returns(logger.Object);
 
             //  here we get a list of pictograms_result
-
             var response = pictogramController.ReadPictograms(It.IsAny<string>(),1, pictograms.Count());
             var result = response.Result as ObjectResult;
             var actual_pictograms = result.Value as SuccessResponse<List<WeekPictogramDTO>>;
@@ -921,17 +874,14 @@ namespace GirafRest.Test
             Assert.Equal(actual_pictograms.Data.Count(), pictograms.Count());
             foreach (var (expected, actual) in actual_pictograms.Data.Zip(pictograms, (x, y) => (x, y)))
             {
-
                 Assert.Equal(expected.Id, actual.Id);
             }
         }
-
 
         [Fact]
         public async Task ReadPictograms_Failure_On_Exception_Throwed()
         {
             //arranging
-
             //here we setup the different stuff we need
             var pictogramController = new MockedPictogramController();
             var userController = new MockedUserController();
@@ -963,22 +913,16 @@ namespace GirafRest.Test
             weekPictorgramDTOs.Add(new WeekPictogramDTO(pictogram3));
 
             //mocking
-
             giraf.Setup(x => x.LoadUserWithDepartment(HttpContext.User)).Returns(Task.FromResult<GirafUser>(user));
-
             pictogramRepository.Setup(x => x.fetchPictogramsNoUserLoggedInStartsWithQuery(It.IsAny<string>())).Throws(new Exception("failure "));
             pictogramRepository.Setup(x => x.fetchPictogramsNoUserLoggedInContainsQuery(It.IsAny<string>())).Throws(new Exception("failure "));
-
             pictogramRepository.Setup(x => x.fetchPictogramsUserNotPartOfDepartmentStartsWithQuery(It.IsAny<string>(), user)).Throws(new Exception("failure "));
             pictogramRepository.Setup(x => x.fetchPictogramsUserNotPartOfDepartmentContainsQuery(It.IsAny<string>(), user)).Throws(new Exception("failure "));
-
             pictogramRepository.Setup(x => x.fetchPictogramsFromDepartmentStartsWithQuery(It.IsAny<string>(), user)).Throws(new Exception("failure "));
             pictogramRepository.Setup(x => x.fetchPictogramsFromDepartmentsContainsQuery(It.IsAny<string>(), user)).Throws(new Exception("failure "));
-
             giraf.Setup(x => x._logger).Returns(logger.Object);
 
             //  here we get a list of pictograms_result
-
             var response = pictogramController.ReadPictograms(It.IsAny<string>(), 0, pictograms.Count());
             var result = response.Result as ObjectResult;
             var actual_error = result.Value as ErrorResponse;
@@ -986,8 +930,6 @@ namespace GirafRest.Test
 
             Assert.Equal(actual_error, actual_error);
         }
-
     }
-
 }
  
