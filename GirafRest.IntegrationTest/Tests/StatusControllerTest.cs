@@ -81,8 +81,6 @@ namespace GirafRest.IntegrationTest.Tests
 
             var response = await _client.SendAsync(request);
             
-            
-            Assert.NotEqual(HttpStatusCode.InternalServerError, response.StatusCode);
             switch (response.StatusCode)
             {
                 case HttpStatusCode.OK:
@@ -90,9 +88,11 @@ namespace GirafRest.IntegrationTest.Tests
                     var content = JObject.Parse(await response.Content?.ReadAsStringAsync());
                     Assert.NotNull(content["data"]);
                     break;
+                case HttpStatusCode.InternalServerError:
+                    Assert.True(false);
+                    break;
                     // If not OK and not an InternalServerError it should not return anything
             }
-            
         }
     }
 }
