@@ -43,9 +43,10 @@ namespace GirafRest.Repositories
         /// Updates user.
         /// </summary>
         /// <param name="user"></param>
-        public void Update(GirafUser user)
+        public async Task UpdateUser(GirafUser user)
         {
             Context.Users.Update(user);
+            Context.SaveChangesAsync();
         }
 
         /// <summary>

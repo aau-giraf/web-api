@@ -116,7 +116,7 @@ namespace GirafRest.Controllers
         public async Task<ActionResult> ReadPictogram(long id)
         {
             //Fetch the pictogram and check that it actually exists
-            var pictogram = _pictogramRepository.GetByID(id);
+            var pictogram = await _pictogramRepository.GetPictogramsById(id);
 
             if (pictogram == null)
             {
@@ -133,7 +133,8 @@ namespace GirafRest.Controllers
 
             if (!CheckOwnership(pictogram, usr).Result)
             {
-                return this.MissingPropertyFromRequest(nameof(pictogram));
+                return StatusCode(StatusCodes.Status403Forbidden,
+                        new ErrorResponse(ErrorCode.NotAuthorized, "User does not have rights to resource"));
             }
 
             return Ok(new SuccessResponse<WeekPictogramDTO>(new WeekPictogramDTO(pictogram)));
@@ -185,7 +186,7 @@ namespace GirafRest.Controllers
                 //Add the pictogram to the user's department
                 user.Department.Resources.Add(new DepartmentResource(user.Department, pict));
             }
-
+            await _pictogramRepository.CreatePictorgram(pict);
             return CreatedAtRoute(
                 "GetPictogram",
                 new { id = pict.Id },
@@ -235,7 +236,7 @@ namespace GirafRest.Controllers
             }
 
             //Fetch the pictogram from the database and check that it exists
-            var pict = _pictogramRepository.GetByID(id);
+            var pict = await _pictogramRepository.GetPictogramsById(id);
 
             if (pict == null)
             {
@@ -251,7 +252,8 @@ namespace GirafRest.Controllers
             pictogram.Id = id;
             //Update the existing database entry and save the changes
             pict.Merge(pictogram);
-            this._pictogramRepository.Update(pict);
+            _giraf._context.Pictograms.Update(pict);
+            await _giraf._context.SaveChangesAsync();
 
             return Ok(new SuccessResponse<WeekPictogramDTO>(new WeekPictogramDTO(pict)));
         }
@@ -275,7 +277,7 @@ namespace GirafRest.Controllers
                 return Unauthorized(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
             }
             //Fetch the pictogram from the database and check that it exists
-            var pict = _pictogramRepository.GetByID(id);
+            var pict = await _pictogramRepository.GetPictogramsById(id);
 
             if (pict == null)
             {
@@ -284,13 +286,16 @@ namespace GirafRest.Controllers
 
             if (!CheckOwnership(pict, usr).Result)
             {
-                return this.MissingPropertyFromRequest(nameof(pict));
+                return StatusCode(StatusCodes.Status403Forbidden,
+                   new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
+
             }
 
             await _pictogramRepository.RemoveRelations(pict);
 
             // Now we can safely delete the pictogram
-            _pictogramRepository.Remove(pict);
+            //_pictogramRepository.Remove(pict);
+            _giraf._context.Pictograms.Remove(pict);
 
             await _giraf._context.SaveChangesAsync();
 
@@ -324,7 +329,7 @@ namespace GirafRest.Controllers
 
 
             //Attempt to fetch the pictogram from the database.
-            Pictogram pictogram = _pictogramRepository.GetByID(id);
+            Pictogram pictogram = await _pictogramRepository.GetPictogramsById(id);
 
             if (pictogram == null)
             {
@@ -379,7 +384,7 @@ namespace GirafRest.Controllers
         public async Task<ActionResult> ReadPictogramImage(long id)
         {
             //Fetch the pictogram and check that it actually exists and has an image.
-            var picto = _pictogramRepository.GetByID(id);
+            var picto = await _pictogramRepository.GetPictogramsById(id);
 
             if (picto == null)
             {
@@ -401,9 +406,6 @@ namespace GirafRest.Controllers
             {
                 return NotFound(new ErrorResponse(ErrorCode.PictogramHasNoImage, "Pictogram has no image"));
             }
-
-
-
 
             var pictoPath = $"{imagePath}{picto.Id}.png";
 
@@ -464,11 +466,12 @@ namespace GirafRest.Controllers
             }
 
             // you can get all public pictograms
-            if (CheckOwnership(picto, usr).Result)
+            if (!CheckOwnership(picto, usr).Result)
             {
-                return PhysicalFile($"{imagePath}{picto.Id}.png", IMAGE_TYPE_PNG);
+                return NotFound();
+
             }
-            return NotFound();
+            return PhysicalFile($"{imagePath}{picto.Id}.png", IMAGE_TYPE_PNG);
         }
 
         #endregion ImageHandling
@@ -522,19 +525,20 @@ namespace GirafRest.Controllers
                 {
                     query = query.ToLower().Replace(" ", string.Empty);
                 }
-                if (user == null)
+                if (user != null)
                 {
-                    // Fetch all public pictograms as there is no user.
-                    return fetchPictogramsNoUserLoggedIn(query);
+                    // User is a part of a department
+                    if (user.Department != null)
+                    {
+                        _giraf._logger.LogInformation($"Fetching pictograms for department {user.Department.Name}");
+                        return fetchingPictogramsFromDepartment(query, user);
+                    }
+                    // User is not part of a department
+                    return fetchingPictogramsUserNotInDepartment(query, user);
                 }
-                // User is a part of a department
-                if (user.Department != null)
-                {
-                    _giraf._logger.LogInformation($"Fetching pictograms for department {user.Department.Name}");
-                    return fetchingPictogramsFromDepartment(query, user);
-                }
-                // User is not part of a department
-                return fetchingPictogramsUserNotInDepartment(query, user);
+
+                // Fetch all public pictograms as there is no user.
+                return fetchPictogramsNoUserLoggedIn(query);
             }
             catch (Exception e)
             {

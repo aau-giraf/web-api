@@ -34,6 +34,8 @@ namespace GirafRest.IRepositories
 
         public Task RemoveRelations(Pictogram pict);
 
+        public Task CreatePictorgram(Pictogram pict);
+
         public IEnumerable<Pictogram> fetchPictogramsFromDepartmentStartsWithQuery(string query, GirafUser user);
 
         public IEnumerable<Pictogram> fetchPictogramsFromDepartmentsContainsQuery(string query, GirafUser user);
