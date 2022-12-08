@@ -122,6 +122,8 @@ namespace GirafRest.Controllers
             {
                 return this.ResourceNotFound(nameof(Pictogram), id);
             }
+            if (pictogram.AccessLevel == AccessLevel.PUBLIC)
+                return Ok(new SuccessResponse<WeekPictogramDTO>(new WeekPictogramDTO(pictogram)));
 
             var usr = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
             if (usr == null)
