@@ -19,6 +19,9 @@ namespace GirafRest.Controllers
     /// <summary>
     /// Manages pictograms, CRUD-ish.
     /// </summary>
+    /// 
+
+    [Authorize]
     [Route("v1/[controller]")]
     public class PictogramController : Controller
     
@@ -252,8 +255,7 @@ namespace GirafRest.Controllers
             pictogram.Id = id;
             //Update the existing database entry and save the changes
             pict.Merge(pictogram);
-            _giraf._context.Pictograms.Update(pict);
-            await _giraf._context.SaveChangesAsync();
+            await _pictogramRepository.UpdatePictogram(pict);
 
             return Ok(new SuccessResponse<WeekPictogramDTO>(new WeekPictogramDTO(pict)));
         }
@@ -362,8 +364,7 @@ namespace GirafRest.Controllers
 
                 pictogram.ImageHash = _giraf.GetHash(image);
             }
-
-            await _giraf._context.SaveChangesAsync();
+            _pictogramRepository.SaveState();
             return Ok(new SuccessResponse<WeekPictogramDTO>(new WeekPictogramDTO(pictogram)));
         }
 

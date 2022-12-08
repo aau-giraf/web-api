@@ -37,6 +37,9 @@ namespace GirafRest.IRepositories
         public Task CreatePictorgram(Pictogram pict);
 
         public Task RemovePictogram(Pictogram pict);
+        public Task UpdatePictogram(Pictogram pict);
+
+        public Task SaveState();
 
         public IEnumerable<Pictogram> fetchPictogramsFromDepartmentStartsWithQuery(string query, GirafUser user);
 
