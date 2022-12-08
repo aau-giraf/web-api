@@ -38,15 +38,13 @@ namespace GirafRest.Repositories
 
             return await Context.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
-
         /// <summary>
         /// Updates user.
         /// </summary>
         /// <param name="user"></param>
-        public async Task UpdateUser(GirafUser user)
+        public void Update(GirafUser user)
         {
             Context.Users.Update(user);
-            Context.SaveChangesAsync();
         }
 
         /// <summary>

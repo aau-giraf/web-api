@@ -294,10 +294,8 @@ namespace GirafRest.Controllers
             await _pictogramRepository.RemoveRelations(pict);
 
             // Now we can safely delete the pictogram
-            //_pictogramRepository.Remove(pict);
-            _giraf._context.Pictograms.Remove(pict);
+            await _pictogramRepository.RemovePictogram(pict);
 
-            await _giraf._context.SaveChangesAsync();
 
             return Ok(new SuccessResponse("Pictogram deleted"));
         }

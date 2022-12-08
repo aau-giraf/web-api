@@ -70,6 +70,13 @@ namespace GirafRest.Repositories
             await Context.Pictograms.AddAsync(pict);
             await Context.SaveChangesAsync();
         }
+
+        public async Task RemovePictogram(Pictogram pict)
+        {
+            Context.Pictograms.Remove(pict);
+
+            await Context.SaveChangesAsync();
+        }
         public async Task RemoveRelations(Pictogram pict)
         {
             // Before we can remove a pictogram we must delete all its relations

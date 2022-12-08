@@ -22,7 +22,6 @@ namespace GirafRest.IRepositories
         GirafUser GetCitizenRelationship(string citizenId);
         GirafUser GetUserSettingsByWeekDayColor(string id);
 
-        public Task UpdateUser(GirafUser user);
         public bool CheckIfUsernameHasSameId(GirafUserDTO newUser, GirafUser user);
         public Task<GirafUser> LoadUserWithResources(GirafUser usr);
         public Task<GirafUser> LoadUserWithDepartment(GirafUser usr);
