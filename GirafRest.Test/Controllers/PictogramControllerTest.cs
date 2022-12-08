@@ -173,7 +173,7 @@ namespace GirafRest.Test
 
             GirafUser usr = null;
 
-            Pictogram picto = new Pictogram("foo", AccessLevel.PUBLIC);
+            Pictogram picto = new Pictogram("foo", AccessLevel.PRIVATE);
             picto.Id = 1;
 
             var pictoWeek = new WeekPictogramDTO(picto);
