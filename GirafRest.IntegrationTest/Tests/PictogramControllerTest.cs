@@ -279,7 +279,7 @@ namespace GirafRest.IntegrationTest.Tests
             var content = JObject.Parse(await response.Content.ReadAsStringAsync());
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-            Assert.Equal("PictogramNotFound", content["errorKey"]);
+            Assert.Equal("NotFound", content["errorKey"].ToString());
         }
 
         /// <summary>

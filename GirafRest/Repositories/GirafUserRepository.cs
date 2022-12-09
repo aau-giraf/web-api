@@ -38,7 +38,6 @@ namespace GirafRest.Repositories
 
             return await Context.Users.FirstOrDefaultAsync(u => u.Id == id);
         }
-
         /// <summary>
         /// Updates user.
         /// </summary>
