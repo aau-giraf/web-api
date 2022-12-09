@@ -75,24 +75,33 @@ namespace GirafRest.Controllers
             try
             {
                 // Get the solution folder
-                var gitpath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
+                string gitpath;
+                string commitHash;
 
-                // Check if it is in a build and not server
-                if (gitpath.Contains("bin"))
+                try
                 {
-                    gitpath = Path.GetFullPath(Path.Combine(gitpath, @"..\..\..\"));
+                    gitpath = Directory.GetParent(Directory.GetCurrentDirectory()).FullName;
+                    // Check if it is in a build and not server
+                    if (gitpath.Contains("bin"))
+                    {
+                        gitpath = Path.GetFullPath(Path.Combine(gitpath, @"..\..\..\"));
+                    }
+
+                    // Get the hidden .git folder
+                    gitpath += ".git/";
+                    // Get commit hash from the HEAD file in the .git folder.
+                    commitHash = System.IO.File.ReadLines(gitpath + "HEAD").First();
                 }
-
-                // Get the hidden .git folder
-                gitpath += ".git/";
-
-                // Get commit hash from the HEAD file in the .git folder.
-                var commitHash = System.IO.File.ReadLines(gitpath + "HEAD").First();
-
+                //This occurs when function is run by GitHub Actions
+                catch (DirectoryNotFoundException)
+                {
+                    return StatusCode(StatusCodes.Status204NoContent,$"Could not find directory." );
+                }
+                // Could potentially add more exceptions to the catch to not return internal server error and be more descriptive
+                
                 // Return the response
                 return Ok(new SuccessResponse($"CommitHash: {commitHash}"));
-
-
+                
                 // Previously, we retrieved the refs/head/branch, and then retrieved the commit hash.
                 // As the "HEAD" file now ONLY contains the commmit hash, this is no longer possible.
                 // This code is preserved in case future students wants to implement the behavior again.
