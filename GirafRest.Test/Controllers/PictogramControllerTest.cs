@@ -88,7 +88,7 @@ namespace GirafRest.Test
             var pictoWeek = new WeekPictogramDTO(picto);
 
             //mock
-            pictoRep.Setup(repo => repo.GetByID(picto.Id)).Returns(picto);
+            pictoRep.Setup(repo => repo.GetPictogramsById(picto.Id)).Returns(Task.FromResult<Pictogram>(picto));
             girafService.Setup(repo => repo.LoadBasicUserDataAsync(HttpContext.User)).Returns(Task.FromResult<GirafUser>(usr));
 
             //act
@@ -118,7 +118,7 @@ namespace GirafRest.Test
             var pictoWeek = new WeekPictogramDTO(picto);
 
             //mock
-            pictoRep.Setup(repo => repo.GetByID(random)).Returns(picto);
+            pictoRep.Setup(repo => repo.GetPictogramsById(random)).Returns(Task.FromResult<Pictogram>(picto));
             girafService.Setup(repo => repo.LoadBasicUserDataAsync(HttpContext.User)).Returns(Task.FromResult<GirafUser>(usr));
 
             //act
@@ -140,8 +140,7 @@ namespace GirafRest.Test
             var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
             var pictoRep = pictogramcontroller.PictogramRepository;
 
-            var usr = new GirafUser("Jan", "Jan", new Department(), GirafRoles.SuperUser);
-            usr.Id = "1";
+            GirafUser usr = null;
 
             Pictogram picto = new Pictogram("foo", AccessLevel.PROTECTED);
             picto.Id = 1;
@@ -149,14 +148,14 @@ namespace GirafRest.Test
             var pictoWeek = new WeekPictogramDTO(picto);
 
             //mock
-            pictoRep.Setup(repo => repo.GetByID(picto.Id)).Returns(picto);
+            pictoRep.Setup(repo => repo.GetPictogramsById(picto.Id)).Returns(Task.FromResult<Pictogram>(picto));
             girafService.Setup(repo => repo.LoadBasicUserDataAsync(HttpContext.User)).Returns(Task.FromResult<GirafUser>(usr));
 
             //act
             var response = pictogramcontroller.ReadPictogram(picto.Id);
             var result = response.Result as ObjectResult;
             var actual = result.Value as ErrorResponse;
-            var expected = ErrorCode.MissingProperties;
+            var expected = ErrorCode.UserNotFound;
 
             //assert
             Assert.Equal(expected, actual.ErrorCode);
@@ -171,7 +170,8 @@ namespace GirafRest.Test
             var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
             var pictoRep = pictogramcontroller.PictogramRepository;
 
-            GirafUser usr = null;
+            var usr = new GirafUser("Jan", "Jan", new Department(), GirafRoles.SuperUser);
+            usr.Id = "1";
 
             Pictogram picto = new Pictogram("foo", AccessLevel.PRIVATE);
             picto.Id = 1;
@@ -179,14 +179,14 @@ namespace GirafRest.Test
             var pictoWeek = new WeekPictogramDTO(picto);
 
             //mock
-            pictoRep.Setup(repo => repo.GetByID(picto.Id)).Returns(picto);
+            pictoRep.Setup(repo => repo.GetPictogramsById(picto.Id)).Returns(Task.FromResult<Pictogram>(picto));
             girafService.Setup(repo => repo.LoadBasicUserDataAsync(HttpContext.User)).Returns(Task.FromResult<GirafUser>(usr));
 
             //act
             var response = pictogramcontroller.ReadPictogram(picto.Id);
             var result = response.Result as ObjectResult;
             var actual = result.Value as ErrorResponse;
-            var expected = ErrorCode.UserNotFound;
+            var expected = ErrorCode.NotAuthorized;
 
             //assert
             Assert.Equal(expected, actual.ErrorCode);
@@ -336,8 +336,8 @@ namespace GirafRest.Test
 
             // mock
             girafService.Setup(repo => repo.LoadBasicUserDataAsync(HttpContext.User)).Returns(Task.FromResult<GirafUser>(usr));
-            pictoRep.Setup(repo => repo.GetByID(picto2.Id)).Returns(picto2);
-            pictoRep.Setup(repo => repo.Update(picto2));
+            pictoRep.Setup(repo => repo.GetPictogramsById(picto2.Id)).Returns(Task.FromResult<Pictogram>(picto2));
+            pictoRep.Setup(repo => repo.UpdatePictogram(picto2));
 
             //act 
             var response = pictogramcontroller.UpdatePictogramInfo(picto2.Id, pictoDTO);
@@ -505,7 +505,7 @@ namespace GirafRest.Test
 
             //mock
             girafService.Setup(repo => repo.LoadBasicUserDataAsync(HttpContext.User)).Returns(Task.FromResult<GirafUser>(usr));
-            pictoRep.Setup(repo => repo.GetByID(picto.Id)).Returns(picto);
+            pictoRep.Setup(repo => repo.GetPictogramsById(picto.Id)).Returns(Task.FromResult<Pictogram>(picto));
             pictoRep.Setup(repo => repo.Update(picto));
 
             //act
@@ -536,10 +536,9 @@ namespace GirafRest.Test
 
             //mock 
             girafService.Setup(repo => repo.LoadBasicUserDataAsync(HttpContext.User)).Returns(Task.FromResult<GirafUser>(usr));
-            pictoRep.Setup(repo => repo.GetByID(picto.Id)).Returns(picto);
+            pictoRep.Setup(repo => repo.GetPictogramsById(picto.Id)).Returns(Task.FromResult<Pictogram>(picto));
             pictoRep.Setup(repo => repo.RemoveRelations(picto)).Returns(Task.CompletedTask);
-            pictoRep.Setup(repo => repo.Remove(picto));
-            girafService.Setup(repo => repo._context.SaveChangesAsync(default, default));
+            pictoRep.Setup(repo => repo.RemovePictogram(picto)).Returns(Task.CompletedTask);
 
             //act 
             var response = pictogramcontroller.DeletePictogram(((int)picto.Id));
@@ -566,10 +565,9 @@ namespace GirafRest.Test
 
             //mock
             girafService.Setup(repo => repo.LoadBasicUserDataAsync(HttpContext.User)).Returns(Task.FromResult<GirafUser>(usr));
-            pictoRep.Setup(repo => repo.GetByID(picto.Id)).Returns(picto);
+            pictoRep.Setup(repo => repo.GetPictogramsById(picto.Id)).Returns(Task.FromResult<Pictogram>(picto));
             pictoRep.Setup(repo => repo.RemoveRelations(picto)).Returns(Task.CompletedTask);
-            pictoRep.Setup(repo => repo.Remove(picto));
-            girafService.Setup(repo => repo._context.SaveChangesAsync(default, default));
+            pictoRep.Setup(repo => repo.RemovePictogram(picto)).Returns(Task.CompletedTask);
 
             //act 
             var response = pictogramcontroller.DeletePictogram(((int)picto.Id));
@@ -596,10 +594,9 @@ namespace GirafRest.Test
 
             //mock
             girafService.Setup(repo => repo.LoadBasicUserDataAsync(HttpContext.User)).Returns(Task.FromResult<GirafUser>(usr));
-            pictoRep.Setup(repo => repo.GetByID(randomint)).Returns(picto);
+            pictoRep.Setup(repo => repo.GetPictogramsById(randomint)).Returns(Task.FromResult<Pictogram>(picto));
             pictoRep.Setup(repo => repo.RemoveRelations(picto)).Returns(Task.CompletedTask);
-            pictoRep.Setup(repo => repo.Remove(picto));
-            girafService.Setup(repo => repo._context.SaveChangesAsync(default, default));
+            pictoRep.Setup(repo => repo.RemovePictogram(picto)).Returns(Task.CompletedTask);
 
             //act 
             var response = pictogramcontroller.DeletePictogram(randomint);
@@ -627,16 +624,15 @@ namespace GirafRest.Test
 
             //mock 
             girafService.Setup(repo => repo.LoadBasicUserDataAsync(HttpContext.User)).Returns(Task.FromResult<GirafUser>(usr));
-            pictoRep.Setup(repo => repo.GetByID(picto.Id)).Returns(picto);
+            pictoRep.Setup(repo => repo.GetPictogramsById(picto.Id)).Returns(Task.FromResult<Pictogram>(picto));
             pictoRep.Setup(repo => repo.RemoveRelations(picto)).Returns(Task.CompletedTask);
-            pictoRep.Setup(repo => repo.Remove(picto));
-            girafService.Setup(repo => repo._context.SaveChangesAsync(default, default));
+            pictoRep.Setup(repo => repo.RemovePictogram(picto)).Returns(Task.CompletedTask);
 
             //act 
             var response = pictogramcontroller.DeletePictogram((int)picto.Id);
             var result = response.Result as ObjectResult;
             var actual = result.Value as ErrorResponse;
-            var expected = ErrorCode.MissingProperties;
+            var expected = ErrorCode.NotAuthorized;
 
             //assert
             Assert.Equal(expected, actual.ErrorCode);
