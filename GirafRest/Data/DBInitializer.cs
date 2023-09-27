@@ -1,16 +1,14 @@
-using GirafRest.Data;
 using GirafRest.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using GirafRest.Data.Samples;
+using SkiaSharp;
 
 namespace GirafRest.Data
 {
@@ -111,41 +109,46 @@ namespace GirafRest.Data
         //Method for generating pictograms
         private static void CreatePictograms(int count)
         {
-            System.Console.WriteLine($"Creating {count} pictograms");
-            DirectoryInfo dir = Directory.CreateDirectory("../pictograms");
-          
-            using FontFamily family = new FontFamily("Arial");
-            using Font font = new Font(
-                family,
-                48,
-                FontStyle.Regular,
-                GraphicsUnit.Pixel);
-            
+            Console.WriteLine($"Creating {count} pictograms");
+            Directory.CreateDirectory("../pictograms");
 
-            for (int i = 1; i <= count; i++)
+            using (var typeface = SKTypeface.Default)
+            using (var paint = new SKPaint())
             {
-                using Image pictogram = DrawText(i.ToString(), font, Color.Black, Color.White);
-                pictogram.Save(Path.Combine(dir.FullName, $"{i}.png"), ImageFormat.Png); 
+                paint.Typeface = typeface;
+                paint.TextSize = 48;
+                paint.IsAntialias = true;
+                paint.Color = SKColors.Black;
+
+                for (int i = 1; i <= count; i++)
+                {
+                    SKImage pictogram = DrawText(i.ToString(), paint, SKColors.White);
+                    using (Stream stream = File.OpenWrite(Path.Combine("../pictograms", $"{i}.png")))
+                    {
+                        pictogram.Encode(SKEncodedImageFormat.Png, 100).SaveTo(stream);
+                    }
+                }
             }
         }
 
-        private static Image DrawText(string text, Font font, Color textColor, Color backColor)
+        private static SKImage DrawText(string text, SKPaint paint, SKColor backColor)
         {
-            Image pictogram = new Bitmap(200, 200);
-            using StringFormat format = new StringFormat
+            using (var bitmap = new SKBitmap(200, 200))
+            using (var canvas = new SKCanvas(bitmap))
             {
-                LineAlignment = StringAlignment.Center,
-                Alignment = StringAlignment.Center
-            };
+                canvas.Clear(backColor);
 
-            using Graphics drawing = Graphics.FromImage(pictogram);
-            using Brush textBrush = new SolidBrush(textColor);
+                // Auto-centers the text
+                var textBounds = new SKRect(0,0, 200, 200);
+                paint.MeasureText(text, ref textBounds);
+                float x = (bitmap.Width - textBounds.Width) / 2;
+                float y = (bitmap.Height + textBounds.Height) / 2;
 
-            drawing.Clear(backColor);
-            drawing.DrawString(text, font, textBrush, RectangleF.FromLTRB(0, 0, 200, 200), format);
-            drawing.Save();
+                // Draw the text at the calculated position
+                canvas.DrawText(text, x, y, paint);
 
-            return pictogram;
+                return SKImage.FromBitmap(bitmap);
+            }
         }
         #endregion
 

@@ -5,11 +5,13 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using SkiaSharp;
 using Xunit;
 
 namespace GirafRest.IntegrationTest.Tests
@@ -212,12 +214,22 @@ namespace GirafRest.IntegrationTest.Tests
                 Method = HttpMethod.Get,
             };
             request.Headers.Add("Authorization", $"Bearer {await TestExtension.GetTokenAsync(_factory, _pictogramFixture.Citizen1Username, _pictogramFixture.Password)}");
-
+        
             var response = await _client.SendAsync(request);
-            var content = Image.FromStream(await response.Content.ReadAsStreamAsync());
+            var imageStream = await response.Content.ReadAsStreamAsync();
+
+            // Read the first 8 bytes from the image data
+            byte[] headerBytes = new byte[8];
+            await imageStream.ReadAsync(headerBytes, 0, 8);
+            var first8BytesOfPng = new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A };
+            
+            // Resets the stream position
+            imageStream.Seek(0, SeekOrigin.Begin);
+            var content = SKImage.FromEncodedData(imageStream);
+            
             Assert.Equal(200, content.Width);
             Assert.Equal(200, content.Height);
-            Assert.Equal("Png", content.RawFormat.ToString());
+            Assert.Equal(first8BytesOfPng, headerBytes);
         }
 
         /// <summary>
