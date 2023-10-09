@@ -1,7 +1,7 @@
 # Web-api
 This repository contains the REST API which the weekplanner uses to connect with the database through, here the web-api, server and database make out the backend of the project.
 
-The web-api is written as a .NET project and it is therefore written in C#. The current version of the project is .NET 6 and .NET-EF 6, and it is not compatible with newer versions of these frameworks. The project consists of different controllers with endpoints for the requests made by the client, repositories for accessing the database through and models, which translates into the different entities/tables that are in the database.
+The web-api is written as a .NET project and it is therefore written in C#. The current version of the project is .NET 8 and EF6, and it is not compatible with newer versions of these frameworks. The project consists of different controllers with endpoints for the requests made by the client, repositories for accessing the database through and models, which translates into the different entities/tables that are in the database.
 
 # Branches
 This repository uses the scaled trunkbased branching strategy, as explained here: [Github setup](https://github.com/aau-giraf/.github/blob/main/wiki/about/github.md). In this repository the "trunk" is named develop, and this is the branch that all developers should branch from when solving an issue. The naming convention for these branches are:
