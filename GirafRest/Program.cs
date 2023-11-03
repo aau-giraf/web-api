@@ -67,10 +67,10 @@ namespace GirafRest
                 .ConfigureLogging((hostingContext, logging) =>
                 {
                     logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                    logging.SetMinimumLevel(LogLevel.Warning);
                 })
                .UseDefaultServiceProvider(options => options.ValidateScopes = false)
                .Build();
-            
         }
        
     }
