@@ -58,6 +58,7 @@ namespace GirafRest.Models.DTOs
             }
 
         }
+
         public override bool Equals(object obj)
         {
 

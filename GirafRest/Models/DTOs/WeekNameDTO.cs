@@ -40,17 +40,16 @@ namespace GirafRest
             this.WeekNumber = weekNumber;
         }
 
-        public int CompareTo( WeekNameDTO other)
+        public int CompareTo(WeekNameDTO other)
         {
             if (this.WeekYear.CompareTo(other.WeekYear) != 0)
             {
-                return -1*this.WeekYear.CompareTo(other.WeekYear);
-            }else
-            {
-                return -1*this.WeekNumber.CompareTo(other.WeekNumber);
+                return -1 * this.WeekYear.CompareTo(other.WeekYear);
             }
-               
-           
+            else
+            {
+                return -1 * this.WeekNumber.CompareTo(other.WeekNumber);
+            }
         }
     }
 }
