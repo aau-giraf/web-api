@@ -123,6 +123,11 @@ namespace GirafRest.Extensions
             }
         }
         
+        /// <summary>
+        /// Extension method for enabling local docker environment
+        /// </summary>
+        /// <param name="hostEnvironment"></param>
+        /// <returns></returns>
         public static bool IsLocalDocker(this IHostEnvironment hostEnvironment)
         {
             ArgumentNullException.ThrowIfNull(hostEnvironment);
