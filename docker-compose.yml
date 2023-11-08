@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  api:
+    build: .
+    ports:
+      - 5000:5000
+    environment:
+       DB_URL: mysql_connection_string
+  database:
+    image: mysql
+    ports:
+      - 3306:3306
+    volumes:
+      -
+volumes:
+  webapi
