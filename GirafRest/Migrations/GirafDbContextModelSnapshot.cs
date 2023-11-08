@@ -16,7 +16,7 @@ namespace GirafRest.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0-rc.1.23419.6")
+                .HasAnnotation("ProductVersion", "6.0.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("GirafRest.Models.Activity", b =>
@@ -63,7 +63,7 @@ namespace GirafRest.Migrations
                         .HasColumnName("id");
 
                     b.Property<string>("CitizenId")
-                        .HasColumnType("varchar(95)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Name")
                         .HasColumnType("longtext")
@@ -94,7 +94,7 @@ namespace GirafRest.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("varchar(95)");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("Key");
 
@@ -129,7 +129,7 @@ namespace GirafRest.Migrations
             modelBuilder.Entity("GirafRest.Models.GirafRole", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(95)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -155,7 +155,7 @@ namespace GirafRest.Migrations
             modelBuilder.Entity("GirafRest.Models.GirafUser", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("varchar(95)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
@@ -249,11 +249,11 @@ namespace GirafRest.Migrations
 
                     b.Property<string>("CitizenId")
                         .IsRequired()
-                        .HasColumnType("varchar(95)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("GuardianId")
                         .IsRequired()
-                        .HasColumnType("varchar(95)");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
 
@@ -286,7 +286,7 @@ namespace GirafRest.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("varchar(95)");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
 
@@ -330,12 +330,6 @@ namespace GirafRest.Migrations
                     b.Property<int>("DefaultTimer")
                         .HasColumnType("int");
 
-                    b.Property<bool>("DisplayDaysRelativeLandscape")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<bool>("DisplayDaysRelativePortrait")
-                        .HasColumnType("tinyint(1)");
-
                     b.Property<bool>("GreyScale")
                         .HasColumnType("tinyint(1)");
 
@@ -345,10 +339,7 @@ namespace GirafRest.Migrations
                     b.Property<int?>("NrOfActivitiesToDisplay")
                         .HasColumnType("int");
 
-                    b.Property<int?>("NrOfDaysToDisplayLandscape")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("NrOfDaysToDisplayPortrait")
+                    b.Property<int?>("NrOfDaysToDisplay")
                         .HasColumnType("int");
 
                     b.Property<int>("Orientation")
@@ -408,7 +399,7 @@ namespace GirafRest.Migrations
 
                     b.Property<string>("OtherKey")
                         .IsRequired()
-                        .HasColumnType("varchar(95)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<long>("PictogramKey")
                         .HasColumnType("bigint");
@@ -430,7 +421,7 @@ namespace GirafRest.Migrations
                         .HasColumnName("id");
 
                     b.Property<string>("GirafUserId")
-                        .HasColumnType("varchar(95)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Name")
                         .HasColumnType("longtext");
@@ -455,6 +446,35 @@ namespace GirafRest.Migrations
                     b.HasIndex("ThumbnailKey");
 
                     b.ToTable("Weeks");
+                });
+
+            modelBuilder.Entity("GirafRest.Models.Weekday", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .HasColumnName("id");
+
+                    b.Property<int>("Day")
+                        .HasColumnType("int");
+
+                    b.Property<long?>("WeekId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long?>("WeekTemplateId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id")
+                        .IsUnique()
+                        .HasAnnotation("SqlServer:Clustered", true);
+
+                    b.HasIndex("WeekId");
+
+                    b.HasIndex("WeekTemplateId");
+
+                    b.ToTable("Weekdays");
                 });
 
             modelBuilder.Entity("GirafRest.Models.WeekDayColor", b =>
@@ -504,35 +524,6 @@ namespace GirafRest.Migrations
                     b.ToTable("WeekTemplates");
                 });
 
-            modelBuilder.Entity("GirafRest.Models.Weekday", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    b.Property<int>("Day")
-                        .HasColumnType("int");
-
-                    b.Property<long?>("WeekId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("WeekTemplateId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Id")
-                        .IsUnique()
-                        .HasAnnotation("SqlServer:Clustered", true);
-
-                    b.HasIndex("WeekId");
-
-                    b.HasIndex("WeekTemplateId");
-
-                    b.ToTable("Weekdays");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.Property<int>("Id")
@@ -547,7 +538,7 @@ namespace GirafRest.Migrations
 
                     b.Property<string>("RoleId")
                         .IsRequired()
-                        .HasColumnType("varchar(95)");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
 
@@ -570,7 +561,7 @@ namespace GirafRest.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("varchar(95)");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("Id");
 
@@ -582,17 +573,17 @@ namespace GirafRest.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("varchar(95)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("ProviderKey")
-                        .HasColumnType("varchar(95)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("ProviderDisplayName")
                         .HasColumnType("longtext");
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("varchar(95)");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("LoginProvider", "ProviderKey");
 
@@ -604,10 +595,10 @@ namespace GirafRest.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(95)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("RoleId")
-                        .HasColumnType("varchar(95)");
+                        .HasColumnType("varchar(255)");
 
                     b.HasKey("UserId", "RoleId");
 
@@ -619,13 +610,13 @@ namespace GirafRest.Migrations
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
                     b.Property<string>("UserId")
-                        .HasColumnType("varchar(95)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("LoginProvider")
-                        .HasColumnType("varchar(95)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Name")
-                        .HasColumnType("varchar(95)");
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("Value")
                         .HasColumnType("longtext");
@@ -779,6 +770,19 @@ namespace GirafRest.Migrations
                     b.Navigation("Thumbnail");
                 });
 
+            modelBuilder.Entity("GirafRest.Models.Weekday", b =>
+                {
+                    b.HasOne("GirafRest.Models.Week", null)
+                        .WithMany("Weekdays")
+                        .HasForeignKey("WeekId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("GirafRest.Models.WeekTemplate", null)
+                        .WithMany("Weekdays")
+                        .HasForeignKey("WeekTemplateId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("GirafRest.Models.WeekDayColor", b =>
                 {
                     b.HasOne("GirafRest.Models.Setting", "Setting")
@@ -807,19 +811,6 @@ namespace GirafRest.Migrations
                     b.Navigation("Department");
 
                     b.Navigation("Thumbnail");
-                });
-
-            modelBuilder.Entity("GirafRest.Models.Weekday", b =>
-                {
-                    b.HasOne("GirafRest.Models.Week", null)
-                        .WithMany("Weekdays")
-                        .HasForeignKey("WeekId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("GirafRest.Models.WeekTemplate", null)
-                        .WithMany("Weekdays")
-                        .HasForeignKey("WeekTemplateId")
-                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -919,14 +910,14 @@ namespace GirafRest.Migrations
                     b.Navigation("Weekdays");
                 });
 
-            modelBuilder.Entity("GirafRest.Models.WeekTemplate", b =>
-                {
-                    b.Navigation("Weekdays");
-                });
-
             modelBuilder.Entity("GirafRest.Models.Weekday", b =>
                 {
                     b.Navigation("Activities");
+                });
+
+            modelBuilder.Entity("GirafRest.Models.WeekTemplate", b =>
+                {
+                    b.Navigation("Weekdays");
                 });
 #pragma warning restore 612, 618
         }
