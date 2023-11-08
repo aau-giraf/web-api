@@ -1,16 +1,26 @@
 version: "3.8"
 services:
-  api:
+  webapi:
+    container_name: GirafRestApi
     build: .
     ports:
       - 5000:5000
+    depends_on:
+      - db
     environment:
-       DB_URL: mysql_connection_string
-  database:
+      ASPNETCORE_ENVIRONMENT: 'LocalDocker'
+  db:
+    container_name: GirafMysqlDatabase
     image: mysql
-    ports:
+    restart: always
+    ports:  
       - 3306:3306
     volumes:
-      -
+      - db_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: 'giraf'
+      MYSQL_USER: 'local'
+      MYSQL_PASSWORD: 'Giraf123'
+      MYSQL_RANDOM_ROOT_PASSWORD: 1
 volumes:
-  webapi
+  db_data:
