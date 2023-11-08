@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -120,6 +121,13 @@ namespace GirafRest.Extensions
                     RequestPath = new PathString("/logs")
                 });
             }
+        }
+        
+        public static bool IsLocalDocker(this IHostEnvironment hostEnvironment)
+        {
+            ArgumentNullException.ThrowIfNull(hostEnvironment);
+            
+            return hostEnvironment.IsEnvironment("LocalDocker");
         }
 
     }
