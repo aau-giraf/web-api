@@ -46,21 +46,6 @@ namespace GirafRest.IntegrationTest.Extensions
             return content["data"]["id"].ToString();
         }
 
-        public static async Task<long> GetDepartmentIdAsync(CustomWebApplicationFactory factory, string name)
-        {
-            var client = factory.CreateClient();
-            HttpRequestMessage request = new HttpRequestMessage()
-            {
-                RequestUri = new Uri($"{BASE_URL}v1/Department/"),
-                Method = HttpMethod.Get
-            };
-
-            var response = await client.SendAsync(request);
-
-            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
-            return content["data"].FirstOrDefault(data => data["name"].ToString() == name)["id"].ToObject<long>();
-        }
-
         public static async Task<string> GetResetTokenAsync(CustomWebApplicationFactory factory, string username, string password, string token, string tokenPassword)
         {
             var client = factory.CreateClient();
@@ -156,22 +141,6 @@ namespace GirafRest.IntegrationTest.Extensions
             request.Headers.Add("Authorization", $"Bearer {await GetTokenAsync(factory, username, password)}");
 
             var response = await client.SendAsync(request);
-        }
-
-        public static async Task<JToken> GetWeekAsync(CustomWebApplicationFactory factory, string username, string password)
-        {
-            var client = factory.CreateClient();
-            HttpRequestMessage request = new HttpRequestMessage()
-            {
-                RequestUri = new Uri($"{BASE_URL}v1/Week/{await GetUserIdAsync(factory, username, password)}/week"),
-                Method = HttpMethod.Get,
-            };
-            request.Headers.Add("Authorization", $"Bearer {await GetTokenAsync(factory, username, password)}");
-
-            var response = await client.SendAsync(request);
-            var content = JObject.Parse(await response.Content.ReadAsStringAsync());
-
-            return content["data"];
         }
 
         public static async Task<string> GetWeekTemplateIdAsync(CustomWebApplicationFactory factory, string username, string password, string templateName)

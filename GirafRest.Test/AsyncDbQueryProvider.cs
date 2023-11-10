@@ -27,7 +27,7 @@ namespace GirafRest.Test
 
         public IQueryable<TElement> CreateQuery<TElement>(Expression expression)
         {
-            return new TestDbAsyncEnumerable<TElement>(expression); 
+            return new TestDbAsyncEnumerable<TElement>(expression);
         }
 
         public object Execute(Expression expression)
@@ -44,11 +44,11 @@ namespace GirafRest.Test
             return _inner.Execute<TResult>(expression); 
         }
 
-        public IAsyncEnumerable<TResult> ExecuteAsync<TResult>(Expression expression)
+        /*public IAsyncEnumerable<TResult> ExecuteAsync<TResult>(Expression expression)
         {
             Task<TResult> task = Task.FromResult(Execute<TResult>(expression));
             return (IAsyncEnumerable<TResult>) task;
-        }
+        }*/
 
         public Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
         {
