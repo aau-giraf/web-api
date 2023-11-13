@@ -24,7 +24,7 @@ namespace GirafRest
         /// <param name="args">program arguments</param>
         public static void Main(string[] args)
         {
-            Console.WriteLine("Welcome to Giraf REST Server.");
+            Console.WriteLine("Welcome to Giraf REST Server. :-)");
 
             //Parse all the program arguments and stop execution if any invalid arguments were found.
             var pa = new ProgramArgumentParser();
@@ -35,8 +35,6 @@ namespace GirafRest
             try
             {
                 BuildWebHost(args).Run();
-                Console.WriteLine("webhost built");
-                
             }
             catch (MySqlException e)
             {
