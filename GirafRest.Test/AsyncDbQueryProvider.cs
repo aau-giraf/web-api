@@ -44,17 +44,6 @@ namespace GirafRest.Test
             return _inner.Execute<TResult>(expression); 
         }
 
-        /*public IAsyncEnumerable<TResult> ExecuteAsync<TResult>(Expression expression)
-        {
-            Task<TResult> task = Task.FromResult(Execute<TResult>(expression));
-            return (IAsyncEnumerable<TResult>) task;
-        }*/
-
-        public Task<TResult> ExecuteAsync<TResult>(Expression expression, CancellationToken cancellationToken)
-        {
-            Task<TResult> task = Task.FromResult(Execute<TResult>(expression));
-            return task;
-        }
 
         // Appeared from the update to .NET Core 3.1.
         // Reference: https://stackoverflow.com/questions/57314896/iasyncqueryprovider-mock-issue-when-migrated-to-net-core-3-adding-tresult-iasyn
