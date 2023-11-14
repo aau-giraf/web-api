@@ -95,30 +95,5 @@ namespace GirafRest.Extensions
             options.Password.RequireNonAlphanumeric = false;
             options.Password.RequireUppercase = false;
         }
-
-        /// <summary>
-        /// Configures logging for the server. Depending on the program arguments the server will either log
-        /// solely to the console or both the console and a log-file (that may be found on host/logs/log-yyyyMMdd.txt).
-        /// </summary>
-        /// <param name="app">A reference to the application builder, that is used to define the behaviour of the server.</param>
-        // public static void ConfigureLogging(this IApplicationBuilder app)
-        // {
-        //     if (ProgramOptions.LogToFile)
-        //     {
-
-        //         //Ensure that the folder for the log-files exists - create it if not.
-        //         string directoryPath = Path.Combine(Directory.GetCurrentDirectory(), ProgramOptions.LogDirectory);
-        //         if (!Directory.Exists(directoryPath))
-        //             Directory.CreateDirectory(directoryPath);
-
-        //         //Tells ASP.NET that the log-directory is accessible remotely on the /logs-url
-        //         app.UseStaticFiles(new StaticFileOptions()
-        //         {
-        //             FileProvider = new PhysicalFileProvider(
-        //                 directoryPath),
-        //             RequestPath = new PathString("/logs")
-        //         });
-        //     }
-        // }
     }
 }
