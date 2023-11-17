@@ -6,18 +6,6 @@
     public class TimerDTO
     {
         /// <summary>
-        /// Constructor for DTO
-        /// </summary>
-        public TimerDTO(long startTime, long progress, long fullLength, bool paused, long key)
-        {
-            StartTime = startTime;
-            Progress = progress;
-            FullLength = fullLength;
-            Paused = paused;
-            Key = key;
-        }
-
-        /// <summary>
         /// Constructor given a Timer
         /// </summary>
         public TimerDTO(Timer timer)

@@ -11,54 +11,28 @@ namespace GirafRest.IntegrationTest.Tests
     [Collection("Integration test")]
     public class ActivityControllerTest
     {
-        // The below is taken from the python integration tests and havent been implemented since they are skipped
         /*
-        @order
-        @skip("Skipping since endpoint is broken")
-        def test_activity_set_new_user_activity(self):
-            """
-            Testing creation of user specific activity
+         ActivityControllerTest unimplemented; requires fix!
 
-            Endpoint: POST:/v2/Activity/{user_id}/{weekplan_name}/{week_year}/{week_number}/{week_day_number}
-            """
-            global activity_id
-            data = {"pictogram": {"id": 1}}
-            response = post(f'{BASE_URL}v2/Activity/{user_id}/{self.weekplan_name}/{self.week_year}/{self.week_number}/{self.week_day_number}', headers=auth(guardian_token), json=data,)
-            response_body = response.json()
+            1. Testing creation of user specific activity
 
-            self.assertEqual(response.status_code, HTTPStatus.CREATED)
-            self.assertIsNotNone(response_body['data'])
-            self.assertIsNotNone(response_body['data']['id'])
-            activity_id = response_body['data']['id']
+               Endpoint: POST:/v2/Activity/{userId}/{weekplanName}/{weekYear}/{weekNumber}/{weekDayNmb}
 
+            2. Testing PUT update to activity for a specific user
 
-        @order
-        @skip("Skipping since test is broken")
-        def test_activity_update_user_activity(self):
-            """
-            Testing PATCH update to activity for a specific user
+               Endpoint: PUT:/v2/Activity/{userId}/update
 
-            Endpoint: PATCH:/v2/Activity/{user_id}/update
-            """
+            3. Testing DELETE on user specific activity
+        
+               Endpoint: DELETE:/v2/Activity/{userId}/delete/{activityId}
+            
+            4. Testing GET users activity from an activityId
 
-            data = {'pictogram': {'id': 6}, 'id': activity_id}
-            response = patch(f'{BASE_URL}v2/Activity/{user_id}/update', json=data,
-                             headers=auth(guardian_token))
+               Endpoint: GET:/v2/Activity/{userId}/{activityId}
 
-            self.assertEqual(response.status_code, HTTPStatus.OK)
+            5. Testing PUT on update timer with userId
 
-        @order
-        @skip("Skipping since test is broken")
-        def test_activity_delete_user_activity(self):
-            """
-            Testing DELETE on user specific activity
-
-            Endpoint: DELETE:/v2/Activity/{user_id}/delete/{activity_id}
-            """
-
-            response = delete(f'{BASE_URL}v2/Activity/{user_id}/delete/{activity_id}', headers=auth(guardian_token))
-
-            self.assertEqual(response.status_code, HTTPStatus.OK)
+               Endpoint: PUT:/v2/Activity/{userId}/updatetimer
     */
     }
 }

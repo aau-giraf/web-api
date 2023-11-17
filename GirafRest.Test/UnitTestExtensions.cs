@@ -644,7 +644,6 @@ namespace GirafRest.Test
 
 
             public readonly Mock<GirafDbContext> MockDbContext;
-            public readonly MockUserManager MockUserManager;
             public Mock<HttpContext> MockHttpContext { get; set; }
             public Mock<ILoggerFactory> MockLoggerFactory { get; private set; }
             public Mock<IGirafService> MockGirafService { get; private set; }
@@ -655,7 +654,6 @@ namespace GirafRest.Test
             public TestContext()
             {
                 MockDbContext = CreateMockDbContext();
-                MockUserManager = CreateMockUserManager(this);
 
                 var mockLogger = new Mock<ILogger>();
 
@@ -708,13 +706,6 @@ namespace GirafRest.Test
                 MockUsers[0].Department = MockDepartments[0];
                 MockUsers[1].Department = MockDepartments[1];
                 return dbMock;
-            }
-
-            private MockUserManager CreateMockUserManager(TestContext tc)
-            {
-                var userStore = new Mock<IUserStore<GirafUser>>();
-                var umMock = new MockUserManager(userStore.Object, tc);
-                return umMock;
             }
 
             private Mock<MockRoleManager> CreateMockRoleManager()
