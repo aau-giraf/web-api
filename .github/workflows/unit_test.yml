@@ -18,6 +18,6 @@ jobs:
     - name: Build with dotnet
       run: dotnet build --configuration Release
     - name: Tests
-      run: dotnet test ./GirafRest.Test/ /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:ExcludeByFile=\"**/Migrations/**/*\"
+      run: dotnet test ./Giraf.UnitTest/ /p:CollectCoverage=true /p:CoverletOutputFormat=lcov /p:ExcludeByFile=\"**/Migrations/**/*\"
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1.0.6
