@@ -40,7 +40,6 @@ namespace GirafRest.Controllers
         [ProducesResponseType(typeof(SuccessResponse), StatusCodes.Status200OK)]
         public ActionResult Status()
         {
-            Console.WriteLine("return ok on status");
             return Ok(new SuccessResponse("GIRAF API is running!"));
         }
 
