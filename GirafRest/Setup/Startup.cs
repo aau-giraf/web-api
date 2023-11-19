@@ -25,6 +25,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GirafRest.IRepositories;
 using GirafRest.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace GirafRest.Setup
 {
@@ -290,6 +291,12 @@ namespace GirafRest.Setup
             });
 
             GirafDbContext context = app.ApplicationServices.GetService<GirafDbContext>();
+            //Only migrate in development or controlled environments.
+            //Can be problematic in production
+            if (env.EnvironmentName == "Development" || env.EnvironmentName == "LocalDocker")
+            {
+                context.Database.Migrate();
+            }
 
             // Create roles if they do not exist
             roleManager.EnsureRoleSetup().Wait();

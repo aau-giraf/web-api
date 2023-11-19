@@ -6,21 +6,28 @@ services:
     ports:
       - 5000:5000
     depends_on:
-      - db
+      db:
+        condition: service_healthy  
     environment:
       ASPNETCORE_ENVIRONMENT: 'LocalDocker'
+
   db:
     container_name: GirafMysqlDatabase
     image: mysql
     restart: always
-    ports:  
-      - 3306:3306
-    volumes:
-      - db_data:/var/lib/mysql
     environment:
       MYSQL_DATABASE: 'giraf'
       MYSQL_USER: 'local'
       MYSQL_PASSWORD: 'Giraf123'
       MYSQL_RANDOM_ROOT_PASSWORD: 1
+    healthcheck:
+      test: "mysql -u$${MYSQL_USER} -p$${MYSQL_PASSWORD} -e 'select 1;'"
+      interval: 1s
+      retries: 120
+    ports:  
+      - 3306:3306
+    volumes:
+      - db_data:/var/lib/mysql
+
 volumes:
   db_data:
