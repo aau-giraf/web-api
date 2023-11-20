@@ -38,7 +38,7 @@ namespace GirafRest.Data
             // Verify that the database has already been created, before adding data to it
             _context.Database.EnsureCreated();
             
-
+            //If setting is not present in switch, development setting is chosen as default
             switch (environmentName)
             {
                 case "Development":
@@ -54,6 +54,7 @@ namespace GirafRest.Data
                     break;
 
                 default:
+                    _sampleDataHandler = new SampleDataHandler("DB_data.dev.json");
                     break;
             }
 
