@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
-using GirafRest.Models;
+using GirafAPI.Models;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using GirafRest.Models.Responses;
+using GirafAPI.Models.Responses;
 using Microsoft.AspNetCore.Http;
-using GirafRest.Models.DTOs;
+using GirafAPI.Models.DTOs;
 using System.Linq;
 using Giraf.UnitTest.Mocks;
 using GirafEntities.User;
-using GirafRest;
+using GirafAPI;
 
 namespace Giraf.UnitTest.Controllers
 {

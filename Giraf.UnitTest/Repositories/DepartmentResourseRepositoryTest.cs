@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using GirafEntities.User;
 using GirafRepositories.Persistence;
-using GirafRest.Data;
-using GirafRest.Models;
-using GirafRest.Repositories;
+using GirafAPI.Data;
+using GirafAPI.Models;
+using GirafAPI.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 

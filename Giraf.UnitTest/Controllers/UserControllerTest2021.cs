@@ -1,7 +1,7 @@
 ﻿
 using GirafEntities.User;
 using Xunit;
-using GirafRest.Models.DTOs;
+using GirafAPI.Models.DTOs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 

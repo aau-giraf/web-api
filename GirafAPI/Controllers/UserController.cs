@@ -1,10 +1,10 @@
 using GirafEntities.User;
 using GirafRepositories.Interfaces;
-using GirafRest.Extensions;
-using GirafRest.Models;
-using GirafRest.Models.DTOs;
-using GirafRest.Models.Responses;
-using GirafRest.Interfaces;
+using GirafAPI.Extensions;
+using GirafAPI.Models;
+using GirafAPI.Models.DTOs;
+using GirafAPI.Models.Responses;
+using GirafAPI.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -16,7 +16,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace GirafRest.Controllers
+namespace GirafAPI.Controllers
 {
     /// <summary>
     /// Manages Users, settings etc.

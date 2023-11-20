@@ -1,9 +1,9 @@
 using GirafEntities.User;
 using GirafRepositories.Interfaces;
-using GirafRest.Models;
-using GirafRest.Models.DTOs;
-using GirafRest.Models.Responses;
-using GirafRest.Interfaces;
+using GirafAPI.Models;
+using GirafAPI.Models.DTOs;
+using GirafAPI.Models.Responses;
+using GirafAPI.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,10 +12,10 @@ using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using static GirafRest.Shared.SharedMethods;
+using static GirafAPI.Shared.SharedMethods;
 
 
-namespace GirafRest.Controllers
+namespace GirafAPI.Controllers
 {
     /// <summary>
     /// Controller for managing Weeks, CRUD-ish

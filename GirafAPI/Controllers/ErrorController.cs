@@ -1,11 +1,11 @@
-﻿using GirafRest.Models.Responses;
+﻿using GirafAPI.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
-namespace GirafRest.Controllers
+namespace GirafAPI.Controllers
 {
     /// <summary>
     /// Handles errors

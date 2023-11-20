@@ -1,10 +1,10 @@
 
-using GirafRest.Models.Responses;
+using GirafAPI.Models.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 
-namespace GirafRest.Controllers {
+namespace GirafAPI.Controllers {
     /// <summary>
     /// Extensions for the base controller
     /// </summary>

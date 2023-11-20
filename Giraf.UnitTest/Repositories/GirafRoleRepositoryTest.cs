@@ -5,10 +5,10 @@ using System.Linq;
 using GirafEntities.User;
 using GirafRepositories.Persistence;
 using GirafRepositories.User;
-using GirafRest.Data;
-using GirafRest.Models;
-using GirafRest.Models.DTOs;
-using GirafRest.Repositories;
+using GirafAPI.Data;
+using GirafAPI.Models;
+using GirafAPI.Models.DTOs;
+using GirafAPI.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using GirafRest;
+using GirafAPI;
 using Xunit;
 namespace Giraf.UnitTest
 {

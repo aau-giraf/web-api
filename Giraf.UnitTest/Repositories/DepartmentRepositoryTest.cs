@@ -2,9 +2,9 @@
 using System;
 using GirafRepositories.Persistence;
 using GirafRepositories.User;
-using GirafRest.Data;
-using GirafRest.Models;
-using GirafRest.Repositories;
+using GirafAPI.Data;
+using GirafAPI.Models;
+using GirafAPI.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 

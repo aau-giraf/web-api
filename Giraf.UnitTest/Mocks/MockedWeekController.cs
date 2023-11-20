@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 using GirafRepositories.Interfaces;
-using GirafRest.Controllers;
+using GirafAPI.Controllers;
 using Moq;
-using GirafRest.Interfaces;
+using GirafAPI.Interfaces;
 using Microsoft.Extensions.Logging;
-using GirafRest.Shared;
+using GirafAPI.Shared;
 
 namespace Giraf.UnitTest.Mocks
 {

@@ -56,7 +56,7 @@ namespace GirafRest.Models.DTOs
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="T:GirafRest.Models.DTOs.GirafUserDTO"/> class.
+        /// Initializes a new instance of the <see cref="T:GirafAPI.Models.DTOs.GirafUserDTO"/> class.
         /// </summary>
         /// <param name="user">User.</param>
         /// <param name="userRole">User role.</param>

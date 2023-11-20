@@ -2,10 +2,10 @@
 using System;
 using System.Linq;
 using GirafRepositories.Persistence;
-using GirafRest.Data;
-using GirafRest.Models;
-using GirafRest.Models.DTOs;
-using GirafRest.Repositories;
+using GirafAPI.Data;
+using GirafAPI.Models;
+using GirafAPI.Models.DTOs;
+using GirafAPI.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 

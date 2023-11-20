@@ -1,4 +1,4 @@
-﻿using GirafRest.Models;
+﻿using GirafAPI.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;

@@ -4,8 +4,8 @@ using System.Linq;
 using System.Text;
 using GirafEntities.WeekPlanner;
 using GirafRepositories.Persistence;
-using GirafRest.Data;
-using GirafRest.Models;
+using GirafAPI.Data;
+using GirafAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Giraf.UnitTest.FakeRepositorysContext

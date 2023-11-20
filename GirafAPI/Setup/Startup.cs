@@ -5,10 +5,10 @@ using GirafRepositories.Interfaces;
 using GirafRepositories.Persistence;
 using GirafRepositories.User;
 using GirafRepositories.WeekPlanner;
-using GirafRest.Data;
-using GirafRest.Extensions;
-using GirafRest.Interfaces;
-using GirafRest.Models;
+using GirafAPI.Data;
+using GirafAPI.Extensions;
+using GirafAPI.Interfaces;
+using GirafAPI.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,11 +28,11 @@ using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using GirafRest.Repositories;
-using GirafRest.Services;
+using GirafAPI.Repositories;
+using GirafAPI.Services;
 using GirafServices;
 
-namespace GirafRest.Setup
+namespace GirafAPI.Setup
 {
     /// <summary>
     /// The Startup class, that defines how the server should behave. In this class you may add services to
@@ -178,7 +178,7 @@ namespace GirafRest.Setup
                     Version = "v1" 
                 });
                 var basePath = AppContext.BaseDirectory;
-                var xmlPath = Path.Combine(basePath, "GirafRest.xml");
+                var xmlPath = Path.Combine(basePath, "GirafAPI.xml");
                 c.IncludeXmlComments(xmlPath);
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {

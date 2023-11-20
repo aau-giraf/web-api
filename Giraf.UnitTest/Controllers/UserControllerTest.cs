@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GirafEntities.User;
-using GirafRest.Models;
-using GirafRest.Models.DTOs;
-using GirafRest.Models.Responses;
+using GirafAPI.Models;
+using GirafAPI.Models.DTOs;
+using GirafAPI.Models.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;

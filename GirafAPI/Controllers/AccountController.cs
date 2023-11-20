@@ -1,11 +1,11 @@
 ﻿using GirafEntities.User;
 using GirafRepositories.Interfaces;
-using GirafRest.Models;
-using GirafRest.Models.DTOs;
-using GirafRest.Models.DTOs.AccountDTOs;
-using GirafRest.Models.Responses;
-using GirafRest.Services;
-using GirafRest.Interfaces;
+using GirafAPI.Models;
+using GirafAPI.Models.DTOs;
+using GirafAPI.Models.DTOs.AccountDTOs;
+using GirafAPI.Models.Responses;
+using GirafAPI.Services;
+using GirafAPI.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -22,7 +22,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GirafRest.Controllers
+namespace GirafAPI.Controllers
 {
     /// <summary>
     /// Manages accounts such as login, sign up, etc.

@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using GirafEntities.User;
 using GirafRepositories.Interfaces;
-using GirafRest.Controllers;
-using GirafRest.Interfaces;
-using GirafRest.Models;
+using GirafAPI.Controllers;
+using GirafAPI.Interfaces;
+using GirafAPI.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Moq;

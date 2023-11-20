@@ -1,7 +1,7 @@
-﻿using GirafRest.Controllers;
-using GirafRest.Interfaces;
-using GirafRest.Models;
-using GirafRest.Services;
+﻿using GirafAPI.Controllers;
+using GirafAPI.Interfaces;
+using GirafAPI.Models;
+using GirafAPI.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;

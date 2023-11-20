@@ -20,7 +20,7 @@ namespace GirafRest.Migrations
                 .HasAnnotation("ProductVersion", "3.1.8")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
-            modelBuilder.Entity("GirafRest.GuardianRelation", b =>
+            modelBuilder.Entity("GirafAPI.GuardianRelation", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -43,7 +43,7 @@ namespace GirafRest.Migrations
                     b.ToTable("GuardianRelations");
                 });
 
-            modelBuilder.Entity("GirafRest.Models.Activity", b =>
+            modelBuilder.Entity("GirafAPI.Models.Activity", b =>
                 {
                     b.Property<long>("Key")
                         .ValueGeneratedOnAdd()
@@ -79,7 +79,7 @@ namespace GirafRest.Migrations
                     b.ToTable("Activities");
                 });
 
-            modelBuilder.Entity("GirafRest.Models.AlternateName", b =>
+            modelBuilder.Entity("GirafAPI.Models.AlternateName", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -109,7 +109,7 @@ namespace GirafRest.Migrations
                     b.ToTable("AlternateNames");
                 });
 
-            modelBuilder.Entity("GirafRest.Models.Department", b =>
+            modelBuilder.Entity("GirafAPI.Models.Department", b =>
                 {
                     b.Property<long>("Key")
                         .ValueGeneratedOnAdd()
@@ -129,7 +129,7 @@ namespace GirafRest.Migrations
                     b.ToTable("Departments");
                 });
 
-            modelBuilder.Entity("GirafRest.Models.DepartmentResource", b =>
+            modelBuilder.Entity("GirafAPI.Models.DepartmentResource", b =>
                 {
                     b.Property<long>("Key")
                         .ValueGeneratedOnAdd()
@@ -150,7 +150,7 @@ namespace GirafRest.Migrations
                     b.ToTable("DepartmentResources");
                 });
 
-            modelBuilder.Entity("GirafRest.Models.GirafRole", b =>
+            modelBuilder.Entity("GirafAPI.Models.GirafRole", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
@@ -176,7 +176,7 @@ namespace GirafRest.Migrations
                     b.ToTable("AspNetRoles");
                 });
 
-            modelBuilder.Entity("GirafRest.Models.GirafUser", b =>
+            modelBuilder.Entity("GirafAPI.Models.GirafUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("varchar(255) CHARACTER SET utf8mb4");
@@ -264,7 +264,7 @@ namespace GirafRest.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
-            modelBuilder.Entity("GirafRest.Models.Pictogram", b =>
+            modelBuilder.Entity("GirafAPI.Models.Pictogram", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -297,7 +297,7 @@ namespace GirafRest.Migrations
                     b.ToTable("Pictograms");
                 });
 
-            modelBuilder.Entity("GirafRest.Models.Setting", b =>
+            modelBuilder.Entity("GirafAPI.Models.Setting", b =>
                 {
                     b.Property<long>("Key")
                         .ValueGeneratedOnAdd()
@@ -341,7 +341,7 @@ namespace GirafRest.Migrations
                     b.ToTable("Setting");
                 });
 
-            modelBuilder.Entity("GirafRest.Models.Timer", b =>
+            modelBuilder.Entity("GirafAPI.Models.Timer", b =>
                 {
                     b.Property<long>("Key")
                         .ValueGeneratedOnAdd()
@@ -364,7 +364,7 @@ namespace GirafRest.Migrations
                     b.ToTable("Timers");
                 });
 
-            modelBuilder.Entity("GirafRest.Models.UserResource", b =>
+            modelBuilder.Entity("GirafAPI.Models.UserResource", b =>
                 {
                     b.Property<long>("Key")
                         .ValueGeneratedOnAdd()
@@ -386,7 +386,7 @@ namespace GirafRest.Migrations
                     b.ToTable("UserResources");
                 });
 
-            modelBuilder.Entity("GirafRest.Models.Week", b =>
+            modelBuilder.Entity("GirafAPI.Models.Week", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -421,7 +421,7 @@ namespace GirafRest.Migrations
                     b.ToTable("Weeks");
                 });
 
-            modelBuilder.Entity("GirafRest.Models.WeekDayColor", b =>
+            modelBuilder.Entity("GirafAPI.Models.WeekDayColor", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -443,7 +443,7 @@ namespace GirafRest.Migrations
                     b.ToTable("WeekDayColors");
                 });
 
-            modelBuilder.Entity("GirafRest.Models.WeekTemplate", b =>
+            modelBuilder.Entity("GirafAPI.Models.WeekTemplate", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -468,7 +468,7 @@ namespace GirafRest.Migrations
                     b.ToTable("WeekTemplates");
                 });
 
-            modelBuilder.Entity("GirafRest.Models.Weekday", b =>
+            modelBuilder.Entity("GirafAPI.Models.Weekday", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
@@ -497,7 +497,7 @@ namespace GirafRest.Migrations
                     b.ToTable("Weekdays");
                 });
 
-            modelBuilder.Entity("GirafRest.PictogramRelation", b =>
+            modelBuilder.Entity("GirafAPI.PictogramRelation", b =>
                 {
                     b.Property<long>("ActivityId")
                         .HasColumnType("bigint");
@@ -614,151 +614,151 @@ namespace GirafRest.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("GirafRest.GuardianRelation", b =>
+            modelBuilder.Entity("GirafAPI.GuardianRelation", b =>
                 {
-                    b.HasOne("GirafRest.Models.GirafUser", "Citizen")
+                    b.HasOne("GirafAPI.Models.GirafUser", "Citizen")
                         .WithMany("Guardians")
                         .HasForeignKey("CitizenId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GirafRest.Models.GirafUser", "Guardian")
+                    b.HasOne("GirafAPI.Models.GirafUser", "Guardian")
                         .WithMany("Citizens")
                         .HasForeignKey("GuardianId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("GirafRest.Models.Activity", b =>
+            modelBuilder.Entity("GirafAPI.Models.Activity", b =>
                 {
-                    b.HasOne("GirafRest.Models.Weekday", "Other")
+                    b.HasOne("GirafAPI.Models.Weekday", "Other")
                         .WithMany("Activities")
                         .HasForeignKey("OtherKey")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GirafRest.Models.Timer", "Timer")
+                    b.HasOne("GirafAPI.Models.Timer", "Timer")
                         .WithMany()
                         .HasForeignKey("TimerKey")
                         .OnDelete(DeleteBehavior.SetNull);
                 });
 
-            modelBuilder.Entity("GirafRest.Models.AlternateName", b =>
+            modelBuilder.Entity("GirafAPI.Models.AlternateName", b =>
                 {
-                    b.HasOne("GirafRest.Models.GirafUser", "Citizen")
+                    b.HasOne("GirafAPI.Models.GirafUser", "Citizen")
                         .WithMany()
                         .HasForeignKey("CitizenId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("GirafRest.Models.Pictogram", "Pictogram")
+                    b.HasOne("GirafAPI.Models.Pictogram", "Pictogram")
                         .WithMany("AlternateNames")
                         .HasForeignKey("PictogramId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("GirafRest.Models.DepartmentResource", b =>
+            modelBuilder.Entity("GirafAPI.Models.DepartmentResource", b =>
                 {
-                    b.HasOne("GirafRest.Models.Department", "Other")
+                    b.HasOne("GirafAPI.Models.Department", "Other")
                         .WithMany("Resources")
                         .HasForeignKey("OtherKey")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GirafRest.Models.Pictogram", "Pictogram")
+                    b.HasOne("GirafAPI.Models.Pictogram", "Pictogram")
                         .WithMany("Departments")
                         .HasForeignKey("PictogramKey")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("GirafRest.Models.GirafUser", b =>
+            modelBuilder.Entity("GirafAPI.Models.GirafUser", b =>
                 {
-                    b.HasOne("GirafRest.Models.Department", "Department")
+                    b.HasOne("GirafAPI.Models.Department", "Department")
                         .WithMany("Members")
                         .HasForeignKey("DepartmentKey")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("GirafRest.Models.Setting", "Settings")
+                    b.HasOne("GirafAPI.Models.Setting", "Settings")
                         .WithMany()
                         .HasForeignKey("SettingsKey");
                 });
 
-            modelBuilder.Entity("GirafRest.Models.UserResource", b =>
+            modelBuilder.Entity("GirafAPI.Models.UserResource", b =>
                 {
-                    b.HasOne("GirafRest.Models.GirafUser", "Other")
+                    b.HasOne("GirafAPI.Models.GirafUser", "Other")
                         .WithMany("Resources")
                         .HasForeignKey("OtherKey")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GirafRest.Models.Pictogram", "Pictogram")
+                    b.HasOne("GirafAPI.Models.Pictogram", "Pictogram")
                         .WithMany("Users")
                         .HasForeignKey("PictogramKey")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("GirafRest.Models.Week", b =>
+            modelBuilder.Entity("GirafAPI.Models.Week", b =>
                 {
-                    b.HasOne("GirafRest.Models.GirafUser", null)
+                    b.HasOne("GirafAPI.Models.GirafUser", null)
                         .WithMany("WeekSchedule")
                         .HasForeignKey("GirafUserId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("GirafRest.Models.Pictogram", "Thumbnail")
+                    b.HasOne("GirafAPI.Models.Pictogram", "Thumbnail")
                         .WithMany()
                         .HasForeignKey("ThumbnailKey")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("GirafRest.Models.WeekDayColor", b =>
+            modelBuilder.Entity("GirafAPI.Models.WeekDayColor", b =>
                 {
-                    b.HasOne("GirafRest.Models.Setting", "Setting")
+                    b.HasOne("GirafAPI.Models.Setting", "Setting")
                         .WithMany("WeekDayColors")
                         .HasForeignKey("SettingId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("GirafRest.Models.WeekTemplate", b =>
+            modelBuilder.Entity("GirafAPI.Models.WeekTemplate", b =>
                 {
-                    b.HasOne("GirafRest.Models.Department", "Department")
+                    b.HasOne("GirafAPI.Models.Department", "Department")
                         .WithMany("WeekTemplates")
                         .HasForeignKey("DepartmentKey")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GirafRest.Models.Pictogram", "Thumbnail")
+                    b.HasOne("GirafAPI.Models.Pictogram", "Thumbnail")
                         .WithMany()
                         .HasForeignKey("ThumbnailKey")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("GirafRest.Models.Weekday", b =>
+            modelBuilder.Entity("GirafAPI.Models.Weekday", b =>
                 {
-                    b.HasOne("GirafRest.Models.Week", null)
+                    b.HasOne("GirafAPI.Models.Week", null)
                         .WithMany("Weekdays")
                         .HasForeignKey("WeekId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("GirafRest.Models.WeekTemplate", null)
+                    b.HasOne("GirafAPI.Models.WeekTemplate", null)
                         .WithMany("Weekdays")
                         .HasForeignKey("WeekTemplateId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("GirafRest.PictogramRelation", b =>
+            modelBuilder.Entity("GirafAPI.PictogramRelation", b =>
                 {
-                    b.HasOne("GirafRest.Models.Activity", "Activity")
+                    b.HasOne("GirafAPI.Models.Activity", "Activity")
                         .WithMany("Pictograms")
                         .HasForeignKey("ActivityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GirafRest.Models.Pictogram", "Pictogram")
+                    b.HasOne("GirafAPI.Models.Pictogram", "Pictogram")
                         .WithMany("Activities")
                         .HasForeignKey("PictogramId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -767,7 +767,7 @@ namespace GirafRest.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("GirafRest.Models.GirafRole", null)
+                    b.HasOne("GirafAPI.Models.GirafRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -776,7 +776,7 @@ namespace GirafRest.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("GirafRest.Models.GirafUser", null)
+                    b.HasOne("GirafAPI.Models.GirafUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -785,7 +785,7 @@ namespace GirafRest.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("GirafRest.Models.GirafUser", null)
+                    b.HasOne("GirafAPI.Models.GirafUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -794,13 +794,13 @@ namespace GirafRest.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("GirafRest.Models.GirafRole", null)
+                    b.HasOne("GirafAPI.Models.GirafRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("GirafRest.Models.GirafUser", null)
+                    b.HasOne("GirafAPI.Models.GirafUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -809,7 +809,7 @@ namespace GirafRest.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("GirafRest.Models.GirafUser", null)
+                    b.HasOne("GirafAPI.Models.GirafUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)

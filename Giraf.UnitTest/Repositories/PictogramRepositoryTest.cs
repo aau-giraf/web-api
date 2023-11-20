@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 using Giraf.UnitTest.FakeRepositorysContext;
 using GirafRepositories.Persistence;
 using GirafRepositories.WeekPlanner;
-using GirafRest.Data;
-using GirafRest.Models;
-using GirafRest.Models.DTOs;
-using GirafRest.Repositories;
+using GirafAPI.Data;
+using GirafAPI.Models;
+using GirafAPI.Models.DTOs;
+using GirafAPI.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 

@@ -1,9 +1,9 @@
 using GirafEntities.User;
 using GirafRepositories.Interfaces;
-using GirafRest.Interfaces;
-using GirafRest.Models;
-using GirafRest.Models.DTOs;
-using GirafRest.Models.Responses;
+using GirafAPI.Interfaces;
+using GirafAPI.Models;
+using GirafAPI.Models.DTOs;
+using GirafAPI.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -13,7 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-namespace GirafRest.Controllers
+namespace GirafAPI.Controllers
 {
     /// <summary>
     /// Handles Department endpoints

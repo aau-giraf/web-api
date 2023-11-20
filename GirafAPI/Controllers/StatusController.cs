@@ -2,14 +2,14 @@
 using System;
 using System.IO;
 using System.Linq;
-using GirafRest.Models.Responses;
-using GirafRest.Interfaces;
+using GirafAPI.Models.Responses;
+using GirafAPI.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using GirafRest.Data;
+using GirafAPI.Data;
 
-namespace GirafRest.Controllers
+namespace GirafAPI.Controllers
 {
     /// <summary>
     /// Status-endpoint; Getting status of HTTP, DB etc, for clients to see status

@@ -2,10 +2,10 @@
 using System.Threading.Tasks;
 using GirafEntities.User;
 using GirafRepositories.Interfaces;
-using GirafRest.Controllers;
-using GirafRest.Interfaces;
-using GirafRest.Models;
-using GirafRest.Services;
+using GirafAPI.Controllers;
+using GirafAPI.Interfaces;
+using GirafAPI.Models;
+using GirafAPI.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
