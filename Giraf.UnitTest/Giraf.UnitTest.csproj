@@ -3,6 +3,14 @@
     <TargetFramework>net8.0</TargetFramework>
     <ErrorOnDuplicatePublishOutputFiles>false</ErrorOnDuplicatePublishOutputFiles>
   </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Playlists\**" />
+    <Compile Remove="Services\**" />
+    <EmbeddedResource Remove="Playlists\**" />
+    <EmbeddedResource Remove="Services\**" />
+    <None Remove="Playlists\**" />
+    <None Remove="Services\**" />
+  </ItemGroup>
 
   <ItemGroup>
   	<Content Update="appsettings.test.json">
@@ -32,15 +40,8 @@
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Playlists" />
-    <Folder Include="Services" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Remove="Playlists\Choice.playlist" />
-    <None Remove="Playlists\Account.playlist" />
     <None Remove="appsettings.Development.json" />
     <None Remove="appsettings.template.json" />
-    <None Remove="Services\appsettings.test.json" />
     <None Remove="appsettings.test.json" />
   </ItemGroup>
   <ItemGroup>
