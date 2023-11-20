@@ -6,4 +6,10 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Folder Include="Authentication\" />
+      <Folder Include="User\" />
+      <Folder Include="WeekPlanner\" />
+    </ItemGroup>
+
 </Project>
