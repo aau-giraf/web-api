@@ -4,7 +4,7 @@ using GirafEntities.WeekPlanner;
 using GirafRest.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Timer = System.Threading.Timer;
+using Timer = GirafEntities.WeekPlanner.Timer;
 
 #pragma warning disable 1591
 namespace GirafRepositories.Persistence
