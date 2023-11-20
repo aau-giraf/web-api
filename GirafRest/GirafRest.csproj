@@ -14,12 +14,6 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="wwwroot\**" />
-    <Content Remove="wwwroot\**" />
-    <EmbeddedResource Remove="wwwroot\**" />
-    <None Remove="wwwroot\**" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="AspNetCoreRateLimit" Version="4.0.2" />
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.15.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.18" />
@@ -45,9 +39,6 @@
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="5.6.2" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="Controllers\ChoiceController.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Remove="Views\_ViewImports.cshtml" />
+    <ProjectReference Include="..\GirafServices\GirafServices.csproj" />
   </ItemGroup>
 </Project>

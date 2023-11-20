@@ -1,9 +1,11 @@
 ﻿using AspNetCoreRateLimit;
+using GirafRepositories;
+using GirafRepositories.User;
+using GirafRepositories.WeekPlanner;
 using GirafRest.Data;
 using GirafRest.Extensions;
-using GirafRest.Models;
-using GirafRest.Services;
 using GirafRest.Interfaces;
+using GirafRest.IRepositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -23,8 +25,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using GirafRest.IRepositories;
 using GirafRest.Repositories;
+using GirafRest.Services;
+using GirafServices;
 
 namespace GirafRest.Setup
 {
@@ -125,6 +128,8 @@ namespace GirafRest.Setup
 
             // Add the implementation of IGirafService to the context, i.e. all common functionality for
             // the controllers.
+            services.AddRepositories(Configuration); /// TÆNK OVER HVOR DET VÆRE HENNE
+            services.AddServices();
             services.AddTransient<IGirafService, GirafService>();
             services.AddMvc(options =>
             {
