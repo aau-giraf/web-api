@@ -1,11 +1,9 @@
-using System.Collections.Generic;
-using System.Linq;
+using GirafRepositories.Interfaces;
+using GirafRepositories.Persistence;
 using GirafRest.Models;
-using GirafRest.IRepositories;
-using GirafRest.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace GirafRest.Repositories
+namespace GirafRepositories.WeekPlanner
 {
     public class PictogramRelationRepository : Repository<PictogramRelation>, IPictogramRelationRepository
     {

@@ -1,9 +1,8 @@
+using GirafEntities.User;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
-namespace GirafRest.IRepositories
+namespace GirafRepositories.Interfaces
 {
     /// <summary>
     /// Domain specific repository for pictograms

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using GirafRest.Models.DTOs;
 using System.Linq;
 using Giraf.UnitTest.Mocks;
+using GirafEntities.User;
 using GirafRest;
 
 namespace Giraf.UnitTest.Controllers

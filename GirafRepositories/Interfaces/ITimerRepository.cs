@@ -1,12 +1,9 @@
-using GirafRest.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
+using GirafEntities.WeekPlanner;
+using Timer = GirafEntities.WeekPlanner.Timer;
 
-namespace GirafRest.IRepositories
+namespace GirafRepositories.Interfaces
 {
-    public interface ITimerRepository : IRepository<GirafRest.Models.Timer>
+    public interface ITimerRepository : IRepository<Timer>
     {
         public Task<Timer> getActivitysTimerkey(Activity activity);
         public Task<Timer> getTimerWithKey(long? Key);

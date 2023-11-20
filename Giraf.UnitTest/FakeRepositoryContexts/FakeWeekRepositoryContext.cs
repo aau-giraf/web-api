@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GirafEntities.User;
+using GirafEntities.WeekPlanner;
+using GirafRepositories.Persistence;
 using GirafRest.Data;
 using GirafRest.Models;
 using Microsoft.EntityFrameworkCore;

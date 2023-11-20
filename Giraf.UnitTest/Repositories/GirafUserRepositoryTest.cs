@@ -3,10 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GirafEntities.User;
+using GirafRepositories.Persistence;
+using GirafRepositories.User;
 using GirafRest.Data;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
-using GirafRest.Models.Enums;
 using GirafRest.Repositories;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using GirafEntities.User;
+using GirafEntities.WeekPlanner;
+using GirafRepositories.Interfaces;
+using System.Collections.Generic;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
@@ -10,7 +13,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Linq;
 using System.Threading.Tasks;
-using GirafRest.IRepositories;
 
 namespace GirafRest.Controllers
 {

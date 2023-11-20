@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using GirafEntities.User;
 using GirafRest.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;

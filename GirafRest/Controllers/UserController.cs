@@ -1,8 +1,9 @@
+using GirafEntities.User;
+using GirafRepositories.Interfaces;
 using GirafRest.Extensions;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
-using GirafRest.Models.Enums;
 using GirafRest.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -14,7 +15,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using GirafRest.IRepositories;
 
 namespace GirafRest.Controllers
 {

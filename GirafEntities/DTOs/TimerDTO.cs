@@ -1,4 +1,6 @@
-﻿namespace GirafRest.Models.DTOs
+﻿using Timer = GirafEntities.WeekPlanner.Timer;
+
+namespace GirafRest.Models.DTOs
 {
     /// <summary>
     /// DTO for <see cref="Timer"/>

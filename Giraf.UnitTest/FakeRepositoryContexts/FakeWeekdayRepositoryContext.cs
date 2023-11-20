@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using GirafRepositories.Persistence;
 using GirafRest.Data;
 using GirafRest.Models;
 using Microsoft.EntityFrameworkCore;

@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq.Expressions;
 using GirafRest.Models;
-namespace GirafRest.IRepositories
+
+namespace GirafRepositories.Interfaces
 {
     public interface IGuardianRelationRepository : IRepository<GuardianRelation>
     {

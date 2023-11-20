@@ -1,4 +1,5 @@
-﻿using GirafRest.Models;
+﻿using GirafEntities.User;
+using GirafRest.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;

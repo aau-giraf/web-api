@@ -1,13 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using GirafRest.Models;
-using GirafRest.IRepositories;
-using GirafRest.Data;
+using GirafRepositories.Interfaces;
+using GirafRepositories.Persistence;
 
-namespace GirafRest.Repositories
+namespace GirafRepositories.WeekPlanner
 {
     public class ImageRepository : Repository<byte[]>, IImageRepository
     {

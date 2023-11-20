@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GirafEntities.WeekPlanner;
 
 namespace GirafRest.Models.DTOs
 {

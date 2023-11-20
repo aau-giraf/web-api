@@ -1,12 +1,8 @@
-using GirafRest.Models;
-using GirafRest.Models.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
+using GirafEntities.User;
 
-namespace GirafRest.IRepositories
+namespace GirafRepositories.Interfaces
 {
-    public interface IGirafRoleRepository : IRepository<GirafRest.Models.GirafRole>
+    public interface IGirafRoleRepository : IRepository<GirafRole>
     {
         string GetGuardianRoleId();
         string GetCitizenRoleId();

@@ -1,6 +1,7 @@
 ﻿using Xunit;
 using System;
 using System.Linq;
+using GirafRepositories.Persistence;
 using GirafRest.Data;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;

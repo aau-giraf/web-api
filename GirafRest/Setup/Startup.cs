@@ -1,11 +1,14 @@
 ﻿using AspNetCoreRateLimit;
+using GirafEntities.User;
 using GirafRepositories;
+using GirafRepositories.Interfaces;
+using GirafRepositories.Persistence;
 using GirafRepositories.User;
 using GirafRepositories.WeekPlanner;
 using GirafRest.Data;
 using GirafRest.Extensions;
 using GirafRest.Interfaces;
-using GirafRest.IRepositories;
+using GirafRest.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -121,7 +124,7 @@ namespace GirafRest.Setup
             services.Configure<JwtConfig>(Configuration.GetSection("Jwt"));
 
             //Add the database context to the server using extension-methods
-            services.AddMySql(Configuration);
+            // services.AddMySql(Configuration);
             configureIdentity<GirafDbContext>(services);
 
             services.AddTransient<IAuthenticationService, GirafAuthenticationService>();

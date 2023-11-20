@@ -1,6 +1,7 @@
+using GirafEntities.User;
 using GirafRest.Models;
 
-namespace GirafRest.IRepositories
+namespace GirafRepositories.Interfaces
 {
     /// <summary>
     /// Domain specific repository for querying Alternate names for pictograms

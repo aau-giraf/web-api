@@ -1,3 +1,5 @@
+using GirafEntities.User;
+using GirafRepositories.Interfaces;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
@@ -11,7 +13,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using static GirafRest.Shared.SharedMethods;
-using GirafRest.IRepositories;
 
 
 namespace GirafRest.Controllers

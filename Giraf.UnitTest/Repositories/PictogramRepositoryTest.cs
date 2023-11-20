@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Giraf.UnitTest.FakeRepositorysContext;
+using GirafRepositories.Persistence;
+using GirafRepositories.WeekPlanner;
 using GirafRest.Data;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;

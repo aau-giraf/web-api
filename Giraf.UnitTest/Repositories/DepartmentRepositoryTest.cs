@@ -1,5 +1,7 @@
 ﻿using Xunit;
 using System;
+using GirafRepositories.Persistence;
+using GirafRepositories.User;
 using GirafRest.Data;
 using GirafRest.Models;
 using GirafRest.Repositories;

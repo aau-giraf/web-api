@@ -1,12 +1,9 @@
+using GirafEntities.User;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
 
-namespace GirafRest.IRepositories
+namespace GirafRepositories.Interfaces
 {
     public interface IWeekRepository : IRepository<GirafRest.Models.Week>
     {

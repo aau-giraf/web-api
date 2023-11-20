@@ -10,11 +10,11 @@ using Microsoft.AspNetCore.Http;
 using Moq;
 using GirafRest.Interfaces;
 using System.Threading.Tasks;
-using GirafRest.IRepositories;
-using GirafRest.Models.Enums;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using GirafEntities.User;
+using GirafRepositories.Interfaces;
 
 namespace Giraf.UnitTest
 {

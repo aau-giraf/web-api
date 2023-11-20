@@ -1,13 +1,11 @@
-using GirafRest.Data;
-using GirafRest.IRepositories;
+using GirafEntities.User;
+using GirafRepositories.Interfaces;
+using GirafRepositories.Persistence;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace GirafRest.Repositories
+namespace GirafRepositories.WeekPlanner
 {
     /// <inheritdoc cref="IPictogramRepository"/>
 

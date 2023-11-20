@@ -1,14 +1,11 @@
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
+using GirafEntities.User;
+using GirafRepositories.Interfaces;
+using GirafRepositories.Persistence;
 using GirafRest.Models;
-using GirafRest.IRepositories;
-using GirafRest.Data;
-using System.Threading.Tasks;
 using GirafRest.Models.DTOs;
+using Microsoft.EntityFrameworkCore;
 
-
-namespace GirafRest.Repositories
+namespace GirafRepositories.User
 {
     /// <summary>
     /// A repository for giraf user

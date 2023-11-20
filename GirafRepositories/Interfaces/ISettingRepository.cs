@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-
-namespace GirafRest.IRepositories
+namespace GirafRepositories.Interfaces
 {
     public interface ISettingRepository : IRepository<GirafRest.Models.Setting>
     {

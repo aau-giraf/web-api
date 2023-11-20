@@ -2,10 +2,12 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using GirafEntities.User;
+using GirafRepositories.Interfaces;
+using GirafRepositories.Persistence;
 using GirafRest.Data;
 using GirafRest.Models;
 using GirafRest.Interfaces;
-using GirafRest.IRepositories;
 using GirafRest.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

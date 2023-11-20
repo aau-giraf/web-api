@@ -1,16 +1,13 @@
+using System.ComponentModel;
+using GirafEntities.User;
+using GirafRest.Data;
+using GirafRest.Data.Samples;
 using GirafRest.Models;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.IO;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using GirafRest.Data.Samples;
 using SkiaSharp;
 
-namespace GirafRest.Data
+namespace GirafRepositories.Persistence
 {
     /// <summary>
     /// A class for initializing the database with some sample data.

@@ -3,6 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GirafEntities.User;
+using GirafRepositories.Persistence;
 using GirafRest.Data;
 using GirafRest.Models;
 using GirafRest.Repositories;

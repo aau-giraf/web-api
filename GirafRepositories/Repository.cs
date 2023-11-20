@@ -1,12 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using GirafRest.IRepositories;
-using GirafRest.Data;
-using System.Threading.Tasks;
+using GirafRepositories.Interfaces;
+using GirafRepositories.Persistence;
 
-namespace GirafRest.Repositories
+namespace GirafRepositories
 {
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {

@@ -1,16 +1,8 @@
 ﻿using GirafRest.Data;
-using GirafRest.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using GirafRest.Data.Samples;
+using Newtonsoft.Json;
 
-namespace GirafRest.Data
+namespace GirafRepositories.Persistence
 {
     public class SampleDataHandler
     {

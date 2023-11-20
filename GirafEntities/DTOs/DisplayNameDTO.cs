@@ -1,5 +1,5 @@
 ﻿using System;
-using GirafRest.Models.Enums;
+using GirafEntities.User;
 
 namespace GirafRest.Models.DTOs
 {

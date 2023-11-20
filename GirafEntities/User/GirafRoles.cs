@@ -1,4 +1,4 @@
-﻿namespace GirafRest.Models.Enums
+﻿namespace GirafEntities.User
 {
     /// <summary>
     /// Giraf roles

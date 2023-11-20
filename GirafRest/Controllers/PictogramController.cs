@@ -1,5 +1,6 @@
+using GirafEntities.User;
+using GirafRepositories.Interfaces;
 using GirafRest.Interfaces;
-using GirafRest.IRepositories;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;

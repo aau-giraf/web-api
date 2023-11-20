@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using GirafRepositories.Interfaces;
 using GirafRest.Controllers;
 using Moq;
-using GirafRest.IRepositories;
 using GirafRest.Interfaces;
 using Microsoft.Extensions.Logging;
 using GirafRest.Shared;

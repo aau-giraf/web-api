@@ -1,15 +1,12 @@
-using GirafRest.Data;
-using GirafRest.IRepositories;
+using GirafEntities.User;
+using GirafRepositories.Interfaces;
+using GirafRepositories.Persistence;
+using GirafRest;
 using GirafRest.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using GirafRest.Extensions;
-using GirafRest.Models.Enums;
 
-namespace GirafRest.Repositories
+namespace GirafRepositories.User
 {
     public class DepartmentRepository : Repository<Department>, IDepartmentRepository
     {

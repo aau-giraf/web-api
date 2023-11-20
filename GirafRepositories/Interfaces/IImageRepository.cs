@@ -1,10 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-using GirafRest.Models;
-namespace GirafRest.IRepositories
+namespace GirafRepositories.Interfaces
 {
     
     public interface IImageRepository : IRepository<Byte[]>

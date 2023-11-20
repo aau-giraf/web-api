@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq.Expressions;
-using GirafRest.Models;
-namespace GirafRest.IRepositories
+using Activity = GirafEntities.WeekPlanner.Activity;
+
+namespace GirafRepositories.Interfaces
 {
-    public interface IActivityRepository : IRepository<Models.Activity>
+    public interface IActivityRepository : IRepository<Activity>
     {
 
     }

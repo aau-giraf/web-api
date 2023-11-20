@@ -1,10 +1,8 @@
-using System.Collections.Generic;
-using System.Linq;
-using GirafRest.Models;
-using GirafRest.IRepositories;
-using GirafRest.Data;
+using GirafEntities.User;
+using GirafRepositories.Interfaces;
+using GirafRepositories.Persistence;
 
-namespace GirafRest.Repositories
+namespace GirafRepositories.User
 {
     public class GirafRoleRepository : Repository<GirafRole>, IGirafRoleRepository
     {

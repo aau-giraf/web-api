@@ -1,10 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
+using GirafEntities.User;
 using GirafRest.Models;
 
-namespace GirafRest.IRepositories
+namespace GirafRepositories.Interfaces
 {
     public interface IDepartmentResourseRepository : IRepository<DepartmentResource>
     {

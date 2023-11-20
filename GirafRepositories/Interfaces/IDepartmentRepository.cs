@@ -1,11 +1,9 @@
+using GirafEntities.User;
+using GirafRest;
 using GirafRest.Models;
-using GirafRest.Models.Enums;
 using Microsoft.AspNetCore.Identity;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace GirafRest.IRepositories
+namespace GirafRepositories.Interfaces
 {
     public interface IDepartmentRepository : IRepository<Department>
     {

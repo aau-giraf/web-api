@@ -9,8 +9,11 @@ using GirafRest.Models;
 using System.Threading;
 using System.Linq;
 using Giraf.UnitTest.FakeRepositorysContext;
+using GirafEntities.WeekPlanner;
+using GirafRepositories.Persistence;
+using GirafRepositories.WeekPlanner;
 using Microsoft.Extensions.Options;
-using Timer = GirafRest.Models.Timer;
+using Timer = GirafEntities.WeekPlanner.Timer;
 
 namespace Giraf.UnitTest.Repositories
 {

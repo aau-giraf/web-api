@@ -1,9 +1,8 @@
+using GirafEntities.User;
 using GirafRest.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using GirafRest.Models.DTOs;
 
-namespace GirafRest.IRepositories
+namespace GirafRepositories.Interfaces
 {
     public interface IGirafUserRepository : IRepository<GirafUser> { 
         /// <summary>

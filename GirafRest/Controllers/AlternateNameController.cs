@@ -1,3 +1,5 @@
+using GirafEntities.User;
+using GirafRepositories.Interfaces;
 using GirafRest.Models;
 using GirafRest.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -6,7 +8,6 @@ using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using GirafRest.Models.DTOs;
 using Microsoft.AspNetCore.Http;
-using GirafRest.IRepositories;
 
 namespace GirafRest.Controllers
 {
