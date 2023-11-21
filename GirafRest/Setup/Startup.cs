@@ -44,12 +44,8 @@ namespace GirafRest.Setup
         {
             HostingEnvironment = env;
             var coreEnvironement = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-            Console.WriteLine(coreEnvironement);
             if (coreEnvironement != null) env.EnvironmentName = coreEnvironement;
-            else {
-                env.EnvironmentName = "Development";
-                Console.WriteLine("TEST1234567lkfejhereufygwyfugewyfwetfwtyfwetfwytfywetfewtyft");
-            }
+            else env.EnvironmentName = "Development";
 
             var builder = new ConfigurationBuilder().SetBasePath(env.ContentRootPath);
             // delete all default configuration providers
@@ -301,7 +297,6 @@ namespace GirafRest.Setup
             //Can be problematic in production
             if (env.IsDevelopment() || env.IsLocalDocker())
             {
-                Console.WriteLine("Test1234oigheriugeufguergfuyrguyegfuyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyygufgwutgugfoifhiuhregioerghiuprfhpwihfpiwggliugeie");
                 context.Database.Migrate();
             }
 
