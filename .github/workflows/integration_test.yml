@@ -6,6 +6,8 @@ jobs:
   build:
     name: Integration Test
     runs-on: ${{ matrix.os }}
+    env:
+      ASPNETCORE_ENVIRONMENT: "CI"
     strategy:
       matrix:
         os: [ubuntu-20.04]
@@ -28,7 +30,6 @@ jobs:
         # secrets are located in repo aau-giraf/web-api:settings.secrets
         # "nohup" is used to run the dotnet application in the background 
         run: |
-          export ASPNETCORE_ENVIRONMENT="CI"
           dotnet tool install --global dotnet-ef
           cd GirafRest
           dotnet restore
@@ -36,5 +37,3 @@ jobs:
           nohup dotnet run --sample-data > /dev/null 2>&1 &
       - name: Tests
         run: dotnet test ./GirafRest.IntegrationTest/
-        env:
-          ASPNETCORE_ENVIRONMENT: "CI"
