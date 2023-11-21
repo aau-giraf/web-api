@@ -57,6 +57,8 @@ namespace GirafRest.Setup
                 builder.AddJsonFile("appsettings.Production.json", optional: false, reloadOnChange: true);
             else if (env.IsLocalDocker())
                 builder.AddJsonFile("appsettings.LocalDocker.json", optional: false, reloadOnChange: true);
+            else if (env.IsCI())
+                builder.AddJsonFile("appsettings.CI.json", optional: false, reloadOnChange: true);
             else
                 throw new NotSupportedException("No database option is supported by this Environment mode");
             builder.AddEnvironmentVariables();

@@ -135,5 +135,12 @@ namespace GirafRest.Extensions
             return hostEnvironment.IsEnvironment("LocalDocker");
         }
 
+        public static bool IsCI(this IHostEnvironment hostEnvironment)
+        {
+            ArgumentNullException.ThrowIfNull(hostEnvironment);
+
+            return hostEnvironment.IsEnvironment("CI");
+        }
+
     }
 }
