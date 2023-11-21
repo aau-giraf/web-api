@@ -1,10 +1,10 @@
 using GirafEntities.User;
+using GirafRepositories;
 using GirafRepositories.Interfaces;
-using GirafAPI.Extensions;
-using GirafAPI.Models;
-using GirafAPI.Models.DTOs;
-using GirafAPI.Models.Responses;
-using GirafAPI.Interfaces;
+using GirafRest.Interfaces;
+using GirafRest.Models;
+using GirafRest.Models.DTOs;
+using GirafRest.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;

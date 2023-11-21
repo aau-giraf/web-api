@@ -1,13 +1,12 @@
 ﻿using GirafRepositories.Persistence;
+using GirafRest.Interfaces;
+using GirafRest.Models.Responses;
 using System;
 using System.IO;
 using System.Linq;
-using GirafAPI.Models.Responses;
-using GirafAPI.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using GirafAPI.Data;
 
 namespace GirafAPI.Controllers
 {

@@ -1,12 +1,12 @@
 using GirafEntities.User;
 using GirafRepositories.Interfaces;
-using GirafAPI.Models;
-using GirafAPI.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
-using GirafAPI.Models.DTOs;
+using GirafRest.Interfaces;
+using GirafRest.Models;
+using GirafRest.Models.DTOs;
 using Microsoft.AspNetCore.Http;
 
 namespace GirafAPI.Controllers

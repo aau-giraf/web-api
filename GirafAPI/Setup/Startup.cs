@@ -5,10 +5,8 @@ using GirafRepositories.Interfaces;
 using GirafRepositories.Persistence;
 using GirafRepositories.User;
 using GirafRepositories.WeekPlanner;
-using GirafAPI.Data;
-using GirafAPI.Extensions;
-using GirafAPI.Interfaces;
-using GirafAPI.Models;
+using GirafRest.Interfaces;
+using GirafRest.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,8 +26,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using GirafAPI.Repositories;
-using GirafAPI.Services;
 using GirafServices;
 
 namespace GirafAPI.Setup

@@ -1,18 +1,6 @@
-using GirafEntities.User;
-using GirafAPI.Data;
-using GirafAPI.Models;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.FileProviders;
-using System;
-using System.IO;
-using System.Threading.Tasks;
 
-namespace GirafAPI.Extensions
+namespace GirafAPI.Setup
 {
     /// <summary>
     /// The class for extension-methods for Giraf REST-api.

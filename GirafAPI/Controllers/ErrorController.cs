@@ -1,4 +1,4 @@
-﻿using GirafAPI.Models.Responses;
+﻿using GirafRest.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
