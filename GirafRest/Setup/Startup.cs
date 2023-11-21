@@ -295,7 +295,7 @@ namespace GirafRest.Setup
             GirafDbContext context = app.ApplicationServices.GetService<GirafDbContext>();
             //Only migrate in development or controlled environments.
             //Can be problematic in production
-            if (env.EnvironmentName == "Development" || env.EnvironmentName == "LocalDocker")
+            if (env.IsDevelopment() || env.IsLocalDocker())
             {
                 Console.WriteLine("Test1234oigheriugeufguergfuyrguyegfuyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyygufgwutgugfoifhiuhregioerghiuprfhpwihfpiwggliugeie");
                 context.Database.Migrate();
