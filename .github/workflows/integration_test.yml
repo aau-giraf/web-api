@@ -13,6 +13,7 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
+          MYSQL_USER: 'root'
           MYSQL_ROOT_PASSWORD: 'Giraf123'
           MYSQL_DATABASE: 'giraf'
         ports:
