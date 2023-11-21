@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GirafRest\GirafRest.csproj" />
+    <ProjectReference Include="..\GirafAPI\GirafAPI.csproj" />
   </ItemGroup>
 
   <ItemGroup>

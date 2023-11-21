@@ -2,6 +2,7 @@ using GirafRest.Models.DTOs;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using GirafEntities.User;
 
 namespace GirafRest.Models
 {

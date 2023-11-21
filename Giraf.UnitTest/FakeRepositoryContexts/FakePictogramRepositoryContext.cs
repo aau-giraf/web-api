@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using GirafRest.Data;
-using GirafRest.Models;
+using GirafRepositories.Persistence;
+using GirafAPI.Data;
+using GirafAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Giraf.UnitTest.FakeRepositorysContext

@@ -1,14 +1,14 @@
-using System.Collections.Generic;
-using System.Linq;
+using GirafEntities.User;
+using GirafEntities.WeekPlanner;
+using GirafRepositories.Interfaces;
+using GirafRepositories.Persistence;
 using GirafRest.Models;
-using GirafRest.IRepositories;
-using GirafRest.Data;
-using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
-using GirafRest.Models.Responses;
 using GirafRest.Models.DTOs;
+using GirafRest.Models.Responses;
+using Microsoft.EntityFrameworkCore;
+using Timer = GirafEntities.WeekPlanner.Timer;
 
-namespace GirafRest.Repositories
+namespace GirafRepositories.WeekPlanner
 {
     public class WeekRepository : Repository<Week>, IWeekRepository
     {

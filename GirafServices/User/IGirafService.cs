@@ -5,6 +5,8 @@ using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using GirafEntities.User;
+using GirafRepositories.Persistence;
 
 namespace GirafRest.Interfaces
 {

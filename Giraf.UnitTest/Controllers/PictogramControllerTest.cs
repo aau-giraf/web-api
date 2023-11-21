@@ -1,20 +1,20 @@
 using System.Linq;
 using Xunit;
-using GirafRest.Models;
+using GirafAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using GirafRest.Controllers;
-using GirafRest.Models.DTOs;
-using GirafRest.Models.Responses;
+using GirafAPI.Controllers;
+using GirafAPI.Models.DTOs;
+using GirafAPI.Models.Responses;
 using Microsoft.AspNetCore.Http;
 using Moq;
-using GirafRest.Interfaces;
+using GirafAPI.Interfaces;
 using System.Threading.Tasks;
-using GirafRest.IRepositories;
-using GirafRest.Models.Enums;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using GirafEntities.User;
+using GirafRepositories.Interfaces;
 
 namespace Giraf.UnitTest
 {

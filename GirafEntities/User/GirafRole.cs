@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace GirafRest.Models
+namespace GirafEntities.User
 {
     /// <summary>
     /// All the roles available in the system

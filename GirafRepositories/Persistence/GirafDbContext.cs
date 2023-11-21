@@ -1,9 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿
+using GirafEntities.User;
+using GirafEntities.WeekPlanner;
 using GirafRest.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Timer = GirafEntities.WeekPlanner.Timer;
 
 #pragma warning disable 1591
-namespace GirafRest.Data
+namespace GirafRepositories.Persistence
 {
     /// <summary>
     /// The GirafDbContext, this is the Database Context for the Giraf database, it defines the various relations between objects in the database.

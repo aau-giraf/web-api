@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using GirafRest.Models;
-using GirafRest.Models.DTOs;
-using GirafRest.Models.Enums;
+using GirafEntities.User;
+using GirafAPI.Models;
+using GirafAPI.Models.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;

@@ -1,19 +1,21 @@
 ﻿using System.Linq;
-using GirafRest.Controllers;
-using GirafRest.Models;
-using GirafRest.Models.DTOs;
-using GirafRest.Models.Responses;
-using GirafRest.Services;
+using GirafAPI.Controllers;
+using GirafAPI.Models;
+using GirafAPI.Models.DTOs;
+using GirafAPI.Models.Responses;
+using GirafAPI.Services;
 using Giraf.UnitTest.Mocks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 using static Giraf.UnitTest.UnitTestExtensions;
 using System.Collections.Generic;
+using GirafEntities.User;
+using GirafEntities.WeekPlanner;
+using GirafRepositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Moq;
-using GirafRest.IRepositories;
-using GirafRest.Interfaces;
+using GirafAPI.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 

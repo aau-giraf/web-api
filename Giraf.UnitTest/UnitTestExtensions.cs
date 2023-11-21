@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.Design.Serialization;
 using System.Linq;
-using GirafRest.Models;
-using GirafRest.Models.Enums;
+using GirafAPI.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -11,10 +10,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Text;
-using GirafRest.Data;
+using GirafAPI.Data;
 using System;
 using Giraf.UnitTest.Mocks;
-using GirafRest.Interfaces;
+using GirafEntities.User;
+using GirafEntities.WeekPlanner;
+using GirafRepositories.Persistence;
+using GirafAPI.Interfaces;
 
 namespace Giraf.UnitTest
 {

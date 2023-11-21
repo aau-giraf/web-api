@@ -1,9 +1,7 @@
-﻿using GirafRest.Controllers;
-using GirafRest.Interfaces;
-using GirafRest.IRepositories;
-using GirafRest.Models;
-using GirafRest.Models.Enums;
-using GirafRest.Services;
+﻿using GirafAPI.Controllers;
+using GirafAPI.Interfaces;
+using GirafAPI.Models;
+using GirafAPI.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -13,6 +11,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GirafEntities.User;
+using GirafRepositories.Interfaces;
 
 namespace Giraf.UnitTest.Mocks
 {

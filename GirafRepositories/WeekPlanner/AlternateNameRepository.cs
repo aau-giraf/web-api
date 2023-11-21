@@ -2,14 +2,14 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using GirafRest.Models;
-using GirafRest.IRepositories;
 using GirafRest.Data;
 using System.Threading.Tasks;
-using GirafRest.Repositories;
+using GirafRepositories.Interfaces;
+using GirafRepositories.Persistence;
 
 namespace GirafRepositories.WeekPlanner
 {
-    /// <inheritdoc cref="GirafRest.IRepositories.IAlternateNameRepository" />
+    /// <inheritdoc cref="IAlternateNameRepository" />
     public class AlternateNameRepository : Repository<AlternateName>, IAlternateNameRepository
     {
         /// <summary>

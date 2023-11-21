@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using GirafRest.Data;
-using GirafRest.Models;
-using GirafRest.Models.Enums;
-using GirafRest.Repositories;
+using GirafEntities.User;
+using GirafRepositories.Persistence;
+using GirafAPI.Data;
+using GirafAPI.Models;
+using GirafAPI.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 

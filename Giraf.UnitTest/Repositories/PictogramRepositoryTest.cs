@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Giraf.UnitTest.FakeRepositorysContext;
-using GirafRest.Data;
-using GirafRest.Models;
-using GirafRest.Models.DTOs;
-using GirafRest.Repositories;
+using GirafRepositories.Persistence;
+using GirafRepositories.WeekPlanner;
+using GirafAPI.Data;
+using GirafAPI.Models;
+using GirafAPI.Models.DTOs;
+using GirafAPI.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 

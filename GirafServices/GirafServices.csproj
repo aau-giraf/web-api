@@ -10,4 +10,8 @@
       <ProjectReference Include="..\GirafRepositories\GirafRepositories.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Sample\" />
+    </ItemGroup>
+
 </Project>

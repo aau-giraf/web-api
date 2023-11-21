@@ -1,10 +1,9 @@
-using GirafRest.Models.Enums;
-using Microsoft.AspNetCore.Identity;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using GirafRest.Models;
+using Microsoft.AspNetCore.Identity;
 
-namespace GirafRest.Models
+namespace GirafEntities.User
 {
     /// <summary>
     /// GirafUser defines all relavant data for the user's of Giraf.

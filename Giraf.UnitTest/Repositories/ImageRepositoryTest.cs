@@ -2,8 +2,10 @@ using System;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using GirafRest.Data;
-using GirafRest.Repositories;
+using GirafRepositories.Persistence;
+using GirafRepositories.WeekPlanner;
+using GirafAPI.Data;
+using GirafAPI.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 

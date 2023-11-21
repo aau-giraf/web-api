@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Giraf.IntegrationTest.Extensions;
 using Giraf.IntegrationTest.Order;
 using Giraf.IntegrationTest.Setup;
-using GirafRest;
+using GirafAPI;
 using Xunit;
 using Newtonsoft.Json.Linq;
 
