@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GirafEntities.WeekPlanner;
 
-namespace GirafRest.Models.DTOs
+namespace GirafEntities.WeekPlanner.DTOs
 {
     /// <summary>
     /// DTO for <see cref="Activity"/>

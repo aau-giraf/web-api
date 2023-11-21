@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.ComponentModel.DataAnnotations;
 
-namespace GirafRest.Models.Responses
+namespace GirafEntities.Responses
 {
     /// <summary>
     /// Represents an error in the GIRAF backend

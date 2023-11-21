@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using GirafEntities.WeekPlanner;
 
-namespace GirafRest.Models
+namespace GirafEntities.WeekPlanner
 {
     /// <summary>
     /// Possible days; 1 for Monday

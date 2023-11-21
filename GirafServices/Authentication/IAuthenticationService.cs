@@ -1,11 +1,8 @@
-﻿using GirafRest.Data;
-using GirafRest.Models;
-using Microsoft.AspNetCore.Identity;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Identity;
 using GirafEntities.User;
 using GirafRepositories.Persistence;
 
-namespace GirafRest.Interfaces
+namespace GirafServices.Authentication
 {
     /// <summary>
     /// Contains methods for authentication checks

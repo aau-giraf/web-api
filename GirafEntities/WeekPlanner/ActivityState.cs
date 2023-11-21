@@ -1,4 +1,4 @@
-﻿namespace GirafRest.Models
+﻿namespace GirafEntities.WeekPlanner
 {
     /// <summary>
     /// State of Activities

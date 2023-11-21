@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace GirafRest.Models.Responses
+namespace GirafEntities.Responses
 {
 #pragma warning disable 1591
     [JsonConverter(typeof(StringEnumConverter))]

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace GirafRest.Models
+namespace GirafEntities.WeekPlanner
 {
     /// <summary>
     /// Week template for a week in a given department
