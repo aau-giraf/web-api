@@ -18,7 +18,6 @@ namespace GirafRest.Test.Mocks
 
         }
 
-
         public void MockLoginAsUser(GirafUser user)
         {
             currentUser = user;
@@ -33,15 +32,11 @@ namespace GirafRest.Test.Mocks
         }
         public override Task<IdentityResult> CreateAsync(GirafUser user, string passWord)
         {
-            return Task.FromResult< IdentityResult >(IdentityResult.Success);
+            return Task.FromResult<IdentityResult>(IdentityResult.Success);
         }
         public override async Task<IdentityResult> AddToRoleAsync(GirafUser user, string role)
         {
             return IdentityResult.Success;
         }
-
     }
-
-
-
 }
