@@ -29,7 +29,6 @@ jobs:
         # "nohup" is used to run the dotnet application in the background 
         run: |
           export ASPNETCORE_ENVIRONMENT="CI"
-          printenv ASPNETCORE_ENVIRONMENT
           dotnet tool install --global dotnet-ef
           cd GirafRest
           dotnet restore
@@ -37,3 +36,5 @@ jobs:
           nohup dotnet run --sample-data > /dev/null 2>&1 &
       - name: Tests
         run: dotnet test ./GirafRest.IntegrationTest/
+        env:
+          ASPNETCORE_ENVIRONMENT: "CI"
