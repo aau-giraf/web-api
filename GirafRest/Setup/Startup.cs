@@ -44,8 +44,12 @@ namespace GirafRest.Setup
         {
             HostingEnvironment = env;
             var coreEnvironement = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            Console.WriteLine(coreEnvironement);
             if (coreEnvironement != null) env.EnvironmentName = coreEnvironement;
-            else env.EnvironmentName = "Development";
+            else {
+                env.EnvironmentName = "Development";
+                Console.WriteLine("TEST1234567lkfejhereufygwyfugewyfwetfwtyfwetfwytfywetfewtyft");
+            }
 
             var builder = new ConfigurationBuilder().SetBasePath(env.ContentRootPath);
             // delete all default configuration providers
