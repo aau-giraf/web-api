@@ -29,7 +29,6 @@ jobs:
         # "nohup" is used to run the dotnet application in the background 
         run: |
           export ASPNETCORE_ENVIRONMENT="CI"
-          bash scripts/ci-setup.sh ${{ secrets.IntegrationTestUser }} ${{ secrets.IntegrationTestPassword }}
           dotnet tool install --global dotnet-ef
           cd GirafRest
           dotnet restore
