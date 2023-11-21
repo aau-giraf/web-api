@@ -297,6 +297,7 @@ namespace GirafRest.Setup
             //Can be problematic in production
             if (env.EnvironmentName == "Development" || env.EnvironmentName == "LocalDocker")
             {
+                Console.WriteLine("Test1234oigheriugeufguergfuyrguyegfuyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyygufgwutgugfoifhiuhregioerghiuprfhpwihfpiwggliugeie");
                 context.Database.Migrate();
             }
 
