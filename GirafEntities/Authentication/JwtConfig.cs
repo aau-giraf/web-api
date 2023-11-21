@@ -1,4 +1,4 @@
-﻿namespace GirafRest.Services
+﻿namespace GirafEntities.Authentication
 {
     /// <summary>
     /// Instance of JwtConfig holding serverside configuration for building JWT Tokens

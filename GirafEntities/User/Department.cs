@@ -1,10 +1,9 @@
-using GirafRest.Models.DTOs;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using GirafEntities.User;
+using GirafEntities.User.DTOs;
 
-namespace GirafRest.Models
+namespace GirafEntities.User
 {
     /// <summary>
     /// Departments group users and thus have a list of users. They may own resources, that are available
@@ -56,7 +55,7 @@ namespace GirafRest.Models
         /// <param name="depDTO">The DTO containing all data on the new department.</param>
         public Department(DepartmentDTO depDTO) : this()
         {
-            this.Name = depDTO.Name;
+            Name = depDTO.Name;
         }
     }
 }

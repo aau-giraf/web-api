@@ -1,5 +1,4 @@
 using GirafEntities.User;
-using GirafRest.Models;
 
 namespace GirafRepositories.Interfaces
 {
