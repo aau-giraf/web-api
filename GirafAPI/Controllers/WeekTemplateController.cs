@@ -2,7 +2,7 @@
 using GirafEntities.User;
 using GirafEntities.WeekPlanner;
 using GirafEntities.WeekPlanner.DTOs;
-using GirafRepositories.Persistence;
+using GirafRepositories.WeekPlanner.Interfaces;
 using GirafServices.Authentication;
 using GirafServices.User;
 using GirafServices.WeekPlanner;
@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace GirafAPI.Controllers
@@ -36,10 +35,8 @@ namespace GirafAPI.Controllers
         /// </summary>
         private readonly IAuthenticationService _authentication;
 
-        // SHOULD BE REMOVED AFTER REFACTORING OF THIS CONTROLLER HAS BEEN COMPLETED!
-        private readonly GirafDbContext _context;
-
-
+        private readonly IWeekTemplateRepository _weekTemplateRepository;
+        
         /// <summary>
         /// Constructor is called by the asp.net runtime.
         /// </summary>
@@ -49,14 +46,15 @@ namespace GirafAPI.Controllers
         public WeekTemplateController(IGirafService giraf,
             ILoggerFactory loggerFactory,
             IAuthenticationService authentication,
-            GirafDbContext context,
+            IWeekTemplateRepository weekTemplateRepository,
             IWeekService weekService,
-            IDepartmentService departmentService)
+            IDepartmentService departmentService
+            )
         {
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("WeekTemplate");
             _authentication = authentication;
-            _context = context;
+            _weekTemplateRepository = weekTemplateRepository;
             _weekService = weekService;
             _departmentService = departmentService;
         }
@@ -79,9 +77,7 @@ namespace GirafAPI.Controllers
             if (!await _authentication.HasTemplateAccess(user))
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
-            var result = _context.WeekTemplates
-                             .Where(t => t.DepartmentKey == user.DepartmentKey)
-                             .Select(w => new WeekTemplateNameDTO(w.Name, w.Id)).ToArray();
+            var result = _weekTemplateRepository.GetWeekTemplatesForUser(user);
 
             if (result.Length < 1)
             {
@@ -109,14 +105,7 @@ namespace GirafAPI.Controllers
         {
             var user = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
 
-            var template = await (_context.WeekTemplates
-                .Include(w => w.Thumbnail)
-                .Include(u => u.Weekdays)
-                .ThenInclude(wd => wd.Activities)
-                .ThenInclude(pa => pa.Pictograms)
-                .ThenInclude(p => p.Pictogram)
-                .Where(t => t.DepartmentKey == user.DepartmentKey)
-                .FirstOrDefaultAsync(w => w.Id == id));
+            var template = await _weekTemplateRepository.GetWeekTemplateFromIdAndUser(id, user);
 
             if (template == null)
                 return NotFound(new ErrorResponse(ErrorCode.NoWeekTemplateFound, "No week template found"));
@@ -162,8 +151,8 @@ namespace GirafAPI.Controllers
             if (errorCode != null)
                 return BadRequest(errorCode);
 
-            _context.WeekTemplates.Add(newTemplate);
-            await _context.SaveChangesAsync();
+            _weekTemplateRepository.AddWeekTemplate(newTemplate);
+            await _weekTemplateRepository.SaveChangesAsync();
             return CreatedAtRoute(
                 "GetWeekTemplate",
                 new { id = newTemplate.Id },
@@ -198,12 +187,7 @@ namespace GirafAPI.Controllers
             if (newValuesDto == null)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing newValuesDto"));
 
-            var template = _context.WeekTemplates
-                .Include(w => w.Thumbnail)
-                .Include(u => u.Weekdays)
-                .ThenInclude(wd => wd.Activities)
-                .ThenInclude(e => e.Pictograms)
-                .FirstOrDefault(t => id == t.Id);
+            var template = _weekTemplateRepository.GetWeekTemplateFromId(id);
 
             if (template == null)
                 return NotFound(new ErrorResponse(ErrorCode.WeekTemplateNotFound, "Weektemplate not found"));
@@ -215,8 +199,8 @@ namespace GirafAPI.Controllers
             if (errorCode != null)
                 return BadRequest(errorCode);
 
-            _context.WeekTemplates.Update(template);
-            await _context.SaveChangesAsync();
+            _weekTemplateRepository.UpdateWeekTemplate(template);
+            await _weekTemplateRepository.SaveChangesAsync();
             return Ok(new SuccessResponse<WeekTemplateDTO>(new WeekTemplateDTO(template)));
         }
 
@@ -240,8 +224,7 @@ namespace GirafAPI.Controllers
             if (user == null)
                 return Unauthorized(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
-            var template = _context.WeekTemplates
-                                          .FirstOrDefault(t => id == t.Id);
+            var template = _weekTemplateRepository.GetWeekTemplateFromId(id);
 
             if (template == null)
                 return NotFound(new ErrorResponse(ErrorCode.WeekTemplateNotFound, "Weektemplate not found"));
@@ -249,8 +232,8 @@ namespace GirafAPI.Controllers
             if (!await _authentication.HasTemplateAccess(user, template?.DepartmentKey))
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
-            _context.WeekTemplates.Remove(template);
-            await _context.SaveChangesAsync();
+            _weekTemplateRepository.RemoveTemplate(template);
+            await _weekTemplateRepository.SaveChangesAsync();
             return Ok(new SuccessResponse("Deleted week template"));
         }
     }
