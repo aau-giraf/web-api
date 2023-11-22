@@ -14,8 +14,10 @@ namespace GirafRepositories
     {
         public static IServiceCollection AddRepositories(this IServiceCollection services, IConfiguration configuration)
         {
+            // Adds the mysql database configuration and register it on the service collection. 
             services.AddMySql(configuration);
             
+            // Add scoped repositories. Every single request gets it's own scoped repositories.
             services.AddScoped<IAlternateNameRepository,AlternateNameRepository>();
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
             services.AddScoped<IGirafRoleRepository, GirafRoleRepository>();
@@ -34,8 +36,8 @@ namespace GirafRepositories
             services.AddScoped<IUserResourseRepository, UserResourseRepository>();
             services.AddScoped<IImageRepository, ImageRepository>();
             services.AddScoped<IWeekdayRepository, WeekdayRepository>();
-            // scoped, transient, singleton
             services.AddTransient<IActivityRepository, ActivityRepository>();
+            
             return services;
         }
         
@@ -54,7 +56,7 @@ namespace GirafRepositories
         /// An extension-method for setting up roles for use when authorizing users to methods.
         /// </summary>
         /// <param name="roleManager">A reference to the role manager for the application.</param>
-        public async static Task EnsureRoleSetup(this RoleManager<GirafRole> roleManager)
+        public static async Task EnsureRoleSetup(this RoleManager<GirafRole> roleManager)
         {
             bool allRolesExists = true;
             foreach (string role in Enum.GetNames(typeof(GirafRoles)))

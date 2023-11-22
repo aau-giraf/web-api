@@ -1,4 +1,7 @@
 ﻿using System;
+using GirafServices.Authentication;
+using GirafServices.User;
+using GirafServices.WeekPlanner;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace GirafServices
@@ -8,7 +11,9 @@ namespace GirafServices
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
         
-            // services.AddSingleton<ISERVICE, MERSERVICE>();
+            services.AddTransient<IGirafService, GirafService>();
+            services.AddTransient<IAuthenticationService, GirafAuthenticationService>();
+            services.AddTransient<IWeekService, WeekService>();
             return services;
         }
     }
