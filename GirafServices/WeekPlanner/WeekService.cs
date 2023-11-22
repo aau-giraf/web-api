@@ -1,15 +1,9 @@
-﻿using GirafEntities.WeekPlanner;
-using GirafRest.Interfaces;
-using GirafRest.Models;
-using GirafRest.Models.DTOs;
-using GirafRest.Models.Responses;
+using GirafEntities.WeekPlanner;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using GirafServices.User;
 using Timer = GirafEntities.WeekPlanner.Timer;
+using GirafEntities.Responses;
+using GirafEntities.WeekPlanner.DTOs;
 
 namespace GirafServices.WeekPlanner
 {

@@ -1,13 +1,9 @@
-﻿using GirafRest.Data;
-using GirafRest.Extensions;
-using GirafRest.Models;
-using GirafRest.Interfaces;
-using Microsoft.AspNetCore.Identity;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Identity;
 using GirafEntities.User;
 using GirafRepositories.Persistence;
+using GirafRepositories;
 
-namespace GirafRest.Services
+namespace GirafServices.Authentication
 {
 
     /// <summary>

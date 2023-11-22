@@ -1,4 +1,5 @@
-namespace GirafRest.Models
+namespace GirafEntities.WeekPlanner
+
 {
     /// <summary>
     /// A week defines the schedule of some citizen in the course of the week.

@@ -1,9 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using GirafRest.Models;
-using GirafRest.Data;
-using System.Threading.Tasks;
+using GirafEntities.WeekPlanner;
 using GirafRepositories.Interfaces;
 using GirafRepositories.Persistence;
 

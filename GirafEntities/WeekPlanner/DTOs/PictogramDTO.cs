@@ -1,6 +1,6 @@
 using System;
 
-namespace GirafRest.Models.DTOs
+namespace GirafEntities.WeekPlanner.DTOs
 {
     /// <summary>
     /// Defines the structure of Pictogram when serializing and deserializing data. Data transfer objects (DTOs) 

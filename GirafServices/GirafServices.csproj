@@ -7,11 +7,17 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <Compile Remove="Sample\**" />
+      <EmbeddedResource Remove="Sample\**" />
+      <None Remove="Sample\**" />
+    </ItemGroup>
+
+    <ItemGroup>
       <ProjectReference Include="..\GirafRepositories\GirafRepositories.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Sample\" />
+      <PackageReference Include="Microsoft.SqlServer.SqlManagementObjects" Version="170.18.0" />
     </ItemGroup>
 
 </Project>

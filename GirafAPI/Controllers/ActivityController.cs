@@ -1,9 +1,8 @@
-﻿using GirafEntities.User;
+﻿using GirafEntities.Responses;
+using GirafEntities.User;
 using GirafEntities.WeekPlanner;
+using GirafEntities.WeekPlanner.DTOs;
 using GirafRepositories.Interfaces;
-using GirafRest.Models;
-using GirafRest.Models.DTOs;
-using GirafRest.Models.Responses;
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

@@ -1,5 +1,4 @@
-﻿using GirafRest.Data;
-using GirafRest.Data.Samples;
+﻿using GirafEntities.Samples;
 using Newtonsoft.Json;
 
 namespace GirafRepositories.Persistence

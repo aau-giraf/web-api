@@ -1,9 +1,6 @@
-﻿using GirafRest.Models.Responses;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using GirafEntities.Responses;
 
-namespace GirafRest.Models.DTOs
+namespace GirafEntities.WeekPlanner.DTOs
 {
     /// <summary>
     /// DTO for <see cref="WeekBase"/>

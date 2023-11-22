@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using GirafEntities.User;
 
-namespace GirafRest.Models.DTOs
+namespace GirafEntities.User.DTOs
 {
     /// <summary>
     /// Defines the structure of GirafUsers when serializing and deserializing data. Data transfer objects (DTOs) 

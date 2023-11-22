@@ -1,4 +1,4 @@
-using GirafRest.Models;
+using GirafEntities.WeekPlanner;
 
 namespace GirafRepositories.Interfaces
 {

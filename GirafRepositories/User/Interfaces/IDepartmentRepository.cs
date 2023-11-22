@@ -1,6 +1,5 @@
 using GirafEntities.User;
-using GirafRest;
-using GirafRest.Models;
+using GirafEntities.User.DTOs;
 using Microsoft.AspNetCore.Identity;
 
 namespace GirafRepositories.Interfaces

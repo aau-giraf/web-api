@@ -1,10 +1,13 @@
+using GirafEntities.Responses;
+using GirafEntities.Settings.DTOs;
 using GirafEntities.User;
+using GirafEntities.User.DTOs;
+using GirafEntities.WeekPlanner;
+using GirafEntities.WeekPlanner.DTOs;
 using GirafRepositories;
 using GirafRepositories.Interfaces;
-using GirafRest.Interfaces;
-using GirafRest.Models;
-using GirafRest.Models.DTOs;
-using GirafRest.Models.Responses;
+using GirafServices.Authentication;
+using GirafServices.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;

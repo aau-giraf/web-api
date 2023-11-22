@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace GirafRest.Models.DTOs
+namespace GirafEntities.WeekPlanner.DTOs
 {
     /// <summary>
     /// DTO for <see cref="AlternateName"/>

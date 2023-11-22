@@ -1,12 +1,7 @@
-﻿using GirafRest.Interfaces;
-using GirafRest.Models.DTOs;
-using GirafRest.Models.Responses;
-using GirafRest.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using GirafEntities.Responses;
+using GirafEntities.WeekPlanner;
+using GirafEntities.WeekPlanner.DTOs;
+using GirafServices.User;
 
 namespace GirafServices.WeekPlanner
 {

@@ -1,7 +1,7 @@
 ﻿using System;
 using GirafEntities.User;
 
-namespace GirafRest.Models.DTOs
+namespace GirafEntities.User.DTOs
 {
     /// <summary>
     /// DTO for DisplayName, used to avoid sending entire GirafUserDTO to avoid sending unnecessary information
@@ -54,7 +54,7 @@ namespace GirafRest.Models.DTOs
             }
             else
             {
-                return this.DisplayName.CompareTo(other.DisplayName);
+                return DisplayName.CompareTo(other.DisplayName);
             }
 
         }
@@ -68,7 +68,7 @@ namespace GirafRest.Models.DTOs
                 return false;
 
             DisplayNameDTO dto = (DisplayNameDTO)obj;
-            return this.DisplayName == dto.DisplayName && this.UserRole == dto.UserRole && this.UserId == dto.UserId;
+            return DisplayName == dto.DisplayName && UserRole == dto.UserRole && UserId == dto.UserId;
         }
     }
 }

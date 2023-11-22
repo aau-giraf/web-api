@@ -1,4 +1,4 @@
-﻿namespace GirafRest.Repositories
+﻿namespace GirafServices.WeekPlanner
 {
     public class Image
     {

@@ -1,4 +1,4 @@
-namespace GirafRest.Models
+namespace GirafEntities.WeekPlanner
 {
     /// <summary>
     /// Defines access levels of <see cref="Pictogram"/> in the system.

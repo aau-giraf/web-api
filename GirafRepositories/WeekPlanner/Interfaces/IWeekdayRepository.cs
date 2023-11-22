@@ -1,8 +1,8 @@
-using GirafRest.Models;
+using GirafEntities.WeekPlanner;
 
 namespace GirafRepositories.Interfaces
 {
-    public interface IWeekdayRepository : IRepository<GirafRest.Models.Weekday>
+    public interface IWeekdayRepository : IRepository<Weekday>
     {
         public Task<int> DeleteSpecificWeekDay(Weekday oldDay);
         public Task<int> UpdateSpecificWeekDay(Weekday oldDay);

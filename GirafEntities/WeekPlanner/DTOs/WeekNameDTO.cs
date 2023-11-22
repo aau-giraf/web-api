@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace GirafRest
+namespace GirafEntities.WeekPlanner.DTOs
 {
     /// <summary>
     /// DTO for weekname, holding year, number and name

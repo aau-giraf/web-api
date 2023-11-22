@@ -1,6 +1,8 @@
+using GirafEntities.WeekPlanner;
+
 namespace GirafRepositories.Interfaces
 {
-    public interface IWeekTemplateRepository : IRepository<GirafRest.Models.WeekTemplate>
+    public interface IWeekTemplateRepository : IRepository<WeekTemplate>
     {
 
     }

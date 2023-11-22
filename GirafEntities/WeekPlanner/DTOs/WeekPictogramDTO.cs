@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GirafRest.Models.DTOs
+namespace GirafEntities.WeekPlanner.DTOs
 {
     /// <summary>
     /// DTO for <see cref="Pictogram"/>

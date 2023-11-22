@@ -1,12 +1,11 @@
 ﻿using AspNetCoreRateLimit;
+using GirafEntities.Authentication;
 using GirafEntities.User;
 using GirafRepositories;
 using GirafRepositories.Interfaces;
 using GirafRepositories.Persistence;
 using GirafRepositories.User;
 using GirafRepositories.WeekPlanner;
-using GirafRest.Interfaces;
-using GirafRest.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -27,6 +26,8 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using GirafServices;
+using GirafServices.Authentication;
+using GirafServices.User;
 
 namespace GirafAPI.Setup
 {

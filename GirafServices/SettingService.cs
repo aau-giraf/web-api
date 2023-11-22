@@ -1,4 +1,4 @@
-﻿namespace GirafRest.Models
+﻿namespace GirafServices
 {
     public class SettingService
     {

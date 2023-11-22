@@ -1,12 +1,8 @@
-using GirafRest.Models.DTOs;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using GirafEntities.WeekPlanner;
+using GirafEntities.WeekPlanner.DTOs;
 
-namespace GirafRest.Models
+namespace GirafEntities.WeekPlanner
 {
     /// <summary>
     /// Possible days; 1 for Monday

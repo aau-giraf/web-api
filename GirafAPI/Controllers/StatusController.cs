@@ -1,6 +1,6 @@
-﻿using GirafRepositories.Persistence;
-using GirafRest.Interfaces;
-using GirafRest.Models.Responses;
+﻿using GirafEntities.Responses;
+using GirafRepositories.Persistence;
+using GirafServices.User;
 using System;
 using System.IO;
 using System.Linq;

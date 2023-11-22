@@ -1,9 +1,11 @@
-using GirafRest.Models.DTOs;
+using GirafEntities.WeekPlanner;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using GirafEntities.Settings.DTOs;
+using GirafEntities.WeekPlanner.DTOs;
 
-namespace GirafRest.Models
+namespace GirafEntities.Settings
 {
     /// <summary>
     /// The LauncherOptions, which is the various settings the users can add to customize the Launcher App.
@@ -50,7 +52,7 @@ namespace GirafRest.Models
         /// </summary>
         [Required]
         public Theme Theme { get; set; }
-        
+
         /// <summary>
         /// Defines the number of days to display in portrait mode for a user in a weekplan
         /// </summary>
@@ -79,12 +81,12 @@ namespace GirafRest.Models
         /// Flag to indicate whether citizen should see one or more days or only activities
         /// </summary>
         public bool ShowOnlyActivities { get; set; }
-        
+
         /// <summary>
         /// Defines the number of activities to display for a user in a weekschedule
         /// </summary>
         public int? NrOfActivitiesToDisplay { get; set; }
-        
+
         /// <summary>
         /// Flag for indicating whether or not greyscale is enabled
         /// </summary>
@@ -122,24 +124,24 @@ namespace GirafRest.Models
         /// <param name="newOptions">The DTO containing new settings</param>
         public void UpdateFrom(SettingDTO newOptions)
         {
-            this.Orientation = newOptions?.Orientation ?? this.Orientation;
-            this.CompleteMark = newOptions?.CompleteMark ?? this.CompleteMark;
-            this.CancelMark = newOptions?.CancelMark ?? this.CancelMark;
-            this.DefaultTimer = newOptions?.DefaultTimer ?? this.DefaultTimer;
-            this.TimerSeconds = newOptions?.TimerSeconds ?? this.TimerSeconds;
-            this.ActivitiesCount = newOptions?.ActivitiesCount ?? this.ActivitiesCount;
-            this.Theme = newOptions?.Theme ?? this.Theme;
-            this.NrOfDaysToDisplayPortrait = newOptions?.NrOfDaysToDisplayPortrait ?? this.NrOfDaysToDisplayPortrait;
-            this.DisplayDaysRelativePortrait = newOptions?.DisplayDaysRelativePortrait ?? this.DisplayDaysRelativePortrait;
-            this.NrOfDaysToDisplayLandscape = newOptions?.NrOfDaysToDisplayLandscape ?? this.NrOfDaysToDisplayLandscape;
-            this.DisplayDaysRelativeLandscape = newOptions?.DisplayDaysRelativeLandscape ?? this.DisplayDaysRelativeLandscape;
-            this.GreyScale = newOptions?.GreyScale ?? this.GreyScale;
-            this.LockTimerControl = newOptions?.LockTimerControl ?? this.LockTimerControl;
-            this.PictogramText = newOptions?.PictogramText ?? this.PictogramText;
-            this.ShowPopup = newOptions?.ShowPopup ?? this.ShowPopup;
-            this.NrOfActivitiesToDisplay = newOptions?.NrOfActivitiesToDisplay ?? this.NrOfActivitiesToDisplay;
-            this.ShowOnlyActivities = newOptions?.ShowOnlyActivities ?? this.ShowOnlyActivities;
-            this.ShowSettingsForCitizen = newOptions?.ShowSettingsForCitizen ?? this.ShowSettingsForCitizen;
+            Orientation = newOptions?.Orientation ?? Orientation;
+            CompleteMark = newOptions?.CompleteMark ?? CompleteMark;
+            CancelMark = newOptions?.CancelMark ?? CancelMark;
+            DefaultTimer = newOptions?.DefaultTimer ?? DefaultTimer;
+            TimerSeconds = newOptions?.TimerSeconds ?? TimerSeconds;
+            ActivitiesCount = newOptions?.ActivitiesCount ?? ActivitiesCount;
+            Theme = newOptions?.Theme ?? Theme;
+            NrOfDaysToDisplayPortrait = newOptions?.NrOfDaysToDisplayPortrait ?? NrOfDaysToDisplayPortrait;
+            DisplayDaysRelativePortrait = newOptions?.DisplayDaysRelativePortrait ?? DisplayDaysRelativePortrait;
+            NrOfDaysToDisplayLandscape = newOptions?.NrOfDaysToDisplayLandscape ?? NrOfDaysToDisplayLandscape;
+            DisplayDaysRelativeLandscape = newOptions?.DisplayDaysRelativeLandscape ?? DisplayDaysRelativeLandscape;
+            GreyScale = newOptions?.GreyScale ?? GreyScale;
+            LockTimerControl = newOptions?.LockTimerControl ?? LockTimerControl;
+            PictogramText = newOptions?.PictogramText ?? PictogramText;
+            ShowPopup = newOptions?.ShowPopup ?? ShowPopup;
+            NrOfActivitiesToDisplay = newOptions?.NrOfActivitiesToDisplay ?? NrOfActivitiesToDisplay;
+            ShowOnlyActivities = newOptions?.ShowOnlyActivities ?? ShowOnlyActivities;
+            ShowSettingsForCitizen = newOptions?.ShowSettingsForCitizen ?? ShowSettingsForCitizen;
             if (newOptions.WeekDayColors != null)
                 updateWeekDayColors(newOptions.WeekDayColors);
         }
@@ -150,7 +152,7 @@ namespace GirafRest.Models
             {
                 foreach (var weekDayColor in weekDayColors)
                 {
-                    var weekDayColorToUpdate = this.WeekDayColors.FirstOrDefault(wdc => wdc.Day == weekDayColor.Day);
+                    var weekDayColorToUpdate = WeekDayColors.FirstOrDefault(wdc => wdc.Day == weekDayColor.Day);
                     if (weekDayColorToUpdate != null)
                     {
                         weekDayColorToUpdate.HexColor = weekDayColor.HexColor;
@@ -164,7 +166,7 @@ namespace GirafRest.Models
         /// </summary>
         public void InitialiseWeekDayColors()
         {
-            this.WeekDayColors = new List<WeekDayColor>(){
+            WeekDayColors = new List<WeekDayColor>(){
                 new WeekDayColor(){Day = Days.Monday, HexColor = "#08a045", SettingId = Key},
                 new WeekDayColor(){Day = Days.Tuesday, HexColor = "#540d6e", SettingId = Key},
                 new WeekDayColor(){Day = Days.Wednesday, HexColor = "#f77f00", SettingId = Key},

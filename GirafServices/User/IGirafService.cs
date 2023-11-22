@@ -4,8 +4,9 @@ using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 using GirafEntities.User;
 using GirafRepositories.Persistence;
+using GirafEntities.WeekPlanner;
 
-namespace GirafRest.Interfaces
+namespace GirafServices.User
 {
     /// <summary>
     /// The IGirafService interfaces defines all methods that are commonly used by the controllers.

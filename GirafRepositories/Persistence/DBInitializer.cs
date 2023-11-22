@@ -1,8 +1,7 @@
 using System.ComponentModel;
+using GirafEntities.Samples;
 using GirafEntities.User;
-using GirafRest.Data;
-using GirafRest.Data.Samples;
-using GirafRest.Models;
+using GirafEntities.WeekPlanner;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SkiaSharp;

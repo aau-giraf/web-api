@@ -1,4 +1,4 @@
-﻿namespace GirafRest.Models.DTOs
+﻿namespace GirafEntities.WeekPlanner.DTOs
 {
     /// <summary>
     /// Simple DTO for a Resource ID
