@@ -8,12 +8,12 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// The year of the week.
         /// </summary>
-        public int WeekYear { get; internal set; }
+        public int WeekYear { get; set; }
 
         /// <summary>
         /// The number of the week, 0 - 52 (53).
         /// </summary>
-        public int WeekNumber { get; internal set; }
+        public int WeekNumber { get; set; }
 
         /// <summary>
         /// Empty contstructor used by JSON Generation

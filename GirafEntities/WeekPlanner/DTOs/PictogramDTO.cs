@@ -11,12 +11,12 @@ namespace GirafRest.Models.DTOs
         /// <summary>
         /// Primary Key
         /// </summary>
-        public long Id { get; internal set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// The last time the pictogram was edited.
         /// </summary>
-        public DateTime LastEdit { get; internal set; }
+        public DateTime LastEdit { get; set; }
 
         /// <summary>
         /// The title of the pictogram.

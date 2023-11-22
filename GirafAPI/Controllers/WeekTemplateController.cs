@@ -4,6 +4,7 @@ using GirafRest.Interfaces;
 using GirafRest.Models;
 using GirafRest.Models.DTOs;
 using GirafRest.Models.Responses;
+using GirafServices.WeekPlanner;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,6 +23,7 @@ namespace GirafAPI.Controllers
     [Route("v1/[controller]")]
     public class WeekTemplateController : Controller
     {
+        private readonly IWeekService _weekService;
         /// <summary>
         /// A reference to GirafService, that contains common functionality for all controllers.
         /// </summary>
@@ -45,12 +47,14 @@ namespace GirafAPI.Controllers
         public WeekTemplateController(IGirafService giraf,
             ILoggerFactory loggerFactory,
             IAuthenticationService authentication,
-            GirafDbContext context)
+            GirafDbContext context,
+            IWeekService weekService)
         {
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("WeekTemplate");
             _authentication = authentication;
             _context = context;
+            _weekService = weekService;
         }
 
         /// <summary>
@@ -150,7 +154,7 @@ namespace GirafAPI.Controllers
 
             var newTemplate = new WeekTemplate(department);
 
-            var errorCode = await SetWeekFromDTO(templateDto, newTemplate, _giraf);
+            var errorCode = await _weekService.SetWeekFromDTO(templateDto, newTemplate, _giraf);
             if (errorCode != null)
                 return BadRequest(errorCode);
 
@@ -203,7 +207,7 @@ namespace GirafAPI.Controllers
             if (!await _authentication.HasTemplateAccess(user, template?.DepartmentKey))
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
-            var errorCode = await SetWeekFromDTO(newValuesDto, template, _giraf);
+            var errorCode = await _weekService.SetWeekFromDTO(newValuesDto, template, _giraf);
             if (errorCode != null)
                 return BadRequest(errorCode);
 
