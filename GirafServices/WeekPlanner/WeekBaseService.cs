@@ -2,17 +2,17 @@
 
 namespace GirafServices.WeekPlanner
 {
-    public class WeekBaseService
+    public class WeekBaseService : IWeekBaseService
     {
         /// <summary>
         /// Updates the given weekday of the Week with the new information found in 'day'.
         /// </summary>
         /// <param name="day">A day instance to update the week with - the old one is completely overridden.</param>
-        public void UpdateDay(Weekday day)
+        public void UpdateDay(Weekday day, WeekBase wb)
         {
-            var wd = Weekdays.FirstOrDefault(d => d.Day == day.Day);
+            var wd = wb.Weekdays.FirstOrDefault(d => d.Day == day.Day);
             if (wd == null)
-                Weekdays.Add(day);
+                wb.Weekdays.Add(day);
             else
                 wd.Activities = day.Activities;
         }

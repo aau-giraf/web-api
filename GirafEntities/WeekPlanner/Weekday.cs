@@ -42,7 +42,7 @@ namespace GirafEntities.WeekPlanner
     /// <summary>
     /// Weekday Model as concrete day for a weekplan, with activities
     /// </summary>
-    public class Weekday
+    public class Weekday 
     {
         /// <summary>
         /// Primary key
