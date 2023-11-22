@@ -9,7 +9,6 @@ using GirafServices.WeekPlanner;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +24,8 @@ namespace GirafAPI.Controllers
     public class WeekTemplateController : Controller
     {
         private readonly IWeekService _weekService;
+        private readonly IDepartmentService _departmentService;
+
         /// <summary>
         /// A reference to GirafService, that contains common functionality for all controllers.
         /// </summary>
@@ -49,13 +50,15 @@ namespace GirafAPI.Controllers
             ILoggerFactory loggerFactory,
             IAuthenticationService authentication,
             GirafDbContext context,
-            IWeekService weekService)
+            IWeekService weekService,
+            IDepartmentService departmentService)
         {
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("WeekTemplate");
             _authentication = authentication;
             _context = context;
             _weekService = weekService;
+            _departmentService = departmentService;
         }
 
         /// <summary>
@@ -149,7 +152,7 @@ namespace GirafAPI.Controllers
             if (templateDto == null)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing templateDto"));
 
-            Department department = _context.Departments.FirstOrDefault(d => d.Key == user.DepartmentKey);
+            Department department = await _departmentService.GetDepartmentByUser(user);
             if (department == null)
                 return BadRequest(new ErrorResponse(ErrorCode.UserMustBeInDepartment, "User must be in a department"));
 
