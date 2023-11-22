@@ -1,6 +1,8 @@
+using GirafEntities.Settings;
+
 namespace GirafRepositories.Interfaces
 {
-    public interface ISettingRepository : IRepository<GirafRest.Models.Setting>
+    public interface ISettingRepository : IRepository<Setting>
     {
 
     }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using GirafEntities.User;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace GirafEntities.WeekPlanner
 {

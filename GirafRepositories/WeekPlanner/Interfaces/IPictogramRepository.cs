@@ -1,6 +1,6 @@
+using GirafEntities.DTOs;
 using GirafEntities.User;
 using GirafRest.Models;
-using GirafRest.Models.DTOs;
 
 namespace GirafRepositories.Interfaces
 {

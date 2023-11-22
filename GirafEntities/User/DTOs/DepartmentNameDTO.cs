@@ -1,4 +1,4 @@
-﻿namespace GirafRest
+﻿namespace GirafEntities.User.DTOs
 {
     /// <summary>
     /// DTO for Department Name
@@ -19,8 +19,8 @@
         /// </summary>
         public DepartmentNameDTO(long id, string name)
         {
-            this.ID = id;
-            this.Name = name;
+            ID = id;
+            Name = name;
         }
 
         /// <summary>

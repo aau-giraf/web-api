@@ -1,7 +1,6 @@
-﻿using GirafRest.Models;
-using System.Collections.Generic;
+﻿using GirafEntities.WeekPlanner;
 
-namespace GirafRest.Data.Samples
+namespace GirafEntities.Samples
 {
     public class SampleWeekday
     {

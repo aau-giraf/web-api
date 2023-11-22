@@ -1,10 +1,6 @@
-using GirafRest.Models.DTOs;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using GirafEntities.WeekPlanner;
+using GirafEntities.WeekPlanner.DTOs;
 
 namespace GirafEntities.WeekPlanner
 {

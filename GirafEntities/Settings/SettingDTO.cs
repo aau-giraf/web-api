@@ -1,7 +1,8 @@
+using GirafEntities.WeekPlanner.DTOs;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace GirafRest.Models.DTOs
+namespace GirafEntities.Settings
 {
     /// <summary>
     /// Screen orientation
@@ -195,25 +196,25 @@ namespace GirafRest.Models.DTOs
         /// <param name="options">The launcher options in need of transfer</param>
         public SettingDTO(Setting options)
         {
-            this.Orientation = options.Orientation;
-            this.CompleteMark = options.CompleteMark;
-            this.CancelMark = options.CancelMark;
-            this.DefaultTimer = options.DefaultTimer;
-            this.TimerSeconds = options.TimerSeconds;
-            this.ActivitiesCount = options.ActivitiesCount;
-            this.Theme = options.Theme;
-            this.NrOfDaysToDisplayPortrait = options.NrOfDaysToDisplayPortrait;
-            this.DisplayDaysRelativePortrait = options.DisplayDaysRelativePortrait;
-            this.NrOfDaysToDisplayLandscape = options.NrOfDaysToDisplayLandscape;
-            this.DisplayDaysRelativeLandscape = options.DisplayDaysRelativeLandscape;
-            this.ShowOnlyActivities = options.ShowOnlyActivities;
-            this.NrOfActivitiesToDisplay = options.NrOfActivitiesToDisplay;
-            this.GreyScale = options.GreyScale;
-            this.LockTimerControl = options.LockTimerControl;
-            this.PictogramText = options.PictogramText;
-            this.ShowSettingsForCitizen = options.ShowSettingsForCitizen;
-            this.WeekDayColors = SetWeekDayColorsFromModel(options.WeekDayColors);
-            this.ShowPopup = options.ShowPopup;
+            Orientation = options.Orientation;
+            CompleteMark = options.CompleteMark;
+            CancelMark = options.CancelMark;
+            DefaultTimer = options.DefaultTimer;
+            TimerSeconds = options.TimerSeconds;
+            ActivitiesCount = options.ActivitiesCount;
+            Theme = options.Theme;
+            NrOfDaysToDisplayPortrait = options.NrOfDaysToDisplayPortrait;
+            DisplayDaysRelativePortrait = options.DisplayDaysRelativePortrait;
+            NrOfDaysToDisplayLandscape = options.NrOfDaysToDisplayLandscape;
+            DisplayDaysRelativeLandscape = options.DisplayDaysRelativeLandscape;
+            ShowOnlyActivities = options.ShowOnlyActivities;
+            NrOfActivitiesToDisplay = options.NrOfActivitiesToDisplay;
+            GreyScale = options.GreyScale;
+            LockTimerControl = options.LockTimerControl;
+            PictogramText = options.PictogramText;
+            ShowSettingsForCitizen = options.ShowSettingsForCitizen;
+            WeekDayColors = SetWeekDayColorsFromModel(options.WeekDayColors);
+            ShowPopup = options.ShowPopup;
         }
 
         /// <summary>

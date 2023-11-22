@@ -3,9 +3,8 @@ using GirafRest.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using System.Collections.Generic;
 using System.Linq;
-using GirafEntities.User;
 
-namespace GirafRest.Models.DTOs
+namespace GirafEntities.User.DTOs
 {
     /// <summary>
     /// DTO for <see cref="Department"/>
