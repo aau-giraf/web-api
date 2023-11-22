@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using GirafEntities.User;
 
-namespace GirafRest.Models.DTOs.AccountDTOs
+namespace GirafEntities.Authentication.DTOs
 {
     /// <summary>
     /// DTO Used for registrering/Signup

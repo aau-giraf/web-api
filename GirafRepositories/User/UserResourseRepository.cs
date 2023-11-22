@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using GirafEntities.User;
 using GirafRepositories.Interfaces;
 using GirafRepositories.Persistence;
-using GirafRest.Models;
 using GirafRest.Data;
 using Microsoft.EntityFrameworkCore;
 

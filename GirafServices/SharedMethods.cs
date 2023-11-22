@@ -1,14 +1,11 @@
-﻿using GirafRest.Models;
-using GirafRest.Models.DTOs;
-using GirafRest.Models.Responses;
-using GirafRest.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
 using GirafEntities.WeekPlanner;
+using GirafServices.User;
+using Timer = GirafEntities.WeekPlanner.Timer;
+using GirafEntities.Responses;
+using GirafEntities.WeekPlanner.DTOs;
 
-namespace GirafRest.Shared
+namespace GirafServices
 {
     /// <summary>
     /// Shared static class for helper methods

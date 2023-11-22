@@ -1,11 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using GirafEntities.User;
-using GirafRest.Models.DTOs;
 
-namespace GirafRest.Models
+namespace GirafEntities.WeekPlanner
 {
-    
+
     /// <summary>
     /// Class for saving alternate names for pictograms 
     /// </summary>

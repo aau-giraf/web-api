@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace GirafEntities.Settings
+namespace GirafRest.Models.DTOs.AccountDTOs
 {
     /// <summary>
     /// DTO Used for changing password

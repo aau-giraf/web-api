@@ -1,9 +1,7 @@
-﻿using GirafRest.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using GirafEntities.User;
 
-namespace GirafRest.Models
+namespace GirafEntities.User
 
 {
     /// <summary>
@@ -46,8 +44,8 @@ namespace GirafRest.Models
         /// </summary>
         public GuardianRelation(GirafUser guardian, GirafUser citizen)
         {
-            this.Citizen = citizen;
-            this.Guardian = guardian;
+            Citizen = citizen;
+            Guardian = guardian;
         }
 
         /// <summary>

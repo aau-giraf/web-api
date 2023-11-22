@@ -1,4 +1,4 @@
-﻿namespace GirafEntities.DTOs
+﻿namespace GirafRest.Models.DTOs
 {
     /// <summary>
     /// Simple DTO for a Resource ID

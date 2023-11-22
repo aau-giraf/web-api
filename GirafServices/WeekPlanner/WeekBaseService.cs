@@ -1,4 +1,6 @@
-﻿namespace GirafRest.Models
+﻿using GirafEntities.WeekPlanner;
+
+namespace GirafServices.WeekPlanner
 {
     public class WeekBaseService
     {

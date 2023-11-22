@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace GirafRest.Data.Samples
+namespace GirafEntities.Samples
 {
     public class SampleGirafUser
     {

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using GirafEntities.WeekPlanner;
 
 
-namespace GirafRest.Models
+namespace GirafEntities.WeekPlanner
 {
     public class PictogramRelation
     {

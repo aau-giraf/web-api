@@ -1,8 +1,7 @@
 using GirafEntities.User;
+using GirafEntities.User.DTOs;
 using GirafRepositories.Interfaces;
 using GirafRepositories.Persistence;
-using GirafRest.Models;
-using GirafRest.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
 
 namespace GirafRepositories.User

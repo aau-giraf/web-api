@@ -1,10 +1,9 @@
-using GirafRest.Models.DTOs;
-using System;
-using System.Collections.Generic;
+using GirafEntities.User;
+using GirafEntities.WeekPlanner.DTOs;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace GirafRest.Models
+namespace GirafEntities.WeekPlanner
 {
     /// <summary>
     /// A pictogram is an image with an associated title. They are used by Guardians and Citizens and so on to 

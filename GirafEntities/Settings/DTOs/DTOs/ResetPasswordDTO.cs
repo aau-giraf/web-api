@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace GirafEntities.Settings
+namespace GirafRest.Models.DTOs.AccountDTOs
 {
     /// <summary>
     /// This class defines the structure of the expected json when a user wishes to reset his password.

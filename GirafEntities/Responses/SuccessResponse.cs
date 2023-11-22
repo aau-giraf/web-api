@@ -1,4 +1,4 @@
-namespace GirafRest.Models.Responses
+namespace GirafEntities.Responses
 {
     /// <summary>
     /// Used for a successful REST response.

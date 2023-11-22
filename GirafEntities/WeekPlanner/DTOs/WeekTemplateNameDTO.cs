@@ -1,4 +1,4 @@
-﻿namespace GirafRest.Models.DTOs
+﻿namespace GirafEntities.WeekPlanner.DTOs
 {
     /// <summary>
     /// Data Transfer Object for <see cref="WeekTemplate"/>

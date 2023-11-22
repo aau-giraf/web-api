@@ -1,8 +1,9 @@
+using GirafEntities.WeekPlanner;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace GirafRest.Models
+namespace GirafEntities.User
 {
     /// <summary>
     /// Defines a many-to-many relationship between <see cref="Department"/> and <see cref="Pictogram"/> (ressource)
@@ -45,10 +46,10 @@ namespace GirafRest.Models
         /// <param name="pictogram">The involved pictogram.</param>
         public DepartmentResource(Department dep, Pictogram pictogram)
         {
-            this.OtherKey = dep.Key;
-            this.Other = dep;
-            this.PictogramKey = pictogram.Id;
-            this.Pictogram = pictogram;
+            OtherKey = dep.Key;
+            Other = dep;
+            PictogramKey = pictogram.Id;
+            Pictogram = pictogram;
 
             pictogram.LastEdit = DateTime.Now;
             Other.Resources.Add(this);

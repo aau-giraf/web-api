@@ -1,4 +1,4 @@
-﻿namespace GirafRest.Data.Samples
+﻿namespace GirafEntities.Samples
 {
     public class SampleDepartment
     {

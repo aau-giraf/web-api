@@ -1,10 +1,9 @@
-﻿using GirafRest.Data.Samples;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace GirafRest.Data
+namespace GirafEntities.Samples
 {
     public class SampleData
     {

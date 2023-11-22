@@ -1,5 +1,5 @@
 using GirafEntities.User;
-using GirafRest.Models;
+using GirafEntities.WeekPlanner;
 
 namespace GirafRepositories.Interfaces
 {

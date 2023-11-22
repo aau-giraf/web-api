@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace GirafRest.Models.DTOs
+namespace GirafEntities.WeekPlanner.DTOs
 {
     /// <summary>
     /// DTO for <see cref="Weekday"/>

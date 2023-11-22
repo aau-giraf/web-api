@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace GirafRest.Models.DTOs.AccountDTOs
+namespace GirafEntities.Authentication.DTOs
 {
     /// <summary>
     /// DTO Used for Login
