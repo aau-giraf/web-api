@@ -119,49 +119,6 @@ namespace GirafEntities.Settings
         public List<WeekDayColor> WeekDayColors { get; set; }
 
         /// <summary>
-        /// Updates all settings based on a DTO
-        /// </summary>
-        /// <param name="newOptions">The DTO containing new settings</param>
-        public void UpdateFrom(SettingDTO newOptions)
-        {
-            Orientation = newOptions?.Orientation ?? Orientation;
-            CompleteMark = newOptions?.CompleteMark ?? CompleteMark;
-            CancelMark = newOptions?.CancelMark ?? CancelMark;
-            DefaultTimer = newOptions?.DefaultTimer ?? DefaultTimer;
-            TimerSeconds = newOptions?.TimerSeconds ?? TimerSeconds;
-            ActivitiesCount = newOptions?.ActivitiesCount ?? ActivitiesCount;
-            Theme = newOptions?.Theme ?? Theme;
-            NrOfDaysToDisplayPortrait = newOptions?.NrOfDaysToDisplayPortrait ?? NrOfDaysToDisplayPortrait;
-            DisplayDaysRelativePortrait = newOptions?.DisplayDaysRelativePortrait ?? DisplayDaysRelativePortrait;
-            NrOfDaysToDisplayLandscape = newOptions?.NrOfDaysToDisplayLandscape ?? NrOfDaysToDisplayLandscape;
-            DisplayDaysRelativeLandscape = newOptions?.DisplayDaysRelativeLandscape ?? DisplayDaysRelativeLandscape;
-            GreyScale = newOptions?.GreyScale ?? GreyScale;
-            LockTimerControl = newOptions?.LockTimerControl ?? LockTimerControl;
-            PictogramText = newOptions?.PictogramText ?? PictogramText;
-            ShowPopup = newOptions?.ShowPopup ?? ShowPopup;
-            NrOfActivitiesToDisplay = newOptions?.NrOfActivitiesToDisplay ?? NrOfActivitiesToDisplay;
-            ShowOnlyActivities = newOptions?.ShowOnlyActivities ?? ShowOnlyActivities;
-            ShowSettingsForCitizen = newOptions?.ShowSettingsForCitizen ?? ShowSettingsForCitizen;
-            if (newOptions.WeekDayColors != null)
-                updateWeekDayColors(newOptions.WeekDayColors);
-        }
-
-        private void updateWeekDayColors(List<WeekDayColorDTO> weekDayColors)
-        {
-            if (WeekDayColors != null)
-            {
-                foreach (var weekDayColor in weekDayColors)
-                {
-                    var weekDayColorToUpdate = WeekDayColors.FirstOrDefault(wdc => wdc.Day == weekDayColor.Day);
-                    if (weekDayColorToUpdate != null)
-                    {
-                        weekDayColorToUpdate.HexColor = weekDayColor.HexColor;
-                    }
-                }
-            }
-        }
-
-        /// <summary>
         /// Initializes WeekDayColors.
         /// </summary>
         public void InitialiseWeekDayColors()
