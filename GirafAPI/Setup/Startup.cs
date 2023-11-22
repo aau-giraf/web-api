@@ -6,6 +6,7 @@ using GirafRepositories.Interfaces;
 using GirafRepositories.Persistence;
 using GirafRepositories.User;
 using GirafRepositories.WeekPlanner;
+using GirafRepositories.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

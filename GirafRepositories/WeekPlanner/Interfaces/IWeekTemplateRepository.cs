@@ -3,7 +3,7 @@ using GirafEntities.WeekPlanner;
 using GirafEntities.WeekPlanner.DTOs;
 using GirafRepositories.Interfaces;
 
-namespace GirafRepositories.WeekPlanner.Interfaces
+namespace GirafRepositories.Interfaces
 {
     public interface IWeekTemplateRepository : IRepository<WeekTemplate>
     {
@@ -13,10 +13,6 @@ namespace GirafRepositories.WeekPlanner.Interfaces
         void UpdateWeekTemplate(WeekTemplate template);
         void RemoveTemplate(WeekTemplate template);
         WeekTemplate GetWeekTemplateFromId(long id);
-        
-        
-        
-        
         Task<int> SaveChangesAsync();
     }
 }
