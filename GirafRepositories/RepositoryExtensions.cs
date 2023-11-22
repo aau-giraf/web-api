@@ -1,6 +1,7 @@
 ﻿using GirafEntities.User;
 using GirafRepositories.Interfaces;
 using GirafRepositories.Persistence;
+using GirafRepositories.User;
 using GirafRepositories.WeekPlanner;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,25 @@ namespace GirafRepositories
         public static IServiceCollection AddRepositories(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddMySql(configuration);
+            
+            services.AddScoped<IAlternateNameRepository,AlternateNameRepository>();
+            services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+            services.AddScoped<IGirafRoleRepository, GirafRoleRepository>();
+            services.AddScoped<IGirafUserRepository, GirafUserRepository>();
+            services.AddScoped<IPictogramRepository,PictogramRepository>();
+            services.AddScoped<ISettingRepository,SettingRepository>();
+            services.AddScoped<ITimerRepository,TimerRepository>();
+            services.AddScoped<IWeekBaseRepository,WeekBaseRepository>();
+            services.AddScoped<IWeekDayColorRepository, WeekDayColorRepository>();
+            services.AddScoped<IWeekRepository, WeekRepository>();
+            services.AddScoped<IWeekTemplateRepository, WeekTemplateRepository>();
+            services.AddScoped<IActivityRepository,ActivityRepository>();
+            services.AddScoped<IDepartmentResourseRepository,DepartmentResourseRepository>();
+            services.AddScoped<IGuardianRelationRepository,GuardianRelationRepository>();
+            services.AddScoped<IPictogramRelationRepository,PictogramRelationRepository>();
+            services.AddScoped<IUserResourseRepository, UserResourseRepository>();
+            services.AddScoped<IImageRepository, ImageRepository>();
+            services.AddScoped<IWeekdayRepository, WeekdayRepository>();
             // scoped, transient, singleton
             services.AddTransient<IActivityRepository, ActivityRepository>();
             return services;

@@ -290,7 +290,10 @@ namespace GirafAPI.Setup
                     name: "default",
                     template: "{controller=Account}/{action=AccessDenied}");
             });
-
+                
+            
+            // ############################################################
+            // Alt herunde kan principielt fjernes herfra 
             GirafDbContext context = app.ApplicationServices.GetService<GirafDbContext>();
 
             // Create roles if they do not exist
@@ -299,7 +302,10 @@ namespace GirafAPI.Setup
             // Fill some sample data into the database
             if (ProgramOptions.GenerateSampleData)
                 DBInitializer.Initialize(context, userManager, ProgramOptions.Pictograms, env.EnvironmentName).Wait();
-
+            
+            // ############################################################
+            
+            
             app.Run((context2) =>
             {
                 context2.Response.StatusCode = 404;
