@@ -1,5 +1,4 @@
-﻿using GirafRest.Models;
-using System.Collections.Generic;
+﻿using GirafEntities.WeekPlanner;
 
 namespace GirafEntities.Samples
 {

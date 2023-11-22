@@ -1,3 +1,4 @@
+using GirafEntities.WeekPlanner.DTOs;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
