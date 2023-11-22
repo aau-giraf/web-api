@@ -1,5 +1,4 @@
-﻿using GirafRest.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 using GirafEntities.User;

@@ -1,6 +1,4 @@
-﻿using GirafRest.Models;
-
-namespace GirafEntities.WeekPlanner.DTOs
+﻿namespace GirafEntities.WeekPlanner.DTOs
 {
     /// <summary>
     /// Color of a weekday DTO
