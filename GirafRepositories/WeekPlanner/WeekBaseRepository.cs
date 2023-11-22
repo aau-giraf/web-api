@@ -1,6 +1,6 @@
+using GirafEntities.WeekPlanner;
 using GirafRepositories.Interfaces;
 using GirafRepositories.Persistence;
-using GirafRest.Models;
 
 namespace GirafRepositories.WeekPlanner
 {

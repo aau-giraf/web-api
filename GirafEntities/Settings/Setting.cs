@@ -2,6 +2,8 @@ using GirafEntities.WeekPlanner;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using GirafEntities.Settings.DTOs;
+using GirafEntities.WeekPlanner.DTOs;
 
 namespace GirafEntities.Settings
 {

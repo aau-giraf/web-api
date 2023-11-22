@@ -1,8 +1,8 @@
-using GirafEntities.DTOs;
 using GirafEntities.User;
+using GirafEntities.WeekPlanner;
+using GirafEntities.WeekPlanner.DTOs;
 using GirafRepositories.Interfaces;
 using GirafRepositories.Persistence;
-using GirafRest.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace GirafRepositories.WeekPlanner

@@ -1,9 +1,8 @@
-﻿using GirafAPI.Models.Responses;
+﻿using GirafEntities.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 
 namespace GirafAPI.Controllers
 {

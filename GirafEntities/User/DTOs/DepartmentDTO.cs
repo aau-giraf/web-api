@@ -1,8 +1,5 @@
-using GirafRest.Extensions;
-using GirafRest.Interfaces;
 using Microsoft.AspNetCore.Identity;
-using System.Collections.Generic;
-using System.Linq;
+
 
 namespace GirafEntities.User.DTOs
 {

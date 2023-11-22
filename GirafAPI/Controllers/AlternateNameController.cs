@@ -1,12 +1,13 @@
 using GirafEntities.User;
+using GirafEntities.WeekPlanner;
+using GirafEntities.WeekPlanner.DTOs;
 using GirafRepositories.Interfaces;
-using GirafAPI.Models;
-using GirafAPI.Interfaces;
+using GirafServices.Authentication;
+using GirafServices.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
-using GirafAPI.Models.DTOs;
 using Microsoft.AspNetCore.Http;
 
 namespace GirafAPI.Controllers

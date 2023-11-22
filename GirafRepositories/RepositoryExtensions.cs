@@ -2,8 +2,6 @@
 using GirafRepositories.Interfaces;
 using GirafRepositories.Persistence;
 using GirafRepositories.WeekPlanner;
-using GirafRest.Data;
-using GirafRest.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

@@ -1,10 +1,7 @@
-﻿using GirafRest.Data;
-using GirafRest.Models;
+﻿using GirafRest.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
-using System.IO;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using GirafEntities.User;
 using GirafRepositories.Persistence;
 using GirafEntities.WeekPlanner;

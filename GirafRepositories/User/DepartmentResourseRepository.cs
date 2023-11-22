@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GirafEntities.User;
+using GirafEntities.WeekPlanner;
 using GirafRepositories.Interfaces;
 using GirafRepositories.Persistence;
-using GirafRest.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace GirafRepositories.User

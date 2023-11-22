@@ -1,6 +1,6 @@
-using GirafEntities.DTOs;
 using GirafEntities.User;
-using GirafRest.Models;
+using GirafEntities.WeekPlanner;
+using GirafEntities.WeekPlanner.DTOs;
 
 namespace GirafRepositories.Interfaces
 {

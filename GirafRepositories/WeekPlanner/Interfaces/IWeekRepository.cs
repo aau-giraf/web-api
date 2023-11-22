@@ -1,11 +1,11 @@
+using GirafEntities.Responses;
 using GirafEntities.User;
-using GirafRest.Models;
-using GirafRest.Models.DTOs;
-using GirafRest.Models.Responses;
+using GirafEntities.WeekPlanner;
+using GirafEntities.WeekPlanner.DTOs;
 
 namespace GirafRepositories.Interfaces
 {
-    public interface IWeekRepository : IRepository<GirafRest.Models.Week>
+    public interface IWeekRepository : IRepository<Week>
     {
         public Task<GirafUser> getAllWeeksOfUser(string userId);
 
