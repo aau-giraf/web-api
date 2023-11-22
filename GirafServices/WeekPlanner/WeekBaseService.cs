@@ -1,5 +1,4 @@
 ﻿using GirafEntities.WeekPlanner;
-using Microsoft.SqlServer.Management.Smo.Agent;
 
 namespace GirafServices.WeekPlanner
 {
@@ -11,7 +10,7 @@ namespace GirafServices.WeekPlanner
         /// <param name="day">A day instance to update the week with - the old one is completely overridden.</param>
         public void UpdateDay(Weekday day)
         {
-            var wd = WeekDays.FirstOrDefault(d => d.Day == day.Day);
+            var wd = Weekdays.FirstOrDefault(d => d.Day == day.Day);
             if (wd == null)
                 Weekdays.Add(day);
             else
