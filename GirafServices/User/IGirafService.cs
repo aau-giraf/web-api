@@ -20,13 +20,6 @@ namespace GirafServices.User
             get;
             set;
         }
-        /// <summary>
-        /// A reference to the database context of the application. This context may be used to query for data.
-        /// </summary>
-        GirafDbContext _context
-        {
-            get;
-        }
         
         /// <summary>
         /// A reference to the user manager, used to fetch users.

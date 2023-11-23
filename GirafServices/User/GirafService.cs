@@ -16,10 +16,7 @@ namespace GirafServices.User
         private readonly IGirafUserRepository _girafUserRepository;
         private readonly IUserResourseRepository _userResourseRepository;
         private readonly IDepartmentResourseRepository _departmentResourseRepository;
-        /// <summary>
-        /// A reference to the database context - used to access the database and query for data. Handled by asp.net's dependency injection.
-        /// </summary>
-        public GirafDbContext _context { get; }
+
         /// <summary>
         /// Asp.net's user manager. Can be used to fetch user data from the request's cookie. Handled by asp.net's dependency injection.
         /// </summary>
