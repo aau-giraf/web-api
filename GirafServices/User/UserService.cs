@@ -1,17 +1,18 @@
 ﻿using GirafEntities.User;
+using GirafEntities.User.DTOs;
 using GirafEntities.WeekPlanner;
 using GirafRepositories.Interfaces;
-using GirafRepositories.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using GirafRepositories;
 
 namespace GirafServices.User
 {
     /// <summary>
-    /// The GirafService class implements the <see cref="IGirafService"/> interface and thus implements common
+    /// The GirafService class implements the <see cref="IUserService"/> interface and thus implements common
     /// functionality that is needed by most controllers.
     /// </summary>
-    public class GirafService : IGirafService
+    public class UserService : IUserService
     {
         private readonly IGirafUserRepository _girafUserRepository;
         private readonly IUserResourseRepository _userResourseRepository;
@@ -33,7 +34,7 @@ namespace GirafServices.User
         /// <param name="girafUserRepository">Service Injection</param>
         /// <param name="userResourseRepository">Service Injection</param>
         /// <param name="departmentResourseRepository">Service Injection</param>
-        public GirafService(UserManager<GirafUser> userManager,
+        public UserService(UserManager<GirafUser> userManager,
             IGirafUserRepository girafUserRepository,
             IUserResourseRepository userResourseRepository,
             IDepartmentResourseRepository departmentResourseRepository)
@@ -43,25 +44,19 @@ namespace GirafServices.User
             _userResourseRepository = userResourseRepository;
             _departmentResourseRepository = departmentResourseRepository;
         }
-        public async Task<byte[]> ReadRequestImage(Stream bodyStream)
+        /// <summary>
+        /// Find belonging members
+        /// </summary>
+        /// <returns>List of matching users</returns>
+        public virtual List<DisplayNameDTO> FindMembers(IEnumerable<GirafUser> users, RoleManager<GirafRole> roleManager, IUserService girafService)
         {
-            byte[] image;
-            using (var imageStream = new MemoryStream())
-            {
-                await bodyStream.CopyToAsync(imageStream);
-
-                try      //I assume this will always throw, but I dare not remove it, because why would it be here?
-                {
-                    await bodyStream.FlushAsync();
-                }
-                catch (NotSupportedException)
-                {
-                }
-
-                image = imageStream.ToArray();
-            }
-
-            return image;
+            return new List<DisplayNameDTO>(
+                users.Select(m => new DisplayNameDTO(
+                        m.DisplayName,
+                        roleManager.findUserRole(girafService._userManager, m).Result,
+                        m.Id
+                    )
+                ));
         }
 
         /// <summary>
@@ -134,21 +129,6 @@ namespace GirafServices.User
             return ownedByUser;
         }
         
-        /// <summary>
-        /// Creates a MD5 hash used for hashing pictures, and returns the hash as a string.
-        /// </summary>
-        /// <param name="image">Input image</param>
-        /// <returns>The hash as a string</returns>
-        public string GetHash(byte[] image)
-        {
-            using (var md5 = new System.Security.Cryptography.MD5CryptoServiceProvider())
-            {
-                var hash = md5.ComputeHash(image);
-                return Convert.ToBase64String(hash);
-            }
-        }
-
-
         /// <summary>
         /// Checks if the current user's department owns the given resource.
         /// </summary>

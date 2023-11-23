@@ -1,4 +1,6 @@
 using System.Linq.Expressions;
+using GirafEntities.WeekPlanner.DTOs;
+using GirafEntities.WeekPlanner;
 using GirafRepositories.Interfaces;
 using GirafRepositories.Persistence;
 

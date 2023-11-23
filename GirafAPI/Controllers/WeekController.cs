@@ -22,7 +22,7 @@ namespace GirafAPI.Controllers
     [Route("v1/[controller]")]
     public class WeekController : Controller
     {
-        private readonly IGirafService _giraf;
+        private readonly IUserService _giraf;
 
 
         private readonly IWeekRepository _weekRepository;
@@ -39,7 +39,7 @@ namespace GirafAPI.Controllers
         /// <param name="timerRepository">Service Injection</param>
         /// <param name="pictogramRepository">Service Injection</param>
         /// <param name="weekdayRepository">Service Injection</param>
-        public WeekController(IGirafService giraf, ILoggerFactory loggerFactory, IWeekRepository weekRepository, ITimerRepository timerRepository, IPictogramRepository pictogramRepository, IWeekdayRepository weekdayRepository)
+        public WeekController(IUserService giraf, ILoggerFactory loggerFactory, IWeekRepository weekRepository, ITimerRepository timerRepository, IPictogramRepository pictogramRepository, IWeekdayRepository weekdayRepository)
         {
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Week");

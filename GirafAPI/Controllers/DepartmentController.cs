@@ -21,14 +21,14 @@ namespace GirafAPI.Controllers
     [Route("v1/[controller]")]
     public class DepartmentController : Controller
     {
-        private readonly IGirafService _giraf;
+        private readonly IUserService _giraf;
 
         public readonly RoleManager<GirafRole> _roleManager;
         private readonly IDepartmentRepository _departmentRepository;
         private readonly IGirafUserRepository _userRepository;
         private readonly IGirafRoleRepository _roleRepository;
         private readonly IPictogramRepository _pictogramRepository;
-        private readonly IGirafUserService _girafUserService;
+        private readonly IUserService _girafUserService;
 
         /// <summary>
         /// Initializes new DepartmentController, injecting services
@@ -40,14 +40,14 @@ namespace GirafAPI.Controllers
         /// <param name="departmentRepository">Department Injection</param>
         /// <param name="girafRoleRepository">GIRAF Role Injection</param>
         /// <param name="pictogramRepository">Pictogram Injection</param>
-        public DepartmentController(IGirafService giraf,
+        public DepartmentController(IUserService giraf,
             ILoggerFactory loggerFactory,
             RoleManager<GirafRole> roleManager,
             IGirafUserRepository userRepository,
             IDepartmentRepository departmentRepository,
             IGirafRoleRepository girafRoleRepository,
             IPictogramRepository pictogramRepository,
-            IGirafUserService girafUserService)
+            IUserService girafUserService)
         {
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Department");

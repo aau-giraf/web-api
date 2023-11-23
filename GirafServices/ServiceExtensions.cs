@@ -11,10 +11,9 @@ namespace GirafServices
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
         
-            services.AddTransient<IGirafService, GirafService>();
+            services.AddTransient<IUserService, UserService>();
             services.AddTransient<IAuthenticationService, GirafAuthenticationService>();
             services.AddTransient<IWeekService, WeekService>();
-            services.AddTransient<IGirafUserService, GirafUserService>();
             return services;
         }
     }

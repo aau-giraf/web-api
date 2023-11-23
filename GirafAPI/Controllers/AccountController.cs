@@ -32,7 +32,7 @@ namespace GirafAPI.Controllers
     public class AccountController : Controller
     {
         private readonly SignInManager<GirafUser> _signInManager;
-        private readonly IGirafService _giraf;
+        private readonly IUserService _giraf;
         private readonly IOptions<JwtConfig> _configuration;
         private readonly IAuthenticationService _authentication;
         private readonly IGirafUserRepository _userRepository;
@@ -54,7 +54,7 @@ namespace GirafAPI.Controllers
         public AccountController(
             SignInManager<GirafUser> signInManager,
             ILoggerFactory loggerFactory,
-            IGirafService giraf,
+            IUserService giraf,
             IOptions<JwtConfig> configuration,
             IGirafUserRepository userRepository,
             IDepartmentRepository departmentRepository,

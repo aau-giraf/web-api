@@ -29,7 +29,7 @@ namespace GirafAPI.Controllers
     {
         private const string IMAGE_TYPE_PNG = "image/png";
 
-        private readonly IGirafService _giraf;
+        private readonly IUserService _giraf;
 
         private readonly IHostEnvironment _hostingEnvironment;
 
@@ -47,7 +47,7 @@ namespace GirafAPI.Controllers
         /// <param name="girafUserRepository">The <see cref="IGirafUserRepository"/> used to query Users</param>
         /// <param name="pictogramRepository">Pictogram Injection</param>
         public PictogramController(
-            IGirafService girafService,
+            IUserService girafService,
             IHostEnvironment hostingEnvironment,
             ILoggerFactory lFactory,
             IGirafUserRepository girafUserRepository,

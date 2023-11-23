@@ -4,6 +4,8 @@ using GirafServices.User;
 using Timer = GirafEntities.WeekPlanner.Timer;
 using GirafEntities.Responses;
 using GirafEntities.WeekPlanner.DTOs;
+using GirafRepositories.Interfaces;
+using GirafRepositories.WeekPlanner;
 
 namespace GirafServices.WeekPlanner
 {
@@ -18,7 +20,16 @@ namespace GirafServices.WeekPlanner
     /// null otherwise.</returns>
     public class WeekService : IWeekService
     {
-        public async Task<ErrorResponse> SetWeekFromDTO(WeekBaseDTO weekDTO, WeekBase week, IGirafService _giraf)
+        private readonly IPictogramRepository _pictogramRepository;
+        private readonly ITimerRepository _timerRepository;
+
+        public WeekService(IPictogramRepository pictogramRepository, ITimerRepository timerRepository)
+        {
+            _pictogramRepository = pictogramRepository;
+            _timerRepository = timerRepository;
+        }
+
+        public async Task<ErrorResponse> SetWeekFromDTO(WeekBaseDTO weekDTO, WeekBase week, IUserService _giraf)
         {
             var modelErrorCode = weekDTO.ValidateModel();
             if (modelErrorCode.HasValue)
@@ -28,10 +39,12 @@ namespace GirafServices.WeekPlanner
 
             week.Name = weekDTO.Name;
 
-            Pictogram thumbnail = _giraf._context.Pictograms
-                .FirstOrDefault(p => p.Id == weekDTO.Thumbnail.Id);
+            Pictogram thumbnail = await _pictogramRepository.GetPictogramsById(weekDTO.Thumbnail.Id);
+
             if (thumbnail == null)
+            {
                 return new ErrorResponse(ErrorCode.MissingProperties, "Missing thumbnail");
+            }
 
             week.Thumbnail = thumbnail;
 
@@ -63,7 +76,7 @@ namespace GirafServices.WeekPlanner
         /// <param name="to">Pictograms and choices will be added to this object.</param>
         /// <param name="from">Pictograms and choices will be read from this object.</param>
         /// <param name="_giraf">IGirafService for injection.</param>
-        public async Task<bool> AddPictogramsToWeekday(Weekday to, WeekdayDTO from, IGirafService _giraf)
+        public async Task<bool> AddPictogramsToWeekday(Weekday to, WeekdayDTO from, IUserService _giraf)
         {
             if (from.Activities != null)
             {
@@ -74,8 +87,7 @@ namespace GirafServices.WeekPlanner
 
                     foreach (var pictogram in activityDTO.Pictograms)
                     {
-                        var picto = await _giraf._context.Pictograms
-                            .Where(p => p.Id == pictogram.Id).FirstOrDefaultAsync();
+                        var picto = await _pictogramRepository.GetPictogramsById(pictogram.Id);
 
                         if (picto != null)
                         {
@@ -90,7 +102,7 @@ namespace GirafServices.WeekPlanner
                     Timer timer = null;
                     if (activityDTO.Timer != null)
                     {
-                        timer = await _giraf._context.Timers.Where(t => t.Key == activityDTO.Timer.Key).FirstOrDefaultAsync();
+                        timer = await _timerRepository.getTimerWithKey(activityDTO.Timer.Key);
                     }
 
                     if (pictograms.Any())
