@@ -32,7 +32,7 @@ namespace GirafAPI.Controllers
     public class AccountController : Controller
     {
         private readonly SignInManager<GirafUser> _signInManager;
-        private readonly IUserService _giraf;
+        private readonly IUserService _userService;
         private readonly IOptions<JwtConfig> _configuration;
         private readonly IAuthenticationService _authentication;
         private readonly IGirafUserRepository _userRepository;
@@ -45,7 +45,7 @@ namespace GirafAPI.Controllers
         /// </summary>
         /// <param name="signInManager">Service Injection</param>
         /// <param name="loggerFactory">Service Injection</param>
-        /// <param name="giraf">Service Injection</param>
+        /// <param name="userService">Service Injection</param>
         /// <param name="configuration">Service Injection</param>
         /// <param name="userRepository">Service Injection</param>
         /// <param name="departmentRepository">Service Injection</param>
@@ -54,7 +54,7 @@ namespace GirafAPI.Controllers
         public AccountController(
             SignInManager<GirafUser> signInManager,
             ILoggerFactory loggerFactory,
-            IUserService giraf,
+            IUserService userService,
             IOptions<JwtConfig> configuration,
             IGirafUserRepository userRepository,
             IDepartmentRepository departmentRepository,
@@ -62,8 +62,8 @@ namespace GirafAPI.Controllers
             ISettingRepository settingRepository)
         {
             _signInManager = signInManager;
-            _giraf = giraf;
-            _giraf._logger = loggerFactory.CreateLogger("Account");
+            _userService = userService;
+            _userService._logger = loggerFactory.CreateLogger("Account");
             _configuration = configuration;
             _userRepository = userRepository;
             _departmentRepository = departmentRepository;
@@ -250,12 +250,12 @@ namespace GirafAPI.Controllers
             if (model.Token == null || model.Password == null)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing token or password"));
 
-            var result = await _giraf._userManager.ResetPasswordAsync(user, model.Token, model.Password);
+            var result = await _userService._userManager.ResetPasswordAsync(user, model.Token, model.Password);
             if (!result.Succeeded)
                 return Unauthorized(new ErrorResponse(ErrorCode.InvalidProperties, "Invalid token"));
 
             await _signInManager.SignInAsync(user, isPersistent: false);
-            _giraf._logger.LogInformation("User changed their password successfully.");
+            _userService._logger.LogInformation("User changed their password successfully.");
             return Ok(new SuccessResponse("User password changed succesfully"));
         }
 
@@ -279,7 +279,7 @@ namespace GirafAPI.Controllers
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
-            var result = await _giraf._userManager.GeneratePasswordResetTokenAsync(user);
+            var result = await _userService._userManager.GeneratePasswordResetTokenAsync(user);
             return Ok(new SuccessResponse(result));
         }
 
@@ -321,7 +321,7 @@ namespace GirafAPI.Controllers
         private async Task<List<Claim>> GetRoleClaims(GirafUser user)
         {
             var roleclaims = new List<Claim>();
-            var userRoles = await _giraf._userManager.GetRolesAsync(user);
+            var userRoles = await _userService._userManager.GetRolesAsync(user);
             roleclaims.AddRange(userRoles.Select(userRole => new Claim(ClaimTypes.Role, userRole)));
             return roleclaims;
         }
