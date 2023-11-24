@@ -7,9 +7,7 @@ namespace GirafServices.WeekPlanner
 {
     public interface IWeekService
     {
-        public Task<ErrorResponse> SetWeekFromDTO(WeekBaseDTO weekDTO, WeekBase week, IGirafService _giraf);
-        public Task<bool> AddPictogramsToWeekday(Weekday to, WeekdayDTO from, IGirafService _giraf);
-
-
+        public Task<ErrorResponse> SetWeekFromDTO(WeekBaseDTO weekDTO, WeekBase week);
+        public Task<bool> AddPictogramsToWeekday(Weekday to, WeekdayDTO from);
     }
 }

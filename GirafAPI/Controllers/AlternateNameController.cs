@@ -19,7 +19,7 @@ namespace GirafAPI.Controllers
     [Route("v2/[Controller]")]
     public class AlternateNameController : Controller
     {
-        private readonly IGirafService _giraf;
+        private readonly IUserService _giraf;
         private readonly IAuthenticationService _authentication;
         private readonly IPictogramRepository _pictogramRepository;
         private readonly IGirafUserRepository _girafUserRepository;
@@ -34,7 +34,7 @@ namespace GirafAPI.Controllers
         /// <param name="girafUserRepository">The <see cref="IGirafUserRepository"/> used to query Users</param>
         /// <param name="alternateNameRepository">The <see cref="IAlternateNameRepository"/> used to query alternate names</param>
         public AlternateNameController(
-            IGirafService girafService,
+            IUserService girafService,
             ILoggerFactory lFactory,
             IPictogramRepository pictogramRepository,
             IGirafUserRepository girafUserRepository,
