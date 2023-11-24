@@ -6,6 +6,9 @@ using GirafEntities.Responses;
 using GirafEntities.WeekPlanner.DTOs;
 using GirafRepositories.Interfaces;
 
+using GirafRepositories.WeekPlanner;
+
+
 namespace GirafServices.WeekPlanner
 {
     /// <summary>
@@ -19,14 +22,11 @@ namespace GirafServices.WeekPlanner
     /// null otherwise.</returns>
     public class WeekService : IWeekService
     {
-        private readonly IWeekBaseService _weekBaseService;
         private readonly IPictogramRepository _pictogramRepository;
         private readonly ITimerRepository _timerRepository;
 
-
-        public WeekService(IWeekBaseService weekBaseService, IPictogramRepository pictogramRepository, ITimerRepository timerRepository)
+        public WeekService(IPictogramRepository pictogramRepository, ITimerRepository timerRepository)
         {
-            _weekBaseService = weekBaseService;
             _pictogramRepository = pictogramRepository;
             _timerRepository = timerRepository;
         }
@@ -42,8 +42,11 @@ namespace GirafServices.WeekPlanner
             week.Name = weekDTO.Name;
 
             Pictogram thumbnail = await _pictogramRepository.GetPictogramsById(weekDTO.Thumbnail.Id);
+
             if (thumbnail == null)
+            {
                 return new ErrorResponse(ErrorCode.MissingProperties, "Missing thumbnail");
+            }
 
             week.Thumbnail = thumbnail;
 

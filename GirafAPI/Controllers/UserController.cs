@@ -31,7 +31,7 @@ namespace GirafAPI.Controllers
     {
         private const int IMAGE_CONTENT_TYPE_DEFINITION = 25;
         private const string IMAGE_TYPE_PNG = "image/png";
-        private readonly IGirafService _giraf;
+        private readonly IUserService _giraf;
         private readonly IGirafUserRepository _girafUserRepository;
         private readonly IImageRepository _imageRepository;
         private readonly IUserResourseRepository _userResourseRepository;
@@ -51,7 +51,7 @@ namespace GirafAPI.Controllers
         /// <param name="pictogramRepository">Service Injection</param>
         /// <param name="authentication"></param>
         public UserController(
-            IGirafService giraf,
+            IUserService giraf,
             ILoggerFactory loggerFactory,
             RoleManager<GirafRole> roleManager,
             IGirafUserRepository girafUserRepository,

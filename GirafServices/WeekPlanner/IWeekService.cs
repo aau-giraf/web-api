@@ -9,7 +9,5 @@ namespace GirafServices.WeekPlanner
     {
         public Task<ErrorResponse> SetWeekFromDTO(WeekBaseDTO weekDTO, WeekBase week);
         public Task<bool> AddPictogramsToWeekday(Weekday to, WeekdayDTO from);
-
-
     }
 }

@@ -21,14 +21,14 @@ namespace GirafAPI.Controllers
     [Route("v1/[controller]")]
     public class DepartmentController : Controller
     {
-        private readonly IGirafService _giraf;
+        private readonly IUserService _giraf;
 
         public readonly RoleManager<GirafRole> _roleManager;
-        public DepartmentDTO _departmentdto { get; set; } = new DepartmentDTO();
         private readonly IDepartmentRepository _departmentRepository;
         private readonly IGirafUserRepository _userRepository;
         private readonly IGirafRoleRepository _roleRepository;
         private readonly IPictogramRepository _pictogramRepository;
+        private readonly IUserService _girafUserService;
 
         /// <summary>
         /// Initializes new DepartmentController, injecting services
@@ -40,13 +40,14 @@ namespace GirafAPI.Controllers
         /// <param name="departmentRepository">Department Injection</param>
         /// <param name="girafRoleRepository">GIRAF Role Injection</param>
         /// <param name="pictogramRepository">Pictogram Injection</param>
-        public DepartmentController(IGirafService giraf,
+        public DepartmentController(IUserService giraf,
             ILoggerFactory loggerFactory,
             RoleManager<GirafRole> roleManager,
             IGirafUserRepository userRepository,
             IDepartmentRepository departmentRepository,
             IGirafRoleRepository girafRoleRepository,
-            IPictogramRepository pictogramRepository)
+            IPictogramRepository pictogramRepository,
+            IUserService girafUserService)
         {
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Department");
@@ -55,6 +56,7 @@ namespace GirafAPI.Controllers
             _departmentRepository = departmentRepository;
             _roleRepository = girafRoleRepository;
             _pictogramRepository = pictogramRepository;
+            _girafUserService = girafUserService;
         }
 
         /// <summary>
@@ -108,7 +110,7 @@ namespace GirafAPI.Controllers
                 return this.ResourceNotFound(nameof(Department));
             }
 
-            var members = _departmentdto.FindMembers(department.Result.Members, _roleManager, _giraf);
+            var members = _girafUserService.FindMembers(department.Result.Members, _roleManager, _giraf);
             return Ok(new SuccessResponse<DepartmentDTO>(new DepartmentDTO(department.Result, members)));
         }
 
@@ -254,7 +256,7 @@ namespace GirafAPI.Controllers
 
                 //Save the changes and return the entity
                 await _departmentRepository.Update(department);
-                var members = _departmentdto.FindMembers(department.Members, _roleManager, _giraf);
+                var members = _girafUserService.FindMembers(department.Members, _roleManager, _giraf);
                 return CreatedAtRoute("GetDepartment", new { id = department.Key }, new SuccessResponse<DepartmentDTO>(new DepartmentDTO(department, members)));
             }
             catch (Exception e)

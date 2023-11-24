@@ -2,15 +2,15 @@
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 using GirafEntities.User;
-using GirafRepositories.Persistence;
 using GirafEntities.WeekPlanner;
+using GirafEntities.User.DTOs;
 
 namespace GirafServices.User
 {
     /// <summary>
     /// The IGirafService interfaces defines all methods that are commonly used by the controllers.
     /// </summary>
-    public interface IGirafService
+    public interface IUserService
     {
         /// <summary>
         /// A reference to a logger used to log information from controllers.
@@ -19,13 +19,6 @@ namespace GirafServices.User
         {
             get;
             set;
-        }
-        /// <summary>
-        /// A reference to the database context of the application. This context may be used to query for data.
-        /// </summary>
-        GirafDbContext _context
-        {
-            get;
         }
         
         /// <summary>
@@ -37,20 +30,14 @@ namespace GirafServices.User
             set;
         }
 
-
-        /// <summary>
-        /// Reads an image from the current request's body and return it as a byte array.
-        /// </summary>
-        /// <param name="bodyStream">A byte-stream from the body of the request.</param>
-        /// <returns>The image found in the request represented as a byte array.</returns>
-        Task<byte[]> ReadRequestImage(Stream bodyStream);
-
         /// <summary>
         /// Loads only the user with the given username, excluding any associated data.
         /// </summary>
         /// <param name="principal">A reference to HttpContext.User</param>
         /// <returns>The loaded user.</returns>
         Task<GirafUser> LoadBasicUserDataAsync(ClaimsPrincipal principal);
+
+        List<DisplayNameDTO> FindMembers(IEnumerable<GirafUser> users, RoleManager<GirafRole> roleManager, IUserService girafService);
 
         /// <summary>
         /// Loads the user with resources.
@@ -81,12 +68,6 @@ namespace GirafServices.User
         /// <returns>The user with department.</returns>
         /// <param name="principal">Principal.</param>
         Task<GirafUser> LoadUserWithDepartment(ClaimsPrincipal principal);
-        /// <summary>
-        /// Creates a MD5 hash used for hashing pictures, and returns the hash as a string.
-        /// </summary>
-        /// <param name="image">Input image</param>
-        /// <returns>The hash as a string</returns>
-        string GetHash(byte[] image);
 
         public Task<GirafUser> LoadUserWithWeekSchedules(string id);
     }
