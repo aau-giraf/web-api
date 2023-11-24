@@ -7,6 +7,8 @@ jobs:
   build:
     name: Integration Test
     runs-on: ${{ matrix.os }}
+    env:
+      ASPNETCORE_ENVIRONMENT: "CI"
     strategy:
       matrix:
         os: [ubuntu-20.04]
@@ -14,7 +16,7 @@ jobs:
       mysql:
         image: mysql:8.0
         env:
-          MYSQL_ROOT_PASSWORD: ${{ secrets.IntegrationTestPassword }}
+          MYSQL_ROOT_PASSWORD: 'Giraf123'
           MYSQL_DATABASE: 'giraf'
         ports:
           - 3306:3306
@@ -29,8 +31,6 @@ jobs:
         # secrets are located in repo aau-giraf/web-api:settings.secrets
         # "nohup" is used to run the dotnet application in the background 
         run: |
-          export ASPNETCORE_ENVIRONMENT="Development"
-          bash scripts/ci-setup.sh ${{ secrets.IntegrationTestUser }} ${{ secrets.IntegrationTestPassword }}
           dotnet tool install --global dotnet-ef
           cd GirafRest
           dotnet restore

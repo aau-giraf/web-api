@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
+using Microsoft.Extensions.Hosting;
 using System;
 using System.IO;
 using System.Threading.Tasks;
@@ -94,6 +95,24 @@ namespace GirafRest.Extensions
             options.Password.RequiredLength = 1;
             options.Password.RequireNonAlphanumeric = false;
             options.Password.RequireUppercase = false;
+        }
+        /// <summary>
+        /// Extension method for enabling local docker environment
+        /// </summary>
+        /// <param name="hostEnvironment"></param>
+        /// <returns></returns>
+        public static bool IsLocalDocker(this IHostEnvironment hostEnvironment)
+        {
+            ArgumentNullException.ThrowIfNull(hostEnvironment);
+            
+            return hostEnvironment.IsEnvironment("LocalDocker");
+        }
+
+        public static bool IsCI(this IHostEnvironment hostEnvironment)
+        {
+            ArgumentNullException.ThrowIfNull(hostEnvironment);
+
+            return hostEnvironment.IsEnvironment("CI");
         }
     }
 }
