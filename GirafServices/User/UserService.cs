@@ -5,6 +5,7 @@ using GirafRepositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using GirafRepositories;
+using GirafRepositories.User;
 
 namespace GirafServices.User
 {
@@ -16,7 +17,9 @@ namespace GirafServices.User
     {
         private readonly IGirafUserRepository _girafUserRepository;
         private readonly IUserResourseRepository _userResourseRepository;
+        private readonly IGirafRoleRepository _girafRoleRepository;
         private readonly IDepartmentResourseRepository _departmentResourseRepository;
+
 
         /// <summary>
         /// Asp.net's user manager. Can be used to fetch user data from the request's cookie. Handled by asp.net's dependency injection.
@@ -146,6 +149,52 @@ namespace GirafServices.User
             var ownedByDepartment = await _departmentResourseRepository.CheckProtectedOwnership(resource, user);
 
             return ownedByDepartment;
+        }
+
+        /// <summary>
+        /// Add guardians to registered user
+        /// </summary>
+        /// <param name="user">The registered user</param>
+        public void AddGuardiansToUser(GirafUser user)
+        {
+            var guardians = _girafRoleRepository.GetAllGuardians();
+            var guardiansInDepartment = _girafUserRepository.GetUsersInDepartment((long)user.DepartmentKey, guardians);
+            foreach (var guardian in guardiansInDepartment)
+            {
+                AddGuardian(guardian, user);
+            }
+        }
+
+        /// <summary>
+        /// Add citizens to registered user
+        /// </summary>
+        /// <param name="user">The registered user</param>
+        public void AddCitizensToUser(GirafUser user)
+        {
+            var citizens = _girafRoleRepository.GetAllCitizens();
+            var citizensInDepartment = _girafUserRepository.GetUsersInDepartment((long)user.DepartmentKey, citizens);
+            foreach (var citizen in citizensInDepartment)
+            {
+                AddCitizen(citizen, user);
+            }
+        }
+
+        /// <summary>
+        /// Adding citizens 
+        /// </summary>
+        /// <param name="citizen">Citizen to add</param>
+        public void AddCitizen(GirafUser citizen, GirafUser guardian)
+        {
+            guardian.Citizens.Add(new GuardianRelation(guardian, citizen));
+        }
+
+        /// <summary>
+        /// Add specific Guardian to this
+        /// </summary>
+        /// <param name="guardian"></param>
+        public void AddGuardian(GirafUser guardian, GirafUser user)
+        {
+            user.Guardians.Add(new GuardianRelation(guardian, user));
         }
 
     }

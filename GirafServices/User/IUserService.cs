@@ -70,5 +70,23 @@ namespace GirafServices.User
         Task<GirafUser> LoadUserWithDepartment(ClaimsPrincipal principal);
 
         public Task<GirafUser> LoadUserWithWeekSchedules(string id);
+
+        /// <summary>
+        /// Add guardians to registered user
+        /// </summary>
+        /// <param name="user">The registered user</param>
+        void AddGuardiansToUser(GirafUser user);
+
+        /// <summary>
+        /// Add citizens to registered user
+        /// </summary>
+        /// <param name="user">The registered user</param>
+        void AddCitizensToUser(GirafUser user);
+
+        void AddCitizen(GirafUser citizen, GirafUser guardian);
+        void AddGuardian(GirafUser guardian, GirafUser user);
+
+
+
     }
 }

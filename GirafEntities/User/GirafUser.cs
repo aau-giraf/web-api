@@ -67,58 +67,6 @@ namespace GirafEntities.User
         /// </summary>
         public virtual Setting Settings { get; set; }
 
-
-        /// <summary>
-        /// Iteratr citizens for calling AddCitizen
-        /// </summary>
-        /// <param name="citizens"></param>
-        public void AddCitizens(List<GirafUser> citizens)
-        {
-            foreach (var citizen in citizens)
-            {
-                AddCitizen(citizen);
-            }
-        }
-
-        /// <summary>
-        /// Adding citizens 
-        /// </summary>
-        /// <param name="citizen">Citizen to add</param>
-        public void AddCitizen(GirafUser citizen)
-        {
-            this.Citizens.Add(new GuardianRelation(this, citizen));
-        }
-
-        /// <summary>
-        /// Action for adding and referencing Guardians
-        /// </summary>
-        /// <param name="guardians"></param>
-        public void AddGuardians(List<GirafUser> guardians)
-        {
-            foreach (var guardian in guardians)
-            {
-                AddGuardian(guardian);
-            }
-        }
-
-        /// <summary>
-        /// Add specific Guardian to this
-        /// </summary>
-        /// <param name="guardian"></param>
-        public void AddGuardian(GirafUser guardian)
-        {
-            this.Guardians.Add(new GuardianRelation(guardian, this));
-        }
-
-        /// <summary>
-        /// Add specific Guardian to this
-        /// </summary>
-        /// <param name="trustee"></param>
-        public void AddTrustee(GirafUser trustee)
-        {
-            this.Guardians.Add(new GuardianRelation(trustee, this));
-        }
-
         /// <summary>
         /// Constructor for GirafUser
         /// </summary>
