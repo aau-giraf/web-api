@@ -33,11 +33,12 @@ namespace GirafAPI.Setup
         private readonly IWeekBaseService _weekBaseService;
         #region Methods
 
-        public DBInitializer(IUserService userService, IDatabaseRepository databaseRepository, IGirafUserRepository userRepository)
+        public DBInitializer(IUserService userService, IDatabaseRepository databaseRepository, IGirafUserRepository userRepository, IWeekBaseService weekBaseService)
         {
             _userService = userService;
             _databaseRepository = databaseRepository;
             _userRepository = userRepository;
+            _weekBaseService = weekBaseService;
         }
 
         /// <summary>
@@ -51,6 +52,7 @@ namespace GirafAPI.Setup
         {
             // Initialize static fields
             _userManager = userManager;
+            ArgumentNullException.ThrowIfNull(_userManager);
 
             // Verify that the database has already been created, before adding data to it
             _databaseRepository.EnsureCreated();

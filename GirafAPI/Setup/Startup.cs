@@ -27,6 +27,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GirafServices;
 using GirafServices.User;
+using GirafServices.WeekPlanner;
 using Microsoft.EntityFrameworkCore;
 
 namespace GirafAPI.Setup
@@ -153,9 +154,9 @@ namespace GirafAPI.Setup
                     Title = "The Giraf REST API", 
                     Version = "v1" 
                 });
-                var basePath = AppContext.BaseDirectory;
-                var xmlPath = Path.Combine(basePath, "GirafAPI.xml");
-                c.IncludeXmlComments(xmlPath);
+                // var basePath = AppContext.BaseDirectory;
+                // var xmlPath = Path.Combine(basePath, "GirafAPI.xml");
+                // c.IncludeXmlComments(xmlPath);
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
@@ -284,7 +285,8 @@ namespace GirafAPI.Setup
                 var userService = app.ApplicationServices.GetService<IUserService>();
                 var dbRepo = app.ApplicationServices.GetService<IDatabaseRepository>();
                 var userRepo = app.ApplicationServices.GetService<IGirafUserRepository>();
-                var dbinitializer = new DBInitializer(userService, dbRepo, userRepo);
+                var weebbaseService = app.ApplicationServices.GetService<IWeekBaseService>();
+                var dbinitializer = new DBInitializer(userService, dbRepo, userRepo, weebbaseService);
                 
                 dbinitializer.Initialize(context, userManager, ProgramOptions.Pictograms, env.EnvironmentName).Wait();
             }

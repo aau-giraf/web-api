@@ -49,4 +49,9 @@
   <ItemGroup>
     <ProjectReference Include="..\GirafServices\GirafServices.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="DB_data.dev.json" />
+    <None Include="DB_data.prod.json" />
+    <None Include="DB_data.stag.json" />
+  </ItemGroup>
 </Project>
