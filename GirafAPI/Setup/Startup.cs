@@ -27,6 +27,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GirafServices;
 using GirafServices.User;
+using Microsoft.EntityFrameworkCore;
 
 namespace GirafAPI.Setup
 {
@@ -88,6 +89,7 @@ namespace GirafAPI.Setup
         /// </summary>
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRepositories(Configuration); 
             services.AddApplicationInsightsTelemetry();
             services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
 
@@ -128,7 +130,6 @@ namespace GirafAPI.Setup
             // If new services or repositories needs to be created and registered
             // register them in the individual extension methods in ServiceExtension/RepositoryExtension.
             services.AddServices();
-            services.AddRepositories(Configuration); 
             
             services.AddMvc(options =>
             {
