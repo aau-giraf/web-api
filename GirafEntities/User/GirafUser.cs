@@ -67,28 +67,6 @@ namespace GirafEntities.User
         /// </summary>
         public virtual Setting Settings { get; set; }
 
-        private void InitialiseData(GirafRoles role)
-        {
-            if (role == GirafRoles.Citizen)
-            {
-                this.Settings = new Setting();
-                this.Settings.InitialiseWeekDayColors();
-            }
-            this.Resources = new List<UserResource>();
-            this.WeekSchedule = new List<Week>();
-            this.Citizens = new List<GuardianRelation>();
-            this.Guardians = new List<GuardianRelation>();
-        }
-        //
-        private void InitialiseData()
-        {
-            this.Settings = new Setting();
-            this.Settings.InitialiseWeekDayColors();
-            this.Resources = new List<UserResource>();
-            this.WeekSchedule = new List<Week>();
-            this.Citizens = new List<GuardianRelation>();
-            this.Guardians = new List<GuardianRelation>();
-        }
 
         /// <summary>
         /// Iteratr citizens for calling AddCitizen
@@ -151,7 +129,16 @@ namespace GirafEntities.User
         /// <param name="userIcon">Profile picture of user</param>
         public GirafUser(string userName, string displayName, Department department, GirafRoles role, byte[] userIcon = null) : base(userName)
         {
-            InitialiseData(role);
+            if (role == GirafRoles.Citizen)
+            {
+                this.Settings = new Setting();
+            }
+
+            this.Resources = new List<UserResource>();
+            this.WeekSchedule = new List<Week>();
+            this.Citizens = new List<GuardianRelation>();
+            this.Guardians = new List<GuardianRelation>();
+
             DisplayName = displayName;
             DepartmentKey = department?.Key ?? -1;
             UserIcon = userIcon;
@@ -162,7 +149,11 @@ namespace GirafEntities.User
         /// </summary>
         public GirafUser()
         {
-            InitialiseData();
+            this.Settings = new Setting();
+            this.Resources = new List<UserResource>();
+            this.WeekSchedule = new List<Week>();
+            this.Citizens = new List<GuardianRelation>();
+            this.Guardians = new List<GuardianRelation>();
         }
     }
 }

@@ -6,6 +6,7 @@ using GirafEntities.WeekPlanner;
 using GirafEntities.WeekPlanner.DTOs;
 using GirafRepositories;
 using GirafRepositories.Interfaces;
+using GirafServices;
 using GirafServices.Authentication;
 using GirafServices.User;
 using Microsoft.AspNetCore.Authorization;
@@ -596,7 +597,8 @@ namespace GirafAPI.Controllers
                     return BadRequest(new ErrorResponse(ErrorCode.InvalidHexValues, "Invalid hex values"));
             }
 
-            user.Settings.UpdateFrom(options);
+            var settingsChanger = new SettingService();
+            settingsChanger.UpdateFrom(options, user);
             // lets update the weekday colours
 
             await _girafUserRepository.SaveChangesAsync();
