@@ -10,12 +10,25 @@ namespace GirafServices
     {
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
-        
-            services.AddTransient<IUserService, UserService>();
+            
+            // Authentication 
             services.AddTransient<IAuthenticationService, GirafAuthenticationService>();
-            services.AddTransient<IWeekService, WeekService>();
-            services.AddTransient<IWeekBaseService, WeekBaseService>();
+            
+            // User
+            services.AddTransient<IUserService, UserService>();
+            services.AddTransient<IDepartmentService, DepartmentService>();
+            
+            // Weekplanner
             services.AddTransient<IImageService, ImageService>();
+            services.AddTransient<IWeekBaseService, WeekBaseService>();
+            services.AddTransient<IWeekService, WeekService>();
+            services.AddTransient<IWeekTemplateService, WeekTemplateService>();
+            
+            // top level
+            services.AddTransient<ISettingService, SettingService>();
+
+
+            
             return services;
         }
     }
