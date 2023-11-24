@@ -13,6 +13,11 @@ namespace GirafRepositories.User
         {
         }
 
+        public Department GetDepartmentByUser(GirafUser user)
+        {
+            return Context.Departments.FirstOrDefault(d => d.Key == user.DepartmentKey);
+        }
+        
         public Department GetDepartmentById(long departmentId)
         {
             return Context.Departments.FirstOrDefault(dep => dep.Key == departmentId);

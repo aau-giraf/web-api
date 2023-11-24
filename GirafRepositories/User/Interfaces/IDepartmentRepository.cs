@@ -7,7 +7,7 @@ namespace GirafRepositories.Interfaces
     public interface IDepartmentRepository : IRepository<Department>
     {
         Department GetDepartmentById(long departmentId);
-
+        Department GetDepartmentByUser(GirafUser user);
         Task<List<DepartmentNameDTO>> GetDepartmentNames();
 
         Task<Department> GetDepartmentMembers(long departmentId);
