@@ -17,7 +17,7 @@ namespace GirafAPI.Controllers
     [Route("v1/[controller]")]
     public class StatusController : Controller
     {
-        private readonly IGirafService _giraf;
+        private readonly IUserService _giraf;
 
         // SHOULD BE REMOVED AFTER REFACTORING OF THIS CONTROLLER HAS BEEN COMPLETED!
         private readonly GirafDbContext _context;
@@ -26,7 +26,7 @@ namespace GirafAPI.Controllers
         /// Constructor for StatusController
         /// </summary>
         /// <param name="giraf">Service Injection</param>
-        public StatusController(IGirafService giraf, GirafDbContext context)
+        public StatusController(IUserService giraf, GirafDbContext context)
         {
             _giraf = giraf;
             _context = context;

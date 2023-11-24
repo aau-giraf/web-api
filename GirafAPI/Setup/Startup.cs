@@ -2,7 +2,6 @@
 using GirafEntities.Authentication;
 using GirafEntities.User;
 using GirafRepositories;
-using GirafRepositories.Interfaces;
 using GirafRepositories.Persistence;
 using GirafRepositories.User;
 using GirafRepositories.WeekPlanner;
@@ -27,8 +26,6 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using GirafServices;
-using GirafServices.Authentication;
-using GirafServices.User;
 
 namespace GirafAPI.Setup
 {
@@ -118,47 +115,26 @@ namespace GirafAPI.Setup
             // configuration (resolvers, counter key builders)
             services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
             #endregion
-
+            
+            // potentielt smides i add repositories
             services.Configure<JwtConfig>(Configuration.GetSection("Jwt"));
 
             //Add the database context to the server using extension-methods
-            // services.AddMySql(Configuration);
+            // SKAL FJERNES
             configureIdentity<GirafDbContext>(services);
-
-            services.AddTransient<IAuthenticationService, GirafAuthenticationService>();
-
-            // Add the implementation of IGirafService to the context, i.e. all common functionality for
-            // the controllers.
-            services.AddRepositories(Configuration); /// TÆNK OVER HVOR DET VÆRE HENNE
+            
+            // Registering services and repositories from the individual projects
+            // If new services or repositories needs to be created and registered
+            // register them in the individual extension methods in ServiceExtension/RepositoryExtension.
             services.AddServices();
-            services.AddTransient<IGirafService, GirafService>();
+            services.AddRepositories(Configuration); 
+            
             services.AddMvc(options =>
             {
                 options.EnableEndpointRouting = false;
             });
             services.AddControllers().AddNewtonsoftJson();
             
-            #region repository dependency injection
-            // Add scoped repositories. Every single request gets it's own scoped repositories.
-            services.AddScoped<IAlternateNameRepository,AlternateNameRepository>();
-            services.AddScoped<IDepartmentRepository,DepartmentRepository>();
-            services.AddScoped<IGirafRoleRepository, GirafRoleRepository>();
-            services.AddScoped<IGirafUserRepository, GirafUserRepository>();
-            services.AddScoped<IPictogramRepository,PictogramRepository>();
-            services.AddScoped<ISettingRepository,SettingRepository>();
-            services.AddScoped<ITimerRepository,TimerRepository>();
-            services.AddScoped<IWeekBaseRepository,WeekBaseRepository>();
-            services.AddScoped<IWeekDayColorRepository, WeekDayColorRepository>();
-            services.AddScoped<IWeekRepository, WeekRepository>();
-            services.AddScoped<IWeekTemplateRepository, WeekTemplateRepository>();
-            services.AddScoped<IActivityRepository,ActivityRepository>();
-            services.AddScoped<IDepartmentResourseRepository,DepartmentResourseRepository>();
-            services.AddScoped<IGuardianRelationRepository,GuardianRelationRepository>();
-            services.AddScoped<IPictogramRelationRepository,PictogramRelationRepository>();
-            services.AddScoped<IUserResourseRepository, UserResourseRepository>();
-            services.AddScoped<IImageRepository, ImageRepository>();
-            services.AddScoped<IWeekdayRepository, WeekdayRepository>();
-           #endregion
             // Set up Cross-Origin Requests
             services.AddCors(o => o.AddPolicy("AllowAll", builder =>
             {
@@ -291,7 +267,10 @@ namespace GirafAPI.Setup
                     name: "default",
                     template: "{controller=Account}/{action=AccessDenied}");
             });
-
+                
+            
+            // ############################################################
+            // Alt herunder kan principielt fjernes herfra 
             GirafDbContext context = app.ApplicationServices.GetService<GirafDbContext>();
 
             // Create roles if they do not exist
@@ -300,7 +279,10 @@ namespace GirafAPI.Setup
             // Fill some sample data into the database
             if (ProgramOptions.GenerateSampleData)
                 DBInitializer.Initialize(context, userManager, ProgramOptions.Pictograms, env.EnvironmentName).Wait();
-
+            
+            // ############################################################
+            
+            
             app.Run((context2) =>
             {
                 context2.Response.StatusCode = 404;

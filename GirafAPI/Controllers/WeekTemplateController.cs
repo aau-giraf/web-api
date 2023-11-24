@@ -27,7 +27,7 @@ namespace GirafAPI.Controllers
         /// <summary>
         /// A reference to GirafService, that contains common functionality for all controllers.
         /// </summary>
-        private readonly IGirafService _giraf;
+        private readonly IUserService _giraf;
         
         /// <summary>
         /// reference to the authenticationservice which provides commong authentication checks
@@ -42,7 +42,7 @@ namespace GirafAPI.Controllers
         /// <param name="giraf">A reference to the GirafService.</param>
         /// <param name="loggerFactory">A reference to an implementation of ILoggerFactory. Used to create a logger.</param>
         /// <param name="authentication"></param>
-        public WeekTemplateController(IGirafService giraf,
+        public WeekTemplateController(IUserService giraf,
             ILoggerFactory loggerFactory,
             IAuthenticationService authentication,
             IWeekTemplateService weekTemplateService,
@@ -146,7 +146,7 @@ namespace GirafAPI.Controllers
 
             var newTemplate = new WeekTemplate(department);
 
-            var errorCode = await _weekService.SetWeekFromDTO(templateDto, newTemplate, _giraf);
+            var errorCode = await _weekService.SetWeekFromDTO(templateDto, newTemplate);
             if (errorCode != null)
                 return BadRequest(errorCode);
 
@@ -194,7 +194,7 @@ namespace GirafAPI.Controllers
             if (!await _authentication.HasTemplateAccess(user, template?.DepartmentKey))
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
-            var errorCode = await _weekService.SetWeekFromDTO(newValuesDto, template, _giraf);
+            var errorCode = await _weekService.SetWeekFromDTO(newValuesDto, template);
             if (errorCode != null)
                 return BadRequest(errorCode);
 
