@@ -48,7 +48,7 @@ namespace GirafAPI.Setup
         /// <param name="userManager">The API for managing GirafUsers.</param>
         /// <param name="pictogramCount">The number of sample pictograms to generate.</param>
         /// <param name="environmentName">The environment set for the current run</param>
-        public async Task Initialize(GirafDbContext context, UserManager<GirafUser> userManager, int pictogramCount, string environmentName)
+        public async Task Initialize(UserManager<GirafUser> userManager, int pictogramCount, string environmentName)
         {
             // Initialize static fields
             _userManager = userManager;

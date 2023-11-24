@@ -3,8 +3,6 @@ using GirafEntities.Authentication;
 using GirafEntities.User;
 using GirafRepositories;
 using GirafRepositories.Persistence;
-using GirafRepositories.User;
-using GirafRepositories.WeekPlanner;
 using GirafRepositories.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -28,7 +26,6 @@ using System.Threading.Tasks;
 using GirafServices;
 using GirafServices.User;
 using GirafServices.WeekPlanner;
-using Microsoft.EntityFrameworkCore;
 
 namespace GirafAPI.Setup
 {
@@ -273,9 +270,6 @@ namespace GirafAPI.Setup
                 
             
             // ############################################################
-            // Alt herunder kan principielt fjernes herfra 
-            GirafDbContext context = app.ApplicationServices.GetService<GirafDbContext>();
-
             // Create roles if they do not exist
             roleManager.EnsureRoleSetup().Wait();
             
@@ -288,7 +282,7 @@ namespace GirafAPI.Setup
                 var weebbaseService = app.ApplicationServices.GetService<IWeekBaseService>();
                 var dbinitializer = new DBInitializer(userService, dbRepo, userRepo, weebbaseService);
                 
-                dbinitializer.Initialize(context, userManager, ProgramOptions.Pictograms, env.EnvironmentName).Wait();
+                dbinitializer.Initialize(userManager, ProgramOptions.Pictograms, env.EnvironmentName).Wait();
             }
             // ############################################################
             
