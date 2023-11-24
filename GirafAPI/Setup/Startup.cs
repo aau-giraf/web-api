@@ -90,7 +90,6 @@ namespace GirafAPI.Setup
         /// </summary>
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddRepositories(Configuration); 
             services.AddApplicationInsightsTelemetry();
             services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
 
@@ -130,6 +129,7 @@ namespace GirafAPI.Setup
             // Registering services and repositories from the individual projects
             // If new services or repositories needs to be created and registered
             // register them in the individual extension methods in ServiceExtension/RepositoryExtension.
+            services.AddRepositories(Configuration); 
             services.AddServices();
             
             services.AddMvc(options =>

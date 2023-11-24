@@ -16,8 +16,7 @@ namespace GirafRepositories
         {
             // Adds the mysql database configuration and register it on the service collection. 
             Console.WriteLine(configuration.GetConnectionString("DefaultConnection"));
-            services.AddDbContext<GirafDbContext>(options => options.UseMySql(configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(new Version())));
-            
+            services.AddMySql(configuration);
             // Add scoped repositories. Every single request gets it's own scoped repositories.
             
             // Persistence
@@ -57,11 +56,11 @@ namespace GirafRepositories
         /// </summary>
         /// <param name="services">A reference to the services of the application.</param>
         /// <param name="Configuration">Contains the ConnectionString</param>
-        // private static void AddMySql(this IServiceCollection services, IConfiguration Configuration)
-        // {
-        //     //Setup the connection to the sql server
-        //     services.AddDbContext<GirafDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(new Version())));
-        // }
+        private static void AddMySql(this IServiceCollection services, IConfiguration Configuration)
+        {
+            //Setup the connection to the sql server
+            services.AddDbContext<GirafDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(new Version())));
+        }
         
         /// <summary>
         /// An extension-method for setting up roles for use when authorizing users to methods.
