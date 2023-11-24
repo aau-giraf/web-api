@@ -132,7 +132,6 @@ namespace GirafEntities.User
             if (role == GirafRoles.Citizen)
             {
                 this.Settings = new Setting();
-                this.Settings.InitialiseWeekDayColors();
             }
 
             this.Resources = new List<UserResource>();
@@ -151,7 +150,6 @@ namespace GirafEntities.User
         public GirafUser()
         {
             this.Settings = new Setting();
-            this.Settings.InitialiseWeekDayColors();
             this.Resources = new List<UserResource>();
             this.WeekSchedule = new List<Week>();
             this.Citizens = new List<GuardianRelation>();
