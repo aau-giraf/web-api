@@ -66,7 +66,7 @@ namespace GirafEntities.WeekPlanner
         /// <summary>
         /// Currently not used, but old applications needs this
         /// </summary>
-        public byte[] Sound { get; set; }
+        // public byte[]? Sound { get; set; }
 
         /// <summary>
         /// Empty constructor is required by Newtonsoft.

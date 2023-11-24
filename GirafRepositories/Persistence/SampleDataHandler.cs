@@ -6,17 +6,9 @@ namespace GirafRepositories.Persistence
     public class SampleDataHandler
     {
         private readonly string jsonFile = $"{Directory.GetCurrentDirectory()}" +
-            $"{Path.DirectorySeparatorChar}" +
-            $"Data" +
-            $"{Path.DirectorySeparatorChar}";
-        private readonly string pictogramsFile = $"{Directory.GetCurrentDirectory()}" +
-            $"{Path.DirectorySeparatorChar}" +
-            $"Data" +
-            $"{Path.DirectorySeparatorChar}pictograms.json";
-        private readonly string rolesFile = $"{Directory.GetCurrentDirectory()}" +
-           $"{Path.DirectorySeparatorChar}" +
-           $"Data" +
-           $"{Path.DirectorySeparatorChar}roles.json";
+                                           $"{Path.DirectorySeparatorChar}";
+        private readonly string pictogramsFile = $"../GirafRepositories/Persistence/pictograms.json";
+        private readonly string rolesFile = $"../GirafRepositories/Persistence/roles.json";
 
         public SampleDataHandler(string path)
         {
