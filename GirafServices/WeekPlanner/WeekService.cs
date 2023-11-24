@@ -6,7 +6,6 @@ using GirafEntities.Responses;
 using GirafEntities.WeekPlanner.DTOs;
 using GirafRepositories.Interfaces;
 
-using GirafRepositories.WeekPlanner;
 
 
 namespace GirafServices.WeekPlanner
@@ -24,11 +23,13 @@ namespace GirafServices.WeekPlanner
     {
         private readonly IPictogramRepository _pictogramRepository;
         private readonly ITimerRepository _timerRepository;
+        private readonly IWeekBaseService _weekBaseService;
 
-        public WeekService(IPictogramRepository pictogramRepository, ITimerRepository timerRepository)
+        public WeekService(IPictogramRepository pictogramRepository, ITimerRepository timerRepository, IWeekBaseService weekBaseService)
         {
             _pictogramRepository = pictogramRepository;
             _timerRepository = timerRepository;
+            _weekBaseService = weekBaseService;
         }
 
         public async Task<ErrorResponse> SetWeekFromDTO(WeekBaseDTO weekDTO, WeekBase week)

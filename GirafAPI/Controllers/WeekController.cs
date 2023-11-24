@@ -4,6 +4,7 @@ using GirafEntities.WeekPlanner;
 using GirafEntities.WeekPlanner.DTOs;
 using GirafRepositories.Interfaces;
 using GirafServices.User;
+using GirafServices.WeekPlanner;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +30,7 @@ namespace GirafAPI.Controllers
         private readonly ITimerRepository _timerRepository;
         private readonly IPictogramRepository _pictogramRepository;
         private readonly IWeekdayRepository _weekdayRepository;
+        private readonly IWeekService _weekService;
 
         /// <summary>
         /// Constructor for WeekController
@@ -290,7 +292,7 @@ namespace GirafAPI.Controllers
                 user.WeekSchedule.Add(week);
             }
 
-            var errorCode = await _weekRepository.SetWeekFromDTO(newWeek, week);
+            var errorCode = await _weekService.SetWeekFromDTO(newWeek, week);
             if (errorCode != null)
                 return BadRequest(errorCode);
 
@@ -336,7 +338,7 @@ namespace GirafAPI.Controllers
             Weekday oldDay = week.Weekdays.Single(d => d.Day == weekdayDto.Day);
 
             oldDay.Activities.Clear();
-            if (!await _weekRepository.AddPictogramsToWeekday(oldDay, weekdayDto))
+            if (!await _weekService.AddPictogramsToWeekday(oldDay, weekdayDto))
             {
                 return NotFound(new ErrorResponse(ErrorCode.ResourceNotFound, "Missing pictogram"));
             }

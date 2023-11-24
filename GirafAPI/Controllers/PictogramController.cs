@@ -4,6 +4,7 @@ using GirafEntities.WeekPlanner;
 using GirafEntities.WeekPlanner.DTOs;
 using GirafRepositories.Interfaces;
 using GirafServices.User;
+using GirafServices.WeekPlanner;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -37,6 +38,7 @@ namespace GirafAPI.Controllers
 
         private readonly IGirafUserRepository _girafUserRepository;
         private readonly IPictogramRepository _pictogramRepository;
+        private readonly IImageService _imageService;
 
         /// <summary>
         /// Constructor for controller
@@ -343,7 +345,7 @@ namespace GirafAPI.Controllers
             }
 
             //Update the image
-            byte[] image = await _giraf.ReadRequestImage(HttpContext.Request.Body);
+            byte[] image = await _imageService.ReadRequestImage(HttpContext.Request.Body);
 
             // This sets the path that the system looks for when retrieving a pictogram
             string path = imagePath + pictogram.Id + ".png";
@@ -363,7 +365,7 @@ namespace GirafAPI.Controllers
                     return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.Forbidden, "The server does not have permission to write this file"));
                 }
 
-                pictogram.ImageHash = _giraf.GetHash(image);
+                pictogram.ImageHash = _imageService.GetHash(image);
             }
             _pictogramRepository.SaveState();
             return Ok(new SuccessResponse<WeekPictogramDTO>(new WeekPictogramDTO(pictogram)));

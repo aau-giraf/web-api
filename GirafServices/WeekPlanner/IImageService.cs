@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GirafServices.WeekPlanner
 {
-    internal interface IImageService
+    public interface IImageService
     {
         /// <summary>
         /// Reads an image from the current request's body and return it as a byte array.

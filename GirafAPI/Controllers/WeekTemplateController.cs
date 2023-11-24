@@ -155,7 +155,7 @@ namespace GirafAPI.Controllers
 
             var newTemplate = new WeekTemplate(department);
 
-            var errorCode = await _weekService.SetWeekFromDTO(templateDto, newTemplate, _giraf);
+            var errorCode = await _weekService.SetWeekFromDTO(templateDto, newTemplate);
             if (errorCode != null)
                 return BadRequest(errorCode);
 
@@ -208,7 +208,7 @@ namespace GirafAPI.Controllers
             if (!await _authentication.HasTemplateAccess(user, template?.DepartmentKey))
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
 
-            var errorCode = await _weekService.SetWeekFromDTO(newValuesDto, template, _giraf);
+            var errorCode = await _weekService.SetWeekFromDTO(newValuesDto, template);
             if (errorCode != null)
                 return BadRequest(errorCode);
 
