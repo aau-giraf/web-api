@@ -37,7 +37,6 @@ namespace GirafRepositories
             services.AddScoped<IImageRepository, ImageRepository>();
             services.AddScoped<IWeekdayRepository, WeekdayRepository>();
             services.AddTransient<IActivityRepository, ActivityRepository>();
-            
             return services;
         }
         

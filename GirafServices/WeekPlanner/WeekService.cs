@@ -5,7 +5,9 @@ using Timer = GirafEntities.WeekPlanner.Timer;
 using GirafEntities.Responses;
 using GirafEntities.WeekPlanner.DTOs;
 using GirafRepositories.Interfaces;
+
 using GirafRepositories.WeekPlanner;
+
 
 namespace GirafServices.WeekPlanner
 {
@@ -29,7 +31,7 @@ namespace GirafServices.WeekPlanner
             _timerRepository = timerRepository;
         }
 
-        public async Task<ErrorResponse> SetWeekFromDTO(WeekBaseDTO weekDTO, WeekBase week, IUserService _giraf)
+        public async Task<ErrorResponse> SetWeekFromDTO(WeekBaseDTO weekDTO, WeekBase week)
         {
             var modelErrorCode = weekDTO.ValidateModel();
             if (modelErrorCode.HasValue)
@@ -51,12 +53,12 @@ namespace GirafServices.WeekPlanner
             foreach (var day in weekDTO.Days)
             {
                 var wkDay = new Weekday(day);
-                if (!(await AddPictogramsToWeekday(wkDay, day, _giraf)))
+                if (!(await AddPictogramsToWeekday(wkDay, day)))
                 {
                     return new ErrorResponse(ErrorCode.ResourceNotFound, "Missing pictogram");
                 }
 
-                week.UpdateDay(wkDay);
+                _weekBaseService.UpdateDay(wkDay, week);
             }
 
             // All week days that were not specified in the new schedule, but existed before
@@ -75,8 +77,7 @@ namespace GirafServices.WeekPlanner
         /// <returns>True if all pictograms and choices were found and added, and false otherwise.</returns>
         /// <param name="to">Pictograms and choices will be added to this object.</param>
         /// <param name="from">Pictograms and choices will be read from this object.</param>
-        /// <param name="_giraf">IGirafService for injection.</param>
-        public async Task<bool> AddPictogramsToWeekday(Weekday to, WeekdayDTO from, IUserService _giraf)
+        public async Task<bool> AddPictogramsToWeekday(Weekday to, WeekdayDTO from)
         {
             if (from.Activities != null)
             {
@@ -106,8 +107,7 @@ namespace GirafServices.WeekPlanner
                     }
 
                     if (pictograms.Any())
-                        to.Activities.Add(new Activity(to, pictograms, activityDTO.Order, activityDTO.State, timer,
-                         activityDTO.IsChoiceBoard, activityDTO.Title, activityDTO.ChoiceBoardName));
+                        to.Activities.Add(new Activity(to, pictograms, activityDTO.Order, activityDTO.State, timer, activityDTO.IsChoiceBoard, activityDTO.Title, activityDTO.ChoiceBoardName));
                 }
             }
             return true;

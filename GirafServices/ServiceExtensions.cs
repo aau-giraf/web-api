@@ -14,6 +14,7 @@ namespace GirafServices
             services.AddTransient<IUserService, UserService>();
             services.AddTransient<IAuthenticationService, GirafAuthenticationService>();
             services.AddTransient<IWeekService, WeekService>();
+            services.AddTransient<IWeekBaseService, WeekBaseService>();
             return services;
         }
     }
