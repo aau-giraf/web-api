@@ -32,7 +32,7 @@ namespace GirafAPI.Controllers
     {
         private const int IMAGE_CONTENT_TYPE_DEFINITION = 25;
         private const string IMAGE_TYPE_PNG = "image/png";
-        private readonly IUserService _giraf;
+        private readonly IUserService _userService;
         private readonly IGirafUserRepository _girafUserRepository;
         private readonly IImageRepository _imageRepository;
         private readonly IUserResourseRepository _userResourseRepository;
@@ -61,8 +61,8 @@ namespace GirafAPI.Controllers
             IPictogramRepository pictogramRepository,
             IAuthenticationService authentication)
         {
-            _giraf = giraf;
-            _giraf._logger = loggerFactory.CreateLogger("User");
+            _userService = giraf;
+            _userService._logger = loggerFactory.CreateLogger("User");
             _roleManager = roleManager;
             _girafUserRepository = girafUserRepository;
             _imageRepository = imageRepository;
@@ -81,11 +81,11 @@ namespace GirafAPI.Controllers
         public async Task<ActionResult> GetUser()
         {
             //First attempt to fetch the user and check that he exists
-            var user = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            var user = await _userService._userManager.GetUserAsync(HttpContext.User);
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
-            return Ok(new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, await _roleManager.findUserRole(_giraf._userManager, user))));
+            return Ok(new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, await _roleManager.findUserRole(_userService._userManager, user))));
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace GirafAPI.Controllers
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
             //Returns the role of the user as a list, should only contain one entry
-            return Ok(new SuccessResponse<GirafRoles>(await _roleManager.findUserRole(_giraf._userManager, user)));
+            return Ok(new SuccessResponse<GirafRoles>(await _roleManager.findUserRole(_userService._userManager, user)));
         }
 
         /// <summary>
@@ -141,13 +141,13 @@ namespace GirafAPI.Controllers
             if (HttpContext != null)
             {
                 var authorized = await _authentication.HasEditOrReadUserAccess(
-                                await _giraf._userManager.GetUserAsync(HttpContext.User), user);
+                                await _userService._userManager.GetUserAsync(HttpContext.User), user);
                 if (!authorized)
                     return new ForbidResult();
             }
 
             //Default return
-            return Ok(new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, await _roleManager.findUserRole(_giraf._userManager, user))));
+            return Ok(new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, await _roleManager.findUserRole(_userService._userManager, user))));
         }
 
         /// <summary>
@@ -171,7 +171,7 @@ namespace GirafAPI.Controllers
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
             // Get the role the user is associated with
-            var userRole = await _roleManager.findUserRole(_giraf._userManager, user);
+            var userRole = await _roleManager.findUserRole(_userService._userManager, user);
 
             //Returns the user settings if the user is a citizen otherwise returns an error (only citizens has settings). 
             if (userRole == GirafRoles.Citizen)
@@ -200,7 +200,7 @@ namespace GirafAPI.Controllers
 
             var user = await _girafUserRepository.GetUserWithId(id);
             // Get the roles the user is associated with
-            var userRole = await _roleManager.findUserRole(_giraf._userManager, user);
+            var userRole = await _roleManager.findUserRole(_userService._userManager, user);
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
@@ -210,7 +210,7 @@ namespace GirafAPI.Controllers
 
             // update fields if they are not null
             if (!String.IsNullOrEmpty(newUser.Username))
-                await _giraf._userManager.SetUserNameAsync(user, newUser.Username);
+                await _userService._userManager.SetUserNameAsync(user, newUser.Username);
 
             if (!String.IsNullOrEmpty(newUser.DisplayName))
                 user.DisplayName = newUser.DisplayName;
@@ -293,8 +293,8 @@ namespace GirafAPI.Controllers
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Image is corrupt"));
 
          ////Checks usersRole if citizen & if ID matches.
-            var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
-            var userRole = await _roleManager.findUserRole(_giraf._userManager, currentUser);
+            var currentUser = await _userService._userManager.GetUserAsync(HttpContext.User);
+            var userRole = await _roleManager.findUserRole(_userService._userManager, currentUser);
             if (userRole == GirafRoles.Citizen)
                 if (currentUser.Id != id) 
                     return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
@@ -365,8 +365,8 @@ namespace GirafAPI.Controllers
             if (resource == null)
                 return NotFound(new ErrorResponse(ErrorCode.ResourceNotFound, "Resource not found"));
 
-            var curUsr = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
-            var resourceOwnedByCaller = await _giraf.CheckPrivateOwnership(resource, curUsr);
+            var curUsr = await _userService.LoadBasicUserDataAsync(HttpContext.User);
+            var resourceOwnedByCaller = await _userService.CheckPrivateOwnership(resource, curUsr);
             if (!resourceOwnedByCaller)
                 return StatusCode(StatusCodes.Status403Forbidden,
                     new ErrorResponse(ErrorCode.NotAuthorized, "User does not own resource"));
@@ -381,7 +381,7 @@ namespace GirafAPI.Controllers
             await _userResourseRepository.AddAsync(userResource);
 
             // Get the roles the user is associated with
-            GirafRoles userRole = await _roleManager.findUserRole(_giraf._userManager, user);
+            GirafRoles userRole = await _roleManager.findUserRole(_userService._userManager, user);
 
             return Ok(new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, userRole)));
         }
@@ -429,7 +429,7 @@ namespace GirafAPI.Controllers
             await _girafUserRepository.SaveChangesAsync();
 
             // Get the roles the user is associated with
-            var userRole = await _roleManager.findUserRole(_giraf._userManager, user);
+            var userRole = await _roleManager.findUserRole(_userService._userManager, user);
 
             //Return Ok and the user - the resource is now visible in user.Resources
             return Ok(new SuccessResponse<GirafUserDTO>(new GirafUserDTO(user, userRole)));
@@ -455,7 +455,7 @@ namespace GirafAPI.Controllers
             //var authUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
             var citizens = new List<DisplayNameDTO>();
 
-            var userRole = (await _roleManager.findUserRole(_giraf._userManager, user));
+            var userRole = (await _roleManager.findUserRole(_userService._userManager, user));
 
             foreach (var citizen in user.Citizens)
             {
@@ -494,7 +494,7 @@ namespace GirafAPI.Controllers
 
 
 
-            var userRole = (await _roleManager.findUserRole(_giraf._userManager, user));
+            var userRole = (await _roleManager.findUserRole(_userService._userManager, user));
             if (userRole != GirafRoles.Citizen)
                 return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.Forbidden, "User does not have permission"));
 
@@ -533,7 +533,7 @@ namespace GirafAPI.Controllers
             if (guardian == null || citizen == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
-            citizen.AddGuardian(guardian);
+            _userService.AddGuardian(guardian, citizen);
 
             return Ok(new SuccessResponse("Added relation between guardian and citizen"));
         }
@@ -558,7 +558,7 @@ namespace GirafAPI.Controllers
             if (user == null)
                 return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
 
-            var userRole = await _roleManager.findUserRole(_giraf._userManager, user);
+            var userRole = await _roleManager.findUserRole(_userService._userManager, user);
             if (userRole != GirafRoles.Citizen)
                 return BadRequest(new ErrorResponse(ErrorCode.RoleMustBeCitizien, "User role is not citizen"));
 

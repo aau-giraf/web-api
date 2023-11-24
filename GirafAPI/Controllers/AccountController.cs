@@ -166,13 +166,13 @@ namespace GirafAPI.Controllers
                     switch (model.Role)
                     {
                         case GirafRoles.Citizen:
-                            AddGuardiansToUser(user);
+                            _userService.AddGuardiansToUser(user);
                             break;
                         case GirafRoles.Guardian:
-                            AddCitizensToUser(user);
+                            _userService.AddCitizensToUser(user);
                             break;
                         case GirafRoles.Trustee:
-                            AddGuardiansToUser(user);
+                            _userService.AddGuardiansToUser(user);
                             break;
                     }
                     _departmentRepository.Save();
@@ -382,33 +382,7 @@ namespace GirafAPI.Controllers
             }
         }
 
-        /// <summary>
-        /// Add guardians to registered user
-        /// </summary>
-        /// <param name="user">The registered user</param>
-        private void AddGuardiansToUser(GirafUser user)
-        {
-            var guardians = _girafRoleRepository.GetAllGuardians();
-            var guardiansInDepartment = _userRepository.GetUsersInDepartment((long)user.DepartmentKey, guardians);
-            foreach (var guardian in guardiansInDepartment)
-            {
-                user.AddGuardian(guardian);
-            }
-        }
 
-        /// <summary>
-        /// Add citizens to registered user
-        /// </summary>
-        /// <param name="user">The registered user</param>
-        private void AddCitizensToUser(GirafUser user)
-        {
-            var citizens = _girafRoleRepository.GetAllCitizens();
-            var citizensInDepartment = _userRepository.GetUsersInDepartment((long)user.DepartmentKey, citizens);
-            foreach (var citizen in citizensInDepartment)
-            {
-                user.AddCitizen(citizen);
-            }
-        }
     }
 }
 

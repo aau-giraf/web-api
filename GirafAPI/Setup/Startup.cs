@@ -26,6 +26,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using GirafServices;
+using GirafServices.User;
 
 namespace GirafAPI.Setup
 {
@@ -275,11 +276,17 @@ namespace GirafAPI.Setup
 
             // Create roles if they do not exist
             roleManager.EnsureRoleSetup().Wait();
-
+            
             // Fill some sample data into the database
             if (ProgramOptions.GenerateSampleData)
-                DBInitializer.Initialize(context, userManager, ProgramOptions.Pictograms, env.EnvironmentName).Wait();
-            
+            {
+                var userService = app.ApplicationServices.GetService<IUserService>();
+                var dbRepo = app.ApplicationServices.GetService<IDatabaseRepository>();
+                var userRepo = app.ApplicationServices.GetService<IGirafUserRepository>();
+                var dbinitializer = new DBInitializer(userService, dbRepo, userRepo);
+                
+                dbinitializer.Initialize(context, userManager, ProgramOptions.Pictograms, env.EnvironmentName).Wait();
+            }
             // ############################################################
             
             
