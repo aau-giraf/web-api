@@ -12,20 +12,20 @@ namespace GirafServices
         {
             
             // Authentication 
-            services.AddTransient<IAuthenticationService, GirafAuthenticationService>();
+            services.AddScoped<IAuthenticationService, GirafAuthenticationService>();
             
             // User
-            services.AddTransient<IUserService, UserService>();
-            services.AddTransient<IDepartmentService, DepartmentService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IDepartmentService, DepartmentService>();
             
             // Weekplanner
-            services.AddTransient<IImageService, ImageService>();
-            services.AddTransient<IWeekBaseService, WeekBaseService>();
-            services.AddTransient<IWeekService, WeekService>();
-            services.AddTransient<IWeekTemplateService, WeekTemplateService>();
+            services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<IWeekBaseService, WeekBaseService>();
+            services.AddScoped<IWeekService, WeekService>();
+            services.AddScoped<IWeekTemplateService, WeekTemplateService>();
             
             // top level
-            services.AddTransient<ISettingService, SettingService>();
+            services.AddScoped<ISettingService, SettingService>();
 
 
             

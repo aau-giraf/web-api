@@ -41,7 +41,7 @@ namespace GirafAPI.Controllers
         /// <param name="timerRepository">Service Injection</param>
         /// <param name="pictogramRepository">Service Injection</param>
         /// <param name="weekdayRepository">Service Injection</param>
-        public WeekController(IUserService giraf, ILoggerFactory loggerFactory, IWeekRepository weekRepository, ITimerRepository timerRepository, IPictogramRepository pictogramRepository, IWeekdayRepository weekdayRepository)
+        public WeekController(IUserService giraf, ILoggerFactory loggerFactory, IWeekRepository weekRepository, ITimerRepository timerRepository, IPictogramRepository pictogramRepository, IWeekdayRepository weekdayRepository, IWeekService weekService)
         {
             _giraf = giraf;
             _giraf._logger = loggerFactory.CreateLogger("Week");
@@ -49,6 +49,7 @@ namespace GirafAPI.Controllers
             _timerRepository = timerRepository;
             _pictogramRepository = pictogramRepository;
             _weekdayRepository = weekdayRepository;
+            _weekService = weekService;
         }
 
         /// <summary>
