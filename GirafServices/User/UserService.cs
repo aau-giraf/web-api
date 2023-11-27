@@ -40,12 +40,13 @@ namespace GirafServices.User
         public UserService(UserManager<GirafUser> userManager,
             IGirafUserRepository girafUserRepository,
             IUserResourseRepository userResourseRepository,
-            IDepartmentResourseRepository departmentResourseRepository)
+            IDepartmentResourseRepository departmentResourseRepository, IGirafRoleRepository girafRoleRepository)
         {
             _userManager = userManager;
             _girafUserRepository = girafUserRepository;
             _userResourseRepository = userResourseRepository;
             _departmentResourseRepository = departmentResourseRepository;
+            _girafRoleRepository = girafRoleRepository;
         }
         /// <summary>
         /// Find belonging members
@@ -157,7 +158,9 @@ namespace GirafServices.User
         /// <param name="user">The registered user</param>
         public void AddGuardiansToUser(GirafUser user)
         {
+            Console.WriteLine("Calling get all guardians");
             var guardians = _girafRoleRepository.GetAllGuardians();
+            Console.WriteLine("Go go go go go");
             var guardiansInDepartment = _girafUserRepository.GetUsersInDepartment((long)user.DepartmentKey, guardians);
             foreach (var guardian in guardiansInDepartment)
             {
