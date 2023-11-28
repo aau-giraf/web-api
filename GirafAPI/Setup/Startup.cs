@@ -15,7 +15,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Serilog;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using System;
 using System.Collections.Generic;
@@ -231,9 +230,6 @@ namespace GirafAPI.Setup
             IHostApplicationLifetime appLifetime)
         {
             app.UseIpRateLimiting();
-
-            //Configure logging for the application
-            appLifetime.ApplicationStopped.Register(Log.CloseAndFlush);
 
             app.UseStatusCodePagesWithReExecute("/v1/Error", "?statusCode={0}");
             // Enable Cors, see configuration in ConfigureServices
