@@ -1,6 +1,4 @@
 using GirafEntities.WeekPlanner;
-using Microsoft.EntityFrameworkCore;
-using GirafServices.User;
 using Timer = GirafEntities.WeekPlanner.Timer;
 using GirafEntities.Responses;
 using GirafEntities.WeekPlanner.DTOs;

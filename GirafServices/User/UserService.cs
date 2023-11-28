@@ -26,9 +26,7 @@ namespace GirafServices.User
         /// </summary>
         public UserManager<GirafUser> _userManager { get; set; }
         /// <summary>
-        /// A data-logger used to write messages to the console. Handled by asp.net's dependency injection.
         /// </summary>
-        public ILogger _logger { get; set; }
 
         /// <summary>
         /// The most general constructor for GirafService. This constructor is used by both the other constructors and the unit tests.

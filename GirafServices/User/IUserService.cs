@@ -13,15 +13,6 @@ namespace GirafServices.User
     public interface IUserService
     {
         /// <summary>
-        /// A reference to a logger used to log information from controllers.
-        /// </summary>
-        ILogger _logger
-        {
-            get;
-            set;
-        }
-        
-        /// <summary>
         /// A reference to the user manager, used to fetch users.
         /// </summary>
         UserManager<GirafUser> _userManager
