@@ -14,7 +14,7 @@ services:
   db:
     container_name: GirafMysqlDatabase
     image: mysql
-    restart: always
+    restart: on-failure
     environment:
       MYSQL_DATABASE: 'giraf'
       MYSQL_USER: 'local'
