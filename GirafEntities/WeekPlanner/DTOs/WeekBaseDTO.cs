@@ -48,22 +48,6 @@ namespace GirafEntities.WeekPlanner.DTOs
         /// DO NOT DELETE THIS! NEWTONSOFT REQUIRES AN EMPTY CONSTRUCTOR.
         /// </summary>
         public WeekBaseDTO() { }
-
-        /// <summary>
-        ///  Validates the WeekDTO for e.g. amount of days
-        /// </summary>
-        /// <returns>InvalidAmountOfWeekdays if amount of days is not in the range 1 to 7.
-        /// TwoDaysCannotHaveSameDayProperty if we e.g. have two Thursdays in a single week.</returns>
-        public ErrorCode? ValidateModel()
-        {
-            if (this.Days == null || (this.Days.Count < 1 || this.Days.Count > 7))
-                return ErrorCode.InvalidAmountOfWeekdays;
-            if (this.Days.Any(d => !Enum.IsDefined(typeof(Days), d.Day)))
-                return ErrorCode.InvalidDay;
-            //If two days have the same day index
-            if (this.Days.GroupBy(d => d.Day).Any(g => g.Count() != 1))
-                return ErrorCode.TwoDaysCannotHaveSameDayProperty;
-            return null;
-        }
+        
     }
 }

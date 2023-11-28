@@ -32,7 +32,7 @@ namespace GirafServices.WeekPlanner
 
         public async Task<ErrorResponse> SetWeekFromDTO(WeekBaseDTO weekDTO, WeekBase week)
         {
-            var modelErrorCode = weekDTO.ValidateModel();
+            var modelErrorCode = ValidateModel(weekDTO);
             if (modelErrorCode.HasValue)
             {
                 return new ErrorResponse(modelErrorCode.Value, "Invalid model");
@@ -67,6 +67,23 @@ namespace GirafServices.WeekPlanner
                 week.Weekdays.Remove(deletedDay);
             }
 
+            return null;
+        }
+        
+        /// <summary>
+        ///  Validates the WeekDTO for e.g. amount of days
+        /// </summary>
+        /// <returns>InvalidAmountOfWeekdays if amount of days is not in the range 1 to 7.
+        /// TwoDaysCannotHaveSameDayProperty if we e.g. have two Thursdays in a single week.</returns>
+        private ErrorCode? ValidateModel(WeekBaseDTO week)
+        {
+            if (week.Days == null || (week.Days.Count < 1 || week.Days.Count > 7))
+                return ErrorCode.InvalidAmountOfWeekdays;
+            if (week.Days.Any(d => !Enum.IsDefined(typeof(Days), d.Day)))
+                return ErrorCode.InvalidDay;
+            //If two days have the same day index
+            if (week.Days.GroupBy(d => d.Day).Any(g => g.Count() != 1))
+                return ErrorCode.TwoDaysCannotHaveSameDayProperty;
             return null;
         }
 
