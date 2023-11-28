@@ -25,7 +25,7 @@ services:
       interval: 1s
       retries: 120
     ports:  
-      - 3306:3306
+      - 5001:5001
     volumes:
       - db_data:/var/lib/mysql
 
