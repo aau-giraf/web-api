@@ -29,14 +29,8 @@ namespace GirafAPI.Controllers
         private readonly ITimerRepository _timerRepository;
 
         /// <summary>
-        /// A data-logger used to write messages to the console. Handled by asp.net's dependency injection.
-        /// </summary>
-        public ILogger _logger { get; set; }
-
-        /// <summary>
         /// Constructor for Controller
         /// </summary>
-        /// <param name="loggerFactory">Service Injection</param>
         /// <param name="userRepository">Service Injection</param>
         /// <param name="alternateNameRepository">Service Injection</param>
         /// <param name="activityRepository">Service Injection</param>

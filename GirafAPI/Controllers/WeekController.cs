@@ -34,7 +34,6 @@ namespace GirafAPI.Controllers
         /// Constructor for WeekController
         /// </summary>
         /// <param name="giraf">Service Injection</param>
-        /// <param name="loggerFactory">Service Injection</param>
         /// <param name="weekRepository">Service Injection</param>
         /// <param name="timerRepository">Service Injection</param>
         /// <param name="pictogramRepository">Service Injection</param>

@@ -40,7 +40,6 @@ namespace GirafAPI.Controllers
         /// Constructor is called by the asp.net runtime.
         /// </summary>
         /// <param name="giraf">A reference to the GirafService.</param>
-        /// <param name="loggerFactory">A reference to an implementation of ILoggerFactory. Used to create a logger.</param>
         /// <param name="authentication"></param>
         public WeekTemplateController(IUserService giraf,
             IAuthenticationService authentication,

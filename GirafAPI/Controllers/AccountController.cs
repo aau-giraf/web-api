@@ -253,7 +253,6 @@ namespace GirafAPI.Controllers
                 return Unauthorized(new ErrorResponse(ErrorCode.InvalidProperties, "Invalid token"));
 
             await _signInManager.SignInAsync(user, isPersistent: false);
-            _userService._logger.LogInformation("User changed their password successfully.");
             return Ok(new SuccessResponse("User password changed succesfully"));
         }
 

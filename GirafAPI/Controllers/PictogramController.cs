@@ -322,32 +322,32 @@ namespace GirafAPI.Controllers
         public async Task<ActionResult> SetPictogramImage(long id)
         {
             GirafUser user = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
-
+        
             if (user == null)
             {
                 return Unauthorized(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
             }
-
-
+        
+        
             //Attempt to fetch the pictogram from the database.
             Pictogram pictogram = await _pictogramRepository.GetPictogramsById(id);
-
+        
             if (pictogram == null)
             {
                 return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, "Pictogram not found"));
             }
-
+        
             if (!CheckOwnership(pictogram, user).Result)
             {
                 return this.MissingPropertyFromRequest(nameof(pictogram));
             }
-
+        
             //Update the image
             byte[] image = await _imageService.ReadRequestImage(HttpContext.Request.Body);
-
+        
             // This sets the path that the system looks for when retrieving a pictogram
             string path = imagePath + pictogram.Id + ".png";
-
+        
             if (image.Length > 0)
             {
                 try
@@ -362,7 +362,7 @@ namespace GirafAPI.Controllers
                     //Consider if the errorcode is the most appropriate one here
                     return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.Forbidden, "The server does not have permission to write this file"));
                 }
-
+        
                 pictogram.ImageHash = _imageService.GetHash(image);
             }
             _pictogramRepository.SaveState();
@@ -530,7 +530,6 @@ namespace GirafAPI.Controllers
                     // User is a part of a department
                     if (user.Department != null)
                     {
-                        _giraf._logger.LogInformation($"Fetching pictograms for department {user.Department.Name}");
                         return fetchingPictogramsFromDepartment(query, user);
                     }
                     // User is not part of a department
@@ -542,7 +541,6 @@ namespace GirafAPI.Controllers
             }
             catch (Exception e)
             {
-                _giraf._logger.LogError("An exception occurred when reading all pictograms.", $"Message: {e.Message}", $"Source: {e.Source}");
                 return null;
             }
         }

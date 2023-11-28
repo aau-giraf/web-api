@@ -44,7 +44,6 @@ namespace GirafAPI.Controllers
         /// Constructor for UserController
         /// </summary>
         /// <param name="giraf">Service Injection</param>
-        /// <param name="loggerFactory">Service Injection</param>
         /// <param name="roleManager">Service Injection</param>
         /// <param name="girafUserRepository">Service Injection</param>
         /// <param name="imageRepository">Service Injection</param>
@@ -53,7 +52,6 @@ namespace GirafAPI.Controllers
         /// <param name="authentication"></param>
         public UserController(
             IUserService giraf,
-            ILoggerFactory loggerFactory,
             RoleManager<GirafRole> roleManager,
             IGirafUserRepository girafUserRepository,
             IImageRepository imageRepository,
@@ -62,7 +60,6 @@ namespace GirafAPI.Controllers
             IAuthenticationService authentication)
         {
             _userService = giraf;
-            _userService._logger = loggerFactory.CreateLogger("User");
             _roleManager = roleManager;
             _girafUserRepository = girafUserRepository;
             _imageRepository = imageRepository;

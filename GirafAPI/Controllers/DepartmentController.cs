@@ -34,7 +34,6 @@ namespace GirafAPI.Controllers
         /// Initializes new DepartmentController, injecting services
         /// </summary>
         /// <param name="giraf">Injection of GirafService</param>
-        /// <param name="loggerFactory">Injection of logger</param>
         /// <param name="roleManager">Injection of RoleManager</param>
         /// <param name="userRepository">User injection</param>
         /// <param name="departmentRepository">Department Injection</param>
@@ -260,7 +259,6 @@ namespace GirafAPI.Controllers
             catch (Exception e)
             {
                 var errorDescription = $"Exception in Post: {e.Message}, {e.InnerException}";
-                _giraf._logger.LogError(errorDescription);
                 return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse(ErrorCode.Error, errorDescription));
             }
         }
