@@ -34,10 +34,8 @@ namespace GirafAPI.Controllers
         private readonly SignInManager<GirafUser> _signInManager;
         private readonly IUserService _userService;
         private readonly IOptions<JwtConfig> _configuration;
-        private readonly IAuthenticationService _authentication;
         private readonly IGirafUserRepository _userRepository;
         private readonly IDepartmentRepository _departmentRepository;
-        private readonly IGirafRoleRepository _girafRoleRepository;
         private readonly ISettingRepository _settingRepository;
 
         /// <summary>
@@ -57,7 +55,6 @@ namespace GirafAPI.Controllers
             IOptions<JwtConfig> configuration,
             IGirafUserRepository userRepository,
             IDepartmentRepository departmentRepository,
-            IGirafRoleRepository girafRoleRepository,
             ISettingRepository settingRepository)
         {
             _signInManager = signInManager;
@@ -65,7 +62,6 @@ namespace GirafAPI.Controllers
             _configuration = configuration;
             _userRepository = userRepository;
             _departmentRepository = departmentRepository;
-            _girafRoleRepository = girafRoleRepository;
             _settingRepository = settingRepository;
         }
 
@@ -137,7 +133,7 @@ namespace GirafAPI.Controllers
             if (String.IsNullOrEmpty(model.Username) || String.IsNullOrEmpty(model.Password) || String.IsNullOrEmpty(model.DisplayName))
                 return BadRequest(new ErrorResponse(ErrorCode.InvalidCredentials, "Missing username, password or displayName"));
 
-            var UserRoleStr = GirafRoleFromEnumToString(model.Role);
+            var UserRoleStr = _userService.GirafRoleFromEnumToString(model.Role);
             if (UserRoleStr == null)
                 return BadRequest(new ErrorResponse(ErrorCode.RoleNotFound, "The provided role is not valid"));
 
@@ -354,32 +350,6 @@ namespace GirafAPI.Controllers
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-
-        /// <summary>
-        /// Simple helper method for converting a role as enum to a role as string
-        /// </summary>
-        /// <returns>The role as a string</returns>
-        /// <param name="role">A given role as enum that should be converted to a string</param>
-        private string GirafRoleFromEnumToString(GirafRoles role)
-        {
-            switch (role)
-            {
-                case GirafRoles.Citizen:
-                    return GirafRole.Citizen;
-                case GirafRoles.Guardian:
-                    return GirafRole.Guardian;
-                case GirafRoles.Trustee:
-                    return GirafRole.Trustee;
-                case GirafRoles.Department:
-                    return GirafRole.Department;
-                case GirafRoles.SuperUser:
-                    return GirafRole.SuperUser;
-                default:
-                    return null;
-            }
-        }
-
-
     }
 }
 

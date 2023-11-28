@@ -9,15 +9,14 @@ using GirafRepositories.Interfaces;
 using GirafServices;
 using GirafServices.Authentication;
 using GirafServices.User;
+using GirafServices.WeekPlanner;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace GirafAPI.Controllers
@@ -34,7 +33,7 @@ namespace GirafAPI.Controllers
         private const string IMAGE_TYPE_PNG = "image/png";
         private readonly IUserService _userService;
         private readonly IGirafUserRepository _girafUserRepository;
-        private readonly IImageRepository _imageRepository;
+        private readonly IImageService _imageService;
         private readonly IUserResourseRepository _userResourseRepository;
         private readonly IPictogramRepository _pictogramRepository;
         private readonly RoleManager<GirafRole> _roleManager;
@@ -54,18 +53,18 @@ namespace GirafAPI.Controllers
             IUserService giraf,
             RoleManager<GirafRole> roleManager,
             IGirafUserRepository girafUserRepository,
-            IImageRepository imageRepository,
             IUserResourseRepository userResourceRepository,
             IPictogramRepository pictogramRepository,
-            IAuthenticationService authentication)
+            IAuthenticationService authentication, 
+            IImageService imageService)
         {
             _userService = giraf;
             _roleManager = roleManager;
             _girafUserRepository = girafUserRepository;
-            _imageRepository = imageRepository;
             _userResourseRepository = userResourceRepository;
             _pictogramRepository = pictogramRepository;
             _authentication = authentication;
+            _imageService = imageService;
         }
 
         /// <summary>
@@ -283,7 +282,7 @@ namespace GirafAPI.Controllers
 
 
 
-            byte[] image = await _imageRepository.ReadRequestImage(HttpContext.Request.Body);
+            byte[] image = await _imageService.ReadRequestImage(HttpContext.Request.Body);
 
 
             if (image.Length < IMAGE_CONTENT_TYPE_DEFINITION)
@@ -574,7 +573,7 @@ namespace GirafAPI.Controllers
             if (options == null)
                 return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Missing settings"));
 
-            var error = ValidateOptions(options);
+            var error = _userService.ValidateOptions(options);
             if (error.HasValue)
                 return BadRequest(new ErrorResponse(ErrorCode.InvalidProperties, "Invalid settings"));
 
@@ -589,7 +588,7 @@ namespace GirafAPI.Controllers
                     return BadRequest(new ErrorResponse(ErrorCode.InvalidDay, "Invalid day"));
 
                 // check that Colors are in correct format
-                var isCorrectHexValues = IsWeekDayColorsCorrectHexFormat(options);
+                var isCorrectHexValues = _userService.IsWeekDayColorsCorrectHexFormat(options);
                 if (!isCorrectHexValues)
                     return BadRequest(new ErrorResponse(ErrorCode.InvalidHexValues, "Invalid hex values"));
             }
@@ -604,60 +603,56 @@ namespace GirafAPI.Controllers
         }
 
         #endregion
-        #region Helpers
 
-        /// <summary>
-        /// Check that enum values for settings is defined
-        /// </summary>
-        /// <returns>ErrorCode if any settings is invalid else null</returns>
-        /// <param name="options">ref to <see cref="SettingDTO"/></param>
-        private ErrorCode? ValidateOptions(SettingDTO options)
-        {
-            if (!(Enum.IsDefined(typeof(Orientation), options.Orientation)) ||
-                !(Enum.IsDefined(typeof(CompleteMark), options.CompleteMark)) ||
-                !(Enum.IsDefined(typeof(CancelMark), options.CancelMark)) ||
-                !(Enum.IsDefined(typeof(DefaultTimer), options.DefaultTimer)) ||
-                !(Enum.IsDefined(typeof(Theme), options.Theme)))
-            {
-                return ErrorCode.InvalidProperties;
-            }
-            if (options.NrOfDaysToDisplayPortrait < 1 || options.NrOfDaysToDisplayPortrait > 7)
-            {
-                return ErrorCode.InvalidProperties;
-            }
-            if (options.NrOfDaysToDisplayLandscape < 1 || options.NrOfDaysToDisplayLandscape > 7)
-            {
-                return ErrorCode.InvalidProperties;
-            }
-            if (options.ActivitiesCount.HasValue && options.ActivitiesCount.Value < 1)
-            {
-                return ErrorCode.InvalidProperties;
-            }
+        // /// <summary>
+        // /// Check that enum values for settings is defined
+        // /// </summary>
+        // /// <returns>ErrorCode if any settings is invalid else null</returns>
+        // /// <param name="options">ref to <see cref="SettingDTO"/></param>
+        // private ErrorCode? ValidateOptions(SettingDTO options)
+        // {
+        //     if (!(Enum.IsDefined(typeof(Orientation), options.Orientation)) ||
+        //         !(Enum.IsDefined(typeof(CompleteMark), options.CompleteMark)) ||
+        //         !(Enum.IsDefined(typeof(CancelMark), options.CancelMark)) ||
+        //         !(Enum.IsDefined(typeof(DefaultTimer), options.DefaultTimer)) ||
+        //         !(Enum.IsDefined(typeof(Theme), options.Theme)))
+        //     {
+        //         return ErrorCode.InvalidProperties;
+        //     }
+        //     if (options.NrOfDaysToDisplayPortrait < 1 || options.NrOfDaysToDisplayPortrait > 7)
+        //     {
+        //         return ErrorCode.InvalidProperties;
+        //     }
+        //     if (options.NrOfDaysToDisplayLandscape < 1 || options.NrOfDaysToDisplayLandscape > 7)
+        //     {
+        //         return ErrorCode.InvalidProperties;
+        //     }
+        //     if (options.ActivitiesCount.HasValue && options.ActivitiesCount.Value < 1)
+        //     {
+        //         return ErrorCode.InvalidProperties;
+        //     }
+        //
+        //     if (options.TimerSeconds.HasValue && options.TimerSeconds.Value < 1)
+        //     {
+        //         return ErrorCode.InvalidProperties;
+        //     }
+        //
+        //     return null;
+        // }
 
-            if (options.TimerSeconds.HasValue && options.TimerSeconds.Value < 1)
-            {
-                return ErrorCode.InvalidProperties;
-            }
-
-            return null;
-        }
-
-        /// <summary>
-        /// // Takes a list of WeekDayColorDTOs and check if all hex given is in correct format
-        /// </summary>
-        private bool IsWeekDayColorsCorrectHexFormat(SettingDTO setting)
-        {
-            var regex = new Regex(@"#[0-9a-fA-F]{6}");
-            foreach (var weekDayColor in setting.WeekDayColors)
-            {
-                Match match = regex.Match(weekDayColor.HexColor);
-                if (!match.Success)
-                    return false;
-            }
-            return true;
-        }
-
-
-        #endregion
+        // /// <summary>
+        // /// // Takes a list of WeekDayColorDTOs and check if all hex given is in correct format
+        // /// </summary>
+        // private bool IsWeekDayColorsCorrectHexFormat(SettingDTO setting)
+        // {
+        //     var regex = new Regex(@"#[0-9a-fA-F]{6}");
+        //     foreach (var weekDayColor in setting.WeekDayColors)
+        //     {
+        //         Match match = regex.Match(weekDayColor.HexColor);
+        //         if (!match.Success)
+        //             return false;
+        //     }
+        //     return true;
+        // }
     }
 }

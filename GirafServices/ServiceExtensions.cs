@@ -23,6 +23,7 @@ namespace GirafServices
             services.AddScoped<IWeekBaseService, WeekBaseService>();
             services.AddScoped<IWeekService, WeekService>();
             services.AddScoped<IWeekTemplateService, WeekTemplateService>();
+            services.AddScoped<IPictogramService, PictogramService>();
             
             // top level
             services.AddScoped<ISettingService, SettingService>();

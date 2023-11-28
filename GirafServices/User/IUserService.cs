@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
+using GirafEntities.Responses;
+using GirafEntities.Settings.DTOs;
 using GirafEntities.User;
 using GirafEntities.WeekPlanner;
 using GirafEntities.User.DTOs;
@@ -77,7 +79,11 @@ namespace GirafServices.User
         void AddCitizen(GirafUser citizen, GirafUser guardian);
         void AddGuardian(GirafUser guardian, GirafUser user);
 
+        string GirafRoleFromEnumToString(GirafRoles role);
 
+        ErrorCode? ValidateOptions(SettingDTO options);
+
+        bool IsWeekDayColorsCorrectHexFormat(SettingDTO setting);
 
     }
 }
