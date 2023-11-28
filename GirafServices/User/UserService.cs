@@ -156,9 +156,7 @@ namespace GirafServices.User
         /// <param name="user">The registered user</param>
         public void AddGuardiansToUser(GirafUser user)
         {
-            Console.WriteLine("Calling get all guardians");
             var guardians = _girafRoleRepository.GetAllGuardians();
-            Console.WriteLine("Go go go go go");
             var guardiansInDepartment = _girafUserRepository.GetUsersInDepartment((long)user.DepartmentKey, guardians);
             foreach (var guardian in guardiansInDepartment)
             {

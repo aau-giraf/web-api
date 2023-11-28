@@ -115,11 +115,9 @@ namespace GirafAPI.Setup
             services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
             #endregion
             
-            // potentielt smides i add repositories
             services.Configure<JwtConfig>(Configuration.GetSection("Jwt"));
 
             //Add the database context to the server using extension-methods
-            // SKAL FJERNES
             configureIdentity<GirafDbContext>(services);
             
             // Registering services and repositories from the individual projects
