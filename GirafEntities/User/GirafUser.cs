@@ -80,6 +80,7 @@ namespace GirafEntities.User
             if (role == GirafRoles.Citizen)
             {
                 this.Settings = new Setting();
+                Settings.WeekDayColors = new List<WeekDayColor>();
                 Settings.WeekDayColors.Add(new WeekDayColor(){Day = Days.Monday, HexColor = "#08a045", SettingId = Settings.Key});
                 Settings.WeekDayColors.Add(new WeekDayColor(){Day = Days.Tuesday, HexColor = "#540d6e", SettingId = Settings.Key});
                 Settings.WeekDayColors.Add(new WeekDayColor(){Day = Days.Wednesday, HexColor = "#f77f00", SettingId = Settings.Key});
@@ -105,6 +106,7 @@ namespace GirafEntities.User
         public GirafUser()
         {
             this.Settings = new Setting();
+            Settings.WeekDayColors = new List<WeekDayColor>();
             Settings.WeekDayColors.Add(new WeekDayColor(){Day = Days.Monday, HexColor = "#08a045", SettingId = Settings.Key});
             Settings.WeekDayColors.Add(new WeekDayColor(){Day = Days.Tuesday, HexColor = "#540d6e", SettingId = Settings.Key});
             Settings.WeekDayColors.Add(new WeekDayColor(){Day = Days.Wednesday, HexColor = "#f77f00", SettingId = Settings.Key});
