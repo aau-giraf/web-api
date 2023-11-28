@@ -175,7 +175,7 @@ namespace GirafServices.User
         public void AddCitizensToUser(GirafUser user)
         {
             var citizens = _girafRoleRepository.GetAllCitizens();
-            var citizensInDepartment = _girafUserRepository.GetUsersInDepartment((long)user.DepartmentKey, citizens);
+            var citizensInDepartment = _girafUserRepository.GetUsersInDepartment(user.DepartmentKey, citizens);
             foreach (var citizen in citizensInDepartment)
             {
                 AddCitizen(citizen, user);

@@ -339,7 +339,7 @@ namespace GirafAPI.Controllers
             {
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
-                new Claim("departmentId", user.DepartmentKey?.ToString() ?? ""),
+                new Claim("departmentId", user.DepartmentKey.ToString() ?? ""),
             };
             claims.AddRange(await GetRoleClaims(user));
 

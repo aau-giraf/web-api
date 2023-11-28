@@ -42,7 +42,7 @@ namespace GirafEntities.User
         /// Belonging department key
         /// </summary>
         [ForeignKey("Department")]
-        public long? DepartmentKey { get; set; }
+        public long DepartmentKey { get; set; }
 
         /// <summary>
         /// Belonging Department
@@ -75,10 +75,10 @@ namespace GirafEntities.User
         /// <param name="department">Department</param>
         /// <param name="role">Role for user</param>
         /// <param name="userIcon">Profile picture of user</param>
-        public GirafUser(string userName, string displayName, Department department, GirafRoles role, byte[] userIcon = null) : base(userName)
+        public GirafUser(string userName, string displayName, Department department, GirafRoles role, byte[]? userIcon = null) : base(userName)
         {
-            if (role == GirafRoles.Citizen)
-            {
+            // if (role == GirafRoles.Citizen)
+            // {
                 this.Settings = new Setting();
                 Settings.WeekDayColors = new List<WeekDayColor>();
                 Settings.WeekDayColors.Add(new WeekDayColor(){Day = Days.Monday, HexColor = "#08a045", SettingId = Settings.Key});
@@ -88,7 +88,7 @@ namespace GirafEntities.User
                 Settings.WeekDayColors.Add(new WeekDayColor(){Day = Days.Friday, HexColor = "#f9c80e", SettingId = Settings.Key});
                 Settings.WeekDayColors.Add(new WeekDayColor(){Day = Days.Saturday, HexColor = "#db2b39", SettingId = Settings.Key});
                 Settings.WeekDayColors.Add(new WeekDayColor(){Day = Days.Sunday, HexColor = "#ffffff", SettingId = Settings.Key});
-            }
+            // }
 
             this.Resources = new List<UserResource>();
             this.WeekSchedule = new List<Week>();
