@@ -5,8 +5,6 @@ using System.Text;
 using GirafEntities.User;
 using GirafEntities.WeekPlanner;
 using GirafRepositories.Persistence;
-using GirafAPI.Data;
-using GirafAPI.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Giraf.UnitTest.FakeRepositorysContext

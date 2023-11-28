@@ -3,9 +3,8 @@ using System.Threading.Tasks;
 using GirafEntities.User;
 using GirafRepositories.Interfaces;
 using GirafAPI.Controllers;
-using GirafAPI.Interfaces;
-using GirafAPI.Models;
-using GirafAPI.Services;
+using GirafEntities.Authentication;
+using GirafServices.User;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -39,7 +38,7 @@ namespace Giraf.UnitTest.RepositoryMocks
                 : this(
                     signInManager, 
                     new Mock<ILoggerFactory>(),
-                    new Mock<IGirafService>(),
+                    new Mock<IUserService>(),
                     configuration,
                     new Mock<IGirafUserRepository>(),
                     new Mock<IDepartmentRepository>(),
@@ -51,7 +50,7 @@ namespace Giraf.UnitTest.RepositoryMocks
             public MockedAccountController(
                 Mock<SignInManager<GirafUser>> signInManager,
                 Mock<ILoggerFactory> loggerFactory,
-                Mock<IGirafService> giraf,
+                Mock<IUserService> giraf,
                 IOptions<JwtConfig> configuration,
                 Mock<IGirafUserRepository> userRepository,
                 Mock<IDepartmentRepository> departmentRepository, 
@@ -89,7 +88,7 @@ namespace Giraf.UnitTest.RepositoryMocks
             
             public Mock<SignInManager<GirafUser>> SignInManager { get; }
             public Mock<ILoggerFactory> LoggerFactory { get; }
-            public Mock<IGirafService> GirafService { get; }
+            public Mock<IUserService> GirafService { get; }
             public Mock<IGirafUserRepository> UserRepository { get; }
             public Mock<IDepartmentRepository> DepartmentRepository { get; }
             public Mock<IGirafRoleRepository> GirafRoleRepository { get; }

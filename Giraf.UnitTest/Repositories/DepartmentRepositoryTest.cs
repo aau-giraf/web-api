@@ -1,10 +1,8 @@
 ﻿using Xunit;
 using System;
+using GirafEntities.User;
 using GirafRepositories.Persistence;
 using GirafRepositories.User;
-using GirafAPI.Data;
-using GirafAPI.Models;
-using GirafAPI.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 

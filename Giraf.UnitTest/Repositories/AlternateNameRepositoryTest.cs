@@ -1,11 +1,9 @@
 ﻿using Xunit;
 using System;
 using System.Linq;
+using GirafEntities.WeekPlanner;
 using GirafRepositories.Persistence;
-using GirafAPI.Data;
-using GirafAPI.Models;
-using GirafAPI.Models.DTOs;
-using GirafAPI.Repositories;
+using GirafRepositories.WeekPlanner;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 

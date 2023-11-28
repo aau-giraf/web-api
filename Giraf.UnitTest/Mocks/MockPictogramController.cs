@@ -1,7 +1,4 @@
 ﻿using GirafAPI.Controllers;
-using GirafAPI.Interfaces;
-using GirafAPI.Models;
-using GirafAPI.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -12,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GirafEntities.User;
+using GirafEntities.WeekPlanner;
 using GirafRepositories.Interfaces;
 
 namespace Giraf.UnitTest.Mocks

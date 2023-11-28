@@ -3,10 +3,9 @@ using System.Threading.Tasks;
 using GirafEntities.User;
 using GirafRepositories.Interfaces;
 using GirafAPI.Controllers;
-using GirafAPI.Interfaces;
-using GirafAPI.Models;
-using GirafAPI.Models.DTOs;
-using GirafAPI.Models.Responses;
+using GirafEntities.Responses;
+using GirafEntities.WeekPlanner;
+using GirafEntities.WeekPlanner.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -66,7 +65,6 @@ namespace Giraf.UnitTest
         public void Create_CorrectRequest_Status201() {
             // Arrange
             var controller = new MockedAlternateNameController();
-            var newAlternateName = new AlternateNameDTO() {
                 Citizen = "Danielsan",
                 Name = "Tommysan",
                 Pictogram = 420691337,

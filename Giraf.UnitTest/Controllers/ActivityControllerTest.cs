@@ -1,21 +1,18 @@
 ﻿using System.Linq;
 using GirafAPI.Controllers;
-using GirafAPI.Models;
-using GirafAPI.Models.DTOs;
-using GirafAPI.Models.Responses;
-using GirafAPI.Services;
 using Giraf.UnitTest.Mocks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
 using static Giraf.UnitTest.UnitTestExtensions;
 using System.Collections.Generic;
+using GirafEntities.Responses;
 using GirafEntities.User;
 using GirafEntities.WeekPlanner;
+using GirafEntities.WeekPlanner.DTOs;
 using GirafRepositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Moq;
-using GirafAPI.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -48,7 +45,6 @@ namespace Giraf.UnitTest
             Mock<IPictogramRelationRepository> pictogramRelationRepository,
             Mock<ITimerRepository> timerRepository)
                 : base(
-                    loggerFactory.Object,
                     userRepository.Object,
                     alternateNameRepository.Object,
                     activityRepository.Object,

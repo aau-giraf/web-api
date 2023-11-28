@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
-using GirafAPI.Models;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using GirafAPI.Models.Responses;
 using Microsoft.AspNetCore.Http;
-using GirafAPI.Models.DTOs;
 using System.Linq;
 using Giraf.UnitTest.Mocks;
 using GirafEntities.User;
 using GirafAPI;
+using GirafEntities.Responses;
+using GirafEntities.WeekPlanner;
+using GirafEntities.WeekPlanner.DTOs;
 
 namespace Giraf.UnitTest.Controllers
 {

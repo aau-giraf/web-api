@@ -3,22 +3,21 @@ using System.Collections.Generic;
 using System.Text;
 using GirafRepositories.Interfaces;
 using GirafAPI.Controllers;
+using GirafServices.User;
 using Moq;
-using GirafAPI.Interfaces;
 using Microsoft.Extensions.Logging;
-using GirafAPI.Shared;
 
 namespace Giraf.UnitTest.Mocks
 {
     class MockedWeekController : WeekController
     {
-        public Mock<IGirafService> Giraf { get; set; }
+        public Mock<IUserService> Giraf { get; set; }
         public Mock<ILoggerFactory> LoggerFactory { get; set; }
         public Mock<IWeekRepository> WeekRepository { get; set; }
         public Mock<ITimerRepository> TimerRepository { get; set; }
         public Mock<IPictogramRepository> PictogramRepository { get; set; }
         public Mock<IWeekdayRepository> WeekdayRepository { get; set; }
-        public MockedWeekController() : this(new Mock<IGirafService>(),
+        public MockedWeekController() : this(new Mock<IUserService>(),
                                             new Mock<ILoggerFactory>(),
                                             new Mock<IWeekRepository>(),
                                             new Mock<ITimerRepository>(),
@@ -29,7 +28,7 @@ namespace Giraf.UnitTest.Mocks
 
 
 
-        public MockedWeekController(Mock<IGirafService> giraf,
+        public MockedWeekController(Mock<IUserService> giraf,
                                     Mock<ILoggerFactory> loggerFactory,
                                     Mock<IWeekRepository> weekRepository,
                                     Mock<ITimerRepository> timerRepository,

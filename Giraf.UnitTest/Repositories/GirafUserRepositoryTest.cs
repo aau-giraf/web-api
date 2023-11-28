@@ -1,15 +1,11 @@
 ﻿using Xunit;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GirafEntities.User;
+using GirafEntities.User.DTOs;
 using GirafRepositories.Persistence;
 using GirafRepositories.User;
-using GirafAPI.Data;
-using GirafAPI.Models;
-using GirafAPI.Models.DTOs;
-using GirafAPI.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Giraf.UnitTest.Repositories

@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using GirafEntities.Responses;
+using GirafEntities.Settings.DTOs;
 using GirafEntities.User;
-using GirafAPI.Models;
-using GirafAPI.Models.DTOs;
-using GirafAPI.Models.Responses;
+using GirafEntities.User.DTOs;
+using GirafEntities.WeekPlanner.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
