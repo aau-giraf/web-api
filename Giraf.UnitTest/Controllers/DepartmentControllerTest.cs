@@ -1,33 +1,29 @@
-using GirafAPI.Controllers;
-using Microsoft.AspNetCore.Mvc;
-using Moq;
-using Xunit;
-using Microsoft.Extensions.Options;
-using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using System.Threading;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Giraf.UnitTest.Mocks;
-using GirafEntities.User;
-using GirafRepositories.Interfaces;
-using GirafAPI;
+using GirafAPI.Controllers;
 using GirafEntities.Responses;
+using GirafEntities.User;
 using GirafEntities.User.DTOs;
 using GirafEntities.WeekPlanner;
-using Microsoft.AspNetCore.Identity;
-using static Giraf.UnitTest.UnitTestExtensions;
+using GirafRepositories.Interfaces;
+using GirafServices.User;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Moq;
+using Xunit;
 
-namespace Giraf.UnitTest
+namespace Giraf.UnitTest.Controllers
 {
     public class DepartmentControllerTest
     {
         public class MockedDepartmentController : DepartmentController
         {
-            public readonly Mock<IGirafService> _giraf;
+            public readonly Mock<IUserService> _giraf;
             public readonly Mock<IDepartmentRepository> _departmentRepository;
             public readonly Mock<IGirafUserRepository> _userRepository;
             public readonly Mock<IGirafRoleRepository> _roleRepository;
@@ -37,8 +33,7 @@ namespace Giraf.UnitTest
             public MockedDepartmentController(RoleManager<GirafRole> rolemanager)
                 :
             this(
-                    new Mock<IGirafService>(),
-                    new Mock<ILoggerFactory>(),
+                    new Mock<IUserService>(),
                     rolemanager,
                     new Mock<IGirafUserRepository>(),
                     new Mock<IDepartmentRepository>(),
@@ -49,8 +44,7 @@ namespace Giraf.UnitTest
             public MockedDepartmentController()
                 :
             this(
-                    new Mock<IGirafService>(),
-                    new Mock<ILoggerFactory>(),
+                    new Mock<IUserService>(),
                     new MockRoleManager(new List<GirafRoles>()),
                     new Mock<IGirafUserRepository>(),
                     new Mock<IDepartmentRepository>(),
@@ -58,17 +52,14 @@ namespace Giraf.UnitTest
                     new Mock<IPictogramRepository>()
                 ) { }
             public MockedDepartmentController(
-                    Mock<IGirafService> girafService,
-                    Mock<ILoggerFactory> logger,
+                    Mock<IUserService> userService,
                     RoleManager<GirafRole> rolemanager,
                     Mock<IGirafUserRepository> userRep,
-
                     Mock<IDepartmentRepository> departmentRepository,
                     Mock<IGirafRoleRepository> girafRoleRepository,
                     Mock<IPictogramRepository> pictogramRepository
         ) : base(
-            girafService.Object,
-            logger.Object,
+            userService.Object,
             rolemanager,   
             userRep.Object,
             departmentRepository.Object,
@@ -77,9 +68,9 @@ namespace Giraf.UnitTest
         )
               
             {
-                girafService.SetupAllProperties();
+                userService.SetupAllProperties();
                
-                _giraf = girafService;
+                _giraf = userService;
                 _departmentRepository = departmentRepository;
                 _roleRepository = girafRoleRepository;
                 _userRepository = userRep;

@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Giraf.UnitTest.Controllers;
 using GirafEntities.User;
 using GirafRepositories.Interfaces;
 using GirafAPI.Controllers;

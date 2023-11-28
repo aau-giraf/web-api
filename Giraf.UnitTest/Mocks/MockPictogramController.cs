@@ -11,38 +11,39 @@ using System.Threading.Tasks;
 using GirafEntities.User;
 using GirafEntities.WeekPlanner;
 using GirafRepositories.Interfaces;
+using GirafServices.User;
+using GirafServices.WeekPlanner;
 
 namespace Giraf.UnitTest.Mocks
 {
     public class MockedPictogramController : PictogramController
     {
         public MockedPictogramController() : this(
-            new Mock<IGirafService>(),
+            new Mock<IUserService>(),
             new Mock<IHostEnvironment>(),
-            new Mock<ILoggerFactory>(),
-            new Mock<IGirafUserRepository>(),
-            new Mock<IPictogramRepository>())
+            new Mock<IPictogramRepository>(),
+            new Mock<IImageService>(),
+            new Mock<IPictogramService>())
         {}
 
         public MockedPictogramController(
-        Mock<IGirafService> giraf,
+        Mock<IUserService> userService,
         Mock<IHostEnvironment> env,
-        Mock<ILoggerFactory> lFactory,
-        Mock<IGirafUserRepository> girafUserRepository,
-        Mock<IPictogramRepository> pictogramRepository
+        Mock<IPictogramRepository> pictogramRepository,
+        Mock<IImageService> imageService,
+        Mock<IPictogramService> pictogramService
         ) : base(
-        giraf.Object,
+        userService.Object,
         env.Object,
-        lFactory.Object,
-        girafUserRepository.Object,
-        pictogramRepository.Object)
+        pictogramRepository.Object,
+        imageService.Object,
+        pictogramService.Object)
         {
 
-            GirafService = giraf;
-            LoggerFactory = lFactory;
-            GirafUserRepository = girafUserRepository;
+            UserService = userService;
+            ImageService = imageService;
             PictogramRepository = pictogramRepository;
-            
+            PictogramService = pictogramService;
             testPictogram = new Pictogram("testPictogram", AccessLevel.PUBLIC);
             testUser = new GirafUser("bob", "Bob", new Department(), GirafRoles.Citizen);
             guardianUser = new GirafUser("guard", "Guard", new Department(), GirafRoles.Guardian);
@@ -57,11 +58,10 @@ namespace Giraf.UnitTest.Mocks
             
         }
 
-        public Mock<IGirafService> GirafService { get; }
-        public Mock<ILoggerFactory> LoggerFactory { get; }
-        public Mock<IGirafUserRepository> GirafUserRepository { get; }
-        public Mock<IImageRepository> ImageRepository { get; }
-        public Mock<IUserResourseRepository> UserResourseRepository { get; }
+        public Mock<IUserService> UserService { get; }
+        public Mock<IImageService> ImageService { get; }
+
+        public Mock<IPictogramService> PictogramService { get; set; }
         public Mock<IPictogramRepository> PictogramRepository { get; }
 
         public GirafUser testUser { get; }

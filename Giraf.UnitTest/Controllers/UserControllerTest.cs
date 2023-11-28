@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 
-namespace Giraf.UnitTest
+namespace Giraf.UnitTest.Controllers
 {
     public class UserControllerTest
     {

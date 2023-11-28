@@ -1,51 +1,53 @@
-using System.Linq;
-using Xunit;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using GirafAPI.Controllers;
-using Microsoft.AspNetCore.Http;
-using Moq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using GirafAPI.Controllers;
 using GirafEntities.Responses;
 using GirafEntities.User;
 using GirafEntities.WeekPlanner;
 using GirafEntities.WeekPlanner.DTOs;
 using GirafRepositories.Interfaces;
+using GirafRepositories.WeekPlanner;
+using GirafServices.User;
+using GirafServices.WeekPlanner;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Moq;
+using Xunit;
 
-namespace Giraf.UnitTest
+namespace Giraf.UnitTest.Controllers
 {
     public class PictogramControllerTest
     {
         public class MockedPictogramController : PictogramController
         {
             public MockedPictogramController() : this(
-                new Mock<IGirafService>(),
+                new Mock<IUserService>(),
                 new Mock<IHostEnvironment>(),
-                new Mock<ILoggerFactory>(),
-                new Mock<IGirafUserRepository>(),
-                new Mock<IPictogramRepository>())
+                new Mock<IPictogramRepository>(),
+                new Mock<IImageService>(),
+                new Mock<IPictogramService>())
             { }
             public MockedPictogramController(
-            Mock<IGirafService> giraf,
+            Mock<IUserService> userService,
             Mock<IHostEnvironment> env,
-            Mock<ILoggerFactory> lFactory,
-            Mock<IGirafUserRepository> girafUserRepository,
-            Mock<IPictogramRepository> pictogramRepository
+            Mock<IPictogramRepository> pictogramRepository,
+            Mock<IImageService> imageService,
+            Mock<IPictogramService> pictogramService
             ) : base(
-            giraf.Object,
+            userService.Object,
             env.Object,
-            lFactory.Object,
-            girafUserRepository.Object,
-            pictogramRepository.Object)
+            pictogramRepository.Object,
+            imageService.Object,
+            pictogramService.Object)
             {
-                GirafService = giraf;
-                LoggerFactory = lFactory;
-                GirafUserRepository = girafUserRepository;
+                UserService = userService;
                 PictogramRepository = pictogramRepository;
-
+                ImageService = imageService;
+                PictogramService = pictogramService;
                 testPictogram = new Pictogram("testPictogram", AccessLevel.PUBLIC);
                 testUser = new GirafUser("bob", "Bob", new Department(), GirafRoles.Citizen);
                 guardianUser = new GirafUser("guard", "Guard", new Department(), GirafRoles.Guardian);
@@ -58,11 +60,11 @@ namespace Giraf.UnitTest
                 this.ControllerContext = new ControllerContext();
                 this.ControllerContext.HttpContext = new DefaultHttpContext();
             }
-            public Mock<IGirafService> GirafService { get; }
-            public Mock<ILoggerFactory> LoggerFactory { get; }
-            public Mock<IGirafUserRepository> GirafUserRepository { get; }
-            public Mock<IImageRepository> ImageRepository { get; }
-            public Mock<IUserResourseRepository> UserResourseRepository { get; }
+            public Mock<IUserService> UserService { get; }
+
+            public Mock<IPictogramService> PictogramService { get; }
+
+            public Mock<IImageService> ImageService { get;  }
             public Mock<IPictogramRepository> PictogramRepository { get; }
             public GirafUser testUser { get; }
             public GirafUser guardianUser { get; }
@@ -74,7 +76,7 @@ namespace Giraf.UnitTest
         {
             //arrange
             var pictogramcontroller = new MockedPictogramController();
-            var girafService = pictogramcontroller.GirafService;
+            var girafService = pictogramcontroller.UserService;
             var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
             var pictoRep = pictogramcontroller.PictogramRepository;
 
@@ -104,7 +106,7 @@ namespace Giraf.UnitTest
         {
             //arrange
             var pictogramcontroller = new MockedPictogramController();
-            var girafService = pictogramcontroller.GirafService;
+            var girafService = pictogramcontroller.UserService;
             var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
             var pictoRep = pictogramcontroller.PictogramRepository;
 
@@ -135,7 +137,7 @@ namespace Giraf.UnitTest
         {
             //arrange
             var pictogramcontroller = new MockedPictogramController();
-            var girafService = pictogramcontroller.GirafService;
+            var girafService = pictogramcontroller.UserService;
             var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
             var pictoRep = pictogramcontroller.PictogramRepository;
 
@@ -165,7 +167,7 @@ namespace Giraf.UnitTest
         {
             //arrange
             var pictogramcontroller = new MockedPictogramController();
-            var girafService = pictogramcontroller.GirafService;
+            var girafService = pictogramcontroller.UserService;
             var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
             var pictoRep = pictogramcontroller.PictogramRepository;
 
@@ -196,7 +198,7 @@ namespace Giraf.UnitTest
         {
             //arranging
             var pictogramcontroller = new MockedPictogramController();
-            var girafService = pictogramcontroller.GirafService;
+            var girafService = pictogramcontroller.UserService;
             var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
 
             var department = new Department();
@@ -240,7 +242,7 @@ namespace Giraf.UnitTest
         {
             //arrange
             var pictogramcontroller = new MockedPictogramController();
-            var girafService = pictogramcontroller.GirafService;
+            var girafService = pictogramcontroller.UserService;
             var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
 
             GirafUser usrNULL = new GirafUser();
@@ -268,7 +270,7 @@ namespace Giraf.UnitTest
         {
             //arrange
             var pictogramcontroller = new MockedPictogramController();
-            var girafService = pictogramcontroller.GirafService;
+            var girafService = pictogramcontroller.UserService;
             var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
 
             var usr = new GirafUser("Jan", "Jan", new Department(), GirafRoles.SuperUser);
@@ -319,7 +321,7 @@ namespace Giraf.UnitTest
         {
             //arrange
             var pictogramcontroller = new MockedPictogramController();
-            var girafService = pictogramcontroller.GirafService;
+            var girafService = pictogramcontroller.UserService;
             var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
             var pictoRep = pictogramcontroller.PictogramRepository;
 
@@ -352,7 +354,7 @@ namespace Giraf.UnitTest
         {
             //arrange
             var pictogramcontroller = new MockedPictogramController();
-            var girafService = pictogramcontroller.GirafService;
+            var girafService = pictogramcontroller.UserService;
             var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
             var pictoRep = pictogramcontroller.PictogramRepository;
             
@@ -387,7 +389,7 @@ namespace Giraf.UnitTest
         {
             //arrange
             var pictogramcontroller = new MockedPictogramController();
-            var girafService = pictogramcontroller.GirafService;
+            var girafService = pictogramcontroller.UserService;
             var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
             var pictoRep = pictogramcontroller.PictogramRepository;
 
@@ -422,7 +424,7 @@ namespace Giraf.UnitTest
         {
             //arrange
             var pictogramcontroller = new MockedPictogramController();
-            var girafService = pictogramcontroller.GirafService;
+            var girafService = pictogramcontroller.UserService;
             var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
             var pictoRep = pictogramcontroller.PictogramRepository;
 
@@ -456,7 +458,7 @@ namespace Giraf.UnitTest
         {
             //arrange
             var pictogramcontroller = new MockedPictogramController();
-            var girafService = pictogramcontroller.GirafService;
+            var girafService = pictogramcontroller.UserService;
             var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
             var pictoRep = pictogramcontroller.PictogramRepository;
 
@@ -490,7 +492,7 @@ namespace Giraf.UnitTest
         {
             //arrange
             var pictogramcontroller = new MockedPictogramController();
-            var girafService = pictogramcontroller.GirafService;
+            var girafService = pictogramcontroller.UserService;
             var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
             var pictoRep = pictogramcontroller.PictogramRepository;
 
@@ -524,7 +526,7 @@ namespace Giraf.UnitTest
         {
             //arrange
             var pictogramcontroller = new MockedPictogramController();
-            var girafService = pictogramcontroller.GirafService;
+            var girafService = pictogramcontroller.UserService;
             var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
             var pictoRep = pictogramcontroller.PictogramRepository;
 
@@ -553,7 +555,7 @@ namespace Giraf.UnitTest
         {
             //arrange
             var pictogramcontroller = new MockedPictogramController();
-            var girafService = pictogramcontroller.GirafService;
+            var girafService = pictogramcontroller.UserService;
             var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
             var pictoRep = pictogramcontroller.PictogramRepository;
 
@@ -583,7 +585,7 @@ namespace Giraf.UnitTest
         {
             //arrange
             var pictogramcontroller = new MockedPictogramController();
-            var girafService = pictogramcontroller.GirafService;
+            var girafService = pictogramcontroller.UserService;
             var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
             var pictoRep = pictogramcontroller.PictogramRepository;
 
@@ -612,7 +614,7 @@ namespace Giraf.UnitTest
         {
             //arrange
             var pictogramcontroller = new MockedPictogramController();
-            var girafService = pictogramcontroller.GirafService;
+            var girafService = pictogramcontroller.UserService;
             var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
             var pictoRep = pictogramcontroller.PictogramRepository;
 
@@ -646,7 +648,7 @@ namespace Giraf.UnitTest
             var userController = new MockedUserController();
             var repository = userController.GirafUserRepository;
             var pictogramRepository = pictogramController.PictogramRepository;
-            var giraf = pictogramController.GirafService;
+            var giraf = pictogramController.UserService;
             var HttpContext = pictogramController.ControllerContext.HttpContext;
             var logger = new Mock<ILogger>();
 
@@ -693,11 +695,12 @@ namespace Giraf.UnitTest
             pictogramRepository.Setup(x => x.fetchPictogramsFromDepartmentStartsWithQuery(It.IsAny<string>(), user)).Returns(expected_pictograms);
             pictogramRepository.Setup(x=> x.fetchPictogramsFromDepartmentsContainsQuery(It.IsAny<string>(), user)).Returns(expected_pictograms);
 
-            giraf.Setup(x => x._logger).Returns(logger.Object);
-            
             //now we actually test it :D
             //  here we get a list of pictograms_result
-            var pictograms_result = await pictogramController.ReadAllPictograms("");
+            var pictogramRepoMock = new Mock<IPictogramRepository>();
+            var userServiceMock = new Mock<IUserService>();
+            var pictogramService = new PictogramService(pictogramRepoMock.Object, userServiceMock.Object);
+            var pictograms_result = await pictogramService.ReadAllPictograms("", user);
 
             foreach (var (expected, actual) in expected_pictograms.Zip(pictograms_result, (x, y) => (x, y))) 
             {
@@ -714,7 +717,7 @@ namespace Giraf.UnitTest
             var userController = new MockedUserController();
             var repository = userController.GirafUserRepository;
             var pictogramRepository = pictogramController.PictogramRepository;
-            var giraf = pictogramController.GirafService;
+            var giraf = pictogramController.UserService;
             var HttpContext = pictogramController.ControllerContext.HttpContext;
             var logger = new Mock<ILogger>();
 
@@ -746,10 +749,13 @@ namespace Giraf.UnitTest
             pictogramRepository.Setup(x => x.fetchPictogramsUserNotPartOfDepartmentContainsQuery(It.IsAny<string>(), user)).Returns(pictograms);
             pictogramRepository.Setup(x => x.fetchPictogramsFromDepartmentStartsWithQuery(It.IsAny<string>(), user)).Returns(pictograms);
             pictogramRepository.Setup(x => x.fetchPictogramsFromDepartmentsContainsQuery(It.IsAny<string>(), user)).Returns(pictograms);
-            giraf.Setup(x => x._logger).Returns(logger.Object);
 
             //  here we get a list of pictograms_result
-            var pictograms_result = await pictogramController.ReadAllPictograms("");
+            var pictogramRepoMock = new Mock<IPictogramRepository>();
+            var userServiceMock = new Mock<IUserService>();
+            var pictogramService = new PictogramService(pictogramRepoMock.Object, userServiceMock.Object);
+            // USER MÅ IKKE VÆRE NULL HER!!! FIX!
+            var pictograms_result = await pictogramService.ReadAllPictograms("");
 
             foreach (var (expected, actual) in expected_pictograms.Zip(pictograms_result, (x, y) => (x, y)))
             {
@@ -766,7 +772,7 @@ namespace Giraf.UnitTest
             var userController = new MockedUserController();
             var repository = userController.GirafUserRepository;
             var pictogramRepository = pictogramController.PictogramRepository;
-            var giraf = pictogramController.GirafService;
+            var giraf = pictogramController.UserService;
             var HttpContext = pictogramController.ControllerContext.HttpContext;
             var logger = new Mock<ILogger>();
 
@@ -804,10 +810,12 @@ namespace Giraf.UnitTest
             pictogramRepository.Setup(x => x.fetchPictogramsUserNotPartOfDepartmentContainsQuery(It.IsAny<string>(), user)).Returns(expected_pictograms);
             pictogramRepository.Setup(x => x.fetchPictogramsFromDepartmentStartsWithQuery(It.IsAny<string>(), user)).Returns(pictograms);
             pictogramRepository.Setup(x => x.fetchPictogramsFromDepartmentsContainsQuery(It.IsAny<string>(), user)).Returns(pictograms);
-            giraf.Setup(x => x._logger).Returns(logger.Object);
 
             //  here we get a list of pictograms_result
-            var pictograms_result = await pictogramController.ReadAllPictograms("");
+            var pictogramRepoMock = new Mock<IPictogramRepository>();
+            var userServiceMock = new Mock<IUserService>();
+            var pictogramService = new PictogramService(pictogramRepoMock.Object, userServiceMock.Object);
+            var pictograms_result = await pictogramService.ReadAllPictograms("", user);
 
             foreach (var (expected, actual) in expected_pictograms.Zip(pictograms_result, (x, y) => (x, y)))
             {
@@ -826,7 +834,7 @@ namespace Giraf.UnitTest
             var userController = new MockedUserController();
             var repository = userController.GirafUserRepository;
             var pictogramRepository = pictogramController.PictogramRepository;
-            var giraf = pictogramController.GirafService;
+            var giraf = pictogramController.UserService;
             var HttpContext = pictogramController.ControllerContext.HttpContext;
             var logger = new Mock<ILogger>();
 
@@ -859,7 +867,6 @@ namespace Giraf.UnitTest
             pictogramRepository.Setup(x => x.fetchPictogramsUserNotPartOfDepartmentContainsQuery(It.IsAny<string>(), user)).Returns(pictograms);
             pictogramRepository.Setup(x => x.fetchPictogramsFromDepartmentStartsWithQuery(It.IsAny<string>(), user)).Returns(pictograms);
             pictogramRepository.Setup(x => x.fetchPictogramsFromDepartmentsContainsQuery(It.IsAny<string>(), user)).Returns(pictograms);
-            giraf.Setup(x => x._logger).Returns(logger.Object);
 
             //  here we get a list of pictograms_result
             var response = pictogramController.ReadPictograms(It.IsAny<string>(),1, pictograms.Count());
@@ -882,7 +889,7 @@ namespace Giraf.UnitTest
             var userController = new MockedUserController();
             var repository = userController.GirafUserRepository;
             var pictogramRepository = pictogramController.PictogramRepository;
-            var giraf = pictogramController.GirafService;
+            var giraf = pictogramController.UserService;
             var HttpContext = pictogramController.ControllerContext.HttpContext;
             var logger = new Mock<ILogger>();
 
@@ -915,7 +922,6 @@ namespace Giraf.UnitTest
             pictogramRepository.Setup(x => x.fetchPictogramsUserNotPartOfDepartmentContainsQuery(It.IsAny<string>(), user)).Throws(new Exception("failure "));
             pictogramRepository.Setup(x => x.fetchPictogramsFromDepartmentStartsWithQuery(It.IsAny<string>(), user)).Throws(new Exception("failure "));
             pictogramRepository.Setup(x => x.fetchPictogramsFromDepartmentsContainsQuery(It.IsAny<string>(), user)).Throws(new Exception("failure "));
-            giraf.Setup(x => x._logger).Returns(logger.Object);
 
             //  here we get a list of pictograms_result
             var response = pictogramController.ReadPictograms(It.IsAny<string>(), 0, pictograms.Count());

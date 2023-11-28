@@ -1,19 +1,6 @@
-﻿using GirafAPI.Controllers;
-using Microsoft.AspNetCore.Mvc;
-using Moq;
-using Xunit;
-using Microsoft.Extensions.Options;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-using ILoggerFactory = Microsoft.Extensions.Logging.ILoggerFactory;
-using System.Threading;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Giraf.UnitTest.RepositoryMocks;
 using GirafEntities.Authentication;
 using GirafEntities.Authentication.DTOs;
@@ -22,11 +9,16 @@ using GirafEntities.Settings.DTOs;
 using GirafEntities.User;
 using GirafEntities.User.DTOs;
 using GirafEntities.WeekPlanner;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Moq;
+using Xunit;
 using Assert = Xunit.Assert;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
-namespace Giraf.UnitTest
+namespace Giraf.UnitTest.Controllers
 {
     public class AccountControllerTest
     {

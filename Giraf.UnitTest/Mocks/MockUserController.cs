@@ -3,6 +3,8 @@ using GirafEntities.User;
 using GirafRepositories.Interfaces;
 using GirafAPI.Controllers;
 using GirafServices.Authentication;
+using GirafServices.User;
+using GirafServices.WeekPlanner;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -10,43 +12,39 @@ using Moq;
 public class MockedUserController : UserController
 {
     public MockedUserController() : this(
-        new Mock<IGirafService>(),
-        new Mock<ILoggerFactory>(),
+        new Mock<IUserService>(),
         GetMockRoleManager(),
         new Mock<IGirafUserRepository>(),
-        new Mock<IImageRepository>(),
         new Mock<IUserResourseRepository>(),
         new Mock<IPictogramRepository>(),
-        new Mock<IAuthenticationService>())
+        new Mock<IAuthenticationService>(),
+        new Mock<IImageService>())
     { }
 
     public MockedUserController(
-        Mock<IGirafService> giraf,
-        Mock<ILoggerFactory> loggerFactory,
+        Mock<IUserService> userService,
         Mock<RoleManager<GirafRole>> roleManager,
         Mock<IGirafUserRepository> girafUserRepository,
-        Mock<IImageRepository> imageRepository,
         Mock<IUserResourseRepository> userResourseRepository,
         Mock<IPictogramRepository> pictogramRepository,
-        Mock<IAuthenticationService> authenticationService) : base(
-        giraf.Object,
-        loggerFactory.Object,
+        Mock<IAuthenticationService> authenticationService,
+        Mock<IImageService> imageService) : base(
+        userService.Object,
         roleManager.Object,
         girafUserRepository.Object,
-        imageRepository.Object,
         userResourseRepository.Object,
         pictogramRepository.Object,
-        authenticationService.Object)
+        authenticationService.Object,
+        imageService.Object)
     {
         var userStoreMock = new Mock<IUserStore<GirafUser>>();
         var userManagerMock = new Mock<UserManager<GirafUser>>(
                 userStoreMock.Object, null, null, null, null, null, null, null, null);
         
-        GirafService = giraf;
-        LoggerFactory = loggerFactory;
+        GirafService = userService;
         RoleManager = roleManager;
         GirafUserRepository = girafUserRepository;
-        ImageRepository = imageRepository;
+        ImageService = imageService;
         UserResourseRepository = userResourseRepository;
         PictogramRepository = pictogramRepository;
         
@@ -68,11 +66,11 @@ public class MockedUserController : UserController
             roleStore.Object, null, null, null, null);
     }
 
-    public Mock<IGirafService> GirafService { get; }
+    public Mock<IUserService> GirafService { get; }
     public Mock<ILoggerFactory> LoggerFactory { get; }
     public Mock<RoleManager<GirafRole>> RoleManager { get; }
     public Mock<IGirafUserRepository> GirafUserRepository { get; }
-    public Mock<IImageRepository> ImageRepository { get; }
+    public Mock<IImageService> ImageService { get; }
     public Mock<IUserResourseRepository> UserResourseRepository { get; }
     public Mock<IPictogramRepository> PictogramRepository { get; }
     

@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,39 +20,36 @@ namespace GirafAPI.Controllers
     [Route("v1/[controller]")]
     public class DepartmentController : Controller
     {
-        private readonly IUserService _giraf;
+        private readonly IUserService _userService;
 
         public readonly RoleManager<GirafRole> _roleManager;
         private readonly IDepartmentRepository _departmentRepository;
         private readonly IGirafUserRepository _userRepository;
         private readonly IGirafRoleRepository _roleRepository;
         private readonly IPictogramRepository _pictogramRepository;
-        private readonly IUserService _girafUserService;
 
         /// <summary>
         /// Initializes new DepartmentController, injecting services
         /// </summary>
-        /// <param name="giraf">Injection of GirafService</param>
+        /// <param name="userService">Injection of GirafService</param>
         /// <param name="roleManager">Injection of RoleManager</param>
         /// <param name="userRepository">User injection</param>
         /// <param name="departmentRepository">Department Injection</param>
         /// <param name="girafRoleRepository">GIRAF Role Injection</param>
         /// <param name="pictogramRepository">Pictogram Injection</param>
-        public DepartmentController(IUserService giraf,
+        public DepartmentController(IUserService userService,
             RoleManager<GirafRole> roleManager,
             IGirafUserRepository userRepository,
             IDepartmentRepository departmentRepository,
             IGirafRoleRepository girafRoleRepository,
-            IPictogramRepository pictogramRepository,
-            IUserService girafUserService)
+            IPictogramRepository pictogramRepository)
         {
-            _giraf = giraf;
+            _userService = userService;
             _roleManager = roleManager;
             _userRepository = userRepository;
             _departmentRepository = departmentRepository;
             _roleRepository = girafRoleRepository;
             _pictogramRepository = pictogramRepository;
-            _girafUserService = girafUserService;
         }
 
         /// <summary>
@@ -86,14 +82,14 @@ namespace GirafAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> Get(long id)
         {
-            var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            var currentUser = await _userService._userManager.GetUserAsync(HttpContext.User);
 
             if (currentUser == null)
             {
                 return this.ResourceNotFound(nameof(User));
             }
 
-            var isSuperUser = await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser);
+            var isSuperUser = await _userService._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser);
 
             if (currentUser?.DepartmentKey != id && !isSuperUser)
             {
@@ -107,7 +103,7 @@ namespace GirafAPI.Controllers
                 return this.ResourceNotFound(nameof(Department));
             }
 
-            var members = _girafUserService.FindMembers(department.Result.Members, _roleManager, _giraf);
+            var members = _userService.FindMembers(department.Result.Members, _roleManager, _userService);
             return Ok(new SuccessResponse<DepartmentDTO>(new DepartmentDTO(department.Result, members)));
         }
 
@@ -129,11 +125,11 @@ namespace GirafAPI.Controllers
                 return this.ResourceNotFound(nameof(Department), department, id);
             }
 
-            var currentUser = await _giraf._userManager.GetUserAsync(HttpContext.User);
+            var currentUser = await _userService._userManager.GetUserAsync(HttpContext.User);
 
             currentUser = _departmentRepository.GetUserByDepartment(department, currentUser);
 
-            var isSuperUser = await _giraf._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser);
+            var isSuperUser = await _userService._userManager.IsInRoleAsync(currentUser, GirafRole.SuperUser);
 
             if (currentUser?.DepartmentKey != department?.Key && !isSuperUser)
             {
@@ -186,13 +182,13 @@ namespace GirafAPI.Controllers
                     return BadRequest(new ErrorResponse(ErrorCode.MissingProperties, "Deparment name has to be specified!"));
                 }
 
-                var authenticatedUser = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
+                var authenticatedUser = await _userService.LoadBasicUserDataAsync(HttpContext.User);
                 if (authenticatedUser == null)
                 {
                     return NotFound(new ErrorResponse(ErrorCode.UserNotFound, "User not found"));
                 }
 
-                var userRole = await _departmentRepository.GetUserRole(_roleManager, _giraf._userManager, authenticatedUser);
+                var userRole = await _departmentRepository.GetUserRole(_roleManager, _userService._userManager, authenticatedUser);
                 if (userRole != GirafRoles.SuperUser)
                 {
                     return StatusCode(StatusCodes.Status403Forbidden, new ErrorResponse(ErrorCode.NotAuthorized, "User is not a super user"));
@@ -242,18 +238,18 @@ namespace GirafAPI.Controllers
 
                 var departmentUser = new GirafUser(depDTO.Name, depDTO.Name, department, GirafRoles.Department) { IsDepartment = true };
 
-                var identityUser = await _giraf._userManager.CreateAsync(departmentUser, "0000");
+                var identityUser = await _userService._userManager.CreateAsync(departmentUser, "0000");
 
                 if (identityUser.Succeeded == false)
                 {
                     return StatusCode(StatusCodes.Status500InternalServerError, new ErrorResponse(ErrorCode.CouldNotCreateDepartmentUser, string.Join("\n", identityUser.Errors)));
                 }
 
-                await _giraf._userManager.AddToRoleAsync(departmentUser, GirafRole.Department);
+                await _userService._userManager.AddToRoleAsync(departmentUser, GirafRole.Department);
 
                 //Save the changes and return the entity
                 await _departmentRepository.Update(department);
-                var members = _girafUserService.FindMembers(department.Members, _roleManager, _giraf);
+                var members = _userService.FindMembers(department.Members, _roleManager, _userService);
                 return CreatedAtRoute("GetDepartment", new { id = department.Key }, new SuccessResponse<DepartmentDTO>(new DepartmentDTO(department, members)));
             }
             catch (Exception e)
@@ -276,7 +272,7 @@ namespace GirafAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> ChangeDepartmentName(long departmentId, [FromBody] DepartmentNameDTO nameDTO)
         {
-            var requestingUser = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
+            var requestingUser = await _userService.LoadBasicUserDataAsync(HttpContext.User);
 
             var department = _departmentRepository.GetDepartmentById(departmentId);
             
@@ -308,7 +304,7 @@ namespace GirafAPI.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult> DeleteDepartment(long departmentId)
         {
-            var requestingUser = await _giraf.LoadBasicUserDataAsync(HttpContext.User);
+            var requestingUser = await _userService.LoadBasicUserDataAsync(HttpContext.User);
 
             var department = _departmentRepository.GetDepartmentById(departmentId);
 

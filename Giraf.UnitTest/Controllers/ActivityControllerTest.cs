@@ -1,22 +1,18 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using GirafAPI.Controllers;
-using Giraf.UnitTest.Mocks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Xunit;
-using static Giraf.UnitTest.UnitTestExtensions;
-using System.Collections.Generic;
 using GirafEntities.Responses;
 using GirafEntities.User;
 using GirafEntities.WeekPlanner;
 using GirafEntities.WeekPlanner.DTOs;
 using GirafRepositories.Interfaces;
-using Microsoft.AspNetCore.Identity;
-using Moq;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using Moq;
+using Xunit;
 
-namespace Giraf.UnitTest
+namespace Giraf.UnitTest.Controllers
 {
     public class ActivityControllerTest
     {
