@@ -41,7 +41,6 @@ namespace GirafAPI.Controllers
         /// <param name="girafRoleRepository">GIRAF Role Injection</param>
         /// <param name="pictogramRepository">Pictogram Injection</param>
         public DepartmentController(IUserService giraf,
-            ILoggerFactory loggerFactory,
             RoleManager<GirafRole> roleManager,
             IGirafUserRepository userRepository,
             IDepartmentRepository departmentRepository,
@@ -50,7 +49,6 @@ namespace GirafAPI.Controllers
             IUserService girafUserService)
         {
             _giraf = giraf;
-            _giraf._logger = loggerFactory.CreateLogger("Department");
             _roleManager = roleManager;
             _userRepository = userRepository;
             _departmentRepository = departmentRepository;

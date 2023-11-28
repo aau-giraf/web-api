@@ -45,7 +45,6 @@ namespace GirafAPI.Controllers
         /// <param name="pictogramRelationRepository">Service Injection</param>
         /// <param name="timerRepository">Service Injection</param>
         public ActivityController(
-            ILoggerFactory loggerFactory,
             IGirafUserRepository userRepository,
             IAlternateNameRepository alternateNameRepository,
             IActivityRepository activityRepository,
@@ -54,7 +53,6 @@ namespace GirafAPI.Controllers
             IPictogramRelationRepository pictogramRelationRepository,
             ITimerRepository timerRepository)
         {
-            _logger = loggerFactory.CreateLogger("Activity");
             _userRepository = userRepository;
             _alternateNameRepository = alternateNameRepository;
             _activityRepository = activityRepository;

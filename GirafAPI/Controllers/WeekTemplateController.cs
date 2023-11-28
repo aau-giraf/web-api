@@ -43,7 +43,6 @@ namespace GirafAPI.Controllers
         /// <param name="loggerFactory">A reference to an implementation of ILoggerFactory. Used to create a logger.</param>
         /// <param name="authentication"></param>
         public WeekTemplateController(IUserService giraf,
-            ILoggerFactory loggerFactory,
             IAuthenticationService authentication,
             IWeekTemplateService weekTemplateService,
             IWeekService weekService,
@@ -51,7 +50,6 @@ namespace GirafAPI.Controllers
             )
         {
             _giraf = giraf;
-            _giraf._logger = loggerFactory.CreateLogger("WeekTemplate");
             _authentication = authentication;
             _weekTemplateService = weekTemplateService;
             _weekService = weekService;

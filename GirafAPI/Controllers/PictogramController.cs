@@ -51,12 +51,10 @@ namespace GirafAPI.Controllers
         public PictogramController(
             IUserService girafService,
             IHostEnvironment hostingEnvironment,
-            ILoggerFactory lFactory,
             IGirafUserRepository girafUserRepository,
             IPictogramRepository pictogramRepository)
         {
             _giraf = girafService;
-            _giraf._logger = lFactory.CreateLogger("Pictogram");
             _hostingEnvironment = hostingEnvironment;
             imagePath = _hostingEnvironment.ContentRootPath + "/../pictograms/";
             _girafUserRepository = girafUserRepository;

@@ -59,7 +59,13 @@ namespace GirafRepositories
         private static void AddMySql(this IServiceCollection services, IConfiguration Configuration)
         {
             //Setup the connection to the sql server
-            services.AddDbContext<GirafDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(new Version())));
+            services.AddDbContext<GirafDbContext>(options => options.UseMySql(
+                                            Configuration.GetConnectionString("DefaultConnection"), 
+                                            new MySqlServerVersion(new Version()),
+                                            mysqlOptions => mysqlOptions.EnableRetryOnFailure(
+                                                            maxRetryCount: 10, 
+                                                            maxRetryDelay: TimeSpan.FromSeconds(30), 
+                                                            errorNumbersToAdd: null)));
         }
         
         /// <summary>

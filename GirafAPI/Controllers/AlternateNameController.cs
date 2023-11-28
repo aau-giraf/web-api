@@ -35,7 +35,6 @@ namespace GirafAPI.Controllers
         /// <param name="alternateNameRepository">The <see cref="IAlternateNameRepository"/> used to query alternate names</param>
         public AlternateNameController(
             IUserService girafService,
-            ILoggerFactory lFactory,
             IPictogramRepository pictogramRepository,
             IGirafUserRepository girafUserRepository,
             IAlternateNameRepository alternateNameRepository

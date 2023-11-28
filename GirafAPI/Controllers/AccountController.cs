@@ -53,7 +53,6 @@ namespace GirafAPI.Controllers
         /// <param name="settingRepository">Service Injection</param>
         public AccountController(
             SignInManager<GirafUser> signInManager,
-            ILoggerFactory loggerFactory,
             IUserService userService,
             IOptions<JwtConfig> configuration,
             IGirafUserRepository userRepository,
@@ -63,7 +62,6 @@ namespace GirafAPI.Controllers
         {
             _signInManager = signInManager;
             _userService = userService;
-            _userService._logger = loggerFactory.CreateLogger("Account");
             _configuration = configuration;
             _userRepository = userRepository;
             _departmentRepository = departmentRepository;
