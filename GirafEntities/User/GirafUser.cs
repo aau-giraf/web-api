@@ -80,6 +80,13 @@ namespace GirafEntities.User
             if (role == GirafRoles.Citizen)
             {
                 this.Settings = new Setting();
+                Settings.WeekDayColors.Add(new WeekDayColor(){Day = Days.Monday, HexColor = "#08a045", SettingId = Settings.Key});
+                Settings.WeekDayColors.Add(new WeekDayColor(){Day = Days.Tuesday, HexColor = "#540d6e", SettingId = Settings.Key});
+                Settings.WeekDayColors.Add(new WeekDayColor(){Day = Days.Wednesday, HexColor = "#f77f00", SettingId = Settings.Key});
+                Settings.WeekDayColors.Add(new WeekDayColor(){Day = Days.Thursday, HexColor = "#004777", SettingId = Settings.Key});
+                Settings.WeekDayColors.Add(new WeekDayColor(){Day = Days.Friday, HexColor = "#f9c80e", SettingId = Settings.Key});
+                Settings.WeekDayColors.Add(new WeekDayColor(){Day = Days.Saturday, HexColor = "#db2b39", SettingId = Settings.Key});
+                Settings.WeekDayColors.Add(new WeekDayColor(){Day = Days.Sunday, HexColor = "#ffffff", SettingId = Settings.Key});
             }
 
             this.Resources = new List<UserResource>();
@@ -98,6 +105,13 @@ namespace GirafEntities.User
         public GirafUser()
         {
             this.Settings = new Setting();
+            Settings.WeekDayColors.Add(new WeekDayColor(){Day = Days.Monday, HexColor = "#08a045", SettingId = Settings.Key});
+            Settings.WeekDayColors.Add(new WeekDayColor(){Day = Days.Tuesday, HexColor = "#540d6e", SettingId = Settings.Key});
+            Settings.WeekDayColors.Add(new WeekDayColor(){Day = Days.Wednesday, HexColor = "#f77f00", SettingId = Settings.Key});
+            Settings.WeekDayColors.Add(new WeekDayColor(){Day = Days.Thursday, HexColor = "#004777", SettingId = Settings.Key});
+            Settings.WeekDayColors.Add(new WeekDayColor(){Day = Days.Friday, HexColor = "#f9c80e", SettingId = Settings.Key});
+            Settings.WeekDayColors.Add(new WeekDayColor(){Day = Days.Saturday, HexColor = "#db2b39", SettingId = Settings.Key});
+            Settings.WeekDayColors.Add(new WeekDayColor(){Day = Days.Sunday, HexColor = "#ffffff", SettingId = Settings.Key});
             this.Resources = new List<UserResource>();
             this.WeekSchedule = new List<Week>();
             this.Citizens = new List<GuardianRelation>();
