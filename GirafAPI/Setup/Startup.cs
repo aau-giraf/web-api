@@ -188,7 +188,13 @@ namespace GirafAPI.Setup
             //Add Identity for user management.
             services.AddIdentity<GirafUser, GirafRole>(options =>
             {
-                options.RemovePasswordRequirements();
+                // Removes the default password requirements from ASP.NET and set them to a bare minimum.
+                //Set password requirements to an absolute bare minimum.
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequiredLength = 1;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
             })
                 .AddEntityFrameworkStores<T>()
                 .AddDefaultTokenProviders();
