@@ -82,6 +82,5 @@ namespace Giraf.UnitTest.RepositoryMocks
             public Mock<IUserService> GirafService { get; }
             public Mock<IGirafUserRepository> UserRepository { get; }
             public Mock<IDepartmentRepository> DepartmentRepository { get; }
-            public Mock<IGirafRoleRepository> GirafRoleRepository { get; }
         }
 }
