@@ -67,6 +67,7 @@ namespace Giraf.UnitTest.RepositoryMocks
                 GirafService = userService;
                 UserRepository = userRepository;
                 DepartmentRepository = departmentRepository;
+                RoleRepository = new Mock<IGirafRoleRepository>();
                 // The following are primary mocks whcih are generic.
                 //   These are added to ease the development of tests.
                 var affectedRows = 1;
@@ -81,6 +82,8 @@ namespace Giraf.UnitTest.RepositoryMocks
             public Mock<SignInManager<GirafUser>> SignInManager { get; }
             public Mock<IUserService> GirafService { get; }
             public Mock<IGirafUserRepository> UserRepository { get; }
+
+            public Mock<IGirafRoleRepository> RoleRepository { get; set; }
             public Mock<IDepartmentRepository> DepartmentRepository { get; }
         }
 }
