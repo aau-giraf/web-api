@@ -9,6 +9,7 @@ using Giraf.IntegrationTest.Extensions;
 using Giraf.IntegrationTest.Order;
 using Giraf.IntegrationTest.Setup;
 using GirafAPI;
+using GirafEntities.User.DTOs;
 using Xunit;
 using Newtonsoft.Json.Linq;
 
