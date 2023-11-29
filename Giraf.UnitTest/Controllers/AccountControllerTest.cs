@@ -465,36 +465,34 @@ namespace Giraf.UnitTest.Controllers
         {
             // var x = new MockedAccountController();
             //
-            // // Arrange
-            // var signInManager = new MockSignInManager();
-            // var userManagerMock = new MockUserManager().Object;
-            // var userRssRepo = new Mock<IUserResourseRepository>();
-            // var deptRssRepo = new Mock<IDepartmentResourseRepository>();
-            // var roleRepo = new Mock<IGirafRoleRepository>();
-            // var db = new Mock<GirafDbContext>();
-            // var actualroleRepo = new GirafRoleRepository(db.Object);
-            // var options = new OptionsJwtConfig(default);
-            // var userRepo = new Mock<IGirafUserRepository>();
-            // var deptRepo = new Mock<IDepartmentRepository>();
-            // var settingRepo = new Mock<ISettingRepository>();
-            // var userService = new UserService(
-            //     userManagerMock, 
-            //     userRepo.Object,
-            //     userRssRepo.Object, 
-            //     deptRssRepo.Object, 
-            //     roleRepo.Object);
-            // var accountController = new AccountController(
-            //     signInManager.Object,
-            //     userService,
-            //     options,
-            //     userRepo.Object,
-            //     deptRepo.Object,
-            //     settingRepo.Object
-            // );
-
             // Arrange
             var signInManager = new MockSignInManager();
-            var accountController = new MockedAccountController(signInManager);
+            var userManagerMock = new MockUserManager().Object;
+            var userRssRepo = new Mock<IUserResourseRepository>();
+            var deptRssRepo = new Mock<IDepartmentResourseRepository>();
+            var roleRepo = new Mock<IGirafRoleRepository>();
+            var options = new OptionsJwtConfig(default);
+            var userRepo = new Mock<IGirafUserRepository>();
+            var deptRepo = new Mock<IDepartmentRepository>();
+            var settingRepo = new Mock<ISettingRepository>();
+            var userService = new UserService(
+                userManagerMock, 
+                userRepo.Object,
+                userRssRepo.Object, 
+                deptRssRepo.Object, 
+                roleRepo.Object);
+            var accountController = new AccountController(
+                signInManager.Object,
+                userService,
+                options,
+                userRepo.Object,
+                deptRepo.Object,
+                settingRepo.Object
+            );
+
+            // Arrange
+            // var signInManager = new MockSignInManager();
+            // var accountController = new MockedAccountController(signInManager);
             var department = new Department()
             {
                 Key = 1,
@@ -530,13 +528,14 @@ namespace Giraf.UnitTest.Controllers
 
             // Mock
             // Mock
-            accountController.UserRepository.Setup(
+            userRepo.Setup(
                 repo => repo.ExistsUsername(registrationDto.Username)
             ).Returns(false);
-            accountController.DepartmentRepository.Setup(
+            deptRepo.Setup(
                 repo => repo.GetDepartmentById(department.Key)
             ).Returns(department);
-            accountController.GirafService.Setup(x => x.GirafRoleFromEnumToString(It.IsAny<GirafRoles>())).Returns("Citizen");
+            // accountController.GirafService.Setup(x => x.GirafRoleFromEnumToString(It.IsAny<GirafRoles>()))
+            //     .Returns("Citizen");
             signInManager.UserManager.Setup(
                 manager => manager.CreateAsync(Capture.In(capturedNewUsers), It.IsAny<string>())
             ).Returns(Task.FromResult(creationResult));
@@ -546,10 +545,10 @@ namespace Giraf.UnitTest.Controllers
             signInManager.Setup(
                 manager => manager.SignInAsync(It.IsAny<GirafUser>(), true, null)
             ).Returns(Task.CompletedTask);
-            accountController.RoleRepository.Setup(
+            roleRepo.Setup(
                 repo => repo.GetAllGuardians()
             ).Returns(guardianIds);
-            accountController.UserRepository.Setup(
+            userRepo.Setup(
                 repo => repo.GetUsersInDepartment(department.Key, guardianIds)
             ).Returns(guardians);
 
