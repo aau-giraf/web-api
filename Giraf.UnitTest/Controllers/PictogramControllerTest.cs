@@ -754,8 +754,9 @@ namespace Giraf.UnitTest.Controllers
             var pictogramRepoMock = new Mock<IPictogramRepository>();
             var userServiceMock = new Mock<IUserService>();
             var pictogramService = new PictogramService(pictogramRepoMock.Object, userServiceMock.Object);
+            
             // USER MÅ IKKE VÆRE NULL HER!!! FIX!
-            var pictograms_result = await pictogramService.ReadAllPictograms("");
+            var pictograms_result = await pictogramService.ReadAllPictograms("", user);
 
             foreach (var (expected, actual) in expected_pictograms.Zip(pictograms_result, (x, y) => (x, y)))
             {

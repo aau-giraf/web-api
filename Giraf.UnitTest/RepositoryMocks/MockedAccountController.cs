@@ -38,49 +38,40 @@ namespace Giraf.UnitTest.RepositoryMocks
                 IOptions<JwtConfig> configuration)
                 : this(
                     signInManager, 
-                    new Mock<ILoggerFactory>(),
                     new Mock<IUserService>(),
                     configuration,
                     new Mock<IGirafUserRepository>(),
                     new Mock<IDepartmentRepository>(),
-                    new Mock<IGirafRoleRepository>(),
                     new Mock<ISettingRepository>()
                 )
             { }
             
             public MockedAccountController(
                 Mock<SignInManager<GirafUser>> signInManager,
-                Mock<ILoggerFactory> loggerFactory,
-                Mock<IUserService> giraf,
+                Mock<IUserService> userService,
                 IOptions<JwtConfig> configuration,
                 Mock<IGirafUserRepository> userRepository,
                 Mock<IDepartmentRepository> departmentRepository, 
-                Mock<IGirafRoleRepository> girafRoleRepository,
                 Mock<ISettingRepository> settingRepository
                 ) 
                 : base(
                     signInManager.Object, 
-                    loggerFactory.Object,
-                    giraf.Object, 
+                    userService.Object, 
                     configuration,
                     userRepository.Object,
                     departmentRepository.Object,
-                    girafRoleRepository.Object,
                     settingRepository.Object
                 )
             {
                 SignInManager = signInManager;
-                LoggerFactory = loggerFactory;
-                GirafService = giraf;
+                GirafService = userService;
                 UserRepository = userRepository;
                 DepartmentRepository = departmentRepository;
-                GirafRoleRepository = girafRoleRepository;
-
                 // The following are primary mocks whcih are generic.
                 //   These are added to ease the development of tests.
                 var affectedRows = 1;
-                GirafService.Setup(
-                    service => service._context.SaveChangesAsync(It.IsAny<CancellationToken>())
+                userRepository.Setup(
+                    service => service.SaveChangesAsync()
                 ).Returns(Task.FromResult(affectedRows));
                 GirafService.SetupGet(
                     service => service._userManager
@@ -88,7 +79,6 @@ namespace Giraf.UnitTest.RepositoryMocks
             }
             
             public Mock<SignInManager<GirafUser>> SignInManager { get; }
-            public Mock<ILoggerFactory> LoggerFactory { get; }
             public Mock<IUserService> GirafService { get; }
             public Mock<IGirafUserRepository> UserRepository { get; }
             public Mock<IDepartmentRepository> DepartmentRepository { get; }

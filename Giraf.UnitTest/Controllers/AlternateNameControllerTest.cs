@@ -45,8 +45,8 @@ namespace Giraf.UnitTest.Controllers
                 // The following are primary mocks whcih are generic.
                 //   These are added to ease the development of tests.
                 var affectedRows = 1;
-                UserService.Setup(
-                    service => service._context.SaveChangesAsync(It.IsAny<CancellationToken>())
+                girafUserRepository.Setup(
+                    service => service.SaveChangesAsync()
                 ).Returns(Task.FromResult(affectedRows));
             }
 

@@ -138,16 +138,15 @@ namespace Giraf.UnitTest.Controllers
             var principal = new ClaimsPrincipal(new ClaimsIdentity(null, "user"));
             var userManager = new MockUserManagerDepartment();
             var departmentRep = departmentController._departmentRepository;
-            var deparmentdto = new Mock<DepartmentDTO>();
+            var userServiceMock = new Mock<IUserService>();
             userManager.MockLoginAsUser(user); 
             
             departmentController._giraf.Object._userManager = userManager;
-            departmentController._departmentdto = deparmentdto.Object;
 
             //mock
             departmentRep.Setup(repo=>repo.GetDepartmentMembers((long)user.DepartmentKey))
                 .Returns(Task.FromResult<Department>(department));
-            deparmentdto.Setup(repo => repo.FindMembers(It.IsAny<List<GirafUser>>(),
+            userServiceMock.Setup(service => service.FindMembers(It.IsAny<List<GirafUser>>(),
                 It.IsAny<RoleManager<GirafRole>>(), departmentController._giraf.Object)).Returns(displayNameDTOs);
 
             //acting 
@@ -222,7 +221,7 @@ namespace Giraf.UnitTest.Controllers
             var picRep = departmentController._pictogramRepository;
             var depDto = new Mock<DepartmentDTO>();
             var userRep = departmentController._userRepository;
-            departmentController._departmentdto = depDto.Object;
+            var userServiceMock = new Mock<IUserService>();
             var testContext = new UnitTestExtensions.TestContext();
             var userManager = new MockUserManagerDepartment();
             
@@ -251,7 +250,7 @@ namespace Giraf.UnitTest.Controllers
             userRep.Setup(repo => repo.GetUserWithId(It.IsAny<string>())).Returns(Task.FromResult<GirafUser>(girafUsers[0]));
             picRep.Setup(repo => repo.GetPictogramWithID(It.IsAny<long>())).Returns(Task.FromResult<Pictogram>(new Pictogram()));
             depRep.Setup(repo => repo.AddDepartmentResource(It.IsAny<DepartmentResource>())).Returns(Task.CompletedTask);
-            depDto.Setup(repo => repo.FindMembers(It.IsAny<List<GirafUser>>(),
+            userServiceMock.Setup(service => service.FindMembers(It.IsAny<List<GirafUser>>(),
                 It.IsAny<RoleManager<GirafRole>>(), departmentController._giraf.Object)).Returns(displayNameDTOS);
             //act
             var response = departmentController.Post(depDTO);
