@@ -854,7 +854,6 @@ namespace Giraf.UnitTest.Controllers
             var pictogramRepository = pictogramController.PictogramRepository;
             var giraf = pictogramController.UserService;
             var HttpContext = pictogramController.ControllerContext.HttpContext;
-            var logger = new Mock<ILogger>();
 
             //here we create the data we need to return from our functions in the function
             var pictogram1 = new Pictogram() { Id = 1 };

@@ -11,6 +11,8 @@ using GirafEntities.User;
 using GirafEntities.User.DTOs;
 using GirafEntities.WeekPlanner;
 using GirafRepositories.Interfaces;
+using GirafRepositories.Persistence;
+using GirafRepositories.User;
 using GirafServices.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -462,9 +464,36 @@ namespace Giraf.UnitTest.Controllers
         [Fact]
         public void Register_GuardianRelation_Success()
         {
+            var x = new MockedAccountController();
             // Arrange
             var signInManager = new MockSignInManager();
-            var accountController = new MockedAccountController(signInManager);
+            var userManagerMock = new MockUserManager().Object;
+            var userRssRepo = new Mock<IUserResourseRepository>();
+            var deptRssRepo = new Mock<IDepartmentResourseRepository>();
+            var roleRepo = new Mock<IGirafRoleRepository>();
+            var db = new Mock<GirafDbContext>();
+            var actualroleRepo = new GirafRoleRepository(db.Object);
+            var options = new OptionsJwtConfig(default);
+            var userRepo = new Mock<IGirafUserRepository>();
+            var deptRepo = new Mock<IDepartmentRepository>();
+            var settingRepo = new Mock<ISettingRepository>();
+            var userService = new UserService(
+                userManagerMock, 
+                userRepo.Object,
+                userRssRepo.Object, 
+                deptRssRepo.Object, 
+                actualroleRepo);
+            var accountController = new AccountController(
+                signInManager.Object,
+                userService,
+                options,
+                userRepo.Object,
+                deptRepo.Object,
+                settingRepo.Object
+            );
+            
+            // var signInManager = new MockSignInManager();
+            // var accountController = new MockedAccountController(signInManager);
             var userRoleRepo = new Mock<IGirafRoleRepository>();
             var department = new Department()
             {
@@ -500,10 +529,10 @@ namespace Giraf.UnitTest.Controllers
             IList<GirafUser> capturedNewUsers = new List<GirafUser>();
         
             // Mock
-            accountController.UserRepository.Setup(
+            userRepo.Setup(
                 repo => repo.ExistsUsername(registrationDto.Username)
             ).Returns(false);
-            accountController.DepartmentRepository.Setup(
+            deptRepo.Setup(
                 repo => repo.GetDepartmentById(department.Key)
             ).Returns(department);
             signInManager.UserManager.Setup(
@@ -518,10 +547,10 @@ namespace Giraf.UnitTest.Controllers
             userRoleRepo.Setup(
                 repo => repo.GetAllGuardians()
             ).Returns(guardianIds);
-            accountController.UserRepository.Setup(
+            userRepo.Setup(
                 repo => repo.GetUsersInDepartment(department.Key, guardianIds)
             ).Returns(guardians);
-        
+            
             // Arrange
             var response = accountController.Register(registrationDto);
             var result = response.Result as ObjectResult;
