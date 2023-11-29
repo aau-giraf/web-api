@@ -1,9 +1,11 @@
 ﻿using Xunit;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GirafEntities.User;
 using GirafEntities.User.DTOs;
+using GirafEntities.WeekPlanner;
 using GirafRepositories.Persistence;
 using GirafRepositories.User;
 using Microsoft.EntityFrameworkCore;
@@ -39,14 +41,15 @@ namespace Giraf.UnitTest.Repositories
                 var user2 = new GirafUser()
                 {
                     Id = "2",
-                    UserName = "John Appleseed",
+                    UserName = "Anton Appleseed",
                     DisplayName = ""
                 };
                 var user3 = new GirafUser()
                 {
                     Id = "3",
                     UserName = "Anna",
-                    DisplayName = ""
+                    DisplayName = "",
+                    DepartmentKey = 1
                 };
                 var user4 = new GirafUser()
                 {
@@ -70,9 +73,24 @@ namespace Giraf.UnitTest.Repositories
                     Citizen = user3
                     
                 };
+                var pictogram = new Pictogram()
+                {
+                    Title = "xd",
+                    ImageHash = "ff"
+                };
+
+                var userResource = new UserResource
+                {
+                    Other = user,
+                    Pictogram = pictogram
+                };
+                var department = new Department()
+                {
+                    Name = "xD",
+                };
                 
                 
-                context.AddRange(user, user2, user3, user4, userAmazing,guardianRelation);
+                context.AddRange(user, user2, user3, user4, userAmazing,guardianRelation, department, pictogram, userResource);
                 context.SaveChanges();
                 
             }

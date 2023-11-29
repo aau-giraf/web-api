@@ -61,7 +61,7 @@ namespace GirafEntities.WeekPlanner
         /// <summary>
         /// The name of the choiceboard
         /// </summary>
-        public string ChoiceBoardName { get; set; }
+        public string? ChoiceBoardName { get; set; }
         
         public string Title { get; set; }
 

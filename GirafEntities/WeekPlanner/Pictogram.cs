@@ -56,7 +56,7 @@ namespace GirafEntities.WeekPlanner
         /// Hash of the image
         /// </summary>
         [Column("ImageHash")]
-        public string ImageHash { get; set; }
+        public string? ImageHash { get; set; }
         
         /// <summary>
         /// A list of alternate names of the pictogram

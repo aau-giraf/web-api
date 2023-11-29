@@ -333,7 +333,8 @@ namespace GirafAPI.Controllers
             Weekday oldDay = week.Weekdays.Single(d => d.Day == weekdayDto.Day);
 
             oldDay.Activities.Clear();
-            if (!await _weekService.AddPictogramsToWeekday(oldDay, weekdayDto))
+            var temp = await _weekService.AddPictogramsToWeekday(oldDay, weekdayDto);
+            if (!temp)
             {
                 return NotFound(new ErrorResponse(ErrorCode.ResourceNotFound, "Missing pictogram"));
             }

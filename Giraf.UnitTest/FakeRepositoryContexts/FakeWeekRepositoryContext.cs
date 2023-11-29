@@ -51,12 +51,12 @@ namespace Giraf.UnitTest.FakeRepositorysContext
                 girafuser1.WeekSchedule.Add(ID3_user1week3);
                 //girafuser2 used for  LoadUserWithWeekSchedules
                 var girafuser2 = new GirafUser();
-                var ID4_user2week1 = new Week();
-                var ID5_user2week2 = new Week();
+                var ID4_user2week1 = new Week {Name = "week3" };
+                var ID5_user2week2 = new Week{Name = "week4"};
                 var weekday1 = new Weekday();
                 var weekday2 = new Weekday();
-                var week1 = new Week();
-                var week2 = new Week();
+                var week1 = new Week{Name = "week1"};
+                var week2 = new Week{Name = "week2"};
                 girafuser2.Id = "TWO";
                 girafuser2.DisplayName = "";
                 ID4_user2week1.Thumbnail = Pictogram1;
@@ -81,7 +81,7 @@ namespace Giraf.UnitTest.FakeRepositorysContext
                 girafuser2.WeekSchedule.Add(ID5_user2week2);
                 //GirafUser for Deletespecificweek
                 var girafuser3 = new GirafUser() { Id = "Three", DisplayName = ""};
-                var ID6_user3week1 = new Week() { WeekYear = 2016 , WeekNumber = 40};
+                var ID6_user3week1 = new Week{Name = "week", WeekYear = 2016 , WeekNumber = 40};
                 girafuser3.WeekSchedule.Add(ID6_user3week1);
                 //items for tesing SetWeekDTO and AddPictograms
                 var activity5 = new Activity(weekday2, new List<Pictogram> { Pictogram4 }, 1, ActivityState.Active, new Timer(), true, "Test5");

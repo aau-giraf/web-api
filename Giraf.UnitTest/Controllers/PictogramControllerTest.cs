@@ -62,7 +62,7 @@ namespace Giraf.UnitTest.Controllers
             }
             public Mock<IUserService> UserService { get; }
 
-            public Mock<IPictogramService> PictogramService { get; }
+            public Mock<IPictogramService> PictogramService { get; set; }
 
             public Mock<IImageService> ImageService { get;  }
             public Mock<IPictogramRepository> PictogramRepository { get; }
@@ -526,9 +526,14 @@ namespace Giraf.UnitTest.Controllers
         {
             //arrange
             var pictogramcontroller = new MockedPictogramController();
+            
+            // var pictogramCtrl = new PictogramController();
             var girafService = pictogramcontroller.UserService;
             var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
             var pictoRep = pictogramcontroller.PictogramRepository;
+            var pictoRepo = new Mock<IPictogramRepository>();
+            var pictogramService = new PictogramService(pictoRepo.Object, girafService.Object);
+            // pictogramcontroller.PictogramService = pictogramService;
 
             var usr = new GirafUser("Jan", "Jan", new Department(), GirafRoles.SuperUser);
 

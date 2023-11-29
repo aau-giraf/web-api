@@ -32,7 +32,8 @@ namespace Giraf.UnitTest.Repositories
                     Pictogram = new Pictogram()
                     {
                         Id = 1,
-                        Title = "pictogram1"
+                        Title = "pictogram1",
+                        ImageHash = "xddsds"
                     },
                     ActivityId = 1
                 };

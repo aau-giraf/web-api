@@ -288,7 +288,8 @@ namespace GirafAPI.Controllers
                 return NotFound(new ErrorResponse(ErrorCode.PictogramNotFound, "Pictogram not found"));
             }
 
-            if (!_pictogramService.CheckOwnership(pict, usr).Result)
+            var temp = _pictogramService.CheckOwnership(pict, usr).Result;
+            if (!temp)
             {
                 return StatusCode(StatusCodes.Status403Forbidden,
                    new ErrorResponse(ErrorCode.NotAuthorized, "User does not have permission"));
