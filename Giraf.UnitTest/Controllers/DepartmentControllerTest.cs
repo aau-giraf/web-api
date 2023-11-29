@@ -147,7 +147,7 @@ namespace Giraf.UnitTest.Controllers
             departmentRep.Setup(repo=>repo.GetDepartmentMembers((long)user.DepartmentKey))
                 .Returns(Task.FromResult<Department>(department));
             userServiceMock.Setup(service => service.FindMembers(It.IsAny<List<GirafUser>>(),
-                It.IsAny<RoleManager<GirafRole>>(), departmentController._giraf.Object)).Returns(displayNameDTOs);
+                It.IsAny<RoleManager<GirafRole>>())).Returns(displayNameDTOs);
 
             //acting 
             var response = departmentController.Get(1);
@@ -251,7 +251,7 @@ namespace Giraf.UnitTest.Controllers
             picRep.Setup(repo => repo.GetPictogramWithID(It.IsAny<long>())).Returns(Task.FromResult<Pictogram>(new Pictogram()));
             depRep.Setup(repo => repo.AddDepartmentResource(It.IsAny<DepartmentResource>())).Returns(Task.CompletedTask);
             userServiceMock.Setup(service => service.FindMembers(It.IsAny<List<GirafUser>>(),
-                It.IsAny<RoleManager<GirafRole>>(), departmentController._giraf.Object)).Returns(displayNameDTOS);
+                It.IsAny<RoleManager<GirafRole>>())).Returns(displayNameDTOS);
             //act
             var response = departmentController.Post(depDTO);
             var result = response.Result as CreatedAtRouteResult;

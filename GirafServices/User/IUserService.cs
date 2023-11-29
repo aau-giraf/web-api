@@ -30,7 +30,7 @@ namespace GirafServices.User
         /// <returns>The loaded user.</returns>
         Task<GirafUser> LoadBasicUserDataAsync(ClaimsPrincipal principal);
 
-        List<DisplayNameDTO> FindMembers(IEnumerable<GirafUser> users, RoleManager<GirafRole> roleManager, IUserService girafService);
+        List<DisplayNameDTO> FindMembers(IEnumerable<GirafUser> users, RoleManager<GirafRole> roleManager);
 
         /// <summary>
         /// Loads the user with resources.

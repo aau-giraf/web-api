@@ -53,12 +53,12 @@ namespace GirafServices.User
         /// Find belonging members
         /// </summary>
         /// <returns>List of matching users</returns>
-        public virtual List<DisplayNameDTO> FindMembers(IEnumerable<GirafUser> users, RoleManager<GirafRole> roleManager, IUserService girafService)
+        public virtual List<DisplayNameDTO> FindMembers(IEnumerable<GirafUser> users, RoleManager<GirafRole> roleManager)
         {
             return new List<DisplayNameDTO>(
                 users.Select(m => new DisplayNameDTO(
                         m.DisplayName,
-                        roleManager.findUserRole(girafService._userManager, m).Result,
+                        roleManager.findUserRole(_userManager, m).Result,
                         m.Id
                     )
                 ));

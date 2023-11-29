@@ -103,7 +103,7 @@ namespace GirafAPI.Controllers
                 return this.ResourceNotFound(nameof(Department));
             }
 
-            var members = _userService.FindMembers(department.Result.Members, _roleManager, _userService);
+            var members = _userService.FindMembers(department.Result.Members, _roleManager);
             return Ok(new SuccessResponse<DepartmentDTO>(new DepartmentDTO(department.Result, members)));
         }
 
@@ -249,7 +249,7 @@ namespace GirafAPI.Controllers
 
                 //Save the changes and return the entity
                 await _departmentRepository.Update(department);
-                var members = _userService.FindMembers(department.Members, _roleManager, _userService);
+                var members = _userService.FindMembers(department.Members, _roleManager);
                 return CreatedAtRoute("GetDepartment", new { id = department.Key }, new SuccessResponse<DepartmentDTO>(new DepartmentDTO(department, members)));
             }
             catch (Exception e)
