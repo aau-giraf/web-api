@@ -135,10 +135,8 @@ namespace Giraf.UnitTest.Controllers
             department.Members = girafUsers;
             var departmentController = new MockedDepartmentController();
 
-            var principal = new ClaimsPrincipal(new ClaimsIdentity(null, "user"));
             var userManager = new MockUserManagerDepartment();
             var departmentRep = departmentController._departmentRepository;
-            var userServiceMock = new Mock<IUserService>();
             userManager.MockLoginAsUser(user); 
             
             departmentController._giraf.Object._userManager = userManager;
@@ -146,7 +144,7 @@ namespace Giraf.UnitTest.Controllers
             //mock
             departmentRep.Setup(repo=>repo.GetDepartmentMembers((long)user.DepartmentKey))
                 .Returns(Task.FromResult<Department>(department));
-            userServiceMock.Setup(service => service.FindMembers(It.IsAny<List<GirafUser>>(),
+            departmentController._giraf.Setup(service => service.FindMembers(It.IsAny<List<GirafUser>>(),
                 It.IsAny<RoleManager<GirafRole>>())).Returns(displayNameDTOs);
 
             //acting 

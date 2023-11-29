@@ -49,6 +49,7 @@ namespace Giraf.UnitTest.Controllers
                 PictogramRepository = pictogramRepository;
                 ImageService = imageService;
                 PictogramService = pictogramService;
+                PictogramServiceReal = new PictogramService(PictogramRepository.Object, UserService.Object);
                 testPictogram = new Pictogram("testPictogram", AccessLevel.PUBLIC);
                 testUser = new GirafUser("bob", "Bob", new Department(), GirafRoles.Citizen);
                 guardianUser = new GirafUser("guard", "Guard", new Department(), GirafRoles.Guardian);
@@ -341,6 +342,7 @@ namespace Giraf.UnitTest.Controllers
             girafService.Setup(repo => repo.LoadBasicUserDataAsync(HttpContext.User)).Returns(Task.FromResult<GirafUser>(usr));
             pictoRep.Setup(repo => repo.GetPictogramsById(picto2.Id)).Returns(Task.FromResult<Pictogram>(picto2));
             pictoRep.Setup(repo => repo.UpdatePictogram(picto2));
+            // pictogramcontroller.PictogramService.Setup(x => x.CheckOwnership())
 
             //act 
             var response = pictogramcontroller.UpdatePictogramInfo(picto2.Id, pictoDTO);
