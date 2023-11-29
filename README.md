@@ -26,6 +26,8 @@ In the terminal write the command: `docker compose up -d`
 
 The Docker compose will setup the database and seed it with sample data before starting the web-api.
 
+**The database can be accessed from port 5100**
+
 You can confirm the web-api is running by going to the [swagger endpoint](http://localhost:5000/swagger).
 
 ## License
