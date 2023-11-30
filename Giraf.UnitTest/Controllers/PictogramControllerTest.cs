@@ -545,6 +545,7 @@ namespace Giraf.UnitTest.Controllers
             //mock 
             userService.Setup(repo => repo.LoadBasicUserDataAsync(HttpContext.User)).Returns(Task.FromResult<GirafUser>(usr));
             pictoRep.Setup(repo => repo.GetPictogramsById(picto.Id)).Returns(Task.FromResult<Pictogram>(picto));
+            pictoService.Setup(x => x.CheckOwnership(picto, usr)).Returns(Task.FromResult(true));
             pictoRep.Setup(repo => repo.RemoveRelations(picto)).Returns(Task.CompletedTask);
             pictoRep.Setup(repo => repo.RemovePictogram(picto)).Returns(Task.CompletedTask);
 
