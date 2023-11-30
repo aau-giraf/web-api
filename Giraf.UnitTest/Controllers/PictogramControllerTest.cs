@@ -325,6 +325,7 @@ namespace Giraf.UnitTest.Controllers
             //arrange
             var pictogramcontroller = new MockedPictogramController();
             var girafService = pictogramcontroller.UserService;
+            var pictoService = pictogramcontroller.PictogramService;
             var HttpContext = pictogramcontroller.ControllerContext.HttpContext;
             var pictoRep = pictogramcontroller.PictogramRepository;
 
@@ -340,6 +341,7 @@ namespace Giraf.UnitTest.Controllers
 
             // mock
             girafService.Setup(repo => repo.LoadBasicUserDataAsync(HttpContext.User)).Returns(Task.FromResult<GirafUser>(usr));
+            pictoService.Setup(x => x.CheckOwnership(picto2, usr)).Returns(Task.FromResult(true));
             pictoRep.Setup(repo => repo.GetPictogramsById(picto2.Id)).Returns(Task.FromResult<Pictogram>(picto2));
             pictoRep.Setup(repo => repo.UpdatePictogram(picto2));
             // pictogramcontroller.PictogramService.Setup(x => x.CheckOwnership()).Returns();
