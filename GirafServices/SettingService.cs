@@ -4,7 +4,7 @@ using GirafEntities.User;
 
 namespace GirafServices
 {
-    public class SettingService
+    public class SettingService : ISettingService
     {
         /// <summary>
         /// Updates all settings based on a DTO
@@ -34,7 +34,7 @@ namespace GirafServices
                 UpdateWeekDayColors(newSetting.WeekDayColors, user);
         }
 
-        private void UpdateWeekDayColors(List<WeekDayColorDTO> weekDayColors, GirafUser user)
+        public void UpdateWeekDayColors(List<WeekDayColorDTO> weekDayColors, GirafUser user)
         {
             if (user.Settings.WeekDayColors != null)
             {

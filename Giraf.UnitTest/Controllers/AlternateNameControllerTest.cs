@@ -1,47 +1,43 @@
 using System.Threading;
 using System.Threading.Tasks;
-using GirafEntities.User;
-using GirafRepositories.Interfaces;
 using GirafAPI.Controllers;
-using GirafAPI.Interfaces;
-using GirafAPI.Models;
-using GirafAPI.Models.DTOs;
-using GirafAPI.Models.Responses;
+using GirafEntities.Responses;
+using GirafEntities.User;
+using GirafEntities.WeekPlanner;
+using GirafEntities.WeekPlanner.DTOs;
+using GirafRepositories.Interfaces;
+using GirafServices.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Xunit;
 
-namespace Giraf.UnitTest
+namespace Giraf.UnitTest.Controllers
 {
     public class AlternateNameControllerTest
     {
         public class MockedAlternateNameController : AlternateNameController {
             public MockedAlternateNameController()
                 : this(
-                    new Mock<IGirafService>(),
-                    new Mock<ILoggerFactory>(),
+                    new Mock<IUserService>(),
                     new Mock<IPictogramRepository>(),
                     new Mock<IGirafUserRepository>(),
                     new Mock<IAlternateNameRepository>()
                 ) { }
 
             public MockedAlternateNameController(
-                Mock<IGirafService> giraf,
-                Mock<ILoggerFactory> loggerFactory,
+                Mock<IUserService> userService,
                 Mock<IPictogramRepository> pictogramRepository,
                 Mock<IGirafUserRepository> girafUserRepository,
                 Mock<IAlternateNameRepository> alternateNameRepository
             ) : base(
-                giraf.Object,
-                loggerFactory.Object,
+                userService.Object,
                 pictogramRepository.Object,
                 girafUserRepository.Object,
                 alternateNameRepository.Object
             ) {
-                Giraf = giraf;
-                LoggerFactory = loggerFactory;
+                UserService = userService;
                 PictogramRepository = pictogramRepository;
                 GirafUserRepository = girafUserRepository;
                 AlternateNameRepository = alternateNameRepository;
@@ -49,13 +45,12 @@ namespace Giraf.UnitTest
                 // The following are primary mocks whcih are generic.
                 //   These are added to ease the development of tests.
                 var affectedRows = 1;
-                Giraf.Setup(
-                    service => service._context.SaveChangesAsync(It.IsAny<CancellationToken>())
+                girafUserRepository.Setup(
+                    service => service.SaveChangesAsync()
                 ).Returns(Task.FromResult(affectedRows));
             }
 
-            public Mock<IGirafService> Giraf { get; }
-            public Mock<ILoggerFactory> LoggerFactory { get; }
+            public Mock<IUserService> UserService { get; }
             public Mock<IPictogramRepository> PictogramRepository { get; }
             public Mock<IGirafUserRepository> GirafUserRepository { get; }
             public Mock<IAlternateNameRepository> AlternateNameRepository { get; }
@@ -66,7 +61,7 @@ namespace Giraf.UnitTest
         public void Create_CorrectRequest_Status201() {
             // Arrange
             var controller = new MockedAlternateNameController();
-            var newAlternateName = new AlternateNameDTO() {
+            var newAlternateName = new AlternateNameDTO{
                 Citizen = "Danielsan",
                 Name = "Tommysan",
                 Pictogram = 420691337,
@@ -107,7 +102,7 @@ namespace Giraf.UnitTest
         [Fact]
         public void Create_CreateWithoutUser_Status400() {
             // Arrange
-            var controller = new MockedAlternateNameController();
+            var controller = new AlternateNameControllerTest.MockedAlternateNameController();
             var newAlternateName = new AlternateNameDTO() {
                 Citizen = "",
                 Name = "Tommysan",
@@ -148,7 +143,7 @@ namespace Giraf.UnitTest
         [Fact]
         public void Create_CreateWithoutPictogram_Status404() {
             // Arrange
-            var controller = new MockedAlternateNameController();
+            var controller = new AlternateNameControllerTest.MockedAlternateNameController();
             var newAlternateName = new AlternateNameDTO() {
                 Citizen = "Danielsan",
                 Name = "Tommysan",
@@ -187,7 +182,7 @@ namespace Giraf.UnitTest
         [Fact]
         public void  Create_CreateWithoutName_Status400() {
             // Arrange
-            var controller = new MockedAlternateNameController();
+            var controller = new AlternateNameControllerTest.MockedAlternateNameController();
             var newAlternateName = new AlternateNameDTO() {
                 Citizen = "Danielsan",
                 Name = null,
@@ -226,7 +221,7 @@ namespace Giraf.UnitTest
         [Fact]
         public void Create_CreateAlreadyExists_Status409(){
             // Arrange
-            var controller = new MockedAlternateNameController();
+            var controller = new AlternateNameControllerTest.MockedAlternateNameController();
             var newAlternateName = new AlternateNameDTO() {
                 Citizen = "Danielsan",
                 Name = "Tommysan",
@@ -262,7 +257,7 @@ namespace Giraf.UnitTest
         [Fact]
         public void Create_CreateWithoutDTO_Status400() {
             // Arrange
-            var controller = new MockedAlternateNameController();
+            var controller = new AlternateNameControllerTest.MockedAlternateNameController();
             AlternateNameDTO newAlternateName = null;
         
 
@@ -284,7 +279,7 @@ namespace Giraf.UnitTest
         [Fact]
         public void Get_WithUserPictogram_Status200() {
             // Arrange
-            var controller = new MockedAlternateNameController();
+            var controller = new AlternateNameControllerTest.MockedAlternateNameController();
             var pictogram = new Pictogram() {
                 Id = 42069
             };
@@ -322,7 +317,7 @@ namespace Giraf.UnitTest
         public void Get_WithNoUser_Status404()
         {
             // Arrange
-            var controller = new MockedAlternateNameController();
+            var controller = new AlternateNameControllerTest.MockedAlternateNameController();
             var pictogram = new Pictogram() {
                 Id = 42069
             };
@@ -355,7 +350,7 @@ namespace Giraf.UnitTest
         [Fact]
         public void Get_MissingPictogram_Status404() {
             // Arrange
-            var controller = new MockedAlternateNameController();
+            var controller = new AlternateNameControllerTest.MockedAlternateNameController();
             var alternateName = new AlternateNameDTO() {
                 Name = "hywmongous",
                 Citizen = "Brandhoej",
@@ -383,7 +378,7 @@ namespace Giraf.UnitTest
         [Fact]
         public void Get_MissingAlternateName_Status404() {
             // Arrange
-            var controller = new MockedAlternateNameController();
+            var controller = new AlternateNameControllerTest.MockedAlternateNameController();
             var alternateName = new AlternateNameDTO() {
                 Name = "hywmongous",
                 Citizen = "Brandhoej",
@@ -417,7 +412,7 @@ namespace Giraf.UnitTest
         [Fact]
         public void Edit_CorrectRequest_Status200() {
             // Arrange
-            var controller = new MockedAlternateNameController();
+            var controller = new AlternateNameControllerTest.MockedAlternateNameController();
             var newAlternateNameDTO = new AlternateNameDTO() {
                 Name = "hywmongous",
                 Citizen = "Brandhoej",
@@ -465,7 +460,7 @@ namespace Giraf.UnitTest
         [Fact]
         public void Edit_MissingNameProperty_Status400() {
             // Arrange
-            var controller = new MockedAlternateNameController();
+            var controller = new AlternateNameControllerTest.MockedAlternateNameController();
             var newAlternateNameDTO = new AlternateNameDTO() {
                 Citizen = "Brandhoej",
                 Pictogram = 420,
@@ -487,7 +482,7 @@ namespace Giraf.UnitTest
         [Fact]
         public void Edit_UserNotFound_Status404() {
             // Arrange
-            var controller = new MockedAlternateNameController();
+            var controller = new AlternateNameControllerTest.MockedAlternateNameController();
             var newAlternateNameDTO = new AlternateNameDTO() {
                 Name = "hywmongous",
                 Citizen = "Brandhoej",
@@ -515,7 +510,7 @@ namespace Giraf.UnitTest
         [Fact]
         public void Edit_PictogramNotFound_Status404() {
             // Arrange
-            var controller = new MockedAlternateNameController();
+            var controller = new AlternateNameControllerTest.MockedAlternateNameController();
             var newAlternateNameDTO = new AlternateNameDTO() {
                 Name = "hywmongous",
                 Citizen = "Brandhoej",
@@ -552,7 +547,7 @@ namespace Giraf.UnitTest
         [Fact]
         public void Edit_AlternateNameMismatch_Status404() {
             // Arrange
-            var controller = new MockedAlternateNameController();
+            var controller = new AlternateNameControllerTest.MockedAlternateNameController();
             var oldAlternateName = new AlternateName() {
                 Id = 80085,
             };
@@ -573,7 +568,7 @@ namespace Giraf.UnitTest
         [Fact]
         public void Edit_WithoutDTO_Status400() {
             // Arrange
-            var controller = new MockedAlternateNameController();
+            var controller = new AlternateNameControllerTest.MockedAlternateNameController();
             AlternateNameDTO newAlternateNameDTO = default;
             var oldAlternateName = new AlternateName() {
                 Id = 80085,
@@ -591,7 +586,7 @@ namespace Giraf.UnitTest
         [Fact]
         public void Edit_AlternateNameNotFound_Status404() {
             // Arrange
-            var controller = new MockedAlternateNameController();
+            var controller = new AlternateNameControllerTest.MockedAlternateNameController();
             var newAlternateNameDTO = new AlternateNameDTO() {
                 Name = "hywmongous",
                 Citizen = "Brandhoej",

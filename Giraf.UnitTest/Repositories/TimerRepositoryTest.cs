@@ -2,10 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using GirafAPI.Data;
 using Xunit;
-using GirafAPI.Repositories;
-using GirafAPI.Models;
 using System.Threading;
 using System.Linq;
 using Giraf.UnitTest.FakeRepositorysContext;

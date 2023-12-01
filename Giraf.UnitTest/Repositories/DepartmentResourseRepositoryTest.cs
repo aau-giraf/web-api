@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using GirafEntities.User;
+using GirafEntities.WeekPlanner;
 using GirafRepositories.Persistence;
-using GirafAPI.Data;
-using GirafAPI.Models;
-using GirafAPI.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 

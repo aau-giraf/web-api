@@ -1,7 +1,5 @@
 using System.Collections.Generic;
-using System.ComponentModel.Design.Serialization;
 using System.Linq;
-using GirafAPI.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -10,13 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Text;
-using GirafAPI.Data;
 using System;
 using Giraf.UnitTest.Mocks;
 using GirafEntities.User;
 using GirafEntities.WeekPlanner;
 using GirafRepositories.Persistence;
-using GirafAPI.Interfaces;
+using GirafServices.User;
 
 namespace Giraf.UnitTest
 {
@@ -648,7 +645,7 @@ namespace Giraf.UnitTest
             public readonly Mock<GirafDbContext> MockDbContext;
             public Mock<HttpContext> MockHttpContext { get; set; }
             public Mock<ILoggerFactory> MockLoggerFactory { get; private set; }
-            public Mock<IGirafService> MockGirafService { get; private set; }
+            public Mock<IUserService> MockUserService { get; private set; }
 
             public readonly Mock<MockRoleManager> MockRoleManager;
 
@@ -667,7 +664,7 @@ namespace Giraf.UnitTest
                 MockRoleManager.Setup(m => m.Roles).Returns(MockRoles.AsQueryable());
                 ;
 
-                MockGirafService = new Mock<IGirafService>();
+                MockUserService = new Mock<IUserService>();
             }
 
             private Mock<GirafDbContext> CreateMockDbContext()

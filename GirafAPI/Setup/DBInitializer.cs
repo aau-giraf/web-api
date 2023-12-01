@@ -33,11 +33,12 @@ namespace GirafAPI.Setup
         private readonly IWeekBaseService _weekBaseService;
         #region Methods
 
-        public DBInitializer(IUserService userService, IDatabaseRepository databaseRepository, IGirafUserRepository userRepository)
+        public DBInitializer(IUserService userService, IDatabaseRepository databaseRepository, IGirafUserRepository userRepository, IWeekBaseService weekBaseService)
         {
             _userService = userService;
             _databaseRepository = databaseRepository;
             _userRepository = userRepository;
+            _weekBaseService = weekBaseService;
         }
 
         /// <summary>
@@ -47,10 +48,11 @@ namespace GirafAPI.Setup
         /// <param name="userManager">The API for managing GirafUsers.</param>
         /// <param name="pictogramCount">The number of sample pictograms to generate.</param>
         /// <param name="environmentName">The environment set for the current run</param>
-        public async Task Initialize(GirafDbContext context, UserManager<GirafUser> userManager, int pictogramCount, string environmentName)
+        public async Task Initialize(UserManager<GirafUser> userManager, int pictogramCount, string environmentName)
         {
             // Initialize static fields
             _userManager = userManager;
+            ArgumentNullException.ThrowIfNull(_userManager);
 
             // Verify that the database has already been created, before adding data to it
             _databaseRepository.EnsureCreated();
@@ -170,32 +172,6 @@ namespace GirafAPI.Setup
                 canvas.DrawText(text, x, y, paint);
 
                 return SKImage.FromBitmap(bitmap);
-            }
-        }
-        #endregion
-
-        #region Ownership sample methods
-        private void AddPictogramsToUser(GirafUser user, params Pictogram[] pictograms)
-        {
-            System.Console.WriteLine("Adding pictograms to " + user.UserName);
-            foreach (var pict in pictograms)
-            {
-                if (pict.AccessLevel != AccessLevel.PRIVATE)
-                    throw new InvalidOperationException($"You may only add private pictograms to users." +
-                        " Pictogram id: {pict.Id}, AccessLevel: {pict.AccessLevel}.");
-                new UserResource(user, pict);
-            }
-        }
-
-        private void AddPictogramToDepartment(Department department, params Pictogram[] pictograms)
-        {
-            Console.WriteLine("Adding pictograms to " + department.Name);
-            foreach (var pict in pictograms)
-            {
-                if (pict.AccessLevel != AccessLevel.PROTECTED)
-                    throw new InvalidOperationException($"You may only add protected pictograms to department." +
-                        " Pictogram id: {pict.Id}, AccessLevel: {pict.AccessLevel}.");
-                new DepartmentResource(department, pict);
             }
         }
         #endregion

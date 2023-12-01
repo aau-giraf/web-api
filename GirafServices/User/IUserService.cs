@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
+using GirafEntities.Responses;
+using GirafEntities.Settings.DTOs;
 using GirafEntities.User;
 using GirafEntities.WeekPlanner;
 using GirafEntities.User.DTOs;
@@ -12,15 +14,6 @@ namespace GirafServices.User
     /// </summary>
     public interface IUserService
     {
-        /// <summary>
-        /// A reference to a logger used to log information from controllers.
-        /// </summary>
-        ILogger _logger
-        {
-            get;
-            set;
-        }
-        
         /// <summary>
         /// A reference to the user manager, used to fetch users.
         /// </summary>
@@ -37,7 +30,7 @@ namespace GirafServices.User
         /// <returns>The loaded user.</returns>
         Task<GirafUser> LoadBasicUserDataAsync(ClaimsPrincipal principal);
 
-        List<DisplayNameDTO> FindMembers(IEnumerable<GirafUser> users, RoleManager<GirafRole> roleManager, IUserService girafService);
+        List<DisplayNameDTO> FindMembers(IEnumerable<GirafUser> users, RoleManager<GirafRole> roleManager);
 
         /// <summary>
         /// Loads the user with resources.
@@ -86,7 +79,11 @@ namespace GirafServices.User
         void AddCitizen(GirafUser citizen, GirafUser guardian);
         void AddGuardian(GirafUser guardian, GirafUser user);
 
+        string GirafRoleFromEnumToString(GirafRoles role);
 
+        ErrorCode? ValidateOptions(SettingDTO options);
+
+        bool IsWeekDayColorsCorrectHexFormat(SettingDTO setting);
 
     }
 }

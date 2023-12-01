@@ -1,15 +1,19 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Giraf.UnitTest.RepositoryMocks;
+using GirafEntities.Responses;
+using GirafEntities.Settings.DTOs;
 using GirafEntities.User;
-using GirafAPI.Models;
-using GirafAPI.Models.DTOs;
-using GirafAPI.Models.Responses;
+using GirafEntities.User.DTOs;
+using GirafEntities.WeekPlanner.DTOs;
+using GirafRepositories.Interfaces;
+using GirafServices.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 
-namespace Giraf.UnitTest
+namespace Giraf.UnitTest.Controllers
 {
     public class UserControllerTest
     {
@@ -374,9 +378,21 @@ namespace Giraf.UnitTest
         public async Task AddGuardianCitizenRelationship_200OK()
         {
             var controller = new MockedUserController();
+            var userManagerMock = new MockUserManager();
+            var userRepository = new Mock<IGirafUserRepository>();
+            var userResource = new Mock<IUserResourseRepository>();
+            var departmentResourceRepo = new Mock<IDepartmentResourseRepository>();
+            var roleRepository = new Mock<IGirafRoleRepository>();
+            var userService = new UserService(
+                userManagerMock.Object, 
+                userRepository.Object,
+                userResource.Object,
+                departmentResourceRepo.Object,
+                roleRepository.Object
+                );
             var gUser = controller.guardianUser;
             var cUser = controller.testUser;
-            gUser.AddCitizen(cUser);
+            userService.AddCitizen(cUser, gUser);
             
 
             controller.GirafUserRepository.Setup(x => x.GetCitizenRelationship(cUser.Id)).Returns(cUser);

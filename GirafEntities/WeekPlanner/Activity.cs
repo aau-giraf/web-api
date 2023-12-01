@@ -61,7 +61,7 @@ namespace GirafEntities.WeekPlanner
         /// <summary>
         /// The name of the choiceboard
         /// </summary>
-        public string ChoiceBoardName { get; set; }
+        public string? ChoiceBoardName { get; set; }
         
         public string Title { get; set; }
 
@@ -78,31 +78,34 @@ namespace GirafEntities.WeekPlanner
         /// <param name="choiceBoardName"></param>
         public Activity(Weekday weekday, List<Pictogram> pictograms, int order, ActivityState state, Timer timer, bool choiceBoard, string title, string choiceBoardName = "ChoiceBoard")
         {
-            this.Other = weekday;
-            this.Order = order;
-            this.State = state;
-            this.Timer = timer;
-            this.IsChoiceBoard = choiceBoard;
-            this.ChoiceBoardName = choiceBoardName;
-            this.Title = title ?? pictograms.First().Title;
-            this.Pictograms = new List<PictogramRelation>();
+            Other = weekday;
+            Order = order;
+            State = state;
+            Timer = timer;
+            IsChoiceBoard = choiceBoard;
+            ChoiceBoardName = choiceBoardName;
+            Title = title ?? pictograms.First().Title;
+            Pictograms = new List<PictogramRelation>();
             if (pictograms != null)
             {
-                AddPictograms(pictograms);
+                foreach (var pictogram in pictograms)
+                {
+                    Pictograms.Add(new PictogramRelation(this, pictogram));
+                }
             }
             
         }
 
-        private void AddPictogram(Pictogram pictogram) {
-            this.Pictograms.Add(new PictogramRelation(this, pictogram));
-        }
-
-        private void AddPictograms(List<Pictogram> pictograms) {
-            foreach (var pictogram in pictograms) 
-            {
-                AddPictogram(pictogram);
-            }
-        }
+        // private void AddPictogram(Pictogram pictogram) {
+        //     this.Pictograms.Add(new PictogramRelation(this, pictogram));
+        // }
+        //
+        // private void AddPictograms(List<Pictogram> pictograms) {
+        //     foreach (var pictogram in pictograms) 
+        //     {
+        //         AddPictogram(pictogram);
+        //     }
+        // }
 
         /// <summary>
         /// Newtonsoft (JSON Generation) needs empty constructor. Don't delete.

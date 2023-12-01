@@ -40,7 +40,7 @@ namespace GirafEntities.User.DTOs
         /// <summary>
         /// Icon for user
         /// </summary>
-        public virtual byte[] UserIcon { get; set; }
+        public virtual byte[]? UserIcon { get; set; }
 
         /// <summary>
         /// The key of the user's department.

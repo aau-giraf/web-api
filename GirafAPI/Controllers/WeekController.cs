@@ -23,9 +23,6 @@ namespace GirafAPI.Controllers
     [Route("v1/[controller]")]
     public class WeekController : Controller
     {
-        private readonly IUserService _giraf;
-
-
         private readonly IWeekRepository _weekRepository;
         private readonly ITimerRepository _timerRepository;
         private readonly IPictogramRepository _pictogramRepository;
@@ -36,19 +33,17 @@ namespace GirafAPI.Controllers
         /// Constructor for WeekController
         /// </summary>
         /// <param name="giraf">Service Injection</param>
-        /// <param name="loggerFactory">Service Injection</param>
         /// <param name="weekRepository">Service Injection</param>
         /// <param name="timerRepository">Service Injection</param>
         /// <param name="pictogramRepository">Service Injection</param>
         /// <param name="weekdayRepository">Service Injection</param>
-        public WeekController(IUserService giraf, ILoggerFactory loggerFactory, IWeekRepository weekRepository, ITimerRepository timerRepository, IPictogramRepository pictogramRepository, IWeekdayRepository weekdayRepository)
+        public WeekController(IWeekRepository weekRepository, ITimerRepository timerRepository, IPictogramRepository pictogramRepository, IWeekdayRepository weekdayRepository, IWeekService weekService)
         {
-            _giraf = giraf;
-            _giraf._logger = loggerFactory.CreateLogger("Week");
             _weekRepository = weekRepository;
             _timerRepository = timerRepository;
             _pictogramRepository = pictogramRepository;
             _weekdayRepository = weekdayRepository;
+            _weekService = weekService;
         }
 
         /// <summary>
@@ -157,28 +152,6 @@ namespace GirafAPI.Controllers
             
             //Create default thumbnail
             var emptyThumbnail = await _pictogramRepository.GetPictogramWithName("default");
-            // IDE SAYS THIS IS ALWAYS FALSE
-            // if (emptyThumbnail == null) 
-            // {
-            //     //Create default thumbnail
-            //     await _pictogramRepository.AddPictogramWith_NO_ImageHash("default", AccessLevel.PUBLIC);
-            //     
-            //     emptyThumbnail = await _pictogramRepository.GetPictogramWithName("default");
-            //
-            //     return Ok(new SuccessResponse<WeekDTO>(new WeekDTO()
-            //     {
-            //         WeekYear = weekYear,
-            //         Name = $"{weekYear} - {weekNumber}",
-            //         WeekNumber = weekNumber,
-            //         Thumbnail = new Models.DTOs.WeekPictogramDTO(emptyThumbnail),
-            //         Days = new int[] { 1, 2, 3, 4, 5, 6, 7 }
-            //             .Select(d => new WeekdayDTO()
-            //             {
-            //                 Activities = new List<ActivityDTO>(),
-            //                 Day = (Days)d
-            //             }).ToArray()
-            //     }));
-            // }
 
             return Ok(new SuccessResponse<WeekDTO>(new WeekDTO()
             {
@@ -338,7 +311,8 @@ namespace GirafAPI.Controllers
             Weekday oldDay = week.Weekdays.Single(d => d.Day == weekdayDto.Day);
 
             oldDay.Activities.Clear();
-            if (!await _weekService.AddPictogramsToWeekday(oldDay, weekdayDto))
+            var temp = await _weekService.AddPictogramsToWeekday(oldDay, weekdayDto);
+            if (!temp)
             {
                 return NotFound(new ErrorResponse(ErrorCode.ResourceNotFound, "Missing pictogram"));
             }

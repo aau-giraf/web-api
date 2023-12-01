@@ -13,11 +13,10 @@ namespace GirafAPI
         /// A list of arguments that are allowed by the application.
         /// </summary>
         private const string _options =
-                          "\t--port=integer\t\t| Specify which port to host the server on, defaults to 5000.\n" +
-                          "\t--list\t\t\t| List options\n" +
-                          "\t--sample-data\t\t| Tells the rest-api to generate some sample data. This only works on an empty database.\n" +
-                          "\t--pictograms=integer\t| Specify how many sample pictograms to generate. Default is 200. Only works when --sample-data is set.\n" +
-                          "\t--logfile=string\t| Toggles logging to a file, the string specifies the path to the file relative to the working directory.";
+            "\t--port=integer\t\t| Specify which port to host the server on, defaults to 5000.\n" +
+            "\t--list\t\t\t| List options\n" +
+            "\t--sample-data\t\t| Tells the rest-api to generate some sample data. This only works on an empty database.\n" +
+            "\t--pictograms=integer\t| Specify how many sample pictograms to generate. Default is 200. Only works when --sample-data is set.\n";
         /// <summary>
         /// A short help message telling the user how to see all program arguments.
         /// </summary>
@@ -48,7 +47,6 @@ namespace GirafAPI
                 ProgramOptions.GenerateSampleData = true;
             };
             programArgumentDictionary["--pictograms"] = programArgumentPictograms;
-            programArgumentDictionary["--logfile"] = programArgumentLogfile;
         }
 
         /// <summary>
@@ -126,20 +124,6 @@ namespace GirafAPI
                 throw new ArgumentException("\tERROR: Invalid pictograms parameter was specified, expected an integer, but found "
                     + argument[0]);
             }
-        }
-        
-        /// <summary>
-        /// Specifies that the server should utilize file-logging to the given file.
-        /// </summary>
-        /// <param name="filename">The name of the file to log to. All files will be placed in wwwroot/Logs.</param>
-        private void programArgumentLogfile(params string[] filename)
-        {
-            if (String.IsNullOrWhiteSpace(filename[0]))
-                throw new ArgumentException("\tERROR: Invalid parameter specified for --logfile, expected a filename, but found "
-                    + filename);
-            Console.WriteLine("\tEnabling file-logging on the path " + Path.Combine(ProgramOptions.LogDirectory, filename[0]).ToString());
-            ProgramOptions.LogToFile = true;
-            ProgramOptions.LogFilepath = filename[0];
         }
     }
 }

@@ -31,7 +31,7 @@ namespace GirafEntities.WeekPlanner.DTOs
         /// <summary>
         /// Hash of DTO
         /// </summary>
-        public string ImageHash { get; set; }
+        public string? ImageHash { get; set; }
 
         /// <summary>
         /// Generated image URL
