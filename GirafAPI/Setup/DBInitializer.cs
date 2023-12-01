@@ -176,32 +176,6 @@ namespace GirafAPI.Setup
         }
         #endregion
 
-        #region Ownership sample methods
-        private void AddPictogramsToUser(GirafUser user, params Pictogram[] pictograms)
-        {
-            System.Console.WriteLine("Adding pictograms to " + user.UserName);
-            foreach (var pict in pictograms)
-            {
-                if (pict.AccessLevel != AccessLevel.PRIVATE)
-                    throw new InvalidOperationException($"You may only add private pictograms to users." +
-                        " Pictogram id: {pict.Id}, AccessLevel: {pict.AccessLevel}.");
-                new UserResource(user, pict);
-            }
-        }
-
-        private void AddPictogramToDepartment(Department department, params Pictogram[] pictograms)
-        {
-            Console.WriteLine("Adding pictograms to " + department.Name);
-            foreach (var pict in pictograms)
-            {
-                if (pict.AccessLevel != AccessLevel.PROTECTED)
-                    throw new InvalidOperationException($"You may only add protected pictograms to department." +
-                        " Pictogram id: {pict.Id}, AccessLevel: {pict.AccessLevel}.");
-                new DepartmentResource(department, pict);
-            }
-        }
-        #endregion
-
         #region Adding sample data
 
         private async Task AddSampleDepartments(List<SampleDepartment> sampleDeps)

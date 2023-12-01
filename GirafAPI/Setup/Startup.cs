@@ -47,7 +47,6 @@ namespace GirafAPI.Setup
             else env.EnvironmentName = "Development";
 
             var builder = new ConfigurationBuilder().SetBasePath(env.ContentRootPath);
-            // delete all default configuration providers
             if (env.IsDevelopment())
                 builder.AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true);
             else if (env.IsStaging())
@@ -148,9 +147,6 @@ namespace GirafAPI.Setup
                     Title = "The Giraf REST API", 
                     Version = "v1" 
                 });
-                // var basePath = AppContext.BaseDirectory;
-                // var xmlPath = Path.Combine(basePath, "GirafAPI.xml");
-                // c.IncludeXmlComments(xmlPath);
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
@@ -269,7 +265,6 @@ namespace GirafAPI.Setup
             });
                 
             
-            // ############################################################
             // Create roles if they do not exist
             roleManager.EnsureRoleSetup().Wait();
             
@@ -284,8 +279,6 @@ namespace GirafAPI.Setup
                 
                 dbinitializer.Initialize(userManager, ProgramOptions.Pictograms, env.EnvironmentName).Wait();
             }
-            // ############################################################
-            
             
             app.Run((context2) =>
             {

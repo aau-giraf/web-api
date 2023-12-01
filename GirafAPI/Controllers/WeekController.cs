@@ -152,28 +152,6 @@ namespace GirafAPI.Controllers
             
             //Create default thumbnail
             var emptyThumbnail = await _pictogramRepository.GetPictogramWithName("default");
-            // IDE SAYS THIS IS ALWAYS FALSE
-            // if (emptyThumbnail == null) 
-            // {
-            //     //Create default thumbnail
-            //     await _pictogramRepository.AddPictogramWith_NO_ImageHash("default", AccessLevel.PUBLIC);
-            //     
-            //     emptyThumbnail = await _pictogramRepository.GetPictogramWithName("default");
-            //
-            //     return Ok(new SuccessResponse<WeekDTO>(new WeekDTO()
-            //     {
-            //         WeekYear = weekYear,
-            //         Name = $"{weekYear} - {weekNumber}",
-            //         WeekNumber = weekNumber,
-            //         Thumbnail = new Models.DTOs.WeekPictogramDTO(emptyThumbnail),
-            //         Days = new int[] { 1, 2, 3, 4, 5, 6, 7 }
-            //             .Select(d => new WeekdayDTO()
-            //             {
-            //                 Activities = new List<ActivityDTO>(),
-            //                 Day = (Days)d
-            //             }).ToArray()
-            //     }));
-            // }
 
             return Ok(new SuccessResponse<WeekDTO>(new WeekDTO()
             {

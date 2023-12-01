@@ -604,55 +604,5 @@ namespace GirafAPI.Controllers
 
         #endregion
 
-        // /// <summary>
-        // /// Check that enum values for settings is defined
-        // /// </summary>
-        // /// <returns>ErrorCode if any settings is invalid else null</returns>
-        // /// <param name="options">ref to <see cref="SettingDTO"/></param>
-        // private ErrorCode? ValidateOptions(SettingDTO options)
-        // {
-        //     if (!(Enum.IsDefined(typeof(Orientation), options.Orientation)) ||
-        //         !(Enum.IsDefined(typeof(CompleteMark), options.CompleteMark)) ||
-        //         !(Enum.IsDefined(typeof(CancelMark), options.CancelMark)) ||
-        //         !(Enum.IsDefined(typeof(DefaultTimer), options.DefaultTimer)) ||
-        //         !(Enum.IsDefined(typeof(Theme), options.Theme)))
-        //     {
-        //         return ErrorCode.InvalidProperties;
-        //     }
-        //     if (options.NrOfDaysToDisplayPortrait < 1 || options.NrOfDaysToDisplayPortrait > 7)
-        //     {
-        //         return ErrorCode.InvalidProperties;
-        //     }
-        //     if (options.NrOfDaysToDisplayLandscape < 1 || options.NrOfDaysToDisplayLandscape > 7)
-        //     {
-        //         return ErrorCode.InvalidProperties;
-        //     }
-        //     if (options.ActivitiesCount.HasValue && options.ActivitiesCount.Value < 1)
-        //     {
-        //         return ErrorCode.InvalidProperties;
-        //     }
-        //
-        //     if (options.TimerSeconds.HasValue && options.TimerSeconds.Value < 1)
-        //     {
-        //         return ErrorCode.InvalidProperties;
-        //     }
-        //
-        //     return null;
-        // }
-
-        // /// <summary>
-        // /// // Takes a list of WeekDayColorDTOs and check if all hex given is in correct format
-        // /// </summary>
-        // private bool IsWeekDayColorsCorrectHexFormat(SettingDTO setting)
-        // {
-        //     var regex = new Regex(@"#[0-9a-fA-F]{6}");
-        //     foreach (var weekDayColor in setting.WeekDayColors)
-        //     {
-        //         Match match = regex.Match(weekDayColor.HexColor);
-        //         if (!match.Success)
-        //             return false;
-        //     }
-        //     return true;
-        // }
     }
 }
