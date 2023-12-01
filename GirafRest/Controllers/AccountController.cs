@@ -121,10 +121,9 @@ namespace GirafRest.Controllers
         ///  Error
         /// </returns>
         [HttpPost("register")]
-        [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> Register([FromBody] RegisterDTO model)
@@ -194,11 +193,10 @@ namespace GirafRest.Controllers
         /// Empty Response on success. Else: Missingproperties, PasswordNotUpdated or UserNotFound
         /// </returns>
         [HttpPut("password/{userId}")]
-        [Authorize(Roles = GirafRole.SuperUser + "," + GirafRole.Department + "," + GirafRole.Guardian)]
+        [AllowAnonymous]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> ChangePasswordByOldPassword(string userId, [FromBody] ChangePasswordDTO model)
