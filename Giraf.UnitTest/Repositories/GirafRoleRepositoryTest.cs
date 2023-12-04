@@ -5,11 +5,6 @@ using System.Linq;
 using GirafEntities.User;
 using GirafRepositories.Persistence;
 using GirafRepositories.User;
-using GirafAPI.Data;
-using GirafAPI.Models;
-using GirafAPI.Models.DTOs;
-using GirafAPI.Repositories;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Giraf.UnitTest.Repositories

@@ -3,8 +3,6 @@ using GirafEntities.Authentication;
 using GirafEntities.User;
 using GirafRepositories;
 using GirafRepositories.Persistence;
-using GirafRepositories.User;
-using GirafRepositories.WeekPlanner;
 using GirafRepositories.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
@@ -17,7 +15,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Serilog;
 using Swashbuckle.AspNetCore.SwaggerUI;
 using System;
 using System.Collections.Generic;
@@ -27,6 +24,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GirafServices;
 using GirafServices.User;
+using GirafServices.WeekPlanner;
 
 namespace GirafAPI.Setup
 {
@@ -49,7 +47,6 @@ namespace GirafAPI.Setup
             else env.EnvironmentName = "Development";
 
             var builder = new ConfigurationBuilder().SetBasePath(env.ContentRootPath);
-            // delete all default configuration providers
             if (env.IsDevelopment())
                 builder.AddJsonFile("appsettings.Development.json", optional: false, reloadOnChange: true);
             else if (env.IsStaging())
@@ -121,18 +118,16 @@ namespace GirafAPI.Setup
             services.AddSingleton<IRateLimitConfiguration, RateLimitConfiguration>();
             #endregion
             
-            // potentielt smides i add repositories
             services.Configure<JwtConfig>(Configuration.GetSection("Jwt"));
 
             //Add the database context to the server using extension-methods
-            // SKAL FJERNES
             configureIdentity<GirafDbContext>(services);
             
             // Registering services and repositories from the individual projects
             // If new services or repositories needs to be created and registered
             // register them in the individual extension methods in ServiceExtension/RepositoryExtension.
-            services.AddServices();
             services.AddRepositories(Configuration); 
+            services.AddServices();
             
             services.AddMvc(options =>
             {
@@ -156,9 +151,6 @@ namespace GirafAPI.Setup
                     Title = "The Giraf REST API", 
                     Version = "v1" 
                 });
-                var basePath = AppContext.BaseDirectory;
-                var xmlPath = Path.Combine(basePath, "GirafAPI.xml");
-                c.IncludeXmlComments(xmlPath);
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
@@ -196,7 +188,13 @@ namespace GirafAPI.Setup
             //Add Identity for user management.
             services.AddIdentity<GirafUser, GirafRole>(options =>
             {
-                options.RemovePasswordRequirements();
+                // Removes the default password requirements from ASP.NET and set them to a bare minimum.
+                //Set password requirements to an absolute bare minimum.
+                options.Password.RequireDigit = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequiredLength = 1;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
             })
                 .AddEntityFrameworkStores<T>()
                 .AddDefaultTokenProviders();
@@ -236,9 +234,6 @@ namespace GirafAPI.Setup
             IHostApplicationLifetime appLifetime)
         {
             app.UseIpRateLimiting();
-
-            //Configure logging for the application
-            appLifetime.ApplicationStopped.Register(Log.CloseAndFlush);
 
             app.UseStatusCodePagesWithReExecute("/v1/Error", "?statusCode={0}");
             // Enable Cors, see configuration in ConfigureServices
@@ -293,12 +288,11 @@ namespace GirafAPI.Setup
                 var userService = app.ApplicationServices.GetService<IUserService>();
                 var dbRepo = app.ApplicationServices.GetService<IDatabaseRepository>();
                 var userRepo = app.ApplicationServices.GetService<IGirafUserRepository>();
-                var dbinitializer = new DBInitializer(userService, dbRepo, userRepo);
+                var weebbaseService = app.ApplicationServices.GetService<IWeekBaseService>();
+                var dbinitializer = new DBInitializer(userService, dbRepo, userRepo, weebbaseService);
                 
-                dbinitializer.Initialize(context, userManager, ProgramOptions.Pictograms, env.EnvironmentName).Wait();
+                dbinitializer.Initialize(userManager, ProgramOptions.Pictograms, env.EnvironmentName).Wait();
             }
-            // ############################################################
-            
             
             app.Run((context2) =>
             {

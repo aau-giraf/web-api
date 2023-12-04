@@ -15,28 +15,39 @@ namespace GirafRepositories
         public static IServiceCollection AddRepositories(this IServiceCollection services, IConfiguration configuration)
         {
             // Adds the mysql database configuration and register it on the service collection. 
+            Console.WriteLine(configuration.GetConnectionString("DefaultConnection"));
             services.AddMySql(configuration);
-            
             // Add scoped repositories. Every single request gets it's own scoped repositories.
-            services.AddScoped<IAlternateNameRepository,AlternateNameRepository>();
+            
+            // Persistence
+            services.AddScoped<IDatabaseRepository, DatabaseRepository>();
+            
+            // Settings
+            services.AddScoped<ISettingRepository,SettingRepository>();
+            
+            // User
             services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+            services.AddScoped<IDepartmentResourseRepository,DepartmentResourseRepository>();
             services.AddScoped<IGirafRoleRepository, GirafRoleRepository>();
             services.AddScoped<IGirafUserRepository, GirafUserRepository>();
+            services.AddScoped<IGuardianRelationRepository,GuardianRelationRepository>();
+            services.AddScoped<IUserResourseRepository, UserResourseRepository>();
+            
+            // Weekplanner
+            services.AddScoped<IActivityRepository,ActivityRepository>();
+            services.AddScoped<IAlternateNameRepository,AlternateNameRepository>();
+            services.AddScoped<IImageRepository, ImageRepository>();
+            services.AddScoped<IPictogramRelationRepository,PictogramRelationRepository>();
             services.AddScoped<IPictogramRepository,PictogramRepository>();
-            services.AddScoped<ISettingRepository,SettingRepository>();
             services.AddScoped<ITimerRepository,TimerRepository>();
             services.AddScoped<IWeekBaseRepository,WeekBaseRepository>();
             services.AddScoped<IWeekDayColorRepository, WeekDayColorRepository>();
+            services.AddScoped<IWeekdayRepository, WeekdayRepository>();
             services.AddScoped<IWeekRepository, WeekRepository>();
             services.AddScoped<IWeekTemplateRepository, WeekTemplateRepository>();
-            services.AddScoped<IActivityRepository,ActivityRepository>();
-            services.AddScoped<IDepartmentResourseRepository,DepartmentResourseRepository>();
-            services.AddScoped<IGuardianRelationRepository,GuardianRelationRepository>();
-            services.AddScoped<IPictogramRelationRepository,PictogramRelationRepository>();
-            services.AddScoped<IUserResourseRepository, UserResourseRepository>();
-            services.AddScoped<IImageRepository, ImageRepository>();
-            services.AddScoped<IWeekdayRepository, WeekdayRepository>();
-            services.AddTransient<IActivityRepository, ActivityRepository>();
+            
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+            
             return services;
         }
         
@@ -48,7 +59,13 @@ namespace GirafRepositories
         private static void AddMySql(this IServiceCollection services, IConfiguration Configuration)
         {
             //Setup the connection to the sql server
-            services.AddDbContext<GirafDbContext>(options => options.UseMySql(Configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(new Version())));
+            services.AddDbContext<GirafDbContext>(options => options.UseMySql(
+                                            Configuration.GetConnectionString("DefaultConnection"), 
+                                            new MySqlServerVersion(new Version()),
+                                            mysqlOptions => mysqlOptions.EnableRetryOnFailure(
+                                                            maxRetryCount: 10, 
+                                                            maxRetryDelay: TimeSpan.FromSeconds(30), 
+                                                            errorNumbersToAdd: null)));
         }
         
         /// <summary>

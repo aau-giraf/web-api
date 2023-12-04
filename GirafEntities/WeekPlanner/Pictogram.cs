@@ -56,7 +56,7 @@ namespace GirafEntities.WeekPlanner
         /// Hash of the image
         /// </summary>
         [Column("ImageHash")]
-        public string ImageHash { get; set; }
+        public string? ImageHash { get; set; }
         
         /// <summary>
         /// A list of alternate names of the pictogram
@@ -66,7 +66,7 @@ namespace GirafEntities.WeekPlanner
         /// <summary>
         /// Currently not used, but old applications needs this
         /// </summary>
-        public byte[] Sound { get; set; }
+        public byte[]? Sound { get; set; }
 
         /// <summary>
         /// Empty constructor is required by Newtonsoft.

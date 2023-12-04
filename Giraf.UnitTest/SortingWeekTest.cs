@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using GirafAPI;
+﻿using System.Collections.Generic;
+using GirafEntities.WeekPlanner.DTOs;
 using Xunit;
 namespace Giraf.UnitTest
 {

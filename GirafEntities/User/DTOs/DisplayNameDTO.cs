@@ -26,7 +26,7 @@ namespace GirafEntities.User.DTOs
         /// <summary>
         /// The users profile picture.
         /// </summary>
-        public virtual byte[] UserIcon { get; set; }
+        public virtual byte[]? UserIcon { get; set; }
 
         /// <summary>
         /// Constructor

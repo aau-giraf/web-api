@@ -4,8 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using GirafRepositories.Persistence;
 using GirafRepositories.WeekPlanner;
-using GirafAPI.Data;
-using GirafAPI.Repositories;
+using GirafServices.WeekPlanner;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
@@ -63,10 +62,11 @@ namespace Giraf.UnitTest.Repositories
                 {
                     //Arrange
                     var repository = new ImageRepository(context);
+                    var imageService = new ImageService();
                     byte[] image = Encoding.UTF8.GetBytes("whatever");
 
                     //Act
-                    var result = await repository.ReadRequestImage(test_Stream);
+                    var result = await imageService.ReadRequestImage(test_Stream);
 
                     //Assert
                     Assert.Equal(image, result);

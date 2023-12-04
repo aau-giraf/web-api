@@ -1,32 +1,29 @@
-﻿using GirafAPI.Controllers;
-using GirafAPI.Models.DTOs.AccountDTOs;
-using Microsoft.AspNetCore.Mvc;
-using Moq;
-using Xunit;
-using GirafAPI.Services;
-using GirafAPI.Models.DTOs;
-using GirafAPI.Models.Responses;
-using Microsoft.Extensions.Options;
-using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using GirafAPI.Interfaces;
-using GirafAPI.Models;
-using Microsoft.AspNetCore.Authentication;
+using Giraf.UnitTest.RepositoryMocks;
+using GirafAPI.Controllers;
+using GirafEntities.Authentication;
+using GirafEntities.Authentication.DTOs;
+using GirafEntities.Responses;
+using GirafEntities.Settings.DTOs;
+using GirafEntities.User;
+using GirafEntities.User.DTOs;
+using GirafEntities.WeekPlanner;
+using GirafRepositories.Interfaces;
+using GirafRepositories.Persistence;
+using GirafRepositories.User;
+using GirafServices.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Logging;
-using ILoggerFactory = Microsoft.Extensions.Logging.ILoggerFactory;
-using System.Threading;
-using System.Linq;
-using Giraf.UnitTest.RepositoryMocks;
-using GirafEntities.User;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Moq;
+using Xunit;
 using Assert = Xunit.Assert;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
-namespace Giraf.UnitTest
+namespace Giraf.UnitTest.Controllers
 {
     public class AccountControllerTest
     {
@@ -39,24 +36,25 @@ namespace Giraf.UnitTest
                 Value = config;
             }
         }
-        
+
         #region Login
 
         // When logging in, one is only allowed to login as users below them in the hierarchy. The hierarchy in order is: Admin, Department, Guardian, Citizen
         // Check if possible to login with mock credentials. All passwords are initialised (Data folder, DBInitializer.cs) to be "password"
 
         [Fact]
-       public void Login_CredentialsOk_Success()
+        public void Login_CredentialsOk_Success()
         {
             // Arrange
             var userManager = new MockUserManager();
             var signInManager = new MockSignInManager(userManager);
-            var jwtOptions = new OptionsJwtConfig(new JwtConfig() {
+            var jwtOptions = new OptionsJwtConfig(new JwtConfig()
+            {
                 JwtKey = "SuperSuperSuperSUperSuperSUperSuperSecretKey",
                 JwtIssuer = "TestIssuer",
                 JwtExpireDays = 1,
             });
-            var accountController = new MockedAccountController(signInManager,jwtOptions);
+            var accountController = new MockedAccountController(signInManager, jwtOptions);
             var userRepository = accountController.UserRepository;
             var dto = new LoginDTO()
             {
@@ -81,7 +79,7 @@ namespace Giraf.UnitTest
                 .Returns(Task.FromResult(signInResult));
             userRepository.Setup(x => x.GetUserByUsername(dto.Username)).ReturnsAsync(mockUser);
             userManager.Setup(x => x.GetRolesAsync(mockUser)).Returns(Task.FromResult<IList<string>>(userRoles));
-            
+
             // Act
             var response = accountController.Login(dto);
             var objectResult = response.Result as ObjectResult;
@@ -102,14 +100,15 @@ namespace Giraf.UnitTest
             // Arrange
             var userManager = new MockUserManager();
             var signInManager = new MockSignInManager(userManager);
-            var jwtOptions = new OptionsJwtConfig(new JwtConfig() {
+            var jwtOptions = new OptionsJwtConfig(new JwtConfig()
+            {
                 JwtKey = "SuperSuperSuperSUperSuperSUperSuperSecretKey",
                 JwtIssuer = "TestIssuer",
                 JwtExpireDays = 1,
             });
             var accountController = new MockedAccountController(signInManager, jwtOptions);
             var userRepository = accountController.UserRepository;
-            
+
             var dto1 = new LoginDTO()
             {
                 Username = "Dawg",
@@ -126,7 +125,6 @@ namespace Giraf.UnitTest
                 DisplayName = "Thomas",
                 Id = "Thomas22",
                 DepartmentKey = 1
-
             };
             var mockUser2 = new GirafUser()
             {
@@ -134,7 +132,6 @@ namespace Giraf.UnitTest
                 DisplayName = "Thomas",
                 Id = "Thomas22",
                 DepartmentKey = 1
-
             };
             var signInResult = SignInResult.Success;
             Task.FromResult(signInResult);
@@ -166,7 +163,7 @@ namespace Giraf.UnitTest
             // Check that both requests are successful
             Assert.Equal(StatusCodes.Status200OK, result1.StatusCode);
             Assert.Equal(StatusCodes.Status200OK, result2.StatusCode);
-            
+
             // Check that jwt token is not null and atleast contains 40 characters
             Assert.NotNull(body2.Data);
             Assert.True(body2.Data.Length >= 40);
@@ -267,7 +264,7 @@ namespace Giraf.UnitTest
         #endregion
 
         #region Register
-        
+
         [Theory]
         [InlineData(GirafRoles.SuperUser)]
         [InlineData(GirafRoles.Guardian)]
@@ -277,8 +274,29 @@ namespace Giraf.UnitTest
         {
             // Arrange
             var signInManager = new MockSignInManager();
-            var accountController = new MockedAccountController(signInManager);
-            
+            var userManagerMock = new MockUserManager().Object;
+            var userRssRepo = new Mock<IUserResourseRepository>();
+            var deptRssRepo = new Mock<IDepartmentResourseRepository>();
+            var roleRepo = new Mock<IGirafRoleRepository>();
+            var options = new OptionsJwtConfig(default);
+            var userRepo = new Mock<IGirafUserRepository>();
+            var deptRepo = new Mock<IDepartmentRepository>();
+            var settingRepo = new Mock<ISettingRepository>();
+            var userService = new UserService(
+                userManagerMock,
+                userRepo.Object,
+                userRssRepo.Object,
+                deptRssRepo.Object,
+                roleRepo.Object);
+            var accountController = new AccountController(
+                signInManager.Object,
+                userService,
+                options,
+                userRepo.Object,
+                deptRepo.Object,
+                settingRepo.Object
+            );
+
             var department = new Department()
             {
                 Key = 1,
@@ -289,8 +307,8 @@ namespace Giraf.UnitTest
                 //   no weird braking changes, i manually initialize it.
                 WeekTemplates = new List<WeekTemplate>()
             };
-            
-            var registrationDto = new RegisterDTO() 
+
+            var registrationDto = new RegisterDTO()
             {
                 Username = "Andreas",
                 DisplayName = "Brandhoej",
@@ -300,10 +318,10 @@ namespace Giraf.UnitTest
             };
 
             // Mock
-            accountController.UserRepository.Setup(
+            userRepo.Setup(
                 repo => repo.ExistsUsername(registrationDto.Username)
             ).Returns(false);
-            accountController.DepartmentRepository.Setup(
+            deptRepo.Setup(
                 repo => repo.GetDepartmentById(department.Key)
             ).Returns(department);
             signInManager.UserManager.Setup(
@@ -327,12 +345,35 @@ namespace Giraf.UnitTest
             Assert.Equal(registrationDto.DepartmentId, body.Data.Department);
             Assert.Equal(registrationDto.DisplayName, body.Data.DisplayName);
         }
-        
+
         [Fact]
         public void Register_ExistingUsername_CodeUserAlreadyExists()
         {
+            var signInManager = new MockSignInManager();
+            var userManagerMock = new MockUserManager().Object;
+            var userRssRepo = new Mock<IUserResourseRepository>();
+            var deptRssRepo = new Mock<IDepartmentResourseRepository>();
+            var roleRepo = new Mock<IGirafRoleRepository>();
+            var options = new OptionsJwtConfig(default);
+            var userRepo = new Mock<IGirafUserRepository>();
+            var deptRepo = new Mock<IDepartmentRepository>();
+            var settingRepo = new Mock<ISettingRepository>();
+            var userService = new UserService(
+                userManagerMock,
+                userRepo.Object,
+                userRssRepo.Object,
+                deptRssRepo.Object,
+                roleRepo.Object);
+            var accountController = new AccountController(
+                signInManager.Object,
+                userService,
+                options,
+                userRepo.Object,
+                deptRepo.Object,
+                settingRepo.Object
+            );
             // Arrange
-            var accountController = new MockedAccountController();
+            // var accountController = new MockedAccountController();
             var registrationDto = new RegisterDTO()
             {
                 Username = "Andreas",
@@ -342,8 +383,8 @@ namespace Giraf.UnitTest
             };
 
             // Mock
-            accountController.UserRepository.Setup(
-                repo => repo.ExistsUsername(registrationDto.Username) 
+            userRepo.Setup(
+                repo => repo.ExistsUsername(registrationDto.Username)
             ).Returns(true);
 
             // Act
@@ -375,7 +416,7 @@ namespace Giraf.UnitTest
             // Assert
             Assert.Equal(ErrorCode.InvalidCredentials, body.ErrorCode);
         }
-        
+
         [Fact]
         public void Register_EmptyPassword_CodeInvalidCredenials()
         {
@@ -422,9 +463,36 @@ namespace Giraf.UnitTest
         [Fact]
         public void Register_GuardianRelation_Success()
         {
+            // var x = new MockedAccountController();
+            //
             // Arrange
             var signInManager = new MockSignInManager();
-            var accountController = new MockedAccountController(signInManager);
+            var userManagerMock = new MockUserManager().Object;
+            var userRssRepo = new Mock<IUserResourseRepository>();
+            var deptRssRepo = new Mock<IDepartmentResourseRepository>();
+            var roleRepo = new Mock<IGirafRoleRepository>();
+            var options = new OptionsJwtConfig(default);
+            var userRepo = new Mock<IGirafUserRepository>();
+            var deptRepo = new Mock<IDepartmentRepository>();
+            var settingRepo = new Mock<ISettingRepository>();
+            var userService = new UserService(
+                userManagerMock, 
+                userRepo.Object,
+                userRssRepo.Object, 
+                deptRssRepo.Object, 
+                roleRepo.Object);
+            var accountController = new AccountController(
+                signInManager.Object,
+                userService,
+                options,
+                userRepo.Object,
+                deptRepo.Object,
+                settingRepo.Object
+            );
+
+            // Arrange
+            // var signInManager = new MockSignInManager();
+            // var accountController = new MockedAccountController(signInManager);
             var department = new Department()
             {
                 Key = 1,
@@ -435,7 +503,7 @@ namespace Giraf.UnitTest
                 //   no weird braking changes, i manually initialize it.
                 WeekTemplates = new List<WeekTemplate>()
             };
-            var registrationDto = new RegisterDTO() 
+            var registrationDto = new RegisterDTO()
             {
                 Username = "Andreas",
                 DisplayName = "Brandhoej",
@@ -459,12 +527,15 @@ namespace Giraf.UnitTest
             IList<GirafUser> capturedNewUsers = new List<GirafUser>();
 
             // Mock
-            accountController.UserRepository.Setup(
+            // Mock
+            userRepo.Setup(
                 repo => repo.ExistsUsername(registrationDto.Username)
             ).Returns(false);
-            accountController.DepartmentRepository.Setup(
+            deptRepo.Setup(
                 repo => repo.GetDepartmentById(department.Key)
             ).Returns(department);
+            // accountController.GirafService.Setup(x => x.GirafRoleFromEnumToString(It.IsAny<GirafRoles>()))
+            //     .Returns("Citizen");
             signInManager.UserManager.Setup(
                 manager => manager.CreateAsync(Capture.In(capturedNewUsers), It.IsAny<string>())
             ).Returns(Task.FromResult(creationResult));
@@ -474,10 +545,10 @@ namespace Giraf.UnitTest
             signInManager.Setup(
                 manager => manager.SignInAsync(It.IsAny<GirafUser>(), true, null)
             ).Returns(Task.CompletedTask);
-            accountController.GirafRoleRepository.Setup(
+            roleRepo.Setup(
                 repo => repo.GetAllGuardians()
             ).Returns(guardianIds);
-            accountController.UserRepository.Setup(
+            userRepo.Setup(
                 repo => repo.GetUsersInDepartment(department.Key, guardianIds)
             ).Returns(guardians);
 
@@ -510,9 +581,10 @@ namespace Giraf.UnitTest
             Assert.Equal(StatusCodes.Status400BadRequest, result.StatusCode);
             Assert.Equal(ErrorCode.MissingProperties, errorResponse.ErrorCode);
         }
+
         #endregion register
-        
-        
+
+
         [Fact]
         public void ChangePassword_ValidInput_Success()
         {
@@ -520,7 +592,7 @@ namespace Giraf.UnitTest
             var signInManager = new MockSignInManager();
             var accountController = new MockedAccountController(signInManager);
             var userId = "I identitfy as this ID because it is IDeal";
-            var user  = new GirafUser()
+            var user = new GirafUser()
             {
                 UserName = "Johnny Lawrence",
                 DisplayName = "Cobra Kai dojo"
@@ -555,7 +627,7 @@ namespace Giraf.UnitTest
             var signInManager = new MockSignInManager();
             var accountController = new MockedAccountController(signInManager);
             var userId = "I identitfy as this ID because it is IDeal";
-            var user  = new GirafUser()
+            var user = new GirafUser()
             {
                 UserName = "Johnny Lawrence",
                 DisplayName = "Cobra Kai dojo"
@@ -582,7 +654,7 @@ namespace Giraf.UnitTest
             var signInManager = new MockSignInManager();
             var accountController = new MockedAccountController(signInManager);
             var userId = "I identitfy as this ID because it is IDeal";
-            var user  = new GirafUser()
+            var user = new GirafUser()
             {
                 UserName = "Johnny Lawrence",
                 DisplayName = "Cobra Kai dojo"
@@ -616,7 +688,7 @@ namespace Giraf.UnitTest
             var signInManager = new MockSignInManager();
             var accountController = new MockedAccountController(signInManager);
             var userId = "I identitfy as this ID because it is IDeal";
-            var user  = new GirafUser()
+            var user = new GirafUser()
             {
                 UserName = "Johnny Lawrence",
                 DisplayName = "Cobra Kai dojo"
@@ -644,7 +716,7 @@ namespace Giraf.UnitTest
             var signInManager = new MockSignInManager();
             var accountController = new MockedAccountController(signInManager);
             var userId = "I identitfy as this ID because it is IDeal";
-            var user  = new GirafUser()
+            var user = new GirafUser()
             {
                 UserName = "Johnny Lawrence",
                 DisplayName = "Cobra Kai dojo"

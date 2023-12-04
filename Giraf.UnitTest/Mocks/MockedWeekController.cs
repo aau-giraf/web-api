@@ -3,51 +3,48 @@ using System.Collections.Generic;
 using System.Text;
 using GirafRepositories.Interfaces;
 using GirafAPI.Controllers;
+using GirafServices.User;
+using GirafServices.WeekPlanner;
 using Moq;
-using GirafAPI.Interfaces;
 using Microsoft.Extensions.Logging;
-using GirafAPI.Shared;
 
 namespace Giraf.UnitTest.Mocks
 {
     class MockedWeekController : WeekController
     {
-        public Mock<IGirafService> Giraf { get; set; }
-        public Mock<ILoggerFactory> LoggerFactory { get; set; }
         public Mock<IWeekRepository> WeekRepository { get; set; }
         public Mock<ITimerRepository> TimerRepository { get; set; }
         public Mock<IPictogramRepository> PictogramRepository { get; set; }
+
+        public Mock<IWeekService> WeekService { get; set; }
         public Mock<IWeekdayRepository> WeekdayRepository { get; set; }
-        public MockedWeekController() : this(new Mock<IGirafService>(),
-                                            new Mock<ILoggerFactory>(),
-                                            new Mock<IWeekRepository>(),
+        public MockedWeekController() : this(new Mock<IWeekRepository>(),
                                             new Mock<ITimerRepository>(),
                                             new Mock<IPictogramRepository>(),
-                                            new Mock<IWeekdayRepository>())
+                                            new Mock<IWeekdayRepository>(),
+                                            new Mock<IWeekService>())
         {
         }
 
 
 
-        public MockedWeekController(Mock<IGirafService> giraf,
-                                    Mock<ILoggerFactory> loggerFactory,
-                                    Mock<IWeekRepository> weekRepository,
+        public MockedWeekController(Mock<IWeekRepository> weekRepository,
                                     Mock<ITimerRepository> timerRepository,
                                     Mock<IPictogramRepository> pictogramRepository,
-                                    Mock<IWeekdayRepository> weekdayRepository) : base(
-                                        giraf.Object,
-                                        loggerFactory.Object,
+                                    Mock<IWeekdayRepository> weekdayRepository,
+                                    Mock<IWeekService> weekService) : base(
                                         weekRepository.Object,
                                         timerRepository.Object,
                                         pictogramRepository.Object,
-                                        weekdayRepository.Object)
+                                        weekdayRepository.Object,
+                                        weekService.Object)
         {
-            Giraf = giraf;
-            LoggerFactory = loggerFactory;
             WeekRepository = weekRepository;
             TimerRepository = timerRepository;
             PictogramRepository = pictogramRepository;
             WeekdayRepository = weekdayRepository;
+            WeekService = weekService;
+
         }
     }
 }

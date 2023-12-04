@@ -2,16 +2,18 @@
 using System.Collections.Generic;
 using System.Text;
 using Xunit;
-using GirafAPI.Models;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using GirafAPI.Models.Responses;
 using Microsoft.AspNetCore.Http;
-using GirafAPI.Models.DTOs;
 using System.Linq;
 using Giraf.UnitTest.Mocks;
 using GirafEntities.User;
 using GirafAPI;
+using GirafEntities.Responses;
+using GirafEntities.WeekPlanner;
+using GirafEntities.WeekPlanner.DTOs;
+using GirafServices.WeekPlanner;
+using Moq;
 
 namespace Giraf.UnitTest.Controllers
 {
@@ -469,6 +471,7 @@ namespace Giraf.UnitTest.Controllers
         {
             //Arrange
             var weekController = new MockedWeekController();
+            var weekServiceMock = new Mock<IWeekService>();
             var weekRepository = weekController.WeekRepository;
 
             WeekDTO newWeek = new WeekDTO();
@@ -478,7 +481,7 @@ namespace Giraf.UnitTest.Controllers
             user.WeekSchedule.Add(week);
             //Mock
             weekRepository.Setup(x => x.LoadUserWithWeekSchedules("Platos")).Returns(Task.FromResult(user));
-            weekRepository.Setup(x => x.SetWeekFromDTO(newWeek, week)).Returns(Task.FromResult(new ErrorResponse(ErrorCode.Error, "Mocked error")));
+            weekController.WeekService.Setup(x => x.SetWeekFromDTO(newWeek, week)).Returns(Task.FromResult(new ErrorResponse(ErrorCode.Error, "Mocked error")));
             //Act
             var response = await weekController.UpdateWeek("Platos", 2021, 21, newWeek);
             var objectResult = response as ObjectResult;
@@ -495,6 +498,7 @@ namespace Giraf.UnitTest.Controllers
             //Arrange
             var weekController = new MockedWeekController();
             var weekRepository = weekController.WeekRepository;
+            var weekServiceMock = new Mock<IWeekService>();
 
             GirafUser user = new GirafUser() { UserName = "Platos" };
             Week week = new Week() { WeekYear = 2021, WeekNumber = 21};
@@ -502,7 +506,7 @@ namespace Giraf.UnitTest.Controllers
           
             //Mock
             weekRepository.Setup(x => x.LoadUserWithWeekSchedules("Platos")).Returns(Task.FromResult(user));
-            weekRepository.Setup(x => x.SetWeekFromDTO(newWeek, week)).Returns(Task.FromResult(null as ErrorResponse));
+            weekServiceMock.Setup(x => x.SetWeekFromDTO(newWeek, week)).Returns(Task.FromResult(null as ErrorResponse));
             //Act
             var response = await weekController.UpdateWeek("Platos", 2021, 21, newWeek);
             var objectResult = response as ObjectResult;
@@ -521,6 +525,7 @@ namespace Giraf.UnitTest.Controllers
             //Arrange
             var weekController = new MockedWeekController();
             var weekRepository = weekController.WeekRepository;
+            var weekServiceMock = new Mock<IWeekService>();
 
             WeekDTO newWeek = new WeekDTO();
             GirafUser user = new GirafUser() { UserName = "Platos" };
@@ -529,7 +534,7 @@ namespace Giraf.UnitTest.Controllers
             user.WeekSchedule.Add(week);
             //Mock
             weekRepository.Setup(x => x.LoadUserWithWeekSchedules("Platos")).Returns(Task.FromResult(user));
-            weekRepository.Setup(x => x.SetWeekFromDTO(newWeek, week)).Returns(Task.FromResult(null as ErrorResponse));
+            weekServiceMock.Setup(x => x.SetWeekFromDTO(newWeek, week)).Returns(Task.FromResult(null as ErrorResponse));
             
             //Act
             var response = await weekController.UpdateWeek("Platos", 2021, 21, newWeek);
@@ -601,6 +606,7 @@ namespace Giraf.UnitTest.Controllers
             //Arrange
             var weekController = new MockedWeekController();
             var weekRepository = weekController.WeekRepository;
+            var weekServiceMock = new Mock<IWeekService>();
 
             WeekdayDTO newWeekDay = new WeekdayDTO() { Day = Days.Wednesday };
             GirafUser user = new GirafUser() { UserName = "Platos" };
@@ -611,7 +617,7 @@ namespace Giraf.UnitTest.Controllers
             user.WeekSchedule.Add(week);
             //Mock
             weekRepository.Setup(x => x.LoadUserWithWeekSchedules(user.UserName)).Returns(Task.FromResult(user));
-            weekRepository.Setup(x => x.AddPictogramsToWeekday(day, newWeekDay)).Returns(Task.FromResult(false));
+            weekServiceMock.Setup(x => x.AddPictogramsToWeekday(day, newWeekDay)).Returns(Task.FromResult(false));
             //Act
             var response = await weekController.UpdateWeekday("Platos", 2021, 21, newWeekDay);
             var objectResult = response as ObjectResult;
@@ -626,6 +632,7 @@ namespace Giraf.UnitTest.Controllers
         {
             //Arrange
             var weekController = new MockedWeekController();
+            
             var weekRepository = weekController.WeekRepository;
 
             WeekdayDTO newWeekDay = new WeekdayDTO() { Day = Days.Wednesday };
@@ -637,7 +644,7 @@ namespace Giraf.UnitTest.Controllers
             user.WeekSchedule.Add(week);
             //Mock
             weekRepository.Setup(x => x.LoadUserWithWeekSchedules(user.UserName)).Returns(Task.FromResult(user));
-            weekRepository.Setup(x => x.AddPictogramsToWeekday(day, newWeekDay)).Returns(Task.FromResult(true));
+            weekController.WeekService.Setup(x => x.AddPictogramsToWeekday(day, newWeekDay)).Returns(Task.FromResult(true));
             //Act
             var response = await weekController.UpdateWeekday("Platos", 2021, 21, newWeekDay);
             var objectResult = response as ObjectResult;
