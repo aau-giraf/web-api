@@ -36,6 +36,19 @@ namespace GirafRest.Setup
     /// </summary>
     public class Startup
     {
+        public static bool IsLocalDocker(this IHostEnvironment hostEnvironment)
+        {
+            ArgumentNullException.ThrowIfNull(hostEnvironment);
+            
+            return hostEnvironment.IsEnvironment("LocalDocker");
+        }
+
+        public static bool IsCI(this IHostEnvironment hostEnvironment)
+        {
+            ArgumentNullException.ThrowIfNull(hostEnvironment);
+
+            return hostEnvironment.IsEnvironment("CI");
+        }
         /// <summary>
         /// Startup Application, and set appsettings
         /// </summary>
