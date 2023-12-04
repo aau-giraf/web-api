@@ -37,4 +37,4 @@ jobs:
           dotnet-ef database update
           nohup dotnet run --sample-data > /dev/null 2>&1 &
       - name: Tests
-        run: dotnet test ./GirafRest.IntegrationTest/
+        run: dotnet test ./Giraf.IntegrationTest/
