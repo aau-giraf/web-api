@@ -25,6 +25,7 @@ using System.Threading.Tasks;
 using GirafServices;
 using GirafServices.User;
 using GirafServices.WeekPlanner;
+using Microsoft.EntityFrameworkCore;
 
 namespace GirafAPI.Setup
 {
@@ -35,19 +36,7 @@ namespace GirafAPI.Setup
     /// </summary>
     public class Startup
     {
-        public static bool IsLocalDocker(this IHostEnvironment hostEnvironment)
-        {
-            ArgumentNullException.ThrowIfNull(hostEnvironment);
-            
-            return hostEnvironment.IsEnvironment("LocalDocker");
-        }
-
-        public static bool IsCI(this IHostEnvironment hostEnvironment)
-        {
-            ArgumentNullException.ThrowIfNull(hostEnvironment);
-
-            return hostEnvironment.IsEnvironment("CI");
-        }
+        
         /// <summary>
         /// Startup Application, and set appsettings
         /// </summary>
