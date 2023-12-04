@@ -17,6 +17,19 @@ Other than the branches being used for development and the trunk, there exists s
 - A hot-fix on a release will increment the number after the dot (.)
 - A new release will increment the number before the dot (.)
 
+# Running with Docker
+To run the wep-api with Docker, clone the repository and navigate into the web-api folder.
+
+Ensure to have Docker Desktop or Docker and Docker compose installed and running.
+
+In the terminal write the command: `docker compose up -d`
+
+The Docker compose will setup the database and seed it with sample data before starting the web-api.
+
+**The database can be accessed from port 5100**
+
+You can confirm the web-api is running by going to the [swagger endpoint](http://localhost:5000/swagger).
+
 ## License
 
 MIT License Copyright (c) 2018-present Aalborg University

@@ -73,6 +73,7 @@ namespace GirafAPI.Setup
                     break;
 
                 default:
+                    _sampleDataHandler = new SampleDataHandler("DB_data.dev.json");
                     break;
             }
 
