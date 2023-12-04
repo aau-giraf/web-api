@@ -32,7 +32,7 @@ jobs:
         # "nohup" is used to run the dotnet application in the background 
         run: |
           dotnet tool install --global dotnet-ef
-          cd GirafRest
+          cd GirafAPI
           dotnet restore
           dotnet-ef database update
           nohup dotnet run --sample-data > /dev/null 2>&1 &
