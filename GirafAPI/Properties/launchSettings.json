@@ -18,7 +18,6 @@
     },
     "GirafRest": {
       "commandName": "Project",
-      "commandLineArgs": "--sample-data",
       "launchBrowser": true,
       "applicationUrl": "http://localhost:1691"
     }

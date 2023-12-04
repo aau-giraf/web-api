@@ -1,0 +1,33 @@
+version: "3.8"
+services:
+  webapi:
+    container_name: GirafRestApi
+    build: .
+    ports:
+      - 5000:5000
+    depends_on:
+      db:
+        condition: service_healthy  
+    environment:
+      ASPNETCORE_ENVIRONMENT: 'LocalDocker'
+
+  db:
+    container_name: GirafMysqlDatabase
+    image: mysql
+    restart: on-failure
+    environment:
+      MYSQL_DATABASE: 'giraf'
+      MYSQL_USER: 'local'
+      MYSQL_PASSWORD: 'Giraf123'
+      MYSQL_RANDOM_ROOT_PASSWORD: 1
+    healthcheck:
+      test: "mysql -u$${MYSQL_USER} -p$${MYSQL_PASSWORD} -e 'select 1;'"
+      interval: 1s
+      retries: 120
+    ports:  
+      - 5100:3306
+    volumes:
+      - db_data:/var/lib/mysql
+
+volumes:
+  db_data:

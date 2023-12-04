@@ -56,6 +56,10 @@ namespace GirafAPI.Setup
                 builder.AddJsonFile("appsettings.Staging.json", optional: false, reloadOnChange: false);
             else if (env.IsProduction())
                 builder.AddJsonFile("appsettings.Production.json", optional: false, reloadOnChange: true);
+            else if (env.IsLocalDocker())
+                builder.AddJsonFile("appsettings.LocalDocker.json", optional: false, reloadOnChange: true);
+            else if (env.IsCI())
+                builder.AddJsonFile("appsettings.CI.json", optional: false, reloadOnChange: true);
             else
                 throw new NotSupportedException("No database option is supported by this Environment mode");
             builder.AddEnvironmentVariables();
@@ -273,6 +277,12 @@ namespace GirafAPI.Setup
             // ############################################################
             // Alt herunder kan principielt fjernes herfra 
             GirafDbContext context = app.ApplicationServices.GetService<GirafDbContext>();
+            //Only migrate in development or controlled environments.
+            //Can be problematic in production
+            if (env.IsDevelopment() || env.IsLocalDocker())
+            {
+                context.Database.Migrate();
+            }
 
             // Create roles if they do not exist
             roleManager.EnsureRoleSetup().Wait();
