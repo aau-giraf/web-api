@@ -280,7 +280,6 @@ namespace GirafAPI.Setup
                     name: "default",
                     template: "{controller=Account}/{action=AccessDenied}");
             });
-
             GirafDbContext context = app.ApplicationServices.GetService<GirafDbContext>();
             //Only migrate in development or controlled environments.
             //Can be problematic in production
