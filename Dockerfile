@@ -1,31 +1,31 @@
-# Using microsoft .NET 6.0 software development kit as 
-# the build envionment.
+# Using Microsoft .NET 8.0 SDK as the build environment
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
-# Copy the project to the container
-COPY . /app
+# Copy the solution to the container
+COPY . .
 
-# Build the app for production
-RUN dotnet publish -c Release -o out
+# Restore dependencies for the solution
+RUN dotnet restore
+
+# Build the GirafAPI project for production
+RUN dotnet publish GirafAPI/GirafAPI.csproj -c Release -o /app/out
 
 #------------------------------------------#
 
-# Use microsoft ASP.NET 6.0 as the runtime envionment
+# Use Microsoft ASP.NET 8.0 as the runtime environment
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime-env
-WORKDIR /srv
+WORKDIR /app
 
-# COPY the built files from the build environment into a local container
+# Copy the built files from the build environment into a local container
 COPY --from=build-env /app/out .
 
-# TODO: ALSO GET THE APPSETTINGS FILE FROM THE BUILD CONTAINER
+#Copy files for sample data to common directory
+COPY GirafRepositories/Persistence/ /GirafRepositories/Persistence/
 
-# Remove the appsettings files from the container
-# so no passwords are pushed to docker hub
-#RUN rm GirafRest/appsettings*
 
-# Expose the port intented for communications
+# Expose the port intended for communications
 EXPOSE 5000
 
-# Start running the app
-ENTRYPOINT ["dotnet", "GirafRest.dll", "--sample-data"]
+# Start running the GirafAPI
+ENTRYPOINT ["dotnet", "GirafAPI.dll", "--sample-data"]
