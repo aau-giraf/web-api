@@ -11,14 +11,14 @@ RUN dotnet publish -c Release -o out
 
 #------------------------------------------#
 
-# Use microsoft ASP.NET 8.0 as the runtime envionment
+# Use Microsoft ASP.NET 8.0 as the runtime envionment
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime-env
 WORKDIR /srv
 
 # COPY the built files from the build environment into a local container
 COPY --from=build-env /app/out .
 
-# COPY the json files for roles and pictograms
+# COPY the json files for roles and pictograms to a common directory
 COPY GirafRepositories/Persistence/*.json /GirafRepositories/Persistence/
 
 # Expose the port intented for communications
