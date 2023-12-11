@@ -5,6 +5,7 @@ namespace GirafRepositories.Persistence
 {
     public class SampleDataHandler
     {
+        //If these paths are changed, the Dockerfile needs to be updated.
         private readonly string jsonFile = $"{Directory.GetCurrentDirectory()}" +
                                            $"{Path.DirectorySeparatorChar}";
         private readonly string pictogramsFile = $"../GirafRepositories/Persistence/pictograms.json";
