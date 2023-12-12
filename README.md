@@ -3,6 +3,8 @@ This repository contains the REST API which the weekplanner uses to connect with
 
 The web-api is written as a .NET project and it is therefore written in C#. The current version of the project is .NET 8 and EF6, and it is not compatible with newer versions of these frameworks. The project consists of different controllers with endpoints for the requests made by the client, repositories for accessing the database through and models, which translates into the different entities/tables that are in the database.
 
+An explination of the structure of the web-api can be found on the [wiki](https://aau-giraf.github.io/wiki/Development/Web_API/), and a setup guide can be found [here](https://aau-giraf.github.io/wiki/Getting_Started/setup/#web-api).
+
 # Branches
 This repository uses the scaled trunkbased branching strategy, as explained here: [Github setup](https://github.com/aau-giraf/.github/blob/main/wiki/about/github.md). In this repository the "trunk" is named develop, and this is the branch that all developers should branch from when solving an issue. The naming convention for these branches are:
 
@@ -18,17 +20,16 @@ Other than the branches being used for development and the trunk, there exists s
 - A new release will increment the number before the dot (.)
 
 # Running with Docker
-To run the wep-api with Docker, clone the repository and navigate into the web-api folder.
+To run the wep-api with Docker:
+- Install Docker Desktop or Docker + Docker Compose, and ensure that the Docker engine is running.
+- Clone the repository and navigate into the web-api folder.
+- In a terminal, write `docker compose up`, you can optionally use the `-d` flag to run headless.
 
-Ensure to have Docker Desktop or Docker and Docker compose installed and running.
+The Docker Compose will setup the database and seed it with sample data before starting the web-api.
 
-In the terminal write the command: `docker compose up -d`
+**The database can be accessed from port 5100.** You can confirm the web-api is running by going to the [swagger endpoint](http://localhost:5000/swagger).
 
-The Docker compose will setup the database and seed it with sample data before starting the web-api.
-
-**The database can be accessed from port 5100**
-
-You can confirm the web-api is running by going to the [swagger endpoint](http://localhost:5000/swagger).
+**Note: If you want to run the web-api with a local instance of MySQL, then you must change the port in the Development appsettings from 5100 to 3306.**
 
 ## License
 

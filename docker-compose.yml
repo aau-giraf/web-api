@@ -13,7 +13,7 @@ services:
 
   db:
     container_name: GirafMysqlDatabase
-    image: mysql
+    image: mysql:8
     restart: on-failure
     environment:
       MYSQL_DATABASE: 'giraf'

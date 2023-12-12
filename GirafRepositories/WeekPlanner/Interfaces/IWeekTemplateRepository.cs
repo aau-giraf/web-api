@@ -9,10 +9,9 @@ namespace GirafRepositories.Interfaces
     {
         WeekTemplateNameDTO[] GetWeekTemplatesForUser(GirafUser user);
         Task<WeekTemplate> GetWeekTemplateFromIdAndUser(long id, GirafUser user);
-        void AddWeekTemplate(WeekTemplate newTemplate);
-        void UpdateWeekTemplate(WeekTemplate template);
-        void RemoveTemplate(WeekTemplate template);
+        Task AddWeekTemplate(WeekTemplate newTemplate);
+        Task UpdateWeekTemplate(WeekTemplate template);
+        Task RemoveTemplate(WeekTemplate template);
         WeekTemplate GetWeekTemplateFromId(long id);
-        Task<int> SaveChangesAsync();
     }
 }

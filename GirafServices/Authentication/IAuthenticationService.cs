@@ -10,11 +10,6 @@ namespace GirafServices.Authentication
     public interface IAuthenticationService
     {
         /// <summary>
-        /// Database context
-        /// </summary>
-        GirafDbContext _context { get; }
-
-        /// <summary>
         /// Role Manager to be used
         /// </summary>
         RoleManager<GirafRole> _roleManager { get; }

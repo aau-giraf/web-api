@@ -15,7 +15,6 @@ namespace GirafRepositories
         public static IServiceCollection AddRepositories(this IServiceCollection services, IConfiguration configuration)
         {
             // Adds the mysql database configuration and register it on the service collection. 
-            Console.WriteLine(configuration.GetConnectionString("DefaultConnection"));
             services.AddMySql(configuration);
             // Add scoped repositories. Every single request gets it's own scoped repositories.
             

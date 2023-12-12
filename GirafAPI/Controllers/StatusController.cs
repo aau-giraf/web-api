@@ -7,29 +7,29 @@ using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Razor.TagHelpers;
+using GirafRepositories.Interfaces;
 
 namespace GirafAPI.Controllers
 {
     /// <summary>
     /// Status-endpoint; Getting status of HTTP, DB etc, for clients to see status
     /// </summary>
-    [Authorize]
     [Route("v1/[controller]")]
     public class StatusController : Controller
     {
         private readonly IUserService _giraf;
+        private readonly IGirafUserRepository _userRepository;
 
-        // SHOULD BE REMOVED AFTER REFACTORING OF THIS CONTROLLER HAS BEEN COMPLETED!
-        private readonly GirafDbContext _context;
 
         /// <summary>
         /// Constructor for StatusController
         /// </summary>
         /// <param name="giraf">Service Injection</param>
-        public StatusController(IUserService giraf, GirafDbContext context)
+        public StatusController(IUserService giraf, IGirafUserRepository userRepository)
         {
             _giraf = giraf;
-            _context = context;
+            _userRepository = userRepository;
         }
 
         /// <summary>
@@ -54,7 +54,7 @@ namespace GirafAPI.Controllers
         {
             try
             {
-                _context.Users.FirstOrDefault();
+                _userRepository.GetAll().FirstOrDefault();
                 return Ok(new SuccessResponse("Connection to database"));
             }
             catch (System.Exception e)

@@ -33,19 +33,22 @@ namespace GirafRepositories.WeekPlanner
                 .FirstOrDefaultAsync(w => w.Id == id);
         }
 
-        public void AddWeekTemplate(WeekTemplate newTemplate)
+        public async Task AddWeekTemplate(WeekTemplate newTemplate)
         {
             Context.WeekTemplates.Add(newTemplate);
+            await Context.SaveChangesAsync();
         }
 
-        public void UpdateWeekTemplate(WeekTemplate template)
+        public async Task UpdateWeekTemplate(WeekTemplate template)
         {
             Context.WeekTemplates.Update(template);
+            await Context.SaveChangesAsync();
         }
 
-        public void RemoveTemplate(WeekTemplate template)
+        public async Task RemoveTemplate(WeekTemplate template)
         {
             Context.WeekTemplates.Remove(template);
+            await Context.SaveChangesAsync();
         }
 
         public WeekTemplate GetWeekTemplateFromId(long id)
@@ -56,15 +59,6 @@ namespace GirafRepositories.WeekPlanner
                 .ThenInclude(wd => wd.Activities)
                 .ThenInclude(e => e.Pictograms)
                 .FirstOrDefault(t => id == t.Id);
-        }
-
-        /// <summary>
-        /// Saves changes.
-        /// </summary>
-        /// <returns></returns>
-        public Task<int> SaveChangesAsync()
-        {
-            return Context.SaveChangesAsync();
         }
     }
 }
