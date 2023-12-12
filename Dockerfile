@@ -1,4 +1,4 @@
-# Using microsoft .NET 6.0 software development kit as 
+# Using microsoft .NET 8.0 software development kit as 
 # the build envionment.
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
