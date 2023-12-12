@@ -29,6 +29,7 @@ The Docker Compose will setup the database and seed it with sample data before s
 
 **The database can be accessed from port 5100.** You can confirm the web-api is running by going to the [swagger endpoint](http://localhost:5000/swagger).
 
+**Note: If you want to run the web-api with a local instance of MySQL, then you must change the port in the Development appsettings from 5100 to 3306.**
 
 ## License
 
