@@ -20,17 +20,15 @@ Other than the branches being used for development and the trunk, there exists s
 - A new release will increment the number before the dot (.)
 
 # Running with Docker
-To run the wep-api with Docker, clone the repository and navigate into the web-api folder.
+To run the wep-api with Docker:
+- Install Docker Desktop or Docker + Docker Compose, and ensure that the Docker engine is running.
+- Clone the repository and navigate into the web-api folder.
+- In a terminal, write `docker compose up`, you can optionally use the `-d` flag to run headless.
 
-Ensure to have Docker Desktop or Docker and Docker compose installed and running.
+The Docker Compose will setup the database and seed it with sample data before starting the web-api.
 
-In the terminal write the command: `docker compose up -d`
+**The database can be accessed from port 5100.** You can confirm the web-api is running by going to the [swagger endpoint](http://localhost:5000/swagger).
 
-The Docker compose will setup the database and seed it with sample data before starting the web-api.
-
-**The database can be accessed from port 5100**
-
-You can confirm the web-api is running by going to the [swagger endpoint](http://localhost:5000/swagger).
 
 ## License
 
