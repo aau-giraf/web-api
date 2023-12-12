@@ -12,11 +12,6 @@ namespace GirafServices.Authentication
     public class GirafAuthenticationService : IAuthenticationService
     {
         /// <summary>
-        /// Database Context for authentication
-        /// </summary>
-        public GirafDbContext _context { get; }
-
-        /// <summary>
         /// Role manager for authentication roles
         /// </summary>
         public RoleManager<GirafRole> _roleManager { get; }
