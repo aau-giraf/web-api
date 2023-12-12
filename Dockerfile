@@ -3,7 +3,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
-# Copy the project to the container
+# COPY the project to the container
 COPY . /app
 
 # Build the app for production
@@ -19,6 +19,8 @@ WORKDIR /srv
 COPY --from=build-env /app/out .
 
 # COPY the json files for roles and pictograms to a common directory
+# The path must be the same
+# If the roles and pictogram json files are moved this must be updated
 COPY GirafRepositories/Persistence/*.json /GirafRepositories/Persistence/
 
 # Expose the port intented for communications
