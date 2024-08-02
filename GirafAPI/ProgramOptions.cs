@@ -21,6 +21,6 @@ namespace GirafAPI
         /// <summary>
         /// A field for storing the port on which to host the server.
         /// </summary>
-        public static Int16 Port = 5000;
+        public static Int16 Port = 2680;
     }
 }
